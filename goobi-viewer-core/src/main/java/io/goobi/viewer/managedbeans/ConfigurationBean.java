@@ -24,12 +24,16 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.annotation.FacesConfig;
+import javax.faces.model.SelectItem;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,17 +44,22 @@ import org.json.JSONObject;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
+import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.modules.IModule;
@@ -100,18 +109,6 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isBookshelvesEnabled.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    @Deprecated
-    public boolean isBookshelvesEnabled() {
-        return isBookmarksEnabled();
-    }
-
-    /**
-     * <p>
      * isBookmarksEnabled.
      * </p>
      *
@@ -149,6 +146,18 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean useTiles(String pageType, String mimeType) throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().useTiles(PageType.getByName(pageType), getImageType(mimeType));
+    }
+
+    /**
+     * whether to show a navigator element in the openseadragon viewe
+     * 
+     * @param pageType get settings for this pageType
+     * @param mimeType get settings for this image type
+     * @return true if navigator should be shown
+     * @throws ViewerConfigurationException
+     */
+    public boolean showImageNavigator(String pageType, String mimeType) throws ViewerConfigurationException {
+        return DataManager.getInstance().getConfiguration().showImageNavigator(PageType.getByName(pageType), getImageType(mimeType));
     }
 
     /**
@@ -653,7 +662,8 @@ public class ConfigurationBean implements Serializable {
      * <p>
      * getTimeMatrixStartYear.
      * </p>
-     *
+     * 
+     * @param subTheme
      * @return a int.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -679,7 +689,8 @@ public class ConfigurationBean implements Serializable {
      * <p>
      * getTimeMatrixEndYear.
      * </p>
-     *
+     * 
+     * @param subTheme
      * @return a int.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -719,11 +730,6 @@ public class ConfigurationBean implements Serializable {
             logger.error("'{}' is not a valid value for 'startyear'", value);
             return 108;
         }
-    }
-
-    @Deprecated
-    public boolean isPiwikTracking() {
-        return isPiwikTrackingEnabled();
     }
 
     /**
@@ -782,17 +788,8 @@ public class ConfigurationBean implements Serializable {
                 .getConfiguration()
                 .getSortFields()
                 .stream()
-                .filter(field -> !isLanguageVersionOtherThan(field, BeanUtils.getLocale().getLanguage()))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * @param field
-     * @param language
-     * @return
-     */
-    private static boolean isLanguageVersionOtherThan(String field, String language) {
-        return field.matches(".*_LANG_[A-Z][A-Z]") && !field.matches(".*_LANG_" + language.toUpperCase());
+                .filter(field -> !Configuration.isLanguageVersionOtherThan(field, BeanUtils.getLocale().getLanguage()))
+                .toList();
     }
 
     /**
@@ -826,10 +823,7 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isPageBrowseStep1Visible() {
         List<Integer> steps = DataManager.getInstance().getConfiguration().getPageBrowseSteps();
-        if (steps != null && steps.size() > 0 && steps.get(0) > 0) {
-            return true;
-        }
-        return false;
+        return steps != null && !steps.isEmpty() && steps.get(0) > 0;
     }
 
     /**
@@ -841,10 +835,7 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isPageBrowseStep2Visible() {
         List<Integer> steps = DataManager.getInstance().getConfiguration().getPageBrowseSteps();
-        if (steps != null && steps.size() > 1 && steps.get(1) > 0) {
-            return true;
-        }
-        return false;
+        return steps != null && steps.size() > 1 && steps.get(1) > 0;
     }
 
     /**
@@ -856,10 +847,7 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isPageBrowseStep3Visible() {
         List<Integer> steps = DataManager.getInstance().getConfiguration().getPageBrowseSteps();
-        if (steps != null && steps.size() > 2 && steps.get(2) > 1) {
-            return true;
-        }
-        return false;
+        return steps != null && steps.size() > 2 && steps.get(2) > 1;
     }
 
     /**
@@ -871,7 +859,7 @@ public class ConfigurationBean implements Serializable {
      */
     public int getPageBrowseStep1() {
         List<Integer> steps = DataManager.getInstance().getConfiguration().getPageBrowseSteps();
-        if (steps != null && steps.size() > 0 && steps.get(0) > 1) {
+        if (steps != null && !steps.isEmpty() && steps.get(0) > 1) {
             return steps.get(0);
         }
         return 0;
@@ -909,7 +897,7 @@ public class ConfigurationBean implements Serializable {
 
     /**
      *
-     * @return
+     * @return Configured value
      */
     public int getPageSelectDropdownDisplayMinPages() {
         return DataManager.getInstance().getConfiguration().getPageSelectDropdownDisplayMinPages();
@@ -1015,6 +1003,17 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
+     * isSearchRisExportEnabled.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isSearchRisExportEnabled() {
+        return DataManager.getInstance().getConfiguration().isSearchRisExportEnabled();
+    }
+
+    /**
+     * <p>
      * isDoublePageNavigationEnabled.
      * </p>
      *
@@ -1049,7 +1048,7 @@ public class ConfigurationBean implements Serializable {
 
     /**
      *
-     * @return
+     * @return Configured value
      */
     public String getRestApiUrlForIIIFPresention() {
         return DataManager.getInstance().getRestApiManager().getIIIFDataApiUrl();
@@ -1083,7 +1082,12 @@ public class ConfigurationBean implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getIso639_1(String language) {
-        return DataManager.getInstance().getLanguageHelper().getLanguage(language).getIsoCodeOld();
+        Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
+        if (lang != null) {
+            return lang.getIsoCodeOld();
+        }
+
+        return language;
     }
 
     /**
@@ -1095,7 +1099,12 @@ public class ConfigurationBean implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getIso639_2B(String language) {
-        return DataManager.getInstance().getLanguageHelper().getLanguage(language).getIsoCode();
+        Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
+        if (lang != null) {
+            return lang.getIsoCode();
+        }
+
+        return language;
     }
 
     /**
@@ -1109,6 +1118,9 @@ public class ConfigurationBean implements Serializable {
      */
     public String getTranslation(String language, String locale) {
         Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
+        if (lang == null) {
+            return language;
+        }
         switch (locale.toLowerCase()) {
             case "de":
             case "ger":
@@ -1160,7 +1172,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isDisplaySidebarWidgetUsage() {
-        return DataManager.getInstance().getConfiguration().isDisplayWidgetUsage();
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsage();
     }
 
     /**
@@ -1253,16 +1265,8 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * @deprecated Superseded by isCopyrightIndicatorEnabled
-     */
-    @Deprecated(since = "22.07")
-    public boolean isDisplayCopyrightInfo() {
-        return false;
-    }
-
-    /**
      * 
-     * @return
+     * @return Configured value
      */
     public boolean isCopyrightIndicatorEnabled() {
         return DataManager.getInstance().getConfiguration().isCopyrightIndicatorEnabled();
@@ -1270,39 +1274,67 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * 
-     * @return
+     * @return Configured value
      */
     public String getCopyrightIndicatorStyle() {
         return DataManager.getInstance().getConfiguration().getCopyrightIndicatorStyle();
     }
 
+    /**
+     * 
+     * @return Configured value
+     */
     public boolean isDisplaySocialMediaShareLinks() {
         return DataManager.getInstance().getConfiguration().isDisplaySocialMediaShareLinks();
     }
 
+    /**
+     * 
+     * @return Configured value
+     */
     public String getMapBoxToken() {
         return DataManager.getInstance().getConfiguration().getMapBoxToken();
     }
 
+    /**
+     * 
+     * @return Configured value
+     */
     public String getMapBoxUser() {
         return DataManager.getInstance().getConfiguration().getMapBoxUser();
     }
 
+    /**
+     * 
+     * @return Configured value
+     */
     public String getMapBoxStyleId() {
         return DataManager.getInstance().getConfiguration().getMapBoxStyleId();
     }
 
     /**
-     *
-     * @return
+     * 
+     * @return Configured value
      */
     public List<Integer> getSearchHitsPerPageValues() {
         return DataManager.getInstance().getConfiguration().getSearchHitsPerPageValues();
     }
 
     /**
-     *
-     * @return
+     * 
+     * @return Configured value
+     */
+    public int getSearchChildHitsInitialLoadLimit() {
+        return DataManager.getInstance().getConfiguration().getSearchChildHitsInitialLoadLimit();
+    }
+
+    public int getSearchChildHitsToLoadOnExpand() {
+        return DataManager.getInstance().getConfiguration().getSearchChildHitsToLoadOnExpand();
+    }
+
+    /**
+     * 
+     * @return Configured value
      */
     public List<EmailRecipient> getFeedbackEmailRecipients() {
         return DataManager.getInstance().getConfiguration().getFeedbackEmailRecipients();
@@ -1313,9 +1345,13 @@ public class ConfigurationBean implements Serializable {
      * @return true if default sorting field is 'RANDOM'; false otherwise
      */
     public boolean isDefaultSortFieldRandom() {
-        return SolrConstants.SORT_RANDOM.equals(DataManager.getInstance().getConfiguration().getDefaultSortField());
+        return SolrConstants.SORT_RANDOM.equals(DataManager.getInstance().getConfiguration().getDefaultSortField(null));
     }
 
+    /**
+     * 
+     * @return Configured value
+     */
     public boolean isDisplayUserGeneratedContentBelowImage() {
         return DataManager.getInstance().getConfiguration().isDisplayUserGeneratedContentBelowImage();
     }
@@ -1330,64 +1366,142 @@ public class ConfigurationBean implements Serializable {
                 && !DataManager.getInstance().getConfiguration().getDocstructNavigationTypes(template, fallbackToDefaultTemplate).isEmpty();
     }
 
+    /**
+     * 
+     * @return Configured value
+     */
     public boolean isDisplayAnnotationTextInImage() {
         return DataManager.getInstance().getConfiguration().isDisplayAnnotationTextInImage();
     }
 
+    /**
+     * 
+     * @return Configured value
+     */
     public boolean isDisplayAddressSearchInMap() {
         return DataManager.getInstance().getConfiguration().isDisplayAddressSearchInMap();
     }
 
+    /**
+     * 
+     * @return Configured value
+     */
     public boolean isArchivesEnabled() {
         return DataManager.getInstance().getConfiguration().isArchivesEnabled();
     }
 
+    /**
+     * @param field
+     * @return Configured value
+     */
     public String getSearchSortingAscendingKey(String field) {
         return DataManager.getInstance().getConfiguration().getSearchSortingKeyAscending(field).orElse("searchSortingDropdown_ascending");
     }
 
+    /**
+     * @param field
+     * @return Configured value
+     */
     public String getSearchSortingDescendingKey(String field) {
         return DataManager.getInstance().getConfiguration().getSearchSortingKeyDescending(field).orElse("searchSortingDropdown_descending");
     }
 
     /**
+     * 
+     * @return List of names of the configured search result groups
+     * @should return all values
+     */
+    public List<String> getSearchResultGroupNames() {
+        logger.trace("getSearchResultGroupNames");
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getSearchResultGroups()
+                .stream()
+                .map(SearchResultGroup::getName)
+                .collect(Collectors.toList());
+    }
+
+    /**
      *
      * @param facetField
-     * @return
+     * @return Configured value
      */
     public boolean isTranslateFacetFieldLabels(String facetField) {
         return DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels(facetField);
     }
 
+    /**
+     * 
+     * @return Configured value
+     */
     public boolean useHeatmapForMapSearch() {
         return DataManager.getInstance().getConfiguration().useHeatmapForMapSearch();
     }
 
+    /**
+     * 
+     * @return Configured value
+     */
     public GeoMapMarker getMarkerForMapSearch() {
         return DataManager.getInstance().getConfiguration().getMarkerForMapSearch();
     }
 
+    /**
+     * 
+     * @return Configured value
+     */
+    public String getSelectionColorForMapSearch() {
+        return DataManager.getInstance().getConfiguration().getSelectionColorForMapSearch();
+    }
+
+    /**
+     * 
+     * @return Configured value
+     */
     public boolean useHeatmapForFacetting() {
         return DataManager.getInstance().getConfiguration().useHeatmapForFacetting();
     }
 
+    /**
+     * 
+     * @return Configured value
+     */
     public GeoMapMarker getMarkerForFacetting() {
         return DataManager.getInstance().getConfiguration().getMarkerForFacetting();
     }
 
+    /**
+     * 
+     * @return Configured value
+     */
+    public String getSelectionColorForFacetting() {
+        return DataManager.getInstance().getConfiguration().getSelectionColorForFacetting();
+    }
+
+    /**
+     * 
+     * @return Configured value
+     */
     public boolean useHeatmapForCMSMaps() {
         return DataManager.getInstance().getConfiguration().useHeatmapForCMSMaps();
     }
 
+    /**
+     * 
+     * @return Configured value
+     */
     public GeoMapMarker getDefaultMarkerForCMSMaps() {
         List<GeoMapMarker> markers = DataManager.getInstance().getConfiguration().getGeoMapMarkers();
-        GeoMapMarker marker = markers.stream()
+        return markers.stream()
                 .filter(m -> m.getName().equalsIgnoreCase("default"))
                 .findAny()
                 .orElse(new GeoMapMarker("default"));
-        return marker;
     }
 
+    /**
+     * 
+     * @return Configured value
+     */
     public int getGeomapAnnotationZoom() {
         return DataManager.getInstance().getConfiguration().getGeomapAnnotationZoom();
     }
@@ -1404,16 +1518,78 @@ public class ConfigurationBean implements Serializable {
         return view.toString();
     }
 
+    /**
+     * 
+     * @return Configured value
+     */
     public String getCampaignGeomapTilesource() {
         return DataManager.getInstance().getConfiguration().getCrowdsourcingCampaignGeomapTilesource();
     }
 
     /**
      * 
-     * @return
+     * @return Configured value
      */
     public boolean isConfigEditorEnabled() {
         return DataManager.getInstance().getConfiguration().isConfigEditorEnabled();
     }
 
+    /**
+     * 
+     * @return Configured value
+     */
+    public boolean isDisplaySearchHitNumbers() {
+        return DataManager.getInstance().getConfiguration().isDisplaySearchHitNumbers();
+    }
+
+    public String getGeomapFiltersAsJson() {
+        Locale locale = BeanUtils.getLocale();
+        Map<String, List<LabeledValue>> map = DataManager.getInstance().getConfiguration().getGeomapFilters();
+        Map<String, List<LabeledValue>> translatedMap = new HashMap<>();
+        for (Entry<String, List<LabeledValue>> entry : map.entrySet()) {
+            //            String translatedLabel = ViewerResourceBundle.getTranslation(entry.getKey(), BeanUtils.getLocale(), true);
+            List<LabeledValue> translatedValues = entry.getValue()
+                    .stream()
+                    .map(v -> new LabeledValue(v.getValue(), ViewerResourceBundle.getTranslation(v.getLabel(), locale), v.getStyleClass()))
+                    .collect(Collectors.toList());
+            translatedMap.put(entry.getKey(), translatedValues);
+
+        }
+        return new JSONObject(translatedMap).toString();
+    }
+
+    public List<SelectItem> getGeomapFeatureTitleOptions() {
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getGeomapFeatureTitleOptions()
+                .stream()
+                .map(item -> new SelectItem(item.getValue(), ViewerResourceBundle.getTranslation(item.getLabel(), BeanUtils.getLocale())))
+                .collect(Collectors.toList());
+    }
+
+    public List<Metadata> getMetadataConfiguration(String type) {
+        return getMetadataConfiguration(type, "_DEFAULT");
+    }
+
+    public List<Metadata> getMetadataConfiguration(String type, String template) {
+        return DataManager.getInstance().getConfiguration().getMetadataConfigurationForTemplate(type, template, true, true);
+    }
+
+    /**
+     * 
+     * @param name
+     * @return Configured value
+     */
+    public String getPageType(String name) {
+        return DataManager.getInstance().getConfiguration().getPageType(PageType.getByName(name));
+    }
+
+    /**
+     *
+     * @param facetField
+     * @return Configured value
+     */
+    public boolean isFacetFieldDisplayValueFilter(String facetField) {
+        return DataManager.getInstance().getConfiguration().isFacetFieldDisplayValueFilter(facetField);
+    }
 }

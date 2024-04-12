@@ -1,0 +1,64 @@
+/* ==============================================================
+	Styling for content component frontend slider
+   ==============================================================*/
+
+.content-component {
+	&__slider {
+		.swiper-container {
+			a:hover {
+				text-decoration: none;
+			}
+		}
+		.swiper-wrapper {}
+		.swiper-slide {}
+		.swiper-link {
+			&:hover {
+				.swiper-heading {
+					text-decoration: none;
+				}
+			}
+		}
+		.swiper-heading {
+		}
+		.swiper-image {
+			height: 450px;
+			background-size: cover;
+			background-position: center;
+		}
+		.swiper-description {
+			margin-top: 1rem;
+		}
+		.swiper-pagination {
+			position: relative;
+			bottom: 0;
+		}
+		// CUSTOM ADAPTATIONS
+		.slider-centered-mode__image {
+			height: 200px;
+		}
+		.slider-3-slides-pagination__image {
+			height: 250px;
+		}
+	}
+	.tpl-slider {
+		&__inner {
+			padding: 2rem;
+			margin-bottom: 20px;
+		}
+		&__slider {
+			margin: 0rem 0 3.5rem 0;
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

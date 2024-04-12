@@ -23,10 +23,7 @@ package io.goobi.viewer.api.rest.v2.cms;
 
 import static io.goobi.viewer.api.rest.v2.ApiUrls.CMS_MEDIA_FILES_FILE_IMAGE;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -66,11 +63,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 @CORSBinding
 public class CMSMediaImageResource3 extends ImageResource {
 
-
     public CMSMediaImageResource3(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context ApiUrls urls,
-            @Parameter(description = "Filename of the image") @PathParam("filename") String filename) throws UnsupportedEncodingException {
+            @Parameter(description = "Filename of the image") @PathParam("filename") String filename) {
         super(context, request, response, "", getMediaFileUrl(filename).toString());
         request.setAttribute("filename", this.imageURI.toString());
         request.setAttribute(ImageResource.IIIF_VERSION, "3.0");
@@ -85,21 +81,21 @@ public class CMSMediaImageResource3 extends ImageResource {
         String imageRequestPath = requestUrl.substring(baseEndIndex);
         int parameterPathIndex = imageRequestPath.indexOf("/") + 1;
         String imageParameterPath = "";
-        if(parameterPathIndex > 0 && parameterPathIndex < imageRequestPath.length()) {
+        if (parameterPathIndex > 0 && parameterPathIndex < imageRequestPath.length()) {
             imageParameterPath = imageRequestPath.substring(parameterPathIndex);
             requestUrl = requestUrl.substring(0, baseEndIndex + parameterPathIndex);
         }
         this.resourceURI = URI.create(requestUrl);
 
         List<String> parts = Arrays.stream(imageParameterPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
-        if(parts.size() == 4) {
+        if (parts.size() == 4) {
             //image request
             request.setAttribute("iiif-info", false);
             request.setAttribute("iiif-region", parts.get(0));
             request.setAttribute("iiif-size", parts.get(1));
             request.setAttribute("iiif-rotation", parts.get(2));
             request.setAttribute("iiif-format", parts.get(3));
-        } else if(imageRequestPath.endsWith("info.json")) {
+        } else if (imageRequestPath.endsWith("info.json")) {
             //image info request
             request.setAttribute("iiif-info", true);
         }
@@ -107,7 +103,7 @@ public class CMSMediaImageResource3 extends ImageResource {
 
     /**
      * @param filename
-     * @return
+     * @return {@link URI}
      */
     private static URI getMediaFileUrl(String filename) {
         Path folder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -125,11 +121,13 @@ public class CMSMediaImageResource3 extends ImageResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding
-    @Operation(tags = {"iiif" }, summary = "IIIF image identifier for the CMS image file of the given filename. Returns a IIIF 3.0 image information object")
+    @Operation(tags = { "iiif" },
+            summary = "IIIF image identifier for the CMS image file of the given filename. Returns a IIIF 3.0 image information object")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
-       return super.redirectToCanonicalImageInfo();
+        return super.redirectToCanonicalImageInfo();
     }
 
+    @Override
     @GET
     @javax.ws.rs.Path("/info.json")
     @Produces({ MEDIA_TYPE_APPLICATION_JSONLD, MediaType.APPLICATION_JSON })
@@ -139,6 +137,5 @@ public class CMSMediaImageResource3 extends ImageResource {
         ImageInformation info = super.getInfoAsJson();
         return new ImageInformation3(info);
     }
-
 
 }

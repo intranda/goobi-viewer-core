@@ -58,9 +58,10 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_RIS_FILE = "/ris";
     public static final String RECORDS_TOC = "/toc";
     public static final String RECORDS_ANNOTATIONS = "/annotations";
+    public static final String RECORDS_ANNOTATIONS_PAGE = "/annotations/1";
     public static final String RECORDS_CMDI_LANG = "/cmdi/{lang}";
     public static final String RECORDS_COMMENTS = "/comments";
-    public static final String RECORDS_COMMENTS_COMMENT = "/comments/{id}";
+    public static final String RECORDS_COMMENTS_PAGE = "/comments/1";
     public static final String RECORDS_METADATA_SOURCE = "/metadata/source";
     public static final String RECORDS_MANIFEST = "/manifest";
     public static final String RECORDS_MANIFEST_AUTOCOMPLETE = "/manifest/autocomplete";
@@ -90,13 +91,13 @@ public class ApiUrls extends AbstractApiUrlManager {
 
     public static final String RECORDS_PAGES = "/records/{pi}/pages/{pageNo}";
     public static final String RECORDS_PAGES_CANVAS = "/canvas";
+    public static final String RECORDS_PAGES_MANIFEST = "/manifest";
     public static final String RECORDS_PAGES_MEDIA = "/media";
     public static final String RECORDS_PAGES_NER_TAGS = "/ner/tags";
     public static final String RECORDS_PAGES_ANNOTATIONS = "/annotations";
     public static final String RECORDS_PAGES_COMMENTS = "/comments";
     public static final String RECORDS_PAGES_COMMENTS_COMMENT = "/comments/{id}";
     public static final String RECORDS_PAGES_TEXT = "/text";
-
 
     public static final String RECORDS_FILES = "/records/{pi}/files";
     public static final String RECORDS_FILES_PLAINTEXT = "/plaintext/{filename}";
@@ -123,18 +124,9 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_FILES_3D_AUXILIARY_FILE_2 = "/{subfolder}/{subsubfolder}/{auxfilename}";
     public static final String RECORDS_FILES_3D_AUXILIARY_FILE_2_ALT = "//{subfolder}/{subsubfolder}/{auxfilename}";
 
-
     public static final String COLLECTIONS = "/collections/{field}";
     public static final String COLLECTIONS_COLLECTION = "/{collection}";
     public static final String COLLECTIONS_CONTENTASSIST = "/contentassist";
-
-    public static final String DOWNLOADS = "/downloads";
-    public static final String DOWNLOADS_EPUB = "/epub";
-    public static final String DOWNLOADS_PDF = "/pdf";
-    public static final String DOWNLOADS_EPUB_RECORD = "/epub/records/{pi}";
-    public static final String DOWNLOADS_PDF_RECORD = "/pdf/records/{pi}";
-    public static final String DOWNLOADS_EPUB_SECTION = "/epub/records/{pi}/sections/{divId}";
-    public static final String DOWNLOADS_PDF_SECTION = "/pdf/records/{pi}/sections/{divId}";
 
     public static final String USERS = "/users";
     public static final String USERS_USERID = "/users/{userId}";
@@ -170,7 +162,6 @@ public class ApiUrls extends AbstractApiUrlManager {
 
     public static final String CONTEXT = "/context";
 
-
     public static final String CROWDSOURCING_CAMPAIGN = "/crowdsourcing/campaings/{campaignId}";
     public static final String CROWDSOURCING_CAMPAIGN_ANNOTATIONS = "/annotations";
     public static final String CROWDSOURCING_CAMPAIGN_RECORDS = "/records/{pi}";
@@ -192,6 +183,7 @@ public class ApiUrls extends AbstractApiUrlManager {
 
     public static final String CMS = "/cms";
     public static final String CMS_MEDIA = "/cms/media";
+    public static final String CMS_MEDIA_BY_CATEGORY = "/category/{tags}";
     public static final String CMS_MEDIA_ITEM = "/{id}";
     public static final String CMS_MEDIA_ITEM_BY_ID = "/{id: \\d+}";
     public static final String CMS_MEDIA_ITEM_BY_FILE = "/{filename: [^\\/]*\\.\\w{1,4}}";
@@ -216,20 +208,18 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String EXTERNAL_IMAGES = "/images/external/{filename}";
     public static final String EXTERNAL_IMAGES_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
 
-
-
-
     private final String apiUrl;
 
     public ApiUrls() {
         this(DataManager.getInstance().getConfiguration().getRestApiUrl().replace("/api/v1", API));
     }
 
-    public ApiUrls(String apiUrl) {
+    public ApiUrls(final String apiUrl) {
         if (StringUtils.isNotBlank(apiUrl) && apiUrl.endsWith("/")) {
-            apiUrl = apiUrl.substring(0, apiUrl.length() - 1);
+            this.apiUrl = apiUrl.substring(0, apiUrl.length() - 1);
+        } else {
+            this.apiUrl = apiUrl;
         }
-        this.apiUrl = apiUrl;
     }
 
     @Override

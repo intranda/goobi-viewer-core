@@ -29,14 +29,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import javax.faces.model.SelectItem;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -46,8 +45,8 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * Old style page loading strategy (load all pages and keep them in memory).
@@ -115,8 +114,8 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
     /** {@inheritDoc} */
     @Override
     public PhysicalElement getPageForFileName(String fileName) {
-        for (int key : pages.keySet()) {
-            PhysicalElement page = pages.get(key);
+        for (Entry<Integer, PhysicalElement> entry : pages.entrySet()) {
+            PhysicalElement page = entry.getValue();
             if (fileName.equals(page.getFileName())) {
                 return page;
             }
@@ -174,8 +173,9 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
 
     /**
      * Generates a list of PhysicalElement objects that belong to this structure element.
-     *
-     * @return
+     * 
+     * @param topElement
+     * @return Map<Integer, PhysicalElement> containing all pages
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -227,5 +227,10 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
 
         logger.debug("Loaded {} pages for '{}'.", ret.size(), pi);
         return ret;
+    }
+
+    @Override
+    public PhysicalElement findPageForFilename(String filename) {
+        return this.pages.values().stream().filter(page -> filename.equalsIgnoreCase(page.getFileName())).findAny().orElse(null);
     }
 }

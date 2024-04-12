@@ -44,10 +44,8 @@
         </rule>
         <rule groupId="jakarta.annotation" artifactId="jakarta.annotation-api">
             <ignoreVersions>
-                <ignoreVersion>2.0.0</ignoreVersion>
-                <ignoreVersion>2.1.0-B1</ignoreVersion>
-                <ignoreVersion>2.1.0</ignoreVersion>
-                <ignoreVersion>2.1.1</ignoreVersion>
+                <ignoreVersion type="regex">2.*</ignoreVersion>
+                <ignoreVersion type="regex">3.*</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="jakarta.servlet" artifactId="jakarta.servlet-api">
@@ -78,5 +76,29 @@
                 <ignoreVersion>2.0.2</ignoreVersion>
             </ignoreVersions>
         </rule>
+        <rule groupId="org.springframework" artifactId="spring-*">
+            <ignoreVersions>
+                <ignoreVersion type="regex">6.*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="jakarta" artifactId="jakarta.jms-api">
+            <ignoreVersions>
+                <ignoreVersion type="regex">3.*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.ocpsoft.rewrite" artifactId="rewrite-*">
+            <ignoreVersions>
+                <ignoreVersion type="regex">10.*.Final</ignoreVersion>
+                <ignoreVersion type="regex">9.*.Final</ignoreVersion>
+                <ignoreVersion type="regex">8.*.Final</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.apache.activemq" artifactId="activemq-*">
+            <ignoreVersions>
+                <ignoreVersion type="regex">6.*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+
+
     </rules>
 </ruleset>

@@ -29,10 +29,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
@@ -53,13 +53,12 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.CMSCollection;
+import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.collections.BrowseElementInfo;
 import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement;
-import io.goobi.viewer.model.viewer.collections.SimpleBrowseElementInfo;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -77,30 +76,30 @@ public class CollectionBuilder extends AbstractBuilder {
      * Required field to create manifest stubs for works in collection
      */
     public static final String[] CONTAINED_WORKS_QUERY_FIELDS =
-            { SolrConstants.PI, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT, SolrConstants.IDDOC };
+            { SolrConstants.PI, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT,
+                    SolrConstants.IDDOC };
     /** Constant <code>RSS_FEED_LABEL="Rss feed"</code> */
-    public final static String RSS_FEED_LABEL = "Rss feed";
+    public static final String RSS_FEED_LABEL = "Rss feed";
     /** Constant <code>RSS_FEED_FORMAT="Rss feed"</code> */
-    public final static String RSS_FEED_FORMAT = "Rss feed";
+    public static final String RSS_FEED_FORMAT = "Rss feed";
 
     /**
      * Caching for collections
      */
     private static Map<String, String> facetFieldMap = new HashMap<>();
-//    private static Map<String, CollectionView> collectionViewMap = new HashMap<>();
+    //    private static Map<String, CollectionView> collectionViewMap = new HashMap<>();
 
     /**
      * <p>
      * Constructor for CollectionBuilder.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param apiUrlManager
      * @throws java.net.URISyntaxException if any.
      */
     public CollectionBuilder(AbstractApiUrlManager apiUrlManager) throws URISyntaxException {
         super(apiUrlManager);
     }
-
 
     /**
      * <p>
@@ -110,7 +109,8 @@ public class CollectionBuilder extends AbstractBuilder {
      * @param collectionField a {@link java.lang.String} object.
      * @param topElement a {@link java.lang.String} object.
      * @param splittingChar a {@link java.lang.String} object.
-     * @param facetField    A SOLR field which values are requested for all records within the collection and stored within the collection for later use
+     * @param facetField A SOLR field which values are requested for all records within the collection and stored within the collection for later use
+     * @param ignoreCollections
      * @return a {@link de.intranda.api.iiif.presentation.v2.Collection2} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.net.URISyntaxException if any.
@@ -118,12 +118,13 @@ public class CollectionBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws IllegalRequestException if the top element is not empty and is not a collection
      */
-    public Collection2 generateCollection(String collectionField, final String topElement, final String facetField, final String splittingChar, final List<String> ignoreCollections)
+    public Collection2 generateCollection(String collectionField, final String topElement, final String facetField, final String splittingChar,
+            final List<String> ignoreCollections)
             throws IndexUnreachableException, URISyntaxException, PresentationException, ViewerConfigurationException, IllegalRequestException {
 
         CollectionView collectionView = getCollectionView(collectionField, facetField, splittingChar);
         collectionView.setIgnore(ignoreCollections);
-//        CollectionView collectionView = createCollectionView(collectionField, facetField, splittingChar);
+        //        CollectionView collectionView = createCollectionView(collectionField, facetField, splittingChar);
         if (StringUtils.isNotBlank(topElement) && !"-".equals(topElement)) {
             collectionView.setTopVisibleElement(topElement);
             collectionView.setDisplayParentCollections(false);
@@ -208,14 +209,14 @@ public class CollectionBuilder extends AbstractBuilder {
                     work = new Manifest2(uri);
                     collection.addManifest((Manifest2) work);
                 }
-                getLabelIfExists(solrDocument).ifPresent(label -> work.setLabel(label));
+                getLabelIfExists(solrDocument).ifPresent(work::setLabel);
             }
         }
     }
 
     /**
-     * @param createCollectionQuery
-     * @return
+     * @param query
+     * @return {@link SolrDocumentList}
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -259,14 +260,12 @@ public class CollectionBuilder extends AbstractBuilder {
             throws URISyntaxException, ViewerConfigurationException {
         try {
             Collection2 collection = new Collection2(uri, baseElement == null ? null : baseElement.getName());
-            this.getAttributions().forEach(attr -> collection.addAttribution(attr));
+            this.getAttributions().forEach(collection::addAttribution);
             if (baseElement != null) {
 
                 BrowseElementInfo info = baseElement.getInfo();
-                if (info != null && info instanceof CMSCollection) {
-                    if(info instanceof CMSCollection) {
-                        collection.setDescription(info.getTranslationsForDescription());
-                    }
+                if (info instanceof CMSCollection) {
+                    collection.setDescription(info.getTranslationsForDescription());
                 }
                 collection.setLabel(getLabel(baseElement.getName()));
 
@@ -306,67 +305,72 @@ public class CollectionBuilder extends AbstractBuilder {
 
     /**
      * @param baseElement
+     * @param collectionView
      * @param collection
      */
     private void addRenderings(HierarchicalBrowseDcElement baseElement, CollectionView collectionView, Collection2 collection) {
 
         this.getRenderings().forEach(link -> {
-            URI id = getLinkingPropertyUri(baseElement, collectionView, link.target);
-            if(id != null) {
+            URI id = getLinkingPropertyUri(baseElement, collectionView, link.getTarget());
+            if (id != null) {
                 collection.addRendering(link.getLinkingContent(id));
             }
         });
 
     }
 
-
     /**
      * @param baseElement
+     * @param collectionView
      * @param target
-     * @return
+     * @return {@link URI}
      */
     private URI getLinkingPropertyUri(HierarchicalBrowseDcElement baseElement, CollectionView collectionView, LinkingTarget target) {
 
         URI uri = null;
-        switch(target) {
+        switch (target) {
             case VIEWER:
                 uri = absolutize(collectionView.getCollectionUrl(baseElement));
+                break;
+            default:
                 break;
         }
         return uri;
     }
 
-
     /**
-     * Add a taglist service to the collection and all subcollections.
-     * The taglist service provides a list of
+     * Add a taglist service to the collection and all subcollections. The taglist service provides a list of
      *
      * @param collection
      * @param collectionField
-     * @param groupingField
+     * @param facetField
+     * @param label
      * @throws IndexUnreachableException
      * @throws IllegalRequestException
      */
-    public void addTagListService(Collection2 collection, String collectionField, final String facetField, String label) throws IndexUnreachableException, IllegalRequestException {
-        CollectionView view = getCollectionView(collectionField, facetField, DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
+    public void addTagListService(Collection2 collection, String collectionField, final String facetField, String label)
+            throws IndexUnreachableException, IllegalRequestException {
+        CollectionView view = getCollectionView(collectionField, facetField,
+                DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
         addTagListService(collection, view, label);
         collection.collections.forEach(c -> addTagListService(c, view, label));
 
     }
 
     /**
-     * @param ele
-     * @return
+     * @param collection
+     * @param view
+     * @param label
      */
     private void addTagListService(Collection2 collection, CollectionView view, String label) {
-            if(collection.getInternalName() != null) {
-                view.getCompleteList().stream().filter(e -> collection.getInternalName().equals(e.getName())).findAny().ifPresent( ele -> {
-                    TagListService tagsService = new TagListService(label, urls.path(ApiUrls.CONTEXT).build());
-                    tagsService.setTags(ele.getFacetValues());
-                    collection.addService(tagsService);
+        if (collection.getInternalName() != null) {
+            view.getCompleteList().stream().filter(e -> collection.getInternalName().equals(e.getName())).findAny().ifPresent(ele -> {
+                TagListService tagsService = new TagListService(label, urls.path(ApiUrls.CONTEXT).build());
+                tagsService.setTags(ele.getFacetValues());
+                collection.addService(tagsService);
 
-                });
-            }
+            });
+        }
 
     }
 
@@ -376,7 +380,7 @@ public class CollectionBuilder extends AbstractBuilder {
      * </p>
      *
      * @param collectionField a {@link java.lang.String} object.
-     * @param facetField a {@link java.lang.String} object.
+     * @param groupingField a {@link java.lang.String} object.
      * @param splittingChar a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -387,19 +391,17 @@ public class CollectionBuilder extends AbstractBuilder {
 
         String key = collectionField + "::" + groupingField;
         if (BeanUtils.getSessionBean().containsKey(key)) {
-            return new CollectionView((CollectionView)BeanUtils.getSessionBean().get(key));
+            return new CollectionView((CollectionView) BeanUtils.getSessionBean().get(key));
         }
 
-        CollectionView view = createCollectionView(collectionField, groupingField, splittingChar);
-
-        return view;
+        return createCollectionView(collectionField, groupingField, splittingChar);
     }
 
     /**
      * @param collectionField
-     * @param facetField    A SOLR field which values are queried and kept in the collectionView for later use
+     * @param facetField A SOLR field which values are queried and kept in the collectionView for later use
      * @param splittingChar
-     * @return
+     * @return {@link CollectionView}
      * @throws IndexUnreachableException
      * @throws IllegalRequestException
      */
@@ -412,7 +414,6 @@ public class CollectionBuilder extends AbstractBuilder {
         String key = collectionField + "::" + facetField;
         BeanUtils.getSessionBean().put(key, view);
         return view;
-
     }
 
     /**
@@ -429,7 +430,7 @@ public class CollectionBuilder extends AbstractBuilder {
             if (facetFieldMap.containsKey(collectionField)) {
                 return facetFieldMap.get(collectionField);
             }
-            String facetField = collectionField;
+            String facetField;
             if (collectionField.startsWith("MD_")) {
                 facetField = collectionField.replace("MD_", "FACET_");
             } else {

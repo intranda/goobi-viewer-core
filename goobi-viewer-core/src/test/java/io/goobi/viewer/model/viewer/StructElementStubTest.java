@@ -28,9 +28,9 @@ import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
@@ -40,10 +40,10 @@ import io.goobi.viewer.managedbeans.ContextMocker;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.StructElementStub;
 
-public class StructElementStubTest extends AbstractSolrEnabledTest {
+class StructElementStubTest extends AbstractSolrEnabledTest {
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
@@ -63,11 +63,11 @@ public class StructElementStubTest extends AbstractSolrEnabledTest {
      * @verifies generate string element correctly
      */
     @Test
-    public void generateContextObject_shouldGenerateStringElementCorrectly() throws Exception {
+    void generateContextObject_shouldGenerateStringElementCorrectly() throws Exception {
         StructElement element = new StructElement(iddocKleiuniv);
         StructElementStub stub = element.createStub();
-        Assert.assertEquals(element.getDocStructType(), stub.getDocStructType());
-        Assert.assertEquals(
+        Assertions.assertEquals(element.getDocStructType(), stub.getDocStructType());
+        Assertions.assertEquals(
                 "ctx_ver=Z39.88-2004&rft_val_fmt=info:ofi/fmt:kev:mtx:book&rft.title=Universit%C3%A4t+und+Technische+Hochschule&rft.au=Klein%2C+Felix&rft.tpages=16",
                 stub.generateContextObject(null, element.getTopStruct().createStub()));
     }
@@ -77,11 +77,11 @@ public class StructElementStubTest extends AbstractSolrEnabledTest {
      * @verifies return unknown format if topstruct null
      */
     @Test
-    public void generateContextObject_shouldReturnUnknownFormatIfTopstructNull() throws Exception {
+    void generateContextObject_shouldReturnUnknownFormatIfTopstructNull() throws Exception {
         StructElement element = new StructElement(iddocKleiuniv);
         StructElementStub stub = element.createStub();
-        Assert.assertEquals(element.getDocStructType(), stub.getDocStructType());
-        Assert.assertTrue(stub.generateContextObject(null, null)
+        Assertions.assertEquals(element.getDocStructType(), stub.getDocStructType());
+        Assertions.assertTrue(stub.generateContextObject(null, null)
                 .startsWith(
                         "ctx_ver=Z39.88-2004&rft_val_fmt=info:ofi/fmt:kev:mtx:unknown"));
     }
@@ -91,12 +91,12 @@ public class StructElementStubTest extends AbstractSolrEnabledTest {
      * @verifies return locale specific title if so requested
      */
     @Test
-    public void getLabel_shouldReturnLocaleSpecificTitleIfSoRequested() throws Exception {
+    void getLabel_shouldReturnLocaleSpecificTitleIfSoRequested() throws Exception {
         StructElement element = new StructElement();
         element.setLabel("label");
         element.getMetadataFields().put("MD_TITLE", Collections.singletonList("title"));
         element.getMetadataFields().put("MD_TITLE_LANG_EN", Collections.singletonList("english title"));
-        Assert.assertEquals("english title", element.getLabel("en"));
+        Assertions.assertEquals("english title", element.getLabel("en"));
     }
 
     /**
@@ -104,12 +104,12 @@ public class StructElementStubTest extends AbstractSolrEnabledTest {
      * @verifies return label if no locale specific title found
      */
     @Test
-    public void getLabel_shouldReturnLabelIfNoLocaleSpecificTitleFound() throws Exception {
+    void getLabel_shouldReturnLabelIfNoLocaleSpecificTitleFound() throws Exception {
         StructElement element = new StructElement();
         element.setLabel("label");
         element.getMetadataFields().put("MD_TITLE", Collections.singletonList("title"));
         element.getMetadataFields().put("MD_TITLE_LANG_EN", Collections.singletonList("english title"));
-        Assert.assertEquals("label", element.getLabel("de"));
+        Assertions.assertEquals("label", element.getLabel("de"));
     }
 
     /**
@@ -117,11 +117,11 @@ public class StructElementStubTest extends AbstractSolrEnabledTest {
      * @verifies return label if locale is null
      */
     @Test
-    public void getLabel_shouldReturnLabelIfLocaleIsNull() throws Exception {
+    void getLabel_shouldReturnLabelIfLocaleIsNull() throws Exception {
         StructElement element = new StructElement();
         element.setLabel("label");
         element.getMetadataFields().put("MD_TITLE", Collections.singletonList("title"));
         element.getMetadataFields().put("MD_TITLE_LANG_EN", Collections.singletonList("english title"));
-        Assert.assertEquals("label", element.getLabel(null));
+        Assertions.assertEquals("label", element.getLabel(null));
     }
 }

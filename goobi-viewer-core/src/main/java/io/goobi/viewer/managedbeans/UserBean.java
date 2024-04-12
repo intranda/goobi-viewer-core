@@ -25,20 +25,19 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -51,6 +50,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jdom2.JDOMException;
+import org.omnifaces.cdi.Push;
+import org.omnifaces.cdi.PushContext;
 
 import com.ocpsoft.pretty.PrettyContext;
 
@@ -58,10 +59,8 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.faces.validators.EmailValidator;
 import io.goobi.viewer.filters.LoginFilter;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
@@ -69,9 +68,11 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.crowdsourcing.CrowdsourcingTools;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
+import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LoginResult;
 import io.goobi.viewer.model.security.user.User;
@@ -79,7 +80,6 @@ import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
-import io.goobi.viewer.model.viewer.Feedback;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import jakarta.mail.MessagingException;
 
@@ -99,6 +99,12 @@ public class UserBean implements Serializable {
     @Inject
     private NavigationHelper navigationHelper;
 
+    @Inject
+    @Push
+    private PushContext sessionTimeoutCounter;
+
+    private Timer sessionTimeoutMonitorTimer;
+
     private User user;
     private String nickName;
     private String email;
@@ -107,7 +113,6 @@ public class UserBean implements Serializable {
     /** Selected OpenID Connect provider. */
     private IAuthenticationProvider authenticationProvider;
     private IAuthenticationProvider loggedInProvider;
-    private List<IAuthenticationProvider> authenticationProviders;
 
     // Passwords for creating an new local user account
     private transient String passwordOne = "";
@@ -115,8 +120,8 @@ public class UserBean implements Serializable {
 
     /** Honey pot field invisible to human users. */
     private String lastName;
+    /** Redirect URL after successful login. */
     private String redirectUrl = null;
-    private Feedback feedback;
     private String transkribusUserName;
     private String transkribusPassword;
     private Boolean hasAdminBackendAccess;
@@ -129,18 +134,25 @@ public class UserBean implements Serializable {
         this.authenticationProvider = getLocalAuthenticationProvider();
     }
 
-    @PostConstruct
-    public void init() {
-        createFeedback();
+    /**
+    *
+    */
+    public void updateSessionTimeoutCounter() {
+        logger.trace("updateSessionTimeoutCounter");
+        sessionTimeoutCounter.send("update");
     }
 
-    /**
-     * Required setter for ManagedProperty injection
-     *
-     * @param navigationHelper the navigationHelper to set
-     */
-    public void setNavigationHelper(NavigationHelper navigationHelper) {
-        this.navigationHelper = navigationHelper;
+    public String getSessionTimeout() {
+        long lastActityTimestamp = BeanUtils.getSession().getLastAccessedTime();
+        logger.trace("lastActityTimestamp: {}", lastActityTimestamp);
+        long inactiveMillis = System.currentTimeMillis() - lastActityTimestamp;
+        logger.trace("inactiveMillis: {}", inactiveMillis);
+        int maxInactiveSeconds = BeanUtils.getSession().getMaxInactiveInterval();
+        // logger.trace("maxInactiveSeconds: {}", maxInactiveSeconds);
+        long timeoutMillis = maxInactiveSeconds * 1000 - inactiveMillis;
+        logger.trace("timeoutMillis: {}", timeoutMillis);
+        LocalTime timeout = LocalTime.ofSecondOfDay(timeoutMillis / 1000);
+        return DateTimeFormatter.ISO_TIME.format(timeout);
     }
 
     /**
@@ -158,7 +170,6 @@ public class UserBean implements Serializable {
         }
         // Check whether the security question has been answered correct, if configured
         if (captchaBean != null && !captchaBean.checkAnswer()) {
-            captchaBean.reset();
             Messages.error("user__security_question_wrong");
             logFailedUserRegistration();
             logger.debug("Wrong security question answer.");
@@ -185,7 +196,9 @@ public class UserBean implements Serializable {
             // Do not allow the same email address being used for multiple users
             Messages.error("newUserExist");
             logFailedUserRegistration();
-            logger.debug("User account already exists for e-mail address '{}'.", NetTools.scrambleEmailAddress(email));
+            if (logger.isDebugEnabled()) {
+                logger.debug("User account already exists for e-mail address '{}'.", NetTools.scrambleEmailAddress(email));
+            }
             return "";
         }
 
@@ -226,8 +239,10 @@ public class UserBean implements Serializable {
         if (request != null) {
             ipAddress = NetTools.getIpAddress(request);
         }
-        logger.debug("Failed user registration attempt from {}, e-mail '{}'", NetTools.scrambleIpAddress(ipAddress),
-                NetTools.scrambleEmailAddress(email));
+        if (logger.isDebugEnabled()) {
+            logger.debug("Failed user registration attempt from {}, e-mail '{}'", NetTools.scrambleIpAddress(ipAddress),
+                    NetTools.scrambleEmailAddress(email));
+        }
     }
 
     /**
@@ -293,27 +308,38 @@ public class UserBean implements Serializable {
     public String login(IAuthenticationProvider provider)
             throws AuthenticationProviderException, IllegalStateException, InterruptedException, ExecutionException {
         if ("#".equals(this.redirectUrl)) {
-            HttpServletRequest request = BeanUtils.getRequest();
-            this.redirectUrl = ViewHistory.getCurrentView(request)
-                    .map(path -> ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + path.getCombinedPrettyfiedUrl())
-                    .orElse("");
+            this.redirectUrl = buildRedirectUrl();
         }
         logger.trace("login");
         if (provider != null) {
+            // Set provider so it can be accessed from outsde
+            setAuthenticationProvider(provider);
+            if (redirectUrl == null && provider instanceof HttpHeaderProvider) {
+                this.redirectUrl = buildRedirectUrl();
+            }
+            logger.trace("redirectUrl: {}", redirectUrl);
+            provider.setRedirectUrl(this.redirectUrl);
             provider.login(email, password).thenAccept(result -> completeLogin(provider, result));
         }
 
         return null;
     }
 
+    static String buildRedirectUrl() {
+        HttpServletRequest request = BeanUtils.getRequest();
+        return ViewHistory.getCurrentView(request)
+                .map(path -> ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + path.getCombinedPrettyfiedUrl())
+                .orElse("");
+    }
+
     /**
      *
      * @param provider
      * @param result
-     * @param loginRequest
      * @throws IllegalStateException
      */
     private void completeLogin(IAuthenticationProvider provider, LoginResult result) {
+        logger.debug("completeLogin");
         HttpServletResponse response = result.getResponse();
         HttpServletRequest request = result.getRequest();
         try {
@@ -329,7 +355,7 @@ public class UserBean implements Serializable {
                 }
             } else if (result.getUser().map(u -> !u.isActive()).orElse(false)) {
                 Messages.error("errLoginWrong");
-            } else if (result.getUser().map(u -> u.isSuspended()).orElse(false)) {
+            } else if (result.getUser().map(User::isSuspended).orElse(false)) {
                 Messages.error("errLoginWrong");
             } else if (oUser.isPresent()) { //login successful
                 try {
@@ -350,10 +376,14 @@ public class UserBean implements Serializable {
                         logger.error("Could not update user in DB.");
                     }
                     setUser(u);
-                    createFeedback();
                     if (request != null && request.getSession(false) != null) {
                         request.getSession(false).setAttribute("user", u);
                     }
+
+                    // Start timer
+                    //                    sessionTimeoutMonitorTimer = new Timer();
+                    //                    sessionTimeoutMonitorTimer.scheduleAtFixedRate(new SessionTimeoutMonitorTask(), 0, 10000);
+
                     if (response != null && StringUtils.isNotEmpty(redirectUrl)) {
                         logger.trace("Redirecting to {}", redirectUrl);
                         String url = this.redirectUrl;
@@ -403,7 +433,10 @@ public class UserBean implements Serializable {
             logger.error("Error logging in ", e);
             Messages.error("errLoginError");
         } finally {
+            logger.trace("releasing result");
             result.setRedirected();
+            // Reset to local provider so that the email field is displayed
+            setAuthenticationProvider(getLocalAuthenticationProvider());
         }
     }
 
@@ -421,7 +454,6 @@ public class UserBean implements Serializable {
 
         user.setTranskribusSession(null);
         setUser(null);
-        createFeedback();
         password = null;
         hasAdminBackendAccess = null;
         if (loggedInProvider != null) {
@@ -429,8 +461,14 @@ public class UserBean implements Serializable {
             loggedInProvider = null;
         }
         try {
+            // Kill session timeout update timer
+            if (sessionTimeoutMonitorTimer != null) {
+                sessionTimeoutMonitorTimer.cancel();
+            }
+
             wipeSession(request);
             SearchHelper.updateFilterQuerySuffix(request, IPrivilegeHolder.PRIV_LIST);
+
             // Reset loaded user-generated content lists
             BeanUtils.getBeanFromRequest(request, "contentBean", ContentBean.class).ifPresent(ContentBean::resetContentList);
         } catch (IndexUnreachableException | PresentationException | DAOException e) {
@@ -448,7 +486,7 @@ public class UserBean implements Serializable {
 
     /**
      * @param request
-     * @param response
+     * @return Redirect outcome
      */
     private String redirect(HttpServletRequest request) {
         Optional<ViewerPath> oCurrentPath = ViewHistory.getCurrentView(request);
@@ -502,42 +540,35 @@ public class UserBean implements Serializable {
             }
             session.removeAttribute("user");
 
-            //        // Remove priv maps
-            Enumeration<String> attributeNames = session.getAttributeNames();
-            Set<String> attributesToRemove = new HashSet<>();
-            while (attributeNames.hasMoreElements()) {
-                String attribute = attributeNames.nextElement();
-                if (attribute.startsWith(IPrivilegeHolder.PREFIX_PRIV)) {
-                    attributesToRemove.add(attribute);
+            this.reset();
 
-                }
-            }
-            if (!attributesToRemove.isEmpty()) {
-                for (String attribute : attributesToRemove) {
-                    session.removeAttribute(attribute);
-                    logger.trace("Removed session attribute: {}", attribute);
-                }
-            }
+            // Remove priv maps
+            AccessConditionUtils.clearSessionPermissions(session);
 
             try {
-                BeanUtils.getBeanFromRequest(request, "cmsBean", CmsBean.class)
-                        .ifPresentOrElse(bean -> bean.invalidate(), () -> {
-                            throw new IllegalStateException("Cannot access cmsBean to invalidate");
+                BeanUtils.getBeanFromRequest(request, "collectionViewBean", CollectionViewBean.class)
+                        .ifPresentOrElse(CollectionViewBean::invalidate, () -> {
+                            throw new IllegalStateException("Cannot access collectionViewBean to invalidate");
                         });
                 BeanUtils.getBeanFromRequest(request, "activeDocumentBean", ActiveDocumentBean.class)
-                        .ifPresentOrElse(bean -> bean.resetAccess(), () -> {
+                        .ifPresentOrElse(ActiveDocumentBean::resetAccess, () -> {
                             throw new IllegalStateException("Cannot access activeDocumentBean to resetAccess");
                         });
                 BeanUtils.getBeanFromRequest(request, "sessionBean", SessionBean.class)
-                        .ifPresentOrElse(bean -> bean.cleanSessionObjects(), () -> {
+                        .ifPresentOrElse(SessionBean::cleanSessionObjects, () -> {
                             throw new IllegalStateException("Cannot access sessionBean to cleanSessionObjects");
                         });
             } catch (Exception e) {
                 logger.warn(e.getMessage());
             }
-
-            this.authenticationProviders = null;
         }
+    }
+
+    /**
+     * Reset session dependend properties after a login or logout
+     */
+    private void reset() {
+        this.hasAdminBackendAccess = null;
     }
 
     /**
@@ -561,7 +592,7 @@ public class UserBean implements Serializable {
     /**
      *
      * @param user
-     * @return
+     * @return true if activation email sent successfully; false otherwise
      */
     private boolean sendActivationEmail(User user) {
         if (StringUtils.isNotEmpty(user.getEmail())) {
@@ -626,7 +657,7 @@ public class UserBean implements Serializable {
                 }
                 String resetUrl = navigationHelper.getApplicationUrl() + "user/resetpw/" + u.getEmail() + "/" + u.getActivationKey() + "/";
 
-                if (DataManager.getInstance().getDao().updateUser(user)) {
+                if (DataManager.getInstance().getDao().updateUser(u)) {
                     try {
                         if (NetTools.postMail(Collections.singletonList(email), null, null,
                                 ViewerResourceBundle.getTranslation("user_retrieveAccountConfirmationEmailSubject", null),
@@ -637,7 +668,7 @@ public class UserBean implements Serializable {
                             Messages.info("user_retrieveAccountConfirmationEmailMessage");
                             return "user?faces-redirect=true";
                         }
-                        logger.error("Could not send passwort reset link e-mail to: {}", user.getEmail());
+                        logger.error("Could not send passwort reset link e-mail to: {}", u.getEmail());
                     } catch (UnsupportedEncodingException | MessagingException e) {
                         logger.error(e.getMessage(), e);
                     }
@@ -716,121 +747,12 @@ public class UserBean implements Serializable {
         } catch (IOException | JDOMException e) {
             Messages.error("transkribus_loginError");
             return "";
-        } catch (HTTPException e) {
-            if (e.getCode() == 401 || e.getCode() == 403) {
-                Messages.error("transkribus_loginDataError");
-            }
-            return "";
         }
         if (user.getTranskribusSession() == null) {
             Messages.error("transkribus_loginError");
             return "";
         }
 
-        return "";
-    }
-
-    /**
-     * <p>
-     * createFeedback.
-     * </p>
-     */
-    public void createFeedback() {
-        lastName = null;
-        if (captchaBean != null) {
-            captchaBean.reset();
-        }
-
-        feedback = new Feedback();
-        if (user != null) {
-            feedback.setSenderAddress(user.getEmail());
-            feedback.setName(user.getDisplayName());
-        }
-        feedback.setRecipientAddress(DataManager.getInstance().getConfiguration().getDefaultFeedbackEmailAddress());
-
-        String url = Optional.ofNullable(FacesContext.getCurrentInstance())
-                .map(FacesContext::getExternalContext)
-                .map(ExternalContext::getRequestHeaderMap)
-                .map(map -> map.get("referer"))
-                .orElse(null);
-        if (StringUtils.isEmpty(url)) {
-            // Accessing beans from a different thread will throw an unhandled exception that will result in a white screen when logging in
-            try {
-                Optional.ofNullable(BeanUtils.getNavigationHelper())
-                        .map(NavigationHelper::getCurrentPrettyUrl)
-                        .ifPresent(u -> feedback.setUrl(u));
-            } catch (Exception e) {
-                logger.warn(e.getMessage());
-            }
-
-        }
-    }
-
-    /**
-     * <p>
-     * submitFeedbackAction.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String submitFeedbackAction(boolean setCurrentUrl) {
-        // Check whether the security question has been answered correct, if configured
-        if (captchaBean != null && !captchaBean.checkAnswer()) {
-            captchaBean.reset();
-            Messages.error("user__security_question_wrong");
-            return "";
-        }
-
-        // Check whether the invisible field lastName has been filled (real users cannot do that)
-        if (StringUtils.isNotEmpty(lastName)) {
-            logger.debug("Honeypot field entry: {}", lastName);
-            return "";
-        }
-        if (!EmailValidator.validateEmailAddress(this.feedback.getSenderAddress())) {
-            Messages.error("email_errlnvalid");
-            logger.debug("Invalid email: {}", this.feedback.getSenderAddress());
-            return "";
-        }
-        if (StringUtils.isBlank(feedback.getName())) {
-            Messages.error("errFeedbackNameRequired");
-            return "";
-        }
-        if (StringUtils.isBlank(feedback.getMessage())) {
-            Messages.error("errFeedbackMessageRequired");
-            return "";
-        }
-        if (StringUtils.isBlank(feedback.getRecipientAddress())) {
-            Messages.error("errFeedbackRecipientRequired");
-            return "";
-        }
-
-        //set current url to feedback
-        if (setCurrentUrl && navigationHelper != null) {
-            feedback.setUrl(navigationHelper.getCurrentPrettyUrl());
-        }
-
-        try {
-            if (NetTools.postMail(Collections.singletonList(feedback.getRecipientAddress()), null, null,
-                    feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
-                // Send confirmation to sender
-                if (StringUtils.isNotEmpty(feedback.getSenderAddress())
-                        && !NetTools.postMail(Collections.singletonList(feedback.getSenderAddress()), null, null,
-                                feedback.getEmailSubject("feedbackEmailSubjectSender"), feedback.getEmailBody("feedbackEmailBody"))) {
-                    logger.warn("Could not send feedback confirmation to sender.");
-                }
-                Messages.info("feedbackSubmitted");
-            } else {
-                logger.error("{} could not send feedback.", feedback.getSenderAddress());
-                Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
-                        .replace("{0}", feedback.getRecipientAddress()));
-            }
-        } catch (UnsupportedEncodingException | MessagingException e) {
-            logger.error(e.getMessage(), e);
-            Messages.error(ViewerResourceBundle.getTranslation("errFeedbackSubmit", null)
-                    .replace("{0}", feedback.getRecipientAddress()));
-        }
-        //eventually always create a new feedback object to erase prior inputs
-        createFeedback();
         return "";
     }
 
@@ -974,10 +896,7 @@ public class UserBean implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public synchronized List<IAuthenticationProvider> getAuthenticationProviders() {
-        if (this.authenticationProviders == null) {
-            this.authenticationProviders = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
-        }
-        return this.authenticationProviders;
+        return DataManager.getInstance().getConfiguration().getAuthenticationProviders();
     }
 
     /**
@@ -1016,6 +935,7 @@ public class UserBean implements Serializable {
      * @param provider a {@link io.goobi.viewer.model.security.authentication.IAuthenticationProvider} object.
      */
     public void setAuthenticationProvider(IAuthenticationProvider provider) {
+        logger.trace("setAuthenticationProvider: {}", provider.getName());
         this.authenticationProvider = provider;
     }
 
@@ -1172,28 +1092,6 @@ public class UserBean implements Serializable {
      */
     public void setActivationKey(String activationKey) {
         this.activationKey = activationKey;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>feedback</code>.
-     * </p>
-     *
-     * @return the feedback
-     */
-    public Feedback getFeedback() {
-        return feedback;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>feedback</code>.
-     * </p>
-     *
-     * @param feedback the feedback to set
-     */
-    public void setFeedback(Feedback feedback) {
-        this.feedback = feedback;
     }
 
     /**
@@ -1397,4 +1295,11 @@ public class UserBean implements Serializable {
         }
     }
 
+    public class SessionTimeoutMonitorTask extends TimerTask {
+        @Override
+        public void run() {
+            logger.trace("timeout monitor update task running");
+            updateSessionTimeoutCounter();
+        }
+    }
 }

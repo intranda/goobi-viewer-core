@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.cms.widgets;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
@@ -46,10 +47,9 @@ import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
- * Class to persist user generated CMS-Sidebar widgets in the database.
- * Different types of widgets containing different data are encoded in subclasses. This main class should be considered effectively abstract,
- * even though it cannot be marked as abstract due to dao persistence restrictions.
- * The exact type of custom widget can be gathered from #{CustomSidebarWidget{@link #getType()}
+ * Class to persist user generated CMS-Sidebar widgets in the database. Different types of widgets containing different data are encoded in
+ * subclasses. This main class should be considered effectively abstract, even though it cannot be marked as abstract due to dao persistence
+ * restrictions. The exact type of custom widget can be gathered from #{CustomSidebarWidget{@link #getType()}
  *
  * Each inheriting class must implement a cloning constructor, i.e. a constructor taking an argument of the same class and copying all its data
  *
@@ -61,7 +61,9 @@ import io.goobi.viewer.model.translations.TranslatedText;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "widget_type")
 @DiscriminatorValue("CustomSidebarWidget")
-public class CustomSidebarWidget implements IPolyglott {
+public class CustomSidebarWidget implements IPolyglott, Serializable {
+
+    private static final long serialVersionUID = -7060014691745797150L;
 
     private static final Logger logger = LogManager.getLogger(CustomSidebarWidget.class);
 
@@ -89,7 +91,8 @@ public class CustomSidebarWidget implements IPolyglott {
     private boolean collapsed = false;
 
     /**
-     * The currently selected locale when editing the widget. Any changes must be passed down to any translatable proberties of the widget, e.g. the title
+     * The currently selected locale when editing the widget. Any changes must be passed down to any translatable proberties of the widget, e.g. the
+     * title
      */
     @Transient
     private Locale locale = IPolyglott.getCurrentLocale();
@@ -99,6 +102,7 @@ public class CustomSidebarWidget implements IPolyglott {
 
     /**
      * Cloning constructor.
+     * 
      * @param source
      */
     public CustomSidebarWidget(CustomSidebarWidget source) {
@@ -173,7 +177,8 @@ public class CustomSidebarWidget implements IPolyglott {
 
     /**
      * Return the type of this custom sidebar widget. Must be implemented by subclasses of {@link CustomSidebarWidget}
-     * @return
+     * 
+     * @return {@link CustomWidgetType}
      */
     public CustomWidgetType getType() {
         return null;
@@ -189,6 +194,7 @@ public class CustomSidebarWidget implements IPolyglott {
 
     /**
      * Set the css style class to use for this widget
+     * 
      * @param styleClass
      */
     public void setStyleClass(String styleClass) {
@@ -204,6 +210,7 @@ public class CustomSidebarWidget implements IPolyglott {
 
     /**
      * Set this widget to be displayed as a collapseable
+     * 
      * @param collapsed the collapsed to set
      */
     public void setCollapsed(boolean collapsed) {
@@ -214,19 +221,18 @@ public class CustomSidebarWidget implements IPolyglott {
      * Creates a copy of the given custom widget o. Depends on cloning constructors if sublass
      *
      * @param o
-     * @return
+     * @return {@link CustomSidebarWidget}
      */
     public static CustomSidebarWidget clone(CustomSidebarWidget o) {
         if (o == null) {
             return null;
-        } else {
-            try {
-                return o.getClass().getConstructor(o.getClass()).newInstance(o);
-            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-                    | SecurityException e) {
-                logger.error("Cannot instatiate CustomSidebarWidget of class {}. Reason: {}", o.getClass(), e.toString());
-                return null;
-            }
+        }
+        try {
+            return o.getClass().getConstructor(o.getClass()).newInstance(o);
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+                | SecurityException e) {
+            logger.error("Cannot instatiate CustomSidebarWidget of class {}. Reason: {}", o.getClass(), e.toString());
+            return null;
         }
     }
 

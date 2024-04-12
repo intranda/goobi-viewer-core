@@ -2,6 +2,5 @@
     <wb-module deploy-name="goobi-viewer-core">
         <wb-resource deploy-path="/" source-path="/src/main/java" tag="defaultRootSource"/>
         <wb-resource deploy-path="/" source-path="/src/main/resources"/>
-        <wb-resource deploy-path="/" source-path="/src/main/resources/META-INF/resources"/>
     </wb-module>
 </project-modules>

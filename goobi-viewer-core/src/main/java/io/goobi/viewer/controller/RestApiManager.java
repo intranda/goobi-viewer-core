@@ -59,9 +59,6 @@ public class RestApiManager {
 
     /**
      * Create an instance directly using the unchanged given ApiUrlManagers
-     *
-     * @param dataApiManager
-     * @param contentApiManager
      */
     public RestApiManager() {
         this(DataManager.getInstance().getConfiguration());
@@ -77,7 +74,6 @@ public class RestApiManager {
     }
 
     /**
-     * @param version
      * @return the dataApiManager if it is either set directly or if the configured rest endpoint points to a goobi viewer v1 rest endpoint. Otherwise
      *         null is returned
      */
@@ -87,9 +83,9 @@ public class RestApiManager {
 
     public Optional<AbstractApiUrlManager> getDataApiManager(Version version) {
         String apiUrl = this.config.getRestApiUrl();
-        if(isLegacyUrl(apiUrl)) {
+        if (isLegacyUrl(apiUrl)) {
             return Optional.empty();
-        } else if(Version.v2.equals(version)){
+        } else if (Version.v2.equals(version)) {
             return Optional.of(new io.goobi.viewer.api.rest.v2.ApiUrls(apiUrl.replace("/api/v1", "/api/v2")));
         } else {
             return Optional.of(new ApiUrls(apiUrl));
@@ -113,7 +109,6 @@ public class RestApiManager {
     }
 
     /**
-     * @param version
      * @return the contentApiManager if it is either set directly or if the configured rest endpoint points to a goobi viewer v1 rest endpoint.
      *         Otherwise null is returned
      */
@@ -123,9 +118,9 @@ public class RestApiManager {
 
     public Optional<AbstractApiUrlManager> getContentApiManager(Version version) {
         String apiUrl = this.config.getIIIFApiUrl();
-        if(isLegacyUrl(apiUrl)) {
+        if (isLegacyUrl(apiUrl)) {
             return Optional.empty();
-        } else if(Version.v2.equals(version)){
+        } else if (Version.v2.equals(version)) {
             return Optional.of(new io.goobi.viewer.api.rest.v2.ApiUrls(apiUrl.replace("/api/v1", "/api/v2")));
         } else {
             return Optional.of(new ApiUrls(apiUrl));
@@ -139,14 +134,14 @@ public class RestApiManager {
     public AbstractApiUrlManager getCMSMediaImageApiManager(Version version) {
         if (DataManager.getInstance().getConfiguration().isUseIIIFApiUrlForCmsMediaUrls()) {
             return getContentApiManager(version).orElse(null);
-        } else {
-            return getDataApiManager(version).orElse(null);
         }
+        
+        return getDataApiManager(version).orElse(null);
     }
 
     /**
      * @param restApiUrl
-     * @return
+     * @return true if restApiUrl is legacy URL; false otherwise
      */
     public static boolean isLegacyUrl(String restApiUrl) {
         return !restApiUrl.matches(".*/api/v[12]/?");
@@ -157,7 +152,8 @@ public class RestApiManager {
      */
     public String getIIIFDataApiUrl() {
         return getDataApiManager(getVersionToUseForIIIF()).map(AbstractApiUrlManager::getApiUrl)
-                .orElse(getDataApiManager().map(AbstractApiUrlManager::getApiUrl).orElse(DataManager.getInstance().getConfiguration().getRestApiUrl()));
+                .orElse(getDataApiManager().map(AbstractApiUrlManager::getApiUrl)
+                        .orElse(DataManager.getInstance().getConfiguration().getRestApiUrl()));
     }
 
     /**
@@ -168,11 +164,13 @@ public class RestApiManager {
     }
 
     /**
+     * @param version
      * @return the url to the content api to use for IIIF resources
      */
     public String getIIIFContentApiUrl(Version version) {
         return getContentApiManager(version).map(AbstractApiUrlManager::getApiUrl)
-                .orElse(getContentApiManager().map(AbstractApiUrlManager::getApiUrl).orElse(DataManager.getInstance().getConfiguration().getIIIFApiUrl()));
+                .orElse(getContentApiManager().map(AbstractApiUrlManager::getApiUrl)
+                        .orElse(DataManager.getInstance().getConfiguration().getIIIFApiUrl()));
     }
 
     public AbstractApiUrlManager getIIIFDataApiManager() {
@@ -186,7 +184,7 @@ public class RestApiManager {
     }
 
     /**
-     * @return
+     * @return Appropriate API version to use for IIIF
      */
     public static Version getVersionToUseForIIIF() {
         String iiifVersion = DataManager.getInstance().getConfiguration().getIIIFVersionToUse();

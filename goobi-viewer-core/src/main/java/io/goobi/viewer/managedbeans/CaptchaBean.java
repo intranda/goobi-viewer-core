@@ -26,12 +26,13 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Random;
 
-import javax.enterprise.context.SessionScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.security.SecurityQuestion;
 
@@ -39,7 +40,7 @@ import io.goobi.viewer.model.security.SecurityQuestion;
  * Handles security question checks.
  */
 @Named
-@SessionScoped
+@ViewScoped
 public class CaptchaBean implements Serializable {
 
     private static final long serialVersionUID = -8342047587240066920L;
@@ -49,15 +50,17 @@ public class CaptchaBean implements Serializable {
     private transient SecurityQuestion securityQuestion = null;
     private transient String securityAnswer;
 
+    private final Configuration config;
+
     /** Reusable Random object. */
     private Random random = new SecureRandom();
 
-    /**
-     * 
-     */
-    public void reset() {
-        securityQuestion = null;
-        securityAnswer = null;
+    public CaptchaBean() {
+        this.config = DataManager.getInstance().getConfiguration();
+    }
+
+    public CaptchaBean(Configuration config) {
+        this.config = config;
     }
 
     /**
@@ -67,7 +70,7 @@ public class CaptchaBean implements Serializable {
      * @should not reset securityQuest if not yet answered
      */
     public boolean resetSecurityQuestion() {
-        List<SecurityQuestion> questions = DataManager.getInstance().getConfiguration().getSecurityQuestions();
+        List<SecurityQuestion> questions = config.getSecurityQuestions();
         if (!questions.isEmpty() && (securityQuestion == null || securityQuestion.isAnswered())) {
             // Reset if questions not empty and security question is not yet set or has been already answered
             securityQuestion = questions.get(random.nextInt(questions.size()));

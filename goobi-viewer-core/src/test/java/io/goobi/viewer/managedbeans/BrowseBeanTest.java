@@ -21,27 +21,43 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.controller.DataManager;
 
-public class BrowseBeanTest extends AbstractTest {
+class BrowseBeanTest extends AbstractTest {
+    
+    /**
+     * @see BrowseBean#getBrowsingMenuItems(String)
+     * @verifies skip items that have skipInWidget true
+     */
+    @Test
+    void getBrowsingMenuItems_shouldSkipItemsThatHaveSkipInWidgetTrue() throws Exception {
+        BrowseBean bb = new BrowseBean();
+        List<String> result = bb.getBrowsingMenuItems(null);
+        assertEquals(2, result.size());
+        assertEquals("MD_AUTHOR_UNTOKENIZED", result.get(0));
+        assertEquals("MD_SHELFMARK", result.get(1));
+    }
 
     /**
      * @see BrowseBean#getBrowsingMenuItems(String)
      * @verifies skip items for language-specific fields if no language was given
      */
     @Test
-    public void getBrowsingMenuItems_shouldSkipItemsForLanguagespecificFieldsIfNoLanguageWasGiven() throws Exception {
+    void getBrowsingMenuItems_shouldSkipItemsForLanguagespecificFieldsIfNoLanguageWasGiven() throws Exception {
         BrowseBean bb = new BrowseBean();
         List<String> result = bb.getBrowsingMenuItems(null);
-        Assert.assertEquals(2, result.size());
-        Assert.assertEquals("MD_AUTHOR_UNTOKENIZED", result.get(0));
-        Assert.assertEquals("MD_SHELFMARK", result.get(1));
+        assertEquals(2, result.size());
+        assertEquals("MD_AUTHOR_UNTOKENIZED", result.get(0));
+        assertEquals("MD_SHELFMARK", result.get(1));
     }
 
     /**
@@ -49,13 +65,28 @@ public class BrowseBeanTest extends AbstractTest {
      * @verifies skip items for language-specific fields if they don't match given language
      */
     @Test
-    public void getBrowsingMenuItems_shouldSkipItemsForLanguagespecificFieldsIfTheyDontMatchGivenLanguage() throws Exception {
+    void getBrowsingMenuItems_shouldSkipItemsForLanguagespecificFieldsIfTheyDontMatchGivenLanguage() throws Exception {
         BrowseBean bb = new BrowseBean();
         List<String> result = bb.getBrowsingMenuItems("en");
-        Assert.assertEquals(3, result.size());
-        Assert.assertEquals("MD_AUTHOR_UNTOKENIZED", result.get(0));
-        Assert.assertEquals("MD_TITLE_LANG_EN_UNTOKENIZED", result.get(1));
-        Assert.assertEquals("MD_SHELFMARK", result.get(2));
+        assertEquals(4, result.size());
+        assertEquals("MD_AUTHOR_UNTOKENIZED", result.get(0));
+        assertEquals("MD_TITLE_LANG_EN_UNTOKENIZED", result.get(2));
+        assertEquals("MD_SHELFMARK", result.get(3));
+    }
+
+    /**
+     * @see BrowseBean#getBrowsingMenuItems(String)
+     * @verifies return language-specific fields with placeholder
+     */
+    @Test
+    void getBrowsingMenuItems_shouldReturnLanguagespecificFieldsWithPlaceholder() throws Exception {
+        BrowseBean bb = new BrowseBean();
+        List<String> result = bb.getBrowsingMenuItems("en");
+        assertEquals(4, result.size());
+        assertEquals("MD_AUTHOR_UNTOKENIZED", result.get(0));
+        assertEquals("MD_ARTIST_LANG_{}", result.get(1));
+        assertEquals("MD_TITLE_LANG_EN_UNTOKENIZED", result.get(2));
+        assertEquals("MD_SHELFMARK", result.get(3));
     }
 
     /**
@@ -63,10 +94,10 @@ public class BrowseBeanTest extends AbstractTest {
      * @verifies return hierarchy correctly
      */
     @Test
-    public void getCollectionHierarchy_shouldReturnHierarchyCorrectly() throws Exception {
+    void getCollectionHierarchy_shouldReturnHierarchyCorrectly() throws Exception {
         BrowseBean bb = new BrowseBean();
-        Assert.assertEquals("foo", bb.getCollectionHierarchy("x", "foo"));
-        Assert.assertEquals("foo / foo.bar", bb.getCollectionHierarchy("x", "foo.bar"));
+        assertEquals("foo", bb.getCollectionHierarchy("x", "foo"));
+        assertEquals("foo / foo.bar", bb.getCollectionHierarchy("x", "foo.bar"));
     }
 
     /**
@@ -74,15 +105,15 @@ public class BrowseBeanTest extends AbstractTest {
      * @verifies return first available alphabetical filter if available
      */
     @Test
-    public void selectRedirectFilter_shouldReturnFirstAvailableAlphabeticalFilterIfAvailable() throws Exception {
+    void selectRedirectFilter_shouldReturnFirstAvailableAlphabeticalFilterIfAvailable() throws Exception {
         BrowseBean bb = new BrowseBean();
         bb.setBrowsingMenuField("foo");
-        bb.availableStringFilters.put("foo", new ArrayList<>(4));
+        bb.getAvailableStringFiltersMap().put("foo", new ArrayList<>(4));
         bb.getAvailableStringFilters().add("!");
         bb.getAvailableStringFilters().add("0-9");
         bb.getAvailableStringFilters().add("A");
         bb.getAvailableStringFilters().add("B");
-        Assert.assertEquals("A", bb.selectRedirectFilter());
+        assertEquals("A", bb.selectRedirectFilter());
     }
 
     /**
@@ -90,13 +121,13 @@ public class BrowseBeanTest extends AbstractTest {
      * @verifies return numerical filter if available
      */
     @Test
-    public void selectRedirectFilter_shouldReturnNumericalFilterIfAvailable() throws Exception {
+    void selectRedirectFilter_shouldReturnNumericalFilterIfAvailable() throws Exception {
         BrowseBean bb = new BrowseBean();
         bb.setBrowsingMenuField("foo");
-        bb.availableStringFilters.put("foo", new ArrayList<>(2));
+        bb.getAvailableStringFiltersMap().put("foo", new ArrayList<>(2));
         bb.getAvailableStringFilters().add("!");
         bb.getAvailableStringFilters().add("0-9");
-        Assert.assertEquals("0-9", bb.selectRedirectFilter());
+        assertEquals("0-9", bb.selectRedirectFilter());
     }
 
     /**
@@ -104,12 +135,62 @@ public class BrowseBeanTest extends AbstractTest {
      * @verifies return first filter if no other available
      */
     @Test
-    public void selectRedirectFilter_shouldReturnFirstFilterIfNoOtherAvailable() throws Exception {
+    void selectRedirectFilter_shouldReturnFirstFilterIfNoOtherAvailable() throws Exception {
         BrowseBean bb = new BrowseBean();
         bb.setBrowsingMenuField("foo");
-        bb.availableStringFilters.put("foo", new ArrayList<>(2));
+        bb.getAvailableStringFiltersMap().put("foo", new ArrayList<>(2));
         bb.getAvailableStringFilters().add("!");
         bb.getAvailableStringFilters().add("?");
-        Assert.assertEquals("!", bb.selectRedirectFilter());
+        assertEquals("!", bb.selectRedirectFilter());
     }
+
+    /**
+     * @see BrowseBean#getBrowsingMenuFieldForLanguage(String)
+     * @verifies return field for given language if placeholder found
+     */
+    @Test
+    void getBrowsingMenuFieldForLanguage_shouldReturnFieldForGivenLanguageIfPlaceholderFound() throws Exception {
+        BrowseBean bb = new BrowseBean();
+        bb.setBrowsingMenuField("MD_FOO_LANG_{}");
+        assertEquals("MD_FOO_LANG_EN", bb.getBrowsingMenuFieldForLanguage("en"));
+    }
+
+    /**
+     * @see BrowseBean#getBrowsingMenuFieldForLanguage(String)
+     * @verifies return browsingMenuField if no language placeholder
+     */
+    @Test
+    void getBrowsingMenuFieldForLanguage_shouldReturnBrowsingMenuFieldIfNoLanguagePlaceholder() throws Exception {
+        BrowseBean bb = new BrowseBean();
+        bb.setBrowsingMenuField("MD_FOO");
+        assertEquals("MD_FOO", bb.getBrowsingMenuFieldForLanguage("en"));
+    }
+
+    /**
+     * @see BrowseBean#generateFilterQuery()
+     * @verifies return empty string if no filterQuery or result groups available
+     */
+    @Test
+    void generateFilterQuery_shouldReturnEmptyStringIfNoFilterQueryOrResultGroupsAvailable() throws Exception {
+        BrowseBean bb = new BrowseBean();
+        assertEquals("", bb.generateFilterQuery(Collections.emptyList()));
+    }
+
+    /**
+     * @see BrowseBean#generateFilterQuery()
+     * @verifies generate filter query correctly
+     */
+    @Test
+    void generateFilterQuery_shouldGenerateFilterQueryCorrectly() throws Exception {
+        BrowseBean bb = new BrowseBean();
+        assertEquals("+(+( (SOURCEDOCFORMAT:LIDO) (DOCSTRCT:monograph) (+DOCSTRCT:\"cms_page\" +MD_CATEGORY:\"story\")))",
+                bb.generateFilterQuery(DataManager.getInstance().getConfiguration().getSearchResultGroups()));
+
+        bb.setFilterQuery("FOO:bar");
+        assertEquals("+(+(FOO:bar))", bb.generateFilterQuery(Collections.emptyList()));
+
+        assertEquals("+(+(FOO:bar) +( (SOURCEDOCFORMAT:LIDO) (DOCSTRCT:monograph) (+DOCSTRCT:\"cms_page\" +MD_CATEGORY:\"story\")))",
+                bb.generateFilterQuery(DataManager.getInstance().getConfiguration().getSearchResultGroups()));
+    }
+
 }

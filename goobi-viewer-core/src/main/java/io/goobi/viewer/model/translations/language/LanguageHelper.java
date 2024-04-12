@@ -47,7 +47,7 @@ public class LanguageHelper {
 
     private static final Logger logger = LogManager.getLogger(LanguageHelper.class);
 
-    ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builder;
+    private ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builder;
 
     /**
      * <p>
@@ -115,10 +115,15 @@ public class LanguageHelper {
     /**
      * Gets the language data for the given iso-code 639-1 or 639-2B
      *
-     * @param isoCode a {@link java.lang.String} object.
+     * @param inIsoCode a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.translations.language.Language} object.
      */
-    public Language getLanguage(String isoCode) {
+    public Language getLanguage(final String inIsoCode) {
+        if (inIsoCode == null) {
+            return null;
+        }
+
+        String isoCode = inIsoCode.replaceAll("[\n\r]", "_");
         HierarchicalConfiguration<ImmutableNode> languageConfig = null;
         try {
             if (isoCode.length() == 3) {
@@ -134,21 +139,22 @@ public class LanguageHelper {
                 languageConfig = getConfig().configurationsAt("language[iso_639-1=\"" + isoCode + "\"]").get(0);
             }
         } catch (IndexOutOfBoundsException e) {
-            throw new IllegalArgumentException("No matching language found for " + isoCode);
-        } catch (Throwable e) {
+            logger.warn("No matching language found for {}", isoCode);
+            return null;
+        } catch (Exception e) {
             throw new IllegalArgumentException(e);
         }
         if (languageConfig == null) {
-            throw new IllegalArgumentException("No matching language found for " + isoCode);
+            logger.warn("No matching language found for {}", isoCode);
+            return null;
         }
-        Language language = createLanguage(languageConfig);
 
-        return language;
+        return createLanguage(languageConfig);
     }
 
     /**
      * @param languageConfig
-     * @return
+     * @return Created {@link Language}
      */
     public Language createLanguage(HierarchicalConfiguration<ImmutableNode> languageConfig) {
         Language language = new Language();
@@ -160,5 +166,4 @@ public class LanguageHelper {
         language.setFrenchName(languageConfig.getString("fre"));
         return language;
     }
-
 }

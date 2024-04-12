@@ -27,19 +27,19 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.monitoring.timer.TimeAnalysis;
 import io.goobi.viewer.api.rest.model.tasks.TaskManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.impl.JPADAO;
-import io.goobi.viewer.dao.update.DatabaseUpdater;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.ModuleMissingException;
 import io.goobi.viewer.model.archives.ArchiveManager;
@@ -65,7 +65,9 @@ public final class DataManager {
 
     private static final Logger logger = LogManager.getLogger(DataManager.class);
 
-    private static final Object lock = new Object();
+    private static final Object LOCK = new Object();
+
+    private static final int THREAD_POOL_SIZE = 10;
 
     private static DataManager instance = null;
 
@@ -113,6 +115,8 @@ public final class DataManager {
 
     private UsageStatisticsRecorder usageStatisticsRecorder = null;
 
+    private ThreadPoolManager threadPoolManager = null;
+
     /**
      * <p>
      * Getter for the field <code>instance</code>.
@@ -123,7 +127,7 @@ public final class DataManager {
     public static DataManager getInstance() {
         DataManager dm = instance;
         if (dm == null) {
-            synchronized (lock) {
+            synchronized (LOCK) {
                 // Another thread might have initialized instance by now
                 dm = instance;
                 if (dm == null) {
@@ -160,8 +164,8 @@ public final class DataManager {
      */
     public IURLBuilder getUrlBuilder() {
         return getModules().stream()
-                .map(module -> module.getURLBuilder())
-                .filter(optional -> optional.isPresent())
+                .map(IModule::getURLBuilder)
+                .filter(Optional::isPresent)
                 .map(optional -> optional.get())
                 .findFirst()
                 .orElse(defaultUrlBuilder);
@@ -229,7 +233,8 @@ public final class DataManager {
         for (IModule m : modules) {
             if (m.getId().equals(module.getId())) {
                 logger.warn(
-                        "Module rejected because a module with the same ID is already registered.\nRegistered module: {} ({}) v{}\nRejected module: {} ({}) v{}",
+                        "Module rejected because a module with the same ID is already registered."
+                                + "\nRegistered module: {} ({}) v{}\nRejected module: {} ({}) v{}",
                         m.getId(), m.getName(), m.getVersion(), module.getId(), module.getName(), module.getVersion());
                 return false;
             }
@@ -271,7 +276,7 @@ public final class DataManager {
      */
     public Configuration getConfiguration() {
         if (configuration == null) {
-            synchronized (lock) {
+            synchronized (LOCK) {
                 configuration = new Configuration(Configuration.CONFIG_FILE_NAME);
             }
         }
@@ -288,7 +293,7 @@ public final class DataManager {
      */
     public LanguageHelper getLanguageHelper() {
         if (languageHelper == null) {
-            synchronized (lock) {
+            synchronized (LOCK) {
                 languageHelper = new LanguageHelper("languages.xml");
             }
         }
@@ -305,7 +310,7 @@ public final class DataManager {
      */
     public SolrSearchIndex getSearchIndex() {
         if (searchIndex == null) {
-            synchronized (lock) {
+            synchronized (LOCK) {
                 searchIndex = new SolrSearchIndex(null);
             }
         }
@@ -324,9 +329,8 @@ public final class DataManager {
      */
     public IDAO getDao() throws DAOException {
         if (dao == null) {
-            synchronized (lock) {
+            synchronized (LOCK) {
                 dao = new JPADAO(getConfiguration().getDbPersistenceUnit());
-                new DatabaseUpdater(dao).update();
             }
         }
 
@@ -373,7 +377,7 @@ public final class DataManager {
      */
     public SessionStoreBookmarkManager getBookmarkManager() {
         if (this.bookmarkManager == null) {
-            synchronized (lock) {
+            synchronized (LOCK) {
                 this.bookmarkManager = new SessionStoreBookmarkManager();
             }
         }
@@ -413,7 +417,7 @@ public final class DataManager {
      */
     public AuthResponseListener<OpenIdProvider> getOAuthResponseListener() {
         if (oAuthResponseListener == null) {
-            synchronized (lock) {
+            synchronized (LOCK) {
                 oAuthResponseListener = new AuthResponseListener<>();
             }
         }
@@ -550,7 +554,7 @@ public final class DataManager {
 
     public ArchiveManager getArchiveManager() {
         if (archiveManager == null) {
-            synchronized (lock) {
+            synchronized (LOCK) {
                 archiveManager = new ArchiveManager(getConfiguration().isArchivesEnabled() ? getConfiguration().getBaseXUrl() : "",
                         getConfiguration().getArchiveNodeTypes(),
                         getSearchIndex());
@@ -561,8 +565,8 @@ public final class DataManager {
 
     public ClientApplicationManager getClientManager() throws DAOException {
         if (this.clientManager == null) {
-            synchronized (lock) {
-                this.clientManager = new ClientApplicationManager(dao);
+            synchronized (LOCK) {
+                this.clientManager = new ClientApplicationManager(getDao());
             }
         }
         return this.clientManager;
@@ -570,11 +574,11 @@ public final class DataManager {
 
     /**
      * 
-     * @return
+     * @return the securityManager
      */
     public SecurityManager getSecurityManager() {
         if (securityManager == null) {
-            synchronized (lock) {
+            synchronized (LOCK) {
                 securityManager = new SecurityManager();
             }
         }
@@ -588,7 +592,7 @@ public final class DataManager {
 
     public UsageStatisticsRecorder getUsageStatisticsRecorder() throws DAOException {
         if (usageStatisticsRecorder == null) {
-            synchronized (lock) {
+            synchronized (LOCK) {
                 usageStatisticsRecorder = new UsageStatisticsRecorder(this.getDao(), this.getConfiguration(), this.getConfiguration().getTheme());
             }
         }
@@ -599,4 +603,12 @@ public final class DataManager {
     public void setUsageStatisticsRecorder(UsageStatisticsRecorder usageStatisticsRecorder) {
         this.usageStatisticsRecorder = usageStatisticsRecorder;
     }
+
+    public synchronized ThreadPoolManager getThreadPoolManager() {
+        if (threadPoolManager == null) {
+            this.threadPoolManager = new ThreadPoolManager(THREAD_POOL_SIZE);
+        }
+        return threadPoolManager;
+    }
+
 }

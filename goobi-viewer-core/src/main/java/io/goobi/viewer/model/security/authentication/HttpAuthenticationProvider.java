@@ -40,6 +40,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.StringTools;
 
@@ -53,6 +55,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  * @author Florian Alpers
  */
 public abstract class HttpAuthenticationProvider implements IAuthenticationProvider {
+
+    private static final Logger logger = LogManager.getLogger(HttpAuthenticationProvider.class);
 
     /** Constant <code>DEFAULT_EMAIL="{username}@nomail.com"</code> */
     protected static final String DEFAULT_EMAIL = "{username}@nomail.com";
@@ -69,6 +73,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     protected final String image;
     protected final long timeoutMillis;
     protected List<String> addUserToGroups;
+    protected String redirectUrl;
 
     /**
      * <p>
@@ -82,7 +87,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
      * @param type a {@link java.lang.String} object.
      * @param timeoutMillis a long.
      */
-    public HttpAuthenticationProvider(String name, String label, String type, String url, String image, long timeoutMillis) {
+    protected HttpAuthenticationProvider(String name, String label, String type, String url, String image, long timeoutMillis) {
         super();
         this.name = name;
         this.label = label;
@@ -161,10 +166,10 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
         } catch (NullPointerException | URISyntaxException e) {
             //construct viewer path uri
         }
-        StringBuilder url = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-        url.append("/resources/themes/").append(BeanUtils.getNavigationHelper().getTheme()).append("/images/openid/");
-        url.append(image);
-        return url.toString();
+        StringBuilder sbUrl = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+        sbUrl.append("/resources/themes/").append(BeanUtils.getNavigationHelper().getTheme()).append("/images/openid/");
+        sbUrl.append(image);
+        return sbUrl.toString();
     }
 
     /** {@inheritDoc} */
@@ -189,6 +194,21 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     @Override
     public void setAddUserToGroups(List<String> addUserToGroups) {
         this.addUserToGroups = addUserToGroups;
+    }
+
+    /**
+     * @return the redirectUrl
+     */
+    public String getRedirectUrl() {
+        return redirectUrl;
+    }
+
+    /**
+     * @param redirectUrl the redirectUrl to set
+     */
+    public void setRedirectUrl(String redirectUrl) {
+        logger.trace("setRedirectUrl: {}", redirectUrl);
+        this.redirectUrl = redirectUrl;
     }
 
     /**

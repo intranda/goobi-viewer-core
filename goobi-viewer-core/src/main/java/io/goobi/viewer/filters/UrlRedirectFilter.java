@@ -79,7 +79,9 @@ public class UrlRedirectFilter implements Filter {
         // logger.trace("doFilter");
         try {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
-            String url = httpRequest.getRequestURI();
+
+            // Important: If prefetching requests are not refused here, the status of the backend beans (ActiveDocumentBean in particular)
+            // will point to the prefetched page rather than the actual current page
             if (isPrefetchingRequest(httpRequest)) {
                 return;
             }
@@ -94,7 +96,7 @@ public class UrlRedirectFilter implements Filter {
                             || StringUtils.isBlank(currentPath.get().getParameterPath().toString().replaceAll("/?\\d+/?", ""))) {
                         ViewerPath cmsPagePath = new ViewerPath(currentPath.get());
                         cmsPagePath.setPagePath(URI.create(currentPath.get().getCmsPage().getRelativeUrlPath(false)));
-                        logger.debug("Forwarding {} to {}", currentPath.get().toString(), cmsPagePath.getCombinedUrl());
+                        logger.debug("Forwarding {} to {}", currentPath.get(), cmsPagePath.getCombinedUrl());
                         RequestDispatcher d = request.getRequestDispatcher(cmsPagePath.getCombinedUrl());
                         d.forward(request, response);
                         return;
@@ -102,7 +104,7 @@ public class UrlRedirectFilter implements Filter {
                 } else if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "campaigns") && currentPath.get().getCampaign() != null) {
                     ViewerPath cmsPagePath = new ViewerPath(currentPath.get());
                     cmsPagePath.setPagePath(URI.create(currentPath.get().getCmsPage().getRelativeUrlPath(false)));
-                    logger.debug("Forwarding {} to {}", currentPath.get().toString(), cmsPagePath.getCombinedUrl());
+                    logger.debug("Forwarding {} to {}", currentPath.get(), cmsPagePath.getCombinedUrl());
                     RequestDispatcher d = request.getRequestDispatcher(cmsPagePath.getCombinedUrl());
                     d.forward(request, response);
                     return;
@@ -115,12 +117,13 @@ public class UrlRedirectFilter implements Filter {
         chain.doFilter(request, response);
     }
 
-
-
     /**
      * Firefox browser tries to precache all urls in links with rel="next" or rel="prefetch". This changes the session state and thus shall not pass
      * Fortunately Firefox marks all precaching-request with a X-Moz : prefetch header
      * (https://developer.mozilla.org/en-US/docs/Web/HTTP/Link_prefetching_FAQ) However this header is not standardized and may change in the future
+     * 
+     * @param httpRequest
+     * @return true if X-Moz:prefetch or sec-purpose:prefetch; false otherwise
      */
     private static boolean isPrefetchingRequest(HttpServletRequest httpRequest) {
 
@@ -132,16 +135,25 @@ public class UrlRedirectFilter implements Filter {
             logger.trace("Refuse prefetch request");
             return true;
         }
+
+        String purpose = httpRequest.getHeader("sec-purpose");
+        if (purpose != null && "prefetch".equalsIgnoreCase(purpose)) {
+            logger.trace("Refuse prefetch request");
+            return true;
+        }
+
         return false;
     }
 
     /** {@inheritDoc} */
     @Override
     public void destroy() {
+        //
     }
 
     /** {@inheritDoc} */
     @Override
     public void init(FilterConfig arg0) throws ServletException {
+        //
     }
 }

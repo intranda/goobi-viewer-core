@@ -19,7 +19,7 @@
 
 
 	<composite:implementation>
-		<span class="ui-autocomplete ui-inputwrapper-filled">
+		<div class="ui-autocomplete ui-inputwrapper-filled search-input-wrapper"> 
 			<input class="#{cc.attrs.styleclass} ui-autocomplete-input ui-inputfield ui-widget ui-state-default ui-corner-all -no-outline -active-border ui-state-filled" 
              type="text" jsf:id="#{cc.attrs.id}" id="#{cc.attrs.id}" value="#{cc.attrs.value}" placeholder="#{cc.attrs.placeholder}" aria-label="#{cc.attrs.arialabel}"/>
 			<h:commandScript name="automcompleteRequest_#{cc.attrs.id}" action="#{cc.handleAutocomplete}" onevent="handleAutocompleteResponse_#{cc.attrs.id}"/>
@@ -70,7 +70,7 @@
 			}
 		
 		</script>
-		</span>
+		</div>
 	
 	</composite:implementation>
 	

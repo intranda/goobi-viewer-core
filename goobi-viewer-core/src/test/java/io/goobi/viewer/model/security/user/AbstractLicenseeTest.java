@@ -23,20 +23,20 @@ package io.goobi.viewer.model.security.user;
 
 import java.util.Collections;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.security.AccessPermission;
 
-public class AbstractLicenseeTest {
+class AbstractLicenseeTest {
 
     /**
      * @see AbstractLicensee#getAccessPermissionFromMap(Map)
      * @verifies return denied if permissionMap empty
      */
     @Test
-    public void getAccessPermissionFromMap_shouldReturnDeniedIfPermissionMapEmpty() throws Exception {
-        Assert.assertFalse(AbstractLicensee.getAccessPermissionFromMap(Collections.emptyMap()).isGranted());
+    void getAccessPermissionFromMap_shouldReturnDeniedIfPermissionMapEmpty() throws Exception {
+        Assertions.assertFalse(AbstractLicensee.getAccessPermissionFromMap(Collections.emptyMap()).isGranted());
     }
 
     /**
@@ -44,8 +44,8 @@ public class AbstractLicenseeTest {
      * @verifies return denied if all permissions in map denied
      */
     @Test
-    public void getAccessPermissionFromMap_shouldReturnDeniedIfAllPermissionsInMapDenied() throws Exception {
-        Assert.assertFalse(AbstractLicensee.getAccessPermissionFromMap(Collections.singletonMap("", AccessPermission.denied())).isGranted());
+    void getAccessPermissionFromMap_shouldReturnDeniedIfAllPermissionsInMapDenied() throws Exception {
+        Assertions.assertFalse(AbstractLicensee.getAccessPermissionFromMap(Collections.singletonMap("", AccessPermission.denied())).isGranted());
     }
 
     /**
@@ -53,8 +53,8 @@ public class AbstractLicenseeTest {
      * @verifies preserve ticketRequired
      */
     @Test
-    public void getAccessPermissionFromMap_shouldPreserveTicketRequired() throws Exception {
-        Assert.assertTrue(
+    void getAccessPermissionFromMap_shouldPreserveTicketRequired() throws Exception {
+        Assertions.assertTrue(
                 AbstractLicensee.getAccessPermissionFromMap(Collections.singletonMap("", AccessPermission.granted().setTicketRequired(true)))
                         .isTicketRequired());
     }
@@ -64,12 +64,12 @@ public class AbstractLicenseeTest {
      * @verifies preserve redirect metadata
      */
     @Test
-    public void getAccessPermissionFromMap_shouldPreserveRedirectMetadata() throws Exception {
+    void getAccessPermissionFromMap_shouldPreserveRedirectMetadata() throws Exception {
         AccessPermission access =
                 AbstractLicensee
                         .getAccessPermissionFromMap(Collections.singletonMap("",
                                 AccessPermission.granted().setRedirect(true).setRedirectUrl("https://example.com")));
-        Assert.assertTrue(access.isRedirect());
-        Assert.assertEquals("https://example.com", access.getRedirectUrl());
+        Assertions.assertTrue(access.isRedirect());
+        Assertions.assertEquals("https://example.com", access.getRedirectUrl());
     }
 }

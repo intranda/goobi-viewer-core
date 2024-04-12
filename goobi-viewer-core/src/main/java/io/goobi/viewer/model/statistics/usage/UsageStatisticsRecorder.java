@@ -37,7 +37,8 @@ import io.goobi.viewer.exceptions.DAOException;
 
 /**
  * Class to be called on requests to be recorded in usage statistics. Stores and updates usage statistics in database on each request
- * @author florian 
+ * 
+ * @author florian
  */
 public class UsageStatisticsRecorder {
 
@@ -64,9 +65,10 @@ public class UsageStatisticsRecorder {
 
     /**
      * Default constructor
-     * @param dao   the {@link #dao} to set
-     * @param config    the {@link #config} to set
-     * @param viewerName    the {@link #viewerName} to set
+     * 
+     * @param dao the {@link #dao} to set
+     * @param config the {@link #config} to set
+     * @param viewerName the {@link #viewerName} to set
      */
     public UsageStatisticsRecorder(IDAO dao, Configuration config, String viewerName) {
         this.dao = dao;
@@ -76,7 +78,8 @@ public class UsageStatisticsRecorder {
 
     /**
      * Check if usage statistics are enabled by configuration
-     * @return  true if {@link Configuration#isStatisticsEnabled()} returns true
+     * 
+     * @return true if {@link Configuration#isStatisticsEnabled()} returns true
      */
     public boolean isActive() {
         return config.isStatisticsEnabled();
@@ -84,9 +87,10 @@ public class UsageStatisticsRecorder {
 
     /**
      * Add a http request to the usage statistics
-     * @param type  the {@link RequestType} for which to count the request
-     * @param recordIdentifier  the record identifier requested by the request
-     * @param request   a {@link HttpServletRequest}
+     * 
+     * @param type the {@link RequestType} for which to count the request
+     * @param recordIdentifier the record identifier requested by the request
+     * @param request a {@link HttpServletRequest}
      */
     public void recordRequest(RequestType type, String recordIdentifier, HttpServletRequest request) {
         if (isActive() && !NetTools.isCrawlerBotRequest(request)) {
@@ -98,11 +102,12 @@ public class UsageStatisticsRecorder {
 
     /**
      * Add a request to the internal request counts
-     * @param type  the {@link RequestType} for which to count the request
-     * @param recordIdentifier  the record identifier requested by the request
-     * @param sessionID     The session issuing this request
-     * @param userAgent     the 'User-Agent' header value of the request
-     * @param clientIP      The IP Address from which the request is issued
+     * 
+     * @param type the {@link RequestType} for which to count the request
+     * @param recordIdentifier the record identifier requested by the request
+     * @param sessionID The session issuing this request
+     * @param userAgent the 'User-Agent' header value of the request
+     * @param clientIP The IP Address from which the request is issued
      */
     protected void recordRequest(RequestType type, String recordIdentifier, String sessionID, String userAgent, String clientIP) {
         if (sessionID != null) {
@@ -131,7 +136,7 @@ public class UsageStatisticsRecorder {
      * Get the statistics for the given date from the database
      * 
      * @param date
-     * @return
+     * @return {@link DailySessionUsageStatistics}
      * @throws DAOException If an error occured regarding the database
      */
     private DailySessionUsageStatistics getStatistics(LocalDate date) throws DAOException {
@@ -142,16 +147,15 @@ public class UsageStatisticsRecorder {
      * Update the given statistics object in the database
      * 
      * @param statistics
-     * @return
+     * @return true if successful; false otherwise
      * @throws DAOException If an error occured regarding the database
      * @throws IllegalArgumentException If no statistics object exists in the database for the date of the given statistics
      */
     private boolean updateStatistics(DailySessionUsageStatistics statistics) throws DAOException, IllegalArgumentException {
         if (statistics.getId() != null) {
             return this.dao.updateUsageStatistics(statistics);
-        } else {
-            throw new IllegalArgumentException("given statistics object is not a dao entity (doesn't have a database id)");
         }
+        throw new IllegalArgumentException("given statistics object is not a dao entity (doesn't have a database id)");
     }
 
     /**

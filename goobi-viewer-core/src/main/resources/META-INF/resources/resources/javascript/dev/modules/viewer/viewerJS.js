@@ -102,6 +102,8 @@ var viewerJS = (function () {
         viewerJS.initFragmentActions();
        
         viewerJS.initRequiredInputs();
+        
+        viewerJS.initDisallowDownload();
                
         // init bookmarks if enabled
         if ( bookmarksEnabled ) { 
@@ -128,6 +130,8 @@ var viewerJS = (function () {
         
         //input validation status
         viewerJS.validationStatus.init();
+        
+        
 
         // render warning if local storage is not useable
         if (!viewer.localStoragePossible) {
@@ -297,6 +301,7 @@ var viewerJS = (function () {
 			$('.widget-chronology-slider__item-input[data-toggle="tooltip"]').tooltip('enable');
 		});
 		
+		
 		//init empty translator instance
 	    var restApiURL = restURL.replace("/rest", "/api/v1");
 	    viewer.translator = new viewerJS.Translator(restApiURL, currentLang);
@@ -321,7 +326,7 @@ var viewerJS = (function () {
 		    })
 		})
     }
-    
+   
     viewer.initTinyMCE  = function(event) {
         //trigger initializazion if either no event was given or if it is a jsf event in status 'success'
         if(!event || event.status == "success") {            
@@ -347,6 +352,14 @@ var viewerJS = (function () {
             }
         }
     }
+
+	viewer.initDisallowDownload = function() {
+		$("[data-allow-download='false']").each( (index, ele) => {
+			ele.addEventListener('contextmenu', function(e) {
+			  e.preventDefault();
+			});
+		})
+	}
 
     viewer.initFragmentNavigation = function () {
         if (window.location.hash) {
@@ -421,9 +434,11 @@ var viewerJS = (function () {
 
         $facets.each(function () {
             var filterConfig = {
+				inputToggle: $(this).find('[data-toggle="filter-input"]'),
                 wrapper: $(this).find('.widget-search-facets__filter'),
+                header: $(this).find('h2'),
                 input: $(this).find('.widget-search-facets__filter-input'),
-                elements: $(this).find('li a')
+                elements: $(this).find('li')
             }
 
             var filter = new viewerJS.listFilter(filterConfig);
@@ -467,10 +482,12 @@ var viewerJS = (function () {
     		let $widgetTitles = $widgetUsage.find(".widget-usage__subtitle");
     		$widgetTitles.each((index,element) => {
     			let $title = $(element);
-    			let $options = $title.next("div").children();
+    			let $options = $title.next();
     			if($options.length == 0) {
     				$title.hide();
-    			}
+    			} else {
+					// console.log('not empty!');
+				}
     		});
     	}
     }
@@ -585,15 +602,13 @@ var viewerJS = (function () {
 	
 	}
 
-    // init bootstrap 4 popovers
+	
+	
+    // CONTENT ITEMS JS DRAFT
 	$(document).ready(function(){
-	    try {	        
-	        $('[data-toggle="popover"]').popover({
-	            trigger : 'hover'
-	        });
-	    } catch(error) {
-	        //no bootstrap defined
-	    }
+		if(typeof SimpleLightbox != "undefined" ) {			
+			new SimpleLightbox({elements: '[data-target="imageLightbox"]'});
+		}
 	});
 
 

@@ -55,7 +55,7 @@
     <annotationFolder>annotations</annotationFolder>
 	<!-- hotfolder: defines the hotfolder from the solr Indexer for indexing 
 		uploaded born-digital-material (see <content> also) -->
-	<hotfolder>hotfolder</hotfolder>
+	<hotfolder>target/hotfolder</hotfolder>
 	<!-- stopwordsFile: location of the stopword.txt file used in Solr -->
 	<stopwordsFile>src/test/resources/stopwords.txt</stopwordsFile>
     <!-- umlautsFile: location of the goobi_opacUmlaut.txt file for process title creation -->
@@ -80,9 +80,9 @@
 		<!-- solr: URL to the Solr index core -->
 		<solr>https://viewer-testing-index.goobi.io/solr/collection1</solr>
 
-		<!-- dfg-viewer: absolute path to DFG-Viewer for linking in bibliographic 
-			data -->
-		<dfg-viewer>dfg-viewer_value</dfg-viewer>
+		<!-- dfg-viewer: absolute path to DFG-Viewer for linking in bibliographic data.
+            @sourcefileField can contain an optional Solr index field containing a custom record file URL -->
+		<dfg-viewer sourcefileField="MD2_DFGVIEWERURL">dfg-viewer_value</dfg-viewer>
 		<!-- urnResolver: Resolver URL for URN-based PURLs displayed in the title 
 			widget, etc. Default is the current application URL + "/resolver?urn=" -->
 		<urnResolver>urnResolver_value</urnResolver>
@@ -121,8 +121,10 @@
 			defines an authenticaltion provider. Required attributes: name, endpoint 
 			(auth URL), clientId, clientSecret, image. -->
         <authenticationProviders>
-            <provider type="openId" name="Google" endpoint="https://accounts.google.com/o/oauth2/auth" clientId="id_google" clientSecret="secret_google" image="google.png" />
-            <provider type="openId" name="Facebook" endpoint="https://www.facebook.com/dialog/oauth" clientId="id_facebook" clientSecret="secret_facebook" image="facebook.png" />
+            <provider type="openId" name="Google" endpoint="https://accounts.google.com/o/oauth2/auth" clientId="id_google"
+                clientSecret="secret_google" image="google.png" />
+            <provider type="openId" name="Facebook" endpoint="https://www.facebook.com/dialog/oauth" clientId="id_facebook"
+                clientSecret="secret_facebook" image="facebook.png" />
             <provider enabled="false" type="openId" name="incomplete" endpoint="https://graph.facebook.com/oauth"
                 clientId="" image="facebook.png" />
             <provider type="userPassword" name="VuFind" label="VuFind-label" endpoint="https://vuFind.example/Api/User/Auth" image="vufind.png" timeout="7000">
@@ -130,6 +132,8 @@
                 <addUserToGroup>vuFindUsers2</addUserToGroup>
             </provider>
             <provider type="userPassword" name="Bibliotheca" endpoint="https://example.com/006719/auth.asp?client=goobiviewer" image="bib.png" />
+            <provider type="httpHeader" name="HTTP Header" enabled="false" parameterType="header" parameterName="id"
+                 endpoint="https://localhost:8080/api/v1/auth/header" image="saml.png" />
             <provider type="local" name="Goobi viewer"/>
         </authenticationProviders>
 		<!-- SMTP configuration. 'smtpSenderName' (defaults to the value of 'smtpSenderAddress') 
@@ -158,9 +162,11 @@
 		<preventProxyCaching>true</preventProxyCaching>
 		
         <solr>
-            <!-- compressionEnabled: Enables compression for the Solr HTTP client. Default is true. -->
+            <!-- useHttp2: If false, the old HTTP1 client will be used for backwards compatibility with Solr 8. Default is true. -->
+            <useHttp2>true</useHttp2>
+            <!-- DEPRECATED compressionEnabled: Enables compression for the Solr HTTP client. Default is true. -->
             <compressionEnabled>false</compressionEnabled>
-            <!-- backwardsCompatible: If true, an XML response parser instead of binary will be used
+            <!-- DEPRECATED backwardsCompatible: If true, an XML response parser instead of binary will be used
                 to enabled Solr 4 compatibility. Default is false. -->
             <backwardsCompatible>true</backwardsCompatible>
         </solr>
@@ -375,6 +381,15 @@
         
         <!-- name: Goobi viewer instance description -->
         <description>Goobi viewer TEST desc</description>
+        
+       	<formats>
+			<date>
+				<en>dd/MM/yyyy</en>
+				<fr>dd/MM/yyyy</fr>
+				<es>dd/MM/yyyy</es>
+				<de>dd.MM.yyyy</de>
+			</date>
+		</formats>
 	</viewer>
 
 	<search>
@@ -386,6 +401,8 @@
             <value>50</value>
             <value>100</value>
         </hitsPerPage>
+        <!-- displayHitNumbers/@enabled: If true, individual numbers of search hits within the current result set will be displayed. Default is false. -->
+        <displayHitNumbers enabled="true" />
 		<!-- fulltextFragmentLength: Approximate length of the full-text fragment 
 			displayed in search hits. Default is 200. -->
 		<fulltextFragmentLength>50</fulltextFragmentLength>
@@ -393,7 +410,7 @@
 			will be rendered as a radio button. Syntax is "filter_" + Solr field name 
 			(so that individual labels can be added). -->
 		<filters>
-            <filter>filter_ALL</filter>
+            <filter default="true">filter_ALL</filter>
             <filter>filter_DEFAULT</filter>
             <filter>filter_FULLTEXT</filter>
             <filter>filter_NORMDATATERMS</filter>
@@ -405,24 +422,28 @@
             <!-- field: Fields used for sorting. Fields must be configured as 'multiValued="false"' in the Solr schema. Multiple (escaped) semicolon-separated
                 fields can be used for  hierarchical sorting (e.g. <luceneField>SORT_FIELD1\;SORT_FIELD2\;SORT_FIELD3</luceneField>). -->
             <field>RELEVANCE</field>
-            <field default="true">RANDOM</field>
+            <field>RANDOM</field>
             <field>SORT_CREATOR</field>
-            <field dropDownAscMessageKey="searchSortingDropdown_az" dropDownDescMessageKey="searchSortingDropdown_za">SORT_TITLE</field>
+            <field default="true" dropDownAscMessageKey="searchSortingDropdown_az" dropDownDescMessageKey="searchSortingDropdown_za">SORT_TITLE_LANG_DE</field>
+            <field default="true" dropDownAscMessageKey="searchSortingDropdown_az" dropDownDescMessageKey="searchSortingDropdown_za">SORT_TITLE_LANG_EN</field>
             <field>!DATECREATED</field>
             <field>SORT_YEARPUBLISH\;SORT_TITLE</field>
+            
 			
             <!-- static: Sorting fields defined here will always used silently prior to the visible sorting fields. These fields can be used to always place
                 certain records on top, for example. -->
             <static>
-                <field>BOOL_PRIORITIZE</field>
+                <field>!BOOL_PRIORITIZE</field>
             </static>
 		</sorting>
 		<facets>
-			<hierarchicalField initialElementNumber=" 4" priorityValues="collection2;collection1">DC</hierarchicalField>
-			<field labelField="MD_FIELDLABEL" sortOrder="numerical" translateLabels="false">YEAR</field>
-			<hierarchicalField labelField="MD_FIRSTNAME" sortOrder="alphabetical" translateLabels="false">MD_CREATOR</hierarchicalField>
-			<field initialElementNumber="16" priorityValues="val1;val2;val3">MD_PLACEPUBLISH</field>
-			<geoField>WKT_COORDS</geoField>
+			<field type="hierarchical" initialElementNumber=" 4" priorityValues="collection2;collection1">DC</field>
+			<field type="range" minValue="-1000" maxValue="2050" labelField="MD_FIELDLABEL" sortOrder="numerical"
+                translateLabels="false" style="graph">YEAR</field>
+			<field type="hierarchical" labelField="MD_FIRSTNAME" sortOrder="alphabetical" translateLabels="false">MD_CREATOR</field>
+			<field initialElementNumber="16" priorityValues="val1;val2;val3" displayValueFilter="false">MD_PLACEPUBLISH</field>
+			<field type="geo" predicate="ISWITHIN" displayResultsOnMap="false">WKT_COORDS</field>
+            <field groupToLength="1" alwaysApplyToUnfilteredHits="true" skipInWidget="true">MD_PERSON</field>
 			<!-- initialElementNumber: sets the initial number of facet elements 
 				to be displayed (any field including DC). Default is 20. -->
 			<initialElementNumber>23</initialElementNumber>
@@ -434,25 +455,28 @@
 			<defaultItemNumber>3</defaultItemNumber>
 			<!-- advancedSearchFields: index fields to be used in advanced search -->
 			<searchFields>
-				<field hierarchical="true" visible="true">DC</field>
-				<field untokenizeForPhraseSearch="true" visible="true">MD_TITLE</field>
-				<field>MD_CREATOR</field>
-				<field>MD_PUBLISHER</field>
-				<field>MD_PLACEPUBLISH</field>
-				<field range="true">MD_YEARPUBLISH</field>
-				<field>MD_SHELFMARK</field>
-				<field label="-----">#SEPARATOR1#</field>
-				<field>MD_FOO_LANG_EN</field>
-				<field>MD_FOO_LANG_DE</field>
-				<field>MD_FOO_LANG_ES</field>
+                <template name="_DEFAULT">
+				    <field hierarchical="true" visible="true">DC</field>
+				    <field untokenizeForPhraseSearch="true" visible="true">MD_TITLE</field>
+				    <field>MD_CREATOR</field>
+				    <field>MD_PUBLISHER</field>
+				    <field>MD_PLACEPUBLISH</field>
+				    <field range="true">MD_YEARPUBLISH</field>
+				    <field>MD_SHELFMARK</field>
+				    <field label="-----">#SEPARATOR1#</field>
+				    <field>MD_FOO_LANG_EN</field>
+				    <field>MD_FOO_LANG_DE</field>
+				    <field>MD_FOO_LANG_ES</field>
+                    <field displaySelectItemsThreshold="20" selectType="badges">DOCSTRCT</field>
+                </template>
 			</searchFields>
 		</advanced>
         <!-- @enabled: Enables the timeline search (default is true) -->
         <timeline enabled="false">
-			<!-- Moegliche Werte fuer Startjahr und Endjahr sind ganze Jahre (auch 
-				Minus) sowie fuer Startjahr weiter der Wert MIN und fuer Endjahr der Wert 
-				MAX. Bei MIN wird das kleinste verfuegbare Jahr aus dem solrIndex als Startwert 
-				genommen, bei MAX das groesste Verfuegbare als Endjahr -->
+            <!-- Possible values for startyear and endyear are whole years (also minus)
+                 as well as the value MIN for startyear and the value MAX for endyear.
+                 For MIN, the smallest available year from the index is taken as the
+                 start value; for MAX, the largest available year is taken as the end year. -->
 			<startyear>1861</startyear>
 			<endyear>1865</endyear>
             <!-- hits: Hits to fetch for the time matrix. The value 'MAX' will be the 
@@ -482,7 +506,21 @@
 			<field type="translate">MD_LANGUAGE_UNTOKENIZED</field>
             <!-- field type="oneline": Fields in this list will have multiple values written into a single string, without line breaks. -->
             <field type="oneline">MD_ACCESSLOCATIONS</field>
+            <field type="snippet">MD_DESCRIPTION</field>
+            <field type="nohighlight">MD_REFID</field>
 		</displayAdditionalMetadata>
+        
+        <metadata>
+            <!-- displayStructType: If false, the structtype is hidden. Default is true -->
+            <displayStructType>false</displayStructType>
+
+            <!-- valueNumber: defines the maximum number of found values to display for each field type -->
+            <valueNumber>17</valueNumber>
+
+            <!-- valueLength: defines the maximum length in characters for each value, longer values are truncated -->
+            <valueLength>18</valueLength>
+        </metadata>
+        
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries 
 			(e.g. for permanent filtering) -->
 		<staticQuerySuffix>-BOOL_HIDE:true</staticQuerySuffix>
@@ -522,6 +560,13 @@
             <facetQuery>(FACET_DC:"foo" OR FACET_DC:foo.*)</facetQuery>
             <facetQuery>(FACET_DC:"bar" OR FACET_DC:bar.*)</facetQuery>
         </useFacetsAsExpandQuery>
+        
+        <!--  -->
+        <resultGroups enabled="true">
+            <group name="lido_objects" useAsAdvancedSearchTemplate="true" query="SOURCEDOCFORMAT:LIDO" />
+            <group name="monographs" query="DOCSTRCT:monograph" />
+            <group name="stories" query="+DOCSTRCT:&quot;cms_page&quot; +MD_CATEGORY:&quot;story&quot;" />
+        </resultGroups>
 	</search>
 
 	<!-- ##### COLLECTION CONFIGURATION ##### -->
@@ -613,7 +658,7 @@
 				<metadata label="MD_CREATOR" value="">
 					<param type="field" key="MD_CREATOR" />
 				</metadata>
-				<metadata label="MD_CATALOGIDSOURCE" value="LINK_CATALOGIDSOURCE" topstructOnly="true">
+				<metadata label="MD_CATALOGIDSOURCE" value="LINK_CATALOGIDSOURCE" separator="; " topstructOnly="true">
 					<param type="field" key="MD_CATALOGIDSOURCE" />
 					<param type="field" key="MD_CATALOGIDSOURCE" />
 				</metadata>
@@ -653,9 +698,9 @@
             </template>
         </metadataView>
 
-		<!-- searchHitMetadataList: defines metadata that is displayed in the search 
-			hitlist. The syntax is the same as in mainMetadataList -->
-		<searchHitMetadataList>
+		<!-- metadataList[@type="search"]: defines metadata that is displayed in the search 
+			hitlist. The syntax is the same as in metadataView -->
+		<metadataList type="searchHit">
 			<template name="_DEFAULT">
 				<metadata label="MD_CREATOR" value="">
 					<param type="field" key="MD_CREATOR" />
@@ -679,21 +724,11 @@
 				</metadata>
 			</template>
 
-			<!-- displayStructType: if false, the structtype is hidden -->
-			<displayStructType>false</displayStructType>
-
-			<!-- valueNumber: defines the maximum number of found values to display 
-				for each field type [since 2.0] -->
-			<valueNumber>17</valueNumber>
-
-			<!-- valueLength: defines the maximum length in characters for each value, 
-				longer values are truncated [since 2.0] -->
-			<valueLength>18</valueLength>
-		</searchHitMetadataList>
+		</metadataList>
 
 
-		<!-- sideBarMetadataList: defines metadata that are displayed in the sidebar. -->
-		<sideBarMetadataList>
+		<!-- metadataList[@type="sidebar"]: defines metadata that are displayed in the sidebar. -->
+		<metadataList type="sideBar">
 			<!-- _DEFAULT: metadata defined in the _DEFAULT template is displayed 
 				on all struct elements that have no explicit definition -->
 			<template name="_DEFAULT">
@@ -728,7 +763,39 @@
 					<param type="field" key="URN" />
 				</metadata>
 			</template>
-		</sideBarMetadataList>
+		</metadataList>
+        
+        <!-- metadataList[@type="highlight"]: defines metadata that is displayed in the highlight views. The syntax is the same as in metadataView -->
+        <metadataList type="highlight">
+            <template name="_DEFAULT">
+                <metadata label="PI" value="">
+                    <param type="field" key="MD_CREATOR" />
+                </metadata>
+                <metadata label="MD_SHELFMARK" value="">
+                    <param type="field" key="MD_SHELFMARK" />
+                </metadata>
+            </template>
+        </metadataList>
+        
+        <metadataList type="cms_fooBar">
+            <template name="_DEFAULT">
+                <metadata label="MD_CREATOR" value="">
+                    <param type="field" key="MD_CREATOR" />
+                </metadata>
+                <metadata label="MD_SHELFMARK" value="">
+                    <param type="field" key="MD_SHELFMARK" />
+                </metadata>
+                <metadata label="MD_PUBLISHER" value="">
+                    <param type="field" key="MD_PUBLISHER" />
+                </metadata>
+                <metadata label="MD_YEARPUBLISH" value="">
+                    <param type="field" key="MD_YEARPUBLISH" />
+                </metadata>
+                <metadata label="MD_PLACEPUBLISH" value="">
+                    <param type="field" key="MD_PLACEPUBLISH" />
+                </metadata>
+            </template>
+        </metadataList>
 		
         <!-- normdataList: List of NORM_ fields to display in the norm data pop-up box -->
         <normdataList>
@@ -765,11 +832,13 @@
 			<!-- field: defines index fields that are available for browsing. 
 				Only untokenized fields should be used. -->
 			<field sortField="SORT_AUTHOR" filterQuery="+DOCTYPE:DOCSTRCT" alwaysApplyFilter="true">MD_AUTHOR_UNTOKENIZED</field>
+            <field sortField="SORT_TITLE">MD_ARTIST_LANG_{}</field>
 			<field sortField="SORT_TITLE">MD_TITLE_LANG_DE_UNTOKENIZED</field>
 			<field sortField="SORT_TITLE">MD_TITLE_LANG_EN_UNTOKENIZED</field>
 			<!-- TODO: describe in the manual -->
 			<!-- <field sortField="SORT_TITLE" docstructFilters="Monograph;Volume;PeriodicalVolume">MD_TITLE_UNTOKENIZED</field> -->
 			<field>MD_SHELFMARK</field>
+            <field skipInWidget="true">MD_OTHERPURPOSE</field>
 		</browsingMenu>
         
         <!-- Used to associate license urls with a label and possibly an icon. Also provides a list
@@ -875,14 +944,14 @@
 	<!-- ##### SHOW OR HIDE SECTIONS IN THE SIDEBAR GLOBALLY ##### -->
 	<sidebar>
 	
-		<!-- @enabled: If true, the download widget within a records 
+		<!-- sidebarWidgetAdditionalFiles/@enabled: If true, the download widget within a records 
 			view for additional files from the source directory is displayed. Default 
 			is true. -->
-		<sidebarWidgetDownloads enabled="true">
+		<sidebarWidgetAdditionalFiles enabled="true">
 			<!-- hideFileRegex: If a regular expression is defined, files matching 
 				it are hidden from the widget display. The download is still possible. -->
 			<hideFileRegex>(wug_.*|AK_.*)</hideFileRegex>
-		</sidebarWidgetDownloads>
+		</sidebarWidgetAdditionalFiles>
 	
 	    <!-- @enabled: If true, the sidebar term browsing widget it displayed. Default is true. -->
         <sidebarBrowsingTerms enabled="false" />
@@ -892,6 +961,9 @@
 
         <!-- @enabled: Show or hide the widget including download links for record and page while viewing the object -->
         <sidebarWidgetUsage enabled="false">
+            <work>
+                <dfgViewerUrlField>MD2_DFGVIEWERURL</dfgViewerUrlField>
+            </work>
             <page>
                 <downloadOptions enabled="false">
                 <!-- Each option contains a label and a format. The label is translated via the messages. 
@@ -1256,6 +1328,41 @@
 	    <marker icon="fa-coffee"  markerColor="pink" shape="star" prefix="fa" iconColor="black" iconRotate="270">maps__marker_4</marker>
 	    <marker icon="fa-number"  number="42" svg="true">maps__marker_5</marker>
 	  </markers>
+	  <filters>
+	  		<filter>
+				<field>D</field>
+			</filter>
+			<filter>
+				<featureGroup>X</featureGroup>
+				<field label="">A</field>
+			</filter>
+			<filter>
+				<featureGroup>Y</featureGroup>
+				<field label="b">B</field>
+				<field label="c">C</field>
+			</filter>
+		</filters>
+	  <metadata>
+		  <option label="cms__geomaps__popup_content__option__none" name=""/>
+        	<option label="cms__geomaps__popup_content__option__place" name="NORM_NAME">
+        		<title>
+        			<template name="_DEFAULT">
+	                	<metadata label="" value="{NORM_NAME}">
+	                    			<param type="field" key="NORM_NAME" altKey="LABEL" />
+						</metadata>
+					</template>
+				</title>
+        	</option>
+        	<option label="cms__geomaps__popup_content__option__metadata" name="MD_VALUE">
+        		<title>
+	        		<template name="_DEFAULT">
+	                	<metadata label="" value="{MD_VALUE}">
+	                    			<param type="field" key="MD_VALUE" altKey="LABEL" />
+						</metadata>
+					</template>
+        		</title>
+        	</option>
+        </metadata>
 	  <coordinateFields>
 	  	<field>MD_GEOJSON_POINT</field>
 	  	<field>NORM_COORDS_GEOJSON</field>
@@ -1264,6 +1371,49 @@
 	  <mapbox>
 	    <token>some.token</token>
 	  </mapbox>
+	  <record>
+	  	<template name="_DEFAULT">
+		  	<featureSets>
+	    		<featureSet type="metadata">
+		    		<name>set_metadata_1</name>
+		        	<marker>maps_marker_1</marker>
+	    			<query>MD_A:A MD_B:B*</query>
+	    			<filters>
+	    				<filter>
+	    					<field label="">MD_METADATATYPE</field>
+	    				</filter>
+	    			</filters>
+	    		</featureSet>
+	    		<featureSet type="event">
+		    		<name>set_event_2</name>
+		        	<marker>maps_marker_2</marker>
+	    			<query>DOCTYPE:event</query>
+	    			<filters>
+	    				<filter>
+	    					<field label="">MD_EVENTTYPE</field>
+	    				</filter>
+	    				<filter>
+	    					<field label="">MD_TYPE</field>
+	    				</filter>
+	    			</filters>
+	    		</featureSet>
+	    	</featureSets>
+		  	<metadata>
+	       		<title>
+	            	<template name="_DEFAULT">
+	                	<metadata label="" value="{NORM_NAME}">
+	                    			<param type="field" key="NORM_NAME" altKey="LABEL" />
+						</metadata>
+					</template>
+					<template name="MD_BIOGRAPHY_JOURNEY">
+	                		<metadata label="" value="Journey to {MD_LOCATION}">
+	                    			<param type="field" key="MD_LOCATION" />
+	                		</metadata>
+					</template>
+	       		</title>
+	       	</metadata>
+      	</template>
+      </record>
 	</maps>
 
     <archives enabled="true">
@@ -1330,8 +1480,25 @@
         </nodeTypes>
     </archives>
     
+    
+    <!-- proxy/@enabled: If false, the proxy configuration will be ignored; default is false. -->
+    <proxy enabled="true">
+        <!-- proxyUrl: Proxy URL -->
+        <proxyUrl>my.proxy</proxyUrl>
+        <!-- proxyUrl: Proxy port -->
+        <proxyPort>9999</proxyPort>
+        <!-- whitelist: List of hosts not to be accessed via proxy -->
+        <whitelist>
+            <host>localhost</host>
+        </whitelist>
+    </proxy>
+    
+    
     <!-- Configuration for collecting usage statistics -->
     <statistics enabled="true"></statistics>
+    
+    <activeMQ enabled="true" numberOfParallelMessages="2"/>
+
 
 </config>
 

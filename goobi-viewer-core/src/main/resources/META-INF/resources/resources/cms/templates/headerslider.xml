@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+	<jsfComponent>
+		<library>cms/components/frontend/component</library>
+		<name>slider</name>
+	</jsfComponent>
+	<label>cms_component__headerslider__label</label>
+	<description>cms_component__headerslider__desc</description>
+	<icon>cms/components/frontend/component/icon/image.png</icon>
+	<scope>pageheader</scope>
+	<content>
+		<item id="slider">
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>slider</name>
+			</jsfComponent>
+		</item>
+	</content>
+
+</component>

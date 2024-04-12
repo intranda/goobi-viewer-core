@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+	<jsfComponent>
+		<library>cms/components/frontend/component</library>
+		<name>searchhitlist</name>
+	</jsfComponent>
+	<label>cms_component__searchhitlist_label</label>
+	<description>cms_component__searchhitlist_desc</description>
+	<icon>cms/components/frontend/component/icon/text.png</icon>
+	<content>
+		<item id="recordlist">
+			<label>cms_component__search_label</label>
+			<description>cms_content__text_desc</description>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>searchhitlist</name>
+			</jsfComponent>
+			<attributes>
+				<attribute name="type" value="heading"/>
+				<attribute name="level" value="h2"/>
+			</attributes>
+		</item>
+	</content>
+
+	<attribute name="hideOnScreenSizes" type="toggle">
+		<value label="Hide on desktop">hideDesktop</value>
+		<value label="Hide on mobile">hideMobile</value>
+	</attribute>
+	<attribute name="showOptions" display="false" boolean="true">
+		<value>false</value>
+	</attribute>
+	
+</component>

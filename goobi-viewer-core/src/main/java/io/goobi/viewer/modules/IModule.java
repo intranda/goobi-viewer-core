@@ -65,6 +65,11 @@ public interface IModule extends IndexAugmenter {
     public String getVersion();
 
     /**
+     * @return JSON object with version data
+     */
+    public String getVersionJson();
+
+    /**
      * <p>
      * isLoaded.
      * </p>
@@ -143,7 +148,7 @@ public interface IModule extends IndexAugmenter {
      *
      * @param fromUser Source user
      * @param toUser Destination user
-     * @return
+     * @return Number of updated rows
      */
     public int moveUserContributions(User fromUser, User toUser);
 

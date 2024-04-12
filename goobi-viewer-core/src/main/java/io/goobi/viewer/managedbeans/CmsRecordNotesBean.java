@@ -48,9 +48,9 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.CMSMultiRecordNote;
-import io.goobi.viewer.model.cms.CMSRecordNote;
-import io.goobi.viewer.model.cms.CMSSingleRecordNote;
+import io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote;
+import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
+import io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote;
 
 /**
  *
@@ -61,7 +61,7 @@ import io.goobi.viewer.model.cms.CMSSingleRecordNote;
  */
 @Named
 @SessionScoped
-public class CmsRecordNotesBean implements Serializable{
+public class CmsRecordNotesBean implements Serializable {
 
     private static final long serialVersionUID = 1436349423447175132L;
 
@@ -83,9 +83,8 @@ public class CmsRecordNotesBean implements Serializable{
 
     }
 
-
     /**
-     * @param images2
+     * @param images
      */
     public CmsRecordNotesBean(ImageDeliveryBean images) {
         this.images = images;
@@ -109,110 +108,114 @@ public class CmsRecordNotesBean implements Serializable{
      * get the thumbnail url for the record related to the note
      *
      * @param note
-     * @return
+     * @return Thumbnail URL
      * @throws ViewerConfigurationException
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
     public String getThumbnailUrl(CMSSingleRecordNote note) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
-        if(StringUtils.isNotBlank(note.getRecordPi())) {
+        if (StringUtils.isNotBlank(note.getRecordPi())) {
             return images.getThumbs().getThumbnailUrl(note.getRecordPi());
-        } else {
-            return "";
         }
+        return "";
     }
 
     /**
      * get the thumbnail url for the record related to the note for given width and height
      *
      * @param note
-     * @return
+     * @param width
+     * @param height
+     * @return Thumbnail URL
      * @throws ViewerConfigurationException
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public String getThumbnailUrl(CMSSingleRecordNote note, int width, int height) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
-        if(StringUtils.isNotBlank(note.getRecordPi())) {
+    public String getThumbnailUrl(CMSSingleRecordNote note, int width, int height)
+            throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
+        if (StringUtils.isNotBlank(note.getRecordPi())) {
             return images.getThumbs().getThumbnailUrl(note.getRecordPi(), width, height);
-        } else {
-            return "";
         }
+        return "";
     }
 
     public boolean deleteNote(CMSRecordNote note) throws DAOException {
-        if(note != null && note.getId() != null) {
+        if (note != null && note.getId() != null) {
             return DataManager.getInstance().getDao().deleteRecordNote(note);
-        } else {
-            return false;
         }
+        return false;
     }
 
-    public String getRecordUrl(CMSSingleRecordNote note)  {
-       if(note != null) {
-           return navigationHelper.getImageUrl() + "/" + note.getRecordPi() + "/";
-       } else {
-           return "";
-       }
+    public String getRecordUrl(CMSSingleRecordNote note) {
+        if (note != null) {
+            return navigationHelper.getImageUrl() + "/" + note.getRecordPi() + "/";
+        }
+        return "";
     }
 
     private void initDataProvider() {
         dataProvider = new TableDataProvider<>(new TableDataSource<CMSRecordNote>() {
 
-                private Optional<Long> numCreatedPages = Optional.empty();
+            private Optional<Long> numCreatedPages = Optional.empty();
 
-                @Override
-                public List<CMSRecordNote> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
+            @Override
+            public List<CMSRecordNote> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder,
+                    Map<String, String> filters) {
+                try {
+                    String useSortField = sortField;
+                    if (StringUtils.isBlank(useSortField)) {
+                        useSortField = "id";
+                    }
+
+                    return DataManager.getInstance()
+                            .getDao()
+                            .getRecordNotes(first, pageSize, useSortField, sortOrder.asBoolean(), filters);
+                } catch (DAOException e) {
+                    logger.error("Could not initialize lazy model: {}", e.getMessage());
+                }
+
+                return Collections.emptyList();
+            }
+
+            @Override
+            public long getTotalNumberOfRecords(Map<String, String> filters) {
+                if (!numCreatedPages.isPresent()) {
                     try {
-                        if (StringUtils.isBlank(sortField)) {
-                            sortField = "id";
-                        }
-
                         List<CMSRecordNote> notes = DataManager.getInstance()
                                 .getDao()
-                                .getRecordNotes(first, pageSize, sortField, sortOrder.asBoolean(), filters);
-                        return notes;
+                                .getRecordNotes(0, Integer.MAX_VALUE, null, false, filters);
+                        numCreatedPages = Optional.of((long) notes.size());
                     } catch (DAOException e) {
-                        logger.error("Could not initialize lazy model: {}", e.getMessage());
+                        logger.error("Unable to retrieve total number of cms pages", e);
                     }
-
-                    return Collections.emptyList();
                 }
+                return numCreatedPages.orElse(0L);
+            }
 
-                @Override
-                public long getTotalNumberOfRecords(Map<String, String> filters) {
-                    if (!numCreatedPages.isPresent()) {
-                        try {
-                            List<CMSRecordNote> notes = DataManager.getInstance()
-                                    .getDao()
-                                    .getRecordNotes(0, Integer.MAX_VALUE, null, false, filters);
-                            numCreatedPages = Optional.of((long)notes.size());
-                        } catch (DAOException e) {
-                            logger.error("Unable to retrieve total number of cms pages", e);
-                        }
-                    }
-                    return numCreatedPages.orElse(0L);
-                }
-
-
-                @Override
-                public void resetTotalNumberOfRecords() {
-                    numCreatedPages = Optional.empty();
-                }
-            });
-            dataProvider.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-            dataProvider.addFilter(PI_TITLE_FILTER);
-            //            lazyModelPages.addFilter("CMSCategory", "name");
+            @Override
+            public void resetTotalNumberOfRecords() {
+                numCreatedPages = Optional.empty();
+            }
+        });
+        dataProvider.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
+        dataProvider.getFilter(PI_TITLE_FILTER);
+        //            lazyModelPages.addFilter("CMSCategory", "name");
     }
 
     public List<CMSRecordNote> getNotesForRecord(String pi) throws DAOException {
         List<CMSRecordNote> notes = new ArrayList<>();
         notes.addAll(DataManager.getInstance().getDao().getRecordNotesForPi(pi, true));
-        notes.addAll(DataManager.getInstance().getDao().getAllMultiRecordNotes(true).stream().filter(note -> note.matchesRecord(pi)).collect(Collectors.toList()));
+        notes.addAll(DataManager.getInstance()
+                .getDao()
+                .getAllMultiRecordNotes(true)
+                .stream()
+                .filter(note -> note.matchesRecord(pi))
+                .collect(Collectors.toList()));
         return notes;
     }
 
-    public String getSearchUrlForNote(CMSMultiRecordNote note)  {
+    public String getSearchUrlForNote(CMSMultiRecordNote note) {
         String query = BeanUtils.escapeCriticalUrlChracters(note.getQueryForSearch());
-        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", query, "1", "-", "-");
+        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", query, "1", "-", "-");
     }
 }

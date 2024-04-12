@@ -23,15 +23,14 @@ package io.goobi.viewer.model.cms;
 
 import java.io.Serializable;
 
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.DAOException;
 
 /**
  * <p>

@@ -23,16 +23,12 @@ package io.goobi.viewer.dao.converter;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.AttributeConverter;
-import jakarta.persistence.Converter;
-
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,10 +36,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.translations.IPolyglott;
-import io.goobi.viewer.model.translations.MultiLanguageValue;
 import io.goobi.viewer.model.translations.TranslatedText;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 /**
  * @author florian
@@ -77,17 +73,14 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
                             .stream()
                             .collect(Collectors.toMap(e -> e.getKey().getLanguage(), e -> StringEscapeUtils.escapeHtml4(e.getValue())));
                     MultiLanguageMetadataValue v = new MultiLanguageMetadataValue(map);
-                    String s = mapper.writeValueAsString(attribute);
-                    return s;
+                    return mapper.writeValueAsString(attribute);
                 } catch (JsonProcessingException e1) {
                     throw new IllegalArgumentException("Cannot convert " + attribute + " to String");
                 }
-            } else {
-                return attribute.getValue().orElse(null);
             }
-        } else {
-            return null;
+            return attribute.getValue().orElse(null);
         }
+        return null;
     }
 
     /* (non-Javadoc)
@@ -98,24 +91,23 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
         TranslatedText attribute = new TranslatedText(getConfiguredLocales());
         if (StringUtils.isBlank(dbData)) {
             return attribute;
-        } else
-            try {
-                IMetadataValue v = mapper.readValue(dbData, IMetadataValue.class);
-                for (Locale locale : getConfiguredLocales()) {
-                    String s = v.getValue(locale).orElse("");
-                    s = StringEscapeUtils.unescapeHtml4(s);
-                    if (StringUtils.isNotBlank(s)) {
-                        attribute.setText(s, locale);
-                    }
+        }
+
+        try {
+            IMetadataValue v = mapper.readValue(dbData, IMetadataValue.class);
+            for (Locale locale : getConfiguredLocales()) {
+                String s = v.getValue(locale).orElse("");
+                s = StringEscapeUtils.unescapeHtml4(s);
+                if (StringUtils.isNotBlank(s)) {
+                    attribute.setText(s, locale);
                 }
-                return attribute;
-            } catch (JsonProcessingException e) {
-                //assume a single language text
-                attribute = new TranslatedText(dbData);
-                return attribute;
             }
-        //            throw new IllegalArgumentException("Cannot convert " + dbData + " to value", e);
-        //        }
+            return attribute;
+        } catch (JsonProcessingException e) {
+            //assume a single language text
+            attribute = new TranslatedText(dbData);
+            return attribute;
+        }
     }
 
     private Collection<Locale> getConfiguredLocales() {

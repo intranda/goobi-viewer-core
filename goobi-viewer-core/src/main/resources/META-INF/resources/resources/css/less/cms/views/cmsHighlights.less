@@ -1,0 +1,37 @@
+/* ==============================================================
+   Admin highlighted objects (object of the month)
+   style declarations for adminHighlights.xhtml / adminHighlightEdit.xhtml
+   ==============================================================*/
+
+#highlights {}
+.admin__highlights {
+	&-date-wrapper {
+		display: flex;
+		gap: 20px;
+	}
+	&-date-picker {
+		flex-grow: 1;
+		width: auto;
+		input::placeholder {
+			color: #bebebe; 
+		}
+	}
+	&-date-picker-text-between {
+		display: flex;
+		align-items: center;
+		font-size: 18px;
+	}
+	
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

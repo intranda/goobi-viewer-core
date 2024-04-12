@@ -21,11 +21,11 @@
  */
 package io.goobi.viewer.model.annotation.serialization;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -39,11 +39,11 @@ import io.goobi.viewer.model.annotation.serialization.SolrAnnotationSaver.Target
  * @author florian
  *
  */
-public class AnnotationSolrSaverTest extends AbstractDatabaseAndSolrEnabledTest {
+class AnnotationSolrSaverTest extends AbstractDatabaseAndSolrEnabledTest {
 
 
     @Test
-    public void callRedindexTargetWithCorrectArguments() throws IOException {
+    void callRedindexTargetWithCorrectArguments() throws IOException {
         String pi1 = "PI1";
         Integer page1 = 5;
 
@@ -58,7 +58,7 @@ public class AnnotationSolrSaverTest extends AbstractDatabaseAndSolrEnabledTest 
     }
 
     @Test
-    public void callReindexTargetCorrectNumberOfTimes() throws IOException {
+    void callReindexTargetCorrectNumberOfTimes() throws IOException {
         String pi1 = "PI1";
         String pi2 = "PI2";
         Integer noPage = null;

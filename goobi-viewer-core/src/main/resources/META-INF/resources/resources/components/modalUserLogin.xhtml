@@ -67,7 +67,7 @@
 														<f:ajax event="change" execute="@form"
 															render="#{cc.attrs.id}:userLoginForm" />
 													</h:selectOneMenu>
-												<label id="labelUserLoginSelectLogin" for="userLoginSelectLogin"
+												<label id="labelUserLoginSelectLogin" for="#{cc.attrs.id}:userLoginSelectLogin"
 													class="control-label effect-label">#{msg.login__select_login_title}:</label>
 												</div>
 										</div>
@@ -96,7 +96,7 @@
 																<f:passThroughAttribute name="aria-labelledby"
 																	value="labelUserEMail" />
 															</h:inputText>
-														<label id="labelUserEMail" for="userEMail"
+														<label id="labelUserEMail" for="#{cc.attrs.id}:userEMail"
 															class="control-label effect-label">#{msg.email}:</label>
 															
 															
@@ -108,13 +108,13 @@
 													rendered="#{userBean.authenticationProvider.type == 'userPassword'}">
 													<div class="user-login-modal__form-row">
 															<h:inputText id="externalUserName"
-																styleClass="form-control user-login-modal__form-control" value="#{userBean.email}"
+																pt:autocomplete="username" styleClass="form-control user-login-modal__form-control" value="#{userBean.email}"
 																required="true"
 																requiredMessage="#{msg.loginEnterUserName}">
 																<f:passThroughAttribute name="aria-labelledby"
 																	value="labelExternalUserName" />
 															</h:inputText>
-														<label id="labelExternalUserName" for="externalUserName"
+														<label id="labelExternalUserName" for="#{cc.attrs.id}:externalUserName"
 															class="control-label effect-label">#{msg.username}:</label>
 													</div>
 												</ui:fragment>
@@ -132,7 +132,7 @@
 															<f:passThroughAttribute name="autocomplete"
 																value="off" />
 														</h:inputSecret>
-														<label id="labelUserPassword" for="userPassword"
+														<label id="labelUserPassword" for="#{cc.attrs.id}:userPassword"
 															class="control-label effect-label">#{msg.password}:</label>
 												</div>
 
@@ -221,7 +221,7 @@
 
 										<h:form id="loginTypeRetrieveAccountForm">
 											<div class="form-group form-row no-gutters no-gutters">
-												<label for="userEMailToRetrieve" class="col-12 col-lg-3 contro-label">#{msg.email}:</label>
+												<label for="#{cc.attrs.id}:userEMailToRetrieve" class="col-12 col-lg-3 contro-label">#{msg.email}:</label>
 												<h:inputText id="userEMailToRetrieve"
 													styleClass="form-control col-12 col-lg-9" value="#{userBean.email}"
 													required="true" requiredMessage="#{msg.loginEnterEmail}">
@@ -256,7 +256,7 @@
 											<h:form id="loginTypeCreateAccountForm">
 
 												<div class="form-group form-row no-gutters lastname">
-													<label for="userCreateAccountLastName"
+													<label for="#{cc.attrs.id}:userCreateAccountLastName"
 														class="col-12 col-lg-3 control-label">#{msg.nameLast}:</label>
 													<h:inputText id="userCreateAccountLastName"
 														styleClass="col-12 col-lg-9 form-control"
@@ -265,7 +265,7 @@
 												</div>
 
 												<div class="form-group form-row no-gutters">
-													<label for="userCreateAccountEMail"
+													<label for="#{cc.attrs.id}:userCreateAccountEMail"
 														class="col-12 col-lg-3 control-label">#{msg.email}:</label>
 													<h:inputText id="userCreateAccountEMail"
 														styleClass="col-12 col-lg-9 form-control user-login-modal__create-account-email-input"
@@ -273,22 +273,25 @@
 														requiredMessage="#{msg.loginEnterEmail}">
 														<f:validator validatorId="emailValidator" />
 														<f:validator validatorId="emailAvailableValidator" />
+														<f:passThroughAttribute name="autocomplete" value="new-username" />
 													</h:inputText>
 												</div>
 
 												<div class="form-group form-row no-gutters">
-													<label for="userCreateAccountPW1"
+													<label for="#{cc.attrs.id}:userCreateAccountPW1"
 														class="col-12 col-lg-3 control-label">#{msg.newUserPasswordOne}:</label>
 													<h:inputSecret id="userCreateAccountPW1"
+													
 														styleClass="col-12 col-lg-9 form-control" type="password"
 														value="#{userBean.passwordOne}" required="true"
 														requiredMessage="#{msg.newUserPasswordOneRequired}">
 														<f:validator validatorId="passwordValidator" />
+														<f:passThroughAttribute name="autocomplete" value="new-password" />
 													</h:inputSecret>
 												</div>
 
 												<div class="form-group form-row no-gutters">
-													<label for="userCreateAccountPW2"
+													<label for="#{cc.attrs.id}:userCreateAccountPW2"
 														class="control-label col-12 col-lg-3">#{msg.newUserPasswordTwo}:</label>
 													<h:inputSecret id="userCreateAccountPW2"
 														styleClass="col-12 col-lg-9 form-control" type="password"
@@ -301,7 +304,7 @@
 
 												<ui:fragment rendered="#{captchaBean.securityQuestion != null}">
 													<div class="form-group form-row no-gutters">
-														<label for="userCreateAccountConfirm"
+														<label for="#{cc.attrs.id}:userCreateAccountConfirm"
 															class="control-label col-12 col-lg-12">#{msg.user__security_question}: #{msg[captchaBean.securityQuestion.questionKey]}</label>
 													<div class="col-12 col-lg-12">	
 															<span></span>
@@ -392,45 +395,33 @@
 							</button>
 						</ui:fragment>
 						
-								<!-- USER LOGIN BODY LOGIN OPEN ID -->
-								<ui:fragment
-									rendered="#{userBean.hasProvidersOfType('openId') or userBean.hasProvidersOfType('saml')}">
-									<div id="userLoginOpenId"
-										class="user-login-modal__body-login-open-id">
-<!-- 										<h3> -->
-<!-- 											<span>#{msg.login__login_with_other_provider}</span> -->
-<!-- 										</h3> -->
-
-										<h:form id="userLoginOpenIdForm">
-											<ul>
-												<ui:repeat var="provider"
-													value="#{userBean.getProvidersOfType('openId')}">
-													<li
-														class="user-login-modal__body-login-open-id-provider #{provider.name}">
-														<h:commandLink action="#{userBean.login(provider)}">
-                                        #{provider.name}
-                                        <f:passThroughAttribute
-																name="aria-label"
-																value="#{msg.login__login_with} #{provider.name}" />
-														</h:commandLink>
-													</li>
-												</ui:repeat>
-												<ui:repeat var="provider"
-													value="#{userBean.getProvidersOfType('saml')}">
-													<li
-														class="user-login-modal__body-login-open-id-provider #{provider.name}">
-														<h:commandLink action="#{userBean.login(provider)}">
-                                        #{provider.name}
-                                        <f:passThroughAttribute
-																name="aria-label"
-																value="#{msg.login__login_with} #{provider.name}" />
-														</h:commandLink>
-													</li>
-												</ui:repeat>
-											</ul>
-										</h:form>
-									</div>
-								</ui:fragment>
+						<!-- USER LOGIN BODY EXTERNAL PROVIDERS-->
+						<ui:fragment rendered="#{userBean.hasProvidersOfType('openId') or userBean.hasProvidersOfType('httpHeader')}">
+							<div id="userLoginOpenId" class="user-login-modal__body-login-open-id">
+								<h:form id="userLoginOpenIdForm">
+									<ul>
+										<ui:repeat var="provider" value="#{userBean.getProvidersOfType('openId')}">
+											<li class="user-login-modal__body-login-open-id-provider #{provider.name}">
+												<h:commandLink action="#{userBean.login(provider)}">
+                                                    #{provider.name}
+                                                    <f:passThroughAttribute name="aria-label"
+														value="#{msg.login__login_with} #{provider.name}" />
+												</h:commandLink>
+											</li>
+										</ui:repeat>
+										<ui:repeat var="provider" value="#{userBean.getProvidersOfType('httpHeader')}">
+											<li class="user-login-modal__body-login-open-id-provider #{provider.name}">
+												<h:commandLink action="#{userBean.login(provider)}">
+                                                    #{provider.name}
+                                                    <f:passThroughAttribute name="aria-label"
+														value="#{msg.login__login_with} #{provider.name}" />
+												</h:commandLink>
+											</li>
+										</ui:repeat>
+									</ul>
+								</h:form>
+							</div>
+						</ui:fragment>
 								
 								
 						

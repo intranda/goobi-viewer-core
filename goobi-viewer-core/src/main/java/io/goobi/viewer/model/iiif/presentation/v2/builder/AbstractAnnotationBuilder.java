@@ -67,6 +67,7 @@ public class AbstractAnnotationBuilder {
 
     public AbstractAnnotationBuilder(AbstractApiUrlManager urls) {
         this.restBuilder = new AbstractBuilder(urls) {
+            //
         };
     }
 
@@ -86,13 +87,21 @@ public class AbstractAnnotationBuilder {
      * Search for both UGC docs with given IDDOC and with MD_ANNOTATION_ID = "annotation_<id>". Searching for IDDOC is only included for backwards
      * compatibility purposes. The correct identifier is MD_ANNOTATION_ID since it reflects the original sql identifier
      *
-     * @param iddoc
-     * @return
+     * @param id
+     * @return Generated query
      */
     public String getAnnotationQuery(long id) {
         return "+(" + SolrConstants.MD_ANNOTATION_ID + ":annotation_" + id + " " + SolrConstants.IDDOC + ":" + id + ")";
     }
 
+    /**
+     * 
+     * @param query
+     * @param request
+     * @return List<SolrDocument>
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public List<SolrDocument> getAnnotationDocuments(String query, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException {
         return getAnnotationDocuments(query, getDefaultSortFields(), request);
@@ -110,29 +119,65 @@ public class AbstractAnnotationBuilder {
         return Arrays.asList(sortField1, sortField2, sortField3);
     }
 
+    /**
+     * 
+     * @param query
+     * @param sortFields
+     * @param request
+     * @return List<SolrDocument>
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public List<SolrDocument> getAnnotationDocuments(String query, List<StringPair> sortFields, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException {
         return getAnnotationDocuments(query, 0, SolrSearchIndex.MAX_HITS, sortFields, request);
     }
 
-    public List<SolrDocument> getAnnotationDocuments(String query, int first, int rows, List<StringPair> sortFields, HttpServletRequest request)
+    /**
+     * 
+     * @param query
+     * @param first
+     * @param rows
+     * @param sortFields
+     * @param request
+     * @return List<SolrDocument>
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public List<SolrDocument> getAnnotationDocuments(String query, int first, int rows, final List<StringPair> sortFields, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException {
-        if (sortFields == null) {
-            sortFields = getDefaultSortFields();
-        }
+        // logger.trace("getAnnotationDocuments: {}", query); //NOSONAR Debug
         SolrDocumentList hits =
-                DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, Arrays.asList(UGC_SOLR_FIELDS)).getResults();
+                DataManager.getInstance()
+                        .getSearchIndex()
+                        .search(query, first, rows, sortFields != null ? sortFields : getDefaultSortFields(), null, Arrays.asList(UGC_SOLR_FIELDS))
+                        .getResults();
         if (hits.isEmpty()) {
             return Collections.emptyList();
         }
         return hits.stream().filter(hit -> isAccessGranted(hit, query, request)).collect(Collectors.toList());
     }
 
+    /**
+     * 
+     * @param id
+     * @param request
+     * @return Optional<SolrDocument>
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public Optional<SolrDocument> getAnnotationDocument(long id, HttpServletRequest request) throws PresentationException, IndexUnreachableException {
         SolrDocument hit = DataManager.getInstance().getSearchIndex().getFirstDoc(getAnnotationQuery(id), Arrays.asList(UGC_SOLR_FIELDS));
         return Optional.ofNullable(hit);
     }
 
+    /**
+     * 
+     * @param doc
+     * @param query
+     * @param request
+     * @return true if user session is allowed access; false otherwise
+     */
     private static boolean isAccessGranted(SolrDocument doc, String query, HttpServletRequest request) {
         String accessCondition = SolrTools.getSingleFieldStringValue(doc, SolrConstants.ACCESSCONDITION);
         if (StringUtils.isBlank(accessCondition) || "OPENACCESS".equalsIgnoreCase(accessCondition)) {
@@ -150,6 +195,13 @@ public class AbstractAnnotationBuilder {
         }
     }
 
+    /**
+     * 
+     * @param request
+     * @return Annotation count
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public long getAnnotationCount(HttpServletRequest request) throws PresentationException, IndexUnreachableException {
         SolrDocumentList hits = DataManager.getInstance()
                 .getSearchIndex()
@@ -164,6 +216,11 @@ public class AbstractAnnotationBuilder {
         return restBuilder;
     }
 
+    /**
+     * 
+     * @param idString
+     * @return Optional<IAnnotation>
+     */
     public Optional<IAnnotation> getAnnotation(String idString) {
         int underscoreIndex = idString.lastIndexOf("_");
         Long id = Long.parseLong(idString.substring(underscoreIndex > -1 ? underscoreIndex + 1 : 0));

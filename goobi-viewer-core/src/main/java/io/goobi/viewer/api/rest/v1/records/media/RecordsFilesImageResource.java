@@ -47,16 +47,13 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotImplementedException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
@@ -69,7 +66,7 @@ import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
 import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -87,8 +84,11 @@ public class RecordsFilesImageResource extends ImageResource {
     private static final Logger logger = LogManager.getLogger(RecordsFilesImageResource.class);
 
     /**
+     * @param context
      * @param request
-     * @param directory
+     * @param response
+     * @param urls
+     * @param pi
      * @param filename
      */
     public RecordsFilesImageResource(
@@ -100,9 +100,9 @@ public class RecordsFilesImageResource extends ImageResource {
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename);
         //Privilege must be PRIV_BORN_DIGITAL for born digital PDFs, and PRIV_VIEW_IMAGES otherwise (i.e. for images)
-        if(ImageFileFormat.PDF.equals(ImageFileFormat.getImageFileFormatFromFileExtension(filename))) {
+        if (ImageFileFormat.PDF.equals(ImageFileFormat.getImageFileFormatFromFileExtension(filename))) {
             request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
-        } else {            
+        } else {
             request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_VIEW_IMAGES);
         }
         String requestUrl = request.getRequestURI();
@@ -123,9 +123,9 @@ public class RecordsFilesImageResource extends ImageResource {
             request.setAttribute("iiif-rotation", parts.get(2));
             request.setAttribute("iiif-format", parts.get(3));
             int maxUnzoomedImageWidth = DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth();
-            if (maxUnzoomedImageWidth > 0 &&
-                    (!(Region.FULL_IMAGE.equals(region) || Region.SQUARE_IMAGE.equals(region)) ||
-                            scaleWidth.orElse(Integer.MAX_VALUE) > maxUnzoomedImageWidth)) {
+            if (maxUnzoomedImageWidth > 0
+                    && (!(Region.FULL_IMAGE.equals(region) || Region.SQUARE_IMAGE.equals(region))
+                            || scaleWidth.orElse(Integer.MAX_VALUE) > maxUnzoomedImageWidth)) {
                 request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE,
                         new String[] { IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV_ZOOM_IMAGES });
             }
@@ -140,7 +140,7 @@ public class RecordsFilesImageResource extends ImageResource {
     @Produces("application/pdf")
     @ContentServerPdfBinding
     @RecordFileDownloadBinding
-    @Operation(tags = {"records"}, summary = "Returns the image for the given filename as PDF")
+    @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
     @Override
     public StreamingOutput getPdf() throws ContentLibException {
         String pi = request.getAttribute("pi").toString();
@@ -148,7 +148,7 @@ public class RecordsFilesImageResource extends ImageResource {
         logger.trace("getPdf: {}/{}", pi, filename);
         filename = FilenameUtils.getBaseName(filename);
         filename = pi + "_" + filename + ".pdf";
-        response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
 
         if (context.getProperty("param:metsSource") != null) {
             try {

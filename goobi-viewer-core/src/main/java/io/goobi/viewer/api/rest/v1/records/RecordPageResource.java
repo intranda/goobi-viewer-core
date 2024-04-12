@@ -26,6 +26,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_COMMENTS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_MANIFEST;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_NER_TAGS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_TEXT;
@@ -34,6 +35,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -46,8 +48,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.annotation.IAnnotationCollection;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
@@ -126,15 +128,36 @@ public class RecordPageResource {
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 base sequence")
     @IIIFPresentationBinding
     public IPresentationModelElement getSequence(@Parameter(
-            description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode,
+            description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF"
+                    + " manifest with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores"
+                    + " all resources from files") @QueryParam("mode") String mode,
             @Parameter(
-                    description = "Set prefered goobi-viewer view for rendering attribute of canvases. Only valid values is 'fullscreen', any other value results in default object/image view being referenced.") @QueryParam("preferedView") String preferedView)
+                    description = "Set prefered goobi-viewer view for rendering attribute of canvases. Only valid values is 'fullscreen',"
+                            + " any other value results in default object/image view being referenced.") @QueryParam("preferedView") String preferedView)
 
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException, IllegalRequestException {
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
         BuildMode buildMode = RecordResource.getBuildeMode(mode);
         return builder.getBaseSequence(pi, buildMode, preferedView);
+    }
+
+    @GET
+    @javax.ws.rs.Path(RECORDS_PAGES_MANIFEST)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 manifest for record")
+    @IIIFPresentationBinding
+    public IPresentationModelElement getManifest(
+            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
+            @Parameter(
+                    description = "Build mode for manifest to select type of resources to include. Default is 'iiif' which returns"
+                            + " the full IIIF manifest with all resources. 'thumbs' Does not read width and height of canvas resources"
+                            + " and 'iiif_simple' ignores all resources from files") @QueryParam("mode") String mode)
+            throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
+            DAOException {
+        IIIFPresentation2ResourceBuilder b = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
+        BuildMode buildMode = RecordResource.getBuildeMode(mode);
+        return b.getManifest(pi, List.of(pageNo), buildMode);
     }
 
     @GET
@@ -156,7 +179,7 @@ public class RecordPageResource {
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a page")
     public IAnnotationCollection getAnnotationsForRecord(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo)
-            throws PresentationException, IndexUnreachableException {
+            throws DAOException {
 
         ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo);
         URI uri = URI.create(apiPath.query("format", "oa").build());
@@ -183,9 +206,10 @@ public class RecordPageResource {
     public IAnnotationCollection getTextForPage(
             @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
             @Parameter(
-                    description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as W3C-Webannotations") @QueryParam("format") String format)
+                    description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations,"
+                            + " otherwise as W3C-Webannotations") @QueryParam("format") String format)
             throws URISyntaxException, DAOException, PresentationException, IndexUnreachableException, ViewerConfigurationException {
-
+        // logger.trace("getTextForPage"); //NOSONAR Debug
         //        ApiPath apiPath = urls.path(RECORDS_PAGES, RECORDS_PAGES_TEXT).params(pi, pageNo);
         boolean access;
         try {

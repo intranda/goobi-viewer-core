@@ -21,15 +21,19 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
@@ -39,15 +43,16 @@ import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.ViewManager;
 
-public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
+class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(ActiveDocumentBeanTest.class);
 
+    private ActiveDocumentBean adb;
     private NavigationHelper navigationHelper;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
@@ -65,6 +70,8 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.when(navigationHelper.getCurrentPage()).thenReturn("viewImage_value");
         Mockito.when(navigationHelper.getCurrentView()).thenReturn("viewImage_value");
         Mockito.when(navigationHelper.getPreferredView()).thenReturn("viewImage_value");
+
+        adb = new ActiveDocumentBean();
     }
 
     /**
@@ -72,22 +79,21 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies create ViewManager correctly
      */
     @Test
-    public void update_shouldCreateViewManagerCorrectly() throws Exception {
-        ActiveDocumentBean adb = new ActiveDocumentBean();
+    void update_shouldCreateViewManagerCorrectly() throws Exception {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("1");
         adb.update();
-        Assert.assertNotNull(adb.getViewManager());
-        Assert.assertEquals(PI_KLEIUNIV, adb.getPersistentIdentifier());
-        Assert.assertEquals(PI_KLEIUNIV, adb.getViewManager().getPi());
-        Assert.assertEquals(iddocKleiuniv, adb.getTopDocumentIddoc());
-        Assert.assertEquals(iddocKleiuniv, adb.getViewManager().getTopStructElementIddoc());
-        Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentStructElementIddoc());
-        Assert.assertNotNull(adb.getViewManager().getTopStructElement());
-        Assert.assertEquals(adb.getTopDocument(), adb.getViewManager().getTopStructElement());
-        Assert.assertNotNull(adb.getViewManager().getCurrentStructElement());
-        Assert.assertEquals(adb.getCurrentElement(), adb.getViewManager().getCurrentStructElement());
-        Assert.assertEquals("", adb.getViewManager().getLogId());
+        Assertions.assertNotNull(adb.getViewManager());
+        assertEquals(PI_KLEIUNIV, adb.getPersistentIdentifier());
+        assertEquals(PI_KLEIUNIV, adb.getViewManager().getPi());
+        assertEquals(iddocKleiuniv, adb.getTopDocumentIddoc());
+        assertEquals(iddocKleiuniv, adb.getViewManager().getTopStructElementIddoc());
+        Assertions.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentStructElementIddoc());
+        Assertions.assertNotNull(adb.getViewManager().getTopStructElement());
+        assertEquals(adb.getTopDocument(), adb.getViewManager().getTopStructElement());
+        Assertions.assertNotNull(adb.getViewManager().getCurrentStructElement());
+        assertEquals(adb.getCurrentElement(), adb.getViewManager().getCurrentStructElement());
+        assertEquals("", adb.getViewManager().getLogId());
     }
 
     /**
@@ -95,22 +101,21 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies update ViewManager correctly if LOGID has changed
      */
     @Test
-    public void update_shouldUpdateViewManagerCorrectlyIfLOGIDHasChanged() throws Exception {
-        ActiveDocumentBean adb = new ActiveDocumentBean();
+    void update_shouldUpdateViewManagerCorrectlyIfLOGIDHasChanged() throws Exception {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("1");
         adb.update();
-        Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentStructElementIddoc());
+        Assertions.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentStructElementIddoc());
         ViewManager oldViewManager = adb.getViewManager();
-        Assert.assertTrue(oldViewManager == adb.getViewManager());
+        Assertions.assertSame(oldViewManager, adb.getViewManager());
 
         adb.setLogid("LOG_0003");
         adb.update();
-        Assert.assertEquals(PI_KLEIUNIV, adb.getViewManager().getPi());
-        Assert.assertEquals(iddocKleiuniv, adb.getViewManager().getTopStructElementIddoc());
-        Assert.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentStructElementIddoc());
-        // Assert.assertEquals("LOG_0003", adb.getViewManager().getLogId());
-        Assert.assertFalse(oldViewManager == adb.getViewManager());
+        assertEquals(PI_KLEIUNIV, adb.getViewManager().getPi());
+        assertEquals(iddocKleiuniv, adb.getViewManager().getTopStructElementIddoc());
+        Assertions.assertNotEquals(iddocKleiuniv, adb.getViewManager().getCurrentStructElementIddoc());
+        // assertEquals("LOG_0003", adb.getViewManager().getLogId());
+        Assertions.assertNotSame(oldViewManager, adb.getViewManager());
     }
 
     /**
@@ -118,8 +123,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not override topDocumentIddoc if LOGID has changed
      */
     @Test
-    public void update_shouldNotOverrideTopDocumentIddocIfLOGIDHasChanged() throws Exception {
-        ActiveDocumentBean adb = new ActiveDocumentBean();
+    void update_shouldNotOverrideTopDocumentIddocIfLOGIDHasChanged() throws Exception {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("1");
         adb.update();
@@ -129,7 +133,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             adb.update();
         } catch (IDDOCNotFoundException e) {
         }
-        Assert.assertEquals(iddocKleiuniv, adb.topDocumentIddoc);
+        assertEquals(iddocKleiuniv, adb.topDocumentIddoc);
     }
 
     /**
@@ -137,10 +141,9 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies determine currentElementIddoc correctly
      */
     @Test
-    public void setPersistentIdentifier_shouldDetermineCurrentElementIddocCorrectly() throws Exception {
-        ActiveDocumentBean adb = new ActiveDocumentBean();
+    void setPersistentIdentifier_shouldDetermineCurrentElementIddocCorrectly() throws Exception {
         adb.setPersistentIdentifier(PI_KLEIUNIV);
-        Assert.assertEquals(iddocKleiuniv, adb.topDocumentIddoc);
+        assertEquals(iddocKleiuniv, adb.topDocumentIddoc);
     }
 
     /**
@@ -148,13 +151,12 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies increase image number by given step
      */
     @Test
-    public void getNextUrl_shouldIncreaseImageNumberByGivenStep() throws Exception {
-        ActiveDocumentBean adb = new ActiveDocumentBean();
+    void getNextUrl_shouldIncreaseImageNumberByGivenStep() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("10");
         adb.update();
-        Assert.assertEquals("/viewImage_value/PPN517154005/13/", adb.getPageUrlRelativeToCurrentPage(3));
+        assertEquals("/viewImage_value/PPN517154005/13/", adb.getPageUrlRelativeToCurrentPage(3));
     }
 
     /**
@@ -162,13 +164,12 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies go no higher than last page
      */
     @Test
-    public void getNextUrl_shouldGoNoHigherThanLastPage() throws Exception {
-        ActiveDocumentBean adb = new ActiveDocumentBean();
+    void getNextUrl_shouldGoNoHigherThanLastPage() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("15");
         adb.update();
-        Assert.assertEquals("/viewImage_value/PPN517154005/" + adb.getViewManager().getPageLoader().getLastPageOrder() + "/",
+        assertEquals("/viewImage_value/PPN517154005/" + adb.getViewManager().getPageLoader().getLastPageOrder() + "/",
                 adb.getPageUrlRelativeToCurrentPage(3));
     }
 
@@ -177,13 +178,12 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies decrease image number by given step
      */
     @Test
-    public void getPrevUrl_shouldDecreaseImageNumberByGivenStep() throws Exception {
-        ActiveDocumentBean adb = new ActiveDocumentBean();
+    void getPrevUrl_shouldDecreaseImageNumberByGivenStep() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("10");
         adb.update();
-        Assert.assertEquals("/viewImage_value/PPN517154005/7/", adb.getPreviousPageUrl(3));
+        assertEquals("/viewImage_value/PPN517154005/7/", adb.getPreviousPageUrl(3));
     }
 
     /**
@@ -191,8 +191,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies go no lower than first page order
      */
     @Test
-    public void getPrevUrl_shouldGoNoLowerThanFirstPageOrder() throws Exception {
-        ActiveDocumentBean adb = new ActiveDocumentBean();
+    void getPrevUrl_shouldGoNoLowerThanFirstPageOrder() throws Exception {
         adb.setNavigationHelper(navigationHelper);
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("2");
@@ -200,7 +199,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             adb.update();
         } catch (IDDOCNotFoundException e) {
         }
-        Assert.assertEquals("/viewImage_value/PPN517154005/" + adb.getViewManager().getPageLoader().getFirstPageOrder() + "/",
+        assertEquals("/viewImage_value/PPN517154005/" + adb.getViewManager().getPageLoader().getFirstPageOrder() + "/",
                 adb.getPreviousPageUrl(4));
     }
 
@@ -209,13 +208,13 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct url correctly
      */
     @Test
-    public void getUrl_shouldConstructUrlCorrectly() throws Exception {
-        ActiveDocumentBean adb = new ActiveDocumentBean();
+    void getUrl_shouldConstructUrlCorrectly() throws Exception {
         adb.setNavigationHelper(navigationHelper);
+        navigationHelper.setLocaleString("en");
         adb.setPersistentIdentifier(PI_KLEIUNIV);
         adb.setImageToShow("1");
         adb.update();
-        Assert.assertEquals("/viewImage_value/PPN517154005/12/", adb.getPageUrl("12"));
+        assertEquals("/viewImage_value/PPN517154005/12/", adb.getPageUrl("12"));
     }
 
     /**
@@ -223,9 +222,7 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies load records that have been released via moving wall
      */
     @Test
-    public void update_shouldLoadRecordsThatHaveBeenReleasedViaMovingWall() throws Exception {
-        ActiveDocumentBean adb = new ActiveDocumentBean();
-
+    void update_shouldLoadRecordsThatHaveBeenReleasedViaMovingWall() throws Exception {
         // Record has been unlocked via a moving wall functionality and should load withour throwing a RecordNotFoundException.
         // The public release year metadata is only available in docstruct and page Solr docs. Here, it is important that none of the
         // record's docs match the conditional query of the license type anyway.
@@ -234,30 +231,27 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         // Override config setting so that localhost doesn't get full access
         DataManager.getInstance().getConfiguration().overrideValue("accessConditions.fullAccessForLocalhost", false);
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
+        Assertions.assertFalse(DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
 
         adb.update();
-        Assert.assertTrue(adb.isRecordLoaded());
+        assertTrue(adb.isRecordLoaded());
     }
 
     /**
      * @see ActiveDocumentBean#update()
      * @verifies throw RecordNotFoundException if listing not allowed by default
      */
-    @Test(expected = RecordNotFoundException.class)
-    public void update_shouldThrowRecordNotFoundExceptionIfListingNotAllowedByDefault() throws Exception {
-        ActiveDocumentBean adb = new ActiveDocumentBean();
-
+    @Test
+    void update_shouldThrowRecordNotFoundExceptionIfListingNotAllowedByDefault() throws Exception {
         // Record will be released by a moving wall in 2041
         adb.setPersistentIdentifier("557335825");
         adb.setImageToShow("1");
 
         // Override config setting so that localhost doesn't get full access
         DataManager.getInstance().getConfiguration().overrideValue("accessConditions.fullAccessForLocalhost", false);
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
+        Assertions.assertFalse(DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
 
-        adb.update();
-        Assert.fail();
+        Assertions.assertThrows(RecordNotFoundException.class, () -> adb.update());
     }
 
     /**
@@ -265,18 +259,17 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct page in single page mode
      */
     @Test
-    public void getPageUrl_shouldReturnCorrectPageInSinglePageMode() throws Exception {
-        ActiveDocumentBean adb = new ActiveDocumentBean();
+    void getPageUrl_shouldReturnCorrectPageInSinglePageMode() throws Exception {
         adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
         adb.setImageToShow("2");
         adb.update();
-        Assert.assertTrue(adb.isRecordLoaded());
+        assertTrue(adb.isRecordLoaded());
 
         // Next page (2 -> 3)
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/3/",
+        assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/3/",
                 adb.getPageUrlRelativeToCurrentPage(1));
         // Previous page (2 -> 1)
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/1/",
+        assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/1/",
                 adb.getPageUrlRelativeToCurrentPage(-1));
     }
 
@@ -285,26 +278,25 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct range in double page mode if currently showing one page
      */
     @Test
-    public void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentlyShowingOnePage() throws Exception {
-        ActiveDocumentBean adb = new ActiveDocumentBean();
+    void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentlyShowingOnePage() throws Exception {
         adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
 
         adb.setImageToShow("1");
         adb.update();
-        Assert.assertTrue(adb.isRecordLoaded());
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2/",
+        assertTrue(adb.isRecordLoaded());
+        assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2/",
                 adb.getPageUrlRelativeToCurrentPage(1));
 
         // Next page (1 -> 2-3)
         adb.setImageToShow("1-1");
         adb.update();
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/",
+        assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/",
                 adb.getPageUrlRelativeToCurrentPage(1));
 
         // Previous page (16 -> 14-15)
         adb.setImageToShow("16");
         adb.update();
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/15/",
+        assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/15/",
                 adb.getPageUrlRelativeToCurrentPage(-1));
 
         // Same in right-to-left
@@ -312,12 +304,12 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         // Next page (1 -> 2-3)
         adb.setImageToShow("1-1");
         adb.update();
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/",
+        assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/",
                 adb.getPageUrlRelativeToCurrentPage(1));
         // Previous page (16 -> 14-15)
         adb.setImageToShow("16-17");
         adb.update();
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/14-15/",
+        assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/14-15/",
                 adb.getPageUrlRelativeToCurrentPage(-1));
 
     }
@@ -327,20 +319,19 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct range in double page mode if currently showing two pages
      */
     @Test
-    public void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentlyShowingTwoPages() throws Exception {
-        ActiveDocumentBean adb = new ActiveDocumentBean();
+    void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentlyShowingTwoPages() throws Exception {
         adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
         adb.setImageToShow("4-5");
         adb.update();
-        Assert.assertTrue(adb.isRecordLoaded());
+        assertTrue(adb.isRecordLoaded());
 
         adb.getViewManager().setDoublePageMode(true);
 
         // Next page (4-5 -> 6-7)
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/6-7/",
+        assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/6-7/",
                 adb.getPageUrlRelativeToCurrentPage(1));
         // Previous page (4-5 -> 2-3)
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/",
+        assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/2-3/",
                 adb.getPageUrlRelativeToCurrentPage(-1));
     }
 
@@ -349,21 +340,20 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct range in double page mode if current page double image
      */
     @Test
-    public void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentPageDoubleImage() throws Exception {
-        ActiveDocumentBean adb = new ActiveDocumentBean();
+    void getPageUrl_shouldReturnCorrectRangeInDoublePageModeIfCurrentPageDoubleImage() throws Exception {
         adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
         adb.setImageToShow("3");
         adb.update();
-        Assert.assertTrue(adb.isRecordLoaded());
+        assertTrue(adb.isRecordLoaded());
 
         adb.getViewManager().setDoublePageMode(true);
         adb.getViewManager().getCurrentPage().setDoubleImage(true);
 
         // Next page (3 -> 4-5)
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/4-5/",
+        assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/4-5/",
                 adb.getPageUrlRelativeToCurrentPage(1));
         // Previous page (3 -> 1-2)
-        Assert.assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/1-2/",
+        assertEquals("/" + PageType.viewObject.getName() + "/" + AbstractSolrEnabledTest.PI_KLEIUNIV + "/1-2/",
                 adb.getPageUrlRelativeToCurrentPage(-1));
     }
 
@@ -372,12 +362,53 @@ public class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies reset lastReceivedIdentifier
      */
     @Test
-    public void reset_shouldResetLastReceivedIdentifier() throws Exception {
-        ActiveDocumentBean bean = new ActiveDocumentBean();
-        bean.lastReceivedIdentifier = "PPN123";
-        Assert.assertEquals("PPN123", bean.lastReceivedIdentifier);
-        bean.reset();
-        Assert.assertNull(bean.lastReceivedIdentifier);
+    void reset_shouldResetLastReceivedIdentifier() throws Exception {
+        adb.setLastReceivedIdentifier("PPN123");
+        assertEquals("PPN123", adb.getLastReceivedIdentifier());
+        adb.reset();
+        Assertions.assertNull(adb.getLastReceivedIdentifier());
     }
 
+    /**
+     * @see ActiveDocumentBean#getRelativeUrlTags()
+     * @verifies return empty string if no record loaded
+     */
+    @Test
+    void getRelativeUrlTags_shouldReturnEmptyStringIfNoRecordLoaded() throws Exception {
+        assertEquals("", adb.getRelativeUrlTags());
+    }
+
+    /**
+     * @see ActiveDocumentBean#getRelativeUrlTags()
+     * @verifies return empty string if navigationHelper null
+     */
+    @Test
+    void getRelativeUrlTags_shouldReturnEmptyStringIfNavigationHelperNull() throws Exception {
+        adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
+        adb.setImageToShow("3");
+        adb.update();
+        adb.setNavigationHelper(null);
+        assertTrue(adb.isRecordLoaded());
+        assertEquals("", adb.getRelativeUrlTags());
+    }
+
+    /**
+     * @see ActiveDocumentBean#getRelativeUrlTags()
+     * @verifies generate tags correctly
+     */
+    @Test
+    void getRelativeUrlTags_shouldGenerateTagsCorrectly() throws Exception {
+        adb.setPersistentIdentifier(AbstractSolrEnabledTest.PI_KLEIUNIV);
+        adb.setImageToShow("3");
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+
+        adb.setNavigationHelper(new NavigationHelper());
+
+        String linkCanonical = "\n<link rel=\"canonical\" href=\"";
+        String linkAlternate = "\n<link rel=\"alternate\" href=\"";
+
+        String result = adb.getRelativeUrlTags();
+        assertTrue(StringUtils.isNotBlank(result));
+    }
 }

@@ -41,7 +41,8 @@ public class GeoCoordinateFeature {
 
     private static final Logger logger = LogManager.getLogger(GeoCoordinateFeature.class);
 
-    private static final String REGEX_GEOCOORDS_SEARCH_STRING = "(IsWithin|Intersects|Contains|IsDisjointTo)\\((\\w+)\\(\\(([\\s\\d\\-.,]+)\\)\\)\\)"; //NOSONAR    backtracking save
+    private static final String REGEX_GEOCOORDS_SEARCH_STRING =
+            "(IsWithin|Intersects|Contains|IsDisjointTo)\\((\\w+)\\(\\(([\\s\\d\\-.,]+)\\)\\)\\)"; //NOSONAR backtracking save
 
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_RELATION = 1;
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE = 2;
@@ -53,7 +54,6 @@ public class GeoCoordinateFeature {
     public static final String RELATION_PREDICATE_ISDISJOINTTO = "ISDISJOINTTO";
 
     public static final String SHAPE_POLYGON = "POLYGON";
-
 
     private final JSONObject feature;
     private final String predicate;
@@ -67,7 +67,10 @@ public class GeoCoordinateFeature {
 
     /**
      * Initialize as a polygon feature with the given points as vertices
-     * @param vertices
+     * 
+     * @param points
+     * @param predicate
+     * @param shape
      */
     public GeoCoordinateFeature(double[][] points, String predicate, String shape) {
         JSONObject json = new JSONObject();
@@ -94,11 +97,11 @@ public class GeoCoordinateFeature {
     }
 
     public double[][] getVertices() {
-        JSONArray vertices =  feature.getJSONArray("vertices");
+        JSONArray vertices = feature.getJSONArray("vertices");
         double[][] points = new double[vertices.length()][2];
         for (int i = 0; i < vertices.length(); i++) {
             JSONArray vertex = vertices.getJSONArray(i);
-            points[i] = new double[]{vertex.getDouble(0), vertex.getDouble(1)};
+            points[i] = new double[] { vertex.getDouble(0), vertex.getDouble(1) };
         }
         return points;
     }
@@ -109,20 +112,18 @@ public class GeoCoordinateFeature {
         String pointString = Arrays.stream(points).map(p -> Double.toString(p[1]) + " " + Double.toString(p[0])).collect(Collectors.joining(", "));
 
         String template = "$P($S(($V)))";
-        String searchString = template
+        return template
                 .replace("$P", this.predicate)
                 .replace("$S", this.shape)
                 .replace("$V", pointString);
-        return searchString;
 
     }
 
     public static String getPredicate(String searchString) {
         Matcher matcher = Pattern.compile(REGEX_GEOCOORDS_SEARCH_STRING, Pattern.CASE_INSENSITIVE).matcher(searchString);
 
-        if(matcher.find()) {
-            String relation = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_RELATION);
-            return relation;
+        if (matcher.find()) {
+            return matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_RELATION);
         }
         return RELATION_PREDICATE_ISWITHIN;
     }
@@ -130,9 +131,8 @@ public class GeoCoordinateFeature {
     public static String getShape(String searchString) {
         Matcher matcher = Pattern.compile(REGEX_GEOCOORDS_SEARCH_STRING, Pattern.CASE_INSENSITIVE).matcher(searchString);
 
-        if(matcher.find()) {
-            String shape = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE);
-            return shape;
+        if (matcher.find()) {
+            return matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE);
         }
         return SHAPE_POLYGON;
     }
@@ -141,39 +141,42 @@ public class GeoCoordinateFeature {
 
         Matcher matcher = Pattern.compile(REGEX_GEOCOORDS_SEARCH_STRING, Pattern.CASE_INSENSITIVE).matcher(searchString);
 
-        if(matcher.find()) {
+        if (matcher.find()) {
             String allPoints = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_POINTS);
             String[] strPoints = allPoints.split(", ");
             double[][] points = new double[strPoints.length][2];
             for (int i = 0; i < strPoints.length; i++) {
                 try {
                     String[] strPoint = strPoints[i].split(" ");
-                    points[i] = new double[]{Double.parseDouble(strPoint[0]), Double.parseDouble(strPoint[1])};
-                } catch(NumberFormatException | IndexOutOfBoundsException e) {
+                    points[i] = new double[] { Double.parseDouble(strPoint[0]), Double.parseDouble(strPoint[1]) };
+                } catch (NumberFormatException | IndexOutOfBoundsException e) {
                     logger.warn("Unable to parse {} as double array", strPoints[i]);
                 }
             }
             return points;
-        } else {
-            return new double[0][2];
         }
-
+        return new double[0][2];
     }
 
     /**
-     * @return
+     * @return true if number of vertices larger than 0; false otherwise
      */
     public boolean hasVertices() {
         return getVertices().length > 0;
     }
 
     /**
-     *
+     * 
+     * @return the shape
      */
     public String getShape() {
-       return this.shape;
+        return this.shape;
     }
 
+    /**
+     * 
+     * @return the predicate
+     */
     public String getPredicate() {
         return this.predicate;
     }
@@ -183,16 +186,14 @@ public class GeoCoordinateFeature {
      */
     @Override
     public boolean equals(Object obj) {
-        if(obj != null && obj.getClass().equals(this.getClass())) {
-            GeoCoordinateFeature other = (GeoCoordinateFeature)obj;
-            return  other.predicate.equals(this.predicate) &&
-                    other.shape.equals(this.shape) &&
-                    Arrays.deepEquals(other.getVertices(), this.getVertices());
-        } else {
-            return false;
+        if (obj != null && obj.getClass().equals(this.getClass())) {
+            GeoCoordinateFeature other = (GeoCoordinateFeature) obj;
+            return other.predicate.equals(this.predicate) && other.shape.equals(this.shape)
+                    && Arrays.deepEquals(other.getVertices(), this.getVertices());
         }
+        return false;
     }
-    
+
     @Override
     public int hashCode() {
         return this.feature.hashCode();

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,14 +43,24 @@ import io.goobi.viewer.controller.DateTools;
 public class CitationDataProvider implements ItemDataProvider {
 
     public static final String AUTHOR = "author";
+    public static final String COLLECTION_TITLE = "collection-title";
+    public static final String COMPOSER = "composer";
+    public static final String CONTAINER_TITLE = "container-title";
+    public static final String DIRECTOR = "director";
     public static final String DOI = "DOI";
+    public static final String EDITOR = "editor";
+    public static final String ILLUSTRATOR = "illustrator";
+    public static final String INTERVIEWER = "interviewer";
     public static final String ISBN = "ISBN";
     public static final String ISSN = "ISSN";
     public static final String ISSUED = "issued";
     public static final String LANGUAGE = "language";
     public static final String PUBLISHER_PLACE = "placepublish";
     public static final String PUBLISHER = "publisher";
+    public static final String RECIPIENT = "recipient";
+    public static final String SCALE = "scale";
     public static final String TITLE = "title";
+    public static final String TRANSLATOR = "translator";
     public static final String URL = "url";
 
     private final Map<String, CSLItemData> itemDataMap = new TreeMap<>();
@@ -66,15 +77,23 @@ public class CitationDataProvider implements ItemDataProvider {
     public CSLItemData addItemData(String id, Map<String, List<String>> fields, CSLType type) {
         CSLItemDataBuilder builder = new CSLItemDataBuilder().type(type).id(id);
 
-        for (String key : fields.keySet()) {
-            if (fields.get(key) == null || fields.get(key).isEmpty()) {
+        for (Entry<String, List<String>> entry : fields.entrySet()) {
+            if (entry.getValue() == null || entry.getValue().isEmpty()) {
                 continue;
             }
 
-            switch (key) {
+            switch (entry.getKey()) {
+                // Persons
                 case AUTHOR:
-                    List<CSLName> names = new ArrayList<>(fields.get(key).size());
-                    for (String name : fields.get(key)) {
+                case COMPOSER:
+                case DIRECTOR:
+                case EDITOR:
+                case ILLUSTRATOR:
+                case INTERVIEWER:
+                case RECIPIENT:
+                case TRANSLATOR:
+                    List<CSLName> names = new ArrayList<>(entry.getValue().size());
+                    for (String name : entry.getValue()) {
                         if (StringUtils.isBlank(name)) {
                             continue;
                         }
@@ -82,55 +101,83 @@ public class CitationDataProvider implements ItemDataProvider {
                             String[] nameSplit = name.split(",");
                             if (nameSplit.length > 1) {
                                 names.add(new CSLNameBuilder().given(nameSplit[1].trim()).family(nameSplit[0].trim()).build());
-                            } else {
-                                //                                builder.author("", nameSplit[0].trim());
                             }
-                        } else {
-                            //                            String[] nameSplit = name.split(" ");
-                            //                            if (nameSplit.length > 1) {
-                            //                                names.add(new CSLNameBuilder().given(nameSplit[0].trim()).family(nameSplit[1].trim()).build());
-                            //                            } else {
-                            //                                builder.author("", name);
-                            //                            }
                         }
                     }
                     if (!names.isEmpty()) {
-                        builder.author(names.toArray(new CSLName[0]));
+                        switch (entry.getKey()) {
+                            case AUTHOR:
+                                builder.author(names.toArray(new CSLName[0]));
+                                break;
+                            case COMPOSER:
+                                builder.composer(names.toArray(new CSLName[0]));
+                                break;
+                            case DIRECTOR:
+                                builder.director(names.toArray(new CSLName[0]));
+                                break;
+                            case EDITOR:
+                                builder.editor(names.toArray(new CSLName[0]));
+                                break;
+                            case ILLUSTRATOR:
+                                builder.illustrator(names.toArray(new CSLName[0]));
+                                break;
+                            case INTERVIEWER:
+                                builder.interviewer(names.toArray(new CSLName[0]));
+                                break;
+                            case RECIPIENT:
+                                builder.recipient(names.toArray(new CSLName[0]));
+                                break;
+                            case TRANSLATOR:
+                                builder.translator(names.toArray(new CSLName[0]));
+                                break;
+                            default:
+                                break;
+                        }
                     }
                     break;
+                case COLLECTION_TITLE:
+                    builder.collectionTitle(entry.getValue().get(0));
+                    break;
+                case CONTAINER_TITLE:
+                    builder.containerTitle(entry.getValue().get(0));
+                    break;
                 case DOI:
-
-                    builder.DOI(fields.get(key).get(0));
+                    builder.DOI(entry.getValue().get(0));
                     break;
                 case ISBN:
-                    builder.ISBN(fields.get(key).get(0));
+                    builder.ISBN(entry.getValue().get(0));
                     break;
                 case ISSN:
-                    builder.ISSN(fields.get(key).get(0));
+                    builder.ISSN(entry.getValue().get(0));
                     break;
                 case ISSUED:
                     // Use different method for year-only values (to avoid duplicates in APA6)
                     try {
-                        DateTools.formatterYearOnly.parse(fields.get(key).get(0));
-                        builder.issued(Integer.valueOf(fields.get(key).get(0)));
+                        DateTools.FORMATTERYEARONLY.parse(entry.getValue().get(0));
+                        builder.issued(Integer.valueOf(entry.getValue().get(0)));
                     } catch (DateTimeParseException e) {
-                        builder.issued(new CSLDateBuilder().raw(fields.get(key).get(0)).build());
+                        builder.issued(new CSLDateBuilder().raw(entry.getValue().get(0)).build());
                     }
                     break;
                 case LANGUAGE:
-                    builder.language(fields.get(key).get(0));
+                    builder.language(entry.getValue().get(0));
                     break;
                 case PUBLISHER:
-                    builder.publisher(fields.get(key).get(0));
+                    builder.publisher(entry.getValue().get(0));
                     break;
                 case PUBLISHER_PLACE:
-                    builder.publisherPlace(fields.get(key).get(0));
+                    builder.publisherPlace(entry.getValue().get(0));
+                    break;
+                case SCALE:
+                    builder.scale(entry.getValue().get(0));
                     break;
                 case TITLE:
-                    builder.title(fields.get(key).get(0));
+                    builder.title(entry.getValue().get(0));
                     break;
                 case URL:
-                    builder.URL(fields.get(key).get(0));
+                    builder.URL(entry.getValue().get(0));
+                    break;
+                default:
                     break;
             }
         }

@@ -21,28 +21,37 @@
  */
 package io.goobi.viewer.model.cms.widgets.type;
 
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
+
 public interface WidgetContentType {
+
+    public String getIconClass();
 
     /**
      * Get a message key providing a label for this widget
-     * @return
+     * 
+     * @return {@link String}
      */
     public String getLabel();
 
     /**
      * The filename of the xhtml component for this widget
-     * @return
+     * 
+     * @return {@link String}
      */
     public String getFilename();
 
     /**
      * The enum value of this type, taken from the classes implementing this interface
-     * @return
+     * 
+     * @return {@link String}
      */
     public String getName();
 
     /**
      * Get the WidgetContentType for which {@link #getName()} method matches the given name
+     * 
      * @param name
      * @return null if no matching type exists
      */
@@ -63,12 +72,12 @@ public interface WidgetContentType {
     }
 
     /**
-     * Get the corresponding generation type.
-     * Widgets of class {@link DefaultWidgetType} have the generation type {@link WidgetGenerationType.DEFAULT}
-     * Widgets of class {@link AutomaticWidgetType} have the generation type {@link WidgetGenerationType.AUTOMATIC}
-     * Widgets of class {@link CustomWidgetType} have the generation type {@link WidgetGenerationType.CUSTOM}
+     * Get the corresponding generation type. Widgets of class {@link DefaultWidgetType} have the generation type {@link WidgetGenerationType.DEFAULT}
+     * Widgets of class {@link AutomaticWidgetType} have the generation type {@link WidgetGenerationType.AUTOMATIC} Widgets of class
+     * {@link CustomWidgetType} have the generation type {@link WidgetGenerationType.CUSTOM}
+     * 
      * @param type
-     * @return
+     * @return {@link WidgetGenerationType}
      */
     public static WidgetGenerationType getGenerationType(WidgetContentType type) {
         switch (type.getClass().getSimpleName()) {
@@ -82,4 +91,9 @@ public interface WidgetContentType {
                 throw new IllegalArgumentException("Generation type for WidgetContentType " + type + " not known");
         }
     }
+    
+    public boolean isAllowedForPage(CMSPage page);
+
+
+    boolean isAllowedForPage(CMSPageTemplate template);
 }

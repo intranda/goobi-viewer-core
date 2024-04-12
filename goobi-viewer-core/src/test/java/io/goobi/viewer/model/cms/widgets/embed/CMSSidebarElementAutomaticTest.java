@@ -21,27 +21,27 @@
  */
 package io.goobi.viewer.model.cms.widgets.embed;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assume.assumeNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.widgets.type.AutomaticWidgetType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
 import io.goobi.viewer.model.maps.GeoMap;
 
-public class CMSSidebarElementAutomaticTest extends AbstractDatabaseEnabledTest {
+class CMSSidebarElementAutomaticTest extends AbstractDatabaseEnabledTest {
 
     @Test
-    public void test() throws DAOException {
+    void test() throws DAOException {
         GeoMap map = DataManager.getInstance().getDao().getGeoMap(1l);
-        assumeNotNull(map);
+        Assertions.assertNotNull(map);
         CMSPage owner = DataManager.getInstance().getDao().getCMSPage(1l);
-        assumeNotNull(owner);
+        Assertions.assertNotNull(owner);
 
         CMSSidebarElementAutomatic widget = new CMSSidebarElementAutomatic(map, owner);
         assertEquals(owner, widget.getOwnerPage());

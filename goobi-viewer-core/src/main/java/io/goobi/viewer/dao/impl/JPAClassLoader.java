@@ -132,7 +132,7 @@ public class JPAClassLoader extends ClassLoader {
      *
      * @param masterFileUrl
      * @param moduleUrls
-     * @param outputPath
+     * @return {@link Document containing merged and module persistence.xml
      * @throws IOException
      * @throws JDOMException
      * @should merge persistence xml files correctly
@@ -161,7 +161,7 @@ public class JPAClassLoader extends ClassLoader {
 
         // Iterate over module persistence.xml files
         for (URL url : moduleUrls) {
-            logger.trace("Processing {}", url.toString());
+            logger.trace("Processing {}", url);
             Document docModule = XmlTools.readXmlFile(url);
             // For each persistence unit in the master file check for any new classes in the module file
             for (Element eleModulePU : docModule.getRootElement().getChildren("persistence-unit", null)) {
@@ -207,7 +207,7 @@ public class JPAClassLoader extends ClassLoader {
                     XmlTools.writeXmlFile(docMerged, file.getAbsolutePath());
                     newUrl = file.toURI().toURL();
                     //                    newUrl = new URL("file://" + file.getAbsolutePath());
-                    logger.info("URL: " + newUrl);
+                    logger.info("URL: {}", newUrl);
                 } catch (JDOMException e) {
                     throw new IOException(e.toString());
                 } catch (DAOException e) {
@@ -216,7 +216,7 @@ public class JPAClassLoader extends ClassLoader {
             }
 
             return new Enumeration<URL>() {
-                URL url = newUrl;
+                private URL url = newUrl;
 
                 @Override
                 public boolean hasMoreElements() {

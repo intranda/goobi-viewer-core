@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 
 /**
  * @author florian
@@ -33,6 +34,9 @@ import io.goobi.viewer.controller.DataManager;
 public class ApiUrls extends AbstractApiUrlManager {
 
     public static final String API = "/api/v1";
+
+    public static final String AUTH = "/auth";
+    public static final String AUTH_HEADER = "/header";
 
     public static final String CACHE = "/cache";
     public static final String CACHE_RECORD = "/{pi}";
@@ -98,6 +102,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_PAGES = "/records/{pi}/pages";
     public static final String RECORDS_PAGES_SEQUENCE = "/sequence/base";
     public static final String RECORDS_PAGES_CANVAS = "/{pageNo}/canvas";
+    public static final String RECORDS_PAGES_MANIFEST = "/{pageNo}/manifest";
     public static final String RECORDS_PAGES_NER_TAGS = "/{pageNo}/ner/tags";
     public static final String RECORDS_PAGES_ANNOTATIONS = "/{pageNo}/annotations";
     public static final String RECORDS_PAGES_COMMENTS = "/{pageNo}/comments";
@@ -109,6 +114,9 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_FILES_ALTO = "/alto/{filename}";
     public static final String RECORDS_FILES_CMDI = "/cmdi/{filename}";
     public static final String RECORDS_FILES_TEI = "/tei/{filename}";
+    public static final String RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD = "/resources/{taskId}/{path: .+}";
+    public static final String RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD_PATH = "/resources/{taskId}/{path}";
+
 
     public static final String RECORDS_FILES_SOURCE = "/source/{filename}";
     public static final String RECORDS_FILES_AUDIO = "/audio/{mimetype}/{filename}";
@@ -132,14 +140,6 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String COLLECTIONS = "/collections/{field}";
     public static final String COLLECTIONS_COLLECTION = "/{collection}";
     public static final String COLLECTIONS_CONTENTASSIST = "/contentassist";
-
-    public static final String DOWNLOADS = "/downloads";
-    public static final String DOWNLOADS_EPUB = "/epub";
-    public static final String DOWNLOADS_PDF = "/pdf";
-    public static final String DOWNLOADS_EPUB_RECORD = "/epub/records/{pi}";
-    public static final String DOWNLOADS_PDF_RECORD = "/pdf/records/{pi}";
-    public static final String DOWNLOADS_EPUB_SECTION = "/epub/records/{pi}/sections/{divId}";
-    public static final String DOWNLOADS_PDF_SECTION = "/pdf/records/{pi}/sections/{divId}";
 
     public static final String USERS = "/users";
     public static final String USERS_USERID = "/users/{userId}";
@@ -171,6 +171,7 @@ public class ApiUrls extends AbstractApiUrlManager {
 
     public static final String SEARCH = "/search";
     public static final String SEARCH_HIT_CHILDREN = "/hit/{id}/{numChildren}";
+    public static final String SEARCH_HIT_CHILDREN_GROUP = "/hit/{id}/{numChildren}/{resultGroup}";
 
     public static final String TASKS = "/tasks";
     public static final String TASKS_TASK = "/{id}";
@@ -198,6 +199,7 @@ public class ApiUrls extends AbstractApiUrlManager {
 
     public static final String CMS = "/cms";
     public static final String CMS_MEDIA = "/cms/media";
+    public static final String CMS_MEDIA_BY_CATEGORY = "/category/{tags}";
     public static final String CMS_MEDIA_ITEM = "/{id}";
     public static final String CMS_MEDIA_ITEM_BY_ID = "/{id: \\d+}";
     public static final String CMS_MEDIA_ITEM_BY_FILE = "/{filename: [^\\/]*\\.\\w{1,4}}";
@@ -239,11 +241,12 @@ public class ApiUrls extends AbstractApiUrlManager {
         this(DataManager.getInstance().getConfiguration().getRestApiUrl());
     }
 
-    public ApiUrls(String apiUrl) {
-        if (StringUtils.isNotBlank(apiUrl) && apiUrl.endsWith("/")) {
-            apiUrl = apiUrl.substring(0, apiUrl.length() - 1);
-        }
-        this.apiUrl = apiUrl;
+    /**
+     * 
+     * @param apiUrl
+     */
+    public ApiUrls(final String apiUrl) {
+        this.apiUrl = StringUtils.isNotBlank(apiUrl) ? StringTools.removeTrailingSlashes(apiUrl) : apiUrl;
     }
 
     @Override

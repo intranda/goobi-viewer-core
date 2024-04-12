@@ -18,14 +18,17 @@
  -->
 <metadataEditor> 
 	<div if="{this.metadataList}">
+	<h2>Pin content</h2>
+	<div class="admin__language-tabs">
 		<ul class="nav nav-tabs">
 				<li each="{language, index in this.opts.languages}"
-					class="{language == this.currentLanguage ? 'active' : ''}">
+					class="admin__language-tab {language == this.currentLanguage ? 'active' : ''}">
 					<a onclick="{this.setCurrentLanguage}">{language}</a> 
 				</li>
 		</ul>
-		<div class="tab-content">
-			<div class="tab-pane active">
+		</div>
+		<div class="cms__geomap__featureset_panel ">
+			<div class="active">
 
 				<div class="input_form">
 					<div each="{metadata, index in this.metadataList}" class="input_form__option_group">
@@ -54,8 +57,8 @@
 						<div if="{metadata.helptext}" id="help_{metadata.property}"
 							class="input_form__option_control_helptext">{metadata.helptext}</div>
 					</div>
-					<div class="input_form__actions">
-						<a if="{this.opts.deleteListener}" disabled="{this.mayDelete() ? '' : 'disabled' }" class="btn btn--clean delete" onclick="{this.notifyDelete}">{this.opts.deleteLabel}</a>
+					<div class="admin__geomap-edit-delete-wrapper">
+						<a if="{this.opts.deleteListener}" disabled="{this.mayDelete() ? '' : 'disabled' }" class="btn btn--clean -redlink" onclick="{this.notifyDelete}">{this.opts.deleteLabel}</a>
 					</div>
 				</div>
 			</div>

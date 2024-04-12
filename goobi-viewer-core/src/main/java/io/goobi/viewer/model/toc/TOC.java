@@ -29,11 +29,12 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -49,9 +50,6 @@ public class TOC implements Serializable {
     private static final long serialVersionUID = 2615373293377347746L;
 
     private static final Logger logger = LogManager.getLogger(TOC.class);
-
-    /** Constant <code>DEFAULT_GROUP="_DEFAULT"</code> */
-    public static final String DEFAULT_GROUP = "_DEFAULT";
 
     /** TOC element map. */
     private Map<String, List<TOCElement>> tocElementMap;
@@ -158,8 +156,8 @@ public class TOC implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<TOCElement> getFlatView() {
-        // logger.trace("getFlatView");
-        return getViewForGroup(DEFAULT_GROUP);
+        // logger.trace("getFlatView"); //NOSONAR Debug
+        return getViewForGroup(StringConstants.DEFAULT_NAME);
     }
 
     /**
@@ -170,7 +168,7 @@ public class TOC implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<TOCElement> getTreeView() {
-        return getTreeViewForGroup(DEFAULT_GROUP);
+        return getTreeViewForGroup(StringConstants.DEFAULT_NAME);
     }
 
     /**
@@ -182,7 +180,7 @@ public class TOC implements Serializable {
      */
     @Deprecated
     public List<TOCElement> getTreeViewSidebar() {
-        // logger.trace("getTreeViewSidebar");
+        // logger.trace("getTreeViewSidebar"); //NOSONAR Debug
         return getTreeView();
     }
 
@@ -202,7 +200,7 @@ public class TOC implements Serializable {
 
         synchronized (this) {
             if (tocElementMap != null) {
-                //                long start = System.nanoTime();
+                // long start = System.nanoTime(); //NOSONAR Debug
                 int lastLevel = 0;
                 int lastParent = 0;
                 for (TOCElement tocElement : tocElementMap.get(group)) {
@@ -239,8 +237,8 @@ public class TOC implements Serializable {
                     lastParent = index;
                     lastLevel = tocElement.getLevel();
                 }
-                //                long end = System.nanoTime();
-                //                logger.trace("Time for initial collapse: {} ns", (end - start));
+                // long end = System.nanoTime(); //NOSONAR Debug
+                // logger.trace("Time for initial collapse: {} ns", (end - start)); //NOSONAR Debug
                 collapseTocForLength(collapseThreshold, lowestLevelToCollapse);
                 treeBuilt = true;
             }
@@ -261,7 +259,7 @@ public class TOC implements Serializable {
                 currentElement.setVisible(true);
                 int parentId = currentElement.getParentId();
                 TOCElement parent = getElement(list, parentId);
-                //recursivley expand all direct ancestors
+                // recursively expand all direct ancestors
                 while (parent != null) {
                     parent.setExpanded(true);
                     expandTree(parentId);
@@ -272,56 +270,81 @@ public class TOC implements Serializable {
         }
     }
 
-    private TOCElement getElement(List<TOCElement> list, Long iddoc) {
-        TOCElement currentElement = list.stream().filter(ele -> ele.getIddoc().equals(iddoc.toString())).findAny().orElse(null);
-        return currentElement;
+    /**
+     * 
+     * @param list
+     * @param iddoc
+     * @return {@link TOCElement}
+     */
+    private static TOCElement getElement(List<TOCElement> list, Long iddoc) {
+        return list.stream().filter(ele -> ele.getIddoc().equals(iddoc.toString())).findAny().orElse(null);
     }
 
-    private TOCElement getElement(List<TOCElement> list, int id) {
-        TOCElement currentElement = list.stream().filter(ele -> ele.getID() == id).findAny().orElse(null);
-        return currentElement;
+    /**
+     * 
+     * @param list
+     * @param id
+     * @return {@link TOCElement}
+     */
+    private static TOCElement getElement(List<TOCElement> list, int id) {
+        return list.stream().filter(ele -> ele.getID() == id).findAny().orElse(null);
     }
 
+    /**
+     * 
+     * @param collapseThreshold
+     * @param lowestLevelToCollapse
+     */
     private void collapseTocForLength(int collapseThreshold, int lowestLevelToCollapse) {
-        if (collapseThreshold > 0 && tocElementMap != null) {
-            //        long start = System.nanoTime();
-            int index = 0;
-            int hideLevel = -1;
-            boolean hide = false;
-            for (index = 0; index < tocElementMap.get(DEFAULT_GROUP).size(); index++) {
-                TOCElement tocElem = tocElementMap.get(DEFAULT_GROUP).get(index);
+        if (collapseThreshold <= 0 || tocElementMap == null) {
+            return;
+        }
 
-                if (tocElem.getLevel() < hideLevel || tocElem.getLevel() < lowestLevelToCollapse) {
-                    //if we return above the hidden level, reset flags
-                    hide = false;
-                    hideLevel = -1;
-                } else if (hide) {
-                    //if hide flag is set from previous sibling, hide and collapse this element
-                    tocElem.setExpanded(false);
-                    tocElem.setVisible(false);
-                } else {
-                    //else check if we need to hide this and following siblings
-                    int levelLength = 0;
-                    for (int i = index; i < tocElementMap.get(DEFAULT_GROUP).size(); i++) {
-                        TOCElement tempElem = tocElementMap.get(DEFAULT_GROUP).get(i);
-                        if (tempElem.getLevel() < tocElem.getLevel()) {
-                            break;
-                        } else if (tempElem.getLevel() == tocElem.getLevel()) {
-                            levelLength++;
-                        }
-                    }
-                    if (levelLength > collapseThreshold) {
-                        tocElementMap.get(DEFAULT_GROUP).get(index - 1).setExpanded(false); //collapse parent
-                        hideLevel = tocElem.getLevel();
-                        hide = true;
-                        tocElem.setExpanded(false);
-                        tocElem.setVisible(false);
+        // long start = System.nanoTime();s
+        int index = 0;
+        int hideLevel = -1;
+        boolean hide = false;
+        for (index = 0; index < tocElementMap.get(StringConstants.DEFAULT_NAME).size(); index++) {
+            TOCElement tocElem = tocElementMap.get(StringConstants.DEFAULT_NAME).get(index);
+
+            if (tocElem.getLevel() < hideLevel || tocElem.getLevel() < lowestLevelToCollapse) {
+                //if we return above the hidden level, reset flags
+                hide = false;
+                hideLevel = -1;
+            } else if (hide) {
+                //if hide flag is set from previous sibling, hide and collapse this element
+                tocElem.setExpanded(false);
+                tocElem.setVisible(false);
+            } else {
+                //else check if we need to hide this and following siblings
+                int levelLength = 0;
+                for (int i = index; i < tocElementMap.get(StringConstants.DEFAULT_NAME).size(); i++) {
+                    TOCElement tempElem = tocElementMap.get(StringConstants.DEFAULT_NAME).get(i);
+                    if (tempElem.getLevel() < tocElem.getLevel()) {
+                        break;
+                    } else if (tempElem.getLevel() == tocElem.getLevel()) {
+                        levelLength++;
                     }
                 }
+                if (levelLength > collapseThreshold) {
+                    tocElementMap.get(StringConstants.DEFAULT_NAME).get(index - 1).setExpanded(false); //collapse parent
+                    hideLevel = tocElem.getLevel();
+                    hide = true;
+                    tocElem.setExpanded(false);
+                    tocElem.setVisible(false);
+                }
+                if (levelLength > collapseThreshold) {
+                    tocElementMap.get(StringConstants.DEFAULT_NAME).get(index - 1).setExpanded(false); //collapse parent
+                    hideLevel = tocElem.getLevel();
+                    hide = true;
+                    tocElem.setExpanded(false);
+                    tocElem.setVisible(false);
+                }
             }
-            //        long end = System.nanoTime();
-            //          logger.trace("Time for length collapse: {} ns", (end - start))
         }
+
+        // long end = System.nanoTime(); //NOSONAR Debug
+        // logger.trace("Time for length collapse: {} ns", (end - start)) //NOSONAR Debug
     }
 
     /**
@@ -334,13 +357,13 @@ public class TOC implements Serializable {
         if (tocElementMap != null) {
             if (tocVisible != -1) {
                 expandTree(tocVisible);
-                activeTocElement = tocElementMap.get(DEFAULT_GROUP).get(tocVisible);
+                activeTocElement = tocElementMap.get(StringConstants.DEFAULT_NAME).get(tocVisible);
                 activeTocElement.setExpanded(true);
                 tocVisible = -1;
             }
             if (tocInvisible != -1) {
                 collapseTree(tocInvisible);
-                activeTocElement = tocElementMap.get(DEFAULT_GROUP).get(tocInvisible);
+                activeTocElement = tocElementMap.get(StringConstants.DEFAULT_NAME).get(tocInvisible);
                 activeTocElement.setExpanded(false);
                 tocInvisible = -1;
             }
@@ -357,9 +380,9 @@ public class TOC implements Serializable {
     private void collapseTree(int parentId) {
         logger.trace("collapseTree: {}", parentId);
         if (tocElementMap != null) {
-            int level = tocElementMap.get(DEFAULT_GROUP).get(parentId).getLevel();
-            for (int i = parentId + 1; i < tocElementMap.get(DEFAULT_GROUP).size(); i++) {
-                TOCElement child = tocElementMap.get(DEFAULT_GROUP).get(i);
+            int level = tocElementMap.get(StringConstants.DEFAULT_NAME).get(parentId).getLevel();
+            for (int i = parentId + 1; i < tocElementMap.get(StringConstants.DEFAULT_NAME).size(); i++) {
+                TOCElement child = tocElementMap.get(StringConstants.DEFAULT_NAME).get(i);
                 if (child.getLevel() > level) {
                     child.setVisible(false);
                 } else {
@@ -377,11 +400,11 @@ public class TOC implements Serializable {
      * @param parentId
      */
     private void expandTree(int parentId) {
-        logger.trace("expandTree: {}", parentId);
+        // logger.trace("expandTree: {}", parentId); //NOSONAR Debug
         if (tocElementMap != null) {
-            int level = tocElementMap.get(DEFAULT_GROUP).get(parentId).getLevel();
-            for (int i = parentId + 1; i < tocElementMap.get(DEFAULT_GROUP).size(); i++) {
-                TOCElement child = tocElementMap.get(DEFAULT_GROUP).get(i);
+            int level = tocElementMap.get(StringConstants.DEFAULT_NAME).get(parentId).getLevel();
+            for (int i = parentId + 1; i < tocElementMap.get(StringConstants.DEFAULT_NAME).size(); i++) {
+                TOCElement child = tocElementMap.get(StringConstants.DEFAULT_NAME).get(i);
                 if (child.getLevel() == level + 1) {
                     // Set immediate children visible
                     child.setVisible(true);
@@ -406,7 +429,7 @@ public class TOC implements Serializable {
     public void expandAll() {
         logger.trace("expandAll");
         if (tocElementMap != null) {
-            for (TOCElement tcElem : tocElementMap.get(DEFAULT_GROUP)) {
+            for (TOCElement tcElem : tocElementMap.get(StringConstants.DEFAULT_NAME)) {
                 tcElem.setVisible(true);
                 if (tcElem.isHasChild()) {
                     tcElem.setExpanded(true);
@@ -423,7 +446,7 @@ public class TOC implements Serializable {
     public void collapseAll() {
         logger.trace("collapseAll");
         if (tocElementMap != null) {
-            for (TOCElement tcElem : tocElementMap.get(DEFAULT_GROUP)) {
+            for (TOCElement tcElem : tocElementMap.get(StringConstants.DEFAULT_NAME)) {
                 if (tcElem.getLevel() == 0) {
                     tcElem.setExpanded(false);
                 } else {
@@ -478,7 +501,7 @@ public class TOC implements Serializable {
      */
     public List<TOCElement> getTocElements() {
         if (tocElementMap != null) {
-            return tocElementMap.get(DEFAULT_GROUP);
+            return tocElementMap.get(StringConstants.DEFAULT_NAME);
         }
 
         return null;
@@ -490,7 +513,7 @@ public class TOC implements Serializable {
      * @return Index of the element with the matching IDDOC within the list of elements; -1 if none found
      */
     public int findTocElementIndexByIddoc(String iddoc) {
-        // logger.trace("findTocElementIndexByIddoc: {}", iddoc);
+        // logger.trace("findTocElementIndexByIddoc: {}", iddoc); //NOSONAR Debug
         if (StringUtils.isEmpty(iddoc)) {
             return -1;
         }
@@ -563,7 +586,7 @@ public class TOC implements Serializable {
             logger.trace("Building tree to determine the TOC depth");
             getTreeView();
         }
-        // logger.trace("getMaxTocDepth: {}", maxTocDepth);
+        // logger.trace("getMaxTocDepth: {}", maxTocDepth); //NOSONAR Debug
         return maxTocDepth;
     }
 
@@ -643,7 +666,7 @@ public class TOC implements Serializable {
     public int getNumPages() {
         int hitsPerPage = DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage();
         if (hitsPerPage > 0) {
-            // logger.trace("numPages: {}/{}={}", totalTocSize, hitsPerPage, totalTocSize / hitsPerPage);
+            // logger.trace("numPages: {}/{}={}", totalTocSize, hitsPerPage, totalTocSize / hitsPerPage); //NOSONAR Debug
             int num = totalTocSize / hitsPerPage;
             if (totalTocSize % hitsPerPage != 0 || num == 0) {
                 num++;
@@ -662,11 +685,12 @@ public class TOC implements Serializable {
      * @return a boolean.
      */
     public boolean isHasChildren() {
-        if (tocElementMap == null || tocElementMap.get(DEFAULT_GROUP) == null || tocElementMap.get(DEFAULT_GROUP).isEmpty()) {
+        if (tocElementMap == null || tocElementMap.get(StringConstants.DEFAULT_NAME) == null
+                || tocElementMap.get(StringConstants.DEFAULT_NAME).isEmpty()) {
             return false;
         }
 
-        return !(tocElementMap.get(DEFAULT_GROUP).size() == 1 && !tocElementMap.get(DEFAULT_GROUP).get(0).isHasChild());
+        return !(tocElementMap.get(StringConstants.DEFAULT_NAME).size() == 1 && !tocElementMap.get(StringConstants.DEFAULT_NAME).get(0).isHasChild());
     }
 
     /**

@@ -27,8 +27,11 @@ import java.util.Locale;
  * A {@link io.goobi.viewer.model.cms.Selectable} which may also hold a locale to indicate the currently visible language/translation
  *
  * @author florian
+ * @param <T>
  */
 public class TranslatedSelectable<T> extends Selectable<T> {
+
+    private static final long serialVersionUID = -8860896349160943598L;
 
     private Locale locale;
 
@@ -90,6 +93,5 @@ public class TranslatedSelectable<T> extends Selectable<T> {
     public void setLanguage(String language) {
         this.locale = Locale.forLanguageTag(language);
     }
-
 
 }

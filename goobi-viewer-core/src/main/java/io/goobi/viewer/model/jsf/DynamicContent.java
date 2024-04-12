@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.jsf;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,7 +29,9 @@ import java.util.Map;
  * @author florian
  *
  */
-public class DynamicContent {
+public class DynamicContent implements Serializable {
+
+    private static final long serialVersionUID = -7672936016976558853L;
 
     private final DynamicContentType type;
     private final String componentFilename;
@@ -36,7 +39,9 @@ public class DynamicContent {
     private Map<String, Object> attributes = new HashMap<>();
 
     /**
-     *
+     * 
+     * @param type
+     * @param componentFilename
      */
     public DynamicContent(DynamicContentType type, String componentFilename) {
         this.type = type;

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="template_general_generic" version="2015-01-14">
+    <name>cms__template_01__title</name>
+    <description>cms__template_01__description</description>
+    <icon>cms_template_01_generic.png</icon>
+    <html>cms_template_01_generic.xhtml</html>
+    <options>    
+        <topBarSlider>true</topBarSlider>
+    </options>
+    <content>
+        <item id="text01" order="1" label="cms__template_01__textblock__label" type="HTML" mandatory="true" />
+        <item id="image01" order="2" label="cms__template_01__textblock_image__label" type="MEDIA" mandatory="false" />
+        <item id="text02" order="3" label="cms__template_01__textblock__label" type="HTML" mandatory="false" />
+        <item id="image02" order="4" label="cms__template_01__textblock_image__label" type="MEDIA" mandatory="false" />
+        <item id="text03" order="5" label="cms__template_01__textblock__label" type="HTML" mandatory="false" />
+        <item id="image03" order="6" label="cms__template_01__textblock_image__label" type="MEDIA" mandatory="false" />
+        <item id="text04" order="7" label="cms__template_01__textblock__label" type="HTML" mandatory="false" />
+        <item id="image04" order="8" label="cms__template_01__textblock_image__label" type="MEDIA" mandatory="false" />
+        <item id="queryList01" order="9" label="cms__template_01__search_hit_list__label" type="SOLRQUERY" />
+    </content>
+</cms_page_template>

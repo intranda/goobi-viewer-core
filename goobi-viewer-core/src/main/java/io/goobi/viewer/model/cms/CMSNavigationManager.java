@@ -21,41 +21,42 @@
  */
 package io.goobi.viewer.model.cms;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.EntityNotFoundException;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.viewer.PageType;
+import jakarta.persistence.EntityNotFoundException;
 
 /**
  * <p>
  * CMSNavigationManager class.
  * </p>
  */
-public class CMSNavigationManager {
+public class CMSNavigationManager implements Serializable {
+
+    private static final long serialVersionUID = 1839819725485560794L;
 
     private static final Logger logger = LogManager.getLogger(CMSNavigationManager.class);
+
     private AtomicInteger visibleItemIdCounter = new AtomicInteger(0);
 
     private final String associatedTheme;
     private List<SelectableNavigationItem> availableItems;
     private List<CMSNavigationItem> visibleItems;
-
-    //    public static CMSNavigationManager getInstance() {
-    //        return instance;
-    //    }
 
     /**
      * <p>
@@ -128,7 +129,7 @@ public class CMSNavigationManager {
         List<CMSPage> cmsPages = BeanUtils.getCmsBean().getAllCMSPages();
         for (CMSPage cmsPage : cmsPages) {
             // Valid pages with a menu title and no relation to a particular record
-            if (cmsPage != null && PageValidityStatus.VALID.equals(cmsPage.getValidityStatus()) && StringUtils.isNotBlank(cmsPage.getMenuTitle())
+            if (cmsPage != null && cmsPage.isPublished() && StringUtils.isNotBlank(cmsPage.getMenuTitle())
                     && StringUtils.isEmpty(cmsPage.getRelatedPI())) {
                 SelectableNavigationItem item = new SelectableNavigationItem(cmsPage);
                 addAvailableItem(item);
@@ -145,7 +146,7 @@ public class CMSNavigationManager {
                 .stream()
                 .flatMap(module -> module.getCmsMenuContributions().entrySet().stream())
                 .map(entry -> new SelectableNavigationItem(entry.getValue(), entry.getKey()))
-                .forEach(item -> addAvailableItem(item));
+                .forEach(this::addAvailableItem);
 
     }
 
@@ -181,8 +182,8 @@ public class CMSNavigationManager {
     public void addSelectedItemsToMenu() {
         getAvailableItems().stream()
                 .filter(SelectableNavigationItem::isSelected)
-                .map(selectedItem -> new CMSNavigationItem(selectedItem))
-                .forEach(visibleItem -> addVisibleItem(visibleItem));
+                .map(CMSNavigationItem::new)
+                .forEach(this::addVisibleItem);
         getAvailableItems().forEach(item -> item.setSelected(false));
     }
 
@@ -203,8 +204,8 @@ public class CMSNavigationManager {
     }
 
     /**
-     * @param daoList
-     * @return
+     * @param items
+     * @return List<CMSNavigationItem>
      */
     private List<CMSNavigationItem> cloneItemHierarchy(List<CMSNavigationItem> items) {
         List<CMSNavigationItem> clones = new ArrayList<>();
@@ -231,15 +232,13 @@ public class CMSNavigationManager {
         String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
         // logger.trace("main theme: {}", mainTheme);
         // logger.trace("associated theme: {}", getAssociatedTheme());
-        List<CMSNavigationItem> daoList = DataManager.getInstance()
+        return DataManager.getInstance()
                 .getDao()
                 .getAllTopCMSNavigationItems()
                 .stream()
                 .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(getAssociatedTheme()))
                         || getAssociatedTheme().equalsIgnoreCase(item.getAssociatedTheme()))
                 .collect(Collectors.toList());
-        // logger.trace("dao list: {}", daoList.size());
-        return daoList;
     }
 
     /**
@@ -260,7 +259,7 @@ public class CMSNavigationManager {
      */
     public void setVisibleItems(List<CMSNavigationItem> items) {
         this.visibleItems = new ArrayList<>();
-        items.stream().map(CMSNavigationItem::getMeWithDescendants).flatMap(l -> l.stream()).forEach(item -> addVisibleItem(item));
+        items.stream().map(CMSNavigationItem::getMeWithDescendants).flatMap(Collection::stream).forEach(this::addVisibleItem);
     }
 
     /**
@@ -283,6 +282,11 @@ public class CMSNavigationManager {
         }
     }
 
+    /**
+     * 
+     * @param item
+     * @throws DAOException
+     */
     private static void addItem(CMSNavigationItem item) throws DAOException {
         if (item.getId() != null && DataManager.getInstance().getDao().getCMSNavigationItem(item.getId()) != null) {
             DataManager.getInstance().getDao().updateCMSNavigationItem(item);
@@ -294,6 +298,7 @@ public class CMSNavigationManager {
     /**
      * Deletes a navigationitem and all its children from the database
      *
+     * @param oldItem
      * @throws DAOException
      */
     private void deleteItem(CMSNavigationItem oldItem) throws ConcurrentModificationException, DAOException {

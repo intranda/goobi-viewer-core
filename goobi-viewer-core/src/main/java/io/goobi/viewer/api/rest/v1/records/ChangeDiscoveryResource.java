@@ -21,6 +21,9 @@
  */
 package io.goobi.viewer.api.rest.v1.records;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CHANGES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CHANGES_PAGE;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,7 +38,6 @@ import de.intranda.api.iiif.discovery.Activity;
 import de.intranda.api.iiif.discovery.OrderedCollection;
 import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -43,9 +45,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.iiif.discovery.ActivityCollectionBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
-
 
 /**
  * @author florian
@@ -56,7 +55,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 @ViewerRestServiceBinding
 public class ChangeDiscoveryResource {
 
-    private final static String[] CONTEXT = { "http://iiif.io/api/discovery/0/context.json", "https://www.w3.org/ns/activitystreams" };
+    private static final String[] CONTEXT = { "http://iiif.io/api/discovery/0/context.json", "https://www.w3.org/ns/activitystreams" };
 
     @Context
     private HttpServletRequest servletRequest;
@@ -64,7 +63,6 @@ public class ChangeDiscoveryResource {
     private HttpServletResponse servletResponse;
     @Inject
     private ApiUrls apiUrlManager;
-
 
     /**
      * Provides a view of the entire list of all activities by linking to the first and last page of the collection. The pages contain the actual
@@ -78,7 +76,7 @@ public class ChangeDiscoveryResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
-            tags= {"records", "iiif"},
+            tags = { "records", "iiif" },
             summary = "Get a IIIF change discovery activity stream of all record changes")
     @ApiResponse(responseCode = "200", description = "Return activity stream according to IIIF change discovery specification")
     @ApiResponse(responseCode = "500", description = "An internal error occured, possibly due to an unreachable SOLR index")

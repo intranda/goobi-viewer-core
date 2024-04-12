@@ -23,7 +23,10 @@ package io.goobi.viewer.model.metadata;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,8 +48,8 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
-import de.intranda.digiverso.normdataimporter.model.MarcRecord;
 import de.intranda.digiverso.normdataimporter.model.NormData;
+import de.intranda.digiverso.normdataimporter.model.Record;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.StringConstants;
@@ -60,6 +63,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -77,6 +81,8 @@ public class Metadata implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(Metadata.class);
 
+    private static final String FIELD_NORM_TYPE = "NORM_TYPE";
+
     // Configuration
 
     /** Label from messages.properties. */
@@ -87,6 +93,7 @@ public class Metadata implements Serializable {
     private String sortField;
     /** Optional metadata field that will provide the label value (if singleString=true) */
     private String labelField;
+    private String separator;
     private int type = 0;
     private int number = -1;
     private boolean group = false;
@@ -158,6 +165,7 @@ public class Metadata implements Serializable {
      * Constructor for Metadata.
      * </p>
      *
+     * @param ownerIddoc
      * @param label a {@link java.lang.String} object.
      * @param masterValue a {@link java.lang.String} object.
      * @param param a {@link io.goobi.viewer.model.metadata.MetadataParameter} object.
@@ -295,7 +303,7 @@ public class Metadata implements Serializable {
 
     /**
      *
-     * @return
+     * @return List<StringPair>
      */
     public List<StringPair> getSortFields() {
         if (StringUtils.isEmpty(sortField)) {
@@ -372,7 +380,14 @@ public class Metadata implements Serializable {
      */
     public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String paramLabel, String url, Map<String, String> options,
             String groupType, Locale locale) {
-        // logger.trace("setParamValue: {}", label);
+        setParamValue(valueIndex, paramIndex, inValues, new RelationshipMetadataContainer(Collections.emptyList(), Collections.emptyMap()),
+                paramLabel, url, options, groupType, locale);
+    }
+
+    public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, RelationshipMetadataContainer relatedMetadata, String paramLabel,
+            String url, Map<String, String> options,
+            String groupType, Locale locale) {
+        // logger.trace("setParamValue: {}", label); //NOSONAR Debug
         if (inValues == null || inValues.isEmpty()) {
             return;
         }
@@ -400,12 +415,15 @@ public class Metadata implements Serializable {
         }
 
         MetadataParameter param = params.get(paramIndex);
-        for (String value : inValues) {
+        for (final String val : inValues) {
             if (param.getType() == null) {
                 continue;
             }
-            value = value.trim();
+            String value = val.trim();
             switch (param.getType()) {
+                case RELATEDFIELD:
+                    value = relatedMetadata.getMetadataValue(this.label,
+                            RelationshipMetadataContainer.FIELD_IN_RELATED_DOCUMENT_PREFIX + param.getKey(), locale);
                 case WIKIFIELD:
                 case WIKIPERSONFIELD:
                     if (value.contains(",")) {
@@ -419,7 +437,7 @@ public class Metadata implements Serializable {
                         }
                         // Revert the name around the comma (persons only)
                         if (param.getType().equals(MetadataParameterType.WIKIPERSONFIELD)) {
-                            String[] valueSplit = value.split("[,]");
+                            String[] valueSplit = value.split(",");
                             if (valueSplit.length > 1) {
                                 value = valueSplit[1].trim() + "_" + valueSplit[0].trim();
                             }
@@ -429,28 +447,45 @@ public class Metadata implements Serializable {
                     value = value.replace("<", "");
                     value = value.replace(">", "");
                     value = value.replace(" ", "_");
-                    // logger.debug("WIKIPEDIA: " + value + " paramIndex: " + paramIndex);
                     break;
                 case TRANSLATEDFIELD:
                     // Values that are message keys (or collection names, etc.)
                     value = ViewerResourceBundle.getTranslation(value, locale);
                     // convert line breaks back to HTML
-                    value = value.replace("&lt;br /&gt;", "<br />");
+                    value = value.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);
+                    break;
+                case DATEFIELD:
+                    String outputPattern =
+                            StringUtils.isNotBlank(param.getPattern()) ? param.getPattern() : BeanUtils.getNavigationHelper().getDatePattern();
+                    String altOutputPattern = outputPattern.replace("dd/", "");
+                    try {
+                        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(outputPattern);
+                        LocalDate date = LocalDate.parse(value);
+                        value = date.format(dateTimeFormatter);
+                    } catch (DateTimeParseException e) {
+                        // No-day format hack
+                        try {
+                            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(altOutputPattern);
+                            LocalDate date = LocalDate.parse(value + "-01");
+                            value = date.format(dateTimeFormatter);
+                        } catch (DateTimeParseException e1) {
+                            logger.warn("Error parsing {} as date", value);
+                        }
+                    }
+                    value = value.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);
                     break;
                 case UNESCAPEDFIELD:
                     // convert line breaks back to HTML
-                    value = value.replace("&lt;br /&gt;", "<br />");
+                    value = value.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);
                     break;
                 case URLESCAPEDFIELD:
                     // escape reserved URL characters
                     value = BeanUtils.escapeCriticalUrlChracters(value);
                     break;
                 case HIERARCHICALFIELD:
-                // create a link for reach hierarchy level
-                {
-                    NavigationHelper nh = BeanUtils.getNavigationHelper();
-                    value = buildHierarchicalValue(paramLabel, value, locale, nh != null ? nh.getApplicationUrl() : null);
-                }
+                    // create a link for reach hierarchy level
+                    NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
+                    value = buildHierarchicalValue(paramLabel, value, locale, navigationHelper != null ? navigationHelper.getApplicationUrl() : null);
                     break;
                 case MILLISFIELD:
                     // Create formatted date-time from millis
@@ -466,17 +501,17 @@ public class Metadata implements Serializable {
                                 // Determine norm data set type from the URI field name
                                 normDataType = param.getKey().replace("NORM_URI_", "");
                             } else if (param.getKey().equals("NORM_URI")) {
-                                if (options != null && options.get("NORM_TYPE") != null) {
+                                if (options != null && options.get(FIELD_NORM_TYPE) != null) {
                                     // Try local NORM_TYPE value, if given
-                                    normDataType = MetadataTools.findMetadataGroupType(options.get("NORM_TYPE"));
+                                    normDataType = MetadataTools.findMetadataGroupType(options.get(FIELD_NORM_TYPE));
                                 } else {
                                     // Fetch MARCXML record and determine norm data set type from gndspec field 075$b
-                                    MarcRecord marcRecord = NormDataImporter.getSingleMarcRecord(value);
+                                    Record marcRecord = MetadataTools.getAuthorityDataRecord(url);
                                     if (marcRecord != null && !marcRecord.getNormDataList().isEmpty()) {
                                         for (NormData normData : marcRecord.getNormDataList()) {
-                                            if ("NORM_TYPE".equals(normData.getKey())) {
-                                                String val = normData.getValues().get(0).getText();
-                                                normDataType = MetadataTools.findMetadataGroupType(val);
+                                            if (FIELD_NORM_TYPE.equals(normData.getKey())) {
+                                                String normVal = normData.getValues().get(0).getText();
+                                                normDataType = MetadataTools.findMetadataGroupType(normVal);
                                                 break;
                                             }
                                         }
@@ -533,10 +568,14 @@ public class Metadata implements Serializable {
                     // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
                     value = StringEscapeUtils.escapeHtml4(value);
                     // convert line breaks back to HTML
-                    value = value.replace("&lt;br /&gt;", "<br />");
+                    value = value.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);
             }
             value = value.replace("'", "&#39;");
-            value = SearchHelper.replaceHighlightingPlaceholders(value);
+            if (param.isRemoveHighlighting()) {
+                value = SearchHelper.removeHighlightingPlaceholders(value);
+            } else {
+                value = SearchHelper.replaceHighlightingPlaceholders(value);
+            }
 
             if (paramIndex >= 0) {
                 while (mdValue.getParamLabels().size() <= paramIndex) {
@@ -569,7 +608,9 @@ public class Metadata implements Serializable {
                 mdValue.setLabel(value);
                 // Remove value from the actual metadata value list if null master value is set
                 if (MetadataValue.MASTERVALUE_NULL.equals(param.getMasterValueFragment())) {
-                    logger.trace("clearing {}", mdValue.getParamValues().get(paramIndex).get(0));
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("clearing {}", mdValue.getParamValues().get(paramIndex).get(0));
+                    }
                     mdValue.getParamValues().get(paramIndex).clear();
                 }
             }
@@ -582,7 +623,7 @@ public class Metadata implements Serializable {
      * @param value Field value
      * @param locale Optional locale for value translation
      * @param applicationUrl Application root URL for hyperlinks; only the values will be included if url is null
-     * @return
+     * @return Built hierarchical value
      * @should build value correctly
      * @should add configured collection sort field
      */
@@ -663,6 +704,17 @@ public class Metadata implements Serializable {
         return params.size();
     }
 
+    public String getParamValue(String field) {
+        for (MetadataValue val : values) {
+            String ret = val.getParamValue(field);
+            if (StringUtils.isNotBlank(ret)) {
+                return ret;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Checks whether any parameter values are set. 'empty' seems to be a reserved word in JSF, so use 'blank'.
      *
@@ -675,7 +727,7 @@ public class Metadata implements Serializable {
     /**
      *
      * @param ownerIddoc
-     * @return
+     * @return true if this metadata contains no non-blank values; false otherwise
      * @should return true if all paramValues are empty
      * @should return false if at least one paramValue is not empty
      * @should return true if all values have different ownerIddoc
@@ -758,7 +810,7 @@ public class Metadata implements Serializable {
 
             int count = 0;
             int indexOfParam = params.indexOf(param);
-            // logger.trace("{} ({})", param.toString(), indexOfParam);
+            // logger.trace("{} ({})", param.toString(), indexOfParam); //NOSONAR Debug
             List<String> values = null;
             if (MetadataParameterType.TOPSTRUCTFIELD.equals(param.getType()) && se.getTopStruct() != null) {
                 // Topstruct values as the first choice
@@ -773,7 +825,7 @@ public class Metadata implements Serializable {
             }
             if (values != null) {
                 if (MetadataParameterType.CITEPROC.equals(param.getType())) {
-                    // logger.trace(param.getKey() + ":" + values.get(0));
+                    // logger.trace(param.getKey() + ":" + values.get(0)); //NOSONAR Debug
                     // Use all available values for citation
                     found = true;
                     // Apply replace rules
@@ -786,12 +838,13 @@ public class Metadata implements Serializable {
                     }
                     setParamValue(0, indexOfParam, values, param.getKey(), null, null, null, locale);
                 } else {
-                    for (String value : values) {
-                        // logger.trace("{}: {}", param.getKey(), mdValue);
+                    for (String val : values) {
+                        // logger.trace("{}: {}", param.getKey(), mdValue); //NOSONAR Debug
                         if (count >= number && number != -1) {
                             break;
                         }
                         found = true;
+                        String value = val;
                         // Apply replace rules
                         if (!param.getReplaceRules().isEmpty()) {
                             value = MetadataTools.applyReplaceRules(value, param.getReplaceRules(), se.getPi());
@@ -809,7 +862,8 @@ public class Metadata implements Serializable {
                 }
             }
             if (values == null && param.getDefaultValue() != null) {
-                // logger.trace("No value found for {} (index {}), using default value '{}'", param.getKey(), indexOfParam, param.getDefaultValue());
+                // logger.trace("No value found for {} (index {}), using default value '{}'",
+                // param.getKey(), indexOfParam, param.getDefaultValue()); //NOSONAR Debug
                 setParamValue(0, indexOfParam, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, null, locale);
                 found = true;
                 count++;
@@ -826,9 +880,9 @@ public class Metadata implements Serializable {
                     }
                 }
 
-                // logger.debug("populate theme: type="+param.getType() + " key=" +param.getKey() + "  count="+count );
+                // logger.debug("populate theme: type="+param.getType() + " key=" +param.getKey() + "  count="+count ); //NOSONAR Debug
                 found = true;
-                // setParamValue(count, getParams().indexOf(param), param.getKey());
+                // setParamValue(count, getParams().indexOf(param), param.getKey()); //NOSONAR Debug
                 count++;
             }
         }
@@ -842,7 +896,7 @@ public class Metadata implements Serializable {
      * @param ownerIddoc Owner IDDOC (either docstruct or parent metadata)
      * @param sortFields Optional field/order pairs for sorting
      * @param locale
-     * @return
+     * @return true if successful; false otherwise
      * @throws IndexUnreachableException
      */
     boolean populateGroup(StructElement se, String ownerIddoc, List<StringPair> sortFields, Locale locale) throws IndexUnreachableException {
@@ -856,6 +910,13 @@ public class Metadata implements Serializable {
             if (groupedMdList == null || groupedMdList.isEmpty()) {
                 return false;
             }
+            /**
+             * Load data of related documents if any params are of type "related". Otherwise generate an empty RelationshipMetadataContainer
+             */
+            RelationshipMetadataContainer relatedDocuments = new RelationshipMetadataContainer(Collections.emptyList(), Collections.emptyMap());
+            if (hasRelationshipMetadata()) {
+                relatedDocuments = RelationshipMetadataContainer.loadRelationships(new ComplexMetadataContainer(groupedMdList));
+            }
             int count = 0;
             for (SolrDocument doc : groupedMdList) {
                 String metadataDocIddoc = null;
@@ -867,7 +928,7 @@ public class Metadata implements Serializable {
                         values = new ArrayList<>();
                         groupFieldMap.put(fieldName, values);
                     }
-                    // logger.trace(fieldName + ":" + doc.getFieldValue(fieldName).toString());
+                    // logger.trace(fieldName + ":" + doc.getFieldValue(fieldName).toString()); //NOSONAR Debug
                     if (doc.getFieldValue(fieldName) instanceof String) {
                         String value = (String) doc.getFieldValue(fieldName);
                         values.add(value);
@@ -886,7 +947,7 @@ public class Metadata implements Serializable {
                 // Populate params for which metadata values have been found
                 for (int i = 0; i < params.size(); ++i) {
                     MetadataParameter param = params.get(i);
-                    // logger.trace("param: {}", param.getKey());
+                    // logger.trace("param: {}", param.getKey()); //NOSONAR Debug
 
                     if (groupFieldMap.get(param.getKey()) != null) {
                         found = true;
@@ -903,16 +964,17 @@ public class Metadata implements Serializable {
                             }
                             paramValues.add(value);
                         }
-                        if (param.getKey().startsWith(NormDataImporter.FIELD_URI) && doc.getFieldValue("NORM_TYPE") != null) {
-                            options.put("NORM_TYPE", SolrTools.getSingleFieldStringValue(doc, "NORM_TYPE"));
+                        if (param.getKey().startsWith(NormDataImporter.FIELD_URI) && doc.getFieldValue(FIELD_NORM_TYPE) != null) {
+                            options.put(FIELD_NORM_TYPE, SolrTools.getSingleFieldStringValue(doc, FIELD_NORM_TYPE));
                         }
-                        setParamValue(count, i, paramValues, param.getKey(), null, options, groupType, locale);
+                        setParamValue(count, i, paramValues, relatedDocuments, param.getKey(), null, options, groupType, locale);
                     } else if (param.getDefaultValue() != null) {
                         logger.debug("No value found for {}, using default value", param.getKey());
-                        setParamValue(0, i, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, groupType, locale);
+                        setParamValue(0, i, Collections.singletonList(param.getDefaultValue()), relatedDocuments, param.getKey(), null, null,
+                                groupType, locale);
                         found = true;
                     } else {
-                        setParamValue(count, i, Collections.singletonList(""), null, null, null, groupType, locale);
+                        setParamValue(count, i, Collections.singletonList(""), relatedDocuments, null, null, null, groupType, locale);
                     }
                 }
                 // Set value IDDOC
@@ -923,7 +985,7 @@ public class Metadata implements Serializable {
 
                     if (!getChildMetadata().isEmpty()) {
                         for (Metadata child : getChildMetadata()) {
-                            // logger.trace("populating child metadata: {}", child.getLabel());
+                            // logger.trace("populating child metadata: {}", child.getLabel()); //NOSONAR Debug
                             child.populate(se, metadataDocIddoc, sortFields, locale);
                         }
                     }
@@ -931,12 +993,16 @@ public class Metadata implements Serializable {
 
                 count++;
             }
-            // logger.trace("GROUP QUERY END");
+            // logger.trace("GROUP QUERY END"); //NOSONAR Debug
         } catch (PresentationException e) {
             logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
         }
 
         return found;
+    }
+
+    private boolean hasRelationshipMetadata() {
+        return this.params.stream().map(param -> param.getType()).anyMatch(type -> type == MetadataParameterType.RELATEDFIELD);
     }
 
     /**
@@ -946,7 +1012,7 @@ public class Metadata implements Serializable {
      * @param metadataMap
      * @param key
      * @param locale
-     * @return
+     * @return List<String>
      */
     private static List<String> getMetadata(Map<String, List<String>> metadataMap, String key, Locale locale) {
         List<String> mdValues = null;
@@ -956,6 +1022,10 @@ public class Metadata implements Serializable {
         }
         if (mdValues == null) {
             mdValues = metadataMap.get(key);
+        }
+        if (mdValues == null) {
+            String langKey = key + "_LANG_" + IPolyglott.getDefaultLocale().getLanguage().toUpperCase();
+            mdValues = metadataMap.get(langKey);
         }
         return mdValues;
     }
@@ -1087,6 +1157,22 @@ public class Metadata implements Serializable {
     }
 
     /**
+     * @return the separator
+     */
+    public String getSeparator() {
+        return separator;
+    }
+
+    /**
+     * @param separator the separator to set
+     * @return this
+     */
+    public Metadata setSeparator(String separator) {
+        this.separator = separator;
+        return this;
+    }
+
+    /**
      * @return the ownerDocstrctType
      */
     public String getOwnerDocstrctType() {
@@ -1148,7 +1234,7 @@ public class Metadata implements Serializable {
 
     /**
      *
-     * @return
+     * @return true if childMetadata not empty; false otherwise
      */
     public boolean isHasChildren() {
         return !childMetadata.isEmpty();
@@ -1192,7 +1278,7 @@ public class Metadata implements Serializable {
      * @should filter by desired field name correctly
      */
     public static List<Metadata> filterMetadata(List<Metadata> metadataList, String language, String field) {
-        // logger.trace("filterMetadataByLanguage: {}", recordLanguage);
+        // logger.trace("filterMetadataByLanguage: {}", recordLanguage); //NOSONAR Debug
         if (language == null || metadataList == null || metadataList.isEmpty()) {
             return metadataList;
         }

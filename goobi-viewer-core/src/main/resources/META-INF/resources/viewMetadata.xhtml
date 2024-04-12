@@ -96,11 +96,11 @@
     <ui:define name="sidebar">
         <widgetComponent:widget_views pageType="metadata" />
         
-        <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}">
-        	<widgetComponent:widget_copyrightInfo />
-        </ui:fragment>
+<!--         <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}"> -->
+<!--         	<widgetComponent:widget_copyrightInfo /> -->
+<!--         </ui:fragment> -->
 
-        <widgetComponent:widget_searchInCurrentItem />
+<!--         <widgetComponent:widget_searchInCurrentItem /> -->
 
         <widgetComponent:widget_statistics_usage />
 
@@ -110,7 +110,7 @@
 
         <widgetComponent:widget_searchResultNavigation />
 	
-		<ui:fragment rendered="#{not empty activeDocumentBean.geoMap.features}">
+		<ui:fragment rendered="#{activeDocumentBean.geoMap.hasFeatures()}">
 	        <widgetComponent:widget_geoMap 
 		        geoMap="#{activeDocumentBean.geoMap}" 
 		        title="#{msg.NORM_LOCATION}" 
@@ -122,17 +122,20 @@
 		        highlightDocumentId="#{activeDocumentBean.logid}"/>
         </ui:fragment>
         
-		<widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
+<!-- 		<widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" /> -->
 
-        <widgetComponent:widget_usage />
+        <widgetComponent:widget_formatsLinks />
 
-        <widgetComponent:widget_relatedGroups />
+        <ui:fragment rendered="#{activeDocumentBean.viewManager.bornDigital == true}">
+        	<widgetComponent:widget_citation />
 
-        <widgetComponent:widget_toc visible="#{configurationBean.sidebarTocWidgetVisible}" />
+        	<widgetComponent:widget_downloads />
+		</ui:fragment>
+<!--         <widgetComponent:widget_relatedGroups /> -->
+ 
+<!--         <widgetComponent:widget_toc visible="#{configurationBean.sidebarTocWidgetVisible}" /> -->
 
-        <widgetComponent:widget_download />
-
-        <widgetComponent:widget_versionHistory />
+        <widgetComponent:widget_versionHistory /> 
 
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">

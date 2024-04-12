@@ -11,7 +11,8 @@
 
     <!-- component content -->
     <composite:implementation>
-	    <ui:fragment rendered="#{configurationBean.displayCopyrightInfo}">
+        <!-- TODO: the redered condition previously used here always returned false, why? -->
+	    <ui:fragment rendered="#{false}">
 	        <div id="widgetCopyright" class="widget widget--white">
 								<ui:fragment rendered="#{configurationBean.accessConditionDisplayField != null and activeDocumentBean.viewManager.topStructElement.getMetadataValue(configurationBean.accessConditionDisplayField) != null}">
 									<div class="custom-title__copy-sign">

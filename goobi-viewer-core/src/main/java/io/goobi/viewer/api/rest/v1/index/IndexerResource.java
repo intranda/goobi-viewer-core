@@ -61,6 +61,13 @@ public class IndexerResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    /**
+     * Used by the Solr indexer to submit its current version and hotfolder file count.
+     * 
+     * @param params
+     * @return {@link SuccessMessage}
+     * @throws IllegalRequestException
+     */
     @PUT
     @Path("/version")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -83,6 +90,12 @@ public class IndexerResource {
         }
     }
 
+    /**
+     * 
+     * @return Indexer version
+     * @deprecated Use /api/v1/monitoring/
+     */
+    @Deprecated(since = "23.02")
     @GET
     @Path("/version")
     @Produces({ MediaType.APPLICATION_JSON })

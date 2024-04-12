@@ -158,7 +158,7 @@
 <!--                                 <span>#{msg.geomap}</span> -->
 <!--                             </h3> -->
 
-<!-- 								<ui:fragment rendered="#{not empty activeDocumentBean.geoMap.features}"> -->
+<!-- 								<ui:fragment rendered="#{activeDocumentBean.geoMap.hasFeatures()}"> -->
 <!-- 							        <widgetComponent:widget_geoMap  -->
 <!-- 								        geoMap="#{activeDocumentBean.geoMap}"  -->
 <!-- 								        title="#{msg.NORM_LOCATION}"  -->
@@ -265,7 +265,7 @@
                     </div>
                     
                     <!-- STATISTICS -->
-					<ui:fragment rendered="#{statisticsBean.usageStatisticsActive}">
+					<ui:fragment rendered="#{statisticsBean.usageStatisticsActive and userBean.admin}">
 	                    <div id="panel-5" class="fullscreen__view-sidebar-accordeon-panel fs-statistics">
 	                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
 	                            <span>#{msg.widget_usage_statistics__title}</span>
@@ -319,14 +319,12 @@
 								<div>#{msg.help__share_image_area__share}</div>
 									<ul>
 										<li>
-											<a data-copy="image-region-page" data-copy-done="#{msg.copyUrlDone}"
-												data-clipboard-text="image-region-page"
+											<a data-copy-share-image="image-region-page" data-copy-done-msg="#{msg.copyUrlDone}"
 												title="#{msg.bookmarkList_shareLink_copy}">#{msg.label__share_image_region_page}</a>
 										</li>
 										<li>
-											<a data-copy="image-region-image"
-												data-copy-done="#{msg.copyUrlDone}"
-												data-clipboard-text="image-region-image"
+											<a	data-copy-share-image="image-region-image"
+												data-copy-done-msg="#{msg.copyUrlDone}"
 												title="#{msg.bookmarkList_shareLink_copy}">#{msg.label__share_image_region_image}</a>
 										</li>
 									</ul>

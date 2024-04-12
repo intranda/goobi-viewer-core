@@ -11,10 +11,12 @@
         <composite:attribute name="singleLanguage" required="false" />
         <composite:attribute name="toggleLanguage" required="false" default="true" />
         <composite:attribute name="longLanguageStrings" required="false" default="false" />
+        <composite:attribute name="selector" required="false" default="changeLocal" />
+        
     </composite:interface>
 
     <composite:implementation>
-        <nav id="changeLocal" class="change-local clearfix">
+        <nav id="#{cc.attrs.selector}" class="change-local clearfix">
             <!-- standard language select -->
             <h:panelGroup rendered="#{cc.attrs.displayAll == true and cc.attrs.toggleLanguage == false}">
                 <h:form id="changeLocalForm1" prependId="false">

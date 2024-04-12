@@ -99,18 +99,23 @@ public class LabeledLink implements Serializable {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         LabeledLink other = (LabeledLink) obj;
         if (getName().isEmpty()) {
-            if (!other.getName().isEmpty())
+            if (!other.getName().isEmpty()) {
                 return false;
-        } else if (!getName().equals(other.getName()))
+            }
+        } else if (!getName().equals(other.getName())) {
             return false;
+        }
         //        if (url == null) {
         //            if (other.url != null)
         //                return false;

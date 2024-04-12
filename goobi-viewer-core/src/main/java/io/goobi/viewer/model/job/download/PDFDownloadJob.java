@@ -26,19 +26,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
 import javax.ws.rs.core.Response;
 
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -47,6 +39,8 @@ import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.job.JobStatus;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 /**
  * <p>
@@ -129,15 +123,6 @@ public class PDFDownloadJob extends DownloadJob {
         return "PDF";
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.download.DownloadJob#triggerCreation(java.lang.String, java.lang.String, java.lang.String)
-     */
-    /** {@inheritDoc} */
-    @Override
-    protected void triggerCreation() throws PresentationException, IndexUnreachableException {
-        triggerCreation(pi, logId, identifier);
-    }
-
     /**
      * <p>
      * triggerCreation.
@@ -148,43 +133,45 @@ public class PDFDownloadJob extends DownloadJob {
      * @param downloadIdentifier a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DownloadException if any.
      */
     public static void triggerCreation(String pi, String logId, String downloadIdentifier)
-            throws PresentationException, IndexUnreachableException, DownloadException {
+            throws PresentationException, IndexUnreachableException {
+
         File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(PDFDownloadJob.LOCAL_TYPE));
         if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
             throw new DownloadException("Cannot create download folder: " + targetFolder);
         }
-        
+
         String cleanedPi = StringTools.cleanUserGeneratedData(pi);
         String cleanedLogId = StringTools.cleanUserGeneratedData(logId);
-        
+
         String title = cleanedPi + "_" + cleanedLogId;
         logger.debug("Trigger PDF generation for {}", title);
 
         String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
         String mediaRepository = DataFileTools.getDataRepositoryPathForRecord(cleanedPi);
         // Path imageFolder = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getMediaFolder()).resolve(pi);
-        Path metsPath = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).resolve(cleanedPi + ".xml");
+        Path metsPath =
+                Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).resolve(cleanedPi + ".xml");
 
         logger.debug("Calling taskManager at {}", taskManagerUrl);
 
         TaskManagerPDFRequest requestObject = new TaskManagerPDFRequest();
-        requestObject.pi = cleanedPi;
-        requestObject.logId = cleanedLogId;
-        requestObject.goobiId = downloadIdentifier;
-        requestObject.sourceDir = metsPath.toString();
+        requestObject.setPi(cleanedPi);
+        requestObject.setLogId(cleanedLogId);
+        requestObject.setGoobiId(downloadIdentifier);
+        requestObject.setSourceDir(metsPath.toString());
         try {
             Response response = postJobRequest(taskManagerUrl, requestObject);
             String entity = response.readEntity(String.class);
             JSONObject entityJson = new JSONObject(entity);
-            if (entityJson.has("STATUS") && entityJson.get("STATUS").equals("ERROR")) {
-                if (entityJson.get("ERRORMESSAGE").equals("Job already in DB, not adding it!")) {
+            if (entityJson.has("STATUS") && "ERROR".equals(entityJson.get("STATUS"))) {
+                if ("Job already in DB, not adding it!".equals(entityJson.get("ERRORMESSAGE"))) {
                     logger.debug("Job is already being processed");
                 } else {
-                    throw new DownloadException("Failed to start pdf creation for PI=" + cleanedPi + " and LOGID=" + cleanedLogId + ": TaskManager returned error "
-                            + entityJson.get("ERRORMESSAGE"));
+                    throw new DownloadException(
+                            "Failed to start pdf creation for PI=" + cleanedPi + " and LOGID=" + cleanedLogId + ": TaskManager returned error "
+                                    + entityJson.get("ERRORMESSAGE"));
                 }
             }
         } catch (Exception e) {
@@ -202,37 +189,8 @@ public class PDFDownloadJob extends DownloadJob {
      * @return a int.
      */
     public static int getPDFJobsInQueue(String identifier) {
-        StringBuilder url = new StringBuilder();
-        url.append(DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
-        url.append("/viewerpdf/numJobsUntil/");
-        url.append(identifier);
-        ResponseHandler<String> handler = new BasicResponseHandler();
-        HttpGet httpGet = new HttpGet(url.toString());
-        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-            CloseableHttpResponse response = httpclient.execute(httpGet);
-            String ret = handler.handleResponse(response);
-            logger.trace("TaskManager response: {}", ret);
-            return Integer.parseInt(ret);
-        } catch (Exception e) {
-            logger.warn("Error getting response from TaskManager: {}", e.toString());
-            return -1;
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.download.DownloadJob#getQueuePosition()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public int getQueuePosition() {
-        switch (status) {
-            case ERROR:
-                return -1;
-            case READY:
-                return 0;
-            default:
-                return getPDFJobsInQueue(identifier);
-        }
+        // TODO replace it with message count
+        return 1;
     }
 
     /* (non-Javadoc)
@@ -242,4 +200,5 @@ public class PDFDownloadJob extends DownloadJob {
     protected String getRestApiPath() {
         return "/viewerpdf";
     }
+
 }

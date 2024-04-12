@@ -11,7 +11,7 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('searchGeoMap', false, true)}" />
-            <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.title__search_geomap,1)}" />
+            <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('title__search_geomap',1)}" />
             <f:event type="preRenderView" listener="#{searchBean.resetSearchParameters}" />
         </f:metadata>
     </ui:define>
@@ -38,7 +38,7 @@
 								<!-- TO DO ACTION FOR RESET -->
 								<button type="button" class="btn btn--default search-geo-coords__reset-search" data-feature="reset">#{msg.reset}</button>
 
-								<h:commandButton id="submitSearch" styleClass="btn btn--full search-geo-coords__submit-search" action="pretty:newSearch5" value="#{msg.search}">
+								<h:commandButton id="submitGeoFacet" styleClass="btn btn--full search-geo-coords__submit-search" action="pretty:newSearch5" value="#{msg.search}">
 				                    <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
 				                    <f:passThroughAttribute name="disabled" value="disabled"></f:passThroughAttribute>
 				                </h:commandButton>
@@ -51,7 +51,7 @@
 							viewerJS.initialized.subscribe(() => {
 							    
 							    config = {
-						            submitSearchSelector: '#submitSearch',
+						            submitSearchSelector: '#submitGeoFacet',
 						    		inputSearchSelector: '#searchInput',
 						    		opts: {
 									    area : '#{searchBean.facets.geoFacetting.feature}',
@@ -61,13 +61,25 @@
 									    msg: {
 									        action__toggle_map_markers : "#{msg.action__toggle_map_markers}"
 									    },
-									    heatmap: {
-											showSearchResultsHeatmap: #{configurationBean.useHeatmapForMapSearch()},
-											mainQuery: "#{searchBean.getFinalSolrQueryEscaped()}",
-									    },
+									    
 									    hitsLayer: {
-											markerIcon: (icon => icon)(#{configurationBean.markerForMapSearch.toJSONString()})
-									    }
+									        style: {
+						      					fillOpacity: 0.02,
+						      					color: "#{configurationBean.markerForMapSearch.markerColor}"
+						      				},
+											markerIcon: (icon => icon)(#{configurationBean.markerForMapSearch.toJSONString()}),
+											heatmap: {
+										    	enabled: #{configurationBean.useHeatmapForMapSearch()},
+												mainQuery: "#{searchBean.getFinalSolrQueryEscaped()}",
+										    },
+									    },
+									    areaLayer: {
+						      				style : {
+						      					fillColor : "#{configurationBean.selectionColorForMapSearch}",
+						      					color : "#{configurationBean.selectionColorForMapSearch}",
+						      					fillOpacity : 0.3,
+						      				}
+						      			}
 						    		}
 							    }
 							    

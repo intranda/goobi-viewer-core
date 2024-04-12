@@ -11,7 +11,7 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsCollections')}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsEditCollection')}" />
             <f:event type="preRenderView" listener="#{cmsBean.init()}" />
         </f:metadata>
     </ui:define>
@@ -24,6 +24,9 @@
             <div class="admin__title-bar">
 				<h1 class="admin__title">#{msg.cms_collection_edit}</h1>
 			</div>
+			
+			<viewerComponent:adminBreadcrumbs />
+			
 			<div class="admin__content-inner-content">
             <div class="admin__content-wrapper">
             <div class="admin__content-main">
@@ -170,6 +173,8 @@
                             <div class="admin-cms-media__select">                            
                                  <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
                                  	<ui:param name="mediaDisplayPanel" value="mediaGroup" />
+                                 	<ui:param name="fileTypes" value="#{cmsMediaBean.getImageTypes()}"/>
+        							<ui:param name="fileTypeValidator" value="#{cmsCollectionsBean.currentCollection.getMediaFilter()}"/>
                                 </ui:include>
                             </div>
 	                   </div>

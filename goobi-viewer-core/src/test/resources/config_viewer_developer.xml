@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<config>
+
+    <!-- stopwordsFile: location of the stopword.txt file used in Solr -->
+    <stopwordsFile>src/test/resources/stopwords.txt</stopwordsFile>
+
+	<urls>
+
+		<rest>https://example.com/viewer/api/v1/</rest>
+        <solr>http://localhost:8983/solr/collection2</solr>
+        
+	</urls>
+	
+	<configFolder>/none/</configFolder>
+
+	<viewerHome>/opt/digiverso/viewer</viewerHome>
+
+	<viewer>
+
+		<theme mainTheme="mainTheme_value" discriminatorField="MD2_VIEWERSUBTHEME">
+            <rootPath>/opt/digiverso/goobi-viewer-theme-test/goobi-viewer-theme-test/WebContent/resources/themes/</rootPath>
+		</theme>
+
+	</viewer>
+
+</config>
+
+

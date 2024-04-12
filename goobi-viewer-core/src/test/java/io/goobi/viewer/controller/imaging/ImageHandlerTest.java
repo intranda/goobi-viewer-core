@@ -25,19 +25,16 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.intranda.api.iiif.image.ImageInformation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 import io.goobi.viewer.AbstractTest;
-import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.ConfigurationTest;
-import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
 
@@ -45,41 +42,34 @@ import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
  * @author Florian Alpers
  *
  */
-public class ImageHandlerTest extends AbstractTest{
+class ImageHandlerTest extends AbstractTest {
 
     ImageHandler handler;
 
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         handler = new ImageHandler();
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
-    @After
-    public void tearDown() throws Exception {
-    }
-
     //    @Test
-    public void testGetImageInformation() throws IllegalPathSyntaxException, URISyntaxException, ContentLibException {
+    void testGetImageInformation() throws IllegalPathSyntaxException, URISyntaxException, ContentLibException {
         String url1 = "http://localhost:8081/ics/iiif/image/18979459-1830/00375666.png/info.json";
         String url2 = "18979459-1830/00375666.png";
 
         ImageInformation info = handler.getImageInformation(url1);
-        Assert.assertNotNull(info);
+        Assertions.assertNotNull(info);
 
         info = handler.getImageInformation(url2);
-        Assert.assertNotNull(info);
+        Assertions.assertNotNull(info);
 
     }
 
     @Test
-    public void testGetImageUrlLocal() {
+    void testGetImageUrlLocal() {
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
                 .setFilePath("00000001.tif")
@@ -92,11 +82,11 @@ public class ImageHandlerTest extends AbstractTest{
                 .build();
 
         String url = handler.getImageUrl(page);
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/1234/00000001.tif/info.json", url);
+        Assertions.assertEquals(TestUtils.APPLICATION_ROOT_URL + "api/v1/image/1234/00000001.tif/info.json", url);
     }
 
     @Test
-    public void testGetImageUrlLocal_handleSpecialCharacters() {
+    void testGetImageUrlLocal_handleSpecialCharacters() {
         PhysicalElement page = new PhysicalElementBuilder().setPi("PI 1234")
                 .setPhysId("PHYS_0001")
                 .setFilePath("ab 00000001.tif")
@@ -110,13 +100,13 @@ public class ImageHandlerTest extends AbstractTest{
 
         String url = handler.getImageUrl(page);
         URI uri = URI.create(url);
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/PI+1234/ab+00000001.tif/info.json", url);
-        Assert.assertEquals(url, uri.toString());
+        Assertions.assertEquals(TestUtils.APPLICATION_ROOT_URL + "api/v1/image/PI+1234/ab+00000001.tif/info.json", url);
+        Assertions.assertEquals(url, uri.toString());
 
     }
 
     @Test
-    public void testGetImageUrlExternal() {
+    void testGetImageUrlExternal() {
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
                 .setFilePath("http://otherServer/images/00000001.tif/info.json")
@@ -129,11 +119,11 @@ public class ImageHandlerTest extends AbstractTest{
                 .build();
 
         String url = handler.getImageUrl(page);
-        Assert.assertEquals("http://otherServer/images/00000001.tif/info.json", url);
+        Assertions.assertEquals("http://otherServer/images/00000001.tif/info.json", url);
     }
 
     @Test
-    public void testGetImageUrlInternal() {
+    void testGetImageUrlInternal() {
         PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
                 .setPhysId("PHYS_0001")
                 .setFilePath("http://exteral/restricted/images/00000001.tif")
@@ -146,30 +136,30 @@ public class ImageHandlerTest extends AbstractTest{
                 .build();
 
         String url = handler.getImageUrl(page);
-        Assert.assertEquals(
-                ConfigurationTest.APPLICATION_ROOT_URL + "api/v1/image/-/http:U002FU002FexteralU002FrestrictedU002FimagesU002F00000001.tif/info.json",
+        Assertions.assertEquals(
+                TestUtils.APPLICATION_ROOT_URL + "api/v1/image/-/http:U002FU002FexteralU002FrestrictedU002FimagesU002F00000001.tif/info.json",
                 url);
     }
 
     @Test
-    public void testResolveURIs() throws URISyntaxException {
+    void testResolveURIs() throws URISyntaxException {
         String stringExternal = "https://localhost:8080/a/b/c d";
         String stringInternal = "file:/a/b/c d#yxwg=123,52,564,213";
         String stringRelative = "a/b/c d [1]-falls.jpg";
 
         URI uriExternal = PathConverter.toURI(stringExternal);
-        Assert.assertEquals("https://localhost:8080/a/b/c%20d", uriExternal.toString());
+        Assertions.assertEquals("https://localhost:8080/a/b/c%20d", uriExternal.toString());
         URI uriInternal = PathConverter.toURI(stringInternal);
-        Assert.assertEquals("file:///a/b/c%20d#yxwg=123,52,564,213", uriInternal.toString());
+        Assertions.assertEquals("file:///a/b/c%20d#yxwg=123,52,564,213", uriInternal.toString());
         URI uriRelative = PathConverter.toURI(stringRelative);
-        Assert.assertEquals("a/b/c%20d%20%5B1%5D-falls.jpg", uriRelative.toString());
+        Assertions.assertEquals("a/b/c%20d%20%5B1%5D-falls.jpg", uriRelative.toString());
 
         Path pathExternal = PathConverter.getPath(uriExternal);
-        Assert.assertEquals("/a/b/c d", pathExternal.toString());
+        Assertions.assertEquals("/a/b/c d", pathExternal.toString());
         Path pathInternal = PathConverter.getPath(uriInternal);
-        Assert.assertEquals("/a/b/c d", pathInternal.toString());
+        Assertions.assertEquals("/a/b/c d", pathInternal.toString());
         Path pathRelative = PathConverter.getPath(uriRelative);
-        Assert.assertEquals("a/b/c d [1]-falls.jpg", pathRelative.toString());
+        Assertions.assertEquals("a/b/c d [1]-falls.jpg", pathRelative.toString());
 
     }
 

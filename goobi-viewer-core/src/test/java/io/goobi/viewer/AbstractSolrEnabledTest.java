@@ -21,12 +21,11 @@
  */
 package io.goobi.viewer;
 
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.apache.solr.client.solrj.SolrClient;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -39,33 +38,29 @@ public abstract class AbstractSolrEnabledTest extends AbstractTest {
     protected static final String PI_KLEIUNIV = "PPN517154005";
     protected static long iddocKleiuniv = -1;
 
-    private HttpSolrClient server;
+    private SolrClient client;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractTest.setUpClass();
 
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
-        server = SolrSearchIndex.getNewHttpSolrClient();
-        DataManager.getInstance().injectSearchIndex(new SolrSearchIndex(server));
+        client = SolrSearchIndex.getNewSolrClient();
+        DataManager.getInstance().injectSearchIndex(new SolrSearchIndex(client));
 
         // Load current IDDOC for PPN517154005, which is used in many tests
         if (iddocKleiuniv == -1) {
             iddocKleiuniv = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(PI_KLEIUNIV);
         }
-        Assert.assertNotEquals(0, iddocKleiuniv);
+        Assertions.assertNotEquals(0, iddocKleiuniv);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
-        server.close();
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
+        client.close();
     }
 }

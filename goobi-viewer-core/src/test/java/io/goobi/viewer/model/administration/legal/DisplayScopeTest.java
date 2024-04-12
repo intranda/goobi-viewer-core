@@ -21,11 +21,11 @@
  */
 package io.goobi.viewer.model.administration.legal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
@@ -36,10 +36,10 @@ import io.goobi.viewer.model.administration.legal.DisplayScope.PageScope;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
-public class DisplayScopeTest extends AbstractSolrEnabledTest {
+class DisplayScopeTest extends AbstractSolrEnabledTest {
 
     @Test
-    public void testClone() {
+    void testClone() {
         {
             DisplayScope scope = new DisplayScope(PageScope.ALL, "PI:abc");
             String json = scope.getAsJson();
@@ -57,7 +57,7 @@ public class DisplayScopeTest extends AbstractSolrEnabledTest {
     }
 
     @Test
-    public void testAppliesToPage() throws PresentationException, IndexUnreachableException {
+    void testAppliesToPage() throws PresentationException, IndexUnreachableException {
         {
             PageType pageType = PageType.search;
             DisplayScope scope = new DisplayScope(PageScope.ALL, "");
@@ -97,7 +97,7 @@ public class DisplayScopeTest extends AbstractSolrEnabledTest {
     
 
     @Test
-    public void testAppliesToPage_emptyArgs() throws PresentationException, IndexUnreachableException {
+    void testAppliesToPage_emptyArgs() throws PresentationException, IndexUnreachableException {
         DisplayScope scope = new DisplayScope(PageScope.RECORD, "PI:1");
         PageType pageType = PageType.viewImage;
         SolrSearchIndex searchIndex = DataManager.getInstance().getSearchIndex();

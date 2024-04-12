@@ -24,26 +24,41 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
 
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.omnifaces.util.Faces;
+import org.quartz.SchedulerException;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.job.mq.GeoMapUpdateHandler;
+import io.goobi.viewer.model.job.quartz.QuartzListener;
+import io.goobi.viewer.model.maps.FeatureSet;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.GeoMapMarker;
+import io.goobi.viewer.model.maps.ManualFeatureSet;
+import io.goobi.viewer.model.maps.SolrFeatureSet;
+import io.goobi.viewer.model.translations.IPolyglott;
 
 /**
  * Bean for managing {@link GeoMaps} in the admin Backend
@@ -53,21 +68,28 @@ import io.goobi.viewer.model.maps.GeoMapMarker;
  */
 @Named
 @ViewScoped
-public class GeoMapBean implements Serializable {
+public class GeoMapBean implements Serializable, IPolyglott {
 
     private static final long serialVersionUID = 2602901072184103402L;
 
+    private static final Logger logger = LogManager.getLogger(GeoMapBean.class);
+
     private GeoMap currentMap = null;
 
-    private String selectedLanguage;
+    private ManualFeatureSet activeFeatureSet = null;
+
+    private Locale selectedLanguage;
 
     private List<GeoMap> loadedMaps = null;
+
+    @Inject
+    private QuartzBean quartzBean;
 
     /**
      *
      */
     public GeoMapBean() {
-        this.selectedLanguage = BeanUtils.getNavigationHelper().getLocaleString();
+        this.selectedLanguage = BeanUtils.getNavigationHelper().getLocale();
     }
 
     /**
@@ -85,6 +107,13 @@ public class GeoMapBean implements Serializable {
      */
     public void setCurrentMap(GeoMap currentMap) {
         this.currentMap = new GeoMap(currentMap);
+        this.activeFeatureSet = this.currentMap.getFeatureSets()
+                .stream()
+                .filter(s -> !s.isQueryResultSet())
+                .findFirst()
+                .map(ManualFeatureSet.class::cast)
+                .orElse(null);
+
     }
 
     /**
@@ -95,9 +124,15 @@ public class GeoMapBean implements Serializable {
      */
     public void setCurrentMapId(Long mapId) throws DAOException {
         GeoMap orig = DataManager.getInstance().getDao().getGeoMap(mapId);
-        this.currentMap = new GeoMap(orig);
+        if (orig != null) {
+            setCurrentMap(orig);
+        }
     }
 
+    /**
+     * 
+     * @return ID of the currently loaded map
+     */
     public Long getCurrentMapId() {
         if (this.currentMap != null) {
             return this.currentMap.getId();
@@ -113,6 +148,7 @@ public class GeoMapBean implements Serializable {
      */
     public void saveCurrentMap() throws DAOException {
         boolean saved = false;
+        boolean redirect = false;
         if (this.currentMap == null) {
             throw new IllegalArgumentException("No map selected. Cannot save");
         } else if (this.currentMap.getId() == null) {
@@ -120,6 +156,7 @@ public class GeoMapBean implements Serializable {
             this.currentMap.setDateUpdated(LocalDateTime.now());
             this.currentMap.setCreator(BeanUtils.getUserBean().getUser());
             saved = DataManager.getInstance().getDao().addGeoMap(this.currentMap);
+            redirect = true;
         } else {
             this.currentMap.setDateUpdated(LocalDateTime.now());
             saved = DataManager.getInstance().getDao().updateGeoMap(this.currentMap);
@@ -129,14 +166,48 @@ public class GeoMapBean implements Serializable {
         } else {
             Messages.error("notify__save_map__error");
         }
+        try {
+            GeoMapUpdateHandler.updateMapInCache(currentMap);
+        } catch (PresentationException e) {
+            logger.error("Error updateing geomap cache: ", e);
+        }
         this.loadedMaps = null;
+        if (redirect) {
+            PrettyUrlTools.redirectToUrl(PrettyUrlTools.getAbsolutePageUrl("adminCmsGeoMapEdit", this.currentMap.getId()));
+        }
     }
 
+    @Deprecated(forRemoval = true)
+    private void updateGeoMapUpdateTask() {
+        Object o = BeanUtils.getServletContext().getAttribute(QuartzListener.QUARTZ_LISTENER_CONTEXT_ATTRIBUTE);
+        if (o instanceof QuartzListener) {
+            try {
+                ((QuartzListener) o).restartTimedJobs();
+                if (this.quartzBean != null) {
+                    this.quartzBean.reset();
+                }
+            } catch (SchedulerException e) {
+                logger.error("Error updating quartz listeners after geomap update", e);
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param map
+     * @throws DAOException
+     */
     public void deleteMap(GeoMap map) throws DAOException {
         DataManager.getInstance().getDao().deleteGeoMap(map);
+        updateGeoMapUpdateTask();
         this.loadedMaps = null;
     }
 
+    /**
+     * 
+     * @param map
+     * @return Map edit URL
+     */
     public String getEditMapUrl(GeoMap map) {
         URL mappedUrl =
                 PrettyContext.getCurrentInstance().getConfig().getMappingById("adminCmsGeoMapEdit").getPatternParser().getMappedURL(map.getId());
@@ -148,7 +219,6 @@ public class GeoMapBean implements Serializable {
      * current map to a new empty map
      *
      * @throws DAOException
-     *
      */
     public void resetCurrentMap() throws DAOException {
         if (getCurrentMap() != null) {
@@ -162,8 +232,6 @@ public class GeoMapBean implements Serializable {
 
     /**
      * Sets the currentMap to a new empty {@link GeoMap}
-     *
-     * @return the pretty url to creating a new GeoMap
      */
     public void createEmptyCurrentMap() {
         this.currentMap = new GeoMap();
@@ -172,14 +240,14 @@ public class GeoMapBean implements Serializable {
     /**
      * @return the selectedLanguage
      */
-    public String getSelectedLanguage() {
+    public Locale getSelectedLanguage() {
         return selectedLanguage;
     }
 
     /**
      * @param selectedLanguage the selectedLanguage to set
      */
-    public void setSelectedLanguage(String selectedLanguage) {
+    public void setSelectedLanguage(Locale selectedLanguage) {
         this.selectedLanguage = selectedLanguage;
     }
 
@@ -209,7 +277,7 @@ public class GeoMapBean implements Serializable {
     }
 
     public boolean isInUse(GeoMap map) throws DAOException {
-        return DataManager.getInstance().getDao().getPagesUsingMap(map).size() > 0;
+        return !DataManager.getInstance().getDao().getPagesUsingMap(map).isEmpty();
     }
 
     public List<CMSPage> getEmbeddingCmsPages(GeoMap map) throws DAOException {
@@ -220,9 +288,14 @@ public class GeoMapBean implements Serializable {
         return !getAllMaps().isEmpty();
     }
 
-    public String getCoordinateSearchQueryTemplate(GeoMap map) {
+    /**
+     * 
+     * @param featureSet
+     * @return String
+     */
+    public String getCoordinateSearchQueryTemplate(SolrFeatureSet featureSet) {
         String locationQuery = "WKT_COORDS:\"Intersects(POINT({lng} {lat})) distErrPct=0\"";
-        String filterQuery = map != null ? map.getSolrQuery() : "";
+        String filterQuery = featureSet != null ? featureSet.getSolrQuery() : "";
         String query = locationQuery;
         if (StringUtils.isNotBlank(filterQuery)) {
             query = "(" + locationQuery + ") AND (" + filterQuery + ")";
@@ -231,19 +304,169 @@ public class GeoMapBean implements Serializable {
                 .getConfig()
                 .getMappingById("newSearch5")
                 .getPatternParser()
-                .getMappedURL(query, "1", "-", "-");
+                .getMappedURL("-", query, "1", "-", "-");
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
 
     public String getHeatmapUrl() {
-        return DataManager.getInstance().getRestApiManager().getDataApiManager()
-        .map(urls -> urls.path(ApiUrls.INDEX, ApiUrls.INDEX_SPATIAL_HEATMAP).build())
-        .orElse("");
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getDataApiManager()
+                .map(urls -> urls.path(ApiUrls.INDEX, ApiUrls.INDEX_SPATIAL_HEATMAP).build())
+                .orElse("");
     }
 
     public String getFeatureUrl() {
-        return DataManager.getInstance().getRestApiManager().getDataApiManager()
-        .map(urls -> urls.path(ApiUrls.INDEX, ApiUrls.INDEX_SPATIAL_SEARCH).build())
-        .orElse("");
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getDataApiManager()
+                .map(urls -> urls.path(ApiUrls.INDEX, ApiUrls.INDEX_SPATIAL_SEARCH).build())
+                .orElse("");
+    }
+
+    /**
+     * 
+     * @param map
+     * @param type
+     */
+    public void addFeatureSet(GeoMap map, String type) {
+        if (map != null && type != null) {
+            switch (type) {
+                case "MANUAL":
+                    ManualFeatureSet featureSet = new ManualFeatureSet();
+                    map.addFeatureSet(featureSet);
+                    this.setActiveFeatureSet(featureSet);
+                    break;
+                case "SOLR_QUERY":
+                    map.addFeatureSet(new SolrFeatureSet());
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param map
+     * @param set
+     */
+    public void removeFeatureSet(GeoMap map, FeatureSet set) {
+        if (map != null && map.getFeatureSets().contains(set)) {
+            map.removeFeatureSet(set);
+        }
+    }
+
+    /**
+     * 
+     * @param type
+     */
+    public void setCurrentGeoMapType(GeoMapType type) {
+
+        if (currentMap != null) {
+            FeatureSet featureSet = null;
+            switch (type) {
+                case MANUAL:
+                    featureSet = new ManualFeatureSet();
+                    break;
+                case SOLR_QUERY:
+                    featureSet = new SolrFeatureSet();
+                    break;
+                default:
+                    break;
+            }
+            currentMap.setFeatureSets(Collections.singletonList(featureSet));
+        }
+    }
+
+    public FeatureSet getActiveFeatureSet() {
+        return activeFeatureSet;
+    }
+
+    public void setActiveFeatureSet(ManualFeatureSet activeFeatureSet) {
+        this.activeFeatureSet = activeFeatureSet;
+    }
+
+    public String getActiveFeatureSetAsString() throws PresentationException {
+        if (this.activeFeatureSet != null) {
+            return this.activeFeatureSet.getFeaturesAsString();
+        }
+
+        return "";
+    }
+
+    public void setActiveFeatureSetAsString(String features) {
+        if (this.activeFeatureSet != null) {
+            this.activeFeatureSet.setFeaturesAsString(features);
+        }
+    }
+
+    public void setActiveFeatureSet() {
+        Integer index = Faces.getRequestParameter("index", Integer.class);
+        if (this.currentMap != null && index != null && index >= 0 && index < this.currentMap.getFeatureSets().size()) {
+            FeatureSet newActiveSet = this.currentMap.getFeatureSets().get(index);
+            if (newActiveSet instanceof ManualFeatureSet) {
+                setActiveFeatureSet((ManualFeatureSet) newActiveSet);
+            }
+        } else {
+            setActiveFeatureSet(null);
+        }
+    }
+
+    public boolean isActiveFeatureSet(FeatureSet featureSet) {
+        return this.activeFeatureSet != null && this.activeFeatureSet.equals(featureSet);
+    }
+
+    public GeoMap getFromCache(GeoMap geomap) {
+        if (geomap != null && geomap.getId() != null) {
+            return BeanUtils.getPersistentStorageBean()
+                    .getIfRecentOrPut("cms_geomap_" + geomap.getId(), geomap, GeoMapUpdateHandler.getGeoMapTimeToLive());
+        }
+        return geomap;
+    }
+
+    /**
+     * Return true if the the current geomap is not null and its title in the given locale is not empty and the description is either not empty for
+     * the current locale of the description for the default locale is empty. Otherwise return false
+     */
+    @Override
+    public boolean isComplete(Locale locale) {
+        if (this.currentMap != null && locale != null) {
+            return !this.currentMap.getTitle(locale.getLanguage()).isEmpty()
+                    && (this.currentMap.getDescription(IPolyglott.getDefaultLocale().getLanguage()).isEmpty()
+                            || !this.currentMap.getDescription(locale.getLanguage()).isEmpty());
+        }
+
+        return false;
+    }
+
+    /**
+     * Return true if the the current geomap is not null and its tile in the given locale is not empty Otherwise return false
+     */
+    @Override
+    public boolean isValid(Locale locale) {
+        if (this.currentMap != null && locale != null) {
+            return !this.currentMap.getTitle(locale.getLanguage()).isEmpty();
+        }
+
+        return false;
+    }
+
+    /**
+     * return false if {@link #isValid(Locale)} returns true and vice versa
+     */
+    @Override
+    public boolean isEmpty(Locale locale) {
+        return !this.isValid(locale);
+    }
+
+    @Override
+    public Locale getSelectedLocale() {
+        return this.getSelectedLanguage();
+    }
+
+    @Override
+    public void setSelectedLocale(Locale locale) {
+        this.setSelectedLanguage(locale);
     }
 }

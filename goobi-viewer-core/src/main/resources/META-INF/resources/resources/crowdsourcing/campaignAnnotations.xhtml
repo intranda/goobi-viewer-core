@@ -15,7 +15,7 @@
 			<f:event type="preRenderView"
 				listener="#{navigationHelper.setCurrentPage('annotations', false, true)}" />
 			<f:event type="preRenderView"
-				listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.annotations,1)}" />
+				listener="#{navigationHelper.addStaticLinkToBreadcrumb('annotations',1)}" />
 		</f:metadata>
 	</ui:define>
 
@@ -112,7 +112,9 @@
 										</div>
 										<!-- CAMPAIGN -->
 										<div class="col-3 d-none d-lg-flex" role="gridcell">
-											#{annotation.creator.displayName}
+										    <h:outputText>
+											    #{annotation.creator.displayName}
+											</h:outputText>
 											<h:outputText rendered="#{annotation.reviewer != null}">
 											    <br />#{annotation.reviewer.displayName}
 											</h:outputText>

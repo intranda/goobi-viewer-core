@@ -21,16 +21,21 @@
  */
 package io.goobi.viewer.model.metadata;
 
+import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
-import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocumentList;
 
+import de.intranda.digiverso.normdataimporter.NormDataImporter;
+import de.intranda.digiverso.normdataimporter.model.Record;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -50,10 +55,24 @@ import io.goobi.viewer.solr.SolrTools;
  * MetadataTools class.
  * </p>
  */
-public class MetadataTools {
+public final class MetadataTools {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(MetadataTools.class);
+
+    private static final String FIELD_MD_CREATOR = "MD_CREATOR";
+    private static final String FIELD_MD_INFORMATION = "MD_INFORMATION";
+    private static final String FIELD_MD_LANGUAGE = "MD_LANGUAGE";
+
+    private static final String XML_ATTRIBUTE_LANG = " xml:lang=\"";
+    private static final String XML_TAG_CLOSE = "\" />";
+
+    /**
+     * Private constructor.
+     */
+    private MetadataTools() {
+        //
+    }
 
     /**
      * <p>
@@ -86,50 +105,49 @@ public class MetadataTools {
         result.append("\r\n<link rel=\"schema.DC\" href=\"http://purl.org/dc/elements/1.1/\" />");
 
         // Determine language and ISO-2 language code
-        if (structElement.getMetadataValue("MD_LANGUAGE") != null) {
-            language = structElement.getMetadataValue("MD_LANGUAGE");
+        if (structElement.getMetadataValue(FIELD_MD_LANGUAGE) != null) {
+            language = structElement.getMetadataValue(FIELD_MD_LANGUAGE);
             isoLanguage = convertLanguageToIso2(language);
         }
 
-        if (structElement.getMetadataValue("MD_TITLE") != null) {
-            title = structElement.getMetadataValues("MD_TITLE").iterator().next();
+        if (structElement.getMetadataValue(SolrConstants.TITLE) != null) {
+            title = structElement.getMetadataValues(SolrConstants.TITLE).iterator().next();
             result.append("\r\n<meta name=\"DC.title\" content=\"").append(title).append("\"");
             if (isoLanguage != null && isoLanguage.length() == 2) {
-                result.append(" xml:lang=\"").append(isoLanguage).append('"');
+                result.append(XML_ATTRIBUTE_LANG).append(isoLanguage).append('"');
             }
             result.append(" />");
         }
 
-        if (structElement.getMetadataValue("MD_CREATOR") != null) {
-            for (Object fieldValue : structElement.getMetadataValues("MD_CREATOR")) {
-                String value = (String) fieldValue;
+        if (structElement.getMetadataValue(FIELD_MD_CREATOR) != null) {
+            for (String fieldValue : structElement.getMetadataValues(FIELD_MD_CREATOR)) {
                 if (StringUtils.isEmpty(creators)) {
-                    creators = value;
+                    creators = fieldValue;
                 } else {
-                    creators = new StringBuilder(creators).append(", ").append(value).toString();
+                    creators = new StringBuilder(creators).append(", ").append(fieldValue).toString();
                 }
             }
             result.append("\r\n<meta name=\"DC.creator\" content=\"").append(creators).append("\"");
             if (isoLanguage != null && isoLanguage.length() == 2) {
-                result.append(" xml:lang=\"").append(isoLanguage).append('"');
+                result.append(XML_ATTRIBUTE_LANG).append(isoLanguage).append('"');
             }
             result.append(" />");
         }
         // DC.publisher
-        if (structElement.getMetadataValue("MD_PUBLISHER") != null) {
-            publisher = structElement.getMetadataValue("MD_PUBLISHER");
+        if (structElement.getMetadataValue(SolrConstants.PUBLISHER) != null) {
+            publisher = structElement.getMetadataValue(SolrConstants.PUBLISHER);
             result.append("\r\n<meta name=\"DC.publisher\" content=\"").append(publisher).append("\"");
             if (isoLanguage != null && isoLanguage.length() == 2) {
-                result.append(" xml:lang=\"").append(isoLanguage).append('"');
+                result.append(XML_ATTRIBUTE_LANG).append(isoLanguage).append('"');
             }
             result.append(" />");
         }
         // DC.date
-        if (structElement.getMetadataValue("MD_YEARPUBLISH") != null) {
-            date = structElement.getMetadataValue("MD_YEARPUBLISH");
+        if (structElement.getMetadataValue(SolrConstants.MD_YEARPUBLISH) != null) {
+            date = structElement.getMetadataValue(SolrConstants.MD_YEARPUBLISH);
             result.append("\r\n<meta name=\"DC.date\" content=\"").append(date).append("\"");
             if (isoLanguage != null && isoLanguage.length() == 2) {
-                result.append(" xml:lang=\"").append(isoLanguage).append('"');
+                result.append(XML_ATTRIBUTE_LANG).append(isoLanguage).append('"');
             }
             result.append(" scheme=\"W3CTF\" />");
         }
@@ -139,7 +157,7 @@ public class MetadataTools {
                 // non-iso2
                 result.append("\r\n<meta name=\"DC.language\" content=\"").append(language).append("\"");
                 if (isoLanguage != null && isoLanguage.length() == 2) {
-                    result.append(" xml:lang=\"").append(isoLanguage).append('"');
+                    result.append(XML_ATTRIBUTE_LANG).append(isoLanguage).append('"');
                 }
                 result.append(" />");
             }
@@ -147,7 +165,8 @@ public class MetadataTools {
                 // iso2
                 result.append("\r\n<meta name=\"DC.language\" content=\"")
                         .append(isoLanguage)
-                        .append("\" xml:lang=\"")
+                        .append('"')
+                        .append(XML_ATTRIBUTE_LANG)
                         .append(isoLanguage)
                         .append("\" scheme=\"DCTERMS.RFC1766\" />");
             }
@@ -159,11 +178,11 @@ public class MetadataTools {
             result.append("\r\n<meta name=\"DC.identifier\" content=\"").append(identifier).append("\" scheme=\"DCTERMS.URI\" />");
         }
         // DCTERMS.abstract
-        if (structElement.getMetadataValue("MD_INFORMATION") != null) {
-            String value = structElement.getMetadataValue("MD_INFORMATION");
+        if (structElement.getMetadataValue(FIELD_MD_INFORMATION) != null) {
+            String value = structElement.getMetadataValue(FIELD_MD_INFORMATION);
             result.append("\r\n<meta name=\"DCTERMS.abstract\" content=\"").append(StringEscapeUtils.escapeHtml4(value)).append("\"");
             if (isoLanguage != null && isoLanguage.length() == 2) {
-                result.append(" xml:lang=\"").append(isoLanguage).append('"');
+                result.append(XML_ATTRIBUTE_LANG).append(isoLanguage).append('"');
             }
             result.append(" />");
         }
@@ -179,12 +198,12 @@ public class MetadataTools {
                 .append('.')
                 .toString();
 
-        result.append("\r\n<meta name=\"DC.source\" content=\"").append(sourceString).append("\" />");
+        result.append("\r\n<meta name=\"DC.source\" content=\"").append(sourceString).append(XML_TAG_CLOSE);
 
         if (structElement.getMetadataValue(SolrConstants.ACCESSCONDITION) != null) {
             rights = structElement.getMetadataValue(SolrConstants.ACCESSCONDITION);
             if (!SolrConstants.OPEN_ACCESS_VALUE.equals(rights)) {
-                result.append("\r\n<meta name=\"DC.rights\" content=\"").append(rights).append("\" />");
+                result.append("\r\n<meta name=\"DC.rights\" content=\"").append(rights).append(XML_TAG_CLOSE);
             }
         }
 
@@ -214,19 +233,19 @@ public class MetadataTools {
 
         // citation_title
         String title = "";
-        if (anchorElement != null && anchorElement.getMetadataValue("MD_TITLE") != null) {
-            title = StringEscapeUtils.escapeHtml4(anchorElement.getMetadataValue("MD_TITLE")) + ": ";
+        if (anchorElement != null && anchorElement.getMetadataValue(SolrConstants.TITLE) != null) {
+            title = StringEscapeUtils.escapeHtml4(anchorElement.getMetadataValue(SolrConstants.TITLE)) + ": ";
         }
-        if (structElement.getMetadataValue("MD_TITLE") != null) {
-            title += StringEscapeUtils.escapeHtml4(structElement.getMetadataValue("MD_TITLE"));
+        if (structElement.getMetadataValue(SolrConstants.TITLE) != null) {
+            title += StringEscapeUtils.escapeHtml4(structElement.getMetadataValue(SolrConstants.TITLE));
         }
-        result.append("\r\n<meta name=\"citation_title\" content=\"").append(title).append("\" />");
+        result.append("\r\n<meta name=\"citation_title\" content=\"").append(title).append(XML_TAG_CLOSE);
 
         // citation_author
-        if (structElement.getMetadataValue("MD_CREATOR") != null) {
-            for (Object fieldValue : structElement.getMetadataValues("MD_CREATOR")) {
+        if (structElement.getMetadataValue(FIELD_MD_CREATOR) != null) {
+            for (Object fieldValue : structElement.getMetadataValues(FIELD_MD_CREATOR)) {
                 String value = StringEscapeUtils.escapeHtml4((String) fieldValue);
-                result.append("\r\n<meta name=\"citation_author\" content=\"").append(value).append("\" />");
+                result.append("\r\n<meta name=\"citation_author\" content=\"").append(value).append(XML_TAG_CLOSE);
             }
         }
         // citation_publication_date
@@ -236,7 +255,7 @@ public class MetadataTools {
             if (normalizedValues != null && !normalizedValues.isEmpty()) {
                 for (String normalizedValue : normalizedValues) {
                     if (value.contains(normalizedValue)) {
-                        result.append("\r\n<meta name=\"citation_publication_date\" content=\"").append(normalizedValue).append("\" />");
+                        result.append("\r\n<meta name=\"citation_publication_date\" content=\"").append(normalizedValue).append(XML_TAG_CLOSE);
                         break;
                     }
                 }
@@ -245,23 +264,23 @@ public class MetadataTools {
         // citation_isbn
         if (structElement.getMetadataValue("MD_ISBN") != null) {
             String value = StringEscapeUtils.escapeHtml4(structElement.getMetadataValue("MD_ISBN"));
-            result.append("\r\n<meta name=\"citation_isbn\" content=\"").append(value).append("\" />");
+            result.append("\r\n<meta name=\"citation_isbn\" content=\"").append(value).append(XML_TAG_CLOSE);
         }
         // citation_issn
         if (structElement.getMetadataValue("MD_ISSN") != null) {
             String value = StringEscapeUtils.escapeHtml4(structElement.getMetadataValue("MD_ISSN"));
-            result.append("\r\n<meta name=\"citation_issn\" content=\"").append(value).append("\" />");
+            result.append("\r\n<meta name=\"citation_issn\" content=\"").append(value).append(XML_TAG_CLOSE);
         }
         // citation_volume
         if (structElement.getMetadataValue(SolrConstants.CURRENTNO) != null) {
             String value = StringEscapeUtils.escapeHtml4(structElement.getMetadataValue(SolrConstants.CURRENTNO));
-            result.append("\r\n<meta name=\"citation_volume\" content=\"").append(value).append("\" />");
+            result.append("\r\n<meta name=\"citation_volume\" content=\"").append(value).append(XML_TAG_CLOSE);
         }
         // citation_language
-        if (structElement.getMetadataValue("MD_LANGUAGE") != null) {
-            String value = StringEscapeUtils.escapeHtml4(structElement.getMetadataValue("MD_LANGUAGE"));
+        if (structElement.getMetadataValue(FIELD_MD_LANGUAGE) != null) {
+            String value = StringEscapeUtils.escapeHtml4(structElement.getMetadataValue(FIELD_MD_LANGUAGE));
             value = convertLanguageToIso2(value);
-            result.append("\r\n<meta name=\"citation_language\" content=\"").append(value).append("\" />");
+            result.append("\r\n<meta name=\"citation_language\" content=\"").append(value).append(XML_TAG_CLOSE);
         }
         //  citation_pdf_url
         if (pages != null && !pages.isEmpty()) {
@@ -270,17 +289,17 @@ public class MetadataTools {
                     continue;
                 }
                 String value = StringEscapeUtils.escapeHtml4(page.getUrl());
-                result.append("\r\n<meta name=\"citation_pdf_url\" content=\"").append(value).append("\" />");
+                result.append("\r\n<meta name=\"citation_pdf_url\" content=\"").append(value).append(XML_TAG_CLOSE);
             }
         }
         // abstract
-        if (structElement.getMetadataValue("MD_INFORMATION") != null) {
+        if (structElement.getMetadataValue(FIELD_MD_INFORMATION) != null) {
             // citation_abstract_html_url
-            result.append("\r\n<meta name=\"citation_abstract_html_url\" content=\"").append(structElement.getMetadataUrl()).append("\" />");
+            result.append("\r\n<meta name=\"citation_abstract_html_url\" content=\"").append(structElement.getMetadataUrl()).append(XML_TAG_CLOSE);
 
             // description (non-highwire)
-            String value = StringEscapeUtils.escapeHtml4(structElement.getMetadataValue("MD_INFORMATION"));
-            result.append("\r\n<meta name=\"description\" content=\"").append(value).append("\" />");
+            String value = StringEscapeUtils.escapeHtml4(structElement.getMetadataValue(FIELD_MD_INFORMATION));
+            result.append("\r\n<meta name=\"description\" content=\"").append(value).append(XML_TAG_CLOSE);
         }
 
         return result.toString();
@@ -291,35 +310,48 @@ public class MetadataTools {
      * generateRIS.
      * </p>
      *
-     * @param structElement a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String generateRIS(StructElement structElement) {
-        if (structElement == null) {
+    public static String generateRIS(StructElement se) {
+        if (se == null) {
+            return null;
+        }
+
+        return generateRIS(se.getDocStructType(), se.getMetadataFields());
+    }
+
+    /**
+     * 
+     * @param docstructType
+     * @param metadataFields
+     * @return Generated RIS string; null of no docstructType given
+     */
+    public static String generateRIS(String docstructType, Map<String, List<String>> metadataFields) {
+        if (docstructType == null) {
             return null;
         }
 
         StringBuilder result = new StringBuilder(100);
-        result.append("TY  - ").append(getRISTypeMapping(structElement.getDocStructType())).append("\r\n");
-        for (String field : structElement.getMetadataFields().keySet()) {
-            List<String> values = structElement.getMetadataFields().get(field);
+        result.append("TY  - ").append(getRISTypeMapping(docstructType)).append("\r\n");
+        for (Entry<String, List<String>> entry : metadataFields.entrySet()) {
+            List<String> values = entry.getValue();
             if (values == null || values.isEmpty()) {
                 continue;
             }
             String risTag = null;
-            switch (field) {
+            switch (entry.getKey()) {
                 case "CURRENTNO":
                     risTag = "VL";
                     break;
                 case "MD_ABSTRACT":
-                case "MD_INFORMATION":
+                case FIELD_MD_INFORMATION:
                     risTag = "AB";
                     break;
                 case "MD_ALTERNATETITLE":
                     risTag = "J2";
                     break;
                 case "MD_AUTHOR":
-                case "MD_CREATOR":
                     risTag = "AU";
                     break;
                 case "MD_EDITION":
@@ -337,22 +369,22 @@ public class MetadataTools {
                 case "MD_ISSN":
                     risTag = "SN";
                     break;
-                case "MD_LANGUAGE":
+                case FIELD_MD_LANGUAGE:
                     risTag = "LA";
                     break;
                 case "MD_NOTE":
                     risTag = "N1";
                     break;
-                case "MD_PLACEPUBLISH":
-                    risTag = "PP";
+                case SolrConstants.PLACEPUBLISH:
+                    risTag = "CY";
                     break;
-                case "MD_PUBLISHER":
+                case SolrConstants.PUBLISHER:
                     risTag = "PB";
                     break;
-                case "MD_TITLE":
+                case SolrConstants.TITLE:
                     risTag = "TI";
                     break;
-                case "MD_YEARPUBLISH":
+                case SolrConstants.MD_YEARPUBLISH:
                     risTag = "PY";
                     break;
                 case "NUMPAGES":
@@ -363,6 +395,8 @@ public class MetadataTools {
                     break;
                 case "PI_TOPSTRUCT":
                     risTag = "CN";
+                    break;
+                default:
                     break;
             }
             if (risTag == null) {
@@ -393,7 +427,7 @@ public class MetadataTools {
     /**
      *
      * @param docstructType
-     * @return
+     * @return Mapped RIS type or default value "GEN"
      */
     static String getRISTypeMapping(String docstructType) {
         if (docstructType == null) {
@@ -452,7 +486,7 @@ public class MetadataTools {
             try {
                 lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
             } catch (IllegalArgumentException e) {
-                logger.warn("No language found for " + lang);
+                logger.warn("No language found for {}", lang);
             }
             if (lang != null) {
                 return lang.getIsoCodeOld();
@@ -472,6 +506,8 @@ public class MetadataTools {
             case "fra":
             case "fre":
                 return "fr";
+            default:
+                break;
         }
 
         return language;
@@ -514,7 +550,7 @@ public class MetadataTools {
 
             switch (replaceRule.getType()) {
                 case CHAR:
-                    StringBuffer sb = new StringBuffer();
+                    StringBuilder sb = new StringBuilder();
                     sb.append(replaceRule.getKey());
                     ret = ret.replace(sb.toString(), replaceRule.getReplacement());
                     break;
@@ -567,6 +603,8 @@ public class MetadataTools {
                 case "wi":
                     ret = MetadataGroupType.RECORD.name();
                     break;
+                default:
+                    break;
             }
             if (ret != null) {
                 logger.trace("Authority data type determined from 075$b (gndspec): {}", ret);
@@ -607,7 +645,33 @@ public class MetadataTools {
             sbQuery.append(' ').append(subQuery);
         }
 
-        // logger.trace("getGroupedMetadata query: {}", sbQuery.toString());
+        // logger.trace("getGroupedMetadata query: {}", sbQuery.toString()); //NOSONAR Debug
         return DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, sortFields, null);
+    }
+
+    /**
+     * Retrieves authority data record from the given URL, using proxy configuration, if configured.
+     * 
+     * @param url Authority data record URL
+     * @return {@link Record} if found; null otherwise
+     */
+    public static Record getAuthorityDataRecord(String url) {
+        if (StringUtils.isEmpty(url)) {
+            return null;
+        }
+
+        String proxyUrl = null;
+        int proxyPort = 0;
+        try {
+            if (DataManager.getInstance().getConfiguration().isProxyEnabled()
+                    && !DataManager.getInstance().getConfiguration().isHostProxyWhitelisted(url)) {
+                proxyUrl = DataManager.getInstance().getConfiguration().getProxyUrl();
+                proxyPort = DataManager.getInstance().getConfiguration().getProxyPort();
+            }
+        } catch (MalformedURLException e) {
+            logger.error(e.getMessage());
+        }
+
+        return NormDataImporter.getSingleRecord(url, proxyUrl, proxyPort);
     }
 }

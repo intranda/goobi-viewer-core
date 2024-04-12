@@ -33,7 +33,7 @@ import io.goobi.viewer.model.search.SearchSortingOption;
  *
  */
 @FacesConverter("searchSortingOptionConverter")
-public class SearchSortingOptionConverter implements Converter<SearchSortingOption>{
+public class SearchSortingOptionConverter implements Converter<SearchSortingOption> {
 
     /* (non-Javadoc)
      * @see javax.faces.convert.Converter#getAsObject(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.String)

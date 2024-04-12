@@ -21,23 +21,22 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSMediaItem;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
-public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
+class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
 
     CmsMediaBean bean;
 
@@ -45,7 +44,7 @@ public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
      * @throws java.lang.Exception
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         bean = new CmsMediaBean();
@@ -62,53 +61,53 @@ public class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
      * @throws java.lang.Exception
      */
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     @Test
-    public void testSelectedTag() {
+    void testSelectedTag() {
         String tag = "sampleTag";
         bean.setSelectedTag(tag);
-        Assert.assertEquals(tag, bean.getSelectedTag());
+        Assertions.assertEquals(tag, bean.getSelectedTag());
     }
 
     @Test
-    public void testGetAllMediaCategories() throws DAOException {
+    void testGetAllMediaCategories() throws DAOException {
         List<CMSCategory> tags = bean.getAllMediaCategories();
-        Assert.assertEquals(7, tags.size());
+        Assertions.assertEquals(7, tags.size());
     }
 
     @Test
-    public void testGetMediaItems() throws DAOException {
+    void testGetMediaItems() throws DAOException {
 
         bean.setFilter("");
-        Assert.assertEquals(4, bean.getMediaItems().size());
+        Assertions.assertEquals(4, bean.getMediaItems().size());
         bean.setFilter("tag1");
-        Assert.assertEquals(3, bean.getMediaItems().size());
+        Assertions.assertEquals(3, bean.getMediaItems().size());
         bean.setFilter("");
-        bean.setFilenameFilter(bean.getImageFilter());
-        Assert.assertEquals(4, bean.getMediaItems().size());
+        bean.setFilenameFilter(CmsMediaBean.getImageFilter());
+        Assertions.assertEquals(4, bean.getMediaItems().size());
         bean.setFilenameFilter(".*\\.xml");
-        Assert.assertEquals(0, bean.getMediaItems().size());
+        Assertions.assertEquals(0, bean.getMediaItems().size());
     }
 
     @Test
-    public void testGetImageFilter() {
+    void testGetImageFilter() {
         String file1 = "image.jpg";
         String file2 = "image.JPEG";
         String file3 = "image.xml";
-        Assert.assertTrue(file1.matches(bean.getImageFilter()));
-        Assert.assertTrue(file2.matches(bean.getImageFilter()));
-        Assert.assertFalse(file3.matches(bean.getImageFilter()));
+        Assertions.assertTrue(file1.matches(CmsMediaBean.getImageFilter()));
+        Assertions.assertTrue(file2.matches(CmsMediaBean.getImageFilter()));
+        Assertions.assertFalse(file3.matches(CmsMediaBean.getImageFilter()));
     }
 
     @Test
-    public void testGetMediaUrlForGif() throws NumberFormatException, ViewerConfigurationException {
+    void testGetMediaUrlForGif() throws NumberFormatException {
         CMSMediaItem item = new CMSMediaItem();
         item.setFileName("lorelai.gif");
-        String url = bean.getMediaUrl(item);
+        String url = CmsMediaBean.getMediaUrl(item);
         assertTrue(url.endsWith("lorelai.gif/full.gif"));
     }
 }

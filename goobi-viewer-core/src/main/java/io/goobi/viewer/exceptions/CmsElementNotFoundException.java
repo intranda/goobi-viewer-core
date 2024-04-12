@@ -38,7 +38,6 @@ public class CmsElementNotFoundException extends PresentationException {
      */
     public CmsElementNotFoundException(String string, Throwable e) {
         super(string, e);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -50,7 +49,6 @@ public class CmsElementNotFoundException extends PresentationException {
      */
     public CmsElementNotFoundException(String string) {
         super(string);
-        // TODO Auto-generated constructor stub
     }
 
 }

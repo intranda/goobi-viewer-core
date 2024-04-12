@@ -7,6 +7,7 @@
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
     <composite:interface />
@@ -14,127 +15,27 @@
     <composite:implementation>
         <div id="cmsCreatePageMetadataItemWrapper" class="admin__default-block">
             <!-- METADATA ITEM TYPE -->
-            <div class="page-metadata-item page-metadata-item-type ">
-                <h2>
-                    #{msg[cmsBean.selectedPage.template.name]}
-                </h2>
 
-                <div class="cms-create-page__template-box">
-                    <div class="cms-create-page__template-box-image">
-                        <img alt="Template Icon" src="#{cmsBean.getIconUrlByTemplateId(cmsBean.selectedPage.template.id)}" title="#{msg.label__cms_template_id}: #{cmsBean.selectedPage.template.id}"/>
-                    </div>
-                    <div class="cms-create-page__template-box-text">
-                        <p>
-                            <h:outputText value="#{msg[cmsBean.selectedPage.template.description]}" />
-                        </p>
-                    </div>
-					<div class="mx-clearfloats"></div>
-                </div>
-
-                <script type="text/javascript">
-                    // init template description popover
-                    $(".page-metadata-item-type .info-btn").popover({
-                        html : true,
-                        title : "#{msg[cmsBean.selectedPage.template.name]}",
-                        content : `#{msg[cmsBean.selectedPage.template.description]}`,
-                        placement : "bottom",
-                        trigger : "click",
-                        container : "body"
-                    });
-                </script>
-
-            </div>
             
             
-             <h3 class="admin__sidebar-divider-top">#{msg.cms_pageMetadata_privacyStatus}</h3>
+             <h2>#{msg.cms_pageMetadata_privacyStatus}</h2>
              
 				<div class="admin__form-help-text in mb-4">#{msg.cms_pageMetadata_privacyStatus_help}</div>
 		
-		         <div class="admin__radio-switch mb-3">
+		         <div class="admin__radio-switch">
 		            <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
 		            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
-		            <input type="radio" jsf:id="cmsPageStatusVisibility_no" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{false}" pt:checked="#{cmsBean.selectedPage.published ? null : 'false'}"/>
+		            <input type="radio" jsf:id="cmsPageStatusVisibility_no" pt:name="#{cmsPageStatusVisibility.clientId}"
+		                value="#{false}" pt:checked="#{cmsPageEditBean.selectedPage.published ? null : 'false'}"/>
 					<h:outputLabel for="cmsPageStatusVisibility_no" value="#{msg.no}" />
-		         	<input type="radio" jsf:id="cmsPageStatusVisibility_yes" pt:name="#{cmsPageStatusVisibility.clientId}" value="#{true}" pt:checked="#{cmsBean.selectedPage.published ? 'false' : null}"/>
+		         	<input type="radio" jsf:id="cmsPageStatusVisibility_yes" pt:name="#{cmsPageStatusVisibility.clientId}"
+		         	    value="#{true}" pt:checked="#{cmsPageEditBean.selectedPage.published ? 'false' : null}"/>
 		         	<h:outputLabel for="cmsPageStatusVisibility_yes" value="#{msg.yes}" />
-					<h:inputHidden id="cmsPageStatusVisibility_input" binding="#{cmsPageStatusVisibility}" value="#{cmsBean.selectedPage.published}"
+					<h:inputHidden id="cmsPageStatusVisibility_input" binding="#{cmsPageStatusVisibility}" value="#{cmsPageEditBean.selectedPage.published}"
         				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
 		             <span class="toggle-outside"><span class="toggle-inside"></span></span>
 		         </div>
 
-            <!-- CMS PAGE ACTION -->
-            <div class="page-metadata-item page-metadata-item-action admin__sidebar-divider-top pt-3">
-                <ul>
-                    <li>
-                        <!-- preview description text -->
-                        <div id="previewDescription" class="alert alert-danger" role="alert">
-                            <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
-                            #{msg.cms_pagePreview_info}
-                        </div>
-
-                        
-                        <a id="showPageButton" class="btn btn--default" target="_blank" href="#{cmsBean.getUrl(cmsBean.selectedPage)}">
-                            #{msg.cms_pagePreview}
-                        </a>
-                        
-                        
-                    </li>
-                    <li>
-                        <!-- delete page -->
-                        <a role="button" href="#" data-toggle="modal" data-target="#deleteMediaModal-#{media.id}" class="btn btn--danger"> #{msg.delete} </a>
-
-                        <!-- delete media modal -->
-                        <div id="deleteMediaModal-#{media.id}" class="modal fade" tabindex="-1" role="dialog">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <h:panelGroup rendered="#{!cmsBean.isLinkedFromNavBar(cmsBean.selectedPage) and !cmsBean.isLinkedToStaticPage(cmsBean.selectedPage)}">
-                                        <div class="modal-header">
-                                            <h3 class="modal-title">#{msg.cms_deletePage_agree}</h3>
-                                            <button type="button" class="close" data-dismiss="modal">
-                                                <span aria-hidden="true">
-                                                    <h:outputText value="&amp;times;" escape="false" />
-                                                </span>
-                                                <span class="sr-only">Close</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">#{msg.cms_deletePage_confirmation}</div>
-                                        <div class="modal-footer">
-                                            <a href="#" class="btn" data-dismiss="modal">#{msg.cancel}</a>
-                                            <h:commandLink action="pretty:adminCmsOverview" actionListener="#{cmsBean.deleteSelectedPage}" value="#{msg.cms_deletePage_agree}"
-                                                styleClass="btn btn--danger">
-                                                <f:ajax render="@none" />
-                                            </h:commandLink>
-                                        </div>
-                                    </h:panelGroup>
-
-                                    <h:panelGroup rendered="#{cmsBean.isLinkedFromNavBar(cmsBean.selectedPage) or cmsBean.isLinkedToStaticPage(cmsBean.selectedPage)}">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal">
-                                                <span aria-hidden="true">
-                                                    <h:outputText value="&amp;times;" escape="false" />
-                                                </span>
-                                                <span class="sr-only">Close</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <h3 class="modal-title" id="myModalLabel">#{msg.cms_deletePage_denied}</h3>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <a href="#" class="btn btn--full" data-dismiss="modal">#{msg.OK}</a>
-                                        </div>
-                                    </h:panelGroup>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <!-- save page -->
-                        <h:commandButton type="submit" action="#{cmsBean.saveSelectedPage}" id="save-button" styleClass="btn btn--success" value="#{msg.cms_pageMetadata_save}"
-                            onclick="$( '#AJAXLoader' ).show(); cmsJS.createPage.enablePreview();">
-                        </h:commandButton>
-                    </li>
-                </ul>
-            </div>
         		
         		</div>
 
@@ -163,14 +64,14 @@
 		                <!-- INPUT TEXT -->
 		                <h:inputText 
 		                    id="prettyUrl" 
-		                    value="#{cmsBean.selectedPage.persistentUrl}" 
+		                    value="#{cmsPageEditBean.selectedPage.persistentUrl}" 
 		                    styleClass="form-control"
 		                    pt:data-target="prettyUrlHolder"
 		                    pt:data-input-restricted="url"
 		                    pt:data-input-restricted-message="#{msg.alert__character_not_allowed_in_url}" />
 		            </h:panelGroup>
 		            
-		            <div data-target="cmsPageUrlPreview" class="admin__small-info mt-2">#{msg.title__preview}: <a target="_blank" data-target="prettyUrlLinkTarget" href="#{navigationHelper.applicationUrl}#{cmsBean.selectedPage.persistentUrl}">#{navigationHelper.applicationUrl}<span id="prettyUrlTextHolder"></span></a></div>
+		            <div data-target="cmsPageUrlPreview" class="admin__small-info mt-2">#{msg.title__preview}: <a target="_blank" data-target="prettyUrlLinkTarget" href="#{navigationHelper.applicationUrl}#{cmsPageEditBean.selectedPage.persistentUrl}">#{navigationHelper.applicationUrl}<span id="prettyUrlTextHolder"></span></a></div>
 				
 				</div>
 				
@@ -199,23 +100,23 @@
 						<div class="custom-control custom-control--select">
 							<h:selectOneMenu id="pageBreadcrumbParent"
 								styleClass="form-control"
-								value="#{cmsBean.selectedPage.parentPageId}">
+								value="#{cmsPageEditBean.selectedPage.parentPageId}">
 								<f:selectItem itemValue="#{null}" itemLabel="-" />
 								<f:selectItems
-									value="#{cmsBean.getAvailableParentPages(cmsBean.selectedPage)}"
+									value="#{cmsBean.getAvailableParentPages(cmsPageEditBean.selectedPage)}"
 									var="availablePage" itemValue="#{availablePage.id}"
 									itemLabel="#{availablePage.title}" />
 								<f:ajax event="change" render="pageBreadcrumbParentGroup" />
 							</h:selectOneMenu>
 						</div>
 		
-						<ui:fragment rendered="#{cmsBean.selectedPage.parentPageId != null and cmsBean.selectedPage.parentPageId != ''}">
+						<ui:fragment rendered="#{cmsPageEditBean.selectedPage.parentPageId != null and cmsPageEditBean.selectedPage.parentPageId != ''}">
 		
 						<div data-target="cmsPageBreadcrumbsPreview"
 							class="admin__small-info mt-2">#{msg.title__preview}:
 							#{msg.home} >
-							#{cmsBean.getCMSPage(cmsBean.selectedPage.parentPageId).title} >
-							#{cmsBean.selectedPage.getLanguageVersion(navigationHelper.locale).title}</div>
+							#{cmsBean.getCMSPage(cmsPageEditBean.selectedPage.parentPageId).title} >
+							#{cmsPageEditBean.selectedPage.title}</div>
 							
 						</ui:fragment>
 		
@@ -233,7 +134,7 @@
 		                    <!-- METADATA ITEM SELECTED CATEGORIES -->
 		                    <h:panelGroup id="selected_categories">
 		                        <div class="page-metadata-item__categories-selected-categories">
-		                            <ui:repeat var="category" value="#{cmsBean.selectedPage.selectableCategories}">
+		                            <ui:repeat var="category" value="#{cmsPageEditBean.selectedPage.selectableCategories}">
 		                                <ui:fragment rendered="#{category.selected}">
 		                                    <div class="badge badge-violet">#{category.value.name}</div>
 		                                </ui:fragment>
@@ -248,7 +149,7 @@
 		                            <div class="cms-module__option-dropdown">
 		                                <div class="cms-module__option-dropdown-trigger" data-toggle="option-dropdown">#{msg.admin__category_select}</div>
 		                                <ul>
-		                                    <ui:repeat var="selectable" value="#{cmsBean.selectedPage.selectableCategories}">
+		                                    <ui:repeat var="selectable" value="#{cmsPageEditBean.selectedPage.selectableCategories}">
 												<li>
 		                                            <label>
 		                                                <h:selectBooleanCheckbox  type="checkbox" value="#{selectable.selected}">
@@ -290,7 +191,7 @@
 			                </div>
 			                
 			                <!-- INPUT TEXT -->
-			                <h:inputText id="relatedPiInput" value="#{cmsBean.selectedPage.relatedPI}" styleClass="form-control" pt:data-target="relatedPiInputField">
+			                <h:inputText id="relatedPiInput" value="#{cmsPageEditBean.selectedPage.relatedPI}" styleClass="form-control" pt:data-target="relatedPiInputField">
 			                
 			                    <f:validator validatorId="relatedPiValidator" for="relatedPiInput" />
 			                    <f:ajax event="blur" render="relatedPiInputGroup useAsDefaultRecordViewGroup" />
@@ -326,12 +227,12 @@
 	                                <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
 						            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
 						            <input type="radio" jsf:id="cmsPageDefaultRecordView_no"
-						            pt:name="#{cmsPageDefaultRecordView.clientId}" value="#{false}" pt:checked="#{cmsBean.selectedPage.useAsDefaultRecordView ? null : 'false'}"/>
+						            pt:name="#{cmsPageDefaultRecordView.clientId}" value="#{false}" pt:checked="#{cmsPageEditBean.selectedPage.useAsDefaultRecordView ? null : 'false'}"/>
 									<h:outputLabel for="cmsPageDefaultRecordView_no" value="#{msg.no}" />
 						         	<input type="radio" jsf:id="cmsPageDefaultRecordView_yes"
-						         	pt:name="#{cmsPageDefaultRecordView.clientId}" value="#{true}" pt:checked="#{cmsBean.selectedPage.useAsDefaultRecordView ? 'false' : null}"/>
+						         	pt:name="#{cmsPageDefaultRecordView.clientId}" value="#{true}" pt:checked="#{cmsPageEditBean.selectedPage.useAsDefaultRecordView ? 'false' : null}"/>
 						         	<h:outputLabel for="cmsPageDefaultRecordView_yes" value="#{msg.yes}" />
-									<h:inputHidden id="cmsPageDefaultRecordView_input" binding="#{cmsPageDefaultRecordView}" value="#{cmsBean.selectedPage.useAsDefaultRecordView}"
+									<h:inputHidden id="cmsPageDefaultRecordView_input" binding="#{cmsPageDefaultRecordView}" value="#{cmsPageEditBean.selectedPage.useAsDefaultRecordView}"
 				        				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
 	                                <span class="toggle-outside"><span class="toggle-inside"></span></span>
 	                            </div>
@@ -366,7 +267,7 @@
 				                    <h:selectOneMenu 
 				                        id="subthemeDiscriminator" 
 				                        styleClass="form-control" 
-				                        value="#{cmsBean.selectedPage.subThemeDiscriminatorValue}"
+				                        value="#{cmsPageEditBean.selectedPage.subThemeDiscriminatorValue}"
 				                        disabled="#{!configurationBean.subthemeDiscriminatorFieldSet}"
 				                        required="#{!userBean.user.hasPrivilegeForAllSubthemeDiscriminatorValues() and configurationBean.subthemeDiscriminatorFieldSet}"
 				                        requiredMessage="#{msg.cms_page_subtheme_discriminator_required_msg}">
@@ -378,6 +279,9 @@
 				                        <f:ajax event="change" render="subthemeDiscriminatorGroup" />
 				                    </h:selectOneMenu>
 				                </div>
+				                <ui:fragment rendered="#{!searchBean.solrIndexReachable}">
+				                    #{msg.errIndexUnreachableTitle}
+				                </ui:fragment>
 				            </h:panelGroup>
 				            <!-- INLINE HELP -->
 				            <span class="cms-module__option-control-helptext">#{msg.cms_page_subtheme_discriminator_help}</span>
@@ -408,7 +312,7 @@
 	                <!-- INPUT TEXT -->
 	                <h:inputText 
 	                    id="cssClass" 
-	                    value="#{cmsBean.selectedPage.wrapperElementClass}" 
+	                    value="#{cmsPageEditBean.selectedPage.wrapperElementClass}" 
 	                    styleClass="form-control" 
 	                    pt:data-target="quickCSSInputField"/>
 	            </h:panelGroup>
@@ -416,50 +320,82 @@
 
             </div>
             
-           	<div class="admin__default-block">
-           	
-		    <h2>#{msg.cms_page_url_parameters}</h2>
+            <div id="addPageToIndexWidget" class="admin__default-block">
+                <!-- TEMPLATE TOGGLE + SETTINGS -->
+                 <h2>#{msg.cms__pageMetadata_searchable_title}</h2>
+                 
+                    <div class="admin__form-help-text in mb-4">#{msg.cms__pageMetadata_searchable_help}</div>
+            
+                     <div class="admin__radio-switch mb-3">
 
-		    <div class="admin__form-help-text in mb-3">#{msg.cms_page_url_parameters_help}</div>
-		    
-			<!-- AREA FOR AJAX REFRESH -->
-            <h:panelGroup id="urlParametersGroup" layout="block" styleClass="cms-module__option-checkbox">
-                <!-- VALIDATION MESSAGE -->
-                <div class="cms-module__option-message">
-                    <h:messages for="urlParameters" 
-                        infoClass="cms-module__option-message-status success" 
-                        warnClass="cms-module__option-message-status warning"
-                        errorClass="cms-module__option-message-status danger" />
+                        <div class="admin__radio-switch">
+                            <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
+                                Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
+                            <input type="radio" jsf:id="searchableToggle_no" pt:name="#{searchableToggle.clientId}" value="#{false}" pt:checked="#{cmsPageEditBean.selectedPage.searchable ? null : 'false'}"/>
+                            <h:outputLabel for="searchableToggle_no" value="#{msg.no}" />
+                            <input type="radio" jsf:id="searchableToggle_yes" pt:name="#{searchableToggle.clientId}" value="#{true}" pt:checked="#{cmsPageEditBean.selectedPage.searchable ? 'false' : null}"/>
+                            <h:outputLabel for="searchableToggle_yes" value="#{msg.yes}" />
+                            <h:inputHidden id="searchableToggle_input" binding="#{searchableToggle}" value="#{cmsPageEditBean.selectedPage.searchable}"
+                                rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
+                             <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                         </div>
 
-                    <div class="cms-module__option-message-mark">
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+
+                     </div>
+                    
                     </div>
-                </div>
-                
-                <!-- ALLOW URL PARAMS TOGGLE -->
-                 <div class="admin__radio-switch">
-                 <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
-	            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
-	            <input type="radio" jsf:id="cmsPageAllowUrlParams_no"
-	            pt:name="#{cmsPageAllowUrlParams.clientId}" value="#{false}" pt:checked="#{cmsBean.selectedPage.mayContainUrlParameters ? null : 'false'}"/>
-				<h:outputLabel for="cmsPageAllowUrlParams_no" value="#{msg.no}" />
-	         	<input type="radio" jsf:id="cmsPageAllowUrlParams_yes"
-	         	pt:name="#{cmsPageAllowUrlParams.clientId}" value="#{true}" pt:checked="#{cmsBean.selectedPage.mayContainUrlParameters ? 'false' : null}"/>
-	         	<h:outputLabel for="cmsPageAllowUrlParams_yes" value="#{msg.yes}" />
-				<h:inputHidden id="cmsPageAllowUrlParams_input" binding="#{cmsPageAllowUrlParams}" value="#{cmsBean.selectedPage.mayContainUrlParameters}"
-       				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
-                     <span class="toggle-outside"><span class="toggle-inside"></span></span>
-                 </div>
-                    
-                    
-                    
-            </h:panelGroup>
             
-            
-            </div>   
-            
-            
+	        <div id="saveAsTemplateWidget" class="admin__default-block">
+	            <!-- TEMPLATE TOGGLE + SETTINGS -->
+	             <h2>#{msg.cms__pageMetadata_save_template_title}</h2>
+	             
+					<div class="admin__form-help-text in mb-4">#{msg.cms__pageMetadata_save_template_help}</div>
+			
+			         <div class="admin__radio-switch mb-3">
+
+						<div class="admin__radio-switch">
+				            <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
+				            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
+				            <input type="radio" jsf:id="saveAsTemplateToggle_no" pt:name="#{saveAsTemplateToggle.clientId}" pt:data-toggle-action="toggleTemplateFunctions" value="#{false}" pt:checked="#{cmsPageEditBean.saveAsTemplate ? null : 'false'}"/>
+							<h:outputLabel for="saveAsTemplateToggle_no" value="#{msg.no}" />
+				         	<input type="radio" jsf:id="saveAsTemplateToggle_yes" pt:name="#{saveAsTemplateToggle.clientId}" pt:data-toggle-action="toggleTemplateFunctions" value="#{true}" pt:checked="#{cmsPageEditBean.saveAsTemplate ? 'false' : null}"/>
+				         	<h:outputLabel for="saveAsTemplateToggle_yes" value="#{msg.yes}" />
+							<h:inputHidden id="saveAsTemplateToggle_input" binding="#{saveAsTemplateToggle}" value="#{cmsPageEditBean.saveAsTemplate}"
+		        				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
+				             <span class="toggle-outside"><span class="toggle-inside"></span></span>
+				         </div>
+
+
+			         </div>
+			         
+		                 <div id="additionalTemplateOptions" class="admin__sidebar-divider-top">
+		                 	<div class="mb-3">
+		                 		<h3 class="mb-2">#{msg.cms__name_of_template}</h3>
+                            	<h:inputText styleClass="form-control" value="#{cmsPageEditBean.templateName}" /> 
+                            </div>
+		                 
+		                 	<h3 class="mb-3">#{msg.label__cms_page_template__lock_components__label}</h3>
+
+							<div class="admin__radio-switch">
+					            <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
+					            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
+					            <input type="radio" jsf:id="lockComponentsSwitch_no" pt:name="#{lockComponentsSwitch.clientId}" value="#{false}" pt:checked="#{cmsPageEditBean.templateLockComponents ? null : 'false'}"/>
+								<h:outputLabel for="lockComponentsSwitch_no" value="#{msg.no}" />
+					         	<input type="radio" jsf:id="lockComponentsSwitch_yes" pt:name="#{lockComponentsSwitch.clientId}" value="#{true}" pt:checked="#{cmsPageEditBean.templateLockComponents ? 'false' : null}"/>
+					         	<h:outputLabel for="lockComponentsSwitch_yes" value="#{msg.yes}" />
+								<h:inputHidden id="lockComponentsSwitch_input" binding="#{lockComponentsSwitch}" value="#{cmsPageEditBean.templateLockComponents}"
+			        				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
+					             <span class="toggle-outside"><span class="toggle-inside"></span></span>
+					         </div>
+
+                            
+                         	<div class="admin__form-help-text in mb-4 mt-2">#{msg.label__cms_page_template__lock_components__description}</div>
+
+		                 </div>
+	
+	        		
+	        		</div>
+
 				<!-- SCRIPT FOR PRETTY URL PREVIEW -->
 				<script>
 				
@@ -508,6 +444,20 @@
 						$('[data-target="cmsPageJumpToQuickCSSLink"]').fadeIn('fast');
 					}
 				});
+				
+				</script>
+				
+				<!-- SCRIPT FOR SAVE AS TEMPLATE TOGGLE -->
+				<script>
+				
+				saveAsTemplateToggle = $('input[data-toggle-action="toggleTemplateFunctions"]');
+				
+                $(saveAsTemplateToggle).on("change", (event) => {
+						$('#additionalTemplateOptions').animate({
+                            height: "toggle",
+                            opacity: "toggle"
+                        }, 250);
+                })
 				
 				</script>
                                                        

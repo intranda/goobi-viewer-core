@@ -35,8 +35,8 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -54,6 +54,7 @@ import io.goobi.viewer.controller.imaging.WatermarkHandler;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -103,6 +104,7 @@ public class ImageDeliveryBean implements Serializable {
     private IIIFPresentationAPIHandler presentation;
 
     public ImageDeliveryBean() {
+        //
     }
 
     @PostConstruct
@@ -136,7 +138,8 @@ public class ImageDeliveryBean implements Serializable {
      * Initialize for testing
      *
      * @param config a {@link io.goobi.viewer.controller.Configuration} object.
-     * @param apiUrls a {@link java.lang.String} object.
+     * @param dataUrlManager
+     * @param contentUrlManager
      */
     public void init(Configuration config, AbstractApiUrlManager dataUrlManager, AbstractApiUrlManager contentUrlManager) {
         this.servletPath = getServletPathFromContext();
@@ -165,7 +168,7 @@ public class ImageDeliveryBean implements Serializable {
         try {
             presentation = new IIIFPresentationAPIHandler(dataUrlManager, config);
         } catch (URISyntaxException e) {
-            logger.error("Failed to initalize presentation api handler {}", e.toString());
+            logger.error("Failed to initalize presentation api handler {}", e.getMessage());
         }
     }
 
@@ -305,7 +308,7 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * Return the URL to the IIIF manifest of the current work, of it exists. Otherwise return empty String
+     * Return the URL to the IIIF manifest of the current work, if it exists. Otherwise return empty String
      *
      * @return the manifest url
      */
@@ -313,6 +316,22 @@ public class ImageDeliveryBean implements Serializable {
         return getCurrentDocumentIfExists().map(doc -> {
             try {
                 return getPresentation().getManifestUrl(doc.getPi());
+            } catch (URISyntaxException e) {
+                logger.error(e.toString(), e);
+                return null;
+            }
+        }).orElse("");
+    }
+
+    /**
+     * Return the URL to the IIIF manifest of the current page, if it exists. Otherwise return empty String
+     *
+     * @return the manifest url
+     */
+    public String getIiifPageManifest() {
+        return getCurrentPageIfExists().map(page -> {
+            try {
+                return getPresentation().getPageManifestUrl(page.getPi(), page.getOrder());
             } catch (URISyntaxException e) {
                 logger.error(e.toString(), e);
                 return null;
@@ -404,7 +423,7 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * Retrieves the #{@link io.goobi.viewer.controller.imaging.IIIFPresentationAPIHandler}, creates it if it doesn't exist yet
      *
-     * @return the iiif presentation handler
+     * @return the IIIF presentation handler
      */
     public IIIFPresentationAPIHandler getPresentation() {
         if (presentation == null) {
@@ -415,20 +434,20 @@ public class ImageDeliveryBean implements Serializable {
 
     /**
      * @return the servletPath
-     * @throws ViewerConfigurationException
      */
-    private String getServletPath() throws ViewerConfigurationException {
+    private String getServletPath() {
         if (servletPath == null) {
             init();
         }
+
         return servletPath;
     }
 
     /**
      * Returns true if the given String denotes an absolute url that is not a file url, false otherwise
      *
-     * @return whether the given string denotes to an external url resource
      * @param urlString the string to test
+     * @return whether the given string denotes to an external url resource
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean isExternalUrl(String urlString) throws ViewerConfigurationException {
@@ -446,9 +465,9 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * Retrieves the url path to the viewer image resource folder. Ith the theme is given, the image resource folder within the theme is returned
      *
+     * @param servletPath a {@link java.lang.String} object.
      * @param theme The name of the theme housing the images. If this is null or empty, the images are taken from the viewer core
      * @return The url to the images folder in resources (possibly in the given theme)
-     * @param servletPath a {@link java.lang.String} object.
      */
     public static String getStaticImagesPath(String servletPath, String theme) {
         StringBuilder sb = new StringBuilder(servletPath);
@@ -470,16 +489,15 @@ public class ImageDeliveryBean implements Serializable {
      * @return true if the url points to a cms media file
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public boolean isCmsUrl(String url) throws ViewerConfigurationException {
+    public boolean isCmsUrl(final String url) throws ViewerConfigurationException {
         URI uri;
         try {
-            url = StringTools.decodeUrl(url);
-            uri = PathConverter.toURI(url);
+            uri = PathConverter.toURI(StringTools.decodeUrl(url));
             Path path = PathConverter.getPath(uri);
             if (path.isAbsolute()) {
                 path = path.normalize();
-                Path cmsMediaPath = Paths.get(getCmsMediaPath());
-                return path.startsWith(cmsMediaPath);
+                Path cmp = Paths.get(getCmsMediaPath());
+                return path.startsWith(cmp);
             }
         } catch (URISyntaxException e) {
             logger.trace(e.toString());
@@ -494,16 +512,15 @@ public class ImageDeliveryBean implements Serializable {
      * @return true if the url points to a temp media file
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public boolean isTempUrl(String url) throws ViewerConfigurationException {
+    public boolean isTempUrl(final String url) throws ViewerConfigurationException {
         URI uri;
         try {
-            url = StringTools.decodeUrl(url);
-            uri = PathConverter.toURI(url);
+            uri = PathConverter.toURI(StringTools.decodeUrl(url));
             Path path = PathConverter.getPath(uri);
             if (path.isAbsolute()) {
                 path = path.normalize();
-                Path cmsMediaPath = Paths.get(getTempMediaPath());
-                return path.startsWith(cmsMediaPath);
+                Path cmp = Paths.get(getTempMediaPath());
+                return path.startsWith(cmp);
             }
         } catch (URISyntaxException e) {
             logger.trace(e.toString());
@@ -512,8 +529,8 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * @param imageName
-     * @return
+     * @param url
+     * @return true if given url is cms or temp url; false otherwise
      * @throws ViewerConfigurationException
      */
     public boolean isPublicUrl(String url) throws ViewerConfigurationException {
@@ -608,4 +625,11 @@ public class ImageDeliveryBean implements Serializable {
         this.pdf = pdf;
     }
 
+    public String getCurrentImageDownloadUrl(int width, int height, String format) {
+        return getCurrentPageIfExists().map(page -> getThumbs().getImageUrl(page, width, height, format)).orElse("");
+    }
+
+    public String getCurrentImageDownloadUrl(DownloadOption option) {
+        return getCurrentImageDownloadUrl(option.getBoxSizeInPixel().width, option.getBoxSizeInPixel().height, option.getFormat());
+    }
 }

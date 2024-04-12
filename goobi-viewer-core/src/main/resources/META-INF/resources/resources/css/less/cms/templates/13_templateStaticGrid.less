@@ -10,10 +10,13 @@
     &__text {
     	margin-bottom: 30px;
     }
-    &__grid {}
+    &__grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr 1fr;
+		gap: 50px;
+	}
 }
 .grid-tile {
-	margin-bottom: 30px;
 	padding: 3px;
 	padding-top: 0;
 	border: 1px solid @middlegray;
@@ -48,10 +51,23 @@
 @media screen and (max-width: @largeBreakpoint) {}
 
 /* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {}
+@media screen and (max-width: @mediumBreakpoint) {
+	.tpl-static-grid {
+	    &__grid {
+			grid-template-columns: 1fr 1fr;
+			gap: 30px;
+		}
+	}
+}
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+	.tpl-static-grid {
+	    &__grid {
+			grid-template-columns: 1fr;
+		}
+	}
+}

@@ -22,10 +22,10 @@
 package io.goobi.viewer.api.rest.v2.records;
 
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_ANNOTATIONS_PAGE;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_COMMENTS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_COMMENTS_PAGE;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_MANIFEST;
-import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_MANIFEST_AUTOCOMPLETE;
-import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_MANIFEST_SEARCH;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_RECORD;
 
 import java.net.URI;
@@ -41,17 +41,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.annotation.IAnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
-import de.intranda.api.iiif.search.AutoSuggestResult;
-import de.intranda.api.iiif.search.SearchResult;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
@@ -65,13 +61,9 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.model.iiif.presentation.v2.builder.BuildMode;
-import io.goobi.viewer.model.iiif.presentation.v2.builder.WebAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.ManifestBuilder;
-import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author florian
@@ -106,7 +98,65 @@ public class RecordResource {
     public IPresentationModelElement getManifest()
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException, IllegalPathSyntaxException, ContentLibException {
-        return new ManifestBuilder(urls).build(pi);
+        return new ManifestBuilder(urls).build(pi, servletRequest);
+    }
+
+    @GET
+    @javax.ws.rs.Path(RECORDS_ANNOTATIONS)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record as annotation collection")
+    public IAnnotationCollection getAnnotationsForRecord() throws DAOException, IllegalRequestException {
+
+        ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
+        URI uri = URI.create(apiPath.build());
+        //        return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false);
+        return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationCollectionForRecord(pi, uri);
+    }
+
+    @GET
+    @javax.ws.rs.Path(RECORDS_COMMENTS)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "annotations" }, summary = "List comments for a record as an annotation collection")
+    public IAnnotationCollection getCommentsForRecord() throws DAOException {
+
+        ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi);
+        URI uri = URI.create(apiPath.build());
+        return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationCollectionForRecordComments(pi, uri);
+    }
+
+    @GET
+    @javax.ws.rs.Path(RECORDS_ANNOTATIONS_PAGE)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record as an annotation collection page")
+    public AnnotationPage getAnnotationsPageForRecord() throws DAOException, IllegalRequestException {
+
+        ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
+        URI uri = URI.create(apiPath.build());
+        //        return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false);
+        AnnotationPage annoPage = new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationCollectionForRecord(pi, uri).getFirst();
+        if (annoPage != null) {
+            return annoPage;
+        } else {
+            return new AnnotationPage(uri);
+        }
+    }
+
+    @GET
+    @javax.ws.rs.Path(RECORDS_COMMENTS_PAGE)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "annotations" }, summary = "List comments for a record as an annotation collection page")
+    public IAnnotationCollection getCommentsForRecordPage()
+            throws DAOException {
+
+        ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi);
+        URI uri = URI.create(apiPath.build());
+        AnnotationPage annoPage =
+                new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationCollectionForRecordComments(pi, uri).getFirst();
+        if (annoPage != null) {
+            return annoPage;
+        } else {
+            return new AnnotationPage(uri);
+        }
     }
 
 }

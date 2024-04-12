@@ -23,20 +23,18 @@ package io.goobi.viewer.model.cms.widgets;
 
 import java.util.Locale;
 
+import io.goobi.viewer.dao.converter.TranslatedTextConverter;
+import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
+import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
-import org.apache.commons.lang3.StringUtils;
-
-import io.goobi.viewer.dao.converter.TranslatedTextConverter;
-import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
-import io.goobi.viewer.model.translations.IPolyglott;
-import io.goobi.viewer.model.translations.TranslatedText;
-
 /**
  * A subtype of {@link CustomSidebarWidget} to display a html text in different languages
+ * 
  * @author florian
  *
  */
@@ -44,7 +42,9 @@ import io.goobi.viewer.model.translations.TranslatedText;
 @DiscriminatorValue("HtmlSidebarWidget")
 public class HtmlSidebarWidget extends CustomSidebarWidget {
 
-    @Column(name = "html_text", columnDefinition="LONGTEXT")
+    private static final long serialVersionUID = 3921353218873876880L;
+
+    @Column(name = "html_text", columnDefinition = "LONGTEXT")
     @Convert(converter = TranslatedTextConverter.class)
     private TranslatedText htmlText = new TranslatedText(IPolyglott.getLocalesStatic());
 
@@ -57,6 +57,7 @@ public class HtmlSidebarWidget extends CustomSidebarWidget {
 
     /**
      * Cloning constructor
+     * 
      * @param o
      */
     public HtmlSidebarWidget(HtmlSidebarWidget o) {

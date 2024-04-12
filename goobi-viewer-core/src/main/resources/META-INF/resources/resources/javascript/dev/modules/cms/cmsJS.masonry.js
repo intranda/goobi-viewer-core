@@ -31,7 +31,8 @@ var cmsJS = ( function( cms ) {
     var _lazyGrid = null;
     var _defaults = {
         $grid: null,
-        loaderSelector: '.tpl-masonry__loader'
+        loaderSelector: '.tpl-masonry__loader',
+		language: 'de'
     };
     
     // DOM-Elements
@@ -55,24 +56,24 @@ var cmsJS = ( function( cms ) {
          * @param {Object} data An data object which contains the images sources for the
          * grid.
          */
-        init: function( config, data ) {
+        init: function( configuration, data ) {
             if ( _debug ) {
                 console.log( '##############################' );
                 console.log( 'cmsJS.masonry.init' );
                 console.log( '##############################' );
-                console.log( 'cmsJS.masonry.init: config - ', config );
+                console.log( 'cmsJS.masonry.init: config - ', configuration );
                 console.log( 'cmsJS.masonry.init: data - ', data );
             }
             
-            $.extend( true, _defaults, config );
+            var config = $.extend( true, {}, _defaults, configuration );
             
             // show loader
-            $( _defaults.loaderSelector ).show();
+            $( config.loaderSelector ).show();
             
             // render grid
-            _renderMasonryGrid( data );
+            _renderMasonryGrid( data, config );
             
-            let $images = _defaults.$grid.find('img');
+            let $images = config.$grid.find('img');
             let promises = [];
             $images.each( (index,element) => {
             	let promise = new Promise((res, rej) => {
@@ -84,9 +85,9 @@ var cmsJS = ( function( cms ) {
             
             Promise.allSettled(promises)
             .then( array => {
-            	//console.log("all images loaded in ", _defaults.$grid, array);
+            	//console.log("all images loaded in ", config.$grid, array);
                 // init Masonry after all images have loaded
-                _defaults.$grid.masonry( {
+                config.$grid.masonry( {
                     itemSelector: '.grid-item',
                     columnWidth: '.grid-sizer',
                     gutter: '.gutter-sizer',
@@ -98,11 +99,11 @@ var cmsJS = ( function( cms ) {
             });
 
             // fade in grid after rendering
-            _defaults.$grid.on( 'layoutComplete', function( event, laidOutItems ) {
-                // hide loader
-                $( _defaults.loaderSelector ).hide();
+            config.$grid.on( 'layoutComplete', function( event, laidOutItems ) {
+                // hide loader 
+                $( config.loaderSelector ).hide();
                 // show images
-                _defaults.$grid.addClass( 'ready' );
+                config.$grid.addClass( 'ready' );
             } );
             
         }
@@ -114,7 +115,7 @@ var cmsJS = ( function( cms ) {
      * @method _renderMasonryGrid
      * @param {Object} data An data object which contains the images sources for the grid.
      */
-    function _renderMasonryGrid( data ) {
+    function _renderMasonryGrid( data, config ) {
         if ( _debug ) {
             console.log( '---------- _renderMasonryGrid() ----------' );
             console.log( '_renderMasonryGrid: data = ', data );
@@ -132,8 +133,8 @@ var cmsJS = ( function( cms ) {
                 $gridItem.addClass( 'grid-item ' + item.tags.join(' '));
             }
             
-            let label = viewerJS.getMetadataValue(item.label, _defaults.language );
-            let description = viewerJS.getMetadataValue(item.description, _defaults.language );
+            let label = viewerJS.getMetadataValue(item.label, config.language );
+            let description = viewerJS.getMetadataValue(item.description, config.language );
             
             let image = item.image["@id"];
             if(item.image.service) { 
@@ -164,7 +165,7 @@ var cmsJS = ( function( cms ) {
             if ( description ) {
                 $gridItemCaption = $( '<div />' );
                 $gridItemCaption.addClass( 'grid-item-caption' );
-                $gridItemCaption.html( description );
+                $gridItemCaption.html( '<span>' + description + '</span>');
                 
                 // grid item caption heading
                 $gridItemCaptionHeading = $( '<h2 />' );
@@ -206,7 +207,7 @@ var cmsJS = ( function( cms ) {
             }
             
             // append to grid
-            _defaults.$grid.append( $gridItem );
+            config.$grid.append( $gridItem );
         } );
     }
     

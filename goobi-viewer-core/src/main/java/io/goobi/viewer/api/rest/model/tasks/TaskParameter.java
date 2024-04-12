@@ -26,16 +26,17 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
+import io.goobi.viewer.api.rest.model.PrerenderPdfsRequestParameters;
 import io.goobi.viewer.api.rest.model.SitemapRequestParameters;
 import io.goobi.viewer.api.rest.model.ToolsRequestParameters;
-import io.goobi.viewer.api.rest.model.tasks.Task.TaskType;
 import io.goobi.viewer.api.rest.v1.tasks.TasksResource;
+import io.goobi.viewer.model.job.TaskType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * Object to create a {@link Task}. Used as rest parameter for the POST call to {@link TasksResource}.
- * Must always pass a valid {@link #type} parameter. Depending on the type, a subclass of TaskParameter
- * may contain additional properties. These properties are interpreted in {@link TaskManager#createTask(TaskType)}
+ * Object to create a {@link Task}. Used as rest parameter for the POST call to {@link TasksResource}. Must always pass a valid {@link #type}
+ * parameter. Depending on the type, a subclass of TaskParameter may contain additional properties. These properties are interpreted in
+ * {@link TaskManager#createTask(TaskType)}
  *
  * @author florian
  *
@@ -47,21 +48,31 @@ import io.swagger.v3.oas.annotations.media.Schema;
         visible = true,
         defaultImpl = TaskParameter.class)
 @JsonSubTypes({
-    @JsonSubTypes.Type(value=SitemapRequestParameters.class, name = "UPDATE_SITEMAP"),
-    @JsonSubTypes.Type(value=ToolsRequestParameters.class, name = "UPDATE_DATA_REPOSITORY_NAMES")
+        @JsonSubTypes.Type(value = SitemapRequestParameters.class, name = "UPDATE_SITEMAP"),
+        @JsonSubTypes.Type(value = ToolsRequestParameters.class, name = "UPDATE_DATA_REPOSITORY_NAMES"),
+        @JsonSubTypes.Type(value = PrerenderPdfsRequestParameters.class, name = "PRERENDER_PDF")
 })
-@Schema(name="ViewerTaskParameter", description="Contains the type of the task to execute as well as possible additional parameters depending on the type of the task", requiredProperties= {"type"})
+@Schema(name = "ViewerTaskParameter",
+        description = "Contains the type of the task to execute as well as possible additional parameters depending on the type of the task",
+        requiredProperties = { "type" })
 public class TaskParameter {
 
     @Schema(description = "The type of the task to execute")
-    public Task.TaskType type;
+    private TaskType type;
 
     public TaskParameter() {
     }
 
-    public TaskParameter(Task.TaskType type) {
+    public TaskParameter(TaskType type) {
         this.type = type;
     }
 
+    public TaskType getType() {
+        return type;
+    }
+
+    public void setType(TaskType type) {
+        this.type = type;
+    }
 
 }

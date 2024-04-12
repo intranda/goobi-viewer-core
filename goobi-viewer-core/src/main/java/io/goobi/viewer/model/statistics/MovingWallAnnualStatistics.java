@@ -63,8 +63,8 @@ public class MovingWallAnnualStatistics {
     }
 
     /**
-     * 
-     * @return
+     * @param separator
+     * @return CSV {@link String}
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -80,7 +80,7 @@ public class MovingWallAnnualStatistics {
             Date date = (Date) doc.getFieldValue(SolrConstants.DATE_PUBLICRELEASEDATE);
             if (pi != null && date != null) {
                 sb.append('\n')
-                        .append(DateTools.format(date, DateTools.formatterISO8601DateTime, true))
+                        .append(DateTools.format(date, DateTools.FORMATTERISO8601DATETIME, true))
                         .append(separator)
                         .append(pi)
                         .append(separator);

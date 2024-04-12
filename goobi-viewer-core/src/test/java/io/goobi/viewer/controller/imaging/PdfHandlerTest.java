@@ -21,36 +21,31 @@
  */
 package io.goobi.viewer.controller.imaging;
 
-import static org.junit.Assert.*;
-
 import java.util.Optional;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.imaging.PdfHandler;
-import io.goobi.viewer.controller.imaging.WatermarkHandler;
 
 /**
  * @author Florian Alpers
  *
  */
-public class PdfHandlerTest extends AbstractTest{
+class PdfHandlerTest extends AbstractTest{
 
     PdfHandler handler;
 
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         Configuration configuration = DataManager.getInstance().getConfiguration();
@@ -58,21 +53,14 @@ public class PdfHandlerTest extends AbstractTest{
         handler = new PdfHandler(new WatermarkHandler(configuration, "http://localhost:8080/viewer/"), urls);
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
-    @After
-    public void tearDown() throws Exception {
-    }
 
     @Test
-    public void test() {
+    void test() {
         String pi = "1234";
         Optional<String> divId = Optional.ofNullable("LOG_0003");
         Optional<String> label = Optional.ofNullable("output-filename.pdf");
 
         String url = handler.getPdfUrl(pi, divId, label);
-        Assert.assertEquals(ConfigurationTest.APPLICATION_ROOT_URL
-                + "api/v1/records/1234/sections/LOG_0003/pdf/", url);
+        Assertions.assertEquals(TestUtils.APPLICATION_ROOT_URL  + "api/v1/records/1234/sections/LOG_0003/pdf/", url);
     }
 }

@@ -63,7 +63,7 @@ public class UsageStatisticsResponse {
     @JsonIgnore
     public String getAsCsv(Locale locale, String columnSeparator, String rowSeparator) {
         List<List<String>> lines = new ArrayList<>();
-        
+
         //HEADER
         List<String> header = new ArrayList<>();
         header.add("type");
@@ -75,22 +75,22 @@ public class UsageStatisticsResponse {
             header.add(typeLabel + " " + ViewerResourceBundle.getTranslation("statistics__unique_requests", locale));
         });
         lines.add(header);
-        
+
         //SUMMARY
         List<String> summaryLine = createCsvLine(this.getSummary(), "summary");
         lines.add(summaryLine);
-        
+
         for (StatisticsSummary item : this.getValues()) {
             List<String> itemLine = createCsvLine(item, "item");
             lines.add(itemLine);
         }
-        
+
         StringBuilder sb = new StringBuilder();
         for (List<String> line : lines) {
             appendLine(sb, line, columnSeparator);
             sb.append(rowSeparator);
         }
-        sb.delete(sb.length()-rowSeparator.length(), sb.length());
+        sb.delete(sb.length() - rowSeparator.length(), sb.length());
         return sb.toString();
 
     }
@@ -99,7 +99,7 @@ public class UsageStatisticsResponse {
         for (String string : cell) {
             sb.append(string).append(separator);
         }
-        sb.delete(sb.length()-separator.length(), sb.length());
+        sb.delete(sb.length() - separator.length(), sb.length());
         return sb;
     }
 

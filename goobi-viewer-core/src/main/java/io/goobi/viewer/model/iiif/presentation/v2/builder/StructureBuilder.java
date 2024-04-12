@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
@@ -50,6 +50,7 @@ import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.StructElementStub;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -72,7 +73,7 @@ public class StructureBuilder extends AbstractBuilder {
      * Constructor for StructureBuilder.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param apiUrlManager
      */
     public StructureBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
@@ -115,7 +116,7 @@ public class StructureBuilder extends AbstractBuilder {
                     if (StringUtils.isNotBlank(parentId)) {
                         range.addWithin(new Range2(getRangeURI(pi, parentId)));
                     }
-                    work.ifPresent(w -> structElement.setTopStruct(w));
+                    work.ifPresent(structElement::setTopStruct);
                     populatePages(structElement, pi, range);
                     populate(structElement, pi, range);
                 }
@@ -131,16 +132,15 @@ public class StructureBuilder extends AbstractBuilder {
      * Generates the list of child ranges of the given range from the given elements which have the given parentiddoc
      *
      * @param elements
-     * @param luceneId
+     * @param parentIddoc
+     * @param pi
      * @param range
      */
     private void populateChildren(List<StructElement> elements, long parentIddoc, String pi, Range2 range) {
         elements.stream()
                 .filter(element -> Long.toString(parentIddoc).equals(element.getMetadataValue(SolrConstants.IDDOC_PARENT)))
-                .map(element -> element.getLogid())
-                .forEach(logId -> {
-                    range.addRange(new Range2(getRangeURI(pi, logId)));
-                });
+                .map(StructElementStub::getLogid)
+                .forEach(logId -> range.addRange(new Range2(getRangeURI(pi, logId))));
 
     }
 
@@ -174,39 +174,36 @@ public class StructureBuilder extends AbstractBuilder {
             logger.warn("Unable to retrieve thumbnail url", e);
         }
 
-
-
         addRenderings(range, ele);
 
     }
 
     /**
-     * @param page
-     * @param canvas
-     * @throws URISyntaxException
+     * @param range
+     * @param ele
      */
     public void addRenderings(AbstractPresentationModelElement2 range, StructElement ele) {
 
         this.getRenderings().forEach(link -> {
             try {
-                URI id = getLinkingPropertyUri(ele, link.target);
-                if(id != null) {
+                URI id = getLinkingPropertyUri(ele, link.getTarget());
+                if (id != null) {
                     range.addRendering(link.getLinkingContent(id));
                 }
-            } catch (URISyntaxException | PresentationException | IndexUnreachableException e) {
+            } catch (PresentationException | IndexUnreachableException e) {
                 logger.error("Error building linking property url", e);
             }
         });
     }
 
-    private URI getLinkingPropertyUri(StructElement ele, LinkingTarget target) throws URISyntaxException, PresentationException, IndexUnreachableException {
+    private URI getLinkingPropertyUri(StructElement ele, LinkingTarget target) throws PresentationException, IndexUnreachableException {
 
-        if(target.equals(LinkingTarget.PDF) && !ele.getTopStruct().isHasImages()) {
+        if (target.equals(LinkingTarget.PDF) && !ele.getTopStruct().isHasImages()) {
             return null;
         }
 
         URI uri = null;
-        switch(target) {
+        switch (target) {
             case VIEWER:
                 String applicationUrl = this.urls.getApplicationUrl();
                 String pageUrl = ele.getUrl();
@@ -215,6 +212,9 @@ public class StructureBuilder extends AbstractBuilder {
             case PDF:
                 String pdfDownloadUrl = imageDelivery.getPdf().getPdfUrl(ele, ele.getPi(), ele.getLabel());
                 uri = URI.create(pdfDownloadUrl);
+                break;
+            default:
+                break;
         }
         return uri;
     }

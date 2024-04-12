@@ -22,6 +22,7 @@
 package io.goobi.viewer.api.rest.v1.cms;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_BY_CATEGORY;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_AUDIO;
@@ -42,16 +43,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.IdentityHashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -76,21 +73,24 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.util.CacheUtils;
+import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
+import io.goobi.viewer.api.rest.bindings.UserLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.MediaDeliveryService;
-import io.goobi.viewer.api.rest.model.MediaItem;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -99,8 +99,11 @@ import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSMediaItem;
-import io.goobi.viewer.model.cms.CMSMediaItemMetadata;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
+import io.goobi.viewer.model.cms.media.CMSMediaLister;
+import io.goobi.viewer.model.cms.media.MediaItem;
+import io.goobi.viewer.model.cms.media.MediaList;
 import io.goobi.viewer.model.security.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -121,13 +124,62 @@ public class CMSMediaResource {
     protected HttpServletRequest servletRequest;
     @Context
     protected HttpServletResponse servletResponse;
+    @Context
+    private IDAO dao;
+
+    public CMSMediaResource() {
+
+    }
+
+    public CMSMediaResource(IDAO dao) {
+        this.dao = dao;
+    }
 
     /**
      * <p>
      * getMediaByTag.
      * </p>
      *
-     * @param tag a {@link java.lang.String} object.
+     * @param tags a {@link java.lang.String} object.
+     * @param maxItems
+     * @param prioritySlots
+     * @param random
+     * @return a {@link io.goobi.viewer.servlets.rest.cms.CMSMediaResource.MediaList} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    @GET
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(
+            tags = { "media" },
+            summary = "Get a list of CMS-Media Items of one or more categories")
+    @javax.ws.rs.Path(CMS_MEDIA_BY_CATEGORY)
+    public MediaList getMediaOfCategories(
+            @Parameter(description = "tag specifying the category the delivered media items must be associated with."
+                    + " Multiple categories can be listed using '...' as separator") @PathParam("tags") String tags,
+            @Parameter(description = "Maximum number of items to return") @QueryParam("max") Integer maxItems,
+            @Parameter(description = "Number of media items marks as 'important' that must be included"
+                    + " in the result") @QueryParam("prioritySlots") Integer prioritySlots,
+            @Parameter(description = "Set to 'true' to return random items for each call."
+                    + " Otherwise the items will be ordererd by their upload date") @QueryParam("random") Boolean random)
+            throws DAOException {
+        List<String> tagList = new ArrayList<>();
+        if (StringUtils.isNotBlank(tags)) {
+            tagList.addAll(Arrays.stream(StringUtils.split(tags, "...")).map(String::toLowerCase).collect(Collectors.toList()));
+            List<CMSMediaItem> items = new CMSMediaLister(dao).getMediaItems(tagList, maxItems, prioritySlots, Boolean.TRUE.equals(random));
+            return new MediaList(items, servletRequest);
+        }
+        return new MediaList(Collections.emptyList(), servletRequest);
+    }
+
+    /**
+     * <p>
+     * getMediaByTag.
+     * </p>
+     *
+     * @param tags a {@link java.lang.String} object.
+     * @param maxItems
+     * @param prioritySlots
+     * @param random
      * @return a {@link io.goobi.viewer.servlets.rest.cms.CMSMediaResource.MediaList} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -136,32 +188,22 @@ public class CMSMediaResource {
     @Operation(
             tags = { "media" },
             summary = "Get a list of CMS-Media Items")
-
+    @AuthorizationBinding
     public MediaList getAllMedia(
-            @Parameter(
-                    description = "Comma separated list of tags. Only media items with any of these tags will be included") @QueryParam("tags") String tags,
+            @Parameter(description = "Comma separated list of tags. Only media items with any of these tags"
+                    + " will be included") @QueryParam("tags") String tags,
             @Parameter(description = "Maximum number of items to return") @QueryParam("max") Integer maxItems,
-            @Parameter(
-                    description = "Number of media items marks as 'important' that must be included in the result") @QueryParam("prioritySlots") Integer prioritySlots,
-            @Parameter(
-                    description = "Set to 'true' to return random items for each call. Otherwise the items will be ordererd by their upload date") @QueryParam("random") Boolean random)
+            @Parameter(description = "Number of media items marks as 'important' that must be included"
+                    + " in the result") @QueryParam("prioritySlots") Integer prioritySlots,
+            @Parameter(description = "Set to 'true' to return random items for each call."
+                    + " Otherwise the items will be ordererd by their upload date") @QueryParam("random") Boolean random)
             throws DAOException {
         List<String> tagList = new ArrayList<>();
         if (StringUtils.isNotBlank(tags)) {
             tagList.addAll(Arrays.stream(StringUtils.split(tags, ",")).map(String::toLowerCase).collect(Collectors.toList()));
         }
-        List<CMSMediaItem> items = DataManager.getInstance()
-                .getDao()
-                .getAllCMSMediaItems()
-                .stream()
-                .filter(
-                        item -> tagList.isEmpty() ||
-                                item.getCategories().stream().map(CMSCategory::getName).map(String::toLowerCase).anyMatch(c -> tagList.contains(c)))
-                .sorted(new PriorityComparator(prioritySlots, Boolean.TRUE.equals(random)))
-                .limit(maxItems != null ? maxItems : Integer.MAX_VALUE)
-                .sorted(new PriorityComparator(0, Boolean.TRUE.equals(random)))
-                .collect(Collectors.toList());
-        return new MediaList(items);
+        List<CMSMediaItem> items = new CMSMediaLister(dao).getMediaItems(tagList, maxItems, prioritySlots, Boolean.TRUE.equals(random));
+        return new MediaList(items, servletRequest);
     }
 
     @GET
@@ -177,9 +219,9 @@ public class CMSMediaResource {
      * getPDFMediaItemContent.
      * </p>
      *
-     * @param id a {@link java.lang.Long} object.
-     * @return File contents as HTML
+     * @param filename
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @return File contents as HTML
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -283,7 +325,7 @@ public class CMSMediaResource {
      * getMediaItemContent.
      * </p>
      *
-     * @param id a {@link java.lang.Long} object.
+     * @param filename
      * @return File contents as HTML
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -311,7 +353,7 @@ public class CMSMediaResource {
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
-        throw new ContentNotFoundException("Resource not found");
+        throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
     }
 
     /**
@@ -337,14 +379,16 @@ public class CMSMediaResource {
     }
 
     /**
-     * List all uplodaed media files
+     * List all uploaded media files
      *
+     * @return List<String> of media file names
      * @throws PresentationException
      *
      */
     @GET
     @javax.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
+    @UserLoggedInBinding
     public List<String> getAllFiles() throws PresentationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
@@ -358,6 +402,7 @@ public class CMSMediaResource {
     @DELETE
     @javax.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
+    @AuthorizationBinding
     public void deleteAllFiles() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
     }
@@ -365,6 +410,7 @@ public class CMSMediaResource {
     @DELETE
     @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE)
     @Produces(MediaType.APPLICATION_JSON)
+    @AuthorizationBinding
     public void deleteFile() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
     }
@@ -384,24 +430,26 @@ public class CMSMediaResource {
     @javax.ws.rs.Path(CMS_MEDIA_FILES)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response uploadMediaFiles(@DefaultValue("true") @FormDataParam("enabled") boolean enabled, @FormDataParam("filename") String filename,
-            @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail)
-            throws DAOException {
+    @UserLoggedInBinding
+    public Response
+            uploadMediaFiles(@DefaultValue("true") @FormDataParam("enabled") boolean enabled, @FormDataParam("filename") String filename,
+                    @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail)
+                    throws DAOException {
 
         if (uploadedInputStream == null) {
             return Response.status(Status.NOT_ACCEPTABLE).entity("Upload stream is null").build();
         }
-        Optional<User> user = getUser();
-        if (!user.isPresent()) {
-            return Response.status(Status.NOT_ACCEPTABLE).entity("No user session found").build();
-        } else if (!user.get().isCmsAdmin()) {
-            return Response.status(Status.FORBIDDEN).entity("User has no permission to upload media files").build();
-        } else {
+        Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
+                DataManager.getInstance().getConfiguration().getCmsMediaFolder());
+        Path mediaFile = cmsMediaFolder.resolve(filename);
+        try {
+            Optional<User> user = getUser();
+            if (!user.isPresent()) {
+                return Response.status(Status.NOT_ACCEPTABLE).entity("No user session found").build();
+            } else if (!user.get().isCmsAdmin()) {
+                return Response.status(Status.FORBIDDEN).entity("User has no permission to upload media files").build();
+            } else {
 
-            Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
-                    DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-            Path mediaFile = cmsMediaFolder.resolve(filename);
-            try {
                 Optional<CMSCategory> requiredCategory = getRequiredCategoryForUser(user.get());
 
                 if (!Files.exists(cmsMediaFolder)) {
@@ -438,18 +486,18 @@ public class CMSMediaResource {
                     Files.delete(mediaFile);
                 }
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
-            } catch (AccessDeniedException e) {
-                return Response.status(Status.FORBIDDEN).entity(e.getMessage()).build();
-            } catch (FileAlreadyExistsException e) {
-                String message =
-                        Messages.translate("admin__media_upload_error_exists", servletRequest.getLocale(), mediaFile.getFileName().toString());
-                return Response.status(Status.CONFLICT).entity(message).build();
-            } catch (IOException | DAOException e) {
-                logger.error("Error uploading media file", e);
-                String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString(),
-                        e.getMessage());
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
             }
+        } catch (AccessDeniedException e) {
+            return Response.status(Status.FORBIDDEN).entity(e.getMessage()).build();
+        } catch (FileAlreadyExistsException e) {
+            String message =
+                    Messages.translate("admin__media_upload_error_exists", servletRequest.getLocale(), mediaFile.getFileName().toString());
+            return Response.status(Status.CONFLICT).entity(message).build();
+        } catch (IOException | DAOException e) {
+            logger.error("Error uploading media file", e);
+            String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString(),
+                    e.getMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
         }
     }
 
@@ -467,7 +515,7 @@ public class CMSMediaResource {
      * rights If the user has unlimited category rights, return an empty optional
      *
      * @param user
-     * @return
+     * @return Optional<CMSCategory>
      * @throws DAOException
      * @throws AccessDeniedException if the user is not allowed to use any categories whatsoever
      */
@@ -489,7 +537,7 @@ public class CMSMediaResource {
      * </p>
      *
      * @param filePath a {@link java.nio.file.Path} object.
-     * @return a {@link io.goobi.viewer.model.cms.CMSMediaItem} object.
+     * @return a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      */
     public CMSMediaItem createMediaItem(Path filePath) {
         CMSMediaItem item = new CMSMediaItem();
@@ -506,8 +554,7 @@ public class CMSMediaResource {
      * Determines the current User using the UserBean instance stored in the session store. If no session is available, no UserBean could be found or
      * no user is logged in, NULL is returned
      *
-     * @param session
-     * @return
+     * @return Optional<User>
      */
     private static Optional<User> getUser() {
         UserBean userBean = BeanUtils.getUserBean();
@@ -520,92 +567,7 @@ public class CMSMediaResource {
             logger.trace("Unable to get user: No user found in session store UserBean instance");
             return Optional.empty();
         }
-        // logger.trace("Found user {}", user);
         return Optional.of(user);
-    }
-
-    public class MediaList {
-
-        private final List<MediaItem> mediaItems;
-
-        public MediaList(List<CMSMediaItem> items) {
-            this.mediaItems = items.stream().map(item -> new MediaItem(item, servletRequest)).collect(Collectors.toList());
-        }
-
-        /**
-         * @return the mediaItems
-         */
-        public List<MediaItem> getMediaItems() {
-            return mediaItems;
-        }
-    }
-
-    /**
-     * Comparator that sorts as many items marked as high priority to the beginning of the list as are given in the constructor The remaining items
-     * will be sorted randomly if the random parameter is true or else by the {@link CMSMediaItem#compareTo(CMSMediaItem)}
-     *
-     * @author florian
-     *
-     */
-    public static class PriorityComparator implements Comparator<CMSMediaItem> {
-
-        private final int prioritySlots;
-        private final boolean random;
-        private final Random randomizer = new SecureRandom();
-        private final Map<CMSMediaItem, Integer> map = new IdentityHashMap<>();
-        private final List<CMSMediaItem> priorityList = new ArrayList<>();
-
-        public PriorityComparator(Integer prioritySlots, boolean random) {
-            this.prioritySlots = prioritySlots == null ? 0 : prioritySlots;
-            this.random = random;
-        }
-
-        /* (non-Javadoc)
-         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-         */
-        @Override
-        public int compare(CMSMediaItem a, CMSMediaItem b) {
-            maybeAddToPriorityList(a);
-            maybeAddToPriorityList(b);
-            if (priorityList.contains(a) && !priorityList.contains(b)) {
-                return -1;
-            } else if (priorityList.contains(b) && !priorityList.contains(a)) {
-                return 1;
-            } else if (a.getDisplayOrder() != 0 && b.getDisplayOrder() != 0) {
-                return Integer.compare(a.getDisplayOrder(), b.getDisplayOrder());
-            } else if (a.getDisplayOrder() != 0) {
-                return -1;
-            } else if (b.getDisplayOrder() != 0) {
-                return 1;
-            } else if (random) {
-                return Integer.compare(valueFor(a), valueFor(b));
-            } else {
-                return a.compareTo(b);
-            }
-        }
-
-        private int valueFor(CMSMediaItem a) {
-            synchronized (map) {
-                return map.computeIfAbsent(a, ignore -> randomizer.nextInt());
-            }
-        }
-
-        /**
-         * @param b
-         */
-        private void maybeAddToPriorityList(CMSMediaItem item) {
-            if (item.isImportant() && priorityList.size() < prioritySlots && !priorityList.contains(item)) {
-                priorityList.add(item);
-            }
-        }
-
-        /**
-         * @return
-         */
-        private int getRandomOrder() {
-            return randomizer.nextBoolean() ? 1 : -1;
-        }
-
     }
 
     private String serveMediaContent(String type, Path file) throws PresentationException, WebApplicationException {

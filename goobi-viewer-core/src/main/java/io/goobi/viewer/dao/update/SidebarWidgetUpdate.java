@@ -36,7 +36,8 @@ import org.apache.logging.log4j.LogManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.FacetFieldSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget;
@@ -70,7 +71,7 @@ public class SidebarWidgetUpdate implements IModelUpdate {
     private static final Logger logger = LogManager.getLogger(SidebarWidgetUpdate.class);
 
     @Override
-    public boolean update(IDAO dao) throws DAOException, SQLException {
+    public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
         if (dao.tableExists("cms_sidebar_elements")) {
             migrateWidgetTables(dao);
             return true;
@@ -91,29 +92,29 @@ public class SidebarWidgetUpdate implements IModelUpdate {
             Map<String, Object> columns = IntStream.range(0, columnNames.size())
                     .boxed()
                     .filter(i -> legacyWidget[i] != null)
-                    .collect(Collectors.toMap(i -> columnNames.get(i), i -> legacyWidget[i]));
+                    .collect(Collectors.toMap(columnNames::get, i -> legacyWidget[i]));
 
-            Long cms_sidebar_element_id = Optional.ofNullable(columns.get("cms_sidebar_element_id")).map(o -> (Long) o).orElse(null);
-            String widget_type = Optional.ofNullable(columns.get("widget_type")).map(o -> (String) o).orElse(null);
-            String css_class = Optional.ofNullable(columns.get("css_class")).map(o -> (String) o).orElse(null);
-            Long geomap__id = Optional.ofNullable(columns.get("geomap__id")).map(o -> (Long) o).orElse(null);
-            String inner_html = Optional.ofNullable(columns.get("inner_html")).map(o -> (String) o).orElse(null);
-            String linked_pages = Optional.ofNullable(columns.get("linked_pages")).map(o -> (String) o).orElse(null);
-            Integer sort_order = Optional.ofNullable(columns.get("sort_order")).map(o -> (Integer) o).orElse(null);
-            String type = Optional.ofNullable(columns.get("type")).map(o -> (String) o).orElse(null);
-            String value = Optional.ofNullable(columns.get("value")).map(o -> (String) o).orElse(null);
-            String widget_mode = Optional.ofNullable(columns.get("widget_mode")).map(o -> (String) o).orElse(null);
-            String widget_title = Optional.ofNullable(columns.get("widget_title")).map(o -> (String) o).orElse(null);
-            Long owner_page_id = Optional.ofNullable(columns.get("owner_page_id")).map(o -> (Long) o).orElse(null);
-            String additional_query = Optional.ofNullable(columns.get("additional_query")).map(o -> (String) o).orElse(null);
-            Boolean descending_order = Optional.ofNullable(columns.get("descending_order")).map(o -> (Boolean) o).orElse(null);
-            Integer result_display_limit = Optional.ofNullable(columns.get("result_display_limit")).map(o -> (Integer) o).orElse(null);
-            String search_field = Optional.ofNullable(columns.get("search_field")).map(o -> (String) o).orElse(null);
+            // Long cmsSidebaElementId = Optional.ofNullable(columns.get("cms_sidebar_element_id")).map(Long.class::cast).orElse(null);
+            // String widgetType = Optional.ofNullable(columns.get("widget_type")).map(String.class::cast).orElse(null);
+            String cssClass = Optional.ofNullable(columns.get("css_class")).map(String.class::cast).orElse(null);
+            Long geomapId = Optional.ofNullable(columns.get("geomap__id")).map(Long.class::cast).orElse(null);
+            String innerHtml = Optional.ofNullable(columns.get("inner_html")).map(String.class::cast).orElse(null);
+            String linkedPages = Optional.ofNullable(columns.get("linked_pages")).map(String.class::cast).orElse(null);
+            Integer sortOrder = Optional.ofNullable(columns.get("sort_order")).map(Integer.class::cast).orElse(null);
+            String type = Optional.ofNullable(columns.get("type")).map(String.class::cast).orElse(null);
+            // String value = Optional.ofNullable(columns.get("value")).map(String.class::cast).orElse(null);
+            String widgetMode = Optional.ofNullable(columns.get("widget_mode")).map(String.class::cast).orElse(null);
+            String widgetTitle = Optional.ofNullable(columns.get("widget_title")).map(String.class::cast).orElse(null);
+            Long ownerPageId = Optional.ofNullable(columns.get("owner_page_id")).map(Long.class::cast).orElse(null);
+            String additionalQuery = Optional.ofNullable(columns.get("additional_query")).map(String.class::cast).orElse(null);
+            // Boolean descendingOrder = Optional.ofNullable(columns.get("descending_order")).map(Boolean.class::cast).orElse(null);
+            Integer resultDisplayLimit = Optional.ofNullable(columns.get("result_display_limit")).map(Integer.class::cast).orElse(null);
+            String searchField = Optional.ofNullable(columns.get("search_field")).map(String.class::cast).orElse(null);
 
             WidgetContentType contentType = parseContentType(type);
 
             if (contentType != null) {
-                CMSPage ownerPage = dao.getCMSPage(owner_page_id);
+                CMSPage ownerPage = dao.getCMSPage(ownerPageId);
                 if (ownerPage != null) {
                     WidgetGenerationType generationType = WidgetContentType.getGenerationType(contentType);
                     CMSSidebarElement element = null;
@@ -122,25 +123,28 @@ public class SidebarWidgetUpdate implements IModelUpdate {
                             element = new CMSSidebarElementDefault(contentType, ownerPage);
                             break;
                         case AUTOMATIC:
-                            GeoMap map = dao.getGeoMap(geomap__id);
+                            GeoMap map = dao.getGeoMap(geomapId);
                             if (map != null) {
                                 element = new CMSSidebarElementAutomatic(map, ownerPage);
                             }
                             break;
                         case CUSTOM:
                             if (CustomWidgetType.WIDGET_HTML.equals(contentType)) {
-                                widget_title = type;
+                                widgetTitle = type;
                             }
-                            CustomSidebarWidget widget = createCustomWidget(inner_html, linked_pages, widget_title, additional_query,
-                                    result_display_limit, search_field, contentType, widget_mode, css_class);
+                            CustomSidebarWidget widget = createCustomWidget(innerHtml, linkedPages, widgetTitle, additionalQuery,
+                                    resultDisplayLimit, searchField, contentType, widgetMode, cssClass);
                             if (widget != null) {
                                 dao.addCustomWidget(widget);
                                 logger.error("CREATED NEW SIDEBAR WIDGET OF TYPE '{}' FOR USE IN CMS PAGE '{}'", contentType, ownerPage);
                                 element = new CMSSidebarElementCustom(widget, ownerPage);
                             }
+                            break;
+                        default:
+                            break;
                     }
                     if (element != null) {
-                        element.setOrder(sort_order);
+                        element.setOrder(sortOrder);
                         ownerPage.addSidebarElement(element);
                         dao.updateCMSPage(ownerPage);
                     }
@@ -151,16 +155,29 @@ public class SidebarWidgetUpdate implements IModelUpdate {
         dao.executeUpdate("DROP TABLE cms_sidebar_elements");
     }
 
-    private static CustomSidebarWidget createCustomWidget(String inner_html, String linked_pages, String widget_title, String additional_query,
-            Integer result_display_limit, String search_field, WidgetContentType contentType, String widget_mode, String css_class) {
+    /**
+     * 
+     * @param innerHtml
+     * @param linkedPages
+     * @param widgetTitle
+     * @param additionalQuery
+     * @param resultDisplayLimit
+     * @param searchField
+     * @param contentType
+     * @param widgetMode
+     * @param cssClass
+     * @return Created {@link CustomSidebarWidget}
+     */
+    private static CustomSidebarWidget createCustomWidget(String innerHtml, String linkedPages, String widgetTitle, String additionalQuery,
+            Integer resultDisplayLimit, String searchField, WidgetContentType contentType, String widgetMode, String cssClass) {
         CustomWidgetType customType = (CustomWidgetType) contentType;
         CustomSidebarWidget widget = new CustomSidebarWidget();
         switch (customType) {
             case WIDGET_HTML:
-                if (StringUtils.isNotBlank(inner_html)) {
+                if (StringUtils.isNotBlank(innerHtml)) {
                     HtmlSidebarWidget htmlWidget = new HtmlSidebarWidget();
-                    setTitle(widget_title, htmlWidget);
-                    htmlWidget.getHtmlText().mapEach(oldValue -> inner_html);
+                    setTitle(widgetTitle, htmlWidget);
+                    htmlWidget.getHtmlText().mapEach(oldValue -> innerHtml);
                     widget = htmlWidget;
                 } else {
                     return null;
@@ -168,36 +185,43 @@ public class SidebarWidgetUpdate implements IModelUpdate {
                 break;
             case WIDGET_CMSPAGES:
                 PageListSidebarWidget pageWidget = new PageListSidebarWidget();
-                setTitle(widget_title, pageWidget);
-                pageWidget.setPageIds(parseIds(linked_pages, "\\s*;\\s*"));
+                setTitle(widgetTitle, pageWidget);
+                pageWidget.setPageIds(parseIds(linkedPages, "\\s*;\\s*"));
                 widget = pageWidget;
                 break;
             case WIDGET_RSSFEED:
                 RssFeedSidebarWidget rssWidget = new RssFeedSidebarWidget();
-                setTitle(StringUtils.isBlank(widget_title) ? "lastImports" : widget_title, rssWidget);
-                if (StringUtils.isNotBlank(widget_title)) {
-                    rssWidget.getTitle().setValue(widget_title, IPolyglott.getDefaultLocale());
+                setTitle(StringUtils.isBlank(widgetTitle) ? "lastImports" : widgetTitle, rssWidget);
+                if (StringUtils.isNotBlank(widgetTitle)) {
+                    rssWidget.getTitle().setValue(widgetTitle, IPolyglott.getDefaultLocale());
                 } else {
                     rssWidget.setTitle(new TranslatedText(ViewerResourceBundle.getTranslations("lastImports")));
                 }
-                rssWidget.setFilterQuery(additional_query);
+                rssWidget.setFilterQuery(additionalQuery);
                 widget = rssWidget;
                 break;
             case WIDGET_FIELDFACETS:
                 FacetFieldSidebarWidget facetWidget = new FacetFieldSidebarWidget();
-                facetWidget.setFacetField(search_field);
-                facetWidget.setNumEntries(result_display_limit);
-                facetWidget.setFilterQuery(additional_query);
+                facetWidget.setFacetField(searchField);
+                facetWidget.setNumEntries(resultDisplayLimit);
+                facetWidget.setFilterQuery(additionalQuery);
                 widget = facetWidget;
+                break;
+            default:
                 break;
         }
 
-        widget.setCollapsed("FOLDOUT".equals(widget_mode));
-        widget.setStyleClass(css_class);
+        widget.setCollapsed("FOLDOUT".equals(widgetMode));
+        widget.setStyleClass(cssClass);
 
         return widget;
     }
 
+    /**
+     * 
+     * @param widgetTitle
+     * @param htmlWidget
+     */
     private static void setTitle(String widgetTitle, CustomSidebarWidget htmlWidget) {
         TranslatedText translatedTitle = new TranslatedText(ViewerResourceBundle.getTranslations(widgetTitle, false));
         if (translatedTitle.isEmpty()) {
@@ -207,6 +231,11 @@ public class SidebarWidgetUpdate implements IModelUpdate {
         }
     }
 
+    /**
+     * 
+     * @param type
+     * @return {@link WidgetContentType}
+     */
     private static WidgetContentType parseContentType(String type) {
         WidgetContentType contentType = null;
         if (StringUtils.isNotBlank(type)) {
@@ -242,6 +271,12 @@ public class SidebarWidgetUpdate implements IModelUpdate {
         return contentType;
     }
 
+    /**
+     * 
+     * @param string
+     * @param separatorPattern
+     * @return IDs parsed from given string
+     */
     private static List<Long> parseIds(String string, String separatorPattern) {
         return Arrays.stream(string.split(separatorPattern)).map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
     }

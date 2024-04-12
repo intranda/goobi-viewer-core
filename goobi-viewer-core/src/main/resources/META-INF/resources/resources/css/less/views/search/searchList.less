@@ -31,6 +31,7 @@
 		display: flex;
 		justify-content: flex-end;
 		flex-wrap: wrap;
+		margin-bottom: 15px;
 	}
 	&__options-container-heading {
 		margin-right: auto;
@@ -85,10 +86,10 @@
 		padding-left: 4px;
 	}
 	&__excel-export {
-		padding-right: 5px;
 		a {
 		}
 		.excel-export-loader {
+			padding-right: 5px;
 			display: none;
 			padding-left: 5px;
 			img {
@@ -97,6 +98,17 @@
 			}
 		}
 	}
+	&__ris-export {
+		padding-right: 5px;
+		.ris-export-loader {
+			display: none;
+			padding-left: 5px;
+			img {
+				width: 14px;
+				margin-top: -4px;
+			}
+		}
+	} 
 	&__toggle-thumbs {
 		padding: 0 5px;
 		border-left: 1px solid @middlegray;
@@ -259,19 +271,53 @@
 		background-color: @middlegray2;
 	}
 	&__hit-header {
+		
+	}
+	&__hit-number-wrapper {
+        border-radius: 50%;
+        color: white;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+        font-weight: bold;
+        margin-right: 7px;
+        text-align: center;
+        width: 40px;
+		height: 40px;
+		background: @blue;
+		max-width: 40px;
+		flex: 0 0 40px;
+		align-self: flex-start;
+	}
+	&__hit-number {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: 30px;
+		display: inline-block;
 	}
 	&__hit-title,
 	&__hit-type,
 	&__hit-info {
+	}
+	&__hit-type {
 	}
 	&__hit-title {
 		position: relative;
 		h3 {
 			padding-bottom: 0.5rem;
 			margin: 0;
+			word-wrap: anywhere;
 		}
 		&.-noThumbnail {
 			padding-right: 2.4rem;
+		}
+		&.-hitNumber {
+			display: flex;
+			align-items: center;
+			margin-bottom: 10px;
+			h3 {
+				padding-bottom: 0;
+			}
 		}
 	}
 	&__no-thumb-bookmark {
@@ -400,6 +446,11 @@
 	&__hit-info {
 		margin-top: 10px;
 	}
+	&__loader {
+			display: flex;
+			width: 100%;
+			justify-content: center;			
+		}
 	a[data-toggle="hit-content"],
 	button[data-toggle="hit-content"] {
 		width: 100%;
@@ -423,16 +474,11 @@
 				transform: rotate(90deg);
 			}
 		}
-		.search-list__loader {
-			display: none;
-			width: 14px;
-		}
 		&.active {
 			display: inline-block;
 		}
 	}
 	&__hit-content {
-		display: none;
 		margin-top: 10px;
 		dl {
 			margin-bottom: 5px;
@@ -465,7 +511,6 @@
 		margin-left: 0.5rem;
 		img {
 			height: 60px;
-			padding: 5px 5px 0 0;
 			max-width: 100px;
 		}
 	}
@@ -525,6 +570,17 @@
 	}
 	&__struct-chapter + .search-list__struct-title {
 		margin-top: 10px;
+	}
+	/* RESULT GROUP STYLES */
+	&__hit-result-group-heading {
+
+	}
+	&__expand-group-link {
+		
+	}
+	/* EXTRA METADATA LIST FOR GRID - HIDE BY DEFAULT */
+	&__hit-metadata-second {
+		display: none;
 	}
 	/* FACETS HEADING */
 	&__facets-heading {

@@ -54,6 +54,7 @@ public class ConfigEditorEndpoint {
 
     /**
      * Store id of http session
+     * 
      * @param session
      * @param config
      */
@@ -64,34 +65,31 @@ public class ConfigEditorEndpoint {
     }
 
     /**
-     * Accept messages containing a file path which is locked by the curren page and needs to be
-     * unlocked upon leaving the page
-     * @param message   a json object string in the form "{'fileToLock' : '/path/to/config/file'}"
+     * Accept messages containing a file path which is locked by the curren page and needs to be unlocked upon leaving the page
+     * 
+     * @param message a json object string in the form "{'fileToLock' : '/path/to/config/file'}"
      */
     @OnMessage
     public void onMessage(String message) {
-        try {            
+        try {
             JSONObject json = new JSONObject(message);
             String pathString = json.getString("fileToLock");
             Path path = Paths.get(pathString);
             this.lockedFilePath = Optional.of(path);
-        } catch(JSONException | NullPointerException e) {
+        } catch (JSONException | NullPointerException e) {
             logger.error("Error interpreting message {}", message);
         }
     }
 
     /**
-     * Called when leaving a adminConfigEditor page. Unlocks the file set by {@link #onMessage(String)}
-     * for the session set by {@link #onOpen(Session, EndpointConfig)} using {@link AdminConfigEditorBean#unlockFile(Path, String)}
+     * Called when leaving a adminConfigEditor page. Unlocks the file set by {@link #onMessage(String)} for the session set by
+     * {@link #onOpen(Session, EndpointConfig)} using {@link AdminConfigEditorBean#unlockFile(Path, String)}
+     * 
      * @param session
      */
     @OnClose
     public void onClose(Session session) {
-        lockedFilePath.ifPresent(path -> 
-            httpSessionId.ifPresent(sessionId -> 
-                AdminConfigEditorBean.unlockFile(path, sessionId)
-            )
-        );
+        lockedFilePath.ifPresent(path -> httpSessionId.ifPresent(sessionId -> AdminConfigEditorBean.unlockFile(path, sessionId)));
     }
 
     @OnError

@@ -21,9 +21,9 @@
  */
 package io.goobi.viewer.model.statistics.usage;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,15 +35,15 @@ import java.util.stream.StreamSupport;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class StatisticsIndexerTest {
+class StatisticsIndexerTest {
 
     @Test
-    public void test() throws DAOException, IOException {
+    void test() throws DAOException, IOException {
         Path hotfolder = Paths.get("src/test/resources/hotfolder");
         Path hotfolderFile = hotfolder.resolve("statistics-usage-2022-07-04.json");
         if(Files.exists(hotfolderFile)) {
@@ -90,18 +90,18 @@ public class StatisticsIndexerTest {
     }
     
     @Test
-    public void testBuildQuery() {
+    void testBuildQuery() {
         LocalDate date = LocalDate.of(2022, 8, 30);
         String query1 = String.format("+%s:%s +%s:\"%s\"", 
                 SolrConstants.DOCTYPE, 
                 StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE,
                 StatisticsLuceneFields.DATE,
-                StatisticsLuceneFields.solrDateFormatter.format(date.atStartOfDay()));
+                StatisticsLuceneFields.SOLR_DATE_FORMATTER.format(date.atStartOfDay()));
         String query2 = "+{docTypeField}:{doctype} +{dateField}:\"{date}\""
                 .replace("{docTypeField}", SolrConstants.DOCTYPE)
                 .replace("{doctype}", StatisticsLuceneFields.USAGE_STATISTICS_DOCTYPE)
                 .replace("{dateField}", StatisticsLuceneFields.DATE)
-                .replace("{date}", StatisticsLuceneFields.solrDateFormatter.format(date.atStartOfDay()));
+                .replace("{date}", StatisticsLuceneFields.SOLR_DATE_FORMATTER.format(date.atStartOfDay()));
         
         assertEquals(query1, query2);
         assertEquals("+DOCTYPE:STATISTICS_USAGE +STATISTICS_DATE:\"2022-08-30T00:00:00Z\"", query1);

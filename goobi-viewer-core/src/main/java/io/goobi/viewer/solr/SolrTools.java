@@ -35,11 +35,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -47,8 +52,6 @@ import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -69,15 +72,16 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 /**
  * Static utility methods for Solr.
  */
-public class SolrTools {
+public final class SolrTools {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(SolrTools.class);
 
-    private static final int MIN_SCHEMA_VERSION = 20190924;
+    private static final int MIN_SCHEMA_VERSION = 20230110;
     private static final String SCHEMA_VERSION_PREFIX = "goobi_viewer-";
 
     private static final String MULTILANGUAGE_FIELD_REGEX = "(\\w+)_LANG_(\\w{2,3})";
+    private static final String SUFFIX_LANGUAGE_REGEX = SolrConstants.MIDFIX_LANG + "([A-Z]{2,3})$";
 
     /**
      * 
@@ -146,6 +150,11 @@ public class SolrTools {
         return getAsString(fieldValue, "\n");
     }
 
+    /**
+     * 
+     * @param fieldValue
+     * @return Boolean
+     */
     public static Boolean getAsBoolean(Object fieldValue) {
         if (fieldValue instanceof Boolean) {
             return (Boolean) fieldValue;
@@ -156,6 +165,12 @@ public class SolrTools {
         }
     }
 
+    /**
+     * 
+     * @param fieldValue
+     * @param separator
+     * @return String
+     */
     @SuppressWarnings("unchecked")
     public static String getAsString(Object fieldValue, String separator) {
         if (fieldValue == null) {
@@ -207,6 +222,13 @@ public class SolrTools {
      * @return a {@link java.lang.Object} object.
      */
     public static Object getSingleFieldValue(SolrDocument doc, String field) {
+        if (doc == null) {
+            throw new IllegalArgumentException("doc may not be null");
+        }
+        if (field == null) {
+            return null;
+        }
+
         Collection<Object> valueList = doc.getFieldValues(field);
         if (valueList != null && !valueList.isEmpty()) {
             return valueList.iterator().next();
@@ -272,8 +294,8 @@ public class SolrTools {
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param fieldName a {@link java.lang.String} object.
-     * @should return all values for the given field
      * @return a {@link java.util.List} object.
+     * @should return all values for the given field
      */
     public static List<String> getMetadataValues(SolrDocument doc, String fieldName) {
         if (doc == null) {
@@ -302,8 +324,8 @@ public class SolrTools {
      * and can get quite large.
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @should return all fields in the given doc except page urns
      * @return a {@link java.util.Map} object.
+     * @should return all fields in the given doc except page urns
      */
     public static Map<String, List<String>> getFieldValueMap(SolrDocument doc) {
         Map<String, List<String>> ret = new HashMap<>();
@@ -328,8 +350,8 @@ public class SolrTools {
      * and can get quite large.
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
-     * @should return all fields in the given doc except page urns
      * @return a {@link java.util.Map} object.
+     * @should return all fields in the given doc except page urns
      */
     public static Map<String, List<IMetadataValue>> getMultiLanguageFieldValueMap(SolrDocument doc) {
         Map<String, List<IMetadataValue>> ret = new HashMap<>();
@@ -362,7 +384,7 @@ public class SolrTools {
      */
     public static List<IMetadataValue> getMultiLanguageMetadata(Map<String, List<String>> mdValues) {
         List<IMetadataValue> values = new ArrayList<>();
-        int numValues = mdValues.values().stream().mapToInt(list -> list.size()).max().orElse(0);
+        int numValues = mdValues.values().stream().mapToInt(Collection::size).max().orElse(0);
         for (int i = 0; i < numValues; i++) {
             MultiLanguageMetadataValue value = new MultiLanguageMetadataValue();
             for (Entry<String, List<String>> entry : mdValues.entrySet()) {
@@ -409,7 +431,7 @@ public class SolrTools {
             }
             Collection<Object> languageValues = doc.getFieldValues(languageField);
             if (languageValues != null) {
-                List<String> values = languageValues.stream().map(value -> String.valueOf(value)).collect(Collectors.toList());
+                List<String> values = languageValues.stream().map(String::valueOf).collect(Collectors.toList());
                 map.put(locale, values);
             }
         }
@@ -444,7 +466,7 @@ public class SolrTools {
                 }
                 Collection<String> languageValues = doc.getMetadataValues(languageField);
                 if (languageValues != null) {
-                    List<String> values = languageValues.stream().map(value -> String.valueOf(value)).collect(Collectors.toList());
+                    List<String> values = languageValues.stream().map(String::valueOf).collect(Collectors.toList());
                     map.put(locale, values);
                 }
             }
@@ -455,7 +477,7 @@ public class SolrTools {
     /**
      *
      * @param doc
-     * @return
+     * @return true if doc contains DOCTYPE:GROUP; false otherwise
      */
     public static boolean isGroup(SolrDocument doc) {
         if (doc == null) {
@@ -468,7 +490,7 @@ public class SolrTools {
     /**
      *
      * @param doc
-     * @return
+     * @return true if doc contains ISANCHOR:true; false otherwise
      */
     public static boolean isAnchor(SolrDocument doc) {
         if (doc == null) {
@@ -481,7 +503,7 @@ public class SolrTools {
     /**
      *
      * @param doc
-     * @return
+     * @return true if doc contains ISWORK:true; false otherwise
      */
     public static boolean isWork(SolrDocument doc) {
         if (doc == null) {
@@ -493,10 +515,30 @@ public class SolrTools {
 
     /**
      * @param fieldName
-     * @return
+     * @return true if fieldName contains _LANG_; false otherwise
      */
-    private static boolean isLanguageCodedField(String fieldName) {
+    public static boolean isLanguageCodedField(String fieldName) {
         return StringUtils.isNotBlank(fieldName) && fieldName.matches(MULTILANGUAGE_FIELD_REGEX);
+    }
+
+    /**
+     * 
+     * @param field
+     * @param language
+     * @return true if language code different
+     * @should return true if language code different
+     * @should return false if language code same
+     * @should return false if no language code
+     */
+    public static boolean isHasWrongLanguageCode(String field, String language) {
+        if (field == null) {
+            throw new IllegalArgumentException("field may not be null");
+        }
+        if (language == null) {
+            throw new IllegalArgumentException("language may not be null");
+        }
+
+        return field.contains(SolrConstants.MIDFIX_LANG) && !field.endsWith(SolrConstants.MIDFIX_LANG + language.toUpperCase());
     }
 
     /**
@@ -514,6 +556,28 @@ public class SolrTools {
                 || e.getMessage().contains("undefined field")
                 || e.getMessage().contains("field can't be found")
                 || e.getMessage().contains("can not sort on multivalued field"));
+    }
+
+    /**
+     * 
+     * @param exceptionMessage
+     * @return Extracted message
+     * @should return empty string if exceptionMessage empty
+     * @should return exceptionMessage if no pattern match found
+     * @should return title content correctly
+     */
+    public static String extractExceptionMessageHtmlTitle(String exceptionMessage) {
+        if (StringUtils.isEmpty(exceptionMessage)) {
+            return "";
+        }
+
+        Pattern p = Pattern.compile("<title>(.*)</title>");
+        Matcher m = p.matcher(exceptionMessage);
+        if (m.find()) {
+            return m.group(1);
+        }
+
+        return exceptionMessage;
     }
 
     /**
@@ -578,6 +642,7 @@ public class SolrTools {
      *
      * @param fieldName a {@link java.lang.String} object.
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param translationLocales
      * @param combiner a {@link java.util.function.BinaryOperator} object.
      * @return a {@link java.util.Optional} object.
      */
@@ -587,7 +652,7 @@ public class SolrTools {
         if (translations.size() > 1) {
             return Optional.of(new MultiLanguageMetadataValue(translations, combiner));
         } else if (!translations.isEmpty()) {
-            String value = translations.values().iterator().next().stream().reduce((s1, s2) -> combiner.apply(s1, s2)).orElse("");
+            String value = translations.values().iterator().next().stream().reduce(combiner::apply).orElse("");
             return Optional.ofNullable(ViewerResourceBundle
                     .getTranslations(value, translationLocales, false));
         } else {
@@ -602,10 +667,11 @@ public class SolrTools {
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object. Needs to contain metadata fields {@link SolrConstants.FILENAME} and
      *            {@link SolrConstants.THUMBNAIL}
+     * @return true if record described by doc has images; false otherwise
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should return correct value for page docs
      * @should return correct value for docsctrct docs
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return correct value for iiif manifests in file name
      */
     public static boolean isHasImages(SolrDocument doc) throws IndexUnreachableException {
         StructElement structElement = new StructElement(0, doc);
@@ -616,6 +682,9 @@ public class SolrTools {
             filename = structElement.getMetadataValue(SolrConstants.THUMBNAIL);
         }
         if (filename != null) {
+            if (filename.endsWith("/info.json")) {
+                return true;
+            }
             fileExtension = FilenameUtils.getExtension(filename).toLowerCase();
         }
 
@@ -625,19 +694,20 @@ public class SolrTools {
     /**
      *
      * @param conditions
-     * @return
+     * @return conditions with NOW/YEAR replaced by current year
      */
-    public static String getProcessedConditions(String conditions) {
+    public static String getProcessedConditions(final String conditions) {
         if (conditions == null) {
             return null;
         }
 
-        if (conditions.contains("NOW/YEAR") && !conditions.contains("DATE_")) {
+        String c = conditions;
+        if (c.contains("NOW/YEAR") && !c.contains("DATE_")) {
             // Hack for getting the current year as a number for non-date Solr fields
-            conditions = conditions.replace("NOW/YEAR", String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
+            c = c.replace("NOW/YEAR", String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
         }
 
-        return conditions.trim();
+        return c.trim();
     }
 
     /**
@@ -652,26 +722,47 @@ public class SolrTools {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should return all existing values for the given field
      */
-    public static List<String> getAvailableValuesForField(String field, String filterQuery) throws PresentationException, IndexUnreachableException {
+    public static List<String> getAvailableValuesForField(final String field, final String filterQuery)
+            throws PresentationException, IndexUnreachableException {
+        return getAvailableValuesForField(field, filterQuery, true);
+    }
+
+    /**
+     * <p>
+     * getAvailableValuesForField.
+     * </p>
+     *
+     * @param field a {@link java.lang.String} object.
+     * @param filterQuery a {@link java.lang.String} object.
+     * @param useFacetField If true, "FACET_" field variant is used for the actual search; Only use false for single-token values
+     * @return List of facet values for the given field and query
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return all existing values for the given field
+     */
+    public static List<String> getAvailableValuesForField(final String field, final String filterQuery, boolean useFacetField)
+            throws PresentationException, IndexUnreachableException {
         if (field == null) {
             throw new IllegalArgumentException("field may not be null");
         }
         if (filterQuery == null) {
             throw new IllegalArgumentException("filterQuery may not be null");
         }
-
-        filterQuery = SearchHelper.buildFinalQuery(filterQuery, false, SearchAggregationType.NO_AGGREGATION);
+        String facettifiedField = useFacetField ? SearchHelper.facetifyField(field) : field;
+        String fq = SearchHelper.buildFinalQuery(filterQuery, false, SearchAggregationType.NO_AGGREGATION);
         QueryResponse qr =
-                DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(filterQuery, null, Collections.singletonList(field), 1, false);
+                DataManager.getInstance()
+                        .getSearchIndex()
+                        .searchFacetsAndStatistics(fq, null, Collections.singletonList(facettifiedField), 1, false);
         if (qr != null) {
-            FacetField facet = qr.getFacetField(field);
+            FacetField facet = qr.getFacetField(facettifiedField);
             if (facet != null) {
                 List<String> ret = new ArrayList<>(facet.getValueCount());
                 for (Count count : facet.getValues()) {
                     // Skip inverted values
                     if (!StringTools.checkValueEmptyOrInverted(count.getName())) {
                         ret.add(count.getName());
-                        // logger.trace(count.getName());
+                        // logger.trace(count.getName()); //NOSONAR Logging sometimes needed for debugging
                     }
                 }
                 return ret;
@@ -694,7 +785,7 @@ public class SolrTools {
             return Collections.emptyList();
         }
 
-        return getAvailableValuesForField(subthemeDiscriminatorField, SolrConstants.PI + ":*");
+        return getAvailableValuesForField(subthemeDiscriminatorField, SolrConstants.PI + ":*", false);
     }
 
     /**
@@ -749,6 +840,10 @@ public class SolrTools {
         return ret;
     }
 
+    /**
+     * 
+     * @return JDOM2 Document containing the Solr schema XML
+     */
     private static Document getSolrSchemaDocument() {
         try {
             NetTools.getWebContentGET(
@@ -766,4 +861,174 @@ public class SolrTools {
 
         return null;
     }
+
+    /**
+     * Escapes all special characters used by SOLR (as detailed here:
+     * https://solr.apache.org/guide/7_3/the-standard-query-parser.html#escaping-special-characters) as well as the characters '<' and '>' by adding a
+     * '\' before them. Special characters which already are escaped by '\' are not escaped any further making this method idempotent
+     * 
+     * @param string the string to escape
+     * @return the escaped string. if the original string is null, null is also returned
+     */
+    public static String escapeSpecialCharacters(String string) {
+        if (StringUtils.isNotBlank(string)) {
+            return string.replaceAll("(?<!\\\\)([<>+\\-&|!(){}\\[\\]^\"~*?:/])", "\\\\$1");
+        }
+        return string;
+    }
+
+    /**
+     * reverts the operation of {@link #escapeSpecialCharacters(String)}
+     * 
+     * @param string the string to unescape
+     * @return the unescaped string
+     */
+    public static String unescapeSpecialCharacters(String string) {
+        if (StringUtils.isNotBlank(string)) {
+            return string.replaceAll("\\\\([<>+\\-&|!(){}\\[\\]^\\\"~*?:\\/])", "$1");
+        }
+        return string;
+    }
+
+    /**
+     * 
+     * @param query
+     * @return cleaned up query
+     * @should remove brace pairs
+     * @should keep join parameter
+     * @should keep single braces
+     */
+    public static String cleanUpQuery(String query) {
+        if (StringUtils.isBlank(query)) {
+            return query;
+        }
+
+        return query.replaceAll("\\{(.+)\\}", "$1").replace("!join from=PI_TOPSTRUCT to=PI", "{!join from=PI_TOPSTRUCT to=PI}");
+    }
+
+    /**
+     * 
+     * @param fieldName
+     * @return fieldName without language suffix
+     */
+    public static String getBaseFieldName(String fieldName) {
+        if (StringUtils.isNotBlank(fieldName)) {
+            return fieldName.replaceAll(SUFFIX_LANGUAGE_REGEX, "");
+        }
+        return fieldName;
+    }
+
+    /**
+     * 
+     * @param fieldName
+     * @return language part of fieldName
+     */
+    public static String getLanguage(String fieldName) {
+        if (StringUtils.isNotBlank(fieldName)) {
+            Matcher matcher = Pattern.compile(SUFFIX_LANGUAGE_REGEX).matcher(fieldName);
+            if (matcher.find()) {
+                return matcher.group(1);
+            }
+            return null;
+        }
+        return null;
+    }
+
+    /**
+     * 
+     * @param fieldName
+     * @return Locale based on the language part of fieldName
+     */
+    public static Locale getLocale(String fieldName) {
+        String language = getLanguage(fieldName);
+        if (StringUtils.isNotBlank(language)) {
+            return Locale.forLanguageTag(language.toLowerCase());
+        }
+        return null;
+    }
+
+    /**
+     * 
+     * @param doc
+     * @param fieldNameFilter
+     * @return Map
+     */
+    public static Map<String, List<IMetadataValue>> getTranslatedMetadata(SolrDocument doc, Function<String, Boolean> fieldNameFilter) {
+        return getTranslatedMetadata(doc, new HashMap<>(), null, fieldNameFilter);
+    }
+
+    /**
+     * 
+     * @param doc
+     * @param metadata
+     * @param documentLocale
+     * @param fieldNameFilter
+     * @return Map
+     */
+    public static Map<String, List<IMetadataValue>> getTranslatedMetadata(SolrDocument doc, Map<String, List<IMetadataValue>> metadata,
+            Locale documentLocale, Function<String, Boolean> fieldNameFilter) {
+        List<String> fieldNames = doc.getFieldNames().stream().filter(fieldNameFilter::apply).collect(Collectors.toList());
+        String docType = SolrTools.getBaseFieldName(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL));
+
+        for (String fieldName : fieldNames) {
+            List<String> values = SolrTools.getMetadataValues(doc, fieldName);
+            String baseFieldName = fieldName;
+            Locale locale = documentLocale;
+            if (SolrTools.isLanguageCodedField(fieldName)) {
+                baseFieldName = SolrTools.getBaseFieldName(fieldName);
+                locale = SolrTools.getLocale(fieldName);
+            } else if ("MD_VALUE".equals(fieldName)) {
+                baseFieldName = docType;
+                metadata.put("METADATA_TYPE", Collections.singletonList(ViewerResourceBundle.getTranslations(baseFieldName, true)));
+            }
+            for (String strValue : values) {
+                int valueIndex = values.indexOf(strValue);
+                List<IMetadataValue> existingValues = metadata.get(baseFieldName);
+                IMetadataValue existingValue = existingValues == null || existingValues.size() <= valueIndex ? null : existingValues.get(valueIndex);
+                if (existingValue == null) {
+                    if (locale == null) {
+                        IMetadataValue value =
+                                new MultiLanguageMetadataValue(new HashMap<>(Map.of(MultiLanguageMetadataValue.DEFAULT_LANGUAGE, strValue)));
+                        metadata.computeIfAbsent(baseFieldName, l -> new ArrayList<>()).add(value);
+                    } else {
+                        IMetadataValue value = new MultiLanguageMetadataValue(new HashMap<>(Map.of(locale.getLanguage(), strValue)));
+                        metadata.computeIfAbsent(baseFieldName, l -> new ArrayList<>()).add(value);
+                    }
+                } else {
+                    if (locale == null) {
+                        existingValue.setValue(strValue);
+                    } else {
+                        existingValue.setValue(strValue, locale);
+                    }
+                }
+            }
+        }
+        if (StringUtils.isNotBlank(docType) && metadata.containsKey(docType)) {
+            metadata.put("MD_VALUE", metadata.get(docType));
+        }
+        return metadata;
+    }
+
+    /**
+     * 
+     * @param doc
+     * @return Value of MD_REFID in doc, if available
+     */
+    public static final String getReferenceId(SolrDocument doc) {
+        String refId = getSingleFieldStringValue(doc, "MD_REFID");
+        if (StringUtils.isBlank(refId)) {
+            return getSingleFieldStringValue(doc, SolrConstants.IDDOC);
+        }
+
+        return refId;
+    }
+
+    public static List<Locale> getAllUsedLocales(StructElement structElement) {
+        return structElement.getMetadataFields().keySet().stream()
+        .filter(field -> field.matches(MULTILANGUAGE_FIELD_REGEX))
+        .map(SolrTools::getLanguage)
+        .map(Locale::forLanguageTag)
+        .toList();
+    }
+
 }

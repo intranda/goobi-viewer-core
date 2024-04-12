@@ -21,16 +21,9 @@
  */
 package io.goobi.viewer.api.rest.model;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpRequest;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -48,15 +41,20 @@ public class UserJsonFacade {
 
     private static final int AVATAR_IMAGE_SIZE = 150;
 
-    public final Long userId;
-    public final String name;
-    public final String avatar;
-    public final long score;
-    public final boolean active;
-    public final boolean suspended;
-    public final boolean anonymous;
-    public final boolean superuser;
+    private final Long userId;
+    private final String name;
+    private final String avatar;
+    private final long score;
+    private final boolean active;
+    private final boolean suspended;
+    private final boolean anonymous;
+    private final boolean superuser;
 
+    /**
+     * 
+     * @param user
+     * @param request
+     */
     public UserJsonFacade(User user, HttpServletRequest request) {
         this.name = user.getDisplayName();
         this.userId = user.getId();
@@ -68,11 +66,18 @@ public class UserJsonFacade {
         this.avatar = user.getAvatarUrl(AVATAR_IMAGE_SIZE, request);
     }
 
+    /**
+     * 
+     * @param user
+     */
     public UserJsonFacade(User user) {
         this(user, null);
     }
 
-
+    /**
+     * 
+     * @param orig
+     */
     public UserJsonFacade(UserJsonFacade orig) {
         this.avatar = orig.avatar;
         this.name = orig.name;
@@ -85,25 +90,25 @@ public class UserJsonFacade {
     }
 
     /**
-     * @param avatar
-     * @param name
      * @param userId
-     * @param suspended
-     * @param active
+     * @param name
+     * @param avatar
      * @param score
+     * @param active
+     * @param suspended
      * @param anonymous
      * @param superuser
      */
     @JsonCreator
     public UserJsonFacade(
-            @JsonProperty("userId")Long userId,
-            @JsonProperty("name")String name,
-            @JsonProperty("avatar")String avatar,
-            @JsonProperty("score")long score,
-            @JsonProperty("active")boolean active,
-            @JsonProperty("suspended")boolean suspended,
-            @JsonProperty("anonymous")boolean anonymous,
-            @JsonProperty("superuser")boolean superuser) {
+            @JsonProperty("userId") Long userId,
+            @JsonProperty("name") String name,
+            @JsonProperty("avatar") String avatar,
+            @JsonProperty("score") long score,
+            @JsonProperty("active") boolean active,
+            @JsonProperty("suspended") boolean suspended,
+            @JsonProperty("anonymous") boolean anonymous,
+            @JsonProperty("superuser") boolean superuser) {
         this.avatar = avatar;
         this.name = name;
         this.userId = userId;
@@ -115,40 +120,66 @@ public class UserJsonFacade {
     }
 
     /**
-     * @param string
+     * @param name
      */
     public UserJsonFacade(String name) {
         this(null, name, null, 0, false, false, true, false);
     }
 
     /**
-     * If no faces context exists, the application url may not be included in the avatar url. Use this to create the absolute url from the request
-     * object. Has no effect if the url is already absolute
-     *
-     * @param applicationUrl
+     * @return the userId
      */
-    private String absolutizeAvatarUrl(String avatarUrl, HttpServletRequest request) {
-      try {
-        URI uri = new URI(avatarUrl);
-        if(!uri.isAbsolute() && !avatarUrl.startsWith("//")); {
-
-        }
-    } catch (URISyntaxException e) {
-        //do nothing
+    public Long getUserId() {
+        return userId;
     }
 
-//        if (request != null && StringUtils.isNotBlank(avatarUrl)) {
-//            try {
-//                URI uri = new URI(avatarUrl);
-//                if (!uri.isAbsolute()) {
-//                    uri = new URI(request.getRequestURL().toString()).resolve(request.getContextPath() +  avatarUrl);
-//                    return uri.toString();
-//                }
-//            } catch (URISyntaxException e) {
-//                //do nothing
-//            }
-//        }
-        return avatarUrl;
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @return the avatar
+     */
+    public String getAvatar() {
+        return avatar;
+    }
+
+    /**
+     * @return the score
+     */
+    public long getScore() {
+        return score;
+    }
+
+    /**
+     * @return the active
+     */
+    public boolean isActive() {
+        return active;
+    }
+
+    /**
+     * @return the suspended
+     */
+    public boolean isSuspended() {
+        return suspended;
+    }
+
+    /**
+     * @return the anonymous
+     */
+    public boolean isAnonymous() {
+        return anonymous;
+    }
+
+    /**
+     * @return the superuser
+     */
+    public boolean isSuperuser() {
+        return superuser;
     }
 
     /* (non-Javadoc)
@@ -158,5 +189,4 @@ public class UserJsonFacade {
     public String toString() {
         return this.name + " ID:" + this.userId + " avatar:" + this.avatar;
     }
-
 }

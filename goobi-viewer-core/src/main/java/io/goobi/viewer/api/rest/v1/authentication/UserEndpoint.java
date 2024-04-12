@@ -45,7 +45,6 @@ import io.swagger.v3.oas.annotations.Operation;
 @Path(ApiUrls.USERS)
 public class UserEndpoint {
 
-
     @Context
     private HttpServletRequest servletRequest;
     @Context
@@ -56,8 +55,6 @@ public class UserEndpoint {
      * authenticateUser.
      * </p>
      *
-     * @param email a {@link java.lang.String} object.
-     * @param password a {@link java.lang.String} object.
      * @return a {@link javax.ws.rs.core.Response} object.
      */
     @Path(ApiUrls.USERS_CURRENT)

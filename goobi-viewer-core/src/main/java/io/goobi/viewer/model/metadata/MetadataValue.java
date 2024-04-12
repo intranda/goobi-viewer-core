@@ -21,17 +21,19 @@
  */
 package io.goobi.viewer.model.metadata;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.undercouch.citeproc.CSL;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -41,6 +43,7 @@ import io.goobi.viewer.model.citation.CitationDataProvider;
 import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.translations.IPolyglott;
 
 /**
  * Wrapper class for metadata parameter value groups, so that JSF can iterate through them properly.
@@ -74,9 +77,10 @@ public class MetadataValue implements Serializable {
     private String masterValue;
     private String groupType;
     private String docstrct = null;
+    private String topstruct = null;
     private String label;
-    private CSL citationProcessor = null;
-    private CitationDataProvider citationItemDataProvider = null;
+    private transient CSL citationProcessor = null;
+    private transient CitationDataProvider citationItemDataProvider = null;
     private String citationString = null;
 
     /**
@@ -95,7 +99,7 @@ public class MetadataValue implements Serializable {
     /**
      *
      * @param index
-     * @return
+     * @return true if value at index blank; false otherwise
      */
     public boolean isParamValueBlank(int index) {
         return StringUtils.isBlank(getComboValueShort(index));
@@ -108,10 +112,11 @@ public class MetadataValue implements Serializable {
      * @should return false if any param value not blank
      */
     public boolean isAllParamValuesBlank() {
-        for (int i = 0; i < paramValues.size(); ++i)
+        for (int i = 0; i < paramValues.size(); ++i) {
             if (StringUtils.isNotBlank(getComboValueShort(i))) {
                 return false;
             }
+        }
 
         return true;
     }
@@ -144,24 +149,19 @@ public class MetadataValue implements Serializable {
                 continue;
             }
 
-            // logger.trace("param value: {}", paramValue);
-
+            // logger.trace("param value: {}", paramValue); //NOSONAR Debug
             if (MetadataParameterType.CITEPROC.getKey().equals(paramValue)) {
-                // logger.trace("CitePROC value: {}", index);
+                // logger.trace("CitePROC value: {}", index); //NOSONAR Debug
                 if (citationProcessor == null) {
                     return "No citation processor";
                 }
-                try {
-                    if (citationString == null) {
-                        citationString = new Citation(id, citationProcessor, citationItemDataProvider, CitationTools.getCSLTypeForDocstrct(docstrct),
-                                citationValues)
-                                        .getCitationString("text");
-                    }
-                    return citationString;
-                } catch (IOException e) {
-                    logger.error(e.getMessage());
-                    return e.getMessage();
+
+                if (citationString == null) {
+                    citationString = new Citation(id, citationProcessor, citationItemDataProvider,
+                            CitationTools.getCSLTypeForDocstrct(docstrct, topstruct),
+                            citationValues).getCitationString("text");
                 }
+                return citationString;
             }
 
             boolean addPrefix = true;
@@ -176,7 +176,7 @@ public class MetadataValue implements Serializable {
                 addPrefix = false;
                 addSuffix = false;
                 masterFragment = ViewerResourceBundle.getTranslation(paramMasterValueFragments.get(index), null);
-                // logger.trace("master fragment: {}", masterFragment);
+                // logger.trace("master fragment: {}", masterFragment); //NOSONAR Debug
             }
             // Only add prefix if the total parameter value lengths is > 0 so far
             if (addPrefix && paramPrefixes.size() > index && StringUtils.isNotEmpty(paramPrefixes.get(index))) {
@@ -210,9 +210,9 @@ public class MetadataValue implements Serializable {
      * @param index a int.
      */
     public String getParamLabelWithColon(int index) {
-        // logger.trace("getParamLabelWithColon: {}", index);
+        // logger.trace("getParamLabelWithColon: {}", index); //NOSONAR Debug
         if (paramLabels.size() > index && paramLabels.get(index) != null) {
-            // logger.trace(ViewerResourceBundle.getTranslation(paramLabels.get(index), null) + ": ");
+            // logger.trace(ViewerResourceBundle.getTranslation(paramLabels.get(index), null) + ": "); //NOSONAR Debug
             return ViewerResourceBundle.getTranslation(paramLabels.get(index), null) + ": ";
         }
         return "";
@@ -307,7 +307,7 @@ public class MetadataValue implements Serializable {
             return new ArrayList<>(normDataUrls.keySet());
         }
 
-        return null;
+        return Collections.emptyList();
     }
 
     /**
@@ -363,10 +363,7 @@ public class MetadataValue implements Serializable {
      */
     public boolean hasParamValue(String paramLabel) {
         int index = paramLabels.indexOf(paramLabel);
-        if (index > -1 && index < paramValues.size()) {
-            return true;
-        }
-        return false;
+        return index > -1 && index < paramValues.size();
     }
 
     /**
@@ -378,11 +375,26 @@ public class MetadataValue implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getParamValue(String paramLabel) {
+        List<String> values = getParamValues(paramLabel);
+        if (!values.isEmpty()) {
+            return values.get(0);
+        }
+
+        return "";
+    }
+
+    /**
+     * 
+     * @param paramLabel
+     * @return List of parameter values for the given paramLabel
+     */
+    public List<String> getParamValues(String paramLabel) {
         int index = paramLabels.indexOf(paramLabel);
         if (index > -1 && index < paramValues.size()) {
-            return paramValues.get(index).get(0);
+            return paramValues.get(index);
         }
-        return "";
+
+        return Collections.emptyList();
     }
 
     /**
@@ -399,7 +411,7 @@ public class MetadataValue implements Serializable {
         if (searchTerms == null || searchTerms.isEmpty()) {
             return;
         }
-        logger.trace("applyHighlightingToParamValue: {}", paramIndex, searchTerms);
+        // logger.trace("applyHighlightingToParamValue: {} ({})", paramIndex, searchTerms); //NOSONAR Debug
 
         List<String> values = paramValues.get(paramIndex);
         for (int i = 0; i < values.size(); ++i) {
@@ -437,6 +449,50 @@ public class MetadataValue implements Serializable {
      */
     public void setOwnerIddoc(String ownerIddoc) {
         this.ownerIddoc = ownerIddoc;
+    }
+
+    /**
+     * 
+     * @return Display value for the current locale
+     */
+    public String getDisplayValue() {
+        return getDisplayValue(IPolyglott.getCurrentLocale());
+    }
+
+    /**
+     * 
+     * @param includeLabels
+     * @return Display value for the current locale
+     */
+    public String getDisplayValue(boolean includeLabels) {
+        return getDisplayValue(IPolyglott.getCurrentLocale(), includeLabels);
+    }
+
+    /**
+     * 
+     * @param locale
+     * @return Display value for the given locale
+     */
+    public String getDisplayValue(Locale locale) {
+        return getDisplayValue(locale, false);
+    }
+
+    /**
+     * 
+     * @param locale
+     * @param includeLabels
+     * @return Display value for the given locale
+     */
+    public String getDisplayValue(Locale locale, boolean includeLabels) {
+        String[] comboValues = IntStream.range(0, paramValues.size()).mapToObj(ind -> {
+            String l = includeLabels ? getParamLabelWithColon(ind) : "";
+            String v = getComboValueShort(ind);
+            return includeLabels ? List.of(l, v) : List.of(v);
+        })
+                .flatMap(List::stream)
+                .toArray(String[]::new);
+
+        return ViewerResourceBundle.getTranslationWithParameters(getMasterValue(), locale, true, comboValues);
     }
 
     /**
@@ -509,6 +565,20 @@ public class MetadataValue implements Serializable {
     }
 
     /**
+     * @return the topstruct
+     */
+    public String getTopstruct() {
+        return topstruct;
+    }
+
+    /**
+     * @param topstruct the topstruct to set
+     */
+    public void setTopstruct(String topstruct) {
+        this.topstruct = topstruct;
+    }
+
+    /**
      * @return the label
      */
     public String getLabel() {
@@ -525,7 +595,7 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * @param citationStyle the citationStyle to set
+     * @param citationProcessor the citationProcessor to set
      * @return this
      */
     public MetadataValue setCitationProcessor(CSL citationProcessor) {
@@ -555,7 +625,7 @@ public class MetadataValue implements Serializable {
         }
         return sb.toString();
     }
-    
+
     public String getCombinedValue() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < paramValues.size(); i++) {

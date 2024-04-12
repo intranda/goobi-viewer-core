@@ -52,7 +52,9 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.metadata.ComplexMetadataContainer;
 import io.goobi.viewer.model.metadata.MetadataTools;
+import io.goobi.viewer.model.metadata.RelationshipMetadataContainer;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.solr.SolrConstants;
@@ -89,6 +91,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     private final Map<String, String> groupLabels = new HashMap<>();
     /** Metadata describing the polygon that contains this docstruct within a page. */
     private List<ShapeMetadata> shapeMetadata;
+    private ComplexMetadataContainer metadataDocuments = null;
     private StructElement topStruct = null;
     /** True if this record has a right-to-left reading direction. */
     private boolean rtl = false;
@@ -197,11 +200,12 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Initializes class properties from the given doc.
      *
-     * @param doc SolrDocument
+     * @param solrDoc SolrDocument
      * @throws IndexUnreachableException
      */
-    private final void init(SolrDocument doc) throws IndexUnreachableException {
+    private final void init(final SolrDocument solrDoc) throws IndexUnreachableException {
         try {
+            SolrDocument doc = solrDoc;
             if (doc == null) {
                 doc = getDocument();
             }
@@ -227,6 +231,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             if (docStructType != null) {
                 docStructType.intern();
             }
+            cmsPage = "cms_page".equals(docStructType);
             volumeNo = getMetadataValue(SolrConstants.CURRENTNO);
             volumeNoSort = getMetadataValue(SolrConstants.CURRENTNOSORT);
             dataRepository = getMetadataValue(SolrConstants.DATAREPOSITORY);
@@ -257,7 +262,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             rtl = Boolean.valueOf(getMetadataValue(SolrConstants.BOOL_DIRECTION_RTL));
             // Load shape metadata
             // TODO use indicator field in doc to avoid this extra search for non-shape elements
-            String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
+            String iddoc = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(Object::toString).orElse(null);
             if (iddoc != null) {
                 SolrDocumentList shapeDocs =
                         MetadataTools.getGroupedMetadata(iddoc, " +" + SolrConstants.METADATATYPE + ':' + MetadataGroupType.SHAPE.name(), null);
@@ -267,7 +272,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                         String label = getLabel();
                         String shape = SolrTools.getSingleFieldStringValue(shapeDoc, "MD_SHAPE");
                         String coords = SolrTools.getSingleFieldStringValue(shapeDoc, "MD_COORDS");
-                        this.shapeMetadata.add(new ShapeMetadata(label, shape, coords, getPi(), getImageNumber(), this.logid));
+                        String order = String.valueOf(shapeDoc.getFieldValue(SolrConstants.ORDER));
+                        this.shapeMetadata.add(new ShapeMetadata(label, shape, coords, getPi(),
+                                "null".equals(order) ? getImageNumber() : Integer.parseInt(order), this.logid));
                     }
                 }
             }
@@ -295,6 +302,18 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         }
         logger.warn(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, luceneId);
         throw new PresentationException("errDocNotFound");
+    }
+
+    public ComplexMetadataContainer getMetadataDocuments() throws PresentationException, IndexUnreachableException {
+        if (this.metadataDocuments == null) {
+            this.metadataDocuments = loadMetadataDocuments();
+        }
+
+        return this.metadataDocuments;
+    }
+
+    private ComplexMetadataContainer loadMetadataDocuments() throws PresentationException, IndexUnreachableException {
+        return RelationshipMetadataContainer.loadRelationshipMetadata(this.pi, DataManager.getInstance().getSearchIndex());
     }
 
     /**
@@ -364,7 +383,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
     /**
      *
-     * @return
+     * @return IDDOC value of the parent document as a {@link Long}
      */
     public Long getParentLuceneId() {
         String parentIddoc = getMetadataValue(SolrConstants.IDDOC_PARENT);
@@ -702,23 +721,25 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
     /**
      *
-     * @return
+     * @return true if permission granted; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws RecordNotFoundException
      */
     public boolean isAccessPermissionDownloadMetadata() throws IndexUnreachableException, DAOException {
+        // logger.trace("isAccessPermissionDownloadMetadata"); //NOSONAR Debug
         return isAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_METADATA);
     }
 
     /**
      *
-     * @return
+     * @return true if permission granted; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws RecordNotFoundException
      */
     public boolean isAccessPermissionGenerateIiifManifest() throws IndexUnreachableException, DAOException {
+        // logger.trace("isAccessPermissionGenerateIiifManifest"); //NOSONAR Debug
         return isAccessPermission(IPrivilegeHolder.PRIV_GENERATE_IIIF_MANIFEST);
     }
 
@@ -730,6 +751,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws DAOException
      */
     boolean isAccessPermission(String privilege) throws IndexUnreachableException, DAOException {
+        // logger.trace("isAccessPermission: {}", privilege); //NOSONAR Debug
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         try {
             return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), logid, privilege, request).isGranted();
@@ -755,6 +777,20 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
+     * 
+     * @param language
+     * @return true if a TEI file name is indexed for the given language; false otherwise
+     */
+    public boolean isHasTeiForLanguage(String language) {
+        if (StringUtils.isNotEmpty(language)) {
+            logger.trace("isHasTeiForLanguage: {}", SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + language.toUpperCase());
+            return getMetadataFields().containsKey(SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + language.toUpperCase());
+        }
+
+        return getMetadataFields().containsKey(SolrConstants.FILENAME_TEI);
+    }
+
+    /**
      * Returns a stub representation of this object that only contains simple members to conserve memory.
      *
      * @return a {@link io.goobi.viewer.model.viewer.StructElementStub} object.
@@ -771,6 +807,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         ret.setWork(work);
         ret.setAnchor(anchor);
         ret.setVolume(volume);
+        ret.setCmsPage(cmsPage);
         ret.setLabel(label);
         ret.setMetadataFields(metadataFields);
 
@@ -888,6 +925,20 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     return new StructElement(Long.parseLong(iddoc), docVolume);
                 }
             }
+        } else if (isGroup()) {
+            List<StringPair> sortFields = DataManager.getInstance().getConfiguration().getTocVolumeSortFieldsForTemplate(getDocStructType());
+
+            SolrDocument docVolume = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getFirstDoc(new StringBuilder("GROUPID_SERIES_2").append(':').append(this.pi).toString(), fields, sortFields);
+            if (docVolume == null) {
+                logger.warn("Group has no child element: Cannot determine appropriate value");
+            } else {
+                String iddoc = SolrTools.getSingleFieldStringValue(docVolume, SolrConstants.IDDOC);
+                if (StringUtils.isNotBlank(iddoc)) {
+                    return new StructElement(Long.parseLong(iddoc), docVolume);
+                }
+            }
         }
 
         return null;
@@ -943,15 +994,31 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         return null;
     }
 
+    public boolean hasShapeMetadata() {
+        return shapeMetadata != null && !shapeMetadata.isEmpty();
+    }
+
+    /**
+     * 
+     * @param order Page order
+     * @return List<ShapeMetadata>
+     */
+    public List<ShapeMetadata> getShapeMetadataForPage(int order) {
+        List<ShapeMetadata> ret = new ArrayList<>();
+        for (ShapeMetadata smd : shapeMetadata) {
+            if (smd.getPageNo() == order) {
+                ret.add(smd);
+            }
+        }
+
+        return ret;
+    }
+
     /**
      * @return the shapeMetadata
      */
     public List<ShapeMetadata> getShapeMetadata() {
         return shapeMetadata;
-    }
-
-    public boolean hasShapeMetadata() {
-        return shapeMetadata != null && !shapeMetadata.isEmpty();
     }
 
     /**
@@ -998,6 +1065,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
          * @param label
          * @param shape
          * @param coords
+         * @param pi
+         * @param pageNo
+         * @param logId
          */
         public ShapeMetadata(String label, String shape, String coords, String pi, int pageNo, String logId) {
             this.label = label;
@@ -1038,11 +1108,16 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             return getUrl(pageType);
         }
 
+        /**
+         * 
+         * @param pageType
+         * @return Constructed URL
+         */
         public String getUrl(PageType pageType) {
             StringBuilder sbUrl = new StringBuilder();
             sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                     .append('/')
-                    .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(structPi, pageNo, logId, pageType));
+                    .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(structPi, pageNo, logId, pageType, false));
             return sbUrl.toString();
         }
 
@@ -1050,9 +1125,16 @@ public class StructElement extends StructElementStub implements Comparable<Struc
          * @return the logId
          */
         public String getLogId() {
+
             return logId;
         }
 
+        /**
+         * @return the pageNo
+         */
+        public int getPageNo() {
+            return pageNo;
+        }
     }
 
     public static StructElement create(SolrDocument solrDoc) {
@@ -1063,4 +1145,5 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             return null;
         }
     }
+
 }

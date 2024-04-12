@@ -32,19 +32,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.JDOMException;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,6 +58,7 @@ import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileSizeCalculator;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
@@ -119,6 +118,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /** Physical ID from the METS file. */
     private final String physId;
     private final String filePath;
+    private String filePathTiff;
+    private String filePathJpeg;
     private String fileName;
     private String fileIdRoot;
     private long fileSize = 0;
@@ -312,11 +313,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         switch (baseMimeType) {
             case IMAGE:
                 return getImageUrl();
-            case VIDEO:
-            case AUDIO: {
+            case VIDEO, AUDIO:
                 String format = getFileNames().keySet().stream().findFirst().orElse("");
                 return getMediaUrl(format);
-            }
             case APPLICATION:
                 if (StringUtils.isEmpty(fileName)) {
                     fileName = determineFileName(filePath);
@@ -370,14 +369,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                             .search(new StringBuilder(SolrConstants.PI).append(":").append(pi).toString(), SolrSearchIndex.MAX_HITS, null,
                                     Collections.singletonList(field));
                     if (res != null && !res.isEmpty() && res.get(0).getFirstValue(field) != null) {
-                        // logger.debug(field + ":" + res.get(0).getFirstValue(field));
+                        // logger.debug("{}:{}", field, res.get(0).getFirstValue(field)); //NOSONAR Debug
                         urlBuilder.append((String) res.get(0).getFirstValue(field));
                         break;
                     }
                 } catch (PresentationException e) {
-                    logger.debug("PresentationException thrown here: " + e.getMessage());
+                    logger.debug("PresentationException thrown here: {}", e.getMessage());
                 } catch (IndexUnreachableException e) {
-                    logger.debug("IndexUnreachableException thrown here: " + e.getMessage());
+                    logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
 
                 }
             } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_URN)) {
@@ -445,6 +444,26 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * 
+     * @return filePath if mime type is image; alternative file path otherwise
+     * @should return filePath if mime type image
+     * @should return tiff if available
+     * @should return jpeg if availabel
+     */
+    public String getImageFilepath() {
+        if (!BaseMimeType.IMAGE.name().equals(getBaseMimeType())) {
+            if (filePathTiff != null) {
+                return filePathTiff;
+            }
+            if (filePathJpeg != null) {
+                return filePathJpeg;
+            }
+        }
+
+        return getFilepath();
+    }
+
+    /**
      * <p>
      * getFilepath.
      * </p>
@@ -453,6 +472,38 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public String getFilepath() {
         return filePath;
+    }
+
+    /**
+     * @return the filePathTiff
+     */
+    public String getFilePathTiff() {
+        return filePathTiff;
+    }
+
+    /**
+     * @param filePathTiff the filePathTiff to set
+     * @return this
+     */
+    public PhysicalElement setFilePathTiff(String filePathTiff) {
+        this.filePathTiff = filePathTiff;
+        return this;
+    }
+
+    /**
+     * @return the filePathJpeg
+     */
+    public String getFilePathJpeg() {
+        return filePathJpeg;
+    }
+
+    /**
+     * @param filePathJpeg the filePathJpeg to set
+     * @return this
+     */
+    public PhysicalElement setFilePathJpeg(String filePathJpeg) {
+        this.filePathJpeg = filePathJpeg;
+        return this;
     }
 
     /**
@@ -518,11 +569,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public String getDisplayMimeType() {
         String fullMimetype = getFullMimeType(getMimeType(), fileName);
-        if(fullMimetype.matches("(?i)image/png")) {
+        if (fullMimetype.matches("(?i)image/png")) {
             return fullMimetype;
-        } else {
-            return "image/jpeg";
         }
+        return "image/jpeg";
     }
 
     /**
@@ -560,17 +610,16 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     /**
      * 
-     * @return
+     * @return First part of the mime type
      * @should return correct base mime type
      * @should return image if base mime type not found
      */
     public String getBaseMimeType() {
         BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
-        if (baseMimeType != null) {
-            return baseMimeType.getName();
+        if (BaseMimeType.UNKNOWN.equals(baseMimeType)) {
+            return BaseMimeType.IMAGE.getName();
         }
-
-        return BaseMimeType.IMAGE.getName();
+        return baseMimeType.getName();
     }
 
     /**
@@ -641,7 +690,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     /**
      *
-     * @return
+     * @return true if page has an indexed image file name and user has access permission; false otherwise
      * @throws DAOException
      * @throws IndexUnreachableException
      */
@@ -918,7 +967,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 fullText = ViewerResourceBundle.getTranslation(e.getMessage(), null);
             } catch (FileNotFoundException e) {
                 logger.error(e.getMessage());
-            } catch (IOException | IndexUnreachableException | DAOException e) {
+            } catch (IOException | IndexUnreachableException e) {
                 logger.error(e.getMessage(), e);
             }
         }
@@ -955,13 +1004,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return true if fulltext loaded successfully false otherwise
      * @throws AccessDeniedException
      * @throws IOException
-     * @throws DAOException
      * @throws IndexUnreachableException
-     * @throws ConfigurationException
      * @should load full-text correctly if not yet loaded
      * @should return null if already loaded
      */
-    String loadFullText() throws AccessDeniedException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    String loadFullText() throws AccessDeniedException, IOException, IndexUnreachableException {
         if (fulltextFileName == null) {
             return null;
         } else if (Boolean.FALSE.equals(isFulltextAccessPermission())) {
@@ -987,19 +1034,20 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public List<String> getWordCoords(Set<String> searchTerms) throws ViewerConfigurationException {
-        return getWordCoords(searchTerms, 0);
+        return getWordCoords(searchTerms, 0, 0);
     }
 
     /**
      * Returns word coordinates for words that start with any of the given search terms.
      *
      * @param searchTerms a {@link java.util.Set} object.
-     * @should load XML document if none yet set
+     * @param proximitySearchDistance
      * @param rotation a int.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should load XML document if none yet set
      */
-    public List<String> getWordCoords(Set<String> searchTerms, int rotation) throws ViewerConfigurationException {
+    public List<String> getWordCoords(Set<String> searchTerms, int proximitySearchDistance, int rotation) throws ViewerConfigurationException {
         if (searchTerms == null || searchTerms.isEmpty()) {
             return Collections.emptyList();
         }
@@ -1019,7 +1067,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         if (altoText != null) {
-            return ALTOTools.getWordCoords(altoText, altoCharset, searchTerms, rotation);
+            return ALTOTools.getWordCoords(altoText, altoCharset, searchTerms, proximitySearchDistance, rotation);
         }
         wordCoordsFormat = CoordsFormat.NONE;
 
@@ -1058,9 +1106,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 wordCoordsFormat = CoordsFormat.ALTO;
             }
             return alto;
-        } catch (ContentNotFoundException e) {
-            logger.error(e.getMessage());
-        } catch (PresentationException e) {
+        } catch (ContentNotFoundException | PresentationException e) {
             logger.error(e.getMessage());
         }
 
@@ -1339,6 +1385,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         BaseMimeType baseMimeType = BaseMimeType.getByName(this.mimeType);
         if (baseMimeType == null) {
             return "viewImage";
+
         }
 
         switch (baseMimeType) {
@@ -1365,7 +1412,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public boolean isAccessPermission3DObject() throws IndexUnreachableException, DAOException {
         logger.trace("AccessPermission3DObject");
         // Prevent access if mime type incompatible
-        if (!BaseMimeType.OBJECT.equals(BaseMimeType.getByName(mimeType))) {
+        if (!BaseMimeType.MODEL.equals(BaseMimeType.getByName(mimeType))) {
             return false;
         }
 
@@ -1435,14 +1482,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                     IPrivilegeHolder.PRIV_ZOOM_IMAGES).isGranted();
         }
         logger.trace("FacesContext not found");
-
         return false;
 
     }
 
     /**
      *
-     * @return
+     * @return true if user has access permission; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
      */
@@ -1499,10 +1545,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             AccessPermission access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
                     IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
-            // logger.trace("Born digital access for page {} is granted: {}", order, access.isGranted());
+            // logger.trace("Born digital access for page {} is granted: {}", order, access.isGranted()); //NOSONAR Debug
             //            if (bornDigitalDownloadTicketRequired == null) {
             bornDigitalDownloadTicketRequired = access.isTicketRequired();
-            // logger.trace("Ticket required for page {}: {}", order, access.isTicketRequired());
+            // logger.trace("Ticket required for page {}: {}", order, access.isTicketRequired()); //NOSONAR Debug
             //            }
             return access.isGranted();
         }
@@ -1522,13 +1568,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         //                if (bornDigitalDownloadTicketRequired == null) {
         isAccessPermissionBornDigital();
         //                }
-        // logger.trace("isBornDigitalDownloadTicketRequired: {}", bornDigitalDownloadTicketRequired);
+        // logger.trace("isBornDigitalDownloadTicketRequired: {}", bornDigitalDownloadTicketRequired); //NOSONAR Debug
 
         // If license requires a download ticket, check agent session for loaded ticket
         if (Boolean.TRUE.equals(bornDigitalDownloadTicketRequired) && FacesContext.getCurrentInstance() != null
                 && FacesContext.getCurrentInstance().getExternalContext() != null) {
             boolean hasTicket = AccessConditionUtils.isHasDownloadTicket(pi, BeanUtils.getSession());
-            // logger.trace("User has download ticket: {}", hasTicket);
+            // logger.trace("User has download ticket: {}", hasTicket); //NOSONAR Debug
             return !hasTicket;
         }
 
@@ -1537,7 +1583,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     /**
      *
-     * @return
+     * @return true if user has access permission; false otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
      */
@@ -1633,7 +1679,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      *
      * @param load If true, ALTO will be loaded if altoText is null
-     * @return
+     * @return ALTO document for this page
      * @throws ViewerConfigurationException
      */
     public String getAltoText(boolean load) throws ViewerConfigurationException {
@@ -1709,15 +1755,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a {@link java.lang.String} object.
      */
     public String getFileSizeAsString() {
-        if (fileSize > 1024 * 1024) {
-            return (fileSize / 1024 / 1024) + " MB";
-        }
-
-        else if (fileSize > 1024) {
-            return (fileSize / 1024) + " KB";
-        } else {
-            return fileSize + " Byte";
-        }
+        return FileSizeCalculator.formatSize(this.fileSize);
     }
 
     /**
@@ -1818,7 +1856,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     /**
      *
-     * @return
+     * @return {@link String}
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws JsonProcessingException
@@ -1831,8 +1869,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             List<ShapeMetadata> shapes = elements.stream()
                     .filter(ele -> ele.getShapeMetadata() != null && !ele.getShapeMetadata().isEmpty())
                     .flatMap(ele -> ele.getShapeMetadata().stream())
-                    .collect(Collectors.toList());
+                    .toList();
             return mapper.writeValueAsString(shapes);
         }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s (%s)", getPi(), getOrder(), getOrderLabel());
     }
 }

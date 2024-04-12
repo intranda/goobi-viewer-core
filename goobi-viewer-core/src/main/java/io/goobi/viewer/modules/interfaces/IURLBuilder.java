@@ -47,7 +47,7 @@ public interface IURLBuilder {
      * </p>
      *
      * @param pi The record persistent identifier
-     * @param imageNo the page number  (1-based)
+     * @param imageNo the page number (1-based)
      * @param logId The METS identifier of the logical struct element
      * @param pageType the type of viewer page the url should open
      * @param topStruct if false, the url should point to a page or struct element within the record, so imageNo and logId must be considered
@@ -55,6 +55,14 @@ public interface IURLBuilder {
      */
     public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType, boolean topStruct);
 
+    /**
+     * 
+     * @param pi
+     * @param imageNo
+     * @param logId
+     * @param pageType
+     * @return Generated URL
+     */
     public default String buildPageUrl(String pi, int imageNo, String logId, PageType pageType) {
         return buildPageUrl(pi, imageNo, logId, pageType, false);
     }

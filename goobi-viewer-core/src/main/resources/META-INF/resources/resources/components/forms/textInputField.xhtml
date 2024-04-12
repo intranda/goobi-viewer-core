@@ -41,7 +41,6 @@
 							class="fa fa-exclamation" aria-hidden="true"></i>
 					</div>
 				</div>
-
 				<h:inputText value="#{cc.attrs.value}" id="#{cc.id}_inputField"
 					label="#{cc.attrs.clientId}_input" styleClass="form-control -validation-input"
 					required="#{cc.attrs.required}" requiredMessage="#{cc.attrs.requiredMessage}" validatorMessage="#{cc.attrs.validatorMessage}">
@@ -61,7 +60,7 @@
 			<ui:fragment rendered="#{cc.attrs.textArea}">
 			<div class="col-9 cms-module__option-control admin__form-input">
 				<h:inputTextarea value="#{cc.attrs.value}" id="#{cc.id}_inputFieldTextArea"
-					label="#{cc.attrs.clientId}_input" styleClass="form-control -validation-input"
+					label="#{cc.attrs.clientId}_input" styleClass="form-control -validation-input tinyMCE"
 					required="#{cc.attrs.required}" requiredMessage="#{cc.attrs.requiredMessage}">
 					<f:passThroughAttribute name="aria-label" value="#{cc.attrs.label}" />
 					<f:ajax event="blur" render="inputGroup" />

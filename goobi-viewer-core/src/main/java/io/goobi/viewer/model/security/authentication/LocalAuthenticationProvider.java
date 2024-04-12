@@ -45,7 +45,7 @@ import io.goobi.viewer.model.security.user.User;
  * @author Florian Alpers
  */
 public class LocalAuthenticationProvider implements IAuthenticationProvider {
-    
+
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(LocalAuthenticationProvider.class);
 
@@ -190,5 +190,15 @@ public class LocalAuthenticationProvider implements IAuthenticationProvider {
     @Override
     public void setAddUserToGroups(List<String> addUserToGroups) {
         this.addUserToGroups = addUserToGroups;
+    }
+
+    @Override
+    public String getRedirectUrl() {
+        return null;
+    }
+
+    @Override
+    public void setRedirectUrl(String redirectUrl) {
+        //        
     }
 }

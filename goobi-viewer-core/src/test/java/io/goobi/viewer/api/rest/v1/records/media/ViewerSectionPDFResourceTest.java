@@ -23,15 +23,15 @@ package io.goobi.viewer.api.rest.v1.records.media;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_PDF;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 
@@ -39,7 +39,7 @@ import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
  * @author florian
  *
  */
-public class ViewerSectionPDFResourceTest extends AbstractRestApiTest {
+class ViewerSectionPDFResourceTest extends AbstractRestApiTest {
     // private static final String PI_ACCESS_PAST_MOVING_WALL = "13473260X";
     private static final String PI_ACCESS_RESTRICTED = "557335825";
     private static final String PI = "02008031921530";
@@ -49,7 +49,7 @@ public class ViewerSectionPDFResourceTest extends AbstractRestApiTest {
      * @throws java.lang.Exception
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -58,21 +58,21 @@ public class ViewerSectionPDFResourceTest extends AbstractRestApiTest {
      * @throws java.lang.Exception
      */
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     @Test
-    public void testGetPdf() {
+    void testGetPdf() {
         String url = urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_PDF).params(PI, LOGID).build();
         try (Response response = target(url)
                 .request()
                 .header("x-forwarded-for", "1.2.3.4")
                 .accept("application/pdf")
                 .get()) {
-            assertEquals(response.getStatusInfo().getReasonPhrase(), 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), response.getStatusInfo().getReasonPhrase());
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             byte[] entity = response.readEntity(byte[].class);
             String contentDisposition = response.getHeaderString("Content-Disposition");
             assertEquals("attachment; filename=\"" + PI + "_" + LOGID + ".pdf" + "\"", contentDisposition);
@@ -81,14 +81,14 @@ public class ViewerSectionPDFResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    public void testGetPdf_refuseAccess() {
+    void testGetPdf_refuseAccess() {
         String url = urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_PDF).params(PI_ACCESS_RESTRICTED, LOGID).build();
         try (Response response = target(url)
                 .request()
                 .header("x-forwarded-for", "1.2.3.4")
                 .accept("application/pdf")
                 .get()) {
-            assertEquals("Should return status 403", 403, response.getStatus());
+            assertEquals(403, response.getStatus(), "Should return status 403");
         }
     }
 }

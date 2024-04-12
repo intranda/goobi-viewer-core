@@ -31,9 +31,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -47,6 +44,7 @@ import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.serialization.AnnotationSaver;
 import io.goobi.viewer.model.annotation.serialization.SqlAnnotationSaver;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
@@ -58,13 +56,11 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class AnnotationUpdate implements IModelUpdate {
 
-    private static final Logger logger = LogManager.getLogger(AnnotationUpdate.class);
-
     /* (non-Javadoc)
      * @see io.goobi.viewer.dao.update.IModelUpdate#update(io.goobi.viewer.dao.IDAO)
      */
     @Override
-    public boolean update(IDAO dao) throws DAOException, SQLException {
+    public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
 
         int updates = 0;
 
@@ -98,9 +94,8 @@ public class AnnotationUpdate implements IModelUpdate {
             Map<String, Object> columns = IntStream.range(0, columnNames.size())
                     .boxed()
                     .filter(i -> annotation[i] != null)
-                    .collect(Collectors.toMap(i -> columnNames.get(i), i -> annotation[i]));
+                    .collect(Collectors.toMap(columnNames::get, i -> annotation[i]));
             try {
-                // Long annotationId = (Long) columns.get("annotation_id");
                 String body = Optional.ofNullable(columns.get("body")).map(o -> (String) o).orElse(null);
                 User owner = Optional.ofNullable(columns.get("creator_id")).map(o -> (Long) o).flatMap(id -> getUser(id, dao)).orElse(null);
                 User reviewer = Optional.ofNullable(columns.get("reviewer_id")).map(o -> (Long) o).flatMap(id -> getUser(id, dao)).orElse(null);
@@ -171,7 +166,7 @@ public class AnnotationUpdate implements IModelUpdate {
             Map<String, Object> columns = IntStream.range(0, columnNames.size())
                     .boxed()
                     .filter(i -> comment[i] != null)
-                    .collect(Collectors.toMap(i -> columnNames.get(i), i -> comment[i]));
+                    .collect(Collectors.toMap(columnNames::get, i -> comment[i]));
 
             try {
                 LocalDateTime dateCreated =
@@ -206,7 +201,7 @@ public class AnnotationUpdate implements IModelUpdate {
     /**
      * @param id
      * @param dao
-     * @return
+     * @return Optional<Question>
      */
     private static Optional<Question> getCampaignQuestion(Long id, IDAO dao) {
         try {
@@ -218,7 +213,7 @@ public class AnnotationUpdate implements IModelUpdate {
 
     /**
      * @param text
-     * @return
+     * @return JSON representation of the given text
      * @throws JsonProcessingException
      */
     private static String getAsJson(String text) throws JsonProcessingException {
@@ -230,7 +225,7 @@ public class AnnotationUpdate implements IModelUpdate {
      * 
      * @param id
      * @param dao
-     * @return
+     * @return Optional<User>
      */
     private static Optional<User> getUser(Long id, IDAO dao) {
         try {
@@ -243,7 +238,7 @@ public class AnnotationUpdate implements IModelUpdate {
     /**
      * 
      * @param generator
-     * @return
+     * @return Access condition for campaign; OPENACCESS if none set
      */
     private static String getAccessConditionForAnnotation(Question generator) {
         return Optional.ofNullable(generator)

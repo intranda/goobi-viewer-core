@@ -33,6 +33,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -46,7 +48,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
@@ -59,6 +60,7 @@ import de.intranda.api.annotation.wa.TypedResource;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
@@ -78,16 +80,22 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.annotation.comments.CommentGroup;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
+import io.goobi.viewer.model.files.external.ExternalFilesDownloader;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.job.download.EPUBDownloadJob;
 import io.goobi.viewer.model.job.download.PDFDownloadJob;
 import io.goobi.viewer.model.maps.GeoMap;
-import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.GeoMapFeature;
+import io.goobi.viewer.model.maps.ManualFeatureSet;
+import io.goobi.viewer.model.maps.RecordGeoMap;
+import io.goobi.viewer.model.metadata.ComplexMetadataContainer;
+import io.goobi.viewer.model.metadata.MetadataContainer;
+import io.goobi.viewer.model.metadata.RelationshipMetadataContainer;
+import io.goobi.viewer.model.metadata.VariableReplacer;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
@@ -110,6 +118,7 @@ import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * This bean opens the requested record and provides all data relevant to this record.
@@ -164,17 +173,17 @@ public class ActiveDocumentBean implements Serializable {
     private BrowseElement nextHit;
 
     /** This persists the last value given to setPersistentIdentifier() and is used for handling a RecordNotFoundException. */
-    String lastReceivedIdentifier;
+    private String lastReceivedIdentifier;
     /** Available languages for this record. */
     private List<String> recordLanguages;
     /** Currently selected language for multilingual records. */
-    private String selectedRecordLanguage;
+    private Language selectedRecordLanguage;
 
     private Boolean deleteRecordKeepTrace;
 
     private String clearCacheMode;
 
-    private Map<String, GeoMap> geoMaps = new HashMap<>();
+    private Map<String, RecordGeoMap> geoMaps = new HashMap<>();
 
     private int reloads = 0;
 
@@ -185,6 +194,8 @@ public class ActiveDocumentBean implements Serializable {
     private Map<String, String> prevDocstructUrlCache = new HashMap<>();
     /* Next docstruct URL cache. TODO Implement differently once other views beside full-screen are used. */
     private Map<String, String> nextDocstructUrlCache = new HashMap<>();
+
+    private List<String> externalResourceUrls = null;
 
     /**
      * Empty constructor.
@@ -259,6 +270,7 @@ public class ActiveDocumentBean implements Serializable {
             prevDocstructUrlCache.clear();
             nextDocstructUrlCache.clear();
             lastReceivedIdentifier = null;
+            externalResourceUrls = null;
 
             // Any cleanup modules need to do when a record is unloaded
             for (IModule module : DataManager.getInstance().getModules()) {
@@ -303,8 +315,15 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      *
-     * @param pi @throws PresentationException @throws RecordNotFoundException @throws RecordDeletedException @throws
-     *            IndexUnreachableException @throws DAOException @throws ViewerConfigurationException @throws RecordLimitExceededException @throws
+     * @param pi
+     * @return output of open()
+     * @throws PresentationException
+     * @throws RecordNotFoundException
+     * @throws RecordDeletedException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     * @throws RecordLimitExceededException
      */
     public String reload(String pi) throws PresentationException, RecordNotFoundException, RecordDeletedException, IndexUnreachableException,
             DAOException, ViewerConfigurationException, RecordLimitExceededException {
@@ -410,6 +429,9 @@ public class ActiveDocumentBean implements Serializable {
                     if (access.isRedirect() && StringUtils.isNotEmpty(access.getRedirectUrl())) {
                         logger.debug("Redirecting to {}", access.getRedirectUrl());
                         try {
+                            // reset the bean's state. Otherwise this code will be called again when the redirected page uses
+                            // activeDocumentBean at all (may the the case in widgets)
+                            reset();
                             FacesContext.getCurrentInstance().getExternalContext().redirect(access.getRedirectUrl());
                             return;
                         } catch (IOException e) {
@@ -462,11 +484,11 @@ public class ActiveDocumentBean implements Serializable {
                 new StructElement(topDocumentIddoc);
                 String query = new StringBuilder("+")
                         .append(SolrConstants.LOGID)
-                        .append(':')
+                        .append(":\"")
                         .append(logid)
-                        .append(" +")
+                        .append("\" +")
                         .append(SolrConstants.PI_TOPSTRUCT)
-                        .append(':')
+                        .append(":")
                         .append(viewManager.getPi())
                         .append(" +")
                         .append(SolrConstants.DOCTYPE)
@@ -518,7 +540,8 @@ public class ActiveDocumentBean implements Serializable {
                 // Search hit navigation
                 if (searchBean != null && searchBean.getCurrentSearch() != null) {
                     if (searchBean.getCurrentHitIndex() < 0) {
-                        // Determine the index of this element in the search result list. Must be done after re-initializing ViewManager so that the PI is correct!
+                        // Determine the index of this element in the search result list.
+                        // Must be done after re-initializing ViewManager so that the PI is correct!
                         searchBean.findCurrentHitIndex(getPersistentIdentifier(), viewManager.getCurrentImageOrder(), true);
                     } else if (mayChangeHitIndex) {
                         // Modify the current hit index
@@ -542,8 +565,8 @@ public class ActiveDocumentBean implements Serializable {
             recordLanguages = viewManager.getTopStructElement().getMetadataValues(SolrConstants.LANGUAGE);
             // If the record has metadata language versions, pre-select the current locale as the record language
             //            if (StringUtils.isBlank(selectedRecordLanguage) && !recordLanguages.isEmpty()) {
-            if (StringUtils.isBlank(selectedRecordLanguage) && navigationHelper != null) {
-                selectedRecordLanguage = navigationHelper.getLocaleString();
+            if (selectedRecordLanguage == null && navigationHelper != null) {
+                selectedRecordLanguage = DataManager.getInstance().getLanguageHelper().getLanguage(navigationHelper.getLocaleString());
             }
 
             // Prepare a new bookshelf item
@@ -567,6 +590,7 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * @return created {@link TOC}
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -612,15 +636,22 @@ public class ActiveDocumentBean implements Serializable {
                 IMetadataValue name = viewManager.getTopStructElement().getMultiLanguageDisplayLabel();
                 HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
                 URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
-
-                for (String language : name.getLanguages()) {
+                List<String> languages = new ArrayList<>(name.getLanguages()); //temporary variable to avoid ConcurrentModificationException
+                Map<String, String> truncatedNames = new HashMap<>();
+                for (String language : languages) {
                     String translation = name.getValue(language).orElse(getPersistentIdentifier());
                     if (translation != null && translation.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
                         translation =
                                 new StringBuilder(translation.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()))
                                         .append("...")
                                         .toString();
-                        name.setValue(translation, language);
+                        truncatedNames.put(language, translation);
+                    }
+                }
+                // Replace translation outside of the loop
+                if (!truncatedNames.isEmpty()) {
+                    for (Entry<String, String> entry : truncatedNames.entrySet()) {
+                        name.setValue(entry.getValue(), entry.getKey());
                     }
                 }
                 // Fallback using the identifier as the label
@@ -658,13 +689,12 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     * @throws PresentationException
      * @throws RecordLimitExceededException
      * @throws NumberFormatException
      */
     public String openFulltext()
             throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException,
-            PresentationException, NumberFormatException, RecordLimitExceededException {
+            NumberFormatException, RecordLimitExceededException {
         open();
         return "viewFulltext";
     }
@@ -708,19 +738,6 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     ********************************* Getter and Setter **************************************
-     *
-     * @return a long.
-     */
-    public long getActiveDocumentIddoc() {
-        if (viewManager != null) {
-            return viewManager.getTopStructElementIddoc();
-        }
-
-        return 0;
-    }
-
-    /**
      * <p>
      * getCurrentElement.
      * </p>
@@ -741,17 +758,51 @@ public class ActiveDocumentBean implements Serializable {
      * Setter for the field <code>imageToShow</code>.
      * </p>
      *
-     * @param imageToShow the imageToShow to set
+     * @param imageToShow Single page number (1) or range (2-3)
      */
     public void setImageToShow(String imageToShow) {
         synchronized (lock) {
-            this.imageToShow = imageToShow;
+            if (StringUtils.isNotEmpty(imageToShow) && imageToShow.matches("^\\d+(-\\d+)?$")) {
+                this.imageToShow = imageToShow;
+            } else {
+                logger.warn("The passed image number '{}' contains illegal characters, setting to '1'...", imageToShow);
+                this.imageToShow = "1";
+            }
             if (viewManager != null) {
-                viewManager.setDropdownSelected(String.valueOf(imageToShow));
+                viewManager.setDropdownSelected(String.valueOf(this.imageToShow));
             }
             // Reset LOGID (the LOGID setter is called later by PrettyFaces, so if a value is passed, it will still be set)
-            setLogid("");
+            try {
+                setLogid("");
+            } catch (PresentationException e) {
+                //cannot be thrown here
+            }
             logger.trace("imageToShow: {}", this.imageToShow);
+        }
+    }
+
+    /**
+     * Sets imageToShow to the representative page found in the search index, or "1" if none found.
+     * 
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public void setRepresentativeImage() throws PresentationException, IndexUnreachableException {
+        logger.trace("setRepresentativeImage"); //NOSONAR Debug
+        synchronized (lock) {
+            String image = "1";
+            if (StringUtils.isNotEmpty(lastReceivedIdentifier) && !"-".equals(lastReceivedIdentifier)) {
+                SolrDocument doc = DataManager.getInstance()
+                        .getSearchIndex()
+                        .getFirstDoc(SolrConstants.PI + ":" + lastReceivedIdentifier, Collections.singletonList(SolrConstants.THUMBPAGENO));
+                if (doc != null && doc.getFieldValue(SolrConstants.THUMBPAGENO) != null) {
+                    image = String.valueOf(doc.getFieldValue(SolrConstants.THUMBPAGENO));
+                    logger.trace("{} found: {}", SolrConstants.THUMBPAGENO, image);
+                } else {
+                    logger.trace("{}  not found, using {}", SolrConstants.THUMBPAGENO, image);
+                }
+            }
+            setImageToShow(image);
         }
     }
 
@@ -774,13 +825,16 @@ public class ActiveDocumentBean implements Serializable {
      * </p>
      *
      * @param logid the logid to set
+     * @throws PresentationException
      */
-    public void setLogid(String logid) {
+    public void setLogid(String logid) throws PresentationException {
         synchronized (this) {
-            if ("-".equals(logid)) {
+            if ("-".equals(logid) || StringUtils.isEmpty(logid)) {
                 this.logid = "";
+            } else if (StringUtils.isNotBlank(logid) && logid.matches("[\\w-]+")) {
+                this.logid = SolrTools.escapeSpecialCharacters(logid);
             } else {
-                this.logid = logid;
+                throw new PresentationException("The passed logId " + SolrTools.escapeSpecialCharacters(logid) + " contains illegal characters");
             }
         }
     }
@@ -868,7 +922,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public void setAction(String action) {
         synchronized (this) {
-            logger.trace("setAction: " + action);
+            logger.trace("setAction: {}", action);
             this.action = action;
             if (searchBean != null && action != null) {
                 switch (action) {
@@ -887,6 +941,12 @@ public class ActiveDocumentBean implements Serializable {
         }
     }
 
+    public String getPIFromFieldValue(String value, String field) throws PresentationException, IndexUnreachableException {
+        String query = "{field}:\"{value}\"".replace("{field}", field).replace("{value}", value);
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, List.of(SolrConstants.PI));
+        return Optional.ofNullable(doc).map(d -> d.getFirstValue(SolrConstants.PI)).map(Object::toString).orElse("");
+    }
+
     /**
      * <p>
      * setPersistentIdentifier.
@@ -901,14 +961,13 @@ public class ActiveDocumentBean implements Serializable {
     public void setPersistentIdentifier(String persistentIdentifier)
             throws PresentationException, RecordNotFoundException, IndexUnreachableException {
         synchronized (this) {
-            logger.trace("setPersistentIdentifier: {}", persistentIdentifier);
-            lastReceivedIdentifier = persistentIdentifier;
+            logger.trace("setPersistentIdentifier: {}", StringTools.stripPatternBreakingChars(persistentIdentifier));
             if (!PIValidator.validatePi(persistentIdentifier)) {
                 logger.warn("Invalid identifier '{}'.", persistentIdentifier);
                 reset();
                 return;
-                // throw new RecordNotFoundException("Illegal identifier: " + persistentIdentifier);
             }
+            lastReceivedIdentifier = persistentIdentifier;
             if (!"-".equals(persistentIdentifier) && (viewManager == null || !persistentIdentifier.equals(viewManager.getPi()))) {
                 long id = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(persistentIdentifier);
                 if (id > 0) {
@@ -919,8 +978,6 @@ public class ActiveDocumentBean implements Serializable {
                 } else {
                     logger.warn("No IDDOC for identifier '{}' found.", persistentIdentifier);
                     reset();
-                    return;
-                    // throw new RecordNotFoundException(new StringBuilder(persistentIdentifier).toString());
                 }
             }
         }
@@ -949,7 +1006,9 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @deprecated URL is now build in HTML
      */
+    @Deprecated(since = "23.11")
     public String getThumbPart() throws IndexUnreachableException {
         if (viewManager != null) {
             return new StringBuilder("/").append(getPersistentIdentifier())
@@ -969,7 +1028,9 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @deprecated URL is now build in HTML
      */
+    @Deprecated(since = "23.11")
     public String getLogPart() throws IndexUnreachableException {
         return new StringBuilder("/").append(getPersistentIdentifier())
                 .append('/')
@@ -987,23 +1048,24 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @param pageType a {@link java.lang.String} object.
      * @param pageOrderRange Single page number or range
-     * @should construct url correctly
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should construct url correctly
      */
-    public String getPageUrl(String pageType, String pageOrderRange) throws IndexUnreachableException {
+    public String getPageUrl(final String pageType, String pageOrderRange) throws IndexUnreachableException {
         StringBuilder sbUrl = new StringBuilder();
-        if (StringUtils.isBlank(pageType)) {
+        String localPageType = pageType;
+        if (StringUtils.isBlank(localPageType)) {
             if (navigationHelper != null) {
-                pageType = navigationHelper.getCurrentView();
-                if (pageType == null) {
-                    pageType = PageType.viewObject.name();
+                localPageType = navigationHelper.getCurrentView();
+                if (localPageType == null) {
+                    localPageType = PageType.viewObject.name();
                 }
             }
-            if (StringUtils.isBlank(pageType)) {
-                pageType = PageType.viewObject.name();
+            if (StringUtils.isBlank(localPageType)) {
+                localPageType = PageType.viewObject.name();
             }
-            // logger.trace("current view: {}", pageType);
+            // logger.trace("current view: {}", localPageType);
         }
 
         int[] pages = StringTools.getIntegerRange(pageOrderRange);
@@ -1018,14 +1080,12 @@ public class ActiveDocumentBean implements Serializable {
                 page2 = Math.min(page2, viewManager.getPageLoader().getLastPageOrder());
             }
         }
-        //        if (page == page2) {
-        //            page2 = Integer.MAX_VALUE;
-        //        }
+
         String range = page + (page2 != Integer.MAX_VALUE ? "-" + page2 : "");
-        // logger.trace("final range: {}", range);
+        // logger.trace("final range: {}", range); //NOSONAR Sometimes needed for debugging
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                 .append('/')
-                .append(PageType.getByName(pageType).getName())
+                .append(PageType.getByName(localPageType).getName())
                 .append('/')
                 .append(getPersistentIdentifier())
                 .append('/')
@@ -1057,13 +1117,11 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getPageUrl() throws IndexUnreachableException {
-        String pageType = null;
-        if (StringUtils.isBlank(pageType)) {
-            pageType = navigationHelper.getPreferredView();
-        }
+        String pageType = navigationHelper.getPreferredView();
         if (StringUtils.isBlank(pageType)) {
             pageType = navigationHelper.getCurrentView();
         }
+
         return getPageUrlByType(pageType);
     }
 
@@ -1138,14 +1196,13 @@ public class ActiveDocumentBean implements Serializable {
      * @param step a int.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws DAOException
      * @should return correct page in single page mode
      * @should return correct range in double page mode if current page double image
      * @should return correct range in double page mode if currently showing two pages
      * @should return correct range in double page mode if currently showing one page
      */
-    public String getPageUrlRelativeToCurrentPage(int step) throws IndexUnreachableException, DAOException {
-        // logger.trace("getPageUrl: {}", step);
+    public String getPageUrlRelativeToCurrentPage(int step) throws IndexUnreachableException {
+        // logger.trace("getPageUrl: {}", step); //NOSONAR Sometimes needed for debugging
         if (viewManager == null) {
             return getPageUrl(imageToShow);
         }
@@ -1159,7 +1216,7 @@ public class ActiveDocumentBean implements Serializable {
 
         // Current image contains two pages
         if (viewManager.getCurrentPage().isDoubleImage()) {
-            // logger.trace("{} is double page", viewManager.getCurrentPage().getOrder());
+            // logger.trace("{} is double page", viewManager.getCurrentPage().getOrder()); //NOSONAR Sometimes needed for debugging
             if (step < 0) {
                 number = viewManager.getCurrentImageOrder() + 2 * step;
             } else {
@@ -1176,11 +1233,11 @@ public class ActiveDocumentBean implements Serializable {
 
         // Only go back one step unit at first
         if (currentLeftPage.isPresent()) {
-            // logger.trace("{} is left page", currentLeftPage.get().getOrder());
+            // logger.trace("{} is left page", currentLeftPage.get().getOrder()); //NOSONAR Sometimes needed for debugging
             number = currentLeftPage.get().getOrder() + step;
         } else if (currentRightPage.isPresent()) {
             // If only the right page is present, it's probably the first page - do not add step at this point
-            // logger.trace("{} is right page", currentRightPage.get().getOrder());
+            // logger.trace("{} is right page", currentRightPage.get().getOrder()); //NOSONAR Sometimes needed for debugging
             number = currentRightPage.get().getOrder();
         } else {
             number = viewManager.getCurrentImageOrder() + step;
@@ -1189,22 +1246,28 @@ public class ActiveDocumentBean implements Serializable {
         // Target image candidate contains two pages
         Optional<PhysicalElement> nextPage = viewManager.getPage(number);
         if (nextPage.isPresent() && nextPage.get().isDoubleImage()) {
-            return getPageUrl(String.valueOf(number) + "-" + String.valueOf(number));
+            return getPageUrl(String.valueOf(number) + "-" + number);
         }
         // If the immediate neighbor is not a double image, add another step
         number += step;
 
         nextPage = viewManager.getPage(number);
         if (nextPage.isPresent() && nextPage.get().isDoubleImage()) {
-            return getPageUrl(String.valueOf(number) + "-" + String.valueOf(number));
+            return getPageUrl(String.valueOf(number) + "-" + number);
         }
 
-        // logger.trace("step: {}", step);
-        // logger.trace("Number: {}", number);
+        // logger.trace("step: {}", step); //NOSONAR Sometimes needed for debugging
+        // logger.trace("Number: {}", number); //NOSONAR Sometimes needed for debugging
 
         return getPageUrl(number + "-" + (number + 1));
     }
 
+    /**
+     * 
+     * @param order
+     * @return Page URL for the given page number
+     * @throws IndexUnreachableException
+     */
     public String getPageUrl(int order) throws IndexUnreachableException {
         return getPageUrl(Integer.toString(order));
     }
@@ -1217,9 +1280,8 @@ public class ActiveDocumentBean implements Serializable {
      * @param step
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws DAOException
      */
-    public String getPreviousPageUrl(int step) throws IndexUnreachableException, DAOException {
+    public String getPreviousPageUrl(int step) throws IndexUnreachableException {
         return getPageUrlRelativeToCurrentPage(step * -1);
     }
 
@@ -1231,9 +1293,8 @@ public class ActiveDocumentBean implements Serializable {
      * @param step
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws DAOException
      */
-    public String getNextPageUrl(int step) throws IndexUnreachableException, DAOException {
+    public String getNextPageUrl(int step) throws IndexUnreachableException {
         return getPageUrlRelativeToCurrentPage(step);
     }
 
@@ -1244,9 +1305,8 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws DAOException
      */
-    public String getPreviousPageUrl() throws IndexUnreachableException, DAOException {
+    public String getPreviousPageUrl() throws IndexUnreachableException {
         return getPreviousPageUrl(1);
     }
 
@@ -1257,22 +1317,21 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws DAOException
      */
-    public String getNextPageUrl() throws IndexUnreachableException, DAOException {
+    public String getNextPageUrl() throws IndexUnreachableException {
         return getNextPageUrl(1);
     }
 
     /**
      *
-     * @return
+     * @return URL to the previous docstruct
      * @throws IndexUnreachableException
      * @throws ViewerConfigurationException
      * @throws DAOException
      * @throws PresentationException
      */
     public String getPreviousDocstructUrl() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
-        // logger.trace("getPreviousDocstructUrl");
+        // logger.trace("getPreviousDocstructUrl"); //NOSONAR Sometimes needed for debugging
         if (viewManager == null) {
             return null;
         }
@@ -1320,14 +1379,14 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      *
-     * @return
+     * @return URL to the next docstruct
      * @throws IndexUnreachableException
      * @throws ViewerConfigurationException
      * @throws DAOException
      * @throws PresentationException
      */
     public String getNextDocstructUrl() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
-        // logger.trace("getNextDocstructUrl");
+        // logger.trace("getNextDocstructUrl"); //NOSONAR Sometimes needed for debugging
         if (viewManager == null) {
             return "";
         }
@@ -1392,9 +1451,8 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws DAOException
      */
-    public String getFullscreenImageUrl() throws IndexUnreachableException, DAOException {
+    public String getFullscreenImageUrl() throws IndexUnreachableException {
         if (viewManager != null && viewManager.isDoublePageMode() && !viewManager.getCurrentPage().isDoubleImage()) {
             Optional<PhysicalElement> currentLeftPage = viewManager.getCurrentLeftPage();
             Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
@@ -1404,20 +1462,6 @@ public class ActiveDocumentBean implements Serializable {
         }
 
         return getPageUrl(PageType.viewFullscreen.getName(), imageToShow);
-    }
-
-    /**
-     * <p>
-     * getReadingModeUrl.
-     * </p>
-     *
-     * @deprecated renamed to fullscreen
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws DAOException
-     */
-    public String getReadingModeUrl() throws IndexUnreachableException, DAOException {
-        return getFullscreenImageUrl();
     }
 
     /**
@@ -1555,11 +1599,12 @@ public class ActiveDocumentBean implements Serializable {
         if (viewManager == null) {
             return null;
         }
-
-        if (viewManager.getToc() == null) {
-            viewManager.setToc(createTOC());
+        synchronized (viewManager) {
+            if (viewManager.getToc() == null) {
+                viewManager.setToc(createTOC());
+            }
+            return viewManager.getToc();
         }
-        return viewManager.getToc();
     }
 
     /**
@@ -1595,7 +1640,8 @@ public class ActiveDocumentBean implements Serializable {
             if (this.tocCurrentPage < 1) {
                 this.tocCurrentPage = 1;
             }
-            // Do not call getToc() here - the setter is usually called before update(), so the required information for proper TOC creation is not yet available
+            // Do not call getToc() here - the setter is usually called before update(),
+            // so the required information for proper TOC creation is not yet available
             if (viewManager != null && viewManager.getToc() != null) {
                 int currentCurrentPage = viewManager.getToc().getCurrentPage();
                 viewManager.getToc().setCurrentPage(this.tocCurrentPage);
@@ -1604,8 +1650,8 @@ public class ActiveDocumentBean implements Serializable {
                     this.tocCurrentPage = viewManager.getToc().getCurrentPage();
                 }
                 // Create a new TOC if pagination is enabled and the paginator page has changed
-                if (currentCurrentPage != this.tocCurrentPage && DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage() > 0
-                        && viewManager != null) {
+                if (currentCurrentPage != this.tocCurrentPage
+                        && DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage() > 0) {
                     viewManager.getToc()
                             .generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMimeType(),
                                     this.tocCurrentPage);
@@ -1675,7 +1721,7 @@ public class ActiveDocumentBean implements Serializable {
             TOC toc = getToc();
             if (toc != null && toc.getTocElements() != null && !toc.getTocElements().isEmpty()) {
                 String label = null;
-                String labelTemplate = "_DEFAULT";
+                String labelTemplate = StringConstants.DEFAULT_NAME;
                 if (getViewManager() != null) {
                     labelTemplate = getViewManager().getTopStructElement().getDocStructType();
                 }
@@ -1685,7 +1731,7 @@ public class ActiveDocumentBean implements Serializable {
                     String suffix = DataManager.getInstance().getConfiguration().getAnchorLabelInTitleBarSuffix(labelTemplate);
                     prefix = ViewerResourceBundle.getTranslation(prefix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
                     suffix = ViewerResourceBundle.getTranslation(suffix, Locale.forLanguageTag(language)).replace("_SPACE_", " ");
-                    label = prefix = toc.getLabel(viewManager.getAnchorPi(), language) + suffix + toc.getLabel(viewManager.getPi(), language);
+                    label = prefix + toc.getLabel(viewManager.getAnchorPi(), language) + suffix + toc.getLabel(viewManager.getPi(), language);
                 } else {
                     label = toc.getLabel(viewManager.getPi(), language);
                 }
@@ -1693,7 +1739,7 @@ public class ActiveDocumentBean implements Serializable {
                     return label;
                 }
             }
-            String label = viewManager.getTopStructElement().getLabel(selectedRecordLanguage);
+            String label = viewManager.getTopStructElement().getLabel(selectedRecordLanguage.getIsoCodeOld());
             if (StringUtils.isNotEmpty(label)) {
                 return label;
             }
@@ -1781,6 +1827,16 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     *
+     * @return a long.
+     * @deprecated Use getTopDocumentIddoc()
+     */
+    @Deprecated(since = "2023.11")
+    public long getActiveDocumentIddoc() {
+        return getTopDocumentIddoc();
+    }
+
+    /**
      * Indicates whether a record is currently properly loaded in this bean. Use to determine whether to display components.
      *
      * @return a boolean.
@@ -1850,12 +1906,11 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      *
-     * @return
-     * @throws ClientProtocolException
+     * @return empty string
      * @throws IOException
      * @throws IndexUnreachableException
      */
-    public String clearCacheAction() throws ClientProtocolException, IOException, IndexUnreachableException {
+    public String clearCacheAction() throws IOException, IndexUnreachableException {
         logger.trace("clearCacheAction: {}", clearCacheMode);
         if (clearCacheMode == null || viewManager == null) {
             return "";
@@ -1867,9 +1922,6 @@ public class ActiveDocumentBean implements Serializable {
             try {
                 NetTools.getWebContentDELETE(url, null, null, null, null);
                 Messages.info("cache_clear__success");
-            } catch (ClientProtocolException e) {
-                logger.error(e.getMessage());
-                Messages.error("cache_clear__failure");
             } catch (IOException e) {
                 logger.error(e.getMessage());
                 Messages.error("cache_clear__failure");
@@ -1921,6 +1973,20 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * @return the lastReceivedIdentifier
+     */
+    public String getLastReceivedIdentifier() {
+        return lastReceivedIdentifier;
+    }
+
+    /**
+     * @param lastReceivedIdentifier the lastReceivedIdentifier to set
+     */
+    public void setLastReceivedIdentifier(String lastReceivedIdentifier) {
+        this.lastReceivedIdentifier = lastReceivedIdentifier;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>recordLanguages</code>.
      * </p>
@@ -1947,10 +2013,10 @@ public class ActiveDocumentBean implements Serializable {
      * Getter for the field <code>selectedRecordLanguage</code>.
      * </p>
      *
-     * @return the selectedRecordLanguage
+     * @return the 639_1 code for selectedRecordLanguage
      */
     public String getSelectedRecordLanguage() {
-        return selectedRecordLanguage;
+        return Optional.ofNullable(selectedRecordLanguage).map(Language::getIsoCodeOld).orElse(navigationHelper.getLocale().getLanguage());
     }
 
     /**
@@ -1958,27 +2024,45 @@ public class ActiveDocumentBean implements Serializable {
      * Setter for the field <code>selectedRecordLanguage</code>.
      * </p>
      *
-     * @param selectedRecordLanguage the selectedRecordLanguage to set
+     * @param selectedRecordLanguageCode the selectedRecordLanguageCode to set
      */
-    public void setSelectedRecordLanguage(String selectedRecordLanguage) {
-        logger.trace("setSelectedRecordLanguage: {}", selectedRecordLanguage);
-        if (selectedRecordLanguage != null && selectedRecordLanguage.length() == 3) {
-            // Map ISO-3 codes to their ISO-2 variant
-            Language language = DataManager.getInstance().getLanguageHelper().getLanguage(selectedRecordLanguage);
-            if (language != null) {
-                logger.trace("Mapped language found: {}", language.getIsoCodeOld());
-                this.selectedRecordLanguage = language.getIsoCodeOld();
-            } else {
-                logger.warn("Language not found for code: {}", selectedRecordLanguage);
-                this.selectedRecordLanguage = selectedRecordLanguage;
+    public void setSelectedRecordLanguage(String selectedRecordLanguageCode) {
+        logger.trace("setSelectedRecordLanguage: {}", selectedRecordLanguageCode);
+        if (selectedRecordLanguageCode != null) {
+            this.selectedRecordLanguage = DataManager.getInstance().getLanguageHelper().getLanguage(selectedRecordLanguageCode);
+        }
+        if (this.selectedRecordLanguage == null) {
+            this.selectedRecordLanguage =
+                    DataManager.getInstance().getLanguageHelper().getLanguage(ViewerResourceBundle.getDefaultLocale().getLanguage());
+            if (selectedRecordLanguage == null) {
+                this.selectedRecordLanguage = DataManager.getInstance().getLanguageHelper().getLanguage("en");
             }
-        } else {
-            this.selectedRecordLanguage = selectedRecordLanguage;
         }
+
         MetadataBean mdb = BeanUtils.getMetadataBean();
-        if (mdb != null) {
-            mdb.setSelectedRecordLanguage(this.selectedRecordLanguage);
+        if (mdb != null && this.selectedRecordLanguage != null) {
+            mdb.setSelectedRecordLanguage(this.selectedRecordLanguage.getIsoCodeOld());
         }
+    }
+
+    /**
+     * <p>
+     * Getter for the field <code>selectedRecordLanguage</code>.
+     * </p>
+     *
+     * @return the 639_2B code for selectedRecordLanguage
+     */
+    public String getSelectedRecordLanguage3() {
+        return Optional.ofNullable(selectedRecordLanguage).map(Language::getIsoCode).orElse(navigationHelper.getLocale().getLanguage());
+    }
+
+    /**
+     * Setter to match getSelectedRecordLanguage3() for URL patterns.
+     * 
+     * @param selectedRecordLanguageCode
+     */
+    public void setSelectedRecordLanguage3(String selectedRecordLanguageCode) {
+        setSelectedRecordLanguage(selectedRecordLanguageCode);
     }
 
     /**
@@ -2023,8 +2107,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * @param currentPage
-     * @return
+     * @param downloadType
+     * @param pageTypeName
+     * @return true if download of the given type is enabled for the given page type; false otherwise
      */
     private static boolean isEnabled(String downloadType, String pageTypeName) {
         if (downloadType.equals(EPUBDownloadJob.LOCAL_TYPE) && !DataManager.getInstance().getConfiguration().isGeneratePdfInTaskManager()) {
@@ -2069,17 +2154,21 @@ public class ActiveDocumentBean implements Serializable {
 
             FacesContext fc = FacesContext.getCurrentInstance();
             ExternalContext ec = fc.getExternalContext();
-            ec.responseReset(); // Some JSF component library or some Filter might have set some headers in the buffer beforehand. We want to get rid of them, else it may collide.
+            // Some JSF component library or some Filter might have set some headers in the buffer beforehand.
+            // We want to get rid of them, else it may collide.
+            ec.responseReset();
             ec.setResponseContentType("application/pdf");
-            ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+            ec.setResponseHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
             OutputStream os = ec.getResponseOutputStream();
             TocWriter writer = new TocWriter("", fileNameRaw);
             writer.createPdfDocument(os, getToc().getTocElements());
-            fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
+            // Important! Otherwise JSF will attempt to render the response which obviously
+            // will fail since it's already written with a file and closed.
+            fc.responseComplete();
         } catch (IndexOutOfBoundsException e) {
             logger.error("No toc to generate");
         } catch (WriteTocException e) {
-            logger.error("Error writing toc: " + e.getMessage(), e);
+            logger.error("Error writing toc: {}", e.getMessage(), e);
         }
     }
 
@@ -2109,8 +2198,8 @@ public class ActiveDocumentBean implements Serializable {
             return null;
         }
 
-        List<SearchHit> ret = SearchHelper.searchWithAggregation(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null,
-                navigationHelper.getLocale(), 0);
+        List<SearchHit> ret = SearchHelper.searchWithAggregation(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null, null,
+                navigationHelper.getLocale(), false, 0);
 
         logger.trace("{} related items found", ret.size());
         return ret;
@@ -2150,6 +2239,9 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @should return empty string if no record loaded
+     * @should return empty string if navigationHelper null
+     * @should generate tags correctly
      */
     public String getRelativeUrlTags() throws IndexUnreachableException, DAOException, PresentationException {
         if (!isRecordLoaded() || navigationHelper == null) {
@@ -2159,40 +2251,131 @@ public class ActiveDocumentBean implements Serializable {
             logger.trace("current view: {}", navigationHelper.getCurrentView());
         }
 
+        String linkCanonical = "\n<link rel=\"canonical\" href=\"";
+        String linkAlternate = "\n<link rel=\"alternate\" href=\"";
+        String linkEnd = "\" />";
+
+        PageType currentPageType = PageType.getByName(navigationHelper.getCurrentView());
+        PageType defaultPageTypeForRecord = PageType.determinePageType(viewManager.getTopStructElement().getDocStructType(), null,
+                isAnchor() || isGroup(), viewManager.isHasPages(), false);
+
         StringBuilder sb = new StringBuilder();
 
-        // Add canonical links
-        if (viewManager.getCurrentPage() != null) {
-            if (StringUtils.isNotEmpty(viewManager.getCurrentPage().getUrn())) {
-                String urnResolverUrl = DataManager.getInstance().getConfiguration().getUrnResolverUrl() + viewManager.getCurrentPage().getUrn();
-                sb.append("\n<link rel=\"canonical\" href=\"").append(urnResolverUrl).append("\" />");
-            }
-            if (viewManager.getCurrentPage().equals(viewManager.getRepresentativePage())) {
-                String piResolverUrl = navigationHelper.getApplicationUrl() + "piresolver?id=" + viewManager.getPi();
-                sb.append("\n<link rel=\"canonical\" href=\"").append(piResolverUrl).append("\" />");
+        // Add resolver links if current view matches resolved view for this record
+        if (defaultPageTypeForRecord != null && defaultPageTypeForRecord.equals(currentPageType)) {
+            if (viewManager.getCurrentPage() != null) {
+                // URN resolver URL (alternate)
+                if (StringUtils.isNotEmpty(viewManager.getCurrentPage().getUrn())) {
+                    String urnResolverUrl = DataManager.getInstance().getConfiguration().getUrnResolverUrl() + viewManager.getCurrentPage().getUrn();
+                    sb.append(linkAlternate).append(urnResolverUrl).append(linkEnd);
+                }
+                // PI resolver URL (alternate)
+                if (viewManager.getCurrentPage().equals(viewManager.getRepresentativePage())) {
+                    String piResolverUrl = navigationHelper.getApplicationUrl() + "piresolver?id=" + viewManager.getPi();
+                    sb.append(linkAlternate).append(piResolverUrl).append(linkEnd);
+                }
             }
         }
-        PageType currentPageType = PageType.getByName(navigationHelper.getCurrentView());
-        if (currentPageType != null && StringUtils.isNotEmpty(currentPageType.name())) {
-            // logger.trace("page type: {}", currentPageType.getName());
+        if (currentPageType != null && StringUtils.isNotEmpty(currentPageType.getName())) {
+            logger.trace("page type: {}", currentPageType);
             // logger.trace("current url: {}", navigationHelper.getCurrentUrl());
-            String currentUrl = navigationHelper.getCurrentUrl();
-            if (currentUrl.contains("!" + currentPageType.getName())) {
-                // Preferred view - add regular view URL
-                sb.append("\n<link rel=\"canonical\" href=\"")
-                        .append(currentUrl.replace("!" + currentPageType.getName(), currentPageType.getName()))
-                        .append("\" />");
-            } else if (currentUrl.contains(currentPageType.getName())) {
-                // Regular view - add preferred view URL
-                sb.append("\n<link rel=\"canonical\" href=\"")
-                        .append(currentUrl.replace(currentPageType.getName(), "!" + currentPageType.getName()))
-                        .append("\" />");
+
+            int page = viewManager.getCurrentImageOrder();
+            String urlRoot = navigationHelper.getApplicationUrl() + currentPageType.getName() + "/" + viewManager.getPi() + "/";
+            String urlRootExplicit = navigationHelper.getApplicationUrl() + "!" + currentPageType.getName() + "/" + viewManager.getPi() + "/";
+            switch (currentPageType) {
+                case viewCalendar:
+                case viewFullscreen:
+                case viewImage:
+                case viewMetadata:
+                case viewObject:
+                    if (page == 1) {
+                        // Page 1: URL without page canonical
+                        sb.append(linkCanonical).append(urlRoot).append(linkEnd);
+                        sb.append(linkAlternate).append(urlRoot).append(page).append('/').append(linkEnd);
+                        sb.append(linkAlternate).append(urlRootExplicit).append(page).append('/').append(linkEnd);
+                    } else {
+                        // Page 2+: URL with page canonical
+                        sb.append(linkCanonical).append(urlRoot).append(page).append('/').append("\" />");
+                        sb.append(linkAlternate).append(urlRootExplicit).append(page).append('/').append(linkEnd);
+                    }
+                    if (StringUtils.isNotEmpty(getLogid())) {
+                        sb.append(linkAlternate).append(urlRoot).append(page).append('/').append(getLogid()).append('/').append(linkEnd);
+                        sb.append(linkAlternate).append(urlRootExplicit).append(page).append('/').append(getLogid()).append('/').append(linkEnd);
+                    }
+                    break;
+                case viewFulltext:
+                    if (page == 1) {
+                        sb.append(linkCanonical).append(urlRoot).append(linkEnd);
+                        sb.append(linkAlternate).append(urlRoot).append(page).append('/').append(linkEnd);
+                        sb.append(linkAlternate).append(urlRootExplicit).append(page).append('/').append(linkEnd);
+                    } else {
+                        sb.append(linkCanonical).append(urlRoot).append(page).append('/').append(linkEnd);
+                        sb.append(linkAlternate).append(urlRootExplicit).append(page).append('/').append(linkEnd);
+                    }
+                    if (StringUtils.isNotEmpty(getSelectedRecordLanguage3())) {
+                        sb.append(linkAlternate)
+                                .append(urlRoot)
+                                .append(page)
+                                .append('/')
+                                .append(getSelectedRecordLanguage3())
+                                .append('/')
+                                .append(linkEnd);
+                        sb.append(linkAlternate)
+                                .append(urlRootExplicit)
+                                .append(page)
+                                .append('/')
+                                .append(getSelectedRecordLanguage3())
+                                .append('/')
+                                .append(linkEnd);
+                    }
+                    break;
+                case viewThumbs:
+                    sb.append(linkCanonical).append(urlRoot).append(getCurrentThumbnailPage()).append('/').append(linkEnd);
+                    break;
+                case viewToc:
+                    sb.append(linkCanonical).append(urlRoot).append(tocCurrentPage).append('/').append(linkEnd);
+                    if (StringUtils.isNotEmpty(getLogid())) {
+                        sb.append(linkAlternate).append(urlRoot).append(tocCurrentPage).append('/').append(getLogid()).append('/').append(linkEnd);
+                        sb.append(linkAlternate)
+                                .append(urlRootExplicit)
+                                .append(tocCurrentPage)
+                                .append('/')
+                                .append(getLogid())
+                                .append('/')
+                                .append(linkEnd);
+                    }
+                    break;
+                default:
+                    break;
             }
+
+            //            String regularUrl;
+            //            String explicitUrl;
+            //            String currentUrl = navigationHelper.getCurrentUrl();
+            //
+            //            if (currentUrl.contains(SolrTools.unescapeSpecialCharacters(getLogid()))) {
+            //                currentUrl = currentUrl.replace(SolrTools.unescapeSpecialCharacters(getLogid()), getLogid());
+            //            }
+
+            //            if (currentUrl.contains("!" + currentPageType.getName())) {
+            //                regularUrl = currentUrl.replace("!" + currentPageType.getName(), currentPageType.getName());
+            //                explicitUrl = currentUrl;
+            //            } else {
+            //                regularUrl = currentUrl;
+            //                explicitUrl = currentUrl.replace(currentPageType.getName(), "!" + currentPageType.getName());
+            //            }
+            //
+            //            // Regular URL (canonical)
+            //            sb.append(linkCanonical).append(regularUrl).append("\" />");
+            //            // Explicitly selected view (alternate)
+            //            sb.append(linkAlternate).append(explicitUrl).append("\" />");
+
         }
 
         // Skip prev/next links for non-paginated views
         if (PageType.viewMetadata.equals(currentPageType) || PageType.viewToc.equals(currentPageType)) {
-            return "";
+            return sb.toString();
         }
 
         // Add next/prev links
@@ -2200,10 +2383,10 @@ public class ActiveDocumentBean implements Serializable {
         String prevUrl = getPreviousPageUrl();
         String nextUrl = getNextPageUrl();
         if (StringUtils.isNotEmpty(nextUrl) && !nextUrl.equals(currentUrl)) {
-            sb.append("\n<link rel=\"next\" href=\"").append(nextUrl).append("\" />");
+            sb.append("\n<link rel=\"next\" href=\"").append(nextUrl).append(linkEnd);
         }
         if (StringUtils.isNotEmpty(prevUrl) && !prevUrl.equals(currentUrl)) {
-            sb.append("\n<link rel=\"prev\" href=\"").append(prevUrl).append("\" />");
+            sb.append("\n<link rel=\"prev\" href=\"").append(prevUrl).append(linkEnd);
         }
 
         return sb.toString();
@@ -2261,24 +2444,53 @@ public class ActiveDocumentBean implements Serializable {
      * Get a CMSSidebarElement with a map containing all GeoMarkers for the current PI. The widget is stored in the bean, but refreshed each time the
      * PI changes
      *
-     * @return
-     * @throws PresentationException
+     * @return {@link GeoMap}
      * @throws DAOException
      * @throws IndexUnreachableException
      */
-    public synchronized GeoMap getGeoMap() throws PresentationException, DAOException, IndexUnreachableException {
-        GeoMap widget = this.geoMaps.get(getPersistentIdentifier());
-        if (widget == null) {
-            widget = generateGeoMap(getPersistentIdentifier());
-            this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), widget);
+    public synchronized GeoMap getGeoMap() throws DAOException, IndexUnreachableException {
+        return getRecordGeoMap().getGeoMap();
+    }
+
+    /**
+     * 
+     * @return {@link RecordGeoMap}
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     */
+    public RecordGeoMap getRecordGeoMap() throws DAOException, IndexUnreachableException {
+        RecordGeoMap map = this.geoMaps.get(getPersistentIdentifier());
+        if (map == null) {
+            ComplexMetadataContainer md = Optional.ofNullable(this).map(b -> b.viewManager).map(ViewManager::getTopStructElement).map(t -> {
+                try {
+                    return t.getMetadataDocuments();
+                } catch (PresentationException | IndexUnreachableException e) {
+                    return null;
+                }
+            }).orElse(null);
+            if (md instanceof RelationshipMetadataContainer) {
+                RelationshipMetadataContainer rmc = (RelationshipMetadataContainer) md;
+                List<MetadataContainer> docs = rmc.getFieldNames()
+                        .stream()
+                        .map(rmc::getMetadata)
+                        .flatMap(List::stream)
+                        .distinct()
+                        .map(rmc::getRelatedRecord)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                map = new RecordGeoMap(getTopDocument(), docs);
+                this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), map);
+            } else {
+                map = new RecordGeoMap();
+            }
         }
-        return widget;
+        return map;
     }
 
     /**
      * 
      * @param pi
-     * @return
+     * @return {@link GeoMap}
      * @throws PresentationException
      * @throws DAOException
      */
@@ -2290,10 +2502,11 @@ public class ActiveDocumentBean implements Serializable {
 
             GeoMap map = new GeoMap();
             map.setId(Long.MAX_VALUE);
-            map.setType(GeoMapType.MANUAL);
             map.setShowPopover(true);
-            map.setMarkerTitleField(null);
-            map.setMarker("default");
+
+            ManualFeatureSet featureSet = new ManualFeatureSet();
+            featureSet.setMarker("default");
+            map.addFeatureSet(featureSet);
 
             String mainDocQuery = String.format("PI:%s", pi);
             List<String> mainDocFields = PrettyUrlTools.getSolrFieldsToDeterminePageType();
@@ -2326,7 +2539,7 @@ public class ActiveDocumentBean implements Serializable {
                     .stream()
                     .filter(a -> PublicationStatus.PUBLISHED.equals(a.getPublicationStatus()))
                     .filter(a -> StringUtils.isNotBlank(a.getBody()))
-                    .map(a -> new DisplayUserGeneratedContent(a))
+                    .map(DisplayUserGeneratedContent::new)
                     .filter(a -> ContentType.GEOLOCATION.equals(a.getType()))
                     .filter(a -> ContentBean.isAccessible(a, BeanUtils.getRequest()))
                     .collect(Collectors.toList());
@@ -2344,7 +2557,7 @@ public class ActiveDocumentBean implements Serializable {
                     for (String coordinateField : coordinateFields) {
                         String docType = solrDocument.getFieldValue(SolrConstants.DOCTYPE).toString();
                         String labelField = "METADATA".equals(docType) ? "MD_VALUE" : SolrConstants.LABEL;
-                        docFeatures.addAll(GeoMap.getGeojsonPoints(solrDocument, coordinateField, labelField, null));
+                        docFeatures.addAll(new GeoCoordinateConverter().getGeojsonPoints(solrDocument, null, coordinateField, labelField));
                     }
                     if (!solrDocument.containsKey(SolrConstants.ISWORK) && solrDocument.getFieldValue(SolrConstants.DOCTYPE).equals("DOCSTRCT")) {
                         docFeatures.forEach(f -> f.setLink(PrettyUrlTools.getRecordUrl(solrDocument, pageType)));
@@ -2358,7 +2571,7 @@ public class ActiveDocumentBean implements Serializable {
             //remove dubplicates
             features = features.stream().distinct().collect(Collectors.toList());
             if (!features.isEmpty()) {
-                map.setFeatures(features.stream().map(f -> f.getJsonObject().toString()).collect(Collectors.toList()));
+                featureSet.setFeatures(features.stream().map(f -> f.getJsonObject().toString()).collect(Collectors.toList()));
             }
             return map;
         } catch (IndexUnreachableException e) {
@@ -2382,7 +2595,7 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     *
+     * @return Selected {@link DownloadOption}
      */
     public DownloadOption getSelectedDownloadOption() {
         if (selectedDownloadOptionLabel == null) {
@@ -2421,11 +2634,10 @@ public class ActiveDocumentBean implements Serializable {
      * This method augments the setter <code>ViewManager.setDoublePageMode(boolean)</code> with URL modifications to reflect the mode.
      *
      * @param doublePageMode The doublePageMode to set
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @return empty string
      * @should set imageToShow if value changes
      */
-    public String setDoublePageModeAction(boolean doublePageMode) throws IndexUnreachableException, DAOException {
+    public String setDoublePageModeAction(boolean doublePageMode) {
         if (viewManager == null) {
             return "";
         }
@@ -2454,7 +2666,7 @@ public class ActiveDocumentBean implements Serializable {
 
         // When not using PrettyContext, the updated URL will always be a click behind
         if (PrettyContext.getCurrentInstance() != null && PrettyContext.getCurrentInstance().getCurrentMapping() != null) {
-            return "pretty:" + PrettyContext.getCurrentInstance().getCurrentMapping().getId();
+            return StringConstants.PREFIX_PRETTY + PrettyContext.getCurrentInstance().getCurrentMapping().getId();
         }
 
         return "";
@@ -2521,6 +2733,26 @@ public class ActiveDocumentBean implements Serializable {
         }
 
         return false;
+    }
+
+    public List<String> getGeomapFilters() {
+        return List.of("MD_METADATATYPE", "MD_GENRE").stream().map(s -> "'" + s + "'").collect(Collectors.toList());
+    }
+
+    public List<String> getExternalResourceUrls() {
+        if (this.externalResourceUrls == null) {
+            this.externalResourceUrls = loadExternalResourceUrls();
+        }
+        return this.externalResourceUrls;
+    }
+
+    private List<String> loadExternalResourceUrls() {
+        List<String> urlTemplates = DataManager.getInstance().getConfiguration().getExternalResourceUrlTemplates();
+        VariableReplacer vr = new VariableReplacer(getTopDocument());
+        return urlTemplates.stream()
+                .flatMap(templ -> vr.replace(templ).stream())
+                .filter(url -> ExternalFilesDownloader.resourceExists(url))
+                .toList();
     }
 
 }

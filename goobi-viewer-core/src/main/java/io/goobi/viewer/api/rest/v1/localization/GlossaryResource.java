@@ -74,7 +74,7 @@ public class GlossaryResource {
     @GET
     @Path(ApiUrls.LOCALIZATION_VOCABS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags= {"localization"}, summary = "Get a list of all glossaries")
+    @Operation(tags = { "localization" }, summary = "Get a list of all glossaries")
     public List<Glossary> listVocabularies() throws IOException {
         return new GlossaryManager().getGlossaries();
     }
@@ -92,9 +92,10 @@ public class GlossaryResource {
     @GET
     @Path(ApiUrls.LOCALIZATION_VOCABS_FILE)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags= {"localization"}, summary = "Get glossary from a glossary file")
-    @ApiResponse(responseCode="404", description="Not vocabulary found with that filename")
-    public String getVocabulary(@PathParam("filename") @Parameter(description="Glossary filename") String filename) throws IOException, ContentNotFoundException {
+    @Operation(tags = { "localization" }, summary = "Get glossary from a glossary file")
+    @ApiResponse(responseCode = "404", description = "Not vocabulary found with that filename")
+    public String getVocabulary(@PathParam("filename") @Parameter(description = "Glossary filename") String filename)
+            throws IOException, ContentNotFoundException {
         return new GlossaryManager().getGlossaryAsJson(filename);
 
     }

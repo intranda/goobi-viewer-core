@@ -21,31 +21,31 @@
  */
 package io.goobi.viewer.model.cms.widgets.embed;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assume.assumeNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Locale;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
 
-public class CMSSidebarElementCustomTest extends AbstractDatabaseEnabledTest {
+class CMSSidebarElementCustomTest extends AbstractDatabaseEnabledTest {
 
     @Test
-    public void test() throws DAOException {
+    void test() throws DAOException {
         CustomSidebarWidget widget = new HtmlSidebarWidget();
         widget.setId(11l);
         widget.getTitle().setText("Titel", Locale.GERMAN);
         CMSPage owner = DataManager.getInstance().getDao().getCMSPage(1l);
-        assumeNotNull(owner);
+        Assertions.assertNotNull(owner);
 
         CMSSidebarElementCustom element = new CMSSidebarElementCustom(widget, owner);
         assertEquals(owner, element.getOwnerPage());

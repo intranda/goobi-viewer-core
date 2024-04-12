@@ -1,0 +1,56 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface>
+		<composite:attribute name="field" required="true" />
+		<composite:attribute name="options" required="true" />
+		<composite:attribute name="label" required="true" />
+		<composite:attribute name="help" required="false" default="" />
+		<composite:attribute name="render" required="false" default="@none" />
+		<composite:attribute name="defaultItemLabel" required="false" />
+		<composite:attribute name="defaultItemValue" required="false" />
+		<composite:attribute name="item" default="item" />
+		<composite:attribute name="itemValue" default="#{item}" />
+		<composite:attribute name="itemLabel" default="#{msg[item]}" />
+		<composite:attribute name="disabled" default="false" />
+		<composite:attribute name="required" default="false" />
+		<composite:attribute name="requiredMessage" default="" />
+	</composite:interface>
+
+	<composite:interface>
+		<composite:attribute name="mediaHolder" required="true" />
+	</composite:interface>
+
+	<composite:implementation>
+		<!-- MEDIA FILE -->
+		<ui:fragment rendered="#{cc.attrs.mediaHolder.mediaItem != null}">
+			<ui:include src="/resources/cms/includes/mediaFile.xhtml">
+				<ui:param name="item" value="#{cc.attrs.mediaHolder.mediaItemWrapper}" />
+			</ui:include>
+		</ui:fragment>
+
+		<!-- ACTIONS -->
+		<div class="cms-module__actions">
+			<h:commandLink action="#{cmsBean.setSelectedMediaHolder(cc.attrs.mediaHolder)}"
+				value="#{cc.attrs.mediaHolder.mediaItem == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
+				class="btn #{cc.attrs.mediaHolder.mediaItem == null ? 'btn--default' : 'btn--clean'}"
+				role="button">
+				<f:ajax execute="@form" render=":mediaSelectPanel" />
+			</h:commandLink>
+			<h:commandLink rendered="#{cc.attrs.mediaHolder.mediaItem != null}"
+				action="#{cc.attrs.mediaHolder.setMediaItem(null)}"
+				value="#{msg.cms_selectMediaItem_deselect}"
+				class="btn btn--clean delete" role="button">
+				<f:ajax execute="@form" render="@form" />
+			</h:commandLink>
+		</div>
+
+
+
+	</composite:implementation>
+</ui:composition>

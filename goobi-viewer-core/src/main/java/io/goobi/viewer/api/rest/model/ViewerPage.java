@@ -25,44 +25,81 @@ import java.net.URI;
 
 import de.intranda.api.iiif.presentation.content.IContent;
 import de.intranda.metadata.multilanguage.IMetadataValue;
-import io.goobi.viewer.model.cms.CMSContentItem.CMSContentItemType;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.media.CMSMediaHolder;
+import io.goobi.viewer.model.cms.media.MediaItem;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
- * Simple template to create a json-representation of a viewer page, typically a CMS-Page.
- * Used to provide slides to sliders
+ * Simple template to create a json-representation of a viewer page, typically a CMS-Page. Used to provide slides to sliders
  *
  * @author florian
  *
  */
 public class ViewerPage {
 
-    public final URI link;
-    public final IContent image;
-    public final IMetadataValue label;
-    public final IMetadataValue description;
+    private final URI link;
+    private final IContent image;
+    private final IMetadataValue label;
+    private final long order;
+
     /**
      * @param link
      * @param image
-     * @param header
-     * @param description
+     * @param label
+     * @param order
      */
-    public ViewerPage(URI link, IContent image, IMetadataValue label, IMetadataValue description) {
+    public ViewerPage(URI link, IContent image, IMetadataValue label, long order) {
         super();
         this.link = link;
         this.image = image;
         this.label = label;
-        this.description = description;
+        this.order = order;
     }
 
+    /**
+     * 
+     * @param page
+     */
     public ViewerPage(CMSPage page) {
         this.label = page.getTitleTranslations();
-        this.description = page.getPreviewTranslations();
         this.link = URI.create(page.getUrl());
-        this.image = page.getGlobalContentItems().stream()
-                .filter(item -> CMSContentItemType.MEDIA.equals(item.getType()))
+        this.order = page.getPageSortingOrElse(0);
+        this.image = page.getPersistentComponents()
+                .stream()
+                .flatMap(c -> c.getContentItems().stream())
+                .filter(CMSMediaHolder.class::isInstance)
                 .sorted()
+                .map(CMSMediaHolder.class::cast)
                 .map(item -> MediaItem.getMediaResource(item.getMediaItem()))
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * @return the link
+     */
+    public URI getLink() {
+        return link;
+    }
+
+    /**
+     * @return the image
+     */
+    public IContent getImage() {
+        return image;
+    }
+
+    /**
+     * @return the label
+     */
+    public IMetadataValue getLabel() {
+        return label;
+    }
+
+    /**
+     * @return the order
+     */
+    public long getOrder() {
+        return order;
     }
 }

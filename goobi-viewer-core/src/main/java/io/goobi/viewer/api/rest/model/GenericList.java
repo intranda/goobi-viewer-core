@@ -26,11 +26,12 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-
 /**
  * <p>
  * GenericList class.
  * </p>
+ * 
+ * @param <T>
  */
 public class GenericList<T> {
 

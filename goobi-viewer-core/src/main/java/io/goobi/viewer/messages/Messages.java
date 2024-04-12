@@ -32,7 +32,14 @@ import javax.faces.context.FacesContext;
  * Messages class.
  * </p>
  */
-public class Messages {
+public final class Messages {
+
+    /**
+     * Private constructor.
+     */
+    private Messages() {
+        //
+    }
 
     /**
      * <p>

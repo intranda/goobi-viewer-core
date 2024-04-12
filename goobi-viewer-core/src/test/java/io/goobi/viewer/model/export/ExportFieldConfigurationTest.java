@@ -21,18 +21,18 @@
  */
 package io.goobi.viewer.model.export;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class ExportFieldConfigurationTest {
+class ExportFieldConfigurationTest {
 
     /**
      * @see ExportFieldConfiguration#getLabel()
      * @verifies return field if label null
      */
     @Test
-    public void getLabel_shouldReturnFieldIfLabelNull() throws Exception {
+    void getLabel_shouldReturnFieldIfLabelNull() throws Exception {
         ExportFieldConfiguration efc  = new ExportFieldConfiguration("MD_FOO");
-        Assert.assertEquals("MD_FOO", efc.getLabel());
+        Assertions.assertEquals("MD_FOO", efc.getLabel());
     }
 }

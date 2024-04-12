@@ -23,6 +23,7 @@ package io.goobi.viewer.model.iiif.search;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ import org.jdom2.JDOMException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import de.intranda.api.annotation.wa.Motivation;
 import de.intranda.api.iiif.search.AutoSuggestResult;
 import de.intranda.api.iiif.search.SearchHit;
 import de.intranda.api.iiif.search.SearchResult;
@@ -71,6 +73,8 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class IIIFSearchBuilder {
 
+    private static final String MOTIVATION_NON_PAINTING = "non-painting";
+
     private static final Logger logger = LogManager.getLogger(IIIFSearchBuilder.class);
 
     private static final List<String> FULLTEXTFIELDLIST =
@@ -91,15 +95,13 @@ public class IIIFSearchBuilder {
     /**
      * Initializes the builder with all required parameters
      *
-     * @param requestURI The request url, including all query parameters
+     * @param urls
      * @param query the query string
      * @param pi the pi of the manifest to search
+     * @param request
      */
-    public IIIFSearchBuilder(AbstractApiUrlManager urls, String query, String pi, HttpServletRequest request) {
-        if (query != null) {
-            query = query.replace("+", " ");
-        }
-        this.query = query;
+    public IIIFSearchBuilder(AbstractApiUrlManager urls, final String query, String pi, HttpServletRequest request) {
+        this.query = query != null ? query.replace("+", " ") : query;
         this.pi = pi;
         this.urls = urls;
         this.converter = new SearchResultConverter(urls, pi, 0);
@@ -136,10 +138,9 @@ public class IIIFSearchBuilder {
      * @param motivation the motivation to set
      * @return a {@link io.goobi.viewer.model.iiif.search.IIIFSearchBuilder} object.
      */
-    public IIIFSearchBuilder setMotivation(String motivation) {
+    public IIIFSearchBuilder setMotivation(final String motivation) {
         if (StringUtils.isNotBlank(motivation)) {
-            motivation = motivation.replace("+", " ");
-            this.motivation = Arrays.asList(StringUtils.split(motivation, " "));
+            this.motivation = Arrays.asList(StringUtils.split(motivation.replace("+", " "), " "));
         }
         return this;
     }
@@ -317,31 +318,31 @@ public class IIIFSearchBuilder {
         long mostHits = 0;
         long total = 0;
         if (StringUtils.isNotBlank(query)) {
-            if (motivation.isEmpty() || motivation.contains("painting")) {
+            if (motivation.isEmpty() || motivation.contains(Motivation.PAINTING)) {
                 AnnotationResultList fulltextAnnotations = searchFulltext(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
                 resultList.add(fulltextAnnotations);
-                mostHits = Math.max(mostHits, fulltextAnnotations.numHits);
-                total += fulltextAnnotations.numHits;
+                mostHits = Math.max(mostHits, fulltextAnnotations.getNumHits());
+                total += fulltextAnnotations.getNumHits();
             }
-            if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("describing")) {
+            if (motivation.isEmpty() || motivation.contains(MOTIVATION_NON_PAINTING) || motivation.contains(Motivation.DESCRIBING)) {
                 AnnotationResultList annotations = searchAnnotations(query, pi, getFirstHitIndex(getPage()), getHitsPerPage(), request);
                 resultList.add(annotations);
-                mostHits = Math.max(mostHits, annotations.numHits);
-                total += annotations.numHits;
+                mostHits = Math.max(mostHits, annotations.getNumHits());
+                total += annotations.getNumHits();
 
             }
-            if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("describing")) {
+            if (motivation.isEmpty() || motivation.contains(MOTIVATION_NON_PAINTING) || motivation.contains(Motivation.DESCRIBING)) {
                 AnnotationResultList metadata = searchMetadata(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
                 resultList.add(metadata);
-                mostHits = Math.max(mostHits, metadata.numHits);
-                total += metadata.numHits;
+                mostHits = Math.max(mostHits, metadata.getNumHits());
+                total += metadata.getNumHits();
 
             }
-            if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("commenting")) {
+            if (motivation.isEmpty() || motivation.contains(MOTIVATION_NON_PAINTING) || motivation.contains(Motivation.DESCRIBING)) {
                 AnnotationResultList annotations = searchComments(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
                 resultList.add(annotations);
-                mostHits = Math.max(mostHits, annotations.numHits);
-                total += annotations.numHits;
+                mostHits = Math.max(mostHits, annotations.getNumHits());
+                total += annotations.getNumHits();
 
             }
         }
@@ -349,8 +350,8 @@ public class IIIFSearchBuilder {
         int lastPageNo = 1 + (int) mostHits / getHitsPerPage();
 
         SearchResult searchResult = new SearchResult(getURI(getPage()));
-        searchResult.setResources(resultList.annotations);
-        searchResult.setHits(resultList.hits);
+        searchResult.setResources(resultList.getAnnotations());
+        searchResult.setHits(resultList.getHits());
         searchResult.setStartIndex(getFirstHitIndex(getPage()));
 
         if (getPage() > 1) {
@@ -383,13 +384,13 @@ public class IIIFSearchBuilder {
             if (motivation.isEmpty() || motivation.contains("painting")) {
                 //add terms from fulltext?
             }
-            if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("describing")) {
+            if (motivation.isEmpty() || motivation.contains(MOTIVATION_NON_PAINTING) || motivation.contains("describing")) {
                 terms.addAll(autoSuggestAnnotations(query, getPi(), request));
             }
-            if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("describing")) {
+            if (motivation.isEmpty() || motivation.contains(MOTIVATION_NON_PAINTING) || motivation.contains("describing")) {
                 terms.addAll(autoSuggestMetadata(query, getPi()));
             }
-            if (motivation.isEmpty() || motivation.contains("non-painting") || motivation.contains("commenting")) {
+            if (motivation.isEmpty() || motivation.contains(MOTIVATION_NON_PAINTING) || motivation.contains("commenting")) {
                 terms.addAll(autoSuggestComments(query, getPi()));
             }
         }
@@ -409,7 +410,7 @@ public class IIIFSearchBuilder {
             List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi);
             comments = comments.stream()
                     .filter(c -> c.getContentString().matches(AbstractSearchParser.getContainedWordRegex(queryRegex)))
-                    .collect(Collectors.toList());
+                    .toList();
             if (firstHitIndex < comments.size()) {
                 comments = comments.subList(firstHitIndex, Math.min(firstHitIndex + hitsPerPage, comments.size()));
                 for (Comment comment : comments) {
@@ -422,6 +423,12 @@ public class IIIFSearchBuilder {
         return results;
     }
 
+    /**
+     * 
+     * @param query
+     * @param pi Record identifier
+     * @return {@link SearchTermList}
+     */
     private SearchTermList autoSuggestComments(String query, String pi) {
 
         SearchTermList terms = new SearchTermList();
@@ -431,7 +438,7 @@ public class IIIFSearchBuilder {
             List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi);
             comments = comments.stream()
                     .filter(c -> c.getContentString().matches(AbstractSearchParser.getContainedWordRegex(queryRegex)))
-                    .collect(Collectors.toList());
+                    .toList();
             for (Comment comment : comments) {
                 terms.addAll(converter.getSearchTerms(queryRegex, comment.getContentString(), getMotivation()));
             }
@@ -441,6 +448,14 @@ public class IIIFSearchBuilder {
         return terms;
     }
 
+    /**
+     * 
+     * @param query
+     * @param pi Record identifier
+     * @param firstHitIndex
+     * @param hitsPerPage
+     * @return {@link AnnotationResultList}
+     */
     private AnnotationResultList searchMetadata(String query, String pi, int firstHitIndex, int hitsPerPage) {
 
         AnnotationResultList results = new AnnotationResultList();
@@ -456,7 +471,7 @@ public class IIIFSearchBuilder {
         queryBuilder.append(" +DOCTYPE:DOCSTRCT");
         queryBuilder.append(" +( ");
         for (String field : searchFields) {
-            if(StringUtils.isNotBlank(field)) {
+            if (StringUtils.isNotBlank(field)) {
                 queryBuilder.append(field).append(":").append(query).append(" ");
             }
         }
@@ -475,11 +490,9 @@ public class IIIFSearchBuilder {
                         hitIndex++;
                         String fieldValue = fieldNames.get(fieldName).stream().collect(Collectors.joining(" "));
                         String containesWordRegex = AbstractSearchParser.getContainedWordRegex(AbstractSearchParser.getQueryRegex(query));
-                        if (fieldValue.matches(containesWordRegex)) {
-                            if (hitIndex >= firstHitIndex && hitIndex < firstHitIndex + hitsPerPage) {
-                                SearchHit hit = converter.convertMetadataToHit(AbstractSearchParser.getQueryRegex(query), fieldName, doc);
-                                results.add(hit);
-                            }
+                        if (fieldValue.matches(containesWordRegex) && hitIndex >= firstHitIndex && hitIndex < firstHitIndex + hitsPerPage) {
+                            SearchHit hit = converter.convertMetadataToHit(AbstractSearchParser.getQueryRegex(query), fieldName, doc);
+                            results.add(hit);
                         }
                     }
                 }
@@ -490,6 +503,12 @@ public class IIIFSearchBuilder {
         return results;
     }
 
+    /**
+     * 
+     * @param query
+     * @param pi Record identifier
+     * @return SearchTermList
+     */
     private SearchTermList autoSuggestMetadata(String query, String pi) {
 
         SearchTermList terms = new SearchTermList();
@@ -521,7 +540,8 @@ public class IIIFSearchBuilder {
                     if (fieldNameMatches(fieldName, displayFields)) {
                         String fieldValue = fieldNames.get(fieldName).stream().collect(Collectors.joining(" "));
                         if (fieldValue.matches(AbstractSearchParser.getContainedWordRegex(AbstractSearchParser.getAutoSuggestRegex(escapedQuery)))) {
-                            terms.addAll(converter.getSearchTerms(AbstractSearchParser.getAutoSuggestRegex(escapedQuery), fieldValue, getMotivation()));
+                            terms.addAll(
+                                    converter.getSearchTerms(AbstractSearchParser.getAutoSuggestRegex(escapedQuery), fieldValue, getMotivation()));
                         }
                     }
                 }
@@ -533,11 +553,12 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * @param queryRegex
-     * @param pi2
+     * @param query Solr query
+     * @param pi Record identifier
      * @param firstHitIndex
-     * @param hitsPerPage2
-     * @return
+     * @param hitsPerPage
+     * @param request {@link HttpServletRequest}
+     * @return {@link AnnotationResultList}
      */
     private AnnotationResultList searchAnnotations(String query, String pi, int firstHitIndex, int hitsPerPage, HttpServletRequest request) {
 
@@ -562,6 +583,13 @@ public class IIIFSearchBuilder {
         return results;
     }
 
+    /**
+     * 
+     * @param query Solr query
+     * @param pi Record identifier
+     * @param request {@link HttpServletRequest}
+     * @return {@link SearchTermList}
+     */
     private SearchTermList autoSuggestAnnotations(String query, String pi, HttpServletRequest request) {
 
         StringBuilder queryBuilder = new StringBuilder();
@@ -582,6 +610,16 @@ public class IIIFSearchBuilder {
         return terms;
     }
 
+    /**
+     * 
+     * @param query Solr query
+     * @param pi Record identifier
+     * @param firstIndex Result offset
+     * @param numHits Number of results to return
+     * @return {@link AnnotationResultList}
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     private AnnotationResultList searchFulltext(String query, String pi, int firstIndex, int numHits)
             throws PresentationException, IndexUnreachableException {
 
@@ -596,7 +634,6 @@ public class IIIFSearchBuilder {
 
         AnnotationResultList results = new AnnotationResultList();
 
-        //        QueryResponse response = DataManager.getInstance().getSearchIndex().search(queryBuilder.toString(), (page-1)*getHitsPerPage(), getHitsPerPage(), Collections.singletonList(sortField), null, FULLTEXTFIELDLIST);
         SolrDocumentList docList = DataManager.getInstance()
                 .getSearchIndex()
                 .search(queryBuilder.toString(), SolrSearchIndex.MAX_HITS, getPageSortFields(), FULLTEXTFIELDLIST);
@@ -609,18 +646,22 @@ public class IIIFSearchBuilder {
                 if (altoFile != null && Files.exists(altoFile)) {
                     results.add(converter.getAnnotationsFromAlto(altoFile, queryRegex));
                 } else if (fulltextFile != null && Files.exists(fulltextFile)) {
-                    String text = new String(Files.readAllBytes(fulltextFile), "utf-8");
-                    results.add(converter.getAnnotationsFromFulltext(text, pi, pageNo, queryRegex, results.numHits, firstIndex, numHits));
+                    String text = new String(Files.readAllBytes(fulltextFile), StandardCharsets.UTF_8.name());
+                    results.add(converter.getAnnotationsFromFulltext(text, pi, pageNo, queryRegex, results.getNumHits(), firstIndex, numHits));
                 }
             } catch (IOException | JDOMException e) {
-                logger.error("Error reading " + fulltextFile, e);
+                logger.error("Error reading {}", fulltextFile, e);
             }
         }
         return results;
     }
 
     /**
-     * Test if the given fieldName is included in the configuredFields or matches any of the contained wildcard fieldNames
+     * Test if the given fieldName is included in the configuredFields or matches any of the contained wildcard fieldNames.
+     * 
+     * @param fieldName
+     * @param configuredFields
+     * @return a boolean
      */
     private static boolean fieldNameMatches(String fieldName, List<String> configuredFields) {
         for (String configuredField : configuredFields) {
@@ -682,7 +723,8 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * @return
+     * @param page
+     * @return {@link URI}
      */
     private URI getURI(Integer page) {
         ApiPath path = urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_MANIFEST_SEARCH).params(this.pi);

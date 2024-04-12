@@ -1,0 +1,115 @@
+/* ==============================================================
+	Styling for content component frontend page list
+   ==============================================================*/
+
+.content-component {
+	&__masonry {
+		&-inner {
+			
+		}
+	    &-text {
+	        margin-bottom: 15px;
+	    }
+	    .grid {
+	        margin-bottom: 15px;
+	        opacity: 0;
+	        transition: all 0.3s ease-in;
+	        &.ready {
+	        	opacity: 1;
+	        }
+	    }
+	
+	    .grid-sizer, 
+		.grid-item {
+		    width: calc(~"33.333333% - 4px");
+	    }
+	    .grid-item {
+	        margin-bottom: 6px;
+	        overflow: hidden;
+	        img {
+	            position: relative;
+	            min-width: 100%;
+	            transition: all 0.3s ease-in;
+	            z-index: 9;
+	        }
+	        &:hover {
+	            .grid-item-title {
+	                opacity: 0;
+	            }
+	            .grid-item-caption {
+	                opacity: 1;
+	            }
+	            img {
+	            	transform: scale(1.2);
+	            }
+	        }
+	    }
+	    .grid-item-title,
+	    .grid-item-caption {
+	        position: absolute;
+	        left: 0;
+	        width: 100%;
+	        padding: 5px;
+	        color: @white;
+	        background-color: rgba(0, 0, 0, 0.65);
+	        transition: all 0.3s ease-in;
+	        z-index: 10;
+	    }
+	    .grid-item-title {
+	        bottom: 0;
+	        opacity: 1;
+	    }
+	    .grid-item-caption {
+	        bottom: 0;
+	        opacity: 0;
+	        h2 {
+	            margin: 0 0 10px 0;
+	            font-size: 1.8rem;
+	        }
+	        a {
+	            display: block;
+	            padding: 0 10px;
+	            font-size: @fontXLarge;
+	            text-align: right;
+	            color: @white;
+	        }
+	        .fa {
+	        	margin-left: 10px;
+	        }
+	    }
+	    .gutter-sizer {
+	        width: 6px;
+	    }
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+	.content-component {
+		&__masonry {
+	      .grid-sizer {
+		    	width: calc(~"50% - 3px"); 
+	      }
+		    .grid-item {
+		    	width: calc(~"50% - 14px");
+		    }
+		}
+	}
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+	.content-component {
+		&__masonry {
+	    .grid-item {
+	    	  width: calc(~"100% - 20px");
+		    }
+		}
+	}
+}

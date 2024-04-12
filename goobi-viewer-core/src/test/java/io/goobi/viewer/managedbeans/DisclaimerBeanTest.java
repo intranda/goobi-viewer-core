@@ -21,15 +21,15 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractTest;
@@ -43,7 +43,7 @@ import io.goobi.viewer.model.administration.legal.DisplayScope.PageScope;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
-public class DisclaimerBeanTest extends AbstractTest {
+class DisclaimerBeanTest extends AbstractTest {
 
     private IDAO dao;
     private SolrSearchIndex searchIndex;
@@ -53,8 +53,8 @@ public class DisclaimerBeanTest extends AbstractTest {
     private ActiveDocumentBean activeDocumentBean;
     private UserBean userBean;
 
-    @Before
-    public void setup() throws DAOException, PresentationException, IndexUnreachableException {
+    @BeforeEach
+    public void setUp() throws DAOException, PresentationException, IndexUnreachableException {
         storedDisclaimer = new Disclaimer();
         storedDisclaimer.getText().setText("Trigger Warnung", Locale.GERMAN);
         storedDisclaimer.getText().setText("Trigger wariung", Locale.ENGLISH);
@@ -80,23 +80,20 @@ public class DisclaimerBeanTest extends AbstractTest {
 
         userBean = Mockito.mock(UserBean.class);
 
-
         bean = new DisclaimerBean(dao, searchIndex);
-        bean.navigationHelper = navigationHelper;
-        bean.activeDocumentBean = activeDocumentBean;
-        bean.userBean = userBean;
+        bean.setNavigationHelper(navigationHelper);
+        bean.setActiveDocumentBean(activeDocumentBean);
+        bean.setUserBean(userBean);
     }
 
     @Test
-    public void testWriteJson() {
+    void testWriteJson() {
 
         String string = bean.getDisclaimerConfig();
         assertTrue(StringUtils.isNotBlank(string));
-        JSONObject json  = new JSONObject(string);
+        JSONObject json = new JSONObject(string);
         assertEquals(storedDisclaimer.getText().getText(Locale.GERMAN), json.get("disclaimerText"));
         assertTrue(json.getBoolean("active"));
     }
-
-
 
 }

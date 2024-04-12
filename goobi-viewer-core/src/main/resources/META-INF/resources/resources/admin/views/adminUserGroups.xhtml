@@ -30,6 +30,9 @@
                                 #{msg.add}
                             </a>
                         </div>
+                        
+                        <viewerComponent:adminBreadcrumbs />
+                        
                         <div class="admin__content-inner-content">
                             <!-- INFO TEXT -->
                             <div class="admin__info-text">
@@ -58,7 +61,7 @@
                                             <dt class="col-sm-4">#{msg.userGroup_members}:</dt>
                                             <dd class="col-sm-8">#{userGroup.memberCount}</dd>
                                             <dt class="col-sm-4">#{msg.owner}:</dt>
-                                            <dd class="col-sm-8">#{userGroup.owner.displayName}</dd>
+                                            <dd class="col-sm-8"><h:outputText value="#{userGroup.owner.displayName}" /></dd>
                                         </dl>
                                         <!-- ACTIONS -->
                                         <div class="row admin__boxed-entry-actions">

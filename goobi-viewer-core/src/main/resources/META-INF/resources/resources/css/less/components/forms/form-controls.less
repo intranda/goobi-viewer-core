@@ -142,7 +142,9 @@
 	&.multiple {
 		height: 125px;
 		padding: 0;
-		overflow-y: auto;
+		// Property was "auto" before, check if it breaks something
+		overflow-y: hidden;
+//		overflow-y: auto;
 		&:after {
 			display: none;
 		}
@@ -172,9 +174,18 @@
 			cursor: not-allowed;
 			opacity: 0.5;
 		}
+		&[size], 
+		&[multiple] {
+			height: 100%;
+		}
 	}
 	select[disabled="disabled"] {
 		cursor: not-allowed;
 		opacity: 0.5;
+	}
+	.-hide-disabled-options {
+		option:disabled {
+			display: none;
+		}
 	}
 }

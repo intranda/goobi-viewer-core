@@ -16,10 +16,10 @@
 		<h:messages id="messages" globalOnly="false" infoClass="alert alert-success" errorClass="alert alert-danger" />
 	</div>
 
-	<div id="Archives" class="archives">
+	<div id="archives" class="archives #{archiveBean.databaseState == 'ARCHIVES_LOADED' ? '-archivesLoaded' : '-archivesNotLoaded'}">
 
 		<!-- ARCHIVES HEADER BOX -->
-		<header id="Header" class="archives__top-wrapper">
+		<header id="header" class="archives__top-wrapper">
 			<div class="archives__header">
 
 				<!-- LOGO OF INSTITUTION -->
@@ -30,7 +30,7 @@
 				</div>
 
 
-
+ 
 
 				<!-- ARCHIVE TITLE -->
 				<div class="archives__top-title">
@@ -51,7 +51,7 @@
 		</header>
 
 		<!-- ARCHIVES CONTENT -->
-		<main id="ArchivesContent" class="archives__main">
+		<main id="archivesContent" class="archives__main">
 			<c:choose>
 				<!-- CONDITION ERROR -->
 				<c:when
@@ -71,6 +71,12 @@
 					test="#{archiveBean.databaseState == 'ERROR_INVALID_FORMAT'}">
 					<div class="archives__error">
 						<span>#{msg.error__archives_failed_to_read_database}</span>
+					</div>
+				</c:when>
+				<c:when
+					test="#{archiveBean.databaseState == 'ERROR_INVALID_CONFIGURATION'}">
+					<div class="archives__error">
+						<span>#{msg.error__archives_failed_to_read_archive_configuration}</span>
 					</div>
 				</c:when>
 				

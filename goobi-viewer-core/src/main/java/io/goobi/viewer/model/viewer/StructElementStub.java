@@ -71,6 +71,8 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     protected boolean anchor = false;
     /** True if this element is a volume element. */
     protected boolean volume = false;
+    /** True if this element represents a CMS page. */
+    protected boolean cmsPage = false;
     /** Number of contained volumes (anchors only) */
     protected long numVolumes = 0;
     /** Volume label of this element (only for records that are part of a multi-volume record). */
@@ -212,6 +214,20 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      */
     public void setVolume(boolean volume) {
         this.volume = volume;
+    }
+
+    /**
+     * @return the cmsPage
+     */
+    public boolean isCmsPage() {
+        return cmsPage;
+    }
+
+    /**
+     * @param cmsPage the cmsPage to set
+     */
+    public void setCmsPage(boolean cmsPage) {
+        this.cmsPage = cmsPage;
     }
 
     /**
@@ -441,16 +457,18 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getUrl(PageType pageType) {
+    public String getUrl(final PageType pageType) {
         // Only viewToc and viewMetadata are allowed for anchors
-        if (anchor && pageType != PageType.viewMetadata) {
-            pageType = PageType.viewToc;
+        PageType usePageType = pageType;
+        if (anchor && usePageType != PageType.viewMetadata) {
+            usePageType = PageType.viewToc;
         }
 
         StringBuilder sbUrl = new StringBuilder();
+        boolean topstruct = isWork() || isAnchor() || isGroup();
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                 .append('/')
-                .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, imageNumber, logid, pageType));
+                .append(DataManager.getInstance().getUrlBuilder().buildPageUrl(pi, imageNumber, logid, usePageType, topstruct));
 
         return sbUrl.toString();
     }
@@ -634,7 +652,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * Returns the first meetadata value for the language speciic version of the given field name. If no value is found, the value of the generic
+     * Returns the first metadata value for the language specific version of the given field name. If no value is found, the value of the generic
      * version is returned.
      *
      * @param fieldName Solr field name
@@ -653,7 +671,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
-     * Returns the first meetadata value for the given field name.
+     * Returns the first metadata value for the given field name.
      *
      * @param fieldName Solr field name.
      * @return a {@link java.lang.String} object.
@@ -662,8 +680,8 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         List<String> values = getMetadataValues(fieldName);
         if (!values.isEmpty()) {
             return values.get(0);
-        } else if (fieldName != null && !fieldName.contains("_LANG_")) {
-            return getMetadataValue(fieldName + "_LANG_" + BeanUtils.getLocale().getLanguage().toUpperCase());
+        } else if (fieldName != null && !fieldName.contains(SolrConstants.MIDFIX_LANG)) {
+            return getMetadataValue(fieldName + SolrConstants.MIDFIX_LANG + "DE");
         }
 
         return null;
@@ -679,8 +697,8 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         List<String> values = metadataFields.get(fieldName);
         if (values != null) {
             return values;
-        } else if (fieldName != null && !fieldName.contains("_LANG_")) {
-            return getMetadataValues(fieldName + "_LANG_" + BeanUtils.getLocale().getLanguage().toUpperCase());
+        } else if (fieldName != null && !fieldName.contains(SolrConstants.MIDFIX_LANG)) {
+            return getMetadataValues(fieldName + SolrConstants.MIDFIX_LANG + "DE");
         }
 
         return Collections.emptyList();
@@ -758,6 +776,10 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         return sb.toString();
     }
 
+    public boolean isHasMetadata(String fieldName) {
+        return this.getMetadataFields().containsKey(fieldName);
+    }
+
     /**
      * <p>
      * getMultiLanguageMetadataValue.
@@ -770,10 +792,10 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
         List<String> fieldNames = this.getMetadataFields()
                 .keySet()
                 .stream()
-                .filter(key -> key.equals(fieldName) || key.startsWith(fieldName + "_LANG_"))
+                .filter(key -> key.equals(fieldName) || key.startsWith(fieldName + SolrConstants.MIDFIX_LANG))
                 .collect(Collectors.toList());
         Map<String, List<String>> valueMap =
-                fieldNames.stream().collect(Collectors.toMap(field -> getLanguage(field), field -> getMetadataValues(field)));
+                fieldNames.stream().collect(Collectors.toMap(field -> getLanguage(field), this::getMetadataValues));
         if (valueMap.size() == 1 && valueMap.containsKey(MultiLanguageMetadataValue.DEFAULT_LANGUAGE)) {
             //only default language: Simple MEtadata value
             return new SimpleMetadataValue(StringUtils.join(valueMap.get(MultiLanguageMetadataValue.DEFAULT_LANGUAGE), "; "));
@@ -783,8 +805,8 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     private static String getLanguage(String fieldName) {
-        if (fieldName.contains("_LANG_")) {
-            return fieldName.substring(fieldName.indexOf("_LANG_") + "_LANG_".length());
+        if (fieldName.contains(SolrConstants.MIDFIX_LANG)) {
+            return fieldName.substring(fieldName.indexOf(SolrConstants.MIDFIX_LANG) + SolrConstants.MIDFIX_LANG.length());
         }
 
         return MultiLanguageMetadataValue.DEFAULT_LANGUAGE;

@@ -15,11 +15,11 @@
  */
 package io.goobi.viewer.model.iiif.presentation.v3.builder;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.net.URISyntaxException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import de.intranda.api.iiif.presentation.v3.Canvas3;
@@ -35,13 +35,13 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
  * @author florian
  *
  */
-public class CanvasBuilderTest extends AbstractSolrEnabledTest {
+class CanvasBuilderTest extends AbstractSolrEnabledTest {
 
     ApiUrls urls = new ApiUrls("http://localhost:8080/viewer/api/v2");
     CanvasBuilder builder = new CanvasBuilder(urls);
     
     @Test
-    public void test_build_shouldIncludeImage() throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
+    void test_build_shouldIncludeImage() throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
                
         PhysicalElement element = Mockito.mock(PhysicalElement.class);
         Mockito.when(element.getPi()).thenReturn("PI_01");

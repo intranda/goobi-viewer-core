@@ -24,7 +24,8 @@
 							<div class="col-11 col-lg-9 admin__form-input">
 								<h:inputText value="#{user.nickName}" id="displayName"
 									label="displayName" styleClass="form-control" required="false"
-									requiredMessage="#{msg.loginEnterDisplayName}" />
+									requiredMessage="#{msg.loginEnterDisplayName}"
+									validator="nicknameValidator" />
 								<span class="admin__form-help-text">#{msg.admin__user_display_name__help}</span>
 							</div>
 							<div class="col-1 admin__form-help-icon">

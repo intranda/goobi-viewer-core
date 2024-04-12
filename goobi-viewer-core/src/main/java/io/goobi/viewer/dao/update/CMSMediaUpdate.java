@@ -33,7 +33,8 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.cms.CMSMediaItem;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
  * Converts {@link CMSMediaItem cms_media_items.link_url} from the LONGBLOB datatype (URI in java) to TEXT (String in java). Extracts the link texts
@@ -55,7 +56,7 @@ public class CMSMediaUpdate implements IModelUpdate {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public boolean update(IDAO dao) throws DAOException, SQLException {
+    public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
         logger.debug("Checking database for deprecated cms_media_items.link_url datatype");
         List<String> types = dao.getNativeQueryResults(
                 "SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME = 'cms_media_items' AND COLUMN_NAME = 'link_url' ");

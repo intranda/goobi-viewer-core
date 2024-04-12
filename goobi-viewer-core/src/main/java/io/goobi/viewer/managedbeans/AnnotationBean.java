@@ -32,7 +32,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
@@ -40,19 +39,16 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
-import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
+import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.export.AnnotationSheetWriter;
@@ -60,8 +56,6 @@ import io.goobi.viewer.model.annotation.serialization.SqlAnnotationDeleter;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.misc.SelectionManager;
-import io.goobi.viewer.model.toc.export.pdf.TocWriter;
-import io.goobi.viewer.model.toc.export.pdf.WriteTocException;
 
 /**
  * @author florian
@@ -91,22 +85,24 @@ public class AnnotationBean implements Serializable {
     @PostConstruct
     public void init() {
         if (lazyModelAnnotations == null) {
-            lazyModelAnnotations = new TableDataProvider<CrowdsourcingAnnotation>(new TableDataSource<CrowdsourcingAnnotation>() {
+            lazyModelAnnotations = new TableDataProvider<>(new TableDataSource<CrowdsourcingAnnotation>() {
 
                 private Optional<Long> numCreatedPages = Optional.empty();
 
                 @Override
-                public List<CrowdsourcingAnnotation> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder,
+                public List<CrowdsourcingAnnotation> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder,
                         Map<String, String> filters) {
                     try {
-                        if (StringUtils.isBlank(sortField)) {
-                            sortField = "id";
-                            sortOrder = SortOrder.DESCENDING;
+                        String useSortField = sortField;
+                        SortOrder useSortOrder = sortOrder;
+                        if (StringUtils.isBlank(useSortField)) {
+                            useSortField = "id";
+                            useSortOrder = SortOrder.DESCENDING;
                         }
                         filters.putAll(getFilters());
                         List<CrowdsourcingAnnotation> ret =
-                                DataManager.getInstance().getDao().getAnnotations(first, pageSize, sortField, sortOrder.asBoolean(), filters);
-                        exportSelection = new SelectionManager<Long>(ret.stream().map(CrowdsourcingAnnotation::getId).collect(Collectors.toList()));
+                                DataManager.getInstance().getDao().getAnnotations(first, pageSize, useSortField, useSortOrder.asBoolean(), filters);
+                        exportSelection = new SelectionManager<>(ret.stream().map(CrowdsourcingAnnotation::getId).collect(Collectors.toList()));
                         return ret;
                     } catch (DAOException e) {
                         logger.error("Could not initialize lazy model: {}", e.getMessage());
@@ -140,7 +136,7 @@ public class AnnotationBean implements Serializable {
                             logger.error("Unable to retrieve total number of campaigns", e);
                         }
                     }
-                    return numCreatedPages.orElse(0l);
+                    return numCreatedPages.orElse(0L);
                 }
 
                 @Override
@@ -150,7 +146,7 @@ public class AnnotationBean implements Serializable {
 
             });
             lazyModelAnnotations.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-            lazyModelAnnotations.setFilters("targetPI_body");
+            lazyModelAnnotations.getFilter("targetPI_body");
         }
     }
 
@@ -180,14 +176,14 @@ public class AnnotationBean implements Serializable {
     }
 
     /**
-     * @return the ownerRecordPI
+     * @return the targetRecordPI
      */
     public String getTargetRecordPI() {
         return targetRecordPI;
     }
 
     /**
-     * @param ownerRecordPI the ownerRecordPI to set
+     * @param targetRecordPI the targetRecordPI to set
      */
     public void setTargetRecordPI(String targetRecordPI) {
         this.targetRecordPI = targetRecordPI;
@@ -253,11 +249,15 @@ public class AnnotationBean implements Serializable {
      * Getter for {@link SelectionManager#isSelectAll() exportSelection#isSelectAll()} is placed here to avoid jsf confusing it with getting a value
      * of the map
      *
-     * @param select
      * @return always false to deselect the select all button when loading the page
      */
     public boolean isSelectAll() {
-        return false;//this.exportSelection.isSelectAll();
+        return false;
+        //this.exportSelection.isSelectAll();
+    }
+
+    public void downloadAllAnnotations() throws IOException, DAOException {
+        downloadAnnotations(DataManager.getInstance().getDao().getAllAnnotations(null, false));
     }
 
     /**
@@ -272,25 +272,34 @@ public class AnnotationBean implements Serializable {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
-        logger.debug("Selected " + selectedAnnos.size() + " annotations for excel download");
+        logger.debug("Selected {} annotations for excel download", selectedAnnos.size());
         downloadAnnotations(selectedAnnos);
     }
 
+    /**
+     * 
+     * @param annotations
+     * @throws IOException
+     */
     public void downloadAnnotations(List<CrowdsourcingAnnotation> annotations) throws IOException {
         try {
             String fileName = "annotations.xlsx";
 
             FacesContext fc = FacesContext.getCurrentInstance();
             ExternalContext ec = fc.getExternalContext();
-            ec.responseReset(); // Some JSF component library or some Filter might have set some headers in the buffer beforehand. We want to get rid of them, else it may collide.
+            // Some JSF component library or some Filter might have set some headers in the buffer beforehand.
+            // We want to get rid of them, else it may collide.
+            ec.responseReset();
             ec.setResponseContentType("application/msexcel");
-            ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+            ec.setResponseHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
             OutputStream os = ec.getResponseOutputStream();
             AnnotationSheetWriter writer = new AnnotationSheetWriter();
             writer.createExcelSheet(os, annotations);
-            fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
+            fc.responseComplete();
+            // Important! Otherwise JSF will attempt to render the response which obviously
+            // will fail since it's already written with a file and closed.
         } finally {
-
+            //
         }
     }
 

@@ -22,7 +22,10 @@
 package io.goobi.viewer.managedbeans.tabledata;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -33,8 +36,8 @@ public class TableDataFilter implements Serializable {
 
     private static final long serialVersionUID = 9120268561536080056L;
 
-    private String joinTable = null;
-    private String column;
+    private String joinTable;
+    private final List<String> columns;
     private String value;
     private final TableDataProvider<?> owner;
 
@@ -43,33 +46,18 @@ public class TableDataFilter implements Serializable {
      * Constructor for TableDataFilter.
      * </p>
      *
-     * @param column a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
      * @param owner a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object.
+     * @param columns a {@link java.lang.String} object.
      */
-    public TableDataFilter(String column, String value, TableDataProvider<?> owner) {
-        super();
-        this.column = column;
-        this.value = value;
+    public TableDataFilter(TableDataProvider<?> owner, String... columns) {
+        this.columns = Arrays.asList(columns);
+        this.value = "";
         this.owner = owner;
+        this.joinTable = null;
     }
 
-    /**
-     * <p>
-     * Constructor for TableDataFilter.
-     * </p>
-     *
-     * @param joinTable a {@link java.lang.String} object.
-     * @param column a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     * @param owner a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object.
-     */
-    public TableDataFilter(String joinTable, String column, String value, TableDataProvider<?> owner) {
-        super();
-        this.joinTable = joinTable;
-        this.column = column;
-        this.value = value;
-        this.owner = owner;
+    public TableDataFilter(String... columns) {
+        this(null, columns);
     }
 
     /**
@@ -79,19 +67,12 @@ public class TableDataFilter implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getColumn() {
-        return column;
+    public List<String> getColumns() {
+        return columns;
     }
 
-    /**
-     * <p>
-     * Setter for the field <code>column</code>.
-     * </p>
-     *
-     * @param column a {@link java.lang.String} object.
-     */
-    public void setColumn(String column) {
-        this.column = column;
+    public String getName() {
+        return this.columns.stream().collect(Collectors.joining());
     }
 
     /**
@@ -115,20 +96,9 @@ public class TableDataFilter implements Serializable {
     public void setValue(String value) {
         this.value = value;
         // Reset number of records as soon as the value has changed so that the paginator etc. can be updated on time
-        if(owner != null) {
+        if (owner != null) {
             owner.resetTotalNumberOfRecords();
         }
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>joinTable</code>.
-     * </p>
-     *
-     * @param joinTable the joinTable to set
-     */
-    public void setJoinTable(String joinTable) {
-        this.joinTable = joinTable;
     }
 
     /**
@@ -141,4 +111,9 @@ public class TableDataFilter implements Serializable {
     public Optional<String> getJoinTable() {
         return Optional.ofNullable(joinTable);
     }
+
+    public void setJoinTable(String joinTable) {
+        this.joinTable = joinTable;
+    }
+
 }

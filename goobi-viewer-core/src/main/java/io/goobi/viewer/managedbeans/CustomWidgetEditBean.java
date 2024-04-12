@@ -37,16 +37,15 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.AjaxResponseException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.FacetFieldSidebarWidget;
 import io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget;
@@ -67,7 +66,7 @@ public class CustomWidgetEditBean implements Serializable {
     private static final long serialVersionUID = 4892069370268036814L;
     private CustomSidebarWidget widget = null;
     private String returnUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.adminCmsSidebarWidgets.getName();
-    private HtmlPanelGroup previewGroup = null;
+    private transient HtmlPanelGroup previewGroup = null;
     private Map<CMSPage, Boolean> cmsPageMap;
 
     @Inject
@@ -118,9 +117,8 @@ public class CustomWidgetEditBean implements Serializable {
     public CustomWidgetType getWidgetType() {
         if (widget == null) {
             return null;
-        } else {
-            return widget.getType();
         }
+        return widget.getType();
     }
 
     public List<CustomWidgetType> getWidgetTypes() {
@@ -131,7 +129,7 @@ public class CustomWidgetEditBean implements Serializable {
         return returnUrl;
     }
 
-    public void save() throws AjaxResponseException {
+    public void save() {
         try {
             if (widget != null) {
                 if (CustomWidgetType.WIDGET_CMSPAGES.equals(this.widget.getType())) {
@@ -156,7 +154,8 @@ public class CustomWidgetEditBean implements Serializable {
             }
         } catch (DAOException e) {
             Messages.error(
-                    ViewerResourceBundle.getTranslationWithParameters("cms__edit_widget__save_widget__error", BeanUtils.getLocale(), e.getMessage()));
+                    ViewerResourceBundle.getTranslationWithParameters("cms__edit_widget__save_widget__error", BeanUtils.getLocale(), true,
+                            e.getMessage()));
         }
     }
 
@@ -174,6 +173,9 @@ public class CustomWidgetEditBean implements Serializable {
             case WIDGET_RSSFEED:
                 this.widget = new RssFeedSidebarWidget();
                 break;
+            default:
+                logger.warn("Type not yet supported: {}", type);
+                break;
         }
     }
 
@@ -185,14 +187,14 @@ public class CustomWidgetEditBean implements Serializable {
         return previewGroup;
     }
 
-    private boolean loadWidgetComponent(CustomSidebarWidget component, HtmlPanelGroup parent) {
+    private static boolean loadWidgetComponent(CustomSidebarWidget component, HtmlPanelGroup parent) {
         DynamicContentBuilder builder = new DynamicContentBuilder();
         DynamicContent content = new DynamicContent(DynamicContentType.WIDGET, component.getType().getFilename());
         content.setId("sidebar_widget_" + component.getId());
         content.setAttributes(Map.of("widget", component));
         UIComponent widgetComponent = builder.build(content, parent);
         if (widgetComponent == null) {
-            logger.error("Error loading widget " + component);
+            logger.error("Error loading widget {}", component);
         }
         return widgetComponent != null;
     }

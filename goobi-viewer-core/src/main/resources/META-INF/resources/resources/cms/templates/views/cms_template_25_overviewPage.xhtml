@@ -1,49 +1,22 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-	template="/resources/themes/#{navigationHelper.theme}/template.html">
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+                xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+                template="/resources/themes/#{navigationHelper.theme}/template.html">
 
-	<ui:param name="cmsPage" value="#{cmsBean.currentPage}" />
+	<composite:interface>
+		<composite:attribute name="component" required="true"/>
+		<composite:attribute name="metadataItem" required="false" default="#{cc.attrs.component.getContentItem('metadata')}"/>
+		<composite:attribute name="literatureItem" required="false" default="#{cc.attrs.component.getContentItem('literature')}"/>
+    </composite:interface>
 
-	<!-- METADATA -->
-	<ui:define name="metadata">
-		<f:metadata>
-			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPage(cmsPage.menuTitle, false, false, true)}" />
-			<f:event type="preRenderView"
-				listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />
-			<f:event type="preRenderView"
-				listener="#{searchBean.resetSearchFilter}" />
-		</f:metadata>
-	</ui:define>
-
-	<!-- CONTENT -->
-	<ui:define name="content">
-		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
-		<f:view contentType="text/html" encoding="utf-8">
-			<div id="templateOverviewPage" class="tpl-overviewpage">
-				<!-- EDIT PAGE -->
-				<ui:fragment rendered="#{cmsBean.mayEdit(cmsPage)}">
-					<ui:include src="/resources/cms/includes/editPage.xhtml" />
-				</ui:fragment>
-
-				<!-- PAGE UNPUBLISHED -->
-				<ui:fragment rendered="#{!cmsPage.published}">
-					<div class="alert alert-warning" role="alert">#{msg.cms_pagePreviewNotPublished}</div>
-				</ui:fragment>
-
-				<h1 >#{cmsPage.title}</h1>
-
-				<ui:fragment rendered="#{cmsPage.hasContent('subtitle')}">
-					<p class="tpl-overviewpage__subtitle">#{cmsPage.getContent('subtitle')}</p>
-				</ui:fragment>
-
+	<composite:implementation>
+			<div id="templateOverviewPage" class="tpl-overviewpage content-component__legacy-full-width">
 				<!-- OVERVIEW METADATA -->
 				<div class="tpl-overviewpage__overview">
 					<!-- THUMBNAIL -->
@@ -61,9 +34,9 @@
 					<!-- METADATA -->
 					<div class="tpl-overviewpage__overview-metadata">
 						<h:form id="overviewMetadataForm" prependId="false">
-							<ui:fragment rendered="true">
+							<ui:fragment rendered="#{cc.attrs.metadataItem != null}">
 								<ui:repeat
-									value="#{metadataBean.getTopMetadataElement(0).getMetadata(cmsPage.getContentItem('metadata').metadataFieldsAsList)}"
+									value="#{metadataBean.getTopMetadataElement(0).getMetadata(cc.attrs.metadataItem.content.metadataFieldsAsList)}"
 									var="metadata" varStatus="status">
 									<ui:fragment
 										rendered="#{metadata.values != null and !metadata.values.isEmpty()}">
@@ -79,12 +52,8 @@
 												<dd>
 													<ui:repeat value="#{metadata.values}" var="val">
 														<span class="tpl-overviewpage__overview-metadata-value">
-															<h:outputFormat value="#{msg[val.masterValue]}"
+															<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}"
 																escape="false">
-                                                                <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind">
-                                                                    <f:param value="#{val.getParamLabelWithColon(ind)}" />
-                                                                    <f:param value="#{val.getComboValueShort(ind)}" />
-                                                                </c:forEach>
 															</h:outputFormat>
 														</span>
 
@@ -96,11 +65,8 @@
 												<dd>
 													<ui:repeat value="#{metadata.values}" var="val">
 														<span class="tpl-overviewpage__overview-metadata-value">
-															<h:outputFormat value="#{msg[val.masterValue]}"
+															<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}"
 																escape="false">
-                                                                <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind">
-                                                                    <f:param value="#{val.getComboValueShort(ind)}" />
-                                                                </c:forEach>
 															</h:outputFormat>
 														</span>
 
@@ -139,13 +105,13 @@
 						src="#{request.contextPath}/resources/images/infinity_loader.gif" />
 					<h:outputText id="literature" escape="false" />
 					
-					<pdfDocument data="#{cmsPage.getContent('literature')}"/>
+					<pdfDocument data="#{cc.attrs.literatureItem.content.url}" loaderSelector="#literatureLoader"/>
 				</div>
 			</div>
 
 			<script type="text/javascript">
 			//<![CDATA[   
-			var url = "#{cmsPage.getContent('literature')}";
+			var url = "#{cc.attrs.literatureItem.content.url}";
                 if ( url ) {
                     if ( url.toLowerCase().endsWith( ".pdf" ) ) {
                         
@@ -167,27 +133,21 @@
                     $( '#literatureLoader' ).hide();
                 }
 
+                var normdataConfig = {
+                        path: "#{request.contextPath}",
+                        lang: {
+                            popoverTitle: "#{msg.normdataPopverTitle}",
+                            popoverClose: "#{msg.normdataPopoverClose}",
+                            showNormdata: "#{msg.normdataExpand}"
+                        },
+                        elemWrapper: $( "#metadataElementWrapper" )
+                    }; 
+                    
+                    viewerJS.normdata.init( normdataConfig );
+                
               //]]>
             </script>
-		</f:view>
-		
-        <script type="text/javascript">            
-            var normdataConfig = {
-                path: "#{request.contextPath}",
-                lang: {
-                    popoverTitle: "#{msg.normdataPopverTitle}",
-                    popoverClose: "#{msg.normdataPopoverClose}",
-                    showNormdata: "#{msg.normdataExpand}"
-                },
-                elemWrapper: $( "#metadataElementWrapper" )
-            }; 
-            
-            viewerJS.normdata.init( normdataConfig );
-        </script>
-	</ui:define>
 
-	<!-- SIDEBAR -->
-	<ui:define name="sidebar">
-		<ui:include src="/resources/cms/includes/cms_sidebar.xhtml" />
-	</ui:define>
+	</composite:implementation>
+	
 </ui:composition>

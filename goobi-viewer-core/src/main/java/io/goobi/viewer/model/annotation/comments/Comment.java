@@ -21,15 +21,13 @@
  */
 package io.goobi.viewer.model.annotation.comments;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-
+import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.wa.Motivation;
 import de.intranda.api.annotation.wa.TextualResource;
-import de.intranda.api.annotation.wa.WebAnnotation;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -39,6 +37,8 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 /**
  * @author florian
@@ -46,7 +46,9 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 @Entity
 @Table(name = "annotations_comments")
-public class Comment extends PersistentAnnotation implements Comparable<Comment> {
+public class Comment extends PersistentAnnotation implements Comparable<Comment>, Serializable {
+
+    private static final long serialVersionUID = 1482656593761912187L;
 
     /**
      *
@@ -68,15 +70,17 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
      * @param targetPI
      * @param targetPage
      */
-    public Comment(WebAnnotation source, Long id, String targetPI, Integer targetPage) {
+    public Comment(AbstractAnnotation source, Long id, String targetPI, Integer targetPage) {
         super(source, id, targetPI, targetPage);
     }
 
     /**
-     * @param string
-     * @param i
+     * @param pi
+     * @param page
      * @param owner
-     * @param string2
+     * @param text
+     * @param accessCondition
+     * @param publicationStatus
      */
     public Comment(String pi, int page, User owner, String text, String accessCondition, PublicationStatus publicationStatus) {
         super();
@@ -127,7 +131,7 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
     }
 
     /**
-     * @param c2
+     * @param o
      * @return
      */
     @Override

@@ -12,10 +12,10 @@
 		<f:metadata>
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('editbookmarklist', false, true)}" />
 			<f:event type="preRenderView"
-				listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.admin__user_profile, request.contextPath.concat('/user/'), 1)}" />
-			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.bookmarkList_bookmarkLists,navigationHelper.applicationUrl.concat('user/bookmarks'),2)}" />
+				listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('admin__user_profile', request.contextPath.concat('/user/'), 1)}" />
+			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('bookmarkList_bookmarkLists',navigationHelper.applicationUrl.concat('user/bookmarks'),2)}" />
 			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(bookmarkBean.currentBookmarkList.name, navigationHelper.applicationUrl.concat('user/bookmarks/show/').concat(bookmarkBean.currentBookmarkList.id),3)}" />
-			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.bookmarkList_edit,4)}" />
+			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('bookmarkList_edit',4)}" />
 		</f:metadata>
 	</ui:define>
 

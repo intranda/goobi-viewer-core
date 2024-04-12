@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.metadata;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
@@ -46,12 +48,16 @@ import io.goobi.viewer.solr.SolrConstants;
  * MetadataElement class.
  * </p>
  */
-public class MetadataElement {
+public class MetadataElement implements Serializable {
+
+    private static final long serialVersionUID = 222226787503688100L;
 
     /**
      * Wrapper class for the metadata type numerical value. Needed only for retrieving the proper message key for each type...
      */
-    public class MetadataType implements Comparable<MetadataType> {
+    public class MetadataType implements Comparable<MetadataType>, Serializable {
+
+        private static final long serialVersionUID = -2875502991726354737L;
 
         private static final String KEY_ROOT = "metadataTab";
 
@@ -130,7 +136,6 @@ public class MetadataElement {
         public String getTabName(int viewIndex) {
             String key = KEY_ROOT + "_" + viewIndex + "_" + type;
             if (ViewerResourceBundle.getTranslation(key, null, true, false, false, false) != null) {
-                //            if(ViewerResourceBundle.getAllKeys().contains(key)) {
                 return key;
             }
 
@@ -138,6 +143,7 @@ public class MetadataElement {
         }
 
         public void setTabName(String tabName) {
+            //
         }
 
         /**
@@ -183,7 +189,7 @@ public class MetadataElement {
      * @param se StructElement
      * @param metadataViewIndex Metadata view index
      * @param sessionLocale
-     * @return
+     * @return Constructed {@link MetadataElement}
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -236,7 +242,7 @@ public class MetadataElement {
         List<Metadata> sidebarMetadataTempList = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(docStructType);
         if (sidebarMetadataTempList.isEmpty()) {
             // Use default if no elements are defined for the current docstruct
-            sidebarMetadataTempList = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate("_DEFAULT");
+            sidebarMetadataTempList = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(StringConstants.DEFAULT_NAME);
         }
         if (sidebarMetadataTempList.isEmpty()) {
             return this;
@@ -268,8 +274,8 @@ public class MetadataElement {
     /**
      * Determines the mimetype from the structElement's metadata, or its first child if the structElement is an anchor
      *
-     * @param se
-     * @return
+     * @param se {@link StructElement}
+     * @return Mime type form metadata field
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -363,7 +369,7 @@ public class MetadataElement {
         Metadata fallbackEn = null;
         for (Metadata md : metadataList) {
             if (md.getLabel().equals(fullFieldName)) {
-                // logger.trace("{}: {}", fullFieldName, md.getValues().size());
+                // logger.trace("{}: {}", fullFieldName, md.getValues().size()); //NOSONAR Debug
                 return md;
             } else if (md.getLabel().equals(fullFieldNameDe)) {
                 fallbackDe = md;
@@ -446,6 +452,7 @@ public class MetadataElement {
     /**
      * Checks whether all metadata fields for this element can be displayed in a single box (i.e. no table type grouped metadata are configured).
      *
+     * @param type
      * @return true if all metadata are not configured as single string; false otherwise
      * @should return false if at least one metadata with same type not single string
      * @should return true if all metadata of same type single string
@@ -726,4 +733,5 @@ public class MetadataElement {
         this.selectedRecordLanguage = language;
         return this;
     }
+
 }

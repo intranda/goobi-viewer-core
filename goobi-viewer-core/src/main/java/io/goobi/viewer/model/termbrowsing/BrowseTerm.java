@@ -48,7 +48,6 @@ public class BrowseTerm implements Serializable {
     /** Optional translated labels for the term. */
     private final IMetadataValue translations;
     /** Hit count; initial value is 0. */
-    //    private final AtomicLong hitCount = new AtomicLong(0);
     private long hitCount = 0;
     /** List of record identifiers already taken into account for including this term. */
     private final Set<String> piList = ConcurrentHashMap.newKeySet();
@@ -66,11 +65,7 @@ public class BrowseTerm implements Serializable {
         this.translations = translations;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
+
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -80,11 +75,7 @@ public class BrowseTerm implements Serializable {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -146,7 +137,6 @@ public class BrowseTerm implements Serializable {
      * @should add to hit count correctly
      */
     public synchronized void addToHitCount(int num) {
-        //        hitCount.set(hitCount.get() + num);
         hitCount += num;
     }
 
@@ -158,7 +148,6 @@ public class BrowseTerm implements Serializable {
      * @return the hitCount
      */
     public long getHitCount() {
-        //        return hitCount.get();
         return hitCount;
     }
 
@@ -181,5 +170,4 @@ public class BrowseTerm implements Serializable {
     public Set<String> getPiList() {
         return piList;
     }
-
 }

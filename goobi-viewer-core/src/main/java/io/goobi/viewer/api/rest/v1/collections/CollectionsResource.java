@@ -69,10 +69,10 @@ public class CollectionsResource {
     private final HttpServletRequest request;
 
     @Inject
-    ApiUrls urls;
+    private ApiUrls urls;
 
     public CollectionsResource(
-            @Parameter(description="Name of the SOLR field the collection is based on. Typically 'DC'")@PathParam("field")String solrField,
+            @Parameter(description = "Name of the SOLR field the collection is based on. Typically 'DC'") @PathParam("field") String solrField,
             @Context HttpServletRequest request) {
         this.solrField = solrField.toUpperCase();
         this.request = request;
@@ -81,21 +81,20 @@ public class CollectionsResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF Presentation 2.1.1 collection")
-    @ApiResponse(responseCode="400", description="No collections available for field")
+    @ApiResponse(responseCode = "400", description = "No collections available for field")
     public Collection2 getAllCollections(
-            @Parameter(description ="Add values of this field to response to allow grouping of results")@QueryParam("grouping")String grouping,
-            @Parameter(description ="comma separated list of collections to ignore in response")@QueryParam("ignore")String ignoreString
-                    )
-            throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
+            @Parameter(description = "Add values of this field to response to allow grouping of results") @QueryParam("grouping") String grouping,
+            @Parameter(description = "comma separated list of collections to ignore in response") @QueryParam("ignore") String ignoreString)
+            throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException, ViewerConfigurationException {
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, request);
         Collection2 collection;
         List<String> ignore = StringUtils.isNotBlank(ignoreString) ? Arrays.asList(ignoreString.split(",")) : Collections.emptyList();
-        if(StringUtils.isBlank(grouping)) {
+        if (StringUtils.isBlank(grouping)) {
             collection = builder.getCollections(solrField, ignore);
         } else {
             collection = builder.getCollectionsWithGrouping(solrField, ignore, grouping);
         }
-        if(collection.getMembers() == null || collection.getMembers().isEmpty()) {
+        if (collection.getMembers() == null || collection.getMembers().isEmpty()) {
             //can't be a collection
             throw new IllegalRequestException("No collections found for field " + solrField);
         }
@@ -106,23 +105,25 @@ public class CollectionsResource {
     @javax.ws.rs.Path(COLLECTIONS_COLLECTION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF Presentation 2.1.1 collection")
-    @ApiResponse(responseCode="400", description="Invalid collection name or field")
+    @ApiResponse(responseCode = "400", description = "Invalid collection name or field")
     public Collection2 getCollection(
-            @Parameter(description="Name of the collection. Must be a value of the SOLR field the collection is based on")@PathParam("collection")String collectionName,
-            @Parameter(description ="Add values of this field to response to allow grouping of results")@QueryParam("grouping")String grouping,
-            @Parameter(description ="comma separated list of subcollections to ignore in response")@QueryParam("ignore")String ignoreString
-            )
-            throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
+            @Parameter(description = "Name of the collection. Must be a value of the SOLR field the collection is based on") 
+            @PathParam("collection") final String inCollectionName,
+            @Parameter(description = "Add values of this field to response to allow grouping of results") 
+            @QueryParam("grouping") String grouping,
+            @Parameter(description = "comma separated list of subcollections to ignore in response") 
+            @QueryParam("ignore") String ignoreString)
+            throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException, ViewerConfigurationException {
         IIIFPresentation2ResourceBuilder builder = new IIIFPresentation2ResourceBuilder(urls, request);
-        collectionName = StringTools.decodeUrl(collectionName);
+        String collectionName = StringTools.decodeUrl(inCollectionName);
         Collection2 collection;
         List<String> ignore = StringUtils.isNotBlank(ignoreString) ? Arrays.asList(ignoreString.split(",")) : Collections.emptyList();
-        if(StringUtils.isBlank(grouping)) {
+        if (StringUtils.isBlank(grouping)) {
             collection = builder.getCollection(solrField, collectionName, ignore);
         } else {
-          collection = builder.getCollectionWithGrouping(solrField, collectionName, grouping, ignore);
+            collection = builder.getCollectionWithGrouping(solrField, collectionName, grouping, ignore);
         }
-        if(collection.getMembers() == null || collection.getMembers().isEmpty()) {
+        if (collection.getMembers() == null || collection.getMembers().isEmpty()) {
             //can't be a collection
             throw new IllegalRequestException("No valid collection: " + solrField + ":" + collectionName);
         }
@@ -132,13 +133,13 @@ public class CollectionsResource {
     @GET
     @javax.ws.rs.Path(COLLECTIONS_CONTENTASSIST)
     @Produces({ MediaType.APPLICATION_JSON })
-    @ApiResponse(responseCode="400", description="No collections available for field")
-//    @Operation(tags = { "collections"}, summary = "Return a list of collections starting with the given input")
+    @ApiResponse(responseCode = "400", description = "No collections available for field")
+    //    @Operation(tags = { "collections"}, summary = "Return a list of collections starting with the given input")
     public List<String> contentAssist(
-            @Parameter(description="User input for which content assist is requested")@QueryParam("query")String input) throws IndexUnreachableException, IllegalRequestException {
+            @Parameter(description = "User input for which content assist is requested") @QueryParam("query") String input)
+            throws IndexUnreachableException, IllegalRequestException {
         ContentAssistResourceBuilder builder = new ContentAssistResourceBuilder();
         return builder.getCollections(solrField, input);
     }
-
 
 }

@@ -22,18 +22,12 @@
 					</dt>
 					
 					<!-- STANDARD STRUCTURE -->
-					<ui:fragment>
+					<ui:fragment rendered="#{metadata.separator == null}">
 						<c:forEach items="#{metadata.values}" var="val">
-							<dd>
-	
+						<dd>
 								<!-- Metadata value -->
 								<h:panelGroup rendered="#{metadata.singleString}">
-									<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-										<c:forEach begin="0" end="#{metadata.paramCount - 0}"
-											var="ind0">
-											<f:param value="#{val.getParamLabelWithColon(ind0)}" />
-											<f:param value="#{val.getComboValueShort(ind0)}" />
-										</c:forEach>
+									<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}" escape="false">
 									</h:outputFormat>
 								</h:panelGroup>
 	
@@ -59,6 +53,47 @@
 								</c:forEach>
 							</dd>
 						</c:forEach>
+			
+					</ui:fragment>
+					
+					<!-- STANDARD WITH SEPARATOR -->
+					<ui:fragment rendered="#{metadata.separator != null}">
+						<dd>
+						<c:forEach items="#{metadata.values}" var="val">
+							<span class="metadata__element-wrapper-single-custom">
+	
+								<!-- Metadata value -->
+								<h:panelGroup rendered="#{metadata.singleString}">
+									<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}" escape="false">
+									</h:outputFormat>
+									<span class="metadata__element-wrapper-single-custom-separator">#{metadata.separator}</span>
+								</h:panelGroup>
+	
+								<!-- Nested child metadata -->
+								<c:forEach var="child" items="#{metadata.childMetadata}"
+									varStatus="status">
+									<ui:fragment rendered="#{!child.isBlank(val.iddoc)}">
+										<ui:fragment rendered="#{child.singleString}">
+											<ui:include
+												src="/resources/includes/metadata/metadataSingleString.xhtml">
+												<ui:param name="metadata"
+													value="#{metadata.childMetadata[status.index]}" />
+											</ui:include>
+										</ui:fragment>
+										<ui:fragment rendered="#{!child.singleString}">
+											<ui:include
+												src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+												<ui:param name="metadata"
+													value="#{metadata.childMetadata[status.index]}" />
+											</ui:include>
+										</ui:fragment>
+									</ui:fragment>
+								</c:forEach>
+								
+						</span>
+						
+						</c:forEach>
+						</dd>
 					</ui:fragment>
 					
 					<!-- STRUCTURE FOR METADATA VALUES IN ONE LINE -->

@@ -21,20 +21,20 @@
  */
 package io.goobi.viewer.controller;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 
-public class SecurityManagerTest extends AbstractTest {
+class SecurityManagerTest extends AbstractTest {
 
     /**
      * @see SecurityManager#getDelay(int,long,long)
      * @verifies return zero if attempts zero
      */
     @Test
-    public void getDelay_shouldReturnZeroIfAttemptsZero() throws Exception {
-        Assert.assertEquals(0, SecurityManager.getDelay(0, 0, System.currentTimeMillis()));
+    void getDelay_shouldReturnZeroIfAttemptsZero() throws Exception {
+        Assertions.assertEquals(0, SecurityManager.getDelay(0, 0, System.currentTimeMillis()));
     }
 
     /**
@@ -42,8 +42,8 @@ public class SecurityManagerTest extends AbstractTest {
      * @verifies return zero if time between lastAttempt and now larger than delay
      */
     @Test
-    public void getDelay_shouldReturnZeroIfTimeBetweenLastAttemptAndNowLargerThanDelay() throws Exception {
-        Assert.assertEquals(0, SecurityManager.getDelay(1, 1000, 5000));
+    void getDelay_shouldReturnZeroIfTimeBetweenLastAttemptAndNowLargerThanDelay() throws Exception {
+        Assertions.assertEquals(0, SecurityManager.getDelay(1, 1000, 5000));
     }
 
     /**
@@ -51,7 +51,7 @@ public class SecurityManagerTest extends AbstractTest {
      * @verifies return delay if time between lastAttempt and now smaller than delay
      */
     @Test
-    public void getDelay_shouldReturnDelayIfTimeBetweenLastAttemptAndNowSmallerThanDelay() throws Exception {
-        Assert.assertEquals(500, SecurityManager.getDelay(1, 1000, 3500));
+    void getDelay_shouldReturnDelayIfTimeBetweenLastAttemptAndNowSmallerThanDelay() throws Exception {
+        Assertions.assertEquals(500, SecurityManager.getDelay(1, 1000, 3500));
     }
 }

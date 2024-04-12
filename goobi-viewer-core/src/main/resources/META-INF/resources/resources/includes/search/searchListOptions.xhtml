@@ -40,7 +40,7 @@
 	            <viewerComponent:searchSaveDialog prependId="false" />
 	        </h:panelGroup>
 	
-	        <!-- SEARCH EXPORT -->
+	        <!-- SEARCH EXPORT (EXCEL) -->
 	        <h:panelGroup rendered="#{configurationBean.searchExcelExportEnabled}">
 	            <div class="search-list__excel-export">
 	                <h:form id="slExportSearchForm" prependId="false">
@@ -58,6 +58,25 @@
 	                </h:form>
 	            </div>
 	        </h:panelGroup>
+	        
+	        <!-- SEARCH EXPORT (RIS) -->
+            <h:panelGroup rendered="#{configurationBean.searchRisExportEnabled}">
+                <div class="search-list__ris-export">
+                    <h:form id="risExportSearchForm" prependId="false">
+                        <h:commandLink id="risDownloadButton" styleClass="btn btn--icon ris-export-trigger" action="#{searchBean.exportSearchAsRisAction}" title="#{msg.searchExportRIS}">
+                            <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                            <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                            <f:passThroughAttribute name="data-placement" value="top" />
+                            <f:passThroughAttribute name="aria-label" value="#{msg.searchExportRIS}" />
+                        </h:commandLink>
+    
+                        <span class="ris-export-loader">
+                            #{msg.searchExportRisLoading}
+                            <img src="#{request.contextPath}/resources/images/ajax_preloader.gif" alt="RIS Export Loader" />
+                        </span>
+                    </h:form>
+                </div>
+            </h:panelGroup>
 	        
 		    <div class="search-list__toggle-thumbs">
 		   		<button type="button" class="btn btn--icon" data-title-inactive="#{msg.action__show_subhits_thumbnails}" data-title-active="#{msg.action__hide_subhits_thumbnails}" data-toggle="tooltip" data-placement="top" data-trigger="hover"

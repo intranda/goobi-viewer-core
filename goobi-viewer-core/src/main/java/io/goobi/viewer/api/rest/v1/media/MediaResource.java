@@ -21,6 +21,10 @@
  */
 package io.goobi.viewer.api.rest.v1.media;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_AUDIO;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_VIDEO;
+
 import java.io.IOException;
 import java.nio.file.Files;
 
@@ -32,8 +36,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.api.rest.model.MediaDeliveryService;
 import io.goobi.viewer.controller.DataFileTools;
@@ -43,7 +47,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
 
 /**
  * A rest resource for delivering video and audio files
@@ -71,9 +74,7 @@ public class MediaResource {
      * serveMediaContent.
      * </p>
      *
-     * @param type a {@link java.lang.String} object.
      * @param format a {@link java.lang.String} object.
-     * @param identifier a {@link java.lang.String} object.
      * @param filename a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -92,9 +93,7 @@ public class MediaResource {
      * serveMediaContent.
      * </p>
      *
-     * @param type a {@link java.lang.String} object.
      * @param format a {@link java.lang.String} object.
-     * @param identifier a {@link java.lang.String} object.
      * @param filename a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.

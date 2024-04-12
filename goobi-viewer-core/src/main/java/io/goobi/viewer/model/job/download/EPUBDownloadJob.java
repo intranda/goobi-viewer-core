@@ -129,21 +129,6 @@ public class EPUBDownloadJob extends DownloadJob {
         return "EPUB";
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.download.DownloadJob#getQueuePosition()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public int getQueuePosition() {
-        switch (status) {
-            case ERROR:
-                return -1;
-            case READY:
-                return 0;
-            default:
-                return getEPUBJobsInQueue(identifier);
-        }
-    }
 
     /**
      * <p>
@@ -197,15 +182,6 @@ public class EPUBDownloadJob extends DownloadJob {
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.download.DownloadJob#triggerCreation(java.lang.String, java.lang.String, java.lang.String)
-     */
-    /** {@inheritDoc} */
-    @Override
-    protected void triggerCreation() throws PresentationException, IndexUnreachableException {
-        triggerCreation(pi, identifier);
-    }
-
     /**
      * <p>
      * triggerCreation.
@@ -213,7 +189,6 @@ public class EPUBDownloadJob extends DownloadJob {
      *
      * @param pi a {@link java.lang.String} object.
      * @param downloadIdentifier a {@link java.lang.String} object.
-     * @param targetFolderPath a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DownloadException if any.
@@ -231,10 +206,10 @@ public class EPUBDownloadJob extends DownloadJob {
         Path metsPath = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).resolve(pi + ".xml");
 
         TaskManagerEPUBRequest requestObject = new TaskManagerEPUBRequest();
-        requestObject.pi = pi;
-        requestObject.goobiId = downloadIdentifier;
-        requestObject.sourceDir = metsPath.toString();
-        requestObject.language = CmsBean.getCurrentLocale().getLanguage();
+        requestObject.setPi(pi);
+        requestObject.setGoobiId(downloadIdentifier);
+        requestObject.setSourceDir(metsPath.toString());
+        requestObject.setLanguage(CmsBean.getCurrentLocale().getLanguage());
 
         try {
             Response response = postJobRequest(taskManagerUrl, requestObject);

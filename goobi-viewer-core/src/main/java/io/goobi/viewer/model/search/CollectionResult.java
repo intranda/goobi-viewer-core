@@ -21,9 +21,9 @@
  */
 package io.goobi.viewer.model.search;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -32,34 +32,33 @@ import java.util.Set;
  * @author florian
  *
  */
-public class CollectionResult {
+public class CollectionResult implements Serializable {
+
+    private static final long serialVersionUID = -5015011669151323658L;
 
     private final String name;
     private Set<String> facetValues = new HashSet<>();
     /**
      * A counter for all records within the collections or its descendants
      */
-    private Long recordCount = 0l;
+    private Long recordCount = 0L;
     /**
      * A counter for direct child collections
      */
-    private Long childCount = 0l;
-
+    private Long childCount = 0L;
 
     public CollectionResult(String name) {
         this.name = name;
     }
 
-
     /**
-     * @param string
-     * @param l
+     * @param name
+     * @param recordCount
      */
-    public CollectionResult(String name, long l) {
+    public CollectionResult(String name, long recordCount) {
         this.name = name;
-        this.recordCount = l;
+        this.recordCount = recordCount;
     }
-
 
     /**
      * @return the groupingValues
@@ -68,14 +67,12 @@ public class CollectionResult {
         return facetValues;
     }
 
-
     /**
-     * @param groupingValues the groupingValues to set
+     * @param facetValues the facetValues to set
      */
     public void setFacetValues(Set<String> facetValues) {
         this.facetValues = facetValues;
     }
-
 
     /**
      * @return the count
@@ -84,14 +81,12 @@ public class CollectionResult {
         return recordCount;
     }
 
-
     /**
      * @param count the count to set
      */
     public void setCount(Long count) {
         this.recordCount = count;
     }
-
 
     /**
      * @return the name
@@ -116,12 +111,11 @@ public class CollectionResult {
         this.childCount += l;
     }
 
-
     /**
      * @param fieldValues
      */
     public void addFacetValues(Collection<Object> fieldValues) {
-        if(fieldValues != null) {
+        if (fieldValues != null) {
             for (Object object : fieldValues) {
                 String value = object.toString();
                 facetValues.add(value);

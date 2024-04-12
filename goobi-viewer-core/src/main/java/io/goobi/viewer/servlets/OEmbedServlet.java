@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -34,14 +35,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -209,10 +211,13 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
     /**
      * 
      * @param origUrl
-     * @return
+     * @return {@link OEmbedRecord}
      * @throws URISyntaxException
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @should parse url with page number correctly
+     * @should parse url without page number correctly
+     * @should return null if url contains no pi
      */
     static OEmbedRecord parseUrl(String origUrl) throws URISyntaxException, PresentationException, IndexUnreachableException {
         if (origUrl == null) {
@@ -225,13 +230,18 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
         url = url.replace("viewer/", "");
 
         String[] urlSplit = url.split("/");
-        logger.trace(Arrays.toString(urlSplit));
+        if (logger.isTraceEnabled()) {
+            logger.trace(Arrays.toString(urlSplit));
+        }
 
         if (urlSplit.length > 0 && "embed".equals(urlSplit[0])) {
             return new OEmbedRecord(origUrl);
         }
+        if (urlSplit.length < 2) {
+            return null;
+        }
         String pi = urlSplit[1];
-        int page = Integer.parseInt(urlSplit[2]);
+        int page = urlSplit.length > 2 ? Integer.parseInt(urlSplit[2]) : 1;
         long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(pi);
         if (iddoc == 0) {
             return null;
@@ -239,9 +249,16 @@ public class OEmbedServlet extends HttpServlet implements Serializable {
 
         OEmbedRecord ret = new OEmbedRecord();
         StructElement se = new StructElement(iddoc);
+        se.setPi(pi);
         ret.setStructElement(se);
-        PhysicalElement pe = AbstractPageLoader.loadPage(se, page);
-        ret.setPhysicalElement(pe);
+        if (se.isAnchor() || se.isGroup()) {
+            StructElement seChild = se.getFirstVolume(new ArrayList<>(ThumbnailHandler.REQUIRED_SOLR_FIELDS));
+            PhysicalElement pe = AbstractPageLoader.loadPage(seChild, page);
+            ret.setPhysicalElement(pe);
+        } else {
+            PhysicalElement pe = AbstractPageLoader.loadPage(se, page);
+            ret.setPhysicalElement(pe);
+        }
 
         return ret;
     }

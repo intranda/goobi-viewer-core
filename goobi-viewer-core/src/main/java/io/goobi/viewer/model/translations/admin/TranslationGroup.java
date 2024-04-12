@@ -34,13 +34,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Translation group configuration item.
  */
-public class TranslationGroup {
+public final class TranslationGroup {
 
     public enum TranslationGroupType {
         SOLR_FIELD_NAMES,
@@ -51,7 +54,7 @@ public class TranslationGroup {
         /**
          *
          * @param name
-         * @return
+         * @return {@link TranslationGroupType} matching given name; null if none foudn
          */
         public static TranslationGroupType getByName(String name) {
             if (name == null) {
@@ -94,7 +97,7 @@ public class TranslationGroup {
      * @param name
      * @param description
      * @param numItems
-     * @return
+     * @return Created {@link TranslationGroup}
      */
     public static TranslationGroup create(int id, TranslationGroupType type, String name, String description, int numItems) {
         return new TranslationGroup(id, type, name, description, numItems);
@@ -136,27 +139,26 @@ public class TranslationGroup {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         TranslationGroup other = (TranslationGroup) obj;
-        if (id != other.id)
-            return false;
-        return true;
+        return id == other.id;
     }
 
     /**
      *
-     * @param field Solr field
      * @param key Message key to find
      * @return true if message entry was found or added; false if no matching group item could be found
      */
     public boolean findEntryByMessageKey(String key) {
         logger.trace("findEntryByMessageKey: {}", key);
-
         for (MessageEntry entry : getAllEntries()) {
             if (entry.getKey().equals(key)) {
                 logger.trace("found key: {}", key);
@@ -229,7 +231,7 @@ public class TranslationGroup {
                 if (item.getEntries() != null) {
                     returnSet.addAll(item.getEntries());
                 }
-            } catch (Exception e) {
+            } catch (IndexUnreachableException | PresentationException e) {
                 loadError = true;
                 break;
             }
@@ -345,13 +347,13 @@ public class TranslationGroup {
      * @should return false if group has no entries
      */
     public boolean isHasEntries() {
-        List<MessageEntry> allEntries = getAllEntries();
-        return allEntries != null && !allEntries.isEmpty();
+        List<MessageEntry> ret = getAllEntries();
+        return ret != null && !ret.isEmpty();
     }
 
     /**
      *
-     * @return
+     * @return List<MessageEntry>
      * @should filter by key correctly
      * @should filter by value correctly
      */
@@ -384,14 +386,18 @@ public class TranslationGroup {
      */
     public List<MessageEntry> getAllEntries() {
         if (allEntries == null) {
-            // logger.trace("Loading entries...");
             Set<MessageEntry> retSet = new HashSet<>();
             for (TranslationGroupItem item : items) {
                 try {
                     if (item.getEntries() != null) {
                         retSet.addAll(item.getEntries());
                     }
-                } catch (Exception e) {
+                } catch (IndexUnreachableException e) {
+                    logger.error("Solr error: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()));
+                    loadError = true;
+                    allEntries = Collections.emptyList();
+                    return allEntries;
+                } catch (PresentationException e) {
                     logger.error(e.getMessage());
                     loadError = true;
                     allEntries = Collections.emptyList();
@@ -521,7 +527,7 @@ public class TranslationGroup {
      *
      */
     void selectEntry(int step) {
-        // logger.trace("selectEntry: {}", step);
+        // logger.trace("selectEntry: {}", step); //NOSONAR Debug
         if (getFilteredEntries() == null || getFilteredEntries().isEmpty()) {
             return;
         }

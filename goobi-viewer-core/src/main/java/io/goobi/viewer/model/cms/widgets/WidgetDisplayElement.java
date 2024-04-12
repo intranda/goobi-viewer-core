@@ -29,22 +29,22 @@ import jakarta.persistence.GenerationType;
 import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
- * Class for displaying information about available sidebar widgets in /admin/cms/widgets and  the sidebar edit tab of /admin/cms/pages/edit.
- * Widgets are distinguished by {@link #getGenerationType()}
- * into default widgets with static GUI, automatic widgets provided by other custom content and custom widgets explicitly created by users
- * They are further distinguished by {@link #getContentType()} corresponding to the individual widget xhtml component
+ * Class for displaying information about available sidebar widgets in /admin/cms/widgets and the sidebar edit tab of /admin/cms/pages/edit. Widgets
+ * are distinguished by {@link #getGenerationType()} into default widgets with static GUI, automatic widgets provided by other custom content and
+ * custom widgets explicitly created by users They are further distinguished by {@link #getContentType()} corresponding to the individual widget xhtml
+ * component
  *
  * @author florian
  *
  */
-public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDisplayElement>{
+public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDisplayElement> {
 
     private final TranslatedText title;
     private final TranslatedText description;
@@ -56,7 +56,6 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
      */
     private final Long id;
     private final IPolyglott translations;
-
 
     /**
      * Default constructor for widgets without underlying data (i.e. default widgets)
@@ -81,8 +80,8 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
      * @param embeddingPages
      * @param generationType
      * @param contentType
-     * @param id    the database id of the underlying content. The type of content depends on generationType and contentType
-     * @param translations  used to display translation status of the widget. Usually the underlying custom widget
+     * @param id the database id of the underlying content. The type of content depends on generationType and contentType
+     * @param translations used to display translation status of the widget. Usually the underlying custom widget
      */
     public WidgetDisplayElement(IMetadataValue title, IMetadataValue description, List<CMSPage> embeddingPages, WidgetGenerationType generationType,
             WidgetContentType contentType, Long id, IPolyglott translations) {
@@ -95,44 +94,56 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
         this.id = id;
         this.translations = translations;
     }
+
     /**
      * The displayed title of the element
+     * 
      * @return the title
      */
     public TranslatedText getTitle() {
         return title;
     }
+
     /**
      * A description of the element
+     * 
      * @return the description
      */
     public TranslatedText getDescription() {
         return description;
     }
+
     /**
      * A list of CMS pages using this element. Only used to automatic and custom widgets
+     * 
      * @return the embeddingPages
      */
     public List<CMSPage> getEmbeddingPages() {
         return embeddingPages;
     }
+
     /**
      * Describes they way in which way data for this widget is created and stored
+     * 
      * @return the {@link GenerationType generation type}
      */
     public WidgetGenerationType getGenerationType() {
         return generationType;
     }
+
     /**
      * Describes the specific xhtml component used for this widget
+     * 
      * @return the contentType
      */
     public WidgetContentType getContentType() {
         return contentType;
     }
+
     /**
      * Identifier of the underlying data, if any
-     * @return
+     * 
+     * @return the id
      */
     public Long getId() {
         return id;
@@ -145,6 +156,7 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     public boolean isComplete(Locale locale) {
         return !this.title.isEmpty(locale) && !this.description.isEmpty(locale);
     }
+
     /**
      * At least one of title and description is filled
      */
@@ -152,14 +164,17 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     public boolean isValid(Locale locale) {
         return !this.title.isEmpty();
     }
+
     @Override
     public boolean isEmpty(Locale locale) {
         return this.title.isEmpty(locale);
     }
+
     @Override
     public Locale getSelectedLocale() {
         return IPolyglott.getCurrentLocale();
     }
+
     /**
      * Not used, since this element isn't editable
      */
@@ -198,11 +213,10 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
     @Override
     public int compareTo(WidgetDisplayElement other) {
         int typeCompare = Integer.compare(this.generationType.ordinal(), other.generationType.ordinal());
-        if(typeCompare == 0) {
+        if (typeCompare == 0) {
             return StringUtils.compare(this.getTitle().getText(), other.getTitle().getText());
-        } else {
-            return typeCompare;
         }
+        return typeCompare;
     }
 
 }

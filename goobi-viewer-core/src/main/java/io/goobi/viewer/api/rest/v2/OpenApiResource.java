@@ -63,53 +63,51 @@ import io.swagger.v3.oas.models.servers.Server;
 public class OpenApiResource {
 
     @Context
-    Application application;
+    private Application application;
     @Context
-    ServletConfig servletConfig;
+    private ServletConfig servletConfig;
 
-    private static OpenAPI openApi  = null;
+    private static OpenAPI openApi = null;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public OpenAPI getOpenApi() {
-        OpenApiResource.initOpenApi(getApiUrls());        
+        OpenApiResource.initOpenApi(getApiUrls());
         return OpenApiResource.openApi;
     }
 
     private static void initOpenApi(List<String> apiUrls) {
-        if(OpenApiResource.openApi == null) {
+        if (OpenApiResource.openApi == null) {
             OpenApiResource.openApi = initSwagger(apiUrls);
         }
     }
 
     private static OpenAPI initSwagger(List<String> apiUrls) {
 
-            OpenAPI oas = new OpenAPI();
-            oas.info(getInfo());
-            oas.servers(getServers(apiUrls));
+        OpenAPI oas = new OpenAPI();
+        oas.info(getInfo());
+        oas.servers(getServers(apiUrls));
 
-            SwaggerConfiguration oasConfig = new SwaggerConfiguration()
-                    .openAPI(oas)
-                    .prettyPrint(true)
-                    .readAllResources(false);
+        SwaggerConfiguration oasConfig = new SwaggerConfiguration()
+                .openAPI(oas)
+                .prettyPrint(true)
+                .readAllResources(false);
 
-            Reader reader = new Reader(oasConfig);
-            OpenAPI openAPI = reader.read(Stream.of(
-                    CMSMediaImageResource3.class,
-                    CollectionsResource.class,
-                    ExternalImageResource.class,
-                    RecordsFilesImageResource.class,
-                    RecordsImageResource.class,
-                    RecordFilesResource.class,
-                    RecordPagesResource.class,
-                    RecordResource.class,
-                    RecordSectionsResource.class).collect(Collectors.toSet()));
-
-            return openAPI;
+        Reader reader = new Reader(oasConfig);
+        return reader.read(Stream.of(
+                CMSMediaImageResource3.class,
+                CollectionsResource.class,
+                ExternalImageResource.class,
+                RecordsFilesImageResource.class,
+                RecordsImageResource.class,
+                RecordFilesResource.class,
+                RecordPagesResource.class,
+                RecordResource.class,
+                RecordSectionsResource.class).collect(Collectors.toSet()));
 
     }
 
-    private List<String> getApiUrls() {
+    private static List<String> getApiUrls() {
 
         return Arrays.asList(
                 DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v2).map(AbstractApiUrlManager::getApiUrl).orElse(null),
@@ -123,18 +121,18 @@ public class OpenApiResource {
     private static List<Server> getServers(List<String> apiUrls) {
         List<Server> servers = new ArrayList<>();
         for (String url : apiUrls) {
-                Server server = new Server();
-                server.setUrl(url);
-                servers.add(server);
+            Server server = new Server();
+            server.setUrl(url);
+            servers.add(server);
         }
         return servers;
     }
 
     /**
-     * @return
+     * @return {@link Info}
      */
     public static Info getInfo() {
-        Info info = new Info()
+        return new Info()
                 .title("Goobi viewer API.")
                 .description("This documentation describes the Goobi viewer API.")
                 .version("v2")
@@ -143,7 +141,6 @@ public class OpenApiResource {
                 .license(new License()
                         .name("GPL2 or later")
                         .url("https://github.com/intranda/goobi-viewer-core/blob/master/LICENSE"));
-        return info;
     }
 
 }

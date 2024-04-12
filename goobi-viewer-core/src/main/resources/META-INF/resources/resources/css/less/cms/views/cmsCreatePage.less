@@ -4,13 +4,14 @@
    ==============================================================*/
 /* CMS CREATE PAGE */
 .cms-create-page {
+	 position: relative;
+	 padding-bottom: 70px;
 	.ui-sortable-handle:hover {
 		cursor: grab;
 	}
 	.ui-sortable-helper:hover {
 		cursor: grabbing !important;
 	}
-    position: relative;
     h1 {}
     .create-page-left {
         padding: 0 0 0 15px;
@@ -25,6 +26,22 @@
         }
     }
     &__wrapper {
+		.language-tab:not(.-default-lang) {
+			.content-item-wrapper:not(.-translatable) {
+				display:none;
+//				position: relative;
+//				&::after {
+//					content: "";
+//					position: absolute;
+//				    top: 0;
+//				    left: 0;
+//				    width: 100%; 
+//				    height: 100%;
+//				    opacity: 0.7;
+//					background: repeating-linear-gradient(45deg, white, white 20px, #f6f6f6 20px, #f6f6f6 35px);
+//				}
+			}
+		}
     	.edit-content-page {
             border-bottom: 1px solid #eee;
             &.edit-content-page-content {
@@ -101,6 +118,14 @@
                 	margin-bottom: 0;
                 }
             }
+            .page-component-list {
+				.attribute-button {
+					&.active {
+						background-color: darkgray;
+						color: lightgray;
+					}
+				}
+			}
         }
         #sidebarEditorWrapper {
             padding: 14px 7px;
@@ -241,6 +266,9 @@
 					opacity: 1;
 				}
 			}
+			&.-disabled {
+				opacity: 0.5;
+			}
 		}
 		&__widget-label {}
 		&__widget-item-delete-button {
@@ -311,6 +339,14 @@
 			}
 			&:hover {
 				background: #f1f2f3;
+			}
+			&.-disabled {
+				opacity: 0.5;
+				cursor: default;
+				label,
+				input {					
+					pointer-events: none;
+				}
 			}
 		}
 		&__add-widgets-button {
@@ -428,6 +464,42 @@
 		padding: 0.4rem 1.5rem 0.5rem 0;
 		img {
 			width: 150px;
+		}
+	}
+	&__choose-template-wrapper {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		gap: 20px;
+	}
+	&__choose-template-box {
+		background: #fff;
+		padding: 2rem;
+		transition: background .2s ease;
+		border: 1px solid #ccc;
+		position: relative;
+		display: flex;
+		gap: 20px;
+	}
+	&__choose-template-box-start {
+		height: 125px;
+		img {
+			height: 100%;
+		}
+	}
+	&__choose-template-box-end {
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		// gap: 20px;
+		align-items: flex-end;
+		h2 {
+			align-self: flex-start;
+		}
+		p {
+			align-self: flex-start;
+		}
+		.btn {
+			margin-top: auto;
 		}
 	}
 }

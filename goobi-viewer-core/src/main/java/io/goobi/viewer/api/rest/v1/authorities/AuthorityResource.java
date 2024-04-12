@@ -38,11 +38,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.MarcRecord;
@@ -53,9 +53,11 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.metadata.MetadataTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
@@ -77,6 +79,7 @@ public class AuthorityResource {
     private HttpServletResponse servletResponse;
 
     public AuthorityResource() {
+        //
     }
 
     @GET
@@ -85,7 +88,7 @@ public class AuthorityResource {
     @CORSBinding
     @Operation(tags = { "authority" }, summary = "Get a normdata authority resource identified by its escaped url")
     public String getIdentity(
-            @Parameter(description = "Identifier url of the resource") @QueryParam("id") String url,
+            @Parameter(description = "Identifier url of the resource") @QueryParam("id") final String inUrl,
             @Parameter(description = "Metadata template to use") @QueryParam("template") String template,
             @Parameter(description = "Language to use for metadata fields") @QueryParam("lang") String lang)
             throws ContentNotFoundException, PresentationException {
@@ -109,7 +112,7 @@ public class AuthorityResource {
         }
         // logger.debug("norm data locale: {}", locale.toString());
 
-        url = StringTools.unescapeCriticalUrlChracters(url.trim());
+        String url = (inUrl == null ? "" : StringTools.unescapeCriticalUrlChracters(inUrl.trim()));
         String secondUrl = null;
         if (url.contains("$")) {
             String[] urlSplit = url.split("[$]");
@@ -119,15 +122,16 @@ public class AuthorityResource {
             }
         }
 
-        Record rec = NormDataImporter.getSingleRecord(url);
+        Record rec = MetadataTools.getAuthorityDataRecord(url);
         if (rec == null) {
-            throw new ContentNotFoundException("Resource not found");
+            logger.trace("Record not found");
+            throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
         }
 
         List<NormData> normDataList = rec.getNormDataList();
         if (normDataList == null) {
             logger.trace("Normdata map is empty");
-            throw new ContentNotFoundException("Resource not found");
+            throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
         }
 
         // Add link elements for Viaf and authority entries
@@ -148,7 +152,7 @@ public class AuthorityResource {
         JSONArray jsonArray = new JSONArray();
 
         // Explorative mode to return all available fields
-        if (template == null || "_DEFAULT".equals(template) || "_ALL".equals(template)) {
+        if (template == null || StringConstants.DEFAULT_NAME.equals(template) || "_ALL".equals(template)) {
             for (NormData normData : normDataList) {
                 jsonArray.put(addNormDataValuesToJSON(normData, locale));
             }
@@ -184,7 +188,7 @@ public class AuthorityResource {
      * 
      * @param normData
      * @param locale
-     * @return
+     * @return {@link JSONObject}
      */
     static JSONObject addNormDataValuesToJSON(NormData normData, Locale locale) {
         JSONObject jsonObj = new JSONObject();

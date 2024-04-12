@@ -64,6 +64,7 @@ import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
 import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -71,7 +72,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 /**
  * @author florian
  *
- * Used to call ContentServer with external image resource URLs
+ *         Used to call ContentServer with external image resource URLs
  *
  */
 @Path(EXTERNAL_IMAGES)
@@ -83,9 +84,11 @@ public class ExternalImageResource extends ImageResource {
     private static final Logger logger = LogManager.getLogger(ExternalImageResource.class);
 
     /**
+     * @param context
      * @param request
-     * @param directory
-     * @param filename
+     * @param response
+     * @param urls
+     * @param imageUrl
      */
     public ExternalImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
@@ -100,10 +103,9 @@ public class ExternalImageResource extends ImageResource {
         int baseEndIndex = baseStartIndex + baseImageUrl.length();
         String imageRequestPath = requestUrl.substring(baseEndIndex);
 
-
         List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
-        if(parts.size() == 4) {
-          //image request
+        if (parts.size() == 4) {
+            //image request
             String region = parts.get(0);
             String size = parts.get(1);
             Optional<Integer> scaleWidth = getRequestedWidth(size);
@@ -113,10 +115,11 @@ public class ExternalImageResource extends ImageResource {
             request.setAttribute("iiif-rotation", parts.get(2));
             request.setAttribute("iiif-format", parts.get(3));
             int maxUnzoomedImageWidth = DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth();
-            if(maxUnzoomedImageWidth > 0 &&
-                    (!(Region.FULL_IMAGE.equals(region) || Region.SQUARE_IMAGE.equals(region)) ||
-                    scaleWidth.orElse(Integer.MAX_VALUE) > maxUnzoomedImageWidth)) {
-                request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, new String[] {IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV_ZOOM_IMAGES});
+            if (maxUnzoomedImageWidth > 0
+                    && (!(Region.FULL_IMAGE.equals(region) || Region.SQUARE_IMAGE.equals(region))
+                            || scaleWidth.orElse(Integer.MAX_VALUE) > maxUnzoomedImageWidth)) {
+                request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE,
+                        new String[] { IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV_ZOOM_IMAGES });
             }
         } else {
             //image info request
@@ -128,22 +131,22 @@ public class ExternalImageResource extends ImageResource {
     @Path(RECORDS_FILES_IMAGE_PDF)
     @Produces("application/pdf")
     @ContentServerPdfBinding
-    @Operation(tags = {"records"}, summary = "Returns the image for the given filename as PDF")
+    @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
     public StreamingOutput getPdf() throws ContentLibException {
         String pi = request.getAttribute("pi").toString();
         String filename = request.getAttribute("filename").toString();
         logger.trace("getPdf: {}/{}", pi, filename);
         filename = FilenameUtils.getBaseName(filename);
         filename = pi + "_" + filename + ".pdf";
-        response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
 
-        if(context.getProperty("param:metsSource") != null) {
+        if (context.getProperty("param:metsSource") != null) {
             try {
                 String metsSource = context.getProperty("param:metsSource").toString();
                 String metsPath = PathConverter.getPath(PathConverter.toURI(metsSource)).resolve(pi + ".xml").toUri().toString();
                 context.setProperty("param:metsFile", metsPath);
             } catch (URISyntaxException e) {
-                logger.error("Failed to convert metsSource " + context.getProperty("metsSource") + " to mets URI");
+                logger.error("Failed to convert metsSource {} to METS URI", context.getProperty("metsSource"));
             }
 
         }
@@ -157,7 +160,7 @@ public class ExternalImageResource extends ImageResource {
     @ContentServerImageInfoBinding
     @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 2.1.1 image information object")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
-       return super.redirectToCanonicalImageInfo();
+        return super.redirectToCanonicalImageInfo();
     }
 
     @Override
@@ -167,6 +170,7 @@ public class ExternalImageResource extends ImageResource {
             String toReplace = URLEncoder.encode("{pi}", "UTF-8");
             this.resourceURI = URI.create(this.resourceURI.toString().replace(toReplace, directory));
         } catch (UnsupportedEncodingException e) {
+            //
         }
     }
 

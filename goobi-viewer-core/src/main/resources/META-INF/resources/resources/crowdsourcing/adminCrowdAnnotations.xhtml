@@ -22,6 +22,8 @@
                     <div class="admin__title-bar">
                         <h1 class="admin__title">#{msg.admin__crowdsourcing_annotations}</h1>
                     </div>
+                    
+                    <viewerComponent:adminBreadcrumbs />
 
                     <div class="admin__content-inner-content">
 
@@ -30,8 +32,17 @@
                             <div class="admin__table-paginator">
                                 <viewerComponent:dataTablePaginator tableValues="#{annotationBean.lazyModelAnnotations}" />
                             </div>
+                            <!-- DOWNLOAD ALL -->
+                            
+
+                            
                             <!-- FILTER -->
-                            <div class="admin__table-filter">
+                            <div class="admin__table-filter admin__annotations-filter-wrapper">
+                            <div class="admin__annotations-download-all-butto0n-wrapper">
+                                <button data-toggle="tooltip" data-placement="top" data-trigger="hover" title="#{msg.admin__crowdsourcing_annotations_export_all_excel_file}" class="admin__overlay-bar-action admin__annotations-download-all-button"
+                                     jsf:action="#{annotationBean.downloadAllAnnotations()}" ><i class="fa fa-download" aria-hidden="true"></i></button>
+                            </div>
+                            
                                 <!-- TODO: ADD FILTER FOR targetPI, TOO -->
                                 <viewerComponent:dataTableColumnFilter key="admin__crowsourcing_annotations_search"
                                     filter="#{annotationBean.lazyModelAnnotations.getFilter('targetPI_body')}" />
@@ -123,9 +134,11 @@
                             </ui:repeat>
                         </div>
                     </div>
+                    
                     <div class="admin__overlay-bar">
                     	<div class="admin__overlay-bar-message">#{msg.admin__crowdsourcing_annotations_export_excel_file}:</div>
-                    	<h:commandButton value="#{msg.save}" styleClass="btn btn--success admin__overlay-bar-action" action="#{annotationBean.downloadSelectedAnnotations()}" />
+                    	<h:commandButton value="#{msg.save}" styleClass="btn btn--success admin__overlay-bar-action"
+                    	    action="#{annotationBean.downloadSelectedAnnotations()}" />
                     </div>
 		            <script type="text/javascript">
 		                $( document ).ready( function() {

@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
@@ -37,8 +36,8 @@ import javax.inject.Named;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -66,7 +65,7 @@ public class UserDataBean implements Serializable {
     private static final long serialVersionUID = -766868003675598285L;
 
     /** Logger for this class. */
-    private static final Logger logger = LogManager.getLogger(UserBean.class);
+    private static final Logger logger = LogManager.getLogger(UserDataBean.class);
 
     private static final int DEFAULT_ROWS_PER_PAGE = 15;
 
@@ -75,6 +74,9 @@ public class UserDataBean implements Serializable {
 
     private TableDataProvider<PersistentAnnotation> lazyModelAnnotations;
     private TableDataProvider<PersistentAnnotation> lazyModelComments;
+
+    /** Cache user comment count to avoid multiple DB calls. */
+    private Long commentCount = null;
 
     /**
      * Required setter for ManagedProperty injection
@@ -108,15 +110,16 @@ public class UserDataBean implements Serializable {
 
             @SuppressWarnings("unchecked")
             @Override
-            public List<PersistentAnnotation> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder,
+            public List<PersistentAnnotation> getEntries(int first, int pageSize, final String sortField, final SortOrder sortOrder,
                     Map<String, String> filters) {
-                if (StringUtils.isBlank(sortField)) {
-                    sortField = "id";
-                    sortOrder = SortOrder.DESCENDING;
+                String useSortField = sortField;
+                SortOrder useSortOrder = sortOrder;
+                if (StringUtils.isBlank(useSortField)) {
+                    useSortField = "id";
+                    useSortOrder = SortOrder.DESCENDING;
                 }
-                List<PersistentAnnotation> ret = lister.getAnnotations(first, pageSize, filters.get("targetPI_body_campaign_dateCreated"), null, null,
-                        Collections.singletonList(userBean.getUser().getId()), null, null, sortField, sortOrder.asBoolean());
-                return ret;
+                return lister.getAnnotations(first, pageSize, filters.get("targetPI_body_campaign_dateCreated"), null, null,
+                        Collections.singletonList(userBean.getUser().getId()), null, null, useSortField, useSortOrder.asBoolean());
             }
 
             @SuppressWarnings("unchecked")
@@ -126,7 +129,7 @@ public class UserDataBean implements Serializable {
                     numCreatedPages = Optional.ofNullable(lister.getAnnotationCount(filters.get("targetPI_body_campaign_dateCreated"), null, null,
                             Collections.singletonList(userBean.getUser().getId()), null, null));
                 }
-                return numCreatedPages.orElse(0l);
+                return numCreatedPages.orElse(0L);
             }
 
             @Override
@@ -135,13 +138,15 @@ public class UserDataBean implements Serializable {
             }
         });
         model.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
-        model.setFilters("targetPI_body_campaign_dateCreated");
+        model.getFilter("targetPI_body_campaign_dateCreated");
         return model;
     }
 
     /**
      * Returns saved searches for the logged in user.
      *
+     * @param user
+     * @param numEntries
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @should return searches for correct user
@@ -154,12 +159,12 @@ public class UserDataBean implements Serializable {
                 .stream()
                 .sorted((s1, s2) -> s2.getDateUpdated().compareTo(s1.getDateUpdated()))
                 .limit(numEntries == null ? Integer.MAX_VALUE : numEntries)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
      *
-     * @return
+     * @return List of annotations for the logged in user
      * @throws DAOException
      */
     public List<CrowdsourcingAnnotation> getAnnotations() throws DAOException {
@@ -217,6 +222,12 @@ public class UserDataBean implements Serializable {
         return DataManager.getInstance().getDao().getSearchCount(user, null);
     }
 
+    /**
+     * 
+     * @param user
+     * @return Number of comments in the DB for the given user
+     * @throws DAOException
+     */
     public long getNumComments(User user) throws DAOException {
         // TODO filter via PI whitelist here?
         logger.trace("getNumComments");
@@ -226,7 +237,7 @@ public class UserDataBean implements Serializable {
     public long getNumAnnotations(User user) throws DAOException {
         return DataManager.getInstance()
                 .getDao()
-                .getAnnotationCount(Collections.singletonMap("creatorId", String.valueOf(userBean.getUser().getId())));
+                .getAnnotationCount(Collections.singletonMap("creatorId", String.valueOf(user.getId())));
     }
 
     public Long getNumRecordsWithComments(User user) throws DAOException {
@@ -241,17 +252,23 @@ public class UserDataBean implements Serializable {
     }
 
     public long getCommentCount() throws DAOException {
+        // logger.trace("getCommentCount"); //NOSONAR Debug
         if (userBean == null || userBean.getUser() == null) {
             return 0;
         }
-        return getNumComments(userBean.getUser());
+
+        if (commentCount == null) {
+            commentCount = getNumComments(userBean.getUser());
+        }
+
+        return commentCount;
     }
 
     /**
      *
      * @param user
      * @param numEntries
-     * @return
+     * @return List of comments for the given user
      * @throws DAOException
      * @should return the latest comments
      */
@@ -264,7 +281,7 @@ public class UserDataBean implements Serializable {
                 .distinct()
                 .sorted((c1, c2) -> c1.compareTo(c2) * -1)
                 .limit(numEntries)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<BookmarkList> getBookmarkListsForUser(User user, int numEntries) throws DAOException {
@@ -274,7 +291,7 @@ public class UserDataBean implements Serializable {
                 .stream()
                 .sorted()
                 .limit(numEntries)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<UserActivity> getLatestActivity(User user, int numEntries) throws DAOException {
@@ -286,14 +303,14 @@ public class UserDataBean implements Serializable {
                 .flatMap(list -> list.getItems().stream())
                 .sorted((bm1, bm2) -> bm1.getDateAdded().compareTo(bm2.getDateAdded()))
                 .limit(numEntries)
-                .collect(Collectors.toList());
+                .toList();
         List<Comment> lastCreatedComments = DataManager.getInstance().getDao().getCommentsOfUser(user, numEntries, "dateCreated", true);
         List<Comment> lastUpdatedComments = DataManager.getInstance()
                 .getDao()
                 .getCommentsOfUser(user, numEntries, "dateModified", true)
                 .stream()
                 .filter(c -> c.getDateModified() != null)
-                .collect(Collectors.toList());
+                .toList();
         List<CrowdsourcingAnnotation> lastCreatedCrowdsourcingAnnotations =
                 DataManager.getInstance().getDao().getAnnotationsForUserId(user.getId(), numEntries, "dateCreated", true);
         List<CrowdsourcingAnnotation> lastUpdatedCrowdsourcingAnnotations = DataManager.getInstance()
@@ -301,7 +318,7 @@ public class UserDataBean implements Serializable {
                 .getAnnotationsForUserId(user.getId(), numEntries, "dateModified", true)
                 .stream()
                 .filter(c -> c.getDateModified() != null)
-                .collect(Collectors.toList());
+                .toList();
 
         Stream<UserActivity> activities = Stream.of(
                 searches.stream().map(UserActivity::getFromSearch),
@@ -313,6 +330,6 @@ public class UserDataBean implements Serializable {
                 .flatMap(Function.identity())
                 .distinct()
                 .sorted((a1, a2) -> a2.getDate().compareTo(a1.getDate()));
-        return activities.limit(numEntries).collect(Collectors.toList());
+        return activities.limit(numEntries).toList();
     }
 }

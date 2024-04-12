@@ -21,6 +21,11 @@
  */
 package io.goobi.viewer.model.cms.widgets.type;
 
+import java.util.function.Predicate;
+
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
+
 /**
  * Types of widgets that are always available for CMS pages and cannot be configured
  *
@@ -32,29 +37,44 @@ public enum DefaultWidgetType implements WidgetContentType {
     /**
      * Browsing or "Stöbern" widget, containing all browse terms which are configured in the viewer-config
      */
-    WIDGET_BROWSING("browseTitle", "cms_widget__browse__description", "widget_browsing.xhtml"),
+    WIDGET_BROWSING("browseTitle", "cms_widget__browse__description", "fa fa-list-alt", "widget_browsing.xhtml"),
     /**
-     * Displays search facetting for a page with search functionality. Always displays the facet fields configured in viewer-config
-     * Also includes chronology-facetting (by year) and geospatial facetting (on a map) which are displayed as independent widgets in the GUI
+     * Displays search facetting for a page with search functionality. Always displays the facet fields configured in viewer-config Also includes
+     * chronology-facetting (by year) and geospatial facetting (on a map) which are displayed as independent widgets in the GUI
      */
-    WIDGET_FACETTING("faceting", "cms_widget__faceting__description", "widget_searchFacets.xhtml"),
+    WIDGET_FACETTING("faceting", "cms_widget__faceting__description", "fa fa-list-ul", "widget_searchFacets.xhtml", CMSPage::hasSearchFunctionality),
     /**
      * Displays a search input field and link to advanced search
      */
-    WIDGET_SEARCH("navigationSearch", "cms_widget__search__description", "widget_searchField.xhtml"),
+    WIDGET_SEARCH("navigationSearch", "cms_widget__search__description", "fa fa-search", "widget_searchField.xhtml"),
     /**
      * Display the total number of records available in the viewer
      */
-    WIDGET_WORKCOUNT("totalNumberOfVolumes", "cms_widget__total_number_of_volumes__description", "widget_workCount.xhtml");
+    WIDGET_WORKCOUNT("totalNumberOfVolumes", "cms_widget__total_number_of_volumes__description", "fa fa-circle-o", "widget_workCount.xhtml"),
+
+    WIDGET_HIGHLIGHT("cms_widget__highlight__label", "cms_widget__highlight__description", "fa fa-star", "widget_highlight.xhtml");
 
     private final String label;
     private final String description;
     private final String filename;
+    private final String iconClass;
+    private final Predicate<CMSPage> allowedForPage;
 
-    private DefaultWidgetType(String label, String description, String filename) {
+    private DefaultWidgetType(String label, String description, String iconClass, String filename) {
+        this(label, description, iconClass, filename, p -> true);
+    }
+    
+    private DefaultWidgetType(String label, String description, String iconClass, String filename, Predicate<CMSPage> allowedForPage) {
         this.label = label;
         this.description = description;
         this.filename = filename;
+        this.iconClass = iconClass;
+        this.allowedForPage = allowedForPage;
+    }
+
+    @Override
+    public String getIconClass() {
+        return this.iconClass;
     }
 
     public String getLabel() {
@@ -62,8 +82,9 @@ public enum DefaultWidgetType implements WidgetContentType {
     }
 
     /**
-     * A message key for a description of ths widget type
-     * @return
+     * A message key for a description of this widget type
+     * 
+     * @return the description
      */
     public String getDescription() {
         return description;
@@ -76,5 +97,16 @@ public enum DefaultWidgetType implements WidgetContentType {
     @Override
     public String getName() {
         return name();
+    }
+
+    @Override
+    public boolean isAllowedForPage(CMSPage page) {
+        return this.allowedForPage.test(page);
+    }
+    
+    @Override
+    public boolean isAllowedForPage(CMSPageTemplate template) {
+        CMSPage page = new CMSPage(template);
+        return this.allowedForPage.test(page);
     }
 }

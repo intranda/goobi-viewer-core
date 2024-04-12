@@ -12,14 +12,14 @@
 
 	<composite:implementation>
 
-		<div id="tagcloudWrapper">
+		<h:panelGroup id="tagcloudWrapper" layout="block" styleClass="tag-cloud__wrapper">
 		<div class="tags">
 		
-			<h:form id="tagCloudForm" styleClass="formTagCloud" >
-			<div id="tagcloud">
+			<h:form id="tagCloudForm" styleClass="formTagCloud tag-cloud__form" >
+			<h:panelGroup id="tagcloud">
 			
 				<ui:repeat value="#{cc.attrs.tagMethod}" var="tag">
-					<div class="tagcloudElement tag#{tag.css}">
+					<div class="tagcloudElement tag-cloud__element tag#{tag.css}">
 					<h:outputLink value="#{navigationHelper.searchUrl}/-/#{tag.field}:#{tag.escapedName}/1/-/-/-/">
 						<h:outputText value="#{tag.name}"/>	
 						<f:passThroughAttribute name="aria-label" value="#{cc.attrs.ariaLabel}: #{tag.name}"/>				
@@ -27,11 +27,11 @@
 					</div>
 				</ui:repeat>
 				
-				</div>
+				</h:panelGroup>
 			</h:form>
 		
 		</div>
-		</div>
+		</h:panelGroup>
 	</composite:implementation>
 
 </ui:composition>

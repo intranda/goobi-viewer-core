@@ -9,9 +9,9 @@
 
     <composite:interface />
 
-    <composite:implementation>
-        <div id="widgetAdmin" class="admin-widget">
-            <h:form id="widgetAdminForm">
+    <composite:implementation> 
+        <h:panelGroup id="widgetAdmin" styleClass="admin-widget" layout="block">
+            <h:form id="widgetAdminForm"> 
                 <div class="admin-widget__header">#{msg.admin__administration_title}</div>
 
                     <ul>
@@ -45,7 +45,7 @@
 								<i class="fa fa-desktop" aria-hidden="true"></i>
 								<span>#{msg.admin__clients__title}</span>
 								<ui:fragment rendered="#{not empty notConfiguredClients}">
-									<span class="admin-widget__counter">#{notConfiguredClients.size()}</span>
+									<span class="admin-widget__counter" data-toggle="tooltip" title="#{msg.admin__clients__tooltip_not_configured}">#{notConfiguredClients.size()}</span>
 								</ui:fragment>
 							</h:outputLink>
 						</li>
@@ -55,7 +55,7 @@
                                 <i class="fa fa-key" aria-hidden="true"></i>
                                 <span>#{msg.admin__licenses}</span>
                                 <ui:fragment rendered="#{fn:length(adminLicenseBean.notConfiguredAccessConditions) gt 0}">
-                            	   <span class="admin-widget__counter">#{fn:length(adminLicenseBean.notConfiguredAccessConditions)}</span>
+                            	   <span data-toggle="tooltip" title="#{msg.admin__licenses__tooltip_not_configured}" class="admin-widget__counter">#{fn:length(adminLicenseBean.notConfiguredAccessConditions)}</span>
                             	</ui:fragment>
                             </h:outputLink>
                             <div >
@@ -67,10 +67,10 @@
                                 <i class="fa fa-lock" aria-hidden="true"></i>
                                 <span>#{msg.admin__rights}</span>
                                 <ui:fragment rendered="#{adminLicenseBean.downloadTicketRequests.size() gt 0 and adminLicenseBean.downloadTicketRequests.size() le 99}">
-									<span class="admin-widget__counter">#{adminLicenseBean.downloadTicketRequests.size()}</span>
+									<span data-toggle="tooltip" title="#{msg.admin__rights__download_tickets_tooltip}" class="admin-widget__counter">#{adminLicenseBean.downloadTicketRequests.size()}</span>
 								</ui:fragment>
                                 <ui:fragment rendered="#{adminLicenseBean.downloadTicketRequests.size() gt 99}">
-									<span class="admin-widget__counter -small">99+</span>
+									<span data-toggle="tooltip" title="#{msg.admin__rights__download_tickets_tooltip}" class="admin-widget__counter -small">99+</span>
 								</ui:fragment>
                             </h:outputLink>
                         </li>
@@ -96,12 +96,12 @@
                                 <h:outputLink value="#{navigationHelper.getPageUrl('adminTranslations')}/">
                                     <i class="fa fa-exchange" aria-hidden="true"></i>
                                     <span>#{msg.admin__translations__link}</span>
-                                    <c:if test="#{adminBean.configuredTranslationGroupsCount gt 0}">
-                                	    <span class="admin-widget__counter">#{adminBean.configuredTranslationGroupsCount}</span>
-								    </c:if>
-                                    <c:if test="#{!adminBean.hasAccessPermissingForTranslationFiles}">
-                                        <span class="admin-widget__counter -redMark"><i class="fa fa-exclamation" aria-hidden="true"></i></span>
-								    </c:if>
+                                    <ui:fragment rendered="#{adminBean.configuredTranslationGroupsCount gt 0}">
+                                	    <span data-toggle="tooltip" title="#{msg.admin__translations__tooltip_count}" class="admin-widget__counter">#{adminBean.configuredTranslationGroupsCount}</span>
+								    </ui:fragment>
+                                    <ui:fragment rendered="#{!adminBean.hasAccessPermissingForTranslationFiles}">
+                                        <span data-toggle="tooltip" title="#{msg.admin__translations__tooltip_no_access}" class="admin-widget__counter -redMark"><i class="fa fa-exclamation" aria-hidden="true"></i></span>
+								    </ui:fragment>
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
@@ -119,11 +119,21 @@
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
+                        
+                        <li  class="#{navigationHelper.currentPage == 'adminMessageQueue' ? 'active' : ''}">
+                            <h:outputLink id="widgetAdminTasksLink" value="#{navigationHelper.getPageUrl('adminMessageQueue')}/">
+                                <i class="fa fa-spinner" aria-hidden="true"></i>
+                                <span>#{msg.admin__tasks__title}</span>
+                                    <ui:fragment rendered="#{userBean.admin and messageQueueBean.paused or userBean.admin and quartzBean.paused}">
+                                        <span data-toggle="tooltip" title="#{msg.admin__tasks__tooltip_queue_not_running}" class="admin-widget__counter"><i class="fa fa-exclamation" aria-hidden="true"></i></span>
+								    </ui:fragment>
+                            </h:outputLink>
+                        </li>                     
                     </ui:fragment>
 
 				</ul>
 
             </h:form>
-        </div>
+        </h:panelGroup>
     </composite:implementation>
 </ui:composition>

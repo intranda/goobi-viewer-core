@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+	<jsfComponent>
+		<library>cms/components/frontend/component</library>
+		<name>htmltext</name>
+	</jsfComponent>
+	<label>cms_component__htmltext__label</label>
+	<description>cms_component__htmltext__desc</description>
+	<icon>cms/components/frontend/component/icon/htmltext.png</icon>
+	<content>
+		<item id="text">
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>htmltext</name>
+			</jsfComponent>
+		</item>
+	</content>
+	<attribute name="width">
+		<value label="50 %">50</value>
+		<value label="100 %" default="true">100</value>
+	</attribute>
+	
+	<attribute name="hideOnScreenSizes" type="toggle">
+		<value label="Hide on desktop">hideDesktop</value>
+		<value label="Hide on mobile">hideMobile</value>
+	</attribute>
+</component>

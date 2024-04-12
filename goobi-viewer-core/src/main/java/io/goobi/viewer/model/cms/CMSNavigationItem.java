@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.cms;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -28,6 +29,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.persistence.annotations.PrivateOwned;
+
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.managedbeans.NavigationHelper;
+import io.goobi.viewer.managedbeans.UserBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.viewer.PageType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,18 +55,6 @@ import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.persistence.annotations.PrivateOwned;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.managedbeans.NavigationHelper;
-import io.goobi.viewer.managedbeans.UserBean;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.viewer.PageType;
-
 /**
  * <p>
  * CMSNavigationItem class.
@@ -61,7 +62,9 @@ import io.goobi.viewer.model.viewer.PageType;
  */
 @Entity
 @Table(name = "cms_navigation_items")
-public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
+public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Serializable {
+
+    private static final long serialVersionUID = -5141867398238202463L;
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(CMSNavigationItem.class);
@@ -164,7 +167,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      * Constructor for CMSNavigationItem.
      * </p>
      *
-     * @param cmsPage a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @param cmsPage a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
     public CMSNavigationItem(CMSPage cmsPage) {
         setCmsPage(cmsPage);
@@ -188,12 +191,12 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof CMSNavigationItem && ((getParentItem() == null && ((CMSNavigationItem) obj).getParentItem() == null)
-                || (getParentItem() != null && getParentItem().equals(((CMSNavigationItem) obj).getParentItem())))) {
-            if (getCmsPage() != null && getCmsPage().equals(((CMSNavigationItem) obj).getCmsPage())) {
+        if (obj instanceof CMSNavigationItem item && ((getParentItem() == null && item.getParentItem() == null)
+                || (getParentItem() != null && getParentItem().equals(item.getParentItem())))) {
+            if (getCmsPage() != null && getCmsPage().equals(item.getCmsPage())) {
                 return true;
-            } else if (getPageUrl().equals(((CMSNavigationItem) obj).getPageUrl())
-                    && getItemLabel().equals(((CMSNavigationItem) obj).getItemLabel())) {
+            } else if (getPageUrl().equals(item.getPageUrl())
+                    && getItemLabel().equals(item.getItemLabel())) {
                 return true;
             }
         }
@@ -372,7 +375,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      * Getter for the field <code>cmsPage</code>.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
     public CMSPage getCmsPage() {
         return cmsPage;
@@ -383,7 +386,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      * Setter for the field <code>cmsPage</code>.
      * </p>
      *
-     * @param cmsPage a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @param cmsPage a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
     public void setCmsPage(CMSPage cmsPage) {
         this.cmsPage = cmsPage;
@@ -407,23 +410,23 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     }
 
     /**
-     * @param pageUrl2
-     * @return
+     * @param url
+     * @return a boolean
      */
     private static boolean isOnSameRessource(String url) {
         return url.startsWith("#");
     }
 
     /**
-     * @param pageUrl2
-     * @return
+     * @param url
+     * @return true if url absolute; false otherwise
      */
     private boolean isAbsolute(String url) {
         try {
             URI uri = new URI(url);
             return uri.isAbsolute();
         } catch (URISyntaxException e) {
-            logger.warn("Failed to validate url " + pageUrl + ". Assuming it to be an absolute url");
+            logger.warn("Failed to validate url {}. Assuming it to be an absolute url", pageUrl);
             return true;
         }
     }
@@ -449,11 +452,12 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      *
      * @param pageUrl a {@link java.lang.String} object.
      */
-    public void setPageUrl(String pageUrl) {
-        if (StringUtils.isNotBlank(pageUrl) && pageUrl.toLowerCase().startsWith("www.")) {
-            pageUrl = "http://" + pageUrl;
+    public void setPageUrl(final String pageUrl) {
+        String usePageUrl = pageUrl;
+        if (StringUtils.isNotBlank(usePageUrl) && usePageUrl.toLowerCase().startsWith("www.")) {
+            usePageUrl = "http://" + usePageUrl;
         }
-        this.pageUrl = pageUrl;
+        this.pageUrl = usePageUrl;
     }
 
     /**
@@ -720,7 +724,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
      */
     public String getAssociatedTheme() {
         return Optional.ofNullable(cmsPage)
-                .map(page -> page.getSubThemeDiscriminatorValue())
+                .map(CMSPage::getSubThemeDiscriminatorValue)
                 .map(value -> StringUtils.isBlank(value) ? null : value)
                 .orElse(this.associatedTheme);
     }
@@ -751,7 +755,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
         return openInNewWindow;
     }
 
-    public static enum DisplayRule {
+    public enum DisplayRule {
         ALWAYS,
         NOT_LOGGED_IN,
         LOGGED_IN,
@@ -775,7 +779,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem> {
     }
 
     /**
-     * @return true if the item links to a cmsPage and that page has a subtheme associated wih it.
+     * @return true if the item links to a cmsPage and that page has a subtheme associated with it.
      */
     public boolean isAssociatedWithSubtheme() {
         return Optional.ofNullable(cmsPage).map(CMSPage::getSubThemeDiscriminatorValue).filter(StringUtils::isNotBlank).isPresent();

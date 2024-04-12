@@ -1,0 +1,525 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html"
+	xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentPageAdmin('adminMessageQueue')}" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="content">
+		<div id="adminAllUsers">
+			<h:panelGroup rendered="#{userBean.admin}">
+				<h:form id="adminAllUserForm" prependId="false">
+					<div class="admin__title-bar">
+						<!-- TITLE -->
+						<h1 class="admin__title">#{msg.admin__tasks__title}</h1>
+
+					</div>
+					<o:socket channel="messageQueueState">
+                        <f:ajax event="update" render="@form" />
+                    </o:socket>
+
+					<viewerComponent:adminBreadcrumbs />
+
+					<div class="admin__content-inner-content">
+
+						<div class="admin__info-text">#{msg.admin__tasks__info_text}</div>
+
+						<h:panelGroup layout="block" id="runningTasksQueueWrapper" class="admin__tasks-running-task-queue-wrapper #{messageQueueBean.paused ? '-paused' : ''} #{messageQueueBean.queueContent.size() == 0 ? '-emptyQueue' : ''}" >
+<!-- 	<div> -->
+<!-- 		<h2>LISTENERS</h2> -->
+<!-- 		<ui:repeat var="listener" value="#{messageQueueBean.listeners}"> -->
+<!-- 			<div style="border:1px solid black; padding:10px"> -->
+<!-- 				<div>TYPE: #{listener.queueType}</div> -->
+<!-- 				<div>shouldStop: #{listener.shouldStop}</div> -->
+<!-- 				<div>last update: #{listener.lastLoopCircle}</div> -->
+<!-- 				<h:commandButton value="Restart" action="#{listener.restartLoop()}"></h:commandButton> -->
+<!-- 			</div> -->
+<!-- 		</ui:repeat> -->
+		
+<!-- 	</div> -->
+
+
+						<div class="admin__tasks-title-wrapper">
+							<h2 class="admin__tasks-task-title">
+								<h:outputText value="#{msg.admin__tasks__pending_tasks}" />
+							</h2>
+							<div class="admin__tasks-status">
+								<!-- 							<div class="admin__tasks-icon-text">Status: #{messageQueueBean.paused ? 'stopped' : 'running'}</div> -->
+
+								<div
+									class="admin__tasks-icon-wrapper #{messageQueueBean.paused ? '-paused' : ''}"
+									data-js-trigger="#{messageQueueBean.paused ? 'resumeRunningTasksButton' : 'pauseRunningTasksButton'}"
+									title="#{messageQueueBean.paused ? msg.admin__tasks__resume_button_tooltip : msg.admin__tasks__pause_button_tooltip}"
+									data-toggle="tooltip" data-placement="top" data-trigger="hover">
+									<div class="admin__tasks-icon-loader"></div>
+									<div class="admin__tasks-icon">
+										<div data-target="playPauseMsgQueueToggle"
+											class="admin__tasks-button-pause #{messageQueueBean.paused ? '-hidden' : '-active'}">
+											<i class="fa fa-pause"></i>
+										</div>
+										<div data-target="playPauseMsgQueueToggle"
+											class="admin__tasks-button-play #{messageQueueBean.paused ? '-active' : '-hidden'}">
+											<i class="fa fa-play"></i>
+										</div>
+									</div>
+								</div>
+							</div>
+
+
+							<ui:fragment rendered="#{messageQueueBean.queueContent.size() > 0}">
+								<a class="admin__tasks-icon-wrapper"
+									title="#{msg.admin__tasks__clear_all_button_tooltip}"
+									data-toggle="tooltip" data-placement="top" data-trigger="hover"
+									jsf:action="#{messageQueueBean.clearQueue}" jsf:id="clearButton"
+									data-require-confirmation="true"
+									data-confirmation-text="#{msg.admin__tasks__clear_all_button_confirmation}"
+									aria-label="#{msg.admin__tasks__clear_all_button_confirmation}">
+									<div class="admin__tasks-clear-all"></div>
+									<div class="admin__tasks-icon">
+										<div
+											class="admin__tasks-button-trash #{messageQueueBean.paused ? '-hidden' : '-active'}">
+											<i class="fa fa-times"></i>
+										</div>
+									</div>
+									<f:ajax execute="@form" render="@form" />
+								</a>
+							</ui:fragment>
+							
+							 
+							
+							<a jsf:id="restartListenerButton" jsf:action="#{messageQueueBean.restartAllListeners()}"
+									data-toggle="tooltip" data-placement="top" data-trigger="hover"
+								class="ml-auto admin__tasks-icon-wrapper" title="#{msg.action__restart_all_task_listeners}">
+								<div class="admin__tasks-button-restart-queue"></div>
+								<div class="admin__tasks-icon">
+									<div class="admin__tasks-button-restart">
+										<i class="fa fa-refresh"></i>
+									</div>
+								</div>
+
+							</a>
+							
+						</div>
+
+
+						<h:commandButton 
+							type="button"
+							id="pauseMsgQueueButton" 
+							action="#{messageQueueBean.pauseQueue}"
+							pt:data-target="pauseMsgQueueButton">
+					    	<f:ajax execute="@form" render="@form runningTasksNotProcessed sidebarAdminWidget:widgetAdminForm:widgetAdminTasksLink" />
+						</h:commandButton>
+						
+						<h:commandButton 
+							type="button"
+							id="resumeMsgQueueButton" 
+							action="#{messageQueueBean.resumeQueue}"
+							pt:data-target="resumeMsgQueueButton">
+					    	<f:ajax execute="@form" render="@form runningTasksNotProcessed sidebarAdminWidget:widgetAdminForm:widgetAdminTasksLink" />
+						</h:commandButton>						
+
+						
+
+						<div class="admin__tasks-empty-queue-spacer"></div>
+						<ui:fragment rendered="#{messageQueueBean.queueContent.size() > 0}">
+						<!-- INDIVIDUAL ROWS -->
+						<ui:repeat var="task" value="#{messageQueueBean.queueContent}">
+
+							<div class="admin__boxed-entry">
+
+								<h3 class="admin__tasks-task-title">
+									<span class="admin__tasks-title-number"
+										title="#{msg.admin__tasks__task_number_of_single_tasks}"
+										data-toggle="tooltip" data-placement="top"
+										data-trigger="hover"> <h:outputText
+											value="#{task.value}" />
+									</span>
+									<h:outputText value="#{msg[task.key]}" />
+								</h3>
+
+								<div class="admin__tasks-task-details-wrapper"
+									data-target="showAllSingleTasks">
+
+									<div class="admin__tasks-task-details-column-heads">
+										<div>#{msg.admin__tasks__task_identifier}</div>
+										<div>#{msg.admin__tasks__task_properties}</div>
+										<div>#{msg.admin__tasks__task_last_updated}</div>
+									</div>
+
+									<ui:repeat var="msgqueueticket"
+										value="#{messageQueueBean.getQueryMessages(task.key)}">
+
+										<div class="admin__tasks-task-details-row">
+
+											<div class="admin__tgetActiveJobsasks-task-details-row-entry">
+												<h:outputText value="#{msgqueueticket.messageId}" />
+											</div>
+											<div class="admin__tasks-task-details-row-entry">
+												<ui:repeat var="prop"
+													value="#{msgqueueticket.properties.keySet()}">
+													<h:outputText
+														value="#{prop}: #{msgqueueticket.properties[prop]} " />
+													<br />
+												</ui:repeat>
+											</div>
+											<div class="admin__tasks-task-details-row-entry">
+												<h:outputText value="#{msgqueueticket.lastUpdateTime}">
+													<f:converter converterId="localDateTimeConverter" />
+													<f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
+												</h:outputText>
+											</div>
+											
+											<div class="admin__tasks-task-details-row-entry">
+												<button
+													jsf:action="#{messageQueueBean.deleteMessage(msgqueueticket)}"
+													class="btn admin__tasks-task-details-delete-button">
+													<i class="fa fa-times" />
+												</button>
+											</div>
+
+										</div>
+
+									</ui:repeat>
+
+								</div>
+
+								<!-- ACTIONS -->
+								<div class="row admin__boxed-entry-actions">
+									<div class="col-3 d-flex">
+										<!-- SHOW DETAILS -->
+										<a href="#" data-js-trigger="showAllSingleTasks"
+											class="admin__boxed-entry-actions-edit"
+											aria-label="show all tasks"><span
+											data-target="showOrHideTasks">#{msg.show}</span><span
+											class="admin__tasks-task-details-all-tasks-hidden-button"
+											data-target="showOrHideTasks">#{msg.hide}</span></a>
+
+										<!-- DELETE THIS -->
+										<button class="admin__boxed-entry-actions-delete -redlink"
+											type="button"
+											data-require-confirmation="true"
+											data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__tasks__delete_message_type_confirmation, task.key)}"
+											jsf:action="#{messageQueueBean.removeMessagesFromQueue(task.key)}"
+											aria-label="#{msg.delete}: #{task.key}">
+											<f:ajax execute="@form" render="runningTasksQueueWrapper" />
+											#{msg.delete}</button>
+
+									</div>
+								</div>
+							</div>
+						</ui:repeat>
+						</ui:fragment>
+						
+							<script>
+					     	// SCRIPT FOR MESSAGE QUEUE PAUSE/RESUME BUTTON FUNCTIONALITY
+							$('[data-js-trigger="resumeRunningTasksButton"]').on('click', function() {
+								$(this).toggleClass('-paused');
+							    $('[ data-target="resumeMsgQueueButton"]').click();
+							    $('[data-target="playPauseMsgQueueToggle"]').toggleClass('-hidden');
+							});
+							
+							$('[data-js-trigger="pauseRunningTasksButton"]').on('click', function() {
+								$(this).toggleClass('-paused');
+								$(this).addClass('-stoppingStatus');
+							    $('[ data-target="pauseMsgQueueButton"]').click();
+							    $('[data-target="playPauseMsgQueueToggle"]').toggleClass('-hidden');
+							});
+							
+							$('[data-js-trigger="showAllSingleTasks"]').on('click', function() {
+								event.preventDefault();
+							    $(this).closest('.admin__boxed-entry').find('[ data-target="showAllSingleTasks"]').slideToggle();
+							    $(this).closest('.admin__boxed-entry').find('[ data-target="showOrHideTasks"]').toggle();
+							});
+					
+							</script>
+						</h:panelGroup>
+
+
+						<h:panelGroup id="quartzTableWrapper" layout="block" styleClass="admin__quartz">
+						
+						<div class="admin__tasks-title-wrapper">
+							<h2 class="admin__tasks-task-title">
+								<h:outputText value="#{msg.admin__tasks__planned_tasks}" />
+							</h2>
+
+							 <h:panelGroup layout="block" id="pauseAllGroup" class="admin__tasks-status">
+
+								<div
+									class="admin__tasks-quartz-icon-wrapper #{quartzBean.paused ? '-stopped' : ''}"
+									data-js-trigger="#{quartzBean.paused ? 'resumeQuartzButton' : 'pauseQuartzButton'}"
+									title="#{quartzBean.paused ? msg.admin__tasks__quartz_start_all_button_tooltip : msg.admin__tasks__quartz_stop_all_button_tooltip}"
+									data-toggle="tooltip" data-placement="top" data-trigger="hover">
+									<div class="admin__tasks-quartz-icon-holder"></div>
+									<div class="admin__tasks-icon">
+										<div data-target="playPauseQuartzToggle"
+											class="admin__tasks-button-pause #{quartzBean.paused ? '-hidden' : '-active'}">
+											<i class="fa fa-stop" aria-hidden="true"></i>
+										</div>
+										<div data-target="playPauseQuartzToggle"
+											class="admin__tasks-button-play #{quartzBean.paused ? '-active' : '-hidden'}">
+											<i class="fa fa-play"></i>
+										</div>
+									</div>
+								</div>	
+								
+								<script>
+						     	// SCRIPT FOR QUARTZ START/STOP ALL QUARTZ JOBS BUTTON
+									$('[data-js-trigger="resumeQuartzButton"]').on('click', function() {
+										$(this).toggleClass('-paused');
+						 			    $('[ data-target="resumeQuartzButton"]').click();
+									    $('[data-target="playPauseQuartzToggle"]').toggleClass('-hidden');
+									});
+									
+									$('[data-js-trigger="pauseQuartzButton"]').on('click', function() {
+										$(this).toggleClass('-paused');
+										$(this).addClass('-stoppingStatus');
+						 			    $('[data-target="pauseQuartzButton"]').click();
+									    $('[data-target="playPauseQuartzToggle"]').toggleClass('-hidden');
+									});
+								</script>	
+
+							</h:panelGroup>
+							
+						</div>
+						
+						<button data-target="pauseQuartzButton"
+							type="button"
+							jsf:action="#{quartzBean.pauseAllJobs}" class="btn">
+							<f:ajax execute="@form" render="quartzTableWrapper quartzNotProcessed sidebarAdminWidget:widgetAdminForm:widgetAdminTasksLink" />
+							<i class="fa fa-pause"></i>
+						</button>
+
+						<button data-target="resumeQuartzButton"
+							type="button"
+							jsf:action="#{quartzBean.resumeAllJobs}" class="btn">
+							<f:ajax execute="@form" render="quartzTableWrapper quartzNotProcessed sidebarAdminWidget:widgetAdminForm:widgetAdminTasksLink" />
+							<i class="fa fa-play"></i>
+						</button>
+
+							<!-- show all active message types -->
+							<div style="width: 100%;" id="new-table-adminallmessagetypes"
+								class="admin__table-content" role="grid"
+								aria-label="#{msg.admin__queue_types}: #{msg.aria_label__table__actions}">
+								<!-- TITLE ROW -->
+								<div class="row  admin__table-title" role="row">
+									<!-- NAME COL -->
+									<div class="col-5 d-flex">#{msg.admin__tasks__quartz_single_name}</div>
+
+									<div class="col-2 d-flex">#{msg.admin__tasks__quartz_single_last}</div>
+									<div class="col-2 d-flex">#{msg.admin__tasks__quartz_single_next}</div>
+									<div class="col-2 d-flex">#{msg.admin__tasks__quartz_single_schedule}</div>
+								</div>
+
+
+								<!-- INDIVIDUAL ROWS -->
+								<ui:repeat var="entry" value="#{quartzBean.activeJobs}">
+									<h:panelGroup id="quartzRowID" layout="block" styleClass="row admin__table-entry admin__tasks-quartz-table-row #{entry.paused == true ? '-paused' : ''}" role="row">
+										<div class="col-5 d-flex flex-column">
+											
+											<div class="admin__tasks-quartz-table-entry-name-wrapper" role="gridcell">
+											
+												<div class="admin__tasks-quartz-table-entry-buttons-wrapper #{entry.paused == true ? '-paused' : ''}">
+												
+													<button jsf:action="#{quartzBean.pauseJob}" class="btn btn--clean admin__tasks-quartz-table-pause-button">
+														<i class="fa fa-pause" />
+														<f:ajax execute="@form" render="quartzRowID pauseAllGroup quartzNotProcessed" />
+														<f:setPropertyActionListener
+															target="#{quartzBean.quartzJobDetails}" value="#{entry}" />
+													</button>
+		
+													<button jsf:action="#{quartzBean.resumeJob}" class="btn btn--clean admin__tasks-quartz-table-play-button">
+														<i class="fa fa-play" />
+														<f:ajax execute="@form" render="quartzRowID pauseAllGroup quartzNotProcessed" />
+														<f:setPropertyActionListener
+															target="#{quartzBean.quartzJobDetails}" value="#{entry}" />
+													</button>
+												
+												</div>
+												
+												<span class="admin__tasks-quartz-table-row-data"><h:outputText value="#{msg[entry.jobName]}" /></span>
+											</div>
+
+											<div>
+												<button jsf:action="#{quartzBean.triggerQuartzJob}"
+													type="button"
+													class="btn admin__table-action-link -bluelink">
+													#{msg.admin__tasks__run_once_now}
+													<f:setPropertyActionListener
+														target="#{quartzBean.quartzJobDetails}" value="#{entry}" />
+													<f:ajax execute="@form" render="runningTasksQueueWrapper" />
+												</button>
+											</div>
+
+										</div>
+
+										<div class="col-2 d-flex align-items-center admin__tasks-quartz-table-row-data" role="gridcell">
+											<h:outputText value="#{entry.previousFireTime}" >
+												<f:convertDateTime type="localDateTime" pattern="#{navigationHelper.dateTimePattern}" />
+											</h:outputText>
+										</div>
+										<div class="col-2 d-flex align-items-center admin__tasks-quartz-table-row-data" role="gridcell">
+												<h:outputText value="#{entry.nextFireTime}">
+													<f:convertDateTime type="localDateTime" pattern="#{navigationHelper.dateTimePattern}" />
+												</h:outputText>
+
+										</div>
+
+										<div
+											class="col-2 d-flex align-items-center align-content-center flex-wrap admin__tasks-quartz-table-row-data"
+											role="gridcell">
+
+											
+											<!-- <h:outputText value="#{entry.cronExpression}" /> -->
+
+											<h:outputText value="#{entry.humanReadableCronTime}" />
+
+										</div>
+									</h:panelGroup>
+								</ui:repeat>
+							</div>
+						</h:panelGroup>
+
+
+						<!--  history table -->
+						<h:panelGroup id="history" layout="block"
+							styleClass="message-history">
+
+							<h2>
+								<h:outputText value="#{msg.admin__tasks__history}" />
+							</h2>
+							<div class="admin__table-tools flex-wrap">
+								<!-- PAGINATOR -->
+								<div class="admin__table-paginator">
+									<viewerComponent:dataTablePaginator
+										tableValues="#{messageQueueBean.lazyModelViewerHistory}" />
+								</div>
+								<!-- FILTER -->
+								<div class="admin__table-filter b-3 mb-sm-0">
+
+									<!-- TODO: ADD FILTER FOR targetPI, TOO  -->
+									<viewerComponent:dataTableColumnFilter
+										key="admin__tasks__history_table_search"
+										filter="#{messageQueueBean.lazyModelViewerHistory.getFilter('all')}" />
+								</div>
+							</div>
+
+
+							<!-- TABLE -->
+							<div id="messagesHistoryTable" class="admin__table-content"
+								role="grid" aria-label="#{msg.messagesHistoryTable}">
+
+								<!-- TITLE ROW -->
+								<div class="row admin__table-title" role="row">
+
+
+									<div class="col-2 d-flex -sorting-arrow-trigger"
+										role="columnheader">
+										<h:outputText value="#{msg.admin__tasks__message_id}" />
+									</div>
+									<div class="col-2 d-flex -sorting-arrow-trigger"
+										role="columnheader">
+										<h:outputText value="#{msg.admin__tasks__message_type}" />
+									</div>
+									<div class="col-1 d-flex"
+										role="columnheader">
+										<h:outputText value="#{msg.admin__tasks__queue}" />
+									</div>
+									<div class="col-3 d-flex -sorting-arrow-trigger"
+										role="columnheader">
+										<h:outputText value="#{msg.admin__tasks__properties}" />
+									</div>
+									<div class="col-2 d-flex" role="columnheader">
+										<h:outputText value="#{msg.admin__tasks__last_update}" />
+									</div>
+									<div class="col-1 d-flex" role="columnheader">
+										<h:outputText value="#{msg.admin__tasks__status}" />
+									</div>
+
+									<div class="col-1 d-flex" role="columnheader">
+										<h:outputText value="#{msg.admin__tasks__retries}" />
+									</div>
+								</div>
+
+								<div class="user-comments__table-body" role="presentation">
+
+									<!-- INDIVIDUAL ROWS -->
+									<ui:repeat var="message"
+										value="#{messageQueueBean.lazyModelViewerHistory.paginatorList}">
+										<div
+											class="row admin__table-entry admin__tasks-table-row #{message.messageStatus != 'FINISH' ? '-error' : ''}"
+											role="row">
+
+											<div class="col-2 text-break d-flex">
+												<h:outputText value="#{message.messageId}" />
+											</div>
+
+											<div class="col-2 d-flex">
+												<h:outputText value="#{msg[message.taskName]}" />
+											</div>
+											<div class="col-1 d-flex">
+												<h:outputText value="#{msg[message.queue]}" />
+											</div>
+											<div class="col-3 d-flex">
+												<ui:repeat var="entry"
+													value="#{message.properties.entrySet().toArray()}">
+													<h:outputText value="#{entry.key}: #{entry.value} " />
+													<br />
+												</ui:repeat>
+											</div>
+											<div class="col-2 d-flex">
+												<h:outputText value="#{message.lastUpdateTime}">
+													<f:convertDateTime type="localDateTime"
+														pattern="#{navigationHelper.dateTimePattern}" />
+												</h:outputText>
+
+
+
+
+											</div>
+											<div class="col-1 d-flex">
+												<h:outputText value="#{msg[message.messageStatus]}" />
+											</div>
+
+											<div class="col-1 d-flex">
+												<h:outputText value="#{message.retryCount}" />
+											</div>
+										</div>
+									</ui:repeat>
+								</div>
+
+							</div>
+
+						</h:panelGroup>
+
+					</div>
+
+				</h:form>
+			</h:panelGroup>
+		</div>
+
+		<script type="text/javascript">
+			var dataTableConfig = {
+				dataTablePaginator : "#dataTablePaginator",
+				txtField1 : "#txtMoveTo1",
+				txtField2 : "#txtMoveTo2",
+				totalCount : "#totalCount",
+				reloadBtn : 'input[id*="cmdMoveTo"]',
+			};
+
+			viewerJS.dataTable.init(dataTableConfig);
+		</script>
+
+	</ui:define>
+
+</ui:composition>

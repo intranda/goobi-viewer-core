@@ -27,6 +27,7 @@
     </ui:define>
 
     <ui:define name="content">
+
 		<f:view contentType="text/html" encoding="utf-8">
             <!-- reCAPTCHA API -->
             <h:panelGroup rendered="#{configurationBean.useReCaptcha}">
@@ -94,7 +95,7 @@
                 </h:panelGroup>
 
                 <!-- VIEW 3D OBJECT -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'object'}">
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'object' or activeDocumentBean.viewManager.currentPage.baseMimeType == 'model'}">
                     <ui:insert name="viewObject3d">
                         <ui:include src="/resources/includes/object/object3d.xhtml" />
                     </ui:insert>
@@ -126,7 +127,7 @@
                     </c:forEach>
                 </c:forEach>
 
-					<!-- USER GENERATED CONTENT -->
+				<!-- USER GENERATED CONTENT -->
  				<h:panelGroup rendered="#{configurationBean.displayUserGeneratedContentBelowImage and contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage).size() > 0}"> 
 					<div id="view_image_user_generated_content">
 						<viewerComponent:annotationList contentList="#{contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage)}" sidebar="false"/>
@@ -171,7 +172,7 @@
 
                 viewerJS.downloadModal.init( downloadModalConfig );
 
-                viewerJS.clipboard.init( '[data-copy]' );
+                // viewerJS.clipboard.init( '[data-copy]' );
             </script>
 		</f:view>
     </ui:define>
@@ -197,7 +198,7 @@
 
         <widgetComponent:widget_metadata />
         
-		<ui:fragment rendered="#{not empty activeDocumentBean.geoMap.features}">
+		<ui:fragment rendered="#{activeDocumentBean.geoMap.hasFeatures()}">
 	        <widgetComponent:widget_geoMap 
 		        geoMap="#{activeDocumentBean.geoMap}" 
 		        title="#{msg.NORM_LOCATION}" 
@@ -206,20 +207,24 @@
 		        showAnnotations="true"
 		        popoverOnHover="true"
 		        popoverClass="record_geomap_popover"
-		        highlightDocumentId="#{activeDocumentBean.logid}"/>
+		        highlightDocumentId="#{activeDocumentBean.logid}"
+		        currentPageNo="#{activeDocumentBean.viewManager.currentImageOrder}"
+		        featureClickHandling="openSearch"/>
         </ui:fragment>
 
         <widgetComponent:widget_annotations />
         
         <widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
 
-        <widgetComponent:widget_usage />
+        <widgetComponent:widget_downloads />
+         
+        <widgetComponent:widget_citation />
 
         <widgetComponent:widget_relatedGroups />
 
         <widgetComponent:widget_toc visible="#{configurationBean.sidebarTocWidgetVisible}" />
 
-        <widgetComponent:widget_download />
+<!--         <widgetComponent:widget_additionalFiles /> -->
 
         <widgetComponent:widget_versionHistory />
 

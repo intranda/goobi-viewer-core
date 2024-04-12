@@ -26,22 +26,11 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Locale;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrException;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -60,9 +49,19 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.metadata.MetadataElement;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHit;
+import io.goobi.viewer.model.search.SearchHitFactory;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * <p>
@@ -106,6 +105,9 @@ public class Bookmark implements Serializable {
     @Column(name = "urn")
     private String urn;
 
+    /**
+     * @deprecated TODO Remove column in the DB update so that this field can be removed
+     */
     @Deprecated
     @Column(name = "main_title")
     private String mainTitle = null;
@@ -274,8 +276,6 @@ public class Bookmark implements Serializable {
         }
 
         StringBuilder sb = new StringBuilder();
-        //        sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-
         if (StringUtils.isNotEmpty(urn)) {
             sb.append("/resolver?identifier=").append(urn);
         } else {
@@ -286,7 +286,7 @@ public class Bookmark implements Serializable {
         }
         url = sb.toString();
 
-        // logger.debug("URL: {}", url);
+        // logger.debug("URL: {}", url); //NOSONAR Debug
         return url;
     }
 
@@ -349,7 +349,6 @@ public class Bookmark implements Serializable {
             if (doc != null) {
                 StructElement se = new StructElement(iddoc, doc);
                 title = se.getDisplayLabel();
-                //                title = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.TITLE);
                 return title;
             }
             throw new PresentationException("No document found with iddoc = " + iddoc);
@@ -471,18 +470,6 @@ public class Bookmark implements Serializable {
 
     /**
      * <p>
-     * getMainTitleUnescaped.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @JsonIgnore
-    public String getMainTitleUnescaped() {
-        return StringEscapeUtils.unescapeHtml4(mainTitle);
-    }
-
-    /**
-     * <p>
      * Getter for the field <code>name</code>.
      * </p>
      *
@@ -569,30 +556,6 @@ public class Bookmark implements Serializable {
         this.order = order;
     }
 
-    /**
-     * <p>
-     * Getter for the field <code>mainTitle</code>.
-     * </p>
-     *
-     * @return the mainTitle
-     */
-    @Deprecated
-    public String getMainTitle() {
-        return mainTitle;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>mainTitle</code>.
-     * </p>
-     *
-     * @param mainTitle the mainTitle to set
-     */
-    @Deprecated
-    public void setMainTitle(String mainTitle) {
-        this.mainTitle = mainTitle;
-    }
-
     @JsonIgnore
     public MetadataElement getMetadataElement() throws IndexUnreachableException {
         SolrDocument doc = retrieveSolrDocument();
@@ -608,22 +571,23 @@ public class Bookmark implements Serializable {
     }
 
     /**
-     * @return
+     * @return SolrDocument
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
     private SolrDocument retrieveSolrDocument() throws IndexUnreachableException {
         try {
             String query = getSolrQueryForDocument();
-            SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, null);
-            return doc;
+            return DataManager.getInstance().getSearchIndex().getFirstDoc(query, null);
         } catch (PresentationException e) {
             throw new IndexUnreachableException(e.toString());
         }
     }
 
     /**
-     * @return
+     * 0
+     * 
+     * @return Generated Solr query
      */
     @JsonIgnore
     public String getSolrQueryForDocument() {
@@ -644,12 +608,25 @@ public class Bookmark implements Serializable {
             try {
                 SolrDocument doc = retrieveSolrDocument();
                 if (doc != null) {
-                    Locale locale = BeanUtils.getLocale();
-                    SearchHit sh = SearchHit.createSearchHit(doc, null, null, locale, "", null, null, null, null, null, null,
-                            SearchHit.HitType.DOCSTRCT, 0, BeanUtils.getImageDeliveryBean().getThumbs());
-                    this.browseElement = sh.getBrowseElement();
+                if (this.getOrder() != null) {
+                    doc.setField(SolrConstants.ORDER, this.getOrder());
+                } else if (StringUtils.isNotBlank(this.getLogId())) {
+                    doc.setField(SolrConstants.LOGID, this.getLogId());
                 }
-            } catch (PresentationException | DAOException | ViewerConfigurationException e) {
+                    Locale locale = BeanUtils.getLocale();
+                    SearchHitFactory factory = new SearchHitFactory(null, null, null, 0, BeanUtils.getImageDeliveryBean().getThumbs(), locale);
+                    SearchHit sh = factory.createSearchHit(doc, null, null, null);
+                    this.browseElement = sh.getBrowseElement();
+                    try {
+                        this.browseElement
+                                .setThumbnailUrl(this.getRepresentativeImageUrl(DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
+                                        DataManager.getInstance().getConfiguration().getThumbnailsHeight()));
+                    } catch (IndexUnreachableException | ViewerConfigurationException | DAOException e) {
+                        logger.error("Unable to set thumbnail url of browseElement to bookmark thumbnail url: {}", e.toString());
+                    }
+
+                }
+            } catch (PresentationException e) {
                 throw new IndexUnreachableException(e.toString());
             }
         }
@@ -660,17 +637,19 @@ public class Bookmark implements Serializable {
     @JsonIgnore
     public boolean isHasImages() {
         try {
-            if (this.hasImages != null) {
+            if (this.hasImages == null) {
                 //no action required
-            } else if (this.browseElement != null) {
-                this.hasImages = this.browseElement.isHasImages();
-            } else {
-                this.hasImages = isHasImagesFromSolr();
+                if (this.browseElement != null) {
+                    this.hasImages = this.browseElement.isHasImages();
+                } else {
+                    this.hasImages = isHasImagesFromSolr();
+                }
             }
         } catch (IndexUnreachableException | PresentationException e) {
             logger.error("Unable to get browse element for bookmark", e);
             return false;
         }
+
         return this.hasImages;
     }
 
@@ -680,5 +659,4 @@ public class Bookmark implements Serializable {
                 .getFirstDoc(getSolrQueryForDocument(), Arrays.asList(SolrConstants.THUMBNAIL, SolrConstants.FILENAME));
         return SolrTools.isHasImages(doc);
     }
-
 }

@@ -33,7 +33,7 @@ public class TrivialFunctionality implements Functionality {
     /** {@inheritDoc} */
     @Override
     public void setPageNo(int pageNo) {
-
+        //
     }
 
     /** {@inheritDoc} */

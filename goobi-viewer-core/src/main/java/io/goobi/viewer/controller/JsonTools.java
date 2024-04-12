@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.controller;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
@@ -30,17 +31,21 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
+import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -62,11 +67,26 @@ import io.goobi.viewer.solr.SolrTools;
  * JsonTools class.
  * </p>
  */
-public class JsonTools {
+public final class JsonTools {
 
     private static final Logger logger = LogManager.getLogger(JsonTools.class);
 
     private static ObjectMapper mapper = new ObjectMapper();
+
+    static {
+        mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
+        mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+        mapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
+    }
+
+    public static final String KEY_MESSAGE = "message";
+    public static final String KEY_STATUS = "status";
+
+    /**
+     * Private constructor.
+     */
+    private JsonTools() {
+    }
 
     /**
      * Returns a <code>JSONArray</code> containing JSON objects for every <code>SolrDocument</code> in the given result. Order remains the same as in
@@ -75,6 +95,7 @@ public class JsonTools {
      * @param result a {@link org.apache.solr.common.SolrDocumentList} object.
      * @param expanded
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param languageToTranslate
      * @return a {@link org.json.JSONArray} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -82,8 +103,7 @@ public class JsonTools {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public static JSONArray getRecordJsonArray(SolrDocumentList result, Map<String, SolrDocumentList> expanded, HttpServletRequest request,
-            String languageToTranslate)
-            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
+            String languageToTranslate) throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         JSONArray jsonArray = new JSONArray();
         Locale locale = StringUtils.isBlank(languageToTranslate) ? null : Locale.forLanguageTag(languageToTranslate);
         ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
@@ -131,10 +151,9 @@ public class JsonTools {
     }
 
     /**
-     * @param mapper
-     * @param locale
      * @param doc
-     * @return
+     * @param locale
+     * @return Given Solr doc as {@link JSONObject}
      * @throws JsonProcessingException
      */
     public static JSONObject getAsJson(SolrDocument doc, Locale locale) throws JsonProcessingException {
@@ -146,27 +165,75 @@ public class JsonTools {
         return object;
     }
 
+    public static String getAsJson(Object object) throws JsonProcessingException {
+        return mapper.writeValueAsString(object);
+    }
+
+    /**
+     * 
+     * @param <T>
+     * @param json
+     * @param clazz
+     * @return T
+     * @throws IOException
+     */
+    public static <T> T getAsObject(String json, Class<T> clazz) throws IOException {
+        try (JsonParser parser = mapper.createParser(json)) {
+            return parser.readValueAs(clazz);
+        }
+    }
+
+    public static Object getAsObjectForJson(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof String) {
+            return value;
+        } else if (value instanceof IMetadataValue metadataValue && metadataValue.getNumberOfUniqueTranslations() == 1) {
+            return metadataValue.getValue().orElse("");
+        } else {
+            try {
+                String s = getAsJson(value);
+                if (StringUtils.isBlank(s)) {
+                    return null;
+                } else if (s.startsWith("{")) {
+                    return new JSONObject(s);
+                } else if (s.matches("(?i)true|false")) {
+                    return Boolean.parseBoolean(s);
+                } else if (s.matches("\\d+")) {
+                    return Long.parseLong(s);
+                } else if (s.matches("[\\d.]+")) {
+                    return Double.parseDouble(s);
+                } else {
+                    return s;
+                }
+            } catch (JsonProcessingException e) {
+                return value.toString();
+            }
+        }
+    }
+
     /**
      * @param locale
      * @param object
-     * @return
+     * @return object translated to locale
      */
-    public static JSONObject translateJSONObject(Locale locale, JSONObject object) {
+    public static JSONObject translateJSONObject(Locale locale, final JSONObject object) {
         JSONObject trObject = new JSONObject();
         String[] names = JSONObject.getNames(object);
         for (String name : names) {
             Object value = object.get(name);
             String trName = Messages.translate(name, locale);
             Object trValue;
-            if (value instanceof String) {
-                trValue = Messages.translate((String) value, locale);
+            if (value instanceof String s) {
+                trValue = Messages.translate(s, locale);
             } else {
                 trValue = value;
             }
             trObject.put(trName, trValue);
         }
-        object = trObject;
-        return object;
+
+        return trObject;
     }
 
     /**
@@ -197,7 +264,7 @@ public class JsonTools {
                     requiredAccessConditionSet.add((String) o);
                 }
                 boolean access = AccessConditionUtils.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST,
-                        "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi.toString(), request).isGranted();
+                        "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi, request).isGranted();
                 if (!access) {
                     logger.debug("User may not list {}", pi);
                     continue;
@@ -217,7 +284,7 @@ public class JsonTools {
             try {
                 Long dateCreatedTimestamp = (Long) jsonObject.get("dateCreated");
                 String dateString =
-                        DateTools.format(DateTools.getLocalDateTimeFromMillis(dateCreatedTimestamp, false), DateTools.formatterISO8601Date, false);
+                        DateTools.format(DateTools.getLocalDateTimeFromMillis(dateCreatedTimestamp, false), DateTools.FORMATTERISO8601DATE, false);
                 if (currentDateJsonObject == null || !dateString.equals(currentDateString)) {
                     currentDateString = dateString;
                     currentDateJsonObject = new JSONObject();
@@ -226,8 +293,7 @@ public class JsonTools {
                 }
                 currentDateJsonObject.put("entry" + i, jsonObject);
             } catch (JSONException e) {
-                logger.warn(jsonObject.get("id") + " has no " + SolrConstants.DATECREATED + " value.");
-                continue;
+                logger.warn("{} has no {} value.", jsonObject.get("id"), SolrConstants.DATECREATED);
             }
         }
 
@@ -256,11 +322,9 @@ public class JsonTools {
      * @param language a {@link java.lang.String} object.
      * @param thumbs
      * @return a {@link org.json.JSONObject} object.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should add all metadata
      */
-    public static JSONObject getRecordJsonObject(SolrDocument doc, String rootUrl, String language, ThumbnailHandler thumbs)
-            throws ViewerConfigurationException {
+    public static JSONObject getRecordJsonObject(SolrDocument doc, String rootUrl, String language, ThumbnailHandler thumbs) {
         JSONObject jsonObj = new JSONObject();
 
         String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
@@ -366,6 +430,46 @@ public class JsonTools {
         try {
             JSONObject jsonObj = new JSONObject(json);
             return jsonObj.getString("version") + " (" + jsonObj.getString("git-revision") + ")";
+        } catch (JSONException e) {
+            logger.warn(e.getMessage());
+            return notAvailableKey;
+        }
+    }
+
+    /**
+     * 
+     * @param json
+     * @return {@link String} containing value of "version" from json
+     */
+    public static String getVersion(String json) {
+        return getValue(json, "version");
+    }
+
+    /**
+     * 
+     * @param json
+     * @return {@link String} containing value of "git-revision" from json
+     */
+    public static String getGitRevision(String json) {
+        return getValue(json, "git-revision");
+    }
+
+    /**
+     * 
+     * @param json
+     * @param field
+     * @return {@link String} containg value of field form json
+     */
+    static String getValue(String json, String field) {
+        final String notAvailableKey = "admin__dashboard_versions_not_available";
+
+        if (StringUtils.isEmpty(json)) {
+            return notAvailableKey;
+        }
+
+        try {
+            JSONObject jsonObj = new JSONObject(json);
+            return jsonObj.getString(field);
         } catch (JSONException e) {
             logger.warn(e.getMessage());
             return notAvailableKey;

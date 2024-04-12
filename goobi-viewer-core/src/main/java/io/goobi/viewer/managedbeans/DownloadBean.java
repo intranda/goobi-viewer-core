@@ -34,16 +34,16 @@ import javax.faces.context.FacesContext;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.EPUBDownloadJob;
 import io.goobi.viewer.model.job.download.PDFDownloadJob;
@@ -88,30 +88,6 @@ public class DownloadBean implements Serializable {
      */
     public static long getTimeToLive() {
         return ttl;
-    }
-
-    /**
-     * <p>
-     * checkDownloadAction.
-     * </p>
-     *
-     * @param type a {@link java.lang.String} object.
-     * @param email a {@link java.lang.String} object.
-     * @param pi a {@link java.lang.String} object.
-     * @param logId a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    @Deprecated
-    public String checkDownloadAction(String type, String email, String pi, String logId)
-            throws DAOException, PresentationException, IndexUnreachableException {
-        if (DownloadJob.checkDownload(type, email, pi, logId, DownloadJob.generateDownloadJobId(type, pi, logId), ttl) != null) {
-            return "pretty:download1";
-        }
-
-        return "pretty:error";
     }
 
     /**
@@ -162,10 +138,12 @@ public class DownloadBean implements Serializable {
 
             FacesContext fc = FacesContext.getCurrentInstance();
             ExternalContext ec = fc.getExternalContext();
-            ec.responseReset(); // Some JSF component library or some Filter might have set some headers in the buffer beforehand. We want to get rid of them, else it may collide.
+            // Some JSF component library or some Filter might have set some headers in the buffer beforehand.
+            // We want to get rid of them, else it may collide.
+            ec.responseReset();
             ec.setResponseContentType(downloadJob.getMimeType());
             ec.setResponseHeader("Content-Length", String.valueOf(Files.size(file)));
-            ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+            ec.setResponseHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
             OutputStream os = ec.getResponseOutputStream();
             try (FileInputStream fis = new FileInputStream(file.toFile())) {
                 byte[] buffer = new byte[1024];
@@ -174,15 +152,16 @@ public class DownloadBean implements Serializable {
                     os.write(buffer, 0, bytesRead);
                 }
             } catch (IOException e) {
-                if(GetAction.isClientAbort(e)) {
+                if (GetAction.isClientAbort(e)) {
                     logger.trace("Download of '{}' aborted: {}", fileName, e.getMessage());
                     return;
-                } else {
-                    throw e;
                 }
+                throw e;
             }
             // os.flush();
-            fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
+            // Important! Otherwise JSF will attempt to render the response which obviously
+            // will fail since it's already written with a file and closed.
+            fc.responseComplete();
         }
     }
 

@@ -1,109 +1,91 @@
-<ui:composition 
-	xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
 	template="/resources/themes/#{navigationHelper.theme}/template.html">
 
+	<composite:interface>
+		<composite:attribute name="component" required="true" type="io.goobi.viewer.model.cms.pages.content.CMSComponent" />
+		<composite:attribute name="random" required="false" default="false" type="java.lang.Boolean"/>
+	</composite:interface>
 
-	<ui:param name="cmsPage" value="#{cmsBean.currentPage}" />
+    
+	<composite:implementation>
 
-	<ui:define name="metadata">
-		<f:metadata>
-			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage)}" />
-			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />
-			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
-		</f:metadata>
-	</ui:define>
-
-	<ui:define name="content">
-		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
-	
-		<f:view contentType="text/html" encoding="utf-8">
 			<div id="templateNewsOverview" class="tpl-news-overview #{cmsPage.wrapperElementClass}">
-                <!-- EDIT PAGE -->
-                <ui:fragment rendered="#{cmsBean.mayEdit(cmsPage)}">
-                    <ui:include src="/resources/cms/includes/editPage.xhtml" />                    
-                </ui:fragment>
-                
-                <!-- PAGE UNPUBLISHED -->
-                <h:panelGroup rendered="#{!cmsPage.published}">
-                    <div class="alert alert-warning" role="alert">
-                        #{msg.cms_pagePreviewNotPublished}
-                    </div>
-                </h:panelGroup>
-                
-				<h1 >#{cmsPage.title}</h1>
-                
                 <!-- OVERVIEW CONTENT -->
                 <div class="tpl-news-overview__content clearfix">                    
                     <!-- IMAGE -->
-                    <h:panelGroup rendered="#{cmsPage.getContent('image01') != ''}">
+                    <h:panelGroup rendered="#{cc.attrs.component.getContentData('image01') != ''}">
                         <figure class="tpl-news-overview__image">
-                            <img title="#{cmsPage.getMediaName('image01')}" src="#{cmsPage.getContent('image01')}" class="img-fluid" alt="#{cmsPage.getMedia('image01').alternativeText}" />
+                            <img title="#{cc.attrs.component.getContentItem('image01').content.mediaItem.name}" src="#{cc.attrs.component.getContentData('image01')}" class="img-fluid" alt="#{cc.attrs.component.getContentItem('image01').content.mediaItem.alternativeText}" />
                             <figcaption>
-                                #{cmsPage.getMediaDescription('image01')}
+                                #{cc.attrs.component.getContentItem('image01').content.mediaItem.description}
                             </figcaption>
                         </figure>
                     </h:panelGroup>
                     
                     <!-- TEXT -->
                     <div class="tpl-news-overview__text">
-                        <h:outputText escape="false" value="#{cmsPage.getContent('A1')}"></h:outputText>
+                        <h:outputText escape="false" value="#{cc.attrs.component.getContentData('A1')}"></h:outputText>
                     </div>
                 </div>
                 
                 <!-- OVERVIEW LIST -->
                 <div class="tpl-news-overview__list">
                     <div class="row">
-                        <c:forEach var="subPage" items="#{cmsPage.getContentItem('list01').nestedPages}">
-                            <div class="tpl-news-overview__list-item clearfix">
-                                <!-- IMAGE -->
-                                <div class="col-12 col-sm-4">
-                                    <figure class="tpl-news-overview__list-image">
-                                        <a href="#{cmsBean.getUrl(subPage)}">
-	                                        <img src="#{subPage.getContent('image01')}" class="img-fluid" title="#{subPage.getMediaName('image01')}" />
-                                        </a>
-                                        <figcaption></figcaption>
-                                    </figure>
-                                </div>
-    
-                                <!-- PREVIEW -->
-                                <div class="col-12 col-sm-8">
-                                    <div class="tpl-news-overview__list-preview">
-                                        <h1 >#{subPage.title}</h1>
-                                        
-                                        <h:panelGroup rendered="#{subPage.getContent('A0') != ''}">
-                                            <div class="tpl-news-overview__preview-date">
-                                                #{subPage.getContent('A0')}
-                                            </div>
-                                        </h:panelGroup>
-                                        
-                                        <div class="tpl-news-overview__preview-text">
-                                            <h:outputText escape="false" value="#{subPage.getContent('preview01')}"></h:outputText>
-                                            <a href="#{cmsBean.getUrl(subPage)}" class="tpl-news-overview__preview-continue">#{msg.more}</a>
-                                        </div>        
-                                    </div>
-                                </div>
-                            </div>
-                        </c:forEach>
-                        <!-- PAGINATOR -->
-						<viewerComponent:simplePaginator 
-							itemCount="#{cmsPage.getContentItem('list01').nestedPagesCount}" 
-							itemActive="#{cmsPage.listPage}"
-							urlPrefix="#{cmsBean.getUrl(cmsPage)}" />
+
+                    	<ui:repeat var="subPage" value="#{cc.attrs.component.getContentItem('list01').content.getNestedPages(cc.attrs.random, cmsBean.templateManager)}">
+							
+							<div class="tpl-news-overview__list-item clearfix">
+							
+								<ui:repeat var="previewComponent" value="#{subPage.previewComponents}">
+									<!-- IMAGE -->
+							       	<ui:fragment rendered="#{previewComponent.hasContent('image')}">
+								        <div class="col-12 col-sm-4">
+								            <figure class="tpl-news-overview__list-image">
+								                <a href="#{cmsBean.getUrl(subPage)}">
+								                 	<img src="#{previewComponent.getContent('image').url}" class="img-fluid" title="#{previewComponent.getContent('image').mediaName}" />
+								                </a>
+								                <figcaption>#{previewComponent.getContent('image').mediaDescription}</figcaption>
+								            </figure>
+								        </div>
+									</ui:fragment>
+									
+									<div class="col-12 col-sm-8">
+	            						<div class="tpl-news-overview__list-preview">
+											 <ui:fragment rendered="#{previewComponent.hasContent('title')}">
+							                	<h1 >#{previewComponent.getContent('title').text}</h1>
+							                </ui:fragment>
+							                
+							                <h:panelGroup rendered="#{previewComponent.hasContent('date')}">
+						                        <div class="tpl-news-overview__preview-date">
+						                            #{previewComponent.getContent('date').text}
+						                        </div>
+						                    </h:panelGroup>
+							                
+							                <h:panelGroup rendered="#{previewComponent.hasContent('text')}">
+							                    <div class="tpl-news-overview__preview-text">
+							                        <h:outputText escape="false" value="#{previewComponent.getContent('text').text}"></h:outputText>
+							                    	<a href="#{cmsBean.getUrl(subPage)}" class="tpl-news-overview__preview-continue">#{msg.more}</a>
+							                    </div>
+							                </h:panelGroup>
+										</div>
+									</div>
+	                
+								</ui:repeat>
+	
+							</div>
+							
+						</ui:repeat>
                     </div>
                 </div>
 			</div>
-		</f:view>
-	</ui:define>
 
-    <!-- SIDEBAR -->
-	<ui:define name="sidebar">
-		<ui:include src="/resources/cms/includes/cms_sidebar.xhtml" />
-    </ui:define>
+	</composite:implementation>
 </ui:composition>

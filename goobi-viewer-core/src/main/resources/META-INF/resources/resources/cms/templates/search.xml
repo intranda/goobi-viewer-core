@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+	<jsfComponent>
+		<library>cms/components/frontend/component</library>
+		<name>search</name>
+	</jsfComponent>
+	<label>cms_component__search_label</label>
+	<description>cms_component__search_desc</description>
+	<icon>cms/components/frontend/component/icon/text.png</icon>
+	<content>
+		<item id="search">
+			<label>cms_component__search_label</label>
+			<description>cms_content__text_desc</description>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>search</name>
+			</jsfComponent>
+		</item>
+	</content>
+
+	<attribute name="width">
+		<value label="50 %">50</value>
+		<value label="100 %" default="true">100</value>
+	</attribute>
+
+	<attribute name="hideOnScreenSizes" type="toggle">
+		<value label="Hide on desktop">hideDesktop</value>
+		<value label="Hide on mobile">hideMobile</value>
+	</attribute>
+	
+</component>

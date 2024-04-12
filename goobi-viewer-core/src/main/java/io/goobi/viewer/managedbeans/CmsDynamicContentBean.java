@@ -22,22 +22,22 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
+import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.jboss.weld.exceptions.IllegalStateException;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jboss.weld.exceptions.IllegalStateException;
 
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.jsf.DynamicContent;
-import io.goobi.viewer.model.jsf.DynamicContentBuilder;
-import io.goobi.viewer.model.jsf.DynamicContentType;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 
 /**
  * @author florian
@@ -45,12 +45,12 @@ import io.goobi.viewer.model.jsf.DynamicContentType;
  */
 @Named
 @ViewScoped
-public class CmsDynamicContentBean implements Serializable{
+public class CmsDynamicContentBean implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(CmsDynamicContentBean.class);
 
     private static final long serialVersionUID = 644204008911471246L;
-    private HtmlPanelGroup topBarGroup = null;
+    private transient HtmlPanelGroup topBarGroup = null;
     private CMSPage cmsPage = null;
 
     @Deprecated //no longer needed to set
@@ -63,8 +63,8 @@ public class CmsDynamicContentBean implements Serializable{
         if (topBarGroup == null) {
             try {
                 loadTopBarContent();
-            } catch(IllegalStateException e) {
-                logger.error("Error initializing topbar content: " + e.toString());
+            } catch (IllegalStateException e) {
+                logger.error("Error initializing topbar content: {}", e.getMessage());
             }
         }
         return topBarGroup;
@@ -80,17 +80,19 @@ public class CmsDynamicContentBean implements Serializable{
     private void loadTopBarContent() {
 
         this.topBarGroup = new HtmlPanelGroup();
-        if(this.cmsPage == null) {
+        if (this.cmsPage == null) {
             throw new IllegalStateException("CMSPage must be set before loading content");
-        } else if(this.cmsPage.getTopBarSlider() != null) {
-            DynamicContentBuilder builder = new DynamicContentBuilder();
-            DynamicContent slider = builder.createContent("topBarSlider", DynamicContentType.SLIDER, Map.of("sliderId", cmsPage.getTopBarSlider().getId()));
-            if(builder.build(slider, this.topBarGroup) == null) {
-                logger.error("Error building slider compoenent from slider " + cmsPage.getTopBarSlider().getId());
-            }
         }
+        try {
+            List<CMSComponent> components = this.cmsPage.getTopbarComponents();
+            for (CMSComponent component : components) {
+                UIComponent ui = component.getUiComponent();
+                this.topBarGroup.getChildren().add(ui);
+            }
+        } catch (PresentationException e) {
+            logger.error("Error building header components for page {}", cmsPage.getId(), e);
 
-
+        }
     }
 
 }

@@ -1,0 +1,84 @@
+<ui:composition xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms">
+
+	<composite:interface>
+		<composite:attribute name="contentItem" required="true" />
+		<composite:attribute name="content" required="false"
+			default="#{cc.attrs.contentItem.content}" />
+	</composite:interface>
+
+	<composite:implementation>
+
+		<div class="admin__content-component-input-group">
+
+			<div class="admin__content-component-input-label">#{msg.admin__category_select}</div>
+
+			<div class="admin__content-component-input-field">
+				<div class="cms-module__option-dropdown">
+
+					<div class="cms-module__option-dropdown-trigger"
+						data-toggle="option-dropdown">Choose category</div>
+
+					<ul>
+						<ui:repeat var="selectable"
+							value="#{cc.attrs.content.selectableCategories}">
+							<li>
+								<label> 
+									<h:selectBooleanCheckbox type="checkbox" value="#{selectable.selected}">
+										<f:ajax event="valueChange" render="@this"></f:ajax>
+									</h:selectBooleanCheckbox> #{selectable.label}
+								</label>
+							</li>
+						</ui:repeat>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="admin__content-component-input-group">
+
+			<div class="admin__content-component-input-label">#{msg.cms_itemTileGrid_numberOfImportantTiles}</div>
+
+			<div class="admin__content-component-input-field">
+
+				<!-- SELECT MENU -->
+				<div class="custom-control custom-control--select">
+					<h:selectOneMenu id="importantTiles" styleClass="form-control"
+						value="#{cc.attrs.content.importantImagesPerView}">
+						<f:selectItems
+							value="#{[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60]}" />
+						<f:passThroughAttribute name="aria-label"
+							value="#{msg.cms_itemTileGrid_numberOfImportantTiles}" />
+					</h:selectOneMenu>
+				</div>
+			</div>
+		</div>
+
+		<div class="admin__content-component-input-group">
+
+			<div class="admin__content-component-input-label">#{msg.cms_itemTileGrid_numberOfTiles}</div>
+
+			<div class="admin__content-component-input-field">
+
+				<!-- SELECT MENU -->
+				<div class="custom-control custom-control--select">
+					<h:selectOneMenu id="tileCount" styleClass="form-control"
+						value="#{cc.attrs.content.imagesPerView}">
+						<f:selectItems
+							value="#{[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60]}" />
+						<f:passThroughAttribute name="aria-label"
+							value="#{msg.cms_itemTileGrid_numberOfTiles}" />
+					</h:selectOneMenu>
+				</div>
+			</div>
+		</div>
+
+	</composite:implementation>
+</ui:composition>

@@ -1,59 +1,32 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://java.sun.com/jsp/jstl/core"
-                xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
-                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-                template="/resources/themes/#{navigationHelper.theme}/template.html">
-	
-	<ui:param name="cmsPage" value="#{cmsBean.currentPage}" />
-	
-    <ui:define name="metadata">
-	    <f:metadata> 
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage)}" />
-			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />
-			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
-        </f:metadata>
-    </ui:define>
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/template.html">
 
-	<ui:define name="content">
-		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
-    
-		<f:view contentType="text/html" encoding="utf-8">
-			<div id="templateGeoMap" class="tpl-geomap #{cmsPage.wrapperElementClass}">
-                <!-- EDIT PAGE -->
-                <ui:fragment rendered="#{cmsBean.mayEdit(cmsPage)}">
-                    <ui:include src="/resources/cms/includes/editPage.xhtml" />                    
-                </ui:fragment>
-                
-                <!-- PAGE UNPUBLISHED -->
-                <h:panelGroup rendered="#{!cmsPage.published}">
-                    <div class="alert alert-warning" role="alert">
-                        #{msg.cms_pagePreviewNotPublished}
-                    </div>
-                </h:panelGroup>
+	<composite:interface>
+		<composite:attribute name="component" required="true" />
+	</composite:interface>
 
-				<h1 >#{cmsPage.title}</h1>                
-				
-				<ui:fragment rendered="#{cmsPage.hasContent('text01')}">
-                    <div class="tpl-geomap__text">
-    					<h:outputText escape="false" value="#{cmsPage.getContent('text01')}"></h:outputText>
-    				</div>
-                </ui:fragment>
-				
-				<ui:fragment rendered="#{cmsPage.hasContent('geomap')}">
-					<viewerComponent:geoMap geoMap="#{cmsPage.getContentItem('geomap').geoMap}">
-					</viewerComponent:geoMap>
-                </ui:fragment>
-                
-			</div>
-		</f:view>
-	</ui:define>
-
-    <!-- SIDEBAR -->
-	<ui:define name="sidebar">
-		<ui:include src="/resources/cms/includes/cms_sidebar.xhtml" />
-    </ui:define>
+	<composite:implementation>
+		<div id="templateGeoMap"
+			class="tpl-geomap content-component__legacy-full-width">
+			<ui:fragment rendered="#{cc.attrs.component.hasContent('text01')}">
+				<div class="tpl-geomap__text">
+					<h:outputText escape="false"
+						value="#{cc.attrs.component.getContentData('text01')}"></h:outputText>
+				</div>
+			</ui:fragment>
+			<ui:fragment rendered="#{cc.attrs.component.hasContent('geomap')}">
+				<viewerComponent:geoMap
+					geoMap="#{cc.attrs.component.getContentItem('geomap').content.map}">
+				</viewerComponent:geoMap>
+			</ui:fragment>
+		</div>
+	</composite:implementation>
 </ui:composition>

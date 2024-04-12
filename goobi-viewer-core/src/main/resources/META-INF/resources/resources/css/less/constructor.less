@@ -16,6 +16,7 @@
 @import "misc/IE.less";
 @import "misc/browserHackTemplates.less";
 @import "misc/popover.less";
+@import "misc/accessibility.less";
 
 /* BASIC COMPONENTS */
 @import "components/forms/basics.less";
@@ -39,8 +40,9 @@
 @import "components/downloadModal.less";
 @import "components/bornDigital.less";
 @import "components/fieldFacets.less";
+@import "components/highlight.less";
 @import "components/imageControls.less";
-@import "components/inputFieldPaginator.less";
+@import "components/inputFieldPaginator.less"; 
 @import "components/loginNavigation.less";
 @import "components/metaMuseal.less";
 @import "components/mobileNavigation.less";
@@ -75,12 +77,16 @@
 @import "widgets/widgetArchives.less";
 @import "widgets/widgetBrowsing.less";
 @import "widgets/widgetChronology.less";
+@import "widgets/widgetCitation.less";
 @import "widgets/widgetCmsPageLinks.less";
 @import "widgets/widgetCopyrightInfo.less";
+@import "widgets/widgetDownloads.less";
 @import "widgets/widgetRelatedGroups.less";
 @import "widgets/widgetCrowdsourcing.less";
 @import "widgets/widgetCustom.less";
-@import "widgets/widgetDownload.less";
+@import "widgets/widgetAdditionalFiles.less";
+@import "widgets/widgetHighlight.less";
+@import "widgets/widgetFormatLinks.less";
 @import "widgets/widgetMetadata.less";
 @import "widgets/widgetMySearches.less";
 @import "widgets/widgetRecordNotes.less";
@@ -165,11 +171,14 @@
 
 /* ADMIN BACKEND */
 @import "admin/admin.less";
+@import "admin/contentComponents/contentComponents.less";
+
 
 @import "admin/views/adminDashboard.less";
 @import "admin/views/adminClients.less";
 @import "admin/views/adminConfigEditor.less";
 @import "admin/views/adminCreateRecord.less";
+@import "admin/views/adminDeveloper.less";
 @import "admin/views/adminDownloadTickets.less";
 @import "admin/views/adminIpRange.less";
 @import "admin/views/adminIpRanges.less";
@@ -243,6 +252,36 @@
 @import "cms/templates/32_templateGalleryText.less";
 @import "cms/templates/33_templateSlider.less";
 
+// GENERAL CMS CONTENT COMPONENT FRONTEND LAYOUT FILE
+@import "cms/contentComponents/generalLayout.less";
+
+// SINGLE CMS CONTENT COMPONENT FRONTEND LAYOUT FILE
+@import "cms/contentComponents/browse.less";
+@import "cms/contentComponents/campaigns.less";
+@import "cms/contentComponents/collection.less";
+@import "cms/contentComponents/contactForm.less";
+@import "cms/contentComponents/faqItem.less";
+@import "cms/contentComponents/faqOverview.less";
+@import "cms/contentComponents/geomap.less";
+@import "cms/contentComponents/glossary.less";
+
+@import "cms/contentComponents/htmltext.less";
+@import "cms/contentComponents/image.less";
+@import "cms/contentComponents/masonry.less";
+@import "cms/contentComponents/pagelist.less";
+@import "cms/contentComponents/publicBookmarks.less";
+@import "cms/contentComponents/rssFeed.less";
+@import "cms/contentComponents/search.less";
+@import "cms/contentComponents/searchFacets.less";
+@import "cms/contentComponents/searchHitlist.less";
+@import "cms/contentComponents/slider.less";
+@import "cms/contentComponents/tagcloud.less";
+@import "cms/contentComponents/text.less";
+@import "cms/contentComponents/timeline.less";
+@import "cms/contentComponents/trackingOptOut.less";
+@import "cms/contentComponents/document.less";
+
+
 /* CMS VIEWS */
 @import "cms/views/adminCmsCategories.less";
 @import "cms/views/adminCmsMedia.less";
@@ -255,6 +294,7 @@
 @import "cms/views/cmsEditCollection.less";
 @import "cms/views/adminCmsGeoMapEdit.less";
 @import "cms/views/cmsEditSlider.less";
+@import "cms/views/cmsHighlights.less";
 
 /* Crowdsourcing */
 @import "crowdsourcing/crowdsourcing.less";

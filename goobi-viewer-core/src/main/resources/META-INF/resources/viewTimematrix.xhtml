@@ -9,9 +9,9 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageTimeMatrix}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('timematrix', false, true)}" />
             <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
-            <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.timematrix,1)}" />
+            <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('timematrix',1)}" />
         </f:metadata>
     </ui:define>
 

@@ -101,14 +101,14 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     private String description;
 
     @Column(name = "public")
-    private Boolean isPublic = false;
+    private boolean isPublic = false;
 
     // Field length had to be limited to 64 chars (SHA-256 length) because InnoDB only supports 767 bytes per index,
     // and the unique index will require 255*n bytes (where n depends on the charset)
     @Column(name = "share_key", unique = true, columnDefinition = "VARCHAR(64)")
     private String shareKey;
 
-    @Column(name = "date_updated", nullable=true)
+    @Column(name = "date_updated", nullable = true)
     @JsonIgnore
     private LocalDateTime dateUpdated;
 
@@ -266,11 +266,11 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
                             .append(SolrConstants.PI_TOPSTRUCT)
                             .append(':')
                             .append(item.getPi())
-                            .append(" AND ")
+                            .append(SolrConstants.SOLR_QUERY_AND)
                             .append(SolrConstants.LOGID)
                             .append(':')
                             .append(item.getLogId())
-                            .append(" AND ")
+                            .append(SolrConstants.SOLR_QUERY_AND)
                             .append(SolrConstants.DOCTYPE)
                             .append(':')
                             .append(DocType.DOCSTRCT.name())
@@ -285,7 +285,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
                         .append(SolrConstants.URN)
                         .append(':')
                         .append(item.getUrn())
-                        .append(" OR ")
+                        .append(SolrConstants.SOLR_QUERY_OR)
                         .append(SolrConstants.IMAGEURN)
                         .append(':')
                         .append(item.getUrn())
@@ -470,7 +470,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      * @return the isPublic
      */
     public boolean isIsPublic() {
-        return isPublic == null ? false : isPublic;
+        return isPublic;
     }
 
     /**
@@ -635,11 +635,12 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      * </p>
      *
      * @param applicationRoot a {@link java.lang.String} object.
-     * @should generate JSON object correctly
+     * @param restApiUrl
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @should generate JSON object correctly
      */
     public String getMiradorJsonObject(String applicationRoot, String restApiUrl)
             throws ViewerConfigurationException, IndexUnreachableException, PresentationException {
@@ -698,14 +699,13 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
 
     /**
      * @param pi
-     * @return
+     * @return Generated URL
      */
     public String getLegacyManifestUrl(String pi) {
-        String manifestUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl()).append("iiif/manifests/")
+        return new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl()).append("iiif/manifests/")
                 .append(pi)
                 .append("/manifest")
                 .toString();
-        return manifestUrl;
     }
 
     /**

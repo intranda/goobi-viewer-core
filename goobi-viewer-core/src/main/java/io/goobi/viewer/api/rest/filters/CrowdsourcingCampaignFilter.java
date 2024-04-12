@@ -34,8 +34,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
@@ -48,10 +48,8 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * Allows access to crowdsourcing campaign resources for sessions owned by a goobi-viewer user
- * who has access to the campaign.
- * For access check to work, the {@link Campaign#getId() campaign id} must be set as the
- * request attribute "CampaignId"
+ * Allows access to crowdsourcing campaign resources for sessions owned by a goobi-viewer user who has access to the campaign. For access check to
+ * work, the {@link Campaign#getId() campaign id} must be set as the request attribute "CampaignId"
  *
  * @author florian
  *
@@ -73,7 +71,7 @@ public class CrowdsourcingCampaignFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext requestContext) throws IOException {
         try {
             Object attribute = servletRequest.getAttribute(CAMPAIGN_ID_REQUEST_ATTRIBUTE);
-            if (attribute != null && attribute instanceof Long) {
+            if (attribute instanceof Long) {
                 Long campaignId = (Long) attribute;
                 User user = getUser().orElseThrow(() -> new ServiceNotAllowedException("No user logged in"));
                 Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
@@ -96,13 +94,13 @@ public class CrowdsourcingCampaignFilter implements ContainerRequestFilter {
     }
 
     /**
-     * @return
+     * @return Optional<User>
      */
-    private Optional<User> getUser() {
+    private static Optional<User> getUser() {
         try {
             return Optional.ofNullable(BeanUtils.getUserBean().getUser());
-        } catch (Throwable e) {
-            logger.error("Unable to get current user from session: " + e.toString());
+        } catch (Exception e) {
+            logger.error("Unable to get current user from session: {}", e.getMessage());
             return Optional.empty();
         }
     }

@@ -27,21 +27,36 @@
 		<class>io.goobi.viewer.model.bookmark.Bookmark</class>
         <class>io.goobi.viewer.model.bookmark.BookmarkList</class>
         <class>io.goobi.viewer.model.cms.CMSCategory</class>
-        <class>io.goobi.viewer.model.cms.CMSContentItem</class>
-        <class>io.goobi.viewer.model.cms.CMSCollection</class>
-        <class>io.goobi.viewer.model.cms.CMSCollectionTranslation</class>
-        <class>io.goobi.viewer.model.cms.CMSMediaItem</class>
-        <class>io.goobi.viewer.model.cms.CMSMediaItemMetadata</class>
-        <class>io.goobi.viewer.model.cms.CMSMultiRecordNote</class>
         <class>io.goobi.viewer.model.cms.CMSNavigationItem</class>
-        <class>io.goobi.viewer.model.cms.CMSPage</class>
-        <class>io.goobi.viewer.model.cms.CMSPageLanguageVersion</class>
-        <class>io.goobi.viewer.model.cms.CMSPageTemplateEnabled</class>
         <class>io.goobi.viewer.model.cms.CMSProperty</class>
-        <class>io.goobi.viewer.model.cms.CMSRecordNote</class>
-        <class>io.goobi.viewer.model.cms.CMSSingleRecordNote</class>
         <class>io.goobi.viewer.model.cms.CMSSlider</class>
         <class>io.goobi.viewer.model.cms.CMSStaticPage</class>
+        <class>io.goobi.viewer.model.cms.collections.CMSCollection</class>
+        <class>io.goobi.viewer.model.cms.collections.CMSCollectionTranslation</class>
+        <class>io.goobi.viewer.model.cms.media.CMSMediaItem</class>
+        <class>io.goobi.viewer.model.cms.media.CMSMediaItemMetadata</class>
+        <class>io.goobi.viewer.model.cms.pages.CMSPage</class>
+        <class>io.goobi.viewer.model.cms.pages.CMSPageTemplate</class>
+        <class>io.goobi.viewer.model.cms.pages.content.CMSContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent</class>       
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSBrowseContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSMetadataContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchFacetsContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent</class>
+        <class>io.goobi.viewer.model.cms.recordnotes.CMSRecordNote</class>
+        <class>io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote</class>
+        <class>io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote</class>
         <class>io.goobi.viewer.model.cms.widgets.CustomSidebarWidget</class>
 		<class>io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget</class>
 		<class>io.goobi.viewer.model.cms.widgets.FacetFieldSidebarWidget</class>
@@ -64,6 +79,9 @@
         <class>io.goobi.viewer.model.log.LogMessage</class>
         <class>io.goobi.viewer.model.maps.GeoMap</class>
         <class>io.goobi.viewer.model.maps.MapTranslation</class>
+        <class>io.goobi.viewer.model.maps.FeatureSet</class>
+        <class>io.goobi.viewer.model.maps.ManualFeatureSet</class>
+        <class>io.goobi.viewer.model.maps.SolrFeatureSet</class>
 		<class>io.goobi.viewer.model.search.Search</class>
         <class>io.goobi.viewer.model.security.DownloadTicket</class>
 		<class>io.goobi.viewer.model.security.License</class>
@@ -79,6 +97,27 @@
 		<class>io.goobi.viewer.model.security.clients.ClientApplication</class>
 		<class>io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics</class>
 		<class>io.goobi.viewer.model.statistics.usage.SessionUsageStatistics</class>
+		<class>io.goobi.viewer.model.cms.pages.CMSPageTemplate</class>
+		<class>io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.CMSContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSBrowseContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMetadataContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSDocumentContent</class>
+		<class>io.goobi.viewer.model.cms.HighlightData</class>
+        <class>io.goobi.viewer.controller.mq.ViewerMessage</class>
+        <class>io.goobi.viewer.model.job.quartz.RecurringTaskTrigger</class>
 
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
@@ -88,7 +127,7 @@
 			<property name="logging.level" value="SEVERE" />
 			<property name="eclipselink.logging.level" value="SEVERE" />
             <property name="eclipselink.id-validation" value="NONE" />
-
+ 
 			<!-- disable logging to separate log file for now as the path can not be influenced in Goobi to go -->
 			<!-- <property name="eclipselink.logging.file" value="/opt/digiverso/logs/viewer_sql.log" /> -->
 
@@ -120,31 +159,47 @@
         <class>io.goobi.viewer.model.administration.legal.TermsOfUse</class>
         <class>io.goobi.viewer.model.administration.legal.TermsOfUseTranslation</class>
         <class>io.goobi.viewer.model.annotation.CrowdsourcingAnnotation</class>
-        <class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
-        <class>io.goobi.viewer.model.annotation.comments.Comment</class>
+		<class>io.goobi.viewer.model.annotation.PersistentAnnotation</class>
+		<class>io.goobi.viewer.model.annotation.comments.Comment</class>
         <class>io.goobi.viewer.model.annotation.comments.CommentGroup</class>
-        <class>io.goobi.viewer.model.bookmark.Bookmark</class>
+		<class>io.goobi.viewer.model.bookmark.Bookmark</class>
         <class>io.goobi.viewer.model.bookmark.BookmarkList</class>
         <class>io.goobi.viewer.model.cms.CMSCategory</class>
-        <class>io.goobi.viewer.model.cms.CMSContentItem</class>
-        <class>io.goobi.viewer.model.cms.CMSCollection</class>
-        <class>io.goobi.viewer.model.cms.CMSCollectionTranslation</class>
-        <class>io.goobi.viewer.model.cms.CMSMediaItem</class>
-        <class>io.goobi.viewer.model.cms.CMSMediaItemMetadata</class>
-        <class>io.goobi.viewer.model.cms.CMSMultiRecordNote</class>
         <class>io.goobi.viewer.model.cms.CMSNavigationItem</class>
-        <class>io.goobi.viewer.model.cms.CMSPage</class>
-        <class>io.goobi.viewer.model.cms.CMSPageLanguageVersion</class>
-        <class>io.goobi.viewer.model.cms.CMSPageTemplateEnabled</class>
         <class>io.goobi.viewer.model.cms.CMSProperty</class>
-        <class>io.goobi.viewer.model.cms.CMSRecordNote</class>
-        <class>io.goobi.viewer.model.cms.CMSSingleRecordNote</class>
         <class>io.goobi.viewer.model.cms.CMSSlider</class>
         <class>io.goobi.viewer.model.cms.CMSStaticPage</class>
+        <class>io.goobi.viewer.model.cms.collections.CMSCollection</class>
+        <class>io.goobi.viewer.model.cms.collections.CMSCollectionTranslation</class>
+        <class>io.goobi.viewer.model.cms.media.CMSMediaItem</class>
+        <class>io.goobi.viewer.model.cms.media.CMSMediaItemMetadata</class>
+        <class>io.goobi.viewer.model.cms.pages.CMSPage</class>
+        <class>io.goobi.viewer.model.cms.pages.CMSPageTemplate</class>
+        <!-- PersistentCMSComponent and CMSContent must be listed in this order o_O -->
+        <class>io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.CMSContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSBrowseContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSMetadataContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchFacetsContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent</class>
+        <class>io.goobi.viewer.model.cms.recordnotes.CMSRecordNote</class>
+        <class>io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote</class>
+        <class>io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote</class>
         <class>io.goobi.viewer.model.cms.widgets.CustomSidebarWidget</class>
-        <class>io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget</class>
-        <class>io.goobi.viewer.model.cms.widgets.FacetFieldSidebarWidget</class>
-        <class>io.goobi.viewer.model.cms.widgets.PageListSidebarWidget</class>
+		<class>io.goobi.viewer.model.cms.widgets.HtmlSidebarWidget</class>
+		<class>io.goobi.viewer.model.cms.widgets.FacetFieldSidebarWidget</class>
+		<class>io.goobi.viewer.model.cms.widgets.PageListSidebarWidget</class>
         <class>io.goobi.viewer.model.cms.widgets.RssFeedSidebarWidget</class>
         <class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement</class>
         <class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementAutomatic</class>
@@ -156,11 +211,16 @@
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic</class>
         <class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignTranslation</class>
         <class>io.goobi.viewer.model.crowdsourcing.questions.Question</class>
-        <class>io.goobi.viewer.model.crowdsourcing.questions.QuestionTranslation</class>
-		<class>io.goobi.viewer.model.download.DownloadJob</class>
-		<class>io.goobi.viewer.model.download.EPUBDownloadJob</class>
-		<class>io.goobi.viewer.model.download.PDFDownloadJob</class>
+		<class>io.goobi.viewer.model.job.download.DownloadJob</class>
+		<class>io.goobi.viewer.model.job.download.EPUBDownloadJob</class>
+		<class>io.goobi.viewer.model.job.download.PDFDownloadJob</class>
+        <class>io.goobi.viewer.model.job.upload.UploadJob</class>
         <class>io.goobi.viewer.model.log.LogMessage</class>
+        <class>io.goobi.viewer.model.maps.GeoMap</class>
+        <class>io.goobi.viewer.model.maps.MapTranslation</class>
+        <class>io.goobi.viewer.model.maps.FeatureSet</class>
+        <class>io.goobi.viewer.model.maps.ManualFeatureSet</class>
+        <class>io.goobi.viewer.model.maps.SolrFeatureSet</class>
 		<class>io.goobi.viewer.model.search.Search</class>
         <class>io.goobi.viewer.model.security.DownloadTicket</class>
 		<class>io.goobi.viewer.model.security.License</class>
@@ -171,43 +231,32 @@
 		<class>io.goobi.viewer.model.security.user.UserGroup</class>
 		<class>io.goobi.viewer.model.security.user.UserRole</class>
 		<class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
-		<class>io.goobi.viewer.model.administration.legal.TermsOfUse</class>
-		<class>io.goobi.viewer.model.administration.legal.TermsOfUseTranslation</class>
-		<class>io.goobi.viewer.model.administration.legal.CookieBanner</class>
-		<class>io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage</class>
-		<class>io.goobi.viewer.model.cms.CMSRecordNote</class>
-		<class>io.goobi.viewer.model.cms.CMSMultiRecordNote</class>
-		<class>io.goobi.viewer.model.cms.CMSSingleRecordNote</class>
-		<class>io.goobi.viewer.model.cms.CMSSlider</class>
+		<class>io.goobi.viewer.model.viewer.themes.ThemeConfiguration</class>
 		<class>io.goobi.viewer.model.translations.Translation</class>
-		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement</class>
-		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementAutomatic</class>
-		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementCustom</class>
-		<class>io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault</class>
-		<class>io.goobi.viewer.model.administration.legal.Disclaimer</class>
 		<class>io.goobi.viewer.model.security.clients.ClientApplication</class>
-        <class>io.goobi.viewer.model.job.download.DownloadJob</class>
-        <class>io.goobi.viewer.model.job.download.EPUBDownloadJob</class>
-        <class>io.goobi.viewer.model.job.download.PDFDownloadJob</class>
-        <class>io.goobi.viewer.model.job.upload.UploadJob</class>
-        <class>io.goobi.viewer.model.log.LogMessage</class>
-        <class>io.goobi.viewer.model.maps.GeoMap</class>
-        <class>io.goobi.viewer.model.maps.MapTranslation</class>
-        <class>io.goobi.viewer.model.search.Search</class>
-        <class>io.goobi.viewer.model.security.DownloadTicket</class>
-        <class>io.goobi.viewer.model.security.License</class>
-        <class>io.goobi.viewer.model.security.LicenseType</class>
-        <class>io.goobi.viewer.model.security.Role</class>
-        <class>io.goobi.viewer.model.security.user.IpRange</class>
-        <class>io.goobi.viewer.model.security.user.User</class>
-        <class>io.goobi.viewer.model.security.user.UserGroup</class>
-        <class>io.goobi.viewer.model.security.user.UserRole</class>
-        <class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
-        <class>io.goobi.viewer.model.translations.Translation</class>
-        <class>io.goobi.viewer.model.viewer.themes.ThemeConfiguration</class>
-        <class>io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics</class>
+		<class>io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics</class>
 		<class>io.goobi.viewer.model.statistics.usage.SessionUsageStatistics</class>
-        		
+		<class>io.goobi.viewer.model.cms.pages.CMSPageTemplate</class>
+		<class>io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.CMSContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSBrowseContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMetadataContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent</class>
+		<class>io.goobi.viewer.model.cms.pages.content.types.CMSDocumentContent</class>
+		<class>io.goobi.viewer.model.cms.HighlightData</class>
+        <class>io.goobi.viewer.controller.mq.ViewerMessage</class>
+		<class>io.goobi.viewer.model.job.quartz.RecurringTaskTrigger</class>
 		<properties>
 			<property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver" />
 			<property name="jakarta.persistence.jdbc.url" value="jdbc:h2:mem:test" />

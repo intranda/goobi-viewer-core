@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Implementation of {@link io.goobi.viewer.model.security.authentication.IAuthResponseListener} which keeps all providers waiting for a response in a
  * {@link java.util.concurrent.ConcurrentHashMap}
  *
+ * @param <T>
  * @author Florian Alpers
  */
 public class AuthResponseListener<T extends IAuthenticationProvider> {

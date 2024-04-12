@@ -15,8 +15,14 @@ function getTomcatDir() {
 	    xml_string = fs.readFileSync("/opt/digiverso/viewer/config/config_viewer.xml", "utf-8");
 	}
 	let viewer_config = XML.parse(xml_string);
-
-	return config.tomcat_dir + "/goobi-viewer-theme-" + viewer_config.viewer.theme.mainTheme;
+	 
+	if (viewer_config.viewer.theme.specialName && viewer_config.viewer.theme.specialName.length) {
+		return config.tomcat_dir + "/goobi-viewer-theme-" + viewer_config.viewer.theme.specialName;
+	}
+	else {
+		return config.tomcat_dir + "/goobi-viewer-theme-" + viewer_config.viewer.theme.mainTheme;
+	}
+			
 }
 
 module.exports = function (grunt) {
@@ -210,7 +216,7 @@ module.exports = function (grunt) {
 	});
 
 	// ---------- LOAD TASKS ---------
-  grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-riot');

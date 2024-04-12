@@ -21,12 +21,9 @@
  */
 package io.goobi.viewer.api.rest.v1.cms;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.CMS_MEDIA_FILES_FILE_IMAGE;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -44,17 +41,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 import de.unigoettingen.sub.commons.util.PathConverter;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.swagger.v3.oas.annotations.Operation;
@@ -73,7 +68,7 @@ public class CMSMediaImageResource extends ImageResource {
     public CMSMediaImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context ApiUrls urls,
-            @Parameter(description = "Filename of the image") @PathParam("filename") String filename) throws UnsupportedEncodingException {
+            @Parameter(description = "Filename of the image") @PathParam("filename") String filename) {
         super(context, request, response, "", getMediaFileUrl(filename).toString());
         request.setAttribute("filename", this.imageURI.toString());
 
@@ -86,21 +81,21 @@ public class CMSMediaImageResource extends ImageResource {
         String imageRequestPath = requestUrl.substring(baseEndIndex);
         int parameterPathIndex = imageRequestPath.indexOf("/");
         String imageParameterPath = "";
-        if(parameterPathIndex > 0 && parameterPathIndex < imageRequestPath.length()) {
+        if (parameterPathIndex > 0 && parameterPathIndex < imageRequestPath.length()) {
             imageParameterPath = imageRequestPath.substring(parameterPathIndex);
             requestUrl = requestUrl.substring(0, baseEndIndex + parameterPathIndex);
         }
         this.resourceURI = URI.create(requestUrl);
 
         List<String> parts = Arrays.stream(imageParameterPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
-        if(parts.size() == 4 ) {
+        if (parts.size() == 4) {
             //image request
             request.setAttribute("iiif-info", false);
             request.setAttribute("iiif-region", parts.get(0));
             request.setAttribute("iiif-size", parts.get(1));
             request.setAttribute("iiif-rotation", parts.get(2));
             request.setAttribute("iiif-format", parts.get(3));
-        } else if(imageRequestPath.endsWith("info.json")) {
+        } else if (imageRequestPath.endsWith("info.json")) {
             //image info request
             request.setAttribute("iiif-info", true);
         }
@@ -108,7 +103,7 @@ public class CMSMediaImageResource extends ImageResource {
 
     /**
      * @param filename
-     * @return
+     * @return {@link URI}
      */
     private static URI getMediaFileUrl(String filename) {
         Path folder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -126,9 +121,10 @@ public class CMSMediaImageResource extends ImageResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding
-    @Operation(tags = {"iiif" }, summary = "IIIF image identifier for the CMS image file of the given filename. Returns a IIIF 2.1.1 image information object")
+    @Operation(tags = { "iiif" },
+            summary = "IIIF image identifier for the CMS image file of the given filename. Returns a IIIF 2.1.1 image information object")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
-       return super.redirectToCanonicalImageInfo();
+        return super.redirectToCanonicalImageInfo();
     }
 
 }

@@ -23,6 +23,8 @@
                         <!-- TITLE -->
                         <h1 class="admin__title">#{msg.cms_menu_heading}</h1>
                     </div>
+                    
+                    <viewerComponent:adminBreadcrumbs />
 
 					<div class="admin__content-inner-content">
 						<!-- SAVE MENU -->
@@ -180,7 +182,7 @@
                                         <!-- PAGES -->
                                         <li>
                                             <h3 data-toggle="available-items" class="in available-item__heading">
-                                                #{msg.cms_menu_pages}
+                                                #{msg.cms_menu_pages} (#{fn:length(cmsNavigationBean.availableMenuItems)})
                                                 <i class="fa fa-caret-down" aria-hidden="true"></i>
                                             </h3>
 

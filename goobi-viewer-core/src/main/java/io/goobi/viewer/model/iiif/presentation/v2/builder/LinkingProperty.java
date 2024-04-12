@@ -23,14 +23,10 @@ package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
 import java.net.URI;
 
-import org.apache.commons.lang3.StringUtils;
-
 import de.intranda.api.iiif.presentation.content.LinkingContent;
 import de.intranda.api.iiif.presentation.enums.DcType;
 import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.metadata.multilanguage.IMetadataValue;
-import de.intranda.metadata.multilanguage.SimpleMetadataValue;
-import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * @author florian
@@ -38,14 +34,14 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
  */
 public class LinkingProperty {
 
-    public static enum LinkingType {
+    public enum LinkingType {
         RENDERING,
         SEE_ALSO,
         RELATED,
         SERVICE;
     }
 
-    public static enum LinkingTarget {
+    public enum LinkingTarget {
         PLAINTEXT(Format.TEXT_PLAIN, DcType.TEXT),
         ALTO(Format.TEXT_XML, DcType.TEXT),
         PDF(Format.APPLICATION_PDF, DcType.IMAGE),
@@ -53,8 +49,8 @@ public class LinkingProperty {
         METS(Format.TEXT_XML, DcType.TEXT),
         LIDO(Format.TEXT_XML, DcType.TEXT);
 
-        public final Format mimeType;
-        public final DcType type;
+        private final Format mimeType;
+        private final DcType type;
 
         private LinkingTarget(Format mimeType, DcType type) {
             this.mimeType = mimeType;
@@ -62,14 +58,14 @@ public class LinkingProperty {
         }
     }
 
-    public final LinkingType type;
-    public final LinkingTarget target;
-    public final IMetadataValue label;
+    private final LinkingType type;
+    private final LinkingTarget target;
+    private final IMetadataValue label;
+
     /**
      * @param type
      * @param target
      * @param label
-     * @param id
      */
     public LinkingProperty(LinkingType type, LinkingTarget target, IMetadataValue label) {
         super();
@@ -82,9 +78,17 @@ public class LinkingProperty {
         LinkingContent link = new LinkingContent(id);
         link.setFormat(target.mimeType);
         link.setType(target.type.getLabel());
-        if(label != null && !label.isEmpty()) {
+        if (label != null && !label.isEmpty()) {
             link.setLabel(label);
         }
         return link;
     }
+
+    /**
+     * @return the target
+     */
+    public LinkingTarget getTarget() {
+        return target;
+    }
+
 }

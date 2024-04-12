@@ -24,31 +24,31 @@ package io.goobi.viewer.controller;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 
-public class BCryptTest extends AbstractTest {
+class BCryptTest extends AbstractTest {
 
     /**
      * @see BCrypt#hashpw(String,String)
      * @verifies hash password correctly
      */
     @Test
-    public void hashpw_shouldHashPasswordCorrectly() throws Exception {
+    void hashpw_shouldHashPasswordCorrectly() throws Exception {
         String salt = BCrypt.gensalt();
         Set<String> used = new HashSet<>();
-        
+
         // ASCII
         StringBuilder sb = new StringBuilder();
         for (int i = 1; i <= 80; ++i) {
             sb.append("A");
             String hash = BCrypt.hashpw(sb.toString(), salt);
             if (i < 73) {
-                Assert.assertFalse("Collision at password length " + i, used.contains(hash));
+                Assertions.assertFalse(used.contains(hash), "Collision at password length " + i);
             } else {
-                Assert.assertTrue(used.contains(hash));
+                Assertions.assertTrue(used.contains(hash));
             }
             used.add(hash);
         }
@@ -58,9 +58,9 @@ public class BCryptTest extends AbstractTest {
             sb.append("Ä");
             String hash = BCrypt.hashpw(sb.toString(), salt);
             if (i < 37) {
-                Assert.assertFalse("Collision at password length " + i, used.contains(hash));
+                Assertions.assertFalse(used.contains(hash), "Collision at password length " + i);
             } else {
-                Assert.assertTrue(used.contains(hash));
+                Assertions.assertTrue(used.contains(hash));
             }
             used.add(hash);
         }
@@ -70,9 +70,9 @@ public class BCryptTest extends AbstractTest {
             sb.append("♠");
             String hash = BCrypt.hashpw(sb.toString(), salt);
             if (i < 25) {
-                Assert.assertFalse("Collision at password length " + i, used.contains(hash));
+                Assertions.assertFalse(used.contains(hash), "Collision at password length " + i);
             } else {
-                Assert.assertTrue(used.contains(hash));
+                Assertions.assertTrue(used.contains(hash));
             }
             used.add(hash);
         }

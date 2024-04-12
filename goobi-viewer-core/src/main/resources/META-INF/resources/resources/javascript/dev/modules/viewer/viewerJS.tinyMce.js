@@ -33,22 +33,42 @@ var viewerJS = ( function( viewer ) {
         height: 400,
         theme: 'silver',
         plugins: 'print preview paste searchreplace autolink directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount media textpattern help',
-        toolbar: ['formatselect | undo redo | bold italic underline strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | fullscreen code | addFeedbackModalLink'],
+        toolbar: ['formatselect | undo redo | bold italic underline strikethrough superscript forecolor backcolor | link | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | fullscreen code | addFeedbackModalLink'],
         menubar: false,
         statusbar: false,
         pagebreak_separator: '<span class="pagebreak"></span>',
         relative_urls: false,
         language: 'de',
 		valid_children: '+a[div]',
-        
-        setup: function (editor) {
-            editor.ui.registry.addButton('myCustomToolbarButton', {
-              text: 'My Custom Button',
-              onAction: function () {
-                alert('Button clicked!');
-              }
+        setup : function (ed) {
+            // listen to changes on tinymce input fields
+            ed.on('init', function (e) {
+                viewerJS.stickyElements.refresh.next();
             });
-          }
+            
+            ed.on('change input paste', function (e) {
+		       console.log("trigger save")
+		       ed.save();
+               //tinymce.triggerSave();
+               //trigger a change event on the underlying textArea
+               console.log("target ", ed.targetElm, ed.getElement())
+               $(ed.targetElm).change();
+                if (currentPage === 'adminCmsNewPage') {
+                    createPageConfig.prevBtn.attr('disabled', true);
+                    createPageConfig.prevDescription.show();
+                }
+            });
+            ed.on('blur', function(e) {
+		        $(ed.targetElm).blur();
+		    });
+            
+			ed.ui.registry.addButton('myCustomToolbarButton', {
+				text: 'My Custom Button',
+	              onAction: function () {
+	                alert('Button clicked!');
+	              }
+    		});
+        }
     };
     
     viewer.tinyMce = {
@@ -81,7 +101,7 @@ var viewerJS = ( function( viewer ) {
                     this.config.language = 'ru';
                     break;
             }
-
+			// console.log("tinymce init ", this.config);
             tinymce.init( this.config );
         },
         close: function() {

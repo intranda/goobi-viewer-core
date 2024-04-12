@@ -25,11 +25,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
@@ -52,38 +51,41 @@ public class SearchQueryGroup implements Serializable {
     private final List<SearchQueryItem> queryItems = new ArrayList<>();
 
     private SearchQueryGroupOperator operator = SearchQueryGroupOperator.AND;
-    private final Locale locale;
 
     /**
      * <p>
      * Constructor for SearchQueryGroup.
      * </p>
      *
-     * @param locale a {@link java.util.Locale} object.
      * @param fieldConfigs
+     * @param template
      */
-    public SearchQueryGroup(Locale locale, List<AdvancedSearchFieldConfiguration> fieldConfigs) {
-        this.locale = locale;
-        init(fieldConfigs);
+    public SearchQueryGroup(List<AdvancedSearchFieldConfiguration> fieldConfigs, String template) {
+        init(fieldConfigs, template);
     }
 
     /**
      * 
      * @param fieldConfigs
+     * @param template
      * @should create and preselect visible fields
+     * @should only create allfields item if fieldConfigs null
      */
-    public void init(List<AdvancedSearchFieldConfiguration> fieldConfigs) {
+    public void init(List<AdvancedSearchFieldConfiguration> fieldConfigs, String template) {
         queryItems.clear();
         operator = SearchQueryGroupOperator.AND;
 
-        SearchQueryItem firstItem = new SearchQueryItem(locale);
-        firstItem.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
-        queryItems.add(firstItem);
+        if (template == null || StringConstants.DEFAULT_NAME.equals(template)) {
+            SearchQueryItem firstItem = new SearchQueryItem(template);
+            firstItem.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
+            queryItems.add(firstItem);
+        }
         if (fieldConfigs != null) {
             for (AdvancedSearchFieldConfiguration fieldConfig : fieldConfigs) {
                 if (fieldConfig.isVisible()) {
-                    SearchQueryItem item = new SearchQueryItem(locale);
+                    SearchQueryItem item = new SearchQueryItem(template);
                     item.setField(fieldConfig.getField());
+                    item.setLabel(fieldConfig.getLabel());
                     queryItems.add(item);
                 }
             }
@@ -94,6 +96,7 @@ public class SearchQueryGroup implements Serializable {
      * Replaces query items in this group with the given list.
      * 
      * @param items
+     * @should replace existing items with given
      */
     public void injectItems(List<SearchQueryItem> items) {
         queryItems.clear();
@@ -103,6 +106,8 @@ public class SearchQueryGroup implements Serializable {
     /**
      * 
      * @return true if none of the items has any value input; false otherwise
+     * @should return true if all items without value
+     * @should return false if at least one item has value
      */
     public boolean isBlank() {
         for (SearchQueryItem item : queryItems) {
@@ -119,6 +124,7 @@ public class SearchQueryGroup implements Serializable {
      * </p>
      *
      * @return a {@link java.util.List} object.
+     * @should return all enum values
      */
     public List<SearchQueryGroupOperator> getAvailableOperators() {
         return Arrays.asList(SearchQueryGroupOperator.values());
@@ -140,11 +146,11 @@ public class SearchQueryGroup implements Serializable {
      * addNewQueryItem.
      * </p>
      *
+     * @return true if operation successful; false otherwise
      * @should add item correctly
-     * @return a boolean.
      */
     public boolean addNewQueryItem() {
-        return queryItems.add(new SearchQueryItem(BeanUtils.getLocale()));
+        return queryItems.add(new SearchQueryItem());
     }
 
     /**
@@ -185,16 +191,5 @@ public class SearchQueryGroup implements Serializable {
      */
     public void setOperator(SearchQueryGroupOperator operator) {
         this.operator = operator;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>locale</code>.
-     * </p>
-     *
-     * @return the locale
-     */
-    public Locale getLocale() {
-        return locale;
     }
 }

@@ -21,6 +21,18 @@
  */
 package io.goobi.viewer.model.cms.widgets.embed;
 
+import java.io.Serializable;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import io.goobi.viewer.dao.converter.WidgetContentTypeConverter;
+import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
+import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
+import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
+import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.DiscriminatorColumn;
@@ -38,18 +50,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import io.goobi.viewer.dao.converter.WidgetContentTypeConverter;
-import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
-import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
-import io.goobi.viewer.model.misc.NumberIterator;
-import io.goobi.viewer.model.translations.IPolyglott;
-import io.goobi.viewer.model.translations.TranslatedText;
-
 /**
  * <p>
  * CMSSidebarElement class.
@@ -61,16 +61,19 @@ import io.goobi.viewer.model.translations.TranslatedText;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "generation_type", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("BASE")
-public class CMSSidebarElement {
+public class CMSSidebarElement implements Serializable {
+
+    private static final long serialVersionUID = -7230299208726799480L;
+
+    private static final Logger logger = LogManager.getLogger(CMSSidebarElement.class);
 
     public static final String WIDGET_TYPE_DEFAULT = "DEFAULT";
     public static final String WIDGET_TYPE_AUTOMATIC = "AUTOMATIC";
     public static final String WIDGET_TYPE_CUSTOM = "CUSTOM";
 
-    private static final Logger logger = LogManager.getLogger(CMSSidebarElement.class);
     /** Constant <code>HASH_MULTIPLIER=11</code> */
     protected static final int HASH_MULTIPLIER = 11;
-    private static final NumberIterator ID_COUNTER = new NumberIterator();
+    // private static final NumberIterator ID_COUNTER = new NumberIterator();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cms_sidebar_element_id")
@@ -78,8 +81,13 @@ public class CMSSidebarElement {
 
     /** Reference to the owning <code>CMSPage</code>. */
     @ManyToOne
-    @JoinColumn(name = "owner_page_id", nullable = false)
+    @JoinColumn(name = "owner_page_id", nullable = true)
     private CMSPage ownerPage;
+
+    /** Reference to the owning <code>CMSPageTemplate</code>. */
+    @ManyToOne
+    @JoinColumn(name = "owner_template_id", nullable = true)
+    private CMSPageTemplate ownerTemplate;
 
     @Column(name = "sort_order")
     private int order;
@@ -101,6 +109,7 @@ public class CMSSidebarElement {
 
     /**
      * Default constructor for a certain type of widget
+     * 
      * @param type
      */
     public CMSSidebarElement(WidgetContentType type) {
@@ -109,8 +118,10 @@ public class CMSSidebarElement {
     }
 
     /**
-     * Default constructor for a certain type of widget and owning CMSPage
+     * Default constructor for a certain type of widget
+     * 
      * @param type
+     * @param owner
      */
     public CMSSidebarElement(WidgetContentType type, CMSPage owner) {
         this(type);
@@ -118,11 +129,48 @@ public class CMSSidebarElement {
     }
 
     /**
-     * Clones the given sidebar element and assigns the given CMSPage as owner.
-     * Depends on cloning constructors of subclasses
+     * Default constructor for a certain type of widget
+     * 
+     * @param type
+     * @param owner
+     */
+    public CMSSidebarElement(WidgetContentType type, CMSPageTemplate owner) {
+        this(type);
+        this.ownerTemplate = owner;
+    }
+
+    /**
+     * Default constructor for a certain type of widget and owning CMSPage
+     * 
      * @param orig
      * @param owner
-     * @return
+     */
+    public CMSSidebarElement(CMSSidebarElement orig, CMSPage owner) {
+        this(orig.contentType);
+        this.id = orig.getId();
+        this.order = orig.getOrder();
+        this.ownerPage = owner;
+    }
+
+    /**
+     * Default constructor for a certain type of widget and owning CMSPageTemplate
+     * 
+     * @param orig
+     * @param owner
+     */
+    public CMSSidebarElement(CMSSidebarElement orig, CMSPageTemplate owner) {
+        this(orig.contentType);
+        this.id = orig.getId();
+        this.order = orig.getOrder();
+        this.ownerTemplate = owner;
+    }
+
+    /**
+     * Clones the given sidebar element and assigns the given CMSPage as owner. Depends on cloning constructors of subclasses
+     * 
+     * @param orig
+     * @param owner
+     * @return {@link CMSSidebarElement}
      */
     public static CMSSidebarElement copy(CMSSidebarElement orig, CMSPage owner) {
         switch (orig.getClass().getSimpleName()) {
@@ -138,7 +186,28 @@ public class CMSSidebarElement {
     }
 
     /**
+     * Clones the given sidebar element and assigns the given CMSPage as owner. Depends on cloning constructors of subclasses
+     * 
+     * @param orig
+     * @param owner
+     * @return {@link CMSSidebarElement}
+     */
+    public static CMSSidebarElement copy(CMSSidebarElement orig, CMSPageTemplate owner) {
+        switch (orig.getClass().getSimpleName()) {
+            case "CMSSidebarElementDefault":
+                return new CMSSidebarElementDefault((CMSSidebarElementDefault) orig, owner);
+            case "CMSSidebarElementAutomatic":
+                return new CMSSidebarElementAutomatic((CMSSidebarElementAutomatic) orig, owner);
+            case "CMSSidebarElementCustom":
+                return new CMSSidebarElementCustom((CMSSidebarElementCustom) orig, owner);
+            default:
+                throw new IllegalArgumentException("Copying of sidebar element type " + orig.getClass() + " not implemented");
+        }
+    }
+
+    /**
      * the database id
+     * 
      * @return the id
      */
     public Long getId() {
@@ -154,6 +223,7 @@ public class CMSSidebarElement {
 
     /**
      * the {@link CMSPage} containing the element
+     * 
      * @return the ownerPage
      */
     public CMSPage getOwnerPage() {
@@ -167,8 +237,17 @@ public class CMSSidebarElement {
         this.ownerPage = ownerPage;
     }
 
+    public CMSPageTemplate getOwnerTemplate() {
+        return ownerTemplate;
+    }
+
+    public void setOwnerTemplate(CMSPageTemplate ownerTemplate) {
+        this.ownerTemplate = ownerTemplate;
+    }
+
     /**
      * The order in which the element is shown. Low numbers are displayed on top of the sidebar, high numbers at the bottom
+     * 
      * @return the order
      */
     public int getOrder() {
@@ -184,6 +263,7 @@ public class CMSSidebarElement {
 
     /**
      * the {@link WidgetGenerationType} of the underlying widget
+     * 
      * @return the generationType
      */
     public WidgetGenerationType getGenerationType() {
@@ -199,6 +279,7 @@ public class CMSSidebarElement {
 
     /**
      * the {@link WidgetContentType} of the underlying widget
+     * 
      * @return the contentType
      */
     public WidgetContentType getContentType() {
@@ -214,10 +295,11 @@ public class CMSSidebarElement {
 
     /**
      * The title displayed for this element when editing the owning CMSPage
-     * @return
+     * 
+     * @return {@link TranslatedText}
      */
     public TranslatedText getTitle() {
         return new TranslatedText(ViewerResourceBundle.getTranslations(getContentType().getLabel()));
     }
-
+    
 }

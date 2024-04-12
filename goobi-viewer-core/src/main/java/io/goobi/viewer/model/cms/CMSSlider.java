@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.commons.lang3.StringUtils;
+
+import io.goobi.viewer.dao.converter.StringListConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -35,12 +38,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-import org.apache.commons.lang3.StringUtils;
-
-import io.goobi.viewer.dao.converter.StringListConverter;
-
 /**
  * Class to persist sliders ("slideshows") created in CMS backend
+ * 
  * @author florian
  *
  */
@@ -58,7 +58,7 @@ public class CMSSlider implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "slider_id")
     private Long id;
-    @Column(name="source_type", nullable=false)
+    @Column(name = "source_type", nullable = false)
     private SourceType sourceType;
     @Column(name = "name", columnDefinition = "LONGTEXT")
     private String name;
@@ -72,14 +72,16 @@ public class CMSSlider implements Serializable {
     private int maxEntries = MAX_ENTRIES_DEFAULT;
     @Column(name = "categories", columnDefinition = "LONGTEXT")
     @Convert(converter = StringListConverter.class)
-    private List<String> categories  = new ArrayList<>();
+    private List<String> categories = new ArrayList<>();
     @Column(name = "collections", columnDefinition = "LONGTEXT")
     @Convert(converter = StringListConverter.class)
-    private List<String> collections  = new ArrayList<>();
-    @Column(name="style")
+    private List<String> collections = new ArrayList<>();
+    @Column(name = "style")
     private String style = "base";
+
     /**
      * Copy constructor
+     * @param o
      */
     public CMSSlider(CMSSlider o) {
         this.id = o.id;
@@ -116,72 +118,84 @@ public class CMSSlider implements Serializable {
     public Long getId() {
         return id;
     }
+
     /**
      * @param id the id to set
      */
     public void setId(Long id) {
         this.id = id;
     }
+
     /**
      * @return the name
      */
     public String getName() {
         return name;
     }
+
     /**
      * @param name the name to set
      */
     public void setName(String name) {
         this.name = name;
     }
+
     /**
      * @return the description
      */
     public String getDescription() {
         return description;
     }
+
     /**
      * @param description the description to set
      */
     public void setDescription(String description) {
         this.description = description;
     }
+
     /**
      * @return the solrQuery
      */
     public String getSolrQuery() {
         return solrQuery;
     }
+
     /**
      * @param solrQuery the solrQuery to set
      */
     public void setSolrQuery(String solrQuery) {
         this.solrQuery = solrQuery;
     }
+
     /**
      * @return the categories
      */
     public List<String> getCategories() {
         return categories;
     }
+
     /**
      * @param categories the categories to set
      */
     public void setCategories(List<String> categories) {
         this.categories = categories;
     }
+
     /**
      * @return the collections
      */
     public List<String> getCollections() {
         return collections;
     }
+
     /**
      * @param collections the collections to set
      */
     public void setCollections(List<String> collections) {
         this.collections = collections;
     }
+
     /**
      * @return the serialversionuid
      */
@@ -215,7 +229,7 @@ public class CMSSlider implements Serializable {
      * @return true if either {@link #solrQuery}, {@link #collections} or {@link #categories} is empty, depending on the {@link sourceType}
      */
     public boolean isEmpty() {
-        switch(sourceType) {
+        switch (sourceType) {
             case COLLECTIONS:
                 return this.collections.isEmpty();
             case PAGES:
@@ -228,7 +242,7 @@ public class CMSSlider implements Serializable {
         }
     }
 
-    public static enum SourceType {
+    public enum SourceType {
         RECORDS("label__records"), //has solrQuery
         COLLECTIONS("cms_collections"), //has collections
         PAGES("label__cms_pages"), //has categories
@@ -276,6 +290,5 @@ public class CMSSlider implements Serializable {
     public List<Integer> getMaxEntriesOptions() {
         return IntStream.range(MAX_ENTRIES_MIN, MAX_ENTRIES_MAX + 1).boxed().collect(Collectors.toList());
     }
-
 
 }

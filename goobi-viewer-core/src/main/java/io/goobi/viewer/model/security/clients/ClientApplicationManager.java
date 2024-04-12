@@ -89,7 +89,7 @@ public class ClientApplicationManager {
             client.setAccessStatus(AccessStatus.NON_APPLICABLE);
             dao.saveClientApplication(client);
             this.allClients = client;
-        } 
+        }
 
     }
 
@@ -141,7 +141,7 @@ public class ClientApplicationManager {
     public static Optional<ClientApplication> getClientFromSession(HttpSession session) {
         if (session != null) {
             Object client = session.getAttribute(CLIENT_SESSION_ATTRIBUTE);
-            if (client != null && client instanceof ClientApplication) {
+            if (client instanceof ClientApplication) {
                 return Optional.of((ClientApplication) client);
             }
         }
@@ -178,7 +178,7 @@ public class ClientApplicationManager {
     /**
      * The the client identifier from a request header
      * 
-     * @param servletRequest
+     * @param request
      * @return The identifier or null if non is in the header
      */
     public static String getClientIdentifier(HttpServletRequest request) {
@@ -216,7 +216,7 @@ public class ClientApplicationManager {
     public boolean isNotAllClients(ClientApplication client) {
         return Optional.ofNullable(client).map(ClientApplication::getId).map(id -> !getAllClients().getId().equals(id)).orElse(true);
     }
-    
+
     /**
      * check if the given client is the client instance representing all clients
      * 

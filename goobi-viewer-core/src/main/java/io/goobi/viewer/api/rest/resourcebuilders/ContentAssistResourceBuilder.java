@@ -31,6 +31,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.CmsCollectionsBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.search.SearchHelper;
 
 /**
@@ -50,38 +51,32 @@ public class ContentAssistResourceBuilder {
      * @param inputString a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
      * @throws IllegalRequestException if the solrField doesn't exist in the index
-     * @throws IndexUnreachableException If an error occured communicating with the SOLR index
+     * @throws IndexUnreachableException If an error occurred communicating with the SOLR index
      */
 
-    public List<String> getCollections(String solrField, String inputString)
+    public List<String> getCollections(String solrField, final String inputString)
             throws IllegalRequestException, IndexUnreachableException {
-        if ("-".equals(inputString)) {
-            inputString = "";
-        }
         String query = "DOCTYPE:DOCSTRCT AND (ISANCHOR:true OR ISWORK:true)";
         try {
-            List<String> facets = SearchHelper.getFacetValues(query, solrField, inputString, 0, null);
+            List<String> facets = SearchHelper.getFacetValues(query, solrField, "-".equals(inputString) ? "" : inputString, 0, null);
             List<String> collections = new ArrayList<>();
             CmsCollectionsBean bean = BeanUtils.getCMSCollectionsBean();
             if (bean != null) {
-                collections.addAll(bean.getCollections().stream().map(collection -> collection.getSolrFieldValue()).collect(Collectors.toList()));
+                collections.addAll(bean.getCollections().stream().map(CMSCollection::getSolrFieldValue).collect(Collectors.toList()));
             }
             String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(solrField);
-            List<String> list = facets.stream()
+            return facets.stream()
                     .flatMap(facet -> getHierarchy("", facet, splittingChar).stream())
                     .distinct()
                     .filter(facet -> !collections.contains(facet))
                     .sorted()
                     .sorted((f1, f2) -> Integer.compare(f1.split(splittingChar).length, f2.split(splittingChar).length))
                     .collect(Collectors.toList());
-
-            return list;
-        } catch(PresentationException e) {
-            if(e.getMessage() != null && e.getMessage().toLowerCase().contains("bad query")) {
+        } catch (PresentationException e) {
+            if (e.getMessage() != null && e.getMessage().toLowerCase().contains("bad query")) {
                 throw new IllegalRequestException("Not a valid SOLR field: " + solrField);
-            } else {
-                throw new IndexUnreachableException("Internal error in index:" + e.toString());
             }
+            throw new IndexUnreachableException("Internal error in index:" + e.toString());
         }
 
     }
@@ -91,7 +86,7 @@ public class ContentAssistResourceBuilder {
      * @param prefix
      * @param facet
      * @param splittingChar
-     * @return
+     * @return List<String>
      */
     private List<String> getHierarchy(String prefix, String facet, String splittingChar) {
         if (splittingChar == null || !facet.contains(splittingChar)) {

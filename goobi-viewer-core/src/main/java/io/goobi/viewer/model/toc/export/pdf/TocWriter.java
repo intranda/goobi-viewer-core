@@ -22,7 +22,6 @@
 package io.goobi.viewer.model.toc.export.pdf;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -32,19 +31,21 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.Paragraph;
+import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.model.toc.TOCElement;
 
 /**
@@ -54,7 +55,7 @@ import io.goobi.viewer.model.toc.TOCElement;
  */
 public class TocWriter {
 
-    private static final Logger logger = LogManager.getLogger(TocWriter.class);
+    private static final Logger logger = LogManager.getLogger(TocWriter.class); //NOSONAR Sometimes used for debugging
 
     private static final int DEFAULT_LEVEL_INDENT = 20;
     private static final int TITLE_MARGIN = 30;
@@ -132,8 +133,7 @@ public class TocWriter {
      * @throws io.goobi.viewer.model.toc.export.pdf.WriteTocException if any.
      */
     public void createPdfDocument(OutputStream output, List<TOCElement> elements) throws WriteTocException {
-        Document document = new Document();
-        try  {
+        try (Document document = new Document()) {
             PdfWriter.getInstance(document, output);
             document.addAuthor(getAuthor());
             document.addTitle(getTitle());
@@ -152,17 +152,17 @@ public class TocWriter {
             table.setWidths(new int[] { 10, 1 });
             table.setHorizontalAlignment(Element.ALIGN_LEFT);
 
-            for (TOCElement TOCElement : elements) {
-                Paragraph contentParagraph = new Paragraph(TOCElement.getLabel());
-                contentParagraph.setIndentationLeft((float) getLevelIndent() * TOCElement.getLevel());
+            for (TOCElement element : elements) {
+                Paragraph contentParagraph = new Paragraph(element.getLabel());
+                contentParagraph.setIndentationLeft((float) getLevelIndent() * element.getLevel());
                 PdfPCell contentCell = new PdfPCell();
-                contentCell.setBorder(PdfPCell.NO_BORDER);
+                contentCell.setBorder(Rectangle.NO_BORDER);
                 contentCell.addElement(contentParagraph);
                 contentCell.setPaddingBottom(ELEMENT_MARGIN);
 
                 PdfPCell locationCell = new PdfPCell();
-                locationCell.setBorder(PdfPCell.NO_BORDER);
-                String location = TOCElement.getPageNoLabel();
+                locationCell.setBorder(Rectangle.NO_BORDER);
+                String location = element.getPageNoLabel();
                 if (StringUtils.isNotBlank(location)) {
                     Paragraph locationParagraph = new Paragraph(location);
                     locationParagraph.setAlignment(Element.ALIGN_RIGHT);
@@ -176,15 +176,13 @@ public class TocWriter {
             document.add(table);
         } catch (DocumentException e) {
             throw new WriteTocException(e);
-        } finally {
-            document.close();
         }
     }
 
     /**
      *
      * @param elements TOC element list
-     * @return
+     * @return {@link String}
      */
     public String getAsText(List<TOCElement> elements) {
         StringBuilder sb = new StringBuilder();
@@ -219,7 +217,7 @@ public class TocWriter {
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.model.toc.export.pdf.WriteTocException if any.
      */
-    public static void main(String[] args) throws FileNotFoundException, IOException, WriteTocException {
+    public static void main(String[] args) throws IOException, WriteTocException {
         File outputFile = new File("test.pdf");
 
         List<TOCElement> list = new ArrayList<>();
@@ -233,16 +231,14 @@ public class TocWriter {
         }
     }
 
-    private static final String LOREM =
-            "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer";
-    private static final Random random = new SecureRandom();
+    private static final Random RANDOM = new SecureRandom();
 
     private static TOCElement createRandomTOCElement() {
-        int level = random.nextInt(6);
-        int startIndex = random.nextInt(100);
-        int endIndex = startIndex + 1 + random.nextInt(199);
-        String label = LOREM.substring(startIndex, endIndex).trim();
-        String pageNo = Integer.toString(random.nextInt(9000) + 1);
+        int level = RANDOM.nextInt(6);
+        int startIndex = RANDOM.nextInt(100);
+        int endIndex = startIndex + 1 + RANDOM.nextInt(199);
+        String label = StringConstants.LOREM_IPSUM.substring(startIndex, endIndex).trim();
+        String pageNo = Integer.toString(RANDOM.nextInt(9000) + 1);
 
         return new TOCElement(new SimpleMetadataValue(label), pageNo, pageNo, "1234", "LOG_0003", level, "PPNq234", "", true, false, true, "", null,
                 null);

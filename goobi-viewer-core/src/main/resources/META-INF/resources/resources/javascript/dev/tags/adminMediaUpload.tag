@@ -1,6 +1,6 @@
 <adminMediaUpload>
 	<div class="admin-cms-media__upload-wrapper">
-	    <div class="admin-cms-media__upload {isDragover ? 'is-dragover' : ''}" ref="dropZone">
+	    <div class="admin-cms-media__upload" ref="dropZone">
 	        <div class="admin-cms-media__upload-input">
 	            <p>
 	                {opts.msg.uploadText}
@@ -38,9 +38,8 @@
         if(this.opts.fileTypes) {
             this.fileTypes = this.opts.fileTypes;
         } else {            
-        	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf, svg, ico';
+        	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf, svg, ico, mp4';
         }
-        this.isDragover = false;
     
         this.on('mount', function () {
             if(this.opts.showFiles) {
@@ -52,24 +51,24 @@
         }.bind(this));
 
         initDrop() {
-			var dropZone = (this.refs.dropZone);
+			var dropZone = (this.refs.dropZone); 
     
             
-            dropZone.addEventListener('dragover', function (e) {
+            dropZone.addEventListener('dragover', e => {
                 e.stopPropagation();
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'copy';
 
                 $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading, .admin-cms-media__upload-message.success, .admin-cms-media__upload-message.error').removeClass('in-progress');
 
-                this.isDragover = true;
+                this.setDragover(true);
                 this.update();
-            }.bind(this));
+            });
     
-            dropZone.addEventListener('dragleave', function (e) {
-                this.isDragover = false;
+            dropZone.addEventListener('dragleave', e => {
+                this.setDragover(false);
                 this.update();
-            }.bind(this));
+            });
     
             dropZone.addEventListener('drop', (e) => {
                 e.stopPropagation();
@@ -95,7 +94,7 @@
                 }
     			this.uploadFiles()
     			.then( () => {
-    			    this.isDragover = false;
+    			    this.setDragover(false);
     			    this.update();
     			})
                 
@@ -136,14 +135,23 @@
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.success, .admin-cms-media__upload-message.error').removeClass('in-progress');
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').addClass('in-progress');
             
+            
             for (i = 0; i < this.files.length; i++) {
+            	if(this.opts.fileTypeValidator) {
+            		let regex = this.opts.fileTypeValidator;// new RegExp(this.opts.fileTypeValidator);
+            		if(!this.files[i]?.name?.match(regex)) {
+	            		let errormessage = "File " + this.files[i].name + " is not allowed for upload";
+	            		console.log(errormessage)
+	            		uploads.push(Promise.reject(errormessage));
+	            		continue;
+            		}
+            	}
                 uploads.push(this.uploadFile(i));
             }
             
             return Promise.allSettled(uploads).then(function(results) {
              	var errorMsg = "";
                  results.forEach(function (result) {
-                     
                      if (result.status === "fulfilled") {
                      	var value = result.value;
                      	this.fileUploaded(value);
@@ -181,6 +189,7 @@
         }
     
         fileUploadError(responseText) {
+        	console.log("fileUploadError", responseText);
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').removeClass('in-progress');
         	if (responseText) {
                 $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.error').addClass('in-progress');
@@ -289,6 +298,19 @@
                 filename = filename.slice(0,filenameEnd);
             }
             return filename;
+        }
+        
+        setDragover(dragover) {
+        	this.isDragover = dragover;
+        	var dropZone = (this.refs.dropZone); 
+        	if(dropZone) {
+        		if(dragover) {
+        			dropZone.classList.add("isdragover");
+        		} else {
+        			dropZone.classList.remove("isdragover");
+        		}
+        	}
+        	
         }
     </script> 
 </adminMediaUpload>

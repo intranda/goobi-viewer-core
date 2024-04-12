@@ -41,6 +41,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.MetsPdfResource;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.NetTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
@@ -56,9 +57,12 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
     private String filename;
 
     /**
+     * @param context
      * @param request
-     * @param type
-     * @param filename
+     * @param response
+     * @param urls
+     * @param pi
+     * @param divId
      * @throws ContentLibException
      */
     public ViewerSectionPDFResource(
@@ -73,13 +77,14 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
         request.setAttribute(FilterTools.ATTRIBUTE_LOGID, divId);
     }
 
+    @Override
     @GET
     @Path(ApiUrls.RECORDS_SECTIONS_PDF)
     @Produces("application/pdf")
     @ContentServerPdfBinding
-    @Operation(tags = { "records"}, summary = "Get PDF for section of record")
+    @Operation(tags = { "records" }, summary = "Get PDF for section of record")
     public StreamingOutput getPdf() throws ContentLibException {
-        response.addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
         return super.getPdf(divId);
     }
 
@@ -88,7 +93,7 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerPdfInfoBinding
     @Override
-    @Operation(tags = { "records"}, summary = "Get information about PDF for section of record")
+    @Operation(tags = { "records" }, summary = "Get information about PDF for section of record")
 
     public PdfInformation getInfoAsJson() throws ContentLibException {
         return super.getInfoAsJson(divId);

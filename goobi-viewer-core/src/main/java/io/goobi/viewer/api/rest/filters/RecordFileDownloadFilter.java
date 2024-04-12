@@ -24,8 +24,8 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.controller.DataManager;
@@ -41,21 +41,21 @@ import io.goobi.viewer.model.statistics.usage.RequestType;
 public class RecordFileDownloadFilter implements ContainerRequestFilter {
 
     private static final Logger logger = LogManager.getLogger(RecordFileDownloadFilter.class);
-    
+
     @Context
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
-    
+
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        try {            
-            if(servletRequest.getAttribute("pi") != null){
+        try {
+            if (servletRequest.getAttribute("pi") != null) {
                 String pi = servletRequest.getAttribute("pi").toString();
                 DataManager.getInstance().getUsageStatisticsRecorder().recordRequest(RequestType.FILE_DOWNLOAD, pi, servletRequest);
             }
-        } catch(Throwable e) {
-            logger.error("Error recording file download: {}", e.toString()); 
+        } catch (DAOException e) {
+            logger.error("Error recording file download: {}", e.toString());
         }
     }
 }

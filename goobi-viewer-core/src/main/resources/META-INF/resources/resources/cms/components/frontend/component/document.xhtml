@@ -1,0 +1,59 @@
+<ui:composition
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms">
+
+    <composite:interface>
+		<composite:attribute name="component" required="true"/>
+		<composite:attribute name="cmsContent" required="false" default="#{cc.attrs.component.firstContentItem.content}"/>
+		<composite:attribute name="document" required="false" default="#{cc.attrs.cmsContent.mediaItem}"/>
+    </composite:interface>
+
+
+    <composite:implementation>
+    	<ui:fragment rendered="#{cc.attrs.cmsContent != null and cc.attrs.document != null and cc.attrs.component.hasAccess(userBean.user)}">
+
+				<div class="content-component content-component__document">
+					<img id="documentLoader_#{cc.clientId}" class="content-component__loader"
+						src="#{request.contextPath}/resources/images/infinity_loader.gif" />
+					<h:outputText id="content-component__document__html" escape="false" />
+					<div id="documentWrapper_#{cc.clientId}" class="content-component__document__pdf" />
+				</div>
+				
+				<script type="text/javascript">
+			//<![CDATA[   
+			var url = "#{cc.attrs.cmsContent.url}";
+                if ( url ) {
+                    if ( url.toLowerCase().endsWith( ".pdf" ) ) {
+                        riot.mount( "#documentWrapper_#{cc.clientId}", 'pdfdocument', {
+                        	data:"#{cc.attrs.cmsContent.url}",
+                        	loaderSelector: "#documentLoader_#{cc.clientId}"
+                        } );
+                    }
+                    else {
+                        $.ajax( {
+                            url: url,
+                            type: "GET",
+                            datatype: "HTML"
+                        } ).then( function( data ) {
+                            document.getElementById('literature').innerHTML = data;
+                            $( '#documentLoader_#{cc.clientId}' ).hide();
+                        } );
+                    }
+                }
+                else {
+                    $( '#documentLoader_#{cc.clientId}' ).hide();
+                }
+                
+              //]]>
+            </script>
+					
+		</ui:fragment>
+    </composite:implementation>
+</ui:composition>

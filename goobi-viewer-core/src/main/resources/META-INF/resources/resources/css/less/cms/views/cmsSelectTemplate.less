@@ -7,7 +7,16 @@
 .cms-select-template {
 	/* ELEMENT */
 	h1 {}
-	&__wrapper {}
+	&__wrapper {
+		transition: 0.2s ease all;
+		opacity: 0;
+		&.-fadeIn {
+			opacity: 1;
+		}
+	}
+	&__filters {
+		margin-bottom: 15px;
+	}
 	&__template {
 		.mx-clearfloats;
 		margin-bottom: 14px;
@@ -54,6 +63,11 @@
 				background-color: @blue;
 			}
 		}
+	}
+	&__single {
+	}
+	&__title {
+		display: none;
 	}
 }
 

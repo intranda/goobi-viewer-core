@@ -19,13 +19,12 @@
 
 		<!-- ADDITIONAL CMS LOGIC IN HEADER -->
 		<script>
-		
 			let prettyUrl = "#{request.contextPath}#{navigationHelper.currentViewPrettyUrl}";
-			if(!prettyUrl.endsWith("/")) {
-			    prettyUrl += "/";
+			let url = new URL(location.origin + prettyUrl);
+			if(!url.pathname.endsWith("/")) {
+				url.pathname += "/";
 			}
-			// console.log("Pretty url of page: " + prettyUrl);
-			window.history.pushState({}, '', prettyUrl);
+			window.history.pushState({}, '', url.href);
 		
 		</script>
 

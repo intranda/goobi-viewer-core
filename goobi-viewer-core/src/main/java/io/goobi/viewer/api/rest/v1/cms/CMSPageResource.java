@@ -21,31 +21,22 @@
  */
 package io.goobi.viewer.api.rest.v1.cms;
 
-import java.net.URI;
-import java.util.List;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.ViewerPage;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.cms.CMSSlider;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
- * Return basic information about cms pages.
- * Used for sliders
+ * Return basic information about cms pages. Used for sliders
  *
  * @author florian
  *
@@ -68,6 +59,5 @@ public class CMSPageResource {
     public ViewerPage getPage() {
         return new ViewerPage(page);
     }
-
 
 }

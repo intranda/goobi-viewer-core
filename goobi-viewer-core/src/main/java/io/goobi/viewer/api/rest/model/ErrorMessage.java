@@ -52,6 +52,21 @@ public class ErrorMessage implements IResponseMessage {
      *
      * @param status a int.
      * @param message a {@link java.lang.String} object.
+     */
+    public ErrorMessage(int status, String message) {
+        super();
+        this.status = status;
+        this.message = message;
+        this.stackTrace = null;
+    }
+
+    /**
+     * <p>
+     * Constructor for ErrorMessage.
+     * </p>
+     *
+     * @param status a int.
+     * @param message a {@link java.lang.String} object.
      * @param stackTrace a {@link java.lang.String} object.
      */
     public ErrorMessage(int status, String message, String stackTrace) {

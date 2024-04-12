@@ -28,11 +28,11 @@ import java.util.concurrent.ExecutionException;
 
 import javax.ws.rs.core.MediaType;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.model.Header;
@@ -45,7 +45,7 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
  * @author florian
  *
  */
-public class LitteraProviderTest extends AbstractDatabaseEnabledTest {
+class LitteraProviderTest extends AbstractDatabaseEnabledTest {
 
     private static String user_id = "test";
     private static String user_id_invalid = "blub";
@@ -65,7 +65,7 @@ public class LitteraProviderTest extends AbstractDatabaseEnabledTest {
     private static ClientAndServer mockServer;
     private static MockServerClient serverClient;
 
-    @BeforeClass
+    @BeforeAll
     public static void startProxy() {
         mockServer = ClientAndServer.startClientAndServer(SERVERPORT);
 
@@ -88,7 +88,7 @@ public class LitteraProviderTest extends AbstractDatabaseEnabledTest {
 
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopProxy() throws Exception {
         serverClient.stop();
         mockServer.stop();
@@ -99,17 +99,17 @@ public class LitteraProviderTest extends AbstractDatabaseEnabledTest {
     }
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         provider = new LitteraProvider("external", "", "http://" + SERVERURL + ":" + SERVERPORT + "/externauth", "", 1000l);
     }
 
     @Test
-    public void testLogin() throws AuthenticationProviderException, InterruptedException, ExecutionException {
-        Assert.assertFalse(provider.login(user_id, user_pw).get().isRefused());
-        Assert.assertTrue(provider.login(user_id_invalid, user_pw).get().isRefused());
-        Assert.assertTrue(provider.login(user_id, user_pw_invalid).get().isRefused());
+    void testLogin() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+        Assertions.assertFalse(provider.login(user_id, user_pw).get().isRefused());
+        Assertions.assertTrue(provider.login(user_id_invalid, user_pw).get().isRefused());
+        Assertions.assertTrue(provider.login(user_id, user_pw_invalid).get().isRefused());
     }
 
 }

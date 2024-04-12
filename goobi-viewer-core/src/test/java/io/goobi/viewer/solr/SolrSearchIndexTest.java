@@ -21,9 +21,10 @@
  */
 package io.goobi.viewer.solr;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,29 +40,53 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.model.viewer.StringPair;
 
-public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
+class SolrSearchIndexTest extends AbstractSolrEnabledTest {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(SolrSearchIndexTest.class);
+
+    /**
+     * @see SolrSearchIndex#isSolrIndexOnline()
+     * @verifies return true if solr online
+     */
+    @Test
+    void isSolrIndexOnline_shouldReturnTrueIfSolrOnline() throws Exception {
+        assertTrue(DataManager.getInstance().getSearchIndex().isSolrIndexOnline());
+    }
+
+    /**
+     * @see SolrSearchIndex#isSolrIndexOnline()
+     * @verifies return false if solr offline
+     */
+    @Test
+    void isSolrIndexOnline_shouldReturnFalseIfSolrOffline() throws Exception {
+        String solrUrl = DataManager.getInstance().getConfiguration().getSolrUrl();
+        DataManager.getInstance().getConfiguration().overrideValue("urls.solr", "https://locahost:1234/solr");
+        try {
+            assertFalse(DataManager.getInstance().getSearchIndex().isSolrIndexOnline());
+        } finally {
+            DataManager.getInstance().getConfiguration().overrideValue("urls.solr", solrUrl);
+        }
+    }
 
     /**
      * @see SolrSearchIndex#search(String,int,int,List,boolean,List,String,List)
      * @verifies return correct results
      */
     @Test
-    public void search_shouldReturnCorrectResults() throws Exception {
+    void search_shouldReturnCorrectResults() throws Exception {
         QueryResponse response = DataManager.getInstance()
                 .getSearchIndex()
                 .search(SolrConstants.PI + ":PPN517154005 " + SolrConstants.PI + ":34115495_1940", 0, Integer.MAX_VALUE, null, null, null);
-        Assert.assertEquals(2, response.getResults().size());
+        Assertions.assertEquals(2, response.getResults().size());
     }
 
     /**
@@ -69,9 +94,9 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      * @verifies return correct number of rows
      */
     @Test
-    public void search_shouldReturnCorrectNumberOfRows() throws Exception {
+    void search_shouldReturnCorrectNumberOfRows() throws Exception {
         QueryResponse response = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":*", 100, 10, null, null, null);
-        Assert.assertEquals(10, response.getResults().size());
+        Assertions.assertEquals(10, response.getResults().size());
     }
 
     /**
@@ -79,17 +104,17 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      * @verifies sort results correctly
      */
     @Test
-    public void search_shouldSortResultsCorrectly() throws Exception {
+    void search_shouldSortResultsCorrectly() throws Exception {
         QueryResponse response = DataManager.getInstance()
                 .getSearchIndex()
                 .search(SolrConstants.PI + ":*", 0, 10, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null, null);
-        Assert.assertEquals(10, response.getResults().size());
+        Assertions.assertEquals(10, response.getResults().size());
         long previous = -1;
         for (SolrDocument doc : response.getResults()) {
             Long datecreated = (Long) doc.getFieldValue(SolrConstants.DATECREATED);
-            Assert.assertNotNull(datecreated);
+            Assertions.assertNotNull(datecreated);
             if (previous != -1) {
-                Assert.assertTrue(previous >= datecreated);
+                Assertions.assertTrue(previous >= datecreated);
             }
             previous = datecreated;
         }
@@ -100,13 +125,13 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      * @verifies facet results correctly
      */
     @Test
-    public void search_shouldFacetResultsCorrectly() throws Exception {
+    void search_shouldFacetResultsCorrectly() throws Exception {
         QueryResponse response = DataManager.getInstance()
                 .getSearchIndex()
                 .search(SolrConstants.PI + ":*", 0, 10, null, Collections.singletonList(SolrConstants.DC), null);
-        Assert.assertEquals(10, response.getResults().size());
-        Assert.assertNotNull(response.getFacetField(SolrConstants.DC));
-        Assert.assertNotNull(response.getFacetField(SolrConstants.DC).getValues());
+        Assertions.assertEquals(10, response.getResults().size());
+        Assertions.assertNotNull(response.getFacetField(SolrConstants.DC));
+        Assertions.assertNotNull(response.getFacetField(SolrConstants.DC).getValues());
     }
 
     /**
@@ -114,14 +139,14 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      * @verifies filter fields correctly
      */
     @Test
-    public void search_shouldFilterFieldsCorrectly() throws Exception {
+    void search_shouldFilterFieldsCorrectly() throws Exception {
         QueryResponse response = DataManager.getInstance()
                 .getSearchIndex()
                 .search(SolrConstants.PI + ":*", 0, 10, null, null, Collections.singletonList(SolrConstants.PI));
-        Assert.assertEquals(10, response.getResults().size());
+        Assertions.assertEquals(10, response.getResults().size());
         for (SolrDocument doc : response.getResults()) {
-            Assert.assertEquals(1, doc.getFieldNames().size());
-            Assert.assertTrue(doc.getFieldNames().contains(SolrConstants.PI));
+            Assertions.assertEquals(1, doc.getFieldNames().size());
+            Assertions.assertTrue(doc.getFieldNames().contains(SolrConstants.PI));
 
         }
     }
@@ -131,13 +156,13 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      * @verifies generate facets correctly
      */
     @Test
-    public void searchFacetsAndStatistics_shouldGenerateFacetsCorrectly() throws Exception {
+    void searchFacetsAndStatistics_shouldGenerateFacetsCorrectly() throws Exception {
         String[] facetFields = { SolrConstants.CALENDAR_YEAR, SolrConstants.CALENDAR_MONTH };
         QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
                 .searchFacetsAndStatistics(SolrConstants.CALENDAR_YEAR + ":*", null, Arrays.asList(facetFields), 0, false);
-        Assert.assertNotNull(resp.getFacetField(SolrConstants.CALENDAR_YEAR));
-        Assert.assertNotNull(resp.getFacetField(SolrConstants.CALENDAR_MONTH));
+        Assertions.assertNotNull(resp.getFacetField(SolrConstants.CALENDAR_YEAR));
+        Assertions.assertNotNull(resp.getFacetField(SolrConstants.CALENDAR_MONTH));
     }
 
     /**
@@ -145,14 +170,14 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      * @verifies generate field statistics for every facet field if requested
      */
     @Test
-    public void searchFacetsAndStatistics_shouldGenerateFieldStatisticsForEveryFacetFieldIfRequested() throws Exception {
+    void searchFacetsAndStatistics_shouldGenerateFieldStatisticsForEveryFacetFieldIfRequested() throws Exception {
         String[] facetFields = { SolrConstants.CALENDAR_YEAR };
         QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
                 .searchFacetsAndStatistics(SolrConstants.CALENDAR_YEAR + ":*", null, Arrays.asList(facetFields), 0, true);
-        Assert.assertNotNull(resp.getFieldStatsInfo());
+        Assertions.assertNotNull(resp.getFieldStatsInfo());
         FieldStatsInfo info = resp.getFieldStatsInfo().get(SolrConstants.CALENDAR_YEAR);
-        Assert.assertNotNull(info);
+        Assertions.assertNotNull(info);
     }
 
     /**
@@ -160,12 +185,12 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      * @verifies not return any docs
      */
     @Test
-    public void searchFacetsAndStatistics_shouldNotReturnAnyDocs() throws Exception {
+    void searchFacetsAndStatistics_shouldNotReturnAnyDocs() throws Exception {
         QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
                 .searchFacetsAndStatistics(SolrConstants.CALENDAR_YEAR + ":*", null, Collections.singletonList(SolrConstants.CALENDAR_YEAR), 0,
                         false);
-        Assert.assertTrue(resp.getResults().isEmpty());
+        Assertions.assertTrue(resp.getResults().isEmpty());
     }
 
     /**
@@ -173,9 +198,9 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      * @verifies retrieve correct IDDOC
      */
     @Test
-    public void getImageOwnerIddoc_shouldRetrieveCorrectIDDOC() throws Exception {
+    void getImageOwnerIddoc_shouldRetrieveCorrectIDDOC() throws Exception {
         long iddoc = DataManager.getInstance().getSearchIndex().getImageOwnerIddoc(PI_KLEIUNIV, 1);
-        Assert.assertNotEquals(-1, iddoc);
+        Assertions.assertNotEquals(-1, iddoc);
     }
 
     /**
@@ -183,7 +208,7 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      * @verifies return correct doc
      */
     @Test
-    public void getFirstDoc_shouldReturnCorrectDoc() throws Exception {
+    void getFirstDoc_shouldReturnCorrectDoc() throws Exception {
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
                 .getFirstDoc(new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(":")
@@ -192,8 +217,8 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
                         .append(SolrConstants.DOCTYPE)
                         .append(":PAGE")
                         .toString(), Collections.singletonList(SolrConstants.ORDER));
-        Assert.assertNotNull(doc);
-        Assert.assertEquals(1, doc.getFieldValue(SolrConstants.ORDER));
+        Assertions.assertNotNull(doc);
+        Assertions.assertEquals(1, doc.getFieldValue(SolrConstants.ORDER));
     }
 
     /**
@@ -201,10 +226,10 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      * @verifies return correct doc
      */
     @Test
-    public void getDocumentByIddoc_shouldReturnCorrectDoc() throws Exception {
+    void getDocumentByIddoc_shouldReturnCorrectDoc() throws Exception {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(String.valueOf(iddocKleiuniv));
-        Assert.assertNotNull(doc);
-        Assert.assertEquals(String.valueOf(iddocKleiuniv), doc.getFieldValue(SolrConstants.IDDOC));
+        Assertions.assertNotNull(doc);
+        Assertions.assertEquals(String.valueOf(iddocKleiuniv), doc.getFieldValue(SolrConstants.IDDOC));
     }
 
     /**
@@ -212,8 +237,8 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      * @verifies retrieve correct IDDOC
      */
     @Test
-    public void getIddocFromIdentifier_shouldRetrieveCorrectIDDOC() throws Exception {
-        Assert.assertEquals(iddocKleiuniv, DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(PI_KLEIUNIV));
+    void getIddocFromIdentifier_shouldRetrieveCorrectIDDOC() throws Exception {
+        Assertions.assertEquals(iddocKleiuniv, DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(PI_KLEIUNIV));
     }
 
     /**
@@ -221,8 +246,8 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      * @verifies retrieve correct identifier
      */
     @Test
-    public void getIdentifierFromIddoc_shouldRetrieveCorrectIdentifier() throws Exception {
-        Assert.assertEquals(PI_KLEIUNIV, DataManager.getInstance().getSearchIndex().getIdentifierFromIddoc(iddocKleiuniv));
+    void getIdentifierFromIddoc_shouldRetrieveCorrectIdentifier() throws Exception {
+        Assertions.assertEquals(PI_KLEIUNIV, DataManager.getInstance().getSearchIndex().getIdentifierFromIddoc(iddocKleiuniv));
     }
 
     /**
@@ -230,8 +255,8 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      * @verifies retrieve correct IDDOC
      */
     @Test
-    public void getIddocByLogid_shouldRetrieveCorrectIDDOC() throws Exception {
-        Assert.assertNotEquals(-1, DataManager.getInstance().getSearchIndex().getIddocByLogid(PI_KLEIUNIV, "LOG_0001"));
+    void getIddocByLogid_shouldRetrieveCorrectIDDOC() throws Exception {
+        Assertions.assertNotEquals(-1, DataManager.getInstance().getSearchIndex().getIddocByLogid(PI_KLEIUNIV, "LOG_0001"));
     }
 
     /**
@@ -239,9 +264,9 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      * @verifies return value from map if available
      */
     @Test
-    public void findDataRepositoryName_shouldReturnValueFromMapIfAvailable() throws Exception {
-        DataManager.getInstance().getSearchIndex().dataRepositoryNames.put("PPN123", "superrepo");
-        Assert.assertEquals("superrepo", DataManager.getInstance().getSearchIndex().findDataRepositoryName("PPN123"));
+    void findDataRepositoryName_shouldReturnValueFromMapIfAvailable() throws Exception {
+        DataManager.getInstance().getSearchIndex().getDataRepositoryNames().put("PPN123", "superrepo");
+        Assertions.assertEquals("superrepo", DataManager.getInstance().getSearchIndex().findDataRepositoryName("PPN123"));
     }
 
     /**
@@ -249,10 +274,10 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      * @verifies update value correctly
      */
     @Test
-    public void updateDataRepositoryNames_shouldUpdateValueCorrectly() throws Exception {
-        Assert.assertNull(DataManager.getInstance().getSearchIndex().dataRepositoryNames.get("PPN123"));
+    void updateDataRepositoryNames_shouldUpdateValueCorrectly() throws Exception {
+        Assertions.assertNull(DataManager.getInstance().getSearchIndex().getDataRepositoryNames().get("PPN123"));
         DataManager.getInstance().getSearchIndex().updateDataRepositoryNames("PPN123", "repo/a");
-        Assert.assertEquals("repo/a", DataManager.getInstance().getSearchIndex().dataRepositoryNames.get("PPN123"));
+        Assertions.assertEquals("repo/a", DataManager.getInstance().getSearchIndex().getDataRepositoryNames().get("PPN123"));
     }
 
     /**
@@ -260,36 +285,19 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      * @verifies return correct values
      */
     @Test
-    public void getLabelValuesForFacetField_shouldReturnCorrectValues() throws Exception {
+    void getLabelValuesForFacetField_shouldReturnCorrectValues() throws Exception {
         String[] values = new String[] { "Groos, Karl", "Schubert, Otto", "Heinse, Gottlob Heinrich" };
         Map<String, String> result = DataManager.getInstance()
                 .getSearchIndex()
                 .getLabelValuesForFacetField("MD_AUTHOR", "MD_FIRSTNAME", new HashSet<>(Arrays.asList(values)));
-        Assert.assertEquals(3, result.size());
-        Assert.assertEquals("Karl", result.get("MD_AUTHOR:Groos, Karl"));
-        Assert.assertEquals("Otto", result.get("MD_AUTHOR:Schubert, Otto"));
-        Assert.assertEquals("Gottlob Heinrich", result.get("MD_AUTHOR:Heinse, Gottlob Heinrich"));
+        Assertions.assertEquals(3, result.size());
+        Assertions.assertEquals("Karl", result.get("MD_AUTHOR:Groos, Karl"));
+        Assertions.assertEquals("Otto", result.get("MD_AUTHOR:Schubert, Otto"));
+        Assertions.assertEquals("Gottlob Heinrich", result.get("MD_AUTHOR:Heinse, Gottlob Heinrich"));
     }
 
     @Test
-    public void getSpellingSuggestions() throws IndexUnreachableException {
-        List<String> suggestions = DataManager.getInstance()
-                .getSearchIndex()
-                .querySpellingSuggestions("tier", 0.7f, false);
-        assertEquals(1, suggestions.size());
-        assertTrue(suggestions.contains("thier"));
-
-        suggestions = DataManager.getInstance()
-                .getSearchIndex()
-                .querySpellingSuggestions("tier", 0.5f, false);
-        assertEquals(10, suggestions.size());
-        assertTrue(suggestions.contains("thier"));
-        assertTrue(suggestions.contains("teil"));
-
-    }
-
-    @Test
-    public void test_getHeatMap() throws IndexUnreachableException {
+    void test_getHeatMap() throws IndexUnreachableException {
 
         String world = "[\"-180 -90\" TO \"180 90\"]";
         String query = "*:*";

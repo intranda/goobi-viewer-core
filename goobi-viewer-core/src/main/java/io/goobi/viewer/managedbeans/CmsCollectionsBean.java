@@ -49,9 +49,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.CMSCollection;
-import io.goobi.viewer.model.cms.CMSCollectionTranslation;
-import io.goobi.viewer.model.cms.CMSCollectionTreeTab;
+import io.goobi.viewer.model.cms.collections.CMSCollection;
+import io.goobi.viewer.model.cms.collections.CMSCollectionTranslation;
+import io.goobi.viewer.model.cms.collections.CMSCollectionTreeTab;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.translations.admin.MessageEntry;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
@@ -61,7 +61,7 @@ import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * Bean handling cms settings for collections
+ * Bean handling CMS settings for collections.
  *
  * @author Florian Alpers
  */
@@ -78,16 +78,13 @@ public class CmsCollectionsBean implements Serializable {
     private static final long serialVersionUID = -2862611194397865986L;
 
     private static final Logger logger = LogManager.getLogger(CmsCollectionsBean.class);
-    // private static final int MAX_IMAGES_PER_PAGE = 36;
 
     @Inject
-    CmsMediaBean cmsMediaBean;
-    @Inject
-    BrowseBean browseBean;
+    private BrowseBean browseBean;
 
     private CMSCollection currentCollection;
     private CMSCollection originalCollection; //collection from database, without any edits after last save
-    String solrField = SolrConstants.DC;
+    private String solrField = SolrConstants.DC;
     private String solrFieldValue;
     private List<CMSCollection> collections;
     private boolean piValid = true;
@@ -203,20 +200,19 @@ public class CmsCollectionsBean implements Serializable {
                 continue;
             }
             for (TranslationGroupItem item : group.getItems()) {
-                if (!item.getKey().equals(solrField)) {
-                    continue;
-                }
-                try {
-                    for (MessageEntry entry : item.getEntries()) {
-                        if (entry.getKey().equals(solrFieldValue)) {
-                            logger.trace(entry.getKey());
-                            return entry;
-                        }
+                if (item.getKey().equals(solrField)) {
+                    try {
+                        for (MessageEntry entry : item.getEntries()) {
+                            if (entry.getKey().equals(solrFieldValue)) {
+                                logger.trace(entry.getKey());
+                                return entry;
+                            }
 
+                        }
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                        break;
                     }
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                    break;
                 }
             }
         }
@@ -227,8 +223,7 @@ public class CmsCollectionsBean implements Serializable {
 
     /**
      *
-     * @param solrField
-     * @return
+     * @return true keys with description suffix found; false otherwise
      */
     public boolean isDisplayImportDescriptionsWidget() {
         for (String key : ViewerResourceBundle.getAllLocalKeys()) {
@@ -240,6 +235,12 @@ public class CmsCollectionsBean implements Serializable {
         return false;
     }
 
+    /**
+     * 
+     * @param solrField
+     * @return empty string
+     * @throws DAOException
+     */
     public String importDescriptionsAction(String solrField) throws DAOException {
         logger.trace("importDescriptionsAction: {}", solrField);
         if (StringUtils.isEmpty(solrField)) {
@@ -257,7 +258,7 @@ public class CmsCollectionsBean implements Serializable {
                 CMSCollection collection = DataManager.getInstance().getDao().getCMSCollection(solrField, rawKey);
                 if (collection == null) {
                     collection = new CMSCollection(solrField, rawKey);
-                    logger.trace("Created new collection: {}", collection.toString());
+                    logger.trace("Created new collection: {}", collection);
                 }
                 collection.populateDescriptions();
 
@@ -282,7 +283,7 @@ public class CmsCollectionsBean implements Serializable {
                         DataManager.getInstance().getDao().addCMSCollection(collection);
                     }
                     collectionCount++;
-                    logger.trace("Saved collection: {}", collection.toString());
+                    logger.trace("Saved collection: {}", collection);
                 }
             }
         }
@@ -339,16 +340,19 @@ public class CmsCollectionsBean implements Serializable {
             updateCollections();
             loadCollection(solrField);
             currentTab.refresh(solrField);
-        } catch (DAOException e) {
-            logger.error(e.getMessage());
-            collections = Collections.emptyList();
-        } catch (IllegalRequestException e) {
-            logger.error(e.getMessage());
-            collections = Collections.emptyList();
-        } catch (IndexUnreachableException e) {
+        } catch (DAOException | IndexUnreachableException | IllegalRequestException e) {
             logger.error(e.getMessage());
             collections = Collections.emptyList();
         }
+    }
+
+    /**
+     * For unit tests.
+     * 
+     * @param solrField the solrField to set
+     */
+    void setSolrFieldNoUpdates(String solrField) {
+        this.solrField = solrField;
     }
 
     /**
@@ -415,8 +419,7 @@ public class CmsCollectionsBean implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<String> getAllCollectionFields() {
-        List<String> collections = DataManager.getInstance().getConfiguration().getConfiguredCollections();
-        return collections;
+        return DataManager.getInstance().getConfiguration().getConfiguredCollections();
     }
 
     /**
@@ -446,25 +449,6 @@ public class CmsCollectionsBean implements Serializable {
         }
     }
 
-    //    /**
-    //     * <p>
-    //     * addCollection.
-    //     * </p>
-    //     *
-    //     * @throws io.goobi.viewer.exceptions.DAOException if any.
-    //     */
-    //    public void addCollection() throws DAOException {
-    //        if (StringUtils.isNoneBlank(getSolrField(), getSolrFieldValue())) {
-    //            CMSCollection collection = new CMSCollection(getSolrField(), getSolrFieldValue());
-    //            DataManager.getInstance().getDao().addCMSCollection(collection);
-    //            updateCollections();
-    //            setSolrFieldValue("");//empty solr field value to avoid creating the same collection again
-    //            logger.trace("collection added to DB: {}", collection);
-    //        } else {
-    //            Messages.error("cms_collections_err_noselection");
-    //        }
-    //    }
-
     /**
      * @param collection
      */
@@ -473,7 +457,7 @@ public class CmsCollectionsBean implements Serializable {
         if (collectionView != null) {
             collectionView.setCollectionInfo(collection.getSolrFieldValue(), collection);
         }
-        List<CollectionView> collections = BeanUtils.getCmsBean().getCollections(collection.getSolrField());
+        List<CollectionView> collections = BeanUtils.getCollectionViewBean().getCollections(collection.getSolrField());
         collections.forEach(view -> view.setCollectionInfo(collection.getSolrFieldValue(), collection));
     }
 
@@ -485,7 +469,7 @@ public class CmsCollectionsBean implements Serializable {
         if (collectionView != null) {
             collectionView.removeCollectionInfo(collection.getSolrFieldValue());
         }
-        List<CollectionView> collections = BeanUtils.getCmsBean().getCollections(collection.getSolrField());
+        List<CollectionView> collections = BeanUtils.getCollectionViewBean().getCollections(collection.getSolrField());
         collections.forEach(view -> view.removeCollectionInfo(collection.getSolrFieldValue()));
 
     }
@@ -495,7 +479,7 @@ public class CmsCollectionsBean implements Serializable {
      * deleteCollection.
      * </p>
      *
-     * @param collection a {@link io.goobi.viewer.model.cms.CMSCollection} object.
+     * @param collection a {@link io.goobi.viewer.model.cms.collections.CMSCollection} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void deleteCollection(CMSCollection collection) throws DAOException {
@@ -509,7 +493,7 @@ public class CmsCollectionsBean implements Serializable {
      * editCollection.
      * </p>
      *
-     * @param collection a {@link io.goobi.viewer.model.cms.CMSCollection} object.
+     * @param collection a {@link io.goobi.viewer.model.cms.collections.CMSCollection} object.
      * @return a {@link java.lang.String} object.
      */
     public String editCollection(CMSCollection collection) {
@@ -525,7 +509,7 @@ public class CmsCollectionsBean implements Serializable {
      * </p>
      *
      * @param language a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.CMSCollectionTranslation} object.
+     * @return a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
      */
     public CMSCollectionTranslation getCurrentLabel(String language) {
         return getCurrentCollection().getLabelAsTranslation(language);
@@ -537,7 +521,7 @@ public class CmsCollectionsBean implements Serializable {
      * </p>
      *
      * @param language a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.CMSCollectionTranslation} object.
+     * @return a {@link io.goobi.viewer.model.cms.collections.CMSCollectionTranslation} object.
      */
     public CMSCollectionTranslation getCurrentDescription(String language) {
         return getCurrentCollection().getDescriptionAsTranslation(language);
@@ -564,6 +548,8 @@ public class CmsCollectionsBean implements Serializable {
                     break;
                 case PI:
                     getCurrentCollection().setMediaItem(null);
+                    break;
+                default:
                     break;
             }
             if (getCurrentCollection().getId() != null) {
@@ -730,14 +716,12 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     public boolean isDirty() {
-        boolean dirty =
-                this.currentCollection != null && this.originalCollection != null && !this.currentCollection.contentEquals(this.originalCollection);
-        return dirty;
+        return this.currentCollection != null && this.originalCollection != null && !this.currentCollection.contentEquals(this.originalCollection);
     }
 
     public String getSearchUrl(CMSCollection collection) {
         String filter = collection.getSolrField() + ":" + collection.getSolrFieldValue();
         filter = StringTools.encodeUrl(filter);
-        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", 1, "-", filter);
+        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", "-", 1, "-", filter);
     }
 }

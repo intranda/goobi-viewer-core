@@ -1,0 +1,75 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+
+	<ui:param name="browseElement"
+		value="#{browseElement != null ? browseElement : null}"></ui:param>
+	<ui:fragment rendered="#{browseElement.showThumbnail}">
+		<div
+			class="col-12 col-sm-2 d-flex justify-content-center justify-content-md-end mt-3 mt-md-0 mb-3 mb-sm-0">
+			<!-- THUMBNAIL -->
+			<figure class="search-list__hit-thumbnail">
+				<!-- SINGLEVOLUME -->
+				<h:outputLink
+					value="#{navigationHelper.applicationUrl}#{browseElement.url}"
+					rendered="#{browseElement.thumbnailUrl != null and !browseElement.anchor}"
+					title="#{browseElement.label}">
+					<img data-src="#{browseElement.thumbnailUrl}"
+						alt="#{browseElement.label}" data-viewer-thumbnail="thumbnail" />
+				</h:outputLink>
+
+				<!-- SINGLEVOLUME WITHOUT IMAGE -->
+				<h:outputLink
+					value="#{navigationHelper.applicationUrl}#{browseElement.url}"
+					rendered="#{browseElement.thumbnailUrl == null and !browseElement.anchor}"
+					title="#{browseElement.label}">
+					<img
+						data-src="/resources/themes/#{navigationHelper.theme}/images/image_not_found.png"
+						alt="#{browseElement.label}" data-viewer-thumbnail="thumbnail" />
+				</h:outputLink>
+
+				<!-- MULTIVOLUME -->
+				<h:outputLink
+					value="#{navigationHelper.applicationUrl}#{browseElement.url}"
+					rendered="#{browseElement.anchor}" styleClass="stackedThumbEffect">
+					<div class="stackedThumbEffect-inner">
+						<img data-src="#{browseElement.thumbnailUrl}"
+							data-viewer-thumbnail="thumbnail"
+							class="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}"
+							alt="Thumbnail" />
+						<h:panelGroup
+							rendered="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME'}">
+							<div class="stacked-thumbnail-before"></div>
+							<div class="stacked-thumbnail-after"></div>
+						</h:panelGroup>
+					</div>
+				</h:outputLink>
+
+				<!-- ADD TO BOOKMARKS -->
+				<ui:fragment rendered="#{showBookmarkIcon}">
+					<button type="button" class="btn btn--icon"
+						data-bookmark-list-type="add" data-pi="#{browseElement.pi}"
+						aria-label="#{msg.bookmarkList_addToBookmarkList}" role="switch"
+						aria-checked="false">
+						<span
+							data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
+							data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
+							data-toggle="tooltip" data-placement="bottom"> <i
+							class="fa #{msg.bookmarkList_icon}" aria-hidden="true"></i> <i
+							class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
+						</span>
+					</button>
+				</ui:fragment>
+			</figure>
+		</div>
+	</ui:fragment>
+
+</ui:composition>

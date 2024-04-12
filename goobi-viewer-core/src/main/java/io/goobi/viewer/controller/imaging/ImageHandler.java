@@ -30,14 +30,13 @@ import java.util.Collections;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.iiif.image.ImageInformation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageManager;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource;
-import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -100,35 +99,37 @@ public class ImageHandler {
         return getImageUrl(pageType, pi, filepath, path.getFileName().toString());
     }
 
-
     /**
      * @param pageType
      * @param pi
      * @param filepath
      * @param filename
-     * @return
+     * @return Generated URL
      */
     public String getImageUrl(PageType pageType, String pi, String filepath, String filename) {
         String escPi = StringTools.encodeUrl(pi);
         String escFilename = StringTools.encodeUrl(filename);
-            if (isRestrictedUrl(filepath)) {
-                String escFilepath = StringTools.escapeCriticalUrlChracters(filepath, true);
-                StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
-                sb.append("image").append("/-/").append(escFilepath).append("/info.json");
-                return sb.toString();
-            } else if (isExternalUrl(filepath)) {
-                return filepath;
-            } else if(urls != null) {
-                ApiPath path = this.urls.path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_INFO).params(escPi, escFilename);
-                if(pageType != null) {
-                    path = path.query("pageType", pageType.name());
-                }
-                return path.build();
-            } else {
-                StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
-                sb.append("image").append("/").append(escPi).append("/").append(escFilename).append("/info.json");
-                return sb.toString();
+        if (isRestrictedUrl(filepath)) {
+            String escFilepath = StringTools.escapeCriticalUrlChracters(filepath, true);
+            if (this.urls != null) {
+                return this.urls.path(ApiUrls.EXTERNAL_IMAGES).params(escFilepath).build();
             }
+            StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
+            sb.append("image/-/").append(escFilepath).append("/info.json");
+            return sb.toString();
+        } else if (isExternalUrl(filepath)) {
+            return filepath;
+        } else if (urls != null) {
+            ApiPath path = this.urls.path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_INFO).params(escPi, escFilename);
+            if (pageType != null) {
+                path = path.query("pageType", pageType.name());
+            }
+            return path.build();
+        } else {
+            StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
+            sb.append("image").append("/").append(escPi).append("/").append(escFilename).append("/info.json");
+            return sb.toString();
+        }
     }
 
     /**
@@ -149,14 +150,13 @@ public class ImageHandler {
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @return The image information for the image file of the given page
-     * @throws de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public ImageInformation getImageInformation(PhysicalElement page)
-            throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
+            throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
         String path = page.getFilepath();
         String url = null;
         if (isExternalUrl(path)) {
@@ -178,20 +178,15 @@ public class ImageHandler {
      *
      * @param url a {@link java.lang.String} object.
      * @return a {@link de.intranda.api.iiif.image.ImageInformation} object.
-     * @throws de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException if any.
      * @throws java.net.URISyntaxException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
      */
-    public ImageInformation getImageInformation(String url) throws IllegalPathSyntaxException, URISyntaxException, ContentLibException {
-        if (url.endsWith("info.json")) {
-            url = url.replace("info.json", "full/max/0/default.jpg");
-        }
-        PageSource imageSource = new PageSource(0, url, Collections.emptyMap());
+    public ImageInformation getImageInformation(final String url) throws URISyntaxException, ContentLibException {
+        PageSource imageSource = new PageSource(0, url.replace("info.json", "full/max/0/default.jpg"), Collections.emptyMap());
         try (ImageManager manager = new ImageManager(imageSource.getImageUri())) {
-            ImageInformation info = manager.getImageInformation(new URI(""));
-            return info;
+            return manager.getImageInformation(new URI(""));
         } catch (FileNotFoundException e) {
-            throw new ContentLibException("Cannot resolve url " + url + " to existing resource");
+            throw new ContentLibException("Cannot resolve url " + url.replace("info.json", "full/max/0/default.jpg") + " to existing resource");
         }
     }
 
@@ -217,10 +212,7 @@ public class ImageHandler {
      * @param url a {@link java.lang.String} object.
      */
     protected static boolean isImageUrl(String url, boolean displayableTypesOnly) {
-        if (url.endsWith("/")) {
-            url = url.substring(0, url.length() - 1);
-        }
-        String extension = FilenameUtils.getExtension(url.toLowerCase());
+        String extension = FilenameUtils.getExtension(StringTools.removeTrailingSlashes(url).toLowerCase());
         switch (extension) {
             case "jpg":
             case "jpeg":
@@ -250,6 +242,5 @@ public class ImageHandler {
                 .stream()
                 .anyMatch(regex -> Pattern.compile(regex).matcher(path).matches());
     }
-
 
 }

@@ -99,16 +99,18 @@ public class SuccessMessage implements IResponseMessage {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         SuccessMessage other = (SuccessMessage) obj;
-        if (success != other.success)
-            return false;
-        return true;
+
+        return success == other.success;
     }
 
 }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+	<jsfComponent>
+		<library>cms/components/frontend/component</library>
+		<name>collectiontiled</name>
+	</jsfComponent>
+	<label>cms_component__collection_tiled__label</label>
+	<description>cms_component__collection_tiled__desc</description>
+	<icon>cms/components/frontend/component/icon/collection.png</icon>
+	<content>
+		<item id="collection">
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>collection</name>
+			</jsfComponent>
+		</item>
+	</content>
+	<attribute name="collectionBaseLevels" display="false" boolean="false">
+		<value>0</value>
+	</attribute>
+	<attribute name="openExpanded" display="false" boolean="true">
+		<value>true</value>
+	</attribute>
+	<attribute name="displayParents" display="false" boolean="true">
+		<value>false</value>
+	</attribute>
+	<attribute name="ignoreHierarchy" display="false" boolean="true">
+		<value>false</value>
+	</attribute>
+	<attribute name="allowGrouping" display="false" boolean="true">
+		<value>false</value>
+	</attribute>
+	<attribute name="allowOpenExpanded" display="false" boolean="true">
+		<value>true</value>
+	</attribute>
+</component>

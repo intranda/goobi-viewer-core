@@ -60,9 +60,10 @@
 
 			<!-- RIGHT AREA TOPBAR -->
 			<div class="admin__topbar-backend-right">
+
 	            <div class="admin__topbar-frontend-hotfolder">
 	            	<!-- COUNT FILES PROCESSING -->
-	            	<h:panelGroup id="hotfolderFileCountGroup">
+	            	<h:panelGroup layout="block" id="hotfolderFileCountGroup">
                     <ui:fragment rendered="#{userBean.admin and adminBean.hotfolderFileCount > 0}">
 						<div class="admin__topbar-frontend-hotfolder-files-action">
 						    <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>
@@ -95,6 +96,23 @@
 		                 </h:form>
 		            </div>
 				</ui:fragment>
+				
+               <!-- SESSION TIMEOUT COUNTER -->
+               <!--
+			   <div class="admin__topbar-frontend-session">
+                    <h:panelGroup layout="block" id="sessionTimeoutCounterGroup">
+                    <ui:fragment>
+                        <div class="admin__topbar-frontend-hotfolder-files-action">
+                            <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>
+                            <span>#{userBean.sessionTimeout}</span>
+                        </div>
+                    </ui:fragment>
+                    </h:panelGroup>
+                    <o:socket channel="sessionTimeoutCounter">
+                        <f:ajax event="update" render="sessionTimeoutCounterGroup" />
+                    </o:socket>
+                </div>
+                -->
 
 	            <!-- LOGOUT -->
 	            <div class="admin__topbar-backend-logout">
@@ -136,7 +154,7 @@
 
                 <!-- WIDGETS -->
                 <div class="admin__sidebar-widgets">
-                    <adminWidget:widget_admin />
+                    <adminWidget:widget_admin id="sidebarAdminWidget" />
                     <adminWidget:widget_legal />
                     <adminWidget:widget_crowdsourcing />
                     <adminWidget:widget_cms />

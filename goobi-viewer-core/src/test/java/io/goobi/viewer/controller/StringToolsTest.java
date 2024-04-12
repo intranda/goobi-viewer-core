@@ -21,28 +21,32 @@
  */
 package io.goobi.viewer.controller;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
-
-public class StringToolsTest {
+class StringToolsTest {
 
     /**
      * @see StringTools#escapeHtmlChars(String)
      * @verifies escape all characters correctly
      */
     @Test
-    public void escapeHtmlChars_shouldEscapeAllCharactersCorrectly() throws Exception {
-        Assert.assertEquals("&lt;i&gt;&quot;A&amp;B&quot;&lt;/i&gt;", StringTools.escapeHtmlChars("<i>\"A&B\"</i>"));
+    void escapeHtmlChars_shouldEscapeAllCharactersCorrectly() throws Exception {
+        assertEquals("&lt;i&gt;&quot;A&amp;B&quot;&lt;/i&gt;", StringTools.escapeHtmlChars("<i>\"A&B\"</i>"));
     }
 
     /**
@@ -50,8 +54,8 @@ public class StringToolsTest {
      * @verifies replace characters correctly
      */
     @Test
-    public void replaceCharacters_shouldReplaceCharactersCorrectly() throws Exception {
-        Assert.assertEquals("|-|3110",
+    void replaceCharacters_shouldReplaceCharactersCorrectly() throws Exception {
+        assertEquals("|-|3110",
                 StringTools.replaceCharacters("Hello", new String[] { "H", "e", "l", "o" }, new String[] { "|-|", "3", "1", "0" }));
     }
 
@@ -60,8 +64,8 @@ public class StringToolsTest {
      * @verifies remove diacritical marks correctly
      */
     @Test
-    public void removeDiacriticalMarks_shouldRemoveDiacriticalMarksCorrectly() throws Exception {
-        Assert.assertEquals("aaaaoooouuuueeeeßn", StringTools.removeDiacriticalMarks("äáàâöóòôüúùûëéèêßñ"));
+    void removeDiacriticalMarks_shouldRemoveDiacriticalMarksCorrectly() throws Exception {
+        assertEquals("aaaaoooouuuueeeeßn", StringTools.removeDiacriticalMarks("äáàâöóòôüúùûëéèêßñ"));
     }
 
     /**
@@ -69,8 +73,8 @@ public class StringToolsTest {
      * @verifies remove line breaks correctly
      */
     @Test
-    public void removeLineBreaks_shouldRemoveLineBreaksCorrectly() throws Exception {
-        Assert.assertEquals("foobar", StringTools.removeLineBreaks("foo\r\nbar", ""));
+    void removeLineBreaks_shouldRemoveLineBreaksCorrectly() throws Exception {
+        assertEquals("foobar", StringTools.removeLineBreaks("foo\r\nbar", ""));
     }
 
     /**
@@ -78,10 +82,10 @@ public class StringToolsTest {
      * @verifies remove html line breaks correctly
      */
     @Test
-    public void removeLineBreaks_shouldRemoveHtmlLineBreaksCorrectly() throws Exception {
-        Assert.assertEquals("foo bar", StringTools.removeLineBreaks("foo<br>bar", " "));
-        Assert.assertEquals("foo bar", StringTools.removeLineBreaks("foo<br/>bar", " "));
-        Assert.assertEquals("foo bar", StringTools.removeLineBreaks("foo<br />bar", " "));
+    void removeLineBreaks_shouldRemoveHtmlLineBreaksCorrectly() throws Exception {
+        assertEquals("foo bar", StringTools.removeLineBreaks("foo<br>bar", " "));
+        assertEquals("foo bar", StringTools.removeLineBreaks("foo<br/>bar", " "));
+        assertEquals("foo bar", StringTools.removeLineBreaks("foo<br />bar", " "));
     }
 
     /**
@@ -89,10 +93,12 @@ public class StringToolsTest {
      * @verifies remove JS blocks correctly
      */
     @Test
-    public void stripJS_shouldRemoveJSBlocksCorrectly() throws Exception {
-        Assert.assertEquals("foo  bar", StringTools.stripJS("foo <script type=\"javascript\">\nfunction f {\n alert();\n}\n</script> bar"));
-        Assert.assertEquals("foo  bar", StringTools.stripJS("foo <SCRIPT>\nfunction f {\n alert();\n}\n</ScRiPt> bar"));
-        Assert.assertEquals("foo  bar", StringTools.stripJS("foo <SCRIPT src=\"http://dangerousscript.js\"/> bar"));
+    void stripJS_shouldRemoveJSBlocksCorrectly() throws Exception {
+        assertEquals("foo  bar", StringTools.stripJS("foo <script type=\"javascript\">\nfunction f {\n alert();\n}\n</script> bar"));
+        assertEquals("foo  bar", StringTools.stripJS("foo <SCRIPT>\nfunction f {\n alert();\n}\n</ScRiPt> bar"));
+        assertEquals("foo  bar", StringTools.stripJS("foo <SCRIPT src=\"http://dangerousscript.js\"/> bar"));
+        assertEquals("foo  bar", StringTools.stripJS("foo <svG onLoad=alert(\"Hello_XSS_World\")></svG> bar"));
+        assertEquals("foo  bar", StringTools.stripJS("foo <svG onLoad=alert(\"Hello_XSS_World\")/> bar"));
     }
 
     /**
@@ -100,20 +106,20 @@ public class StringToolsTest {
      * @verifies remove chars correctly
      */
     @Test
-    public void stripPatternBreakingChars_shouldRemoveCharsCorrectly() throws Exception {
-        Assert.assertEquals("foo_bar__", StringTools.stripPatternBreakingChars("foo\tbar\r\n"));
+    void stripPatternBreakingChars_shouldRemoveCharsCorrectly() throws Exception {
+        assertEquals("foo_bar__", StringTools.stripPatternBreakingChars("foo\tbar\r\n"));
     }
 
     @Test
-    public void testEscapeQuotes() {
+    void testEscapeQuotes() {
         String original = "Das ist ein 'String' mit \"Quotes\".";
         String reference = "Das ist ein \\'String\\' mit \\\"Quotes\\\".";
 
         String escaped = StringTools.escapeQuotes(original);
-        Assert.assertEquals(reference, escaped);
+        assertEquals(reference, escaped);
 
         escaped = StringTools.escapeQuotes(reference);
-        Assert.assertEquals(reference, escaped);
+        assertEquals(reference, escaped);
     }
 
     /**
@@ -121,9 +127,9 @@ public class StringToolsTest {
      * @verifies return true for image urls
      */
     @Test
-    public void isImageUrl_shouldReturnTrueForImageUrls() throws Exception {
-        Assert.assertTrue(StringTools.isImageUrl("https://example.com/default.jpg"));
-        Assert.assertTrue(StringTools.isImageUrl("https://example.com/MASTER.TIFF"));
+    void isImageUrl_shouldReturnTrueForImageUrls() throws Exception {
+        assertTrue(StringTools.isImageUrl("https://example.com/default.jpg"));
+        assertTrue(StringTools.isImageUrl("https://example.com/MASTER.TIFF"));
     }
 
     /**
@@ -131,20 +137,20 @@ public class StringToolsTest {
      * @verifies rename classes correctly
      */
     @Test
-    public void renameIncompatibleCSSClasses_shouldRenameClassesCorrectly() throws Exception {
+    void renameIncompatibleCSSClasses_shouldRenameClassesCorrectly() throws Exception {
         Path file = Paths.get("src/test/resources/data/text_example_bad_classes.htm");
-        Assert.assertTrue(Files.isRegularFile(file));
+        assertTrue(Files.isRegularFile(file));
 
         String html = FileTools.getStringFromFile(file.toFile(), StringTools.DEFAULT_ENCODING);
-        Assert.assertNotNull(html);
-        Assert.assertTrue(html.contains(".20Formatvorlage"));
-        Assert.assertTrue(html.contains("class=\"20Formatvorlage"));
+        Assertions.assertNotNull(html);
+        assertTrue(html.contains(".20Formatvorlage"));
+        assertTrue(html.contains("class=\"20Formatvorlage"));
 
         html = StringTools.renameIncompatibleCSSClasses(html);
-        Assert.assertFalse(html.contains(".20Formatvorlage"));
-        Assert.assertFalse(html.contains("class=\"20Formatvorlage"));
-        Assert.assertTrue(html.contains(".Formatvorlage20"));
-        Assert.assertTrue(html.contains("class=\"Formatvorlage20"));
+        assertFalse(html.contains(".20Formatvorlage"));
+        assertFalse(html.contains("class=\"20Formatvorlage"));
+        assertTrue(html.contains(".Formatvorlage20"));
+        assertTrue(html.contains("class=\"Formatvorlage20"));
     }
 
     /**
@@ -152,13 +158,13 @@ public class StringToolsTest {
      * @verifies create list correctly
      */
     @Test
-    public void getHierarchyForCollection_shouldCreateListCorrectly() throws Exception {
+    void getHierarchyForCollection_shouldCreateListCorrectly() throws Exception {
         List<String> result = StringTools.getHierarchyForCollection("a.b.c.d", ".");
-        Assert.assertEquals(4, result.size());
-        Assert.assertEquals("a", result.get(0));
-        Assert.assertEquals("a.b", result.get(1));
-        Assert.assertEquals("a.b.c", result.get(2));
-        Assert.assertEquals("a.b.c.d", result.get(3));
+        assertEquals(4, result.size());
+        assertEquals("a", result.get(0));
+        assertEquals("a.b", result.get(1));
+        assertEquals("a.b.c", result.get(2));
+        assertEquals("a.b.c.d", result.get(3));
     }
 
     /**
@@ -166,10 +172,10 @@ public class StringToolsTest {
      * @verifies return single value correctly
      */
     @Test
-    public void getHierarchyForCollection_shouldReturnSingleValueCorrectly() throws Exception {
+    void getHierarchyForCollection_shouldReturnSingleValueCorrectly() throws Exception {
         List<String> result = StringTools.getHierarchyForCollection("a", ".");
-        Assert.assertEquals(1, result.size());
-        Assert.assertEquals("a", result.get(0));
+        assertEquals(1, result.size());
+        assertEquals("a", result.get(0));
     }
 
     /**
@@ -177,8 +183,8 @@ public class StringToolsTest {
      * @verifies normalize coordinates correctly
      */
     @Test
-    public void normalizeWebAnnotationCoordinates_shouldNormalizeCoordinatesCorrectly() throws Exception {
-        Assert.assertEquals("1, 2, 4, 6", StringTools.normalizeWebAnnotationCoordinates("xywh=1, 2, 3, 4"));
+    void normalizeWebAnnotationCoordinates_shouldNormalizeCoordinatesCorrectly() throws Exception {
+        assertEquals("1, 2, 4, 6", StringTools.normalizeWebAnnotationCoordinates("xywh=1, 2, 3, 4"));
     }
 
     /**
@@ -186,8 +192,8 @@ public class StringToolsTest {
      * @verifies preserve legacy coordinates
      */
     @Test
-    public void normalizeWebAnnotationCoordinates_shouldPreserveLegacyCoordinates() throws Exception {
-        Assert.assertEquals("1, 2, 3, 4", StringTools.normalizeWebAnnotationCoordinates("1, 2, 3, 4"));
+    void normalizeWebAnnotationCoordinates_shouldPreserveLegacyCoordinates() throws Exception {
+        assertEquals("1, 2, 3, 4", StringTools.normalizeWebAnnotationCoordinates("1, 2, 3, 4"));
     }
 
     /**
@@ -195,8 +201,8 @@ public class StringToolsTest {
      * @verifies hash string correctly
      */
     @Test
-    public void generateHash_shouldHashStringCorrectly() throws Exception {
-        Assert.assertEquals("9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08", StringTools.generateHash("test"));
+    void generateHash_shouldHashStringCorrectly() throws Exception {
+        assertEquals("9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08", StringTools.generateHash("test"));
     }
 
     /**
@@ -204,9 +210,9 @@ public class StringToolsTest {
      * @verifies return true if value null or empty
      */
     @Test
-    public void checkValueEmptyOrInverted_shouldReturnTrueIfValueNullOrEmpty() throws Exception {
-        Assert.assertTrue(StringTools.checkValueEmptyOrInverted(null));
-        Assert.assertTrue(StringTools.checkValueEmptyOrInverted(""));
+    void checkValueEmptyOrInverted_shouldReturnTrueIfValueNullOrEmpty() throws Exception {
+        assertTrue(StringTools.checkValueEmptyOrInverted(null));
+        assertTrue(StringTools.checkValueEmptyOrInverted(""));
     }
 
     /**
@@ -214,8 +220,8 @@ public class StringToolsTest {
      * @verifies return true if value starts with 0x1
      */
     @Test
-    public void checkValueEmptyOrInverted_shouldReturnTrueIfValueStartsWith0x1() throws Exception {
-        Assert.assertTrue(StringTools.checkValueEmptyOrInverted("oof"));
+    void checkValueEmptyOrInverted_shouldReturnTrueIfValueStartsWith0x1() throws Exception {
+        assertTrue(StringTools.checkValueEmptyOrInverted("oof"));
     }
 
     /**
@@ -223,8 +229,8 @@ public class StringToolsTest {
      * @verifies return true if value starts with #1;
      */
     @Test
-    public void checkValueEmptyOrInverted_shouldReturnTrueIfValueStartsWith1() throws Exception {
-        Assert.assertTrue(StringTools.checkValueEmptyOrInverted("#1;oof"));
+    void checkValueEmptyOrInverted_shouldReturnTrueIfValueStartsWith1() throws Exception {
+        assertTrue(StringTools.checkValueEmptyOrInverted("#1;oof"));
     }
 
     /**
@@ -232,8 +238,8 @@ public class StringToolsTest {
      * @verifies return false otherwise
      */
     @Test
-    public void checkValueEmptyOrInverted_shouldReturnFalseOtherwise() throws Exception {
-        Assert.assertFalse(StringTools.checkValueEmptyOrInverted("foo"));
+    void checkValueEmptyOrInverted_shouldReturnFalseOtherwise() throws Exception {
+        assertFalse(StringTools.checkValueEmptyOrInverted("foo"));
     }
 
     /**
@@ -241,13 +247,13 @@ public class StringToolsTest {
      * @verifies return all matching keys
      */
     @Test
-    public void filterStringsViaRegex_shouldReturnAllMatchingKeys() throws Exception {
+    void filterStringsViaRegex_shouldReturnAllMatchingKeys() throws Exception {
         String[] keys = new String[] { "foo", "bar", "key0", "key1", "key2" };
         List<String> result = StringTools.filterStringsViaRegex(Arrays.asList(keys), "key[0-9]+");
-        Assert.assertEquals(3, result.size());
-        Assert.assertEquals("key0", result.get(0));
-        Assert.assertEquals("key1", result.get(1));
-        Assert.assertEquals("key2", result.get(2));
+        assertEquals(3, result.size());
+        assertEquals("key0", result.get(0));
+        assertEquals("key1", result.get(1));
+        assertEquals("key2", result.get(2));
     }
 
     /**
@@ -255,8 +261,8 @@ public class StringToolsTest {
      * @verifies return true if string contains url encoded characters
      */
     @Test
-    public void isStringUrlEncoded_shouldReturnTrueIfStringContainsUrlEncodedCharacters() throws Exception {
-        Assert.assertTrue(StringTools.isStringUrlEncoded("%28foo%29", StringTools.DEFAULT_ENCODING));
+    void isStringUrlEncoded_shouldReturnTrueIfStringContainsUrlEncodedCharacters() throws Exception {
+        assertTrue(StringTools.isStringUrlEncoded("%28foo%29", StringTools.DEFAULT_ENCODING));
     }
 
     /**
@@ -264,8 +270,8 @@ public class StringToolsTest {
      * @verifies return false if string not encoded
      */
     @Test
-    public void isStringUrlEncoded_shouldReturnFalseIfStringNotEncoded() throws Exception {
-        Assert.assertFalse(StringTools.isStringUrlEncoded("(foo)", StringTools.DEFAULT_ENCODING));
+    void isStringUrlEncoded_shouldReturnFalseIfStringNotEncoded() throws Exception {
+        assertFalse(StringTools.isStringUrlEncoded("(foo)", StringTools.DEFAULT_ENCODING));
     }
 
     /**
@@ -273,9 +279,9 @@ public class StringToolsTest {
      * @verifies replace characters correctly
      */
     @Test
-    public void escapeCriticalUrlChracters_shouldReplaceCharactersCorrectly() throws Exception {
-        Assert.assertEquals("U002BAU002FU005CU007CU003FZ", StringTools.escapeCriticalUrlChracters("+A/\\|?Z", false));
-        Assert.assertEquals("U007C", StringTools.escapeCriticalUrlChracters("%7C", true));
+    void escapeCriticalUrlChracters_shouldReplaceCharactersCorrectly() throws Exception {
+        assertEquals("U002BAU002FU005CU007CU003FZ", StringTools.escapeCriticalUrlChracters("+A/\\|?Z", false));
+        assertEquals("U007C", StringTools.escapeCriticalUrlChracters("%7C", true));
     }
 
     /**
@@ -283,8 +289,72 @@ public class StringToolsTest {
      * @verifies replace characters correctly
      */
     @Test
-    public void unescapeCriticalUrlChracters_shouldReplaceCharactersCorrectly() throws Exception {
-        Assert.assertEquals("+A/\\|?Z", StringTools.unescapeCriticalUrlChracters("U002BAU002FU005CU007CU003FZ"));
+    void unescapeCriticalUrlChracters_shouldReplaceCharactersCorrectly() throws Exception {
+        assertEquals("+A/\\|?Z", StringTools.unescapeCriticalUrlChracters("U002BAU002FU005CU007CU003FZ"));
     }
 
+    @Test
+    void testSortByList() {
+        List<String> sorting = List.of("c", "d", "e", "f", "g", "a", "h");
+
+        List<String> s1 = List.of("a", "b", "c", "d");
+        List<String> s1Sorted = new ArrayList<>(s1);
+        s1Sorted.sort((k, l) -> StringTools.sortByList(k, l, sorting));
+        assertEquals("c", s1Sorted.get(0));
+        assertEquals("d", s1Sorted.get(1));
+        assertEquals("a", s1Sorted.get(2));
+        assertEquals("b", s1Sorted.get(3));
+    }
+
+    @Test
+    void testCleanHtml() {
+
+        String html =
+                "<p><script>alert('SPAM')</script><span data-sheets-value=\"{\"1\":2,\"2\":\"Kremer, Boris, and Alex Reding. My home is my castle : exposition d’art contemporain, du 1er juin au 27 octobre 2006, Galerie l’Indépendance - Parc Heintz] = from 1 June to 27 October 2006. Luxembourg: Dexia-BIL, 2006. Print.\"}\" data-sheets-userformat=\"{\"2\":15107,\"3\":{\"1\":0},\"4\":{\"1\":2,\"2\":16777215},\"11\":4,\"12\":0,\"14\":{\"1\":2,\"2\":3815994},\"15\":\"\\\"Source Sans Pro\\\", \\\"Helvetica Neue\\\", Helvetica, Arial, sans-serif\",\"16\":11}\">Kremer, Boris, and Alex Reding. <em>My home is my castle : exposition d’art contemporain, du 1er juin au 27 octobre 2006, Galerie l’Indépendance - Parc Heintz</em>. Luxembourg: Dexia-BIL, 2006. Print.</span></p>";
+        String expectHtmlCleanted =
+                "<p><span>Kremer, Boris, and Alex Reding. <em>My home is my castle : exposition d’art contemporain, du 1er juin au 27 octobre 2006, Galerie l’Indépendance - Parc Heintz</em>. Luxembourg: Dexia-BIL, 2006. Print.</span></p>";
+
+        String htmlCleaned = Jsoup.clean(html, Safelist.relaxed());
+
+        assertEquals(expectHtmlCleanted, htmlCleaned);
+
+    }
+
+    /**
+     * @see StringTools#findBestMatch(String,List<String>,Locale)
+     * @verifies throw IllegalArgumentException if s is null
+     */
+    @Test
+    void findBestMatch_shouldThrowIllegalArgumentExceptionIfSIsNull() throws Exception {
+        Exception e = Assertions.assertThrows(IllegalArgumentException.class, () -> StringTools.findBestMatch(null, Collections.emptyList(), "en"));
+        assertEquals("s may not be null", e.getMessage());
+    }
+
+    /**
+     * @see StringTools#findBestMatch(String,List<String>,Locale)
+     * @verifies throw IllegalArgumentException if candidates is null
+     */
+    @Test
+    void findBestMatch_shouldThrowIllegalArgumentExceptionIfCandidatesIsNull() throws Exception {
+        Exception e = Assertions.assertThrows(IllegalArgumentException.class, () -> StringTools.findBestMatch("foo", null, "en"));
+        assertEquals("candidates may not be null", e.getMessage());
+    }
+
+    /**
+     * @see StringTools#findBestMatch(String,List<String>,Locale)
+     * @verifies return best match
+     */
+    @Test
+    void findBestMatch_shouldReturnBestMatch() throws Exception {
+        assertEquals("amet, sit, ipsum!", StringTools.findBestMatch("Lorem ipsum dolor sit amet", Arrays.asList("foo", "foo lorem", "amet, sit, ipsum!"), "en"));
+    }
+    
+    /**
+     * @see StringTools#findBestMatch(String,List<String>,Locale)
+     * @verifies return null if no matches found
+     */
+    @Test
+    void findBestMatch_shouldReturnNullIfNoMatchesFound() throws Exception {
+        Assertions.assertNull(StringTools.findBestMatch("Lorem ipsum dolor sit amet", Arrays.asList(";)", "", "zyx"), "en"));
+    }
 }

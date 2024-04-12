@@ -21,9 +21,14 @@
  */
 package io.goobi.viewer.model.cms;
 
+import java.io.Serializable;
 import java.util.Locale;
 import java.util.Optional;
 
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.viewer.PageType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,11 +37,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
-import org.apache.commons.lang3.StringUtils;
-
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.DAOException;
-
 /**
  * <p>
  * CMSStaticPage class.
@@ -44,7 +44,9 @@ import io.goobi.viewer.exceptions.DAOException;
  */
 @Entity
 @Table(name = "cms_static_pages")
-public class CMSStaticPage {
+public class CMSStaticPage implements Serializable {
+
+    private static final long serialVersionUID = -8591081547005923490L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -87,25 +89,6 @@ public class CMSStaticPage {
     }
 
     /**
-     * Construct a CMSStaticPage from a CMSPage referring to a static page. Used for Backwards compability
-     *
-     * @param cmsPage a {@link io.goobi.viewer.model.cms.CMSPage} object.
-     * @throws java.lang.IllegalArgumentException if the cmsPage does not refer to a static page
-     * @throws java.lang.NullPointerException if the cmsPage is null
-     */
-    @SuppressWarnings("deprecation")
-    public CMSStaticPage(CMSPage cmsPage) {
-        String staticPageName = cmsPage.getStaticPageName();
-        if (StringUtils.isBlank(staticPageName)) {
-            throw new IllegalArgumentException("Can only create a static page from a CMSPage with a non-empty staticPageName");
-        }
-
-        this.id = null;
-        this.pageName = staticPageName.trim();
-        setCmsPage(cmsPage);
-    }
-
-    /**
      * <p>
      * getCmsPageOptional.
      * </p>
@@ -124,7 +107,7 @@ public class CMSStaticPage {
      * Getter for the field <code>cmsPage</code>.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      */
     public CMSPage getCmsPage() {
         return getCmsPageOptional().orElse(null);
@@ -139,7 +122,7 @@ public class CMSStaticPage {
      */
     public void setCmsPage(CMSPage cmsPage) {
         this.cmsPage = Optional.ofNullable(cmsPage);
-        setCmsPageId(this.cmsPage.map(page -> page.getId()).orElse(null));
+        setCmsPageId(this.cmsPage.map(CMSPage::getId).orElse(null));
     }
 
     /**
@@ -174,7 +157,7 @@ public class CMSStaticPage {
      */
     public boolean isLanguageComplete(Locale locale) {
         if (getCmsPageOptional().isPresent()) {
-            return cmsPage.get().isLanguageComplete(locale);
+            return cmsPage.get().isComplete(locale);
         }
         return false;
     }
@@ -210,19 +193,16 @@ public class CMSStaticPage {
      */
     public void setCmsPageId(Long cmsPageId) {
         this.cmsPageId = cmsPageId;
-        Optional<CMSPage> cmsPage = getCmsPageOptional();
-        if (!cmsPage.isPresent() || cmsPage.map(page -> page.getId()).map(id ->  !id.equals(cmsPageId)).orElse(true)) {
+        Optional<CMSPage> localCmsPage = getCmsPageOptional();
+        if (!localCmsPage.isPresent() || localCmsPage.map(CMSPage::getId).map(id1 -> !id1.equals(cmsPageId)).orElse(true)) {
             updateCmsPage();
         }
     }
 
-    /**
-     * @param cmsPageId2
-     */
     private void updateCmsPage() {
-        getCmsPageId().ifPresent(id -> {
+        getCmsPageId().ifPresent(id1 -> {
             try {
-                this.cmsPage = Optional.ofNullable(DataManager.getInstance().getDao().getCMSPage(id));
+                this.cmsPage = Optional.ofNullable(DataManager.getInstance().getDao().getCMSPage(id1));
             } catch (DAOException e) {
                 this.cmsPage = Optional.empty();
             }
@@ -249,6 +229,10 @@ public class CMSStaticPage {
         }
 
         return false;
+    }
+
+    public PageType getPageType() {
+        return PageType.getByName(this.pageName);
     }
 
 }

@@ -21,12 +21,17 @@
  */
 package io.goobi.viewer.model.cms;
 
+import java.io.Serializable;
+
 /**
- * An entity holding an object which can be selected or deselected
+ * An entity holding an object which can be selected or unselected
  *
  * @author florian
+ * @param <T>
  */
-public class Selectable<T> implements Comparable<Selectable<T>> {
+public class Selectable<T> implements Comparable<Selectable<T>>, Serializable {
+
+    private static final long serialVersionUID = -7364321290125791403L;
 
     private final T value;
     private boolean selected;
@@ -90,16 +95,16 @@ public class Selectable<T> implements Comparable<Selectable<T>> {
 
         return 0;
     }
-    
+
+    @SuppressWarnings("rawtypes")
     @Override
     public boolean equals(Object obj) {
-        if(obj != null && obj.getClass().equals(this.getClass())) {
+        if (obj != null && obj.getClass().equals(this.getClass())) {
             return (((Selectable) obj).getValue()).equals(this.getValue());
-        } else {
-            return false;
         }
+        return false;
     }
-    
+
     @Override
     public int hashCode() {
         return this.value == null ? 0 : this.value.hashCode();

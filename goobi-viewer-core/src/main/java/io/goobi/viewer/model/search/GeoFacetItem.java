@@ -45,7 +45,6 @@ public class GeoFacetItem implements IFacetItem {
     private static final Logger logger = LogManager.getLogger(GeoFacetItem.class);
     public static final GeoCoordinateFeature NO_AREA = new GeoCoordinateFeature(new double[0][2], "", "");
 
-
     private GeoCoordinateFeature feature = null;
     private String solrField;
 
@@ -55,9 +54,9 @@ public class GeoFacetItem implements IFacetItem {
 
     public GeoFacetItem(GeoFacetItem orig) {
         this.solrField = orig.solrField;
-        if(StringUtils.isBlank(orig.getFeature())) {
+        if (StringUtils.isBlank(orig.getFeature())) {
             this.feature = null;
-        } else if(!orig.feature.hasVertices()) {
+        } else if (!orig.feature.hasVertices()) {
             this.feature = NO_AREA;
         } else {
             this.feature = new GeoCoordinateFeature(orig.getFeature(), orig.getSearchPredicate(), orig.getSearchAreaShape());
@@ -77,21 +76,18 @@ public class GeoFacetItem implements IFacetItem {
     }
 
     public String getSearchPredicate() {
-        if(this.feature != null) {
+        if (this.feature != null) {
             return this.feature.getPredicate();
-        } else {
-            return "";
         }
+        return "";
     }
 
     public String getSearchAreaShape() {
-        if(this.feature != null) {
+        if (this.feature != null) {
             return this.feature.getShape();
-        } else {
-            return "";
         }
+        return "";
     }
-
 
     /**
      * Sets {@link #currentGeoFacettingFeature} and sets the matching search string to the WKT_COORDS facet if available
@@ -99,32 +95,30 @@ public class GeoFacetItem implements IFacetItem {
      * @param feature
      */
     public void setFeature(String feature) {
-            try {
-                if(StringUtils.isNotBlank(feature)) {
-                    this.feature = new GeoCoordinateFeature(feature, getDefaultSearchPredicate(), GeoCoordinateFeature.SHAPE_POLYGON);
-                } else {
-                    this.feature = NO_AREA;
-                }
-            } catch(JSONException e) {
-                logger.error("Faild to parse JSON object {}", feature);
+        try {
+            if (StringUtils.isNotBlank(feature)) {
+                this.feature = new GeoCoordinateFeature(feature, getDefaultSearchPredicate(), GeoCoordinateFeature.SHAPE_POLYGON);
+            } else {
+                this.feature = NO_AREA;
             }
+        } catch (JSONException e) {
+            logger.error("Faild to parse JSON object {}", feature);
+        }
     }
 
     @Deprecated
     public void setFeatureFromContext() {
-        Map<String, String> params = FacesContext.getCurrentInstance().
-                getExternalContext().getRequestParameterMap();
+        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 
-        String feature = params.get("feature");
-        setFeature(feature);
+        String feat = params.get("feature");
+        setFeature(feat);
     }
 
     public String getFacetQuery() {
-        if(isActive() && feature != null && feature.hasVertices()) {
+        if (isActive() && feature != null && feature.hasVertices()) {
             return solrField + ":" + getValue();
-        } else {
-            return "";
         }
+        return "";
     }
 
     public String getValue() {
@@ -136,14 +130,13 @@ public class GeoFacetItem implements IFacetItem {
     }
 
     /**
-     * @return
+     * @return {@link String}
      */
     public String getEscapedFacetQuery() {
-        if(isActive() && feature != null && feature.hasVertices()) {
+        if (isActive() && feature != null && feature.hasVertices()) {
             return solrField + ":" + FacetItem.getEscapedValue(getValue());
-        } else {
-            return "";
         }
+        return "";
     }
 
     /**
@@ -163,7 +156,7 @@ public class GeoFacetItem implements IFacetItem {
      * @param vertices
      */
     public void setVertices(double[][] vertices) {
-        if(vertices == null || vertices.length == 0) {
+        if (vertices == null || vertices.length == 0) {
             this.feature = NO_AREA;
         } else {
             this.feature = new GeoCoordinateFeature(vertices, getDefaultSearchPredicate(), GeoCoordinateFeature.SHAPE_POLYGON);
@@ -234,7 +227,7 @@ public class GeoFacetItem implements IFacetItem {
     }
 
     private String getDefaultSearchPredicate() {
-        return DataManager.getInstance().getConfiguration().getGeoFacetFieldPredicate();
+        return DataManager.getInstance().getConfiguration().getGeoFacetFieldPredicate(solrField);
     }
 
     /* (non-Javadoc)
@@ -267,9 +260,9 @@ public class GeoFacetItem implements IFacetItem {
     @Override
     public void setLink(String link) {
         int separatorIndex = link.indexOf(":");
-        if(separatorIndex > 0) {
+        if (separatorIndex > 0) {
             this.solrField = link.substring(0, separatorIndex);
-            setValue(link.substring(separatorIndex+1));
+            setValue(link.substring(separatorIndex + 1));
         }
     }
 
@@ -314,6 +307,16 @@ public class GeoFacetItem implements IFacetItem {
         return 0;
     }
 
+    @Override
+    public boolean isGroup() {
+        return false;
+    }
+
+    @Override
+    public IFacetItem setGroup(boolean group) {
+        return this;
+    }
+
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.IFacetItem#setCount(long)
      */
@@ -330,5 +333,4 @@ public class GeoFacetItem implements IFacetItem {
     public boolean isHierarchial() {
         return false;
     }
-
 }

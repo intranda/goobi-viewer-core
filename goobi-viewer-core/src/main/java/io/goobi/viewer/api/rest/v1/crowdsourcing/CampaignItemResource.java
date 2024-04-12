@@ -109,12 +109,21 @@ public class CampaignItemResource {
      * <p>
      * Constructor for CampaignItemResource.
      * </p>
+     * 
+     * @param servletRequest
+     * @param campaignId
      */
     public CampaignItemResource(@Context HttpServletRequest servletRequest, @PathParam("campaignId") Long campaignId) {
         this.campaignId = campaignId;
         servletRequest.setAttribute(CrowdsourcingCampaignFilter.CAMPAIGN_ID_REQUEST_ATTRIBUTE, campaignId);
     }
 
+    /**
+     * 
+     * @param servletRequest
+     * @param urls
+     * @param campaignId
+     */
     public CampaignItemResource(@Context HttpServletRequest servletRequest, AbstractApiUrlManager urls, @PathParam("campaignId") Long campaignId) {
         this.urls = urls;
         this.campaignId = campaignId;
@@ -123,10 +132,10 @@ public class CampaignItemResource {
 
     /**
      * Get the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} for a campaign and work, containing the URL of the targeted resource
-     * (iiif manifest) and all information to create a GUI for the campaign's questions
+     * (IIIF manifest) and all information to create a GUI for the campaign's questions
      *
-     * @param campaignId a {@link java.lang.Long} object.
-     * @param pi a {@link java.lang.String} object.
+     * @param persistentIdentifier a {@link java.lang.String} object.
+     * @param servletRequest
      * @return a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem}
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -136,13 +145,13 @@ public class CampaignItemResource {
     @Path("/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public CampaignItem getItemForManifest(@PathParam("pi") String pi, @Context HttpServletRequest servletRequest)
+    public CampaignItem getItemForManifest(@PathParam("pi") final String persistentIdentifier, @Context HttpServletRequest servletRequest)
             throws URISyntaxException, DAOException, ContentNotFoundException {
-        if (pi == null) {
+        if (persistentIdentifier == null) {
             return null;
         }
 
-        pi = StringTools.stripPatternBreakingChars(pi);
+        String pi = StringTools.stripPatternBreakingChars(persistentIdentifier);
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
         if (campaign == null) {
             throw new ContentNotFoundException("No campaign found with id " + campaignId);
@@ -157,8 +166,9 @@ public class CampaignItemResource {
         if (item.isPageStatisticMode() && campaign.getStatistics().get(pi) != null) {
             for (String key : campaign.getStatistics().get(pi).getPageStatistics().keySet()) {
                 CampaignRecordPageStatistic pageStatistic = campaign.getStatistics().get(pi).getPageStatistics().get(key);
-                if (pageStatistic.getPage() != null)
+                if (pageStatistic.getPage() != null) {
                     item.getPageStatusMap().put(pageStatistic.getPage(), pageStatistic.getStatus().name());
+                }
             }
             logger.debug("pageStatusMap set");
         }
@@ -174,7 +184,6 @@ public class CampaignItemResource {
             List<String> allMetadataFields =
                     campaign.getQuestions().stream().flatMap(q -> q.getMetadataFields().stream()).distinct().collect(Collectors.toList());
             String query = SolrConstants.PI + ":" + pi;
-            // logger.debug("Query: {}", query);
             SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, allMetadataFields);
             if (doc == null) {
                 throw new ContentNotFoundException("Record not found: " + pi);
@@ -198,7 +207,7 @@ public class CampaignItemResource {
      * records the {@link io.goobi.viewer.model.security.user.User} who made the change
      *
      * @param item a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} object.
-     * @param pi a {@link java.lang.String} object.
+     * @param persistentIdentifier a {@link java.lang.String} object.
      * @param page
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -206,11 +215,13 @@ public class CampaignItemResource {
     @Path("/{pi}/{page}")
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public void setItemForManifest(CampaignItem item, @PathParam("pi") String pi, @PathParam("page") int page) throws DAOException {
+    public void setItemForManifest(CampaignItem item, @PathParam("pi") final String persistentIdentifier, @PathParam("page") int page)
+            throws DAOException {
         if (item == null) {
             throw new IllegalArgumentException("item may not be null");
         }
 
+        String pi = persistentIdentifier;
         if (pi != null) {
             pi = StringTools.stripPatternBreakingChars(pi);
         }
@@ -265,7 +276,7 @@ public class CampaignItemResource {
             anno.setPublicationStatus(getPublicationStatus(crowdsourcingStatus));
             if (CrowdsourcingStatus.FINISHED.equals(crowdsourcingStatus)) {
                 anno.setAccessCondition(getPublishedAccessCondition(campaign));
-                if(campaign.isReviewModeActive() && user.isPresent()) {
+                if (campaign.isReviewModeActive() && user.isPresent()) {
                     anno.setReviewer(user.get());
                 }
             }
@@ -292,7 +303,7 @@ public class CampaignItemResource {
             anno.setPublicationStatus(getPublicationStatus(crowdsourcingStatus));
             if (CrowdsourcingStatus.FINISHED.equals(crowdsourcingStatus)) {
                 anno.setAccessCondition(getPublishedAccessCondition(campaign));
-                if(campaign.isReviewModeActive() && user.isPresent()) {
+                if (campaign.isReviewModeActive() && user.isPresent()) {
                     anno.setReviewer(user.get());
                 }
             }
@@ -303,7 +314,7 @@ public class CampaignItemResource {
     /**
      * 
      * @param crowdsourcingStatus
-     * @return
+     * @return {@link PublicationStatus}
      */
     private static PublicationStatus getPublicationStatus(CrowdsourcingStatus crowdsourcingStatus) {
         switch (crowdsourcingStatus) {
@@ -322,8 +333,8 @@ public class CampaignItemResource {
     /**
      * Get all annotations for the given campaign and work, sorted by target
      *
-     * @param campaignId a {@link java.lang.Long} object.
      * @param pi a {@link java.lang.String} object.
+     * @param request
      * @return A map of target URIs (manifest or canvas) mapped to a submap of question URIs mapped to questions
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -332,14 +343,12 @@ public class CampaignItemResource {
     @Path("/{pi}/annotations")
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public List<WebAnnotation> getAnnotationsForManifest(@PathParam("pi") String pi, @Context HttpServletRequest request)
+    public List<WebAnnotation> getAnnotationsForManifest(@PathParam("pi") final String pi, @Context HttpServletRequest request)
             throws URISyntaxException, DAOException {
-        if (pi != null) {
-            pi = StringTools.stripPatternBreakingChars(pi);
-        }
         // logger.debug("getAnnotationsForManifest: {}", pi);
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
-        List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, pi);
+        List<CrowdsourcingAnnotation> annotations =
+                DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, StringTools.stripPatternBreakingChars(pi));
 
         List<WebAnnotation> webAnnotations = new ArrayList<>();
         for (CrowdsourcingAnnotation anno : annotations) {
@@ -365,13 +374,9 @@ public class CampaignItemResource {
     @Path("/{pi}/annotations")
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
-    public void setAnnotationsForManifest(List<AnnotationPage> pages, @PathParam("pi") String pi)
+    public void setAnnotationsForManifest(List<AnnotationPage> pages, @PathParam("pi") final String pi)
             throws URISyntaxException, DAOException {
-        if (pi != null) {
-            pi = StringTools.stripPatternBreakingChars(pi);
-        }
         // logger.debug("setAnnotationsForManifest: {}", pi);
-
         IDAO dao = DataManager.getInstance().getDao();
         Campaign campaign = dao.getCampaign(campaignId);
 
@@ -384,7 +389,8 @@ public class CampaignItemResource {
                     "{pageNo}");
             Integer pageOrder = StringUtils.isBlank(pageOrderString) ? null : Integer.parseInt(pageOrderString);
 
-            List<CrowdsourcingAnnotation> existingAnnotations = dao.getAnnotationsForCampaignAndTarget(campaign, pi, pageOrder);
+            List<CrowdsourcingAnnotation> existingAnnotations =
+                    dao.getAnnotationsForCampaignAndTarget(campaign, StringTools.stripPatternBreakingChars(pi), pageOrder);
             List<CrowdsourcingAnnotation> newAnnotations =
                     page.annotations.stream().map(anno -> createPersistentAnnotation(herePi, pageOrder, anno)).collect(Collectors.toList());
 

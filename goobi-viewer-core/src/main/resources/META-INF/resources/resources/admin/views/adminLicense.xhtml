@@ -27,6 +27,8 @@
                                 <h:outputText value="#{msg.admin__license_edit}" rendered="#{adminLicenseBean.currentLicenseType.id != null}" />
                             </h1>
                         </div>
+                        
+                        <viewerComponent:adminBreadcrumbs />
 
                         <div class="admin__content-inner-content">
                             <h2>#{msg.general}</h2>

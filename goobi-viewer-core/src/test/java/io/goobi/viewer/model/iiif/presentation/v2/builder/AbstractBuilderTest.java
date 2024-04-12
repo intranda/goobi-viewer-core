@@ -21,46 +21,55 @@
  */
 package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder;
 
 /**
  * @author florian
  *
  */
-public class AbstractBuilderTest extends AbstractTest {
+class AbstractBuilderTest extends AbstractTest {
 
     AbstractBuilder builder;
 
-    @Before
-    public void SetUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp();
         builder = new AbstractBuilder(new ApiUrls("http://localhost:8080/viewer/rest")) {
         };
     }
 
     @Test
-    public void testGetEventFields() {
+    void testGetEventFields() {
         Map<String, List<String>> events = builder.getEventFields();
-        Assert.assertNotNull(events);
-        Assert.assertEquals(3, events.size());
-        Assert.assertEquals(2, events.get("").size());
-        Assert.assertEquals(2, events.get("Provenienz").size());
-        Assert.assertEquals(1, events.get("Expression Creation").size());
-        Assert.assertEquals("MD_EVENTARTIST", events.get("Expression Creation").iterator().next());
+        Assertions.assertNotNull(events);
+        Assertions.assertEquals(3, events.size());
+        Assertions.assertEquals(2, events.get("").size());
+        Assertions.assertEquals(2, events.get("Provenienz").size());
+        Assertions.assertEquals(1, events.get("Expression Creation").size());
+        Assertions.assertEquals("MD_EVENTARTIST", events.get("Expression Creation").iterator().next());
 
     }
 
+    @Test
+    void testMetadataContained() {
+        List<String> fieldNames = List.of("MD_TEST", "MD_BLA*");
+        
+        Assertions.assertTrue(builder.contained("MD_TEST", fieldNames));
+        Assertions.assertTrue(builder.contained("MD_TEST_LANG_DE", fieldNames));
+        Assertions.assertFalse(builder.contained("MD_TEST_2", fieldNames));
+        
+        Assertions.assertTrue(builder.contained("MD_BLA", fieldNames));
+        Assertions.assertTrue(builder.contained("MD_BLA_LANG_EN", fieldNames));
+        Assertions.assertTrue(builder.contained("MD_BLA_2", fieldNames));
+
+    }
+    
 }

@@ -33,9 +33,9 @@ import io.goobi.viewer.model.search.SearchHit;
  */
 public class SearchHitChildList {
 
-    final private boolean hasMoreChildren;
-    final private int hitsDisplayed;
-    final private List<SearchHit> children;
+    private final boolean hasMoreChildren;
+    private final int hitsDisplayed;
+    private final List<SearchHit> children;
 
     /**
      * <p>

@@ -70,7 +70,7 @@ public class Feedback implements Serializable {
             body = body
                     .replace("{0}", name)
                     .replace("{1}", senderAddress)
-                    .replace("{2}", url)
+                    .replace("{2}", url == null ? "" : url)
                     .replace("{3}", message);
             // Feedback type only exists for crowdsourcing feedback
             if (type != null) {

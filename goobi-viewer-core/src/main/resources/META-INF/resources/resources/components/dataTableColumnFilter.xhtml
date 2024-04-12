@@ -17,10 +17,10 @@
     <composite:implementation>
         <div class="admin__table-filter-inner">
             <div class="form-group mb-0">
-                <label class="sr-only" for="#{cc.attrs.filter.column}">Filter</label>
+                <label class="sr-only" for="#{cc.attrs.filter.name}">Filter</label>
                 <div class="input-group">
                 	<div class="admin__search-input-wrapper">
-	                    <h:inputText id="#{cc.attrs.filter.column}InputText" styleClass="form-control filter-input admin__search-input" value="#{cc.attrs.filter.value}">
+	                    <h:inputText id="#{cc.attrs.filter.name}InputText" styleClass="form-control filter-input admin__search-input" value="#{cc.attrs.filter.value}">
 	                        <f:passThroughAttribute name="aria-label" value="#{msg[cc.attrs.key]}" />
 	                    </h:inputText>
 	                    <div class="admin__search-clear">x</div>
@@ -29,7 +29,7 @@
                         <!-- MESSAGE KEY GIVEN -->
                         <ui:fragment rendered="#{cc.attrs.key != 'empty'}">
                             <button
-								id="#{cc.attrs.filter.column}BtnText"
+								id="#{cc.attrs.filter.name}BtnText"
 								jsf:styleClass="btn btn--icon btn-filter">
                                 #{msg[cc.attrs.key]}
                                 <f:ajax execute="@form" render="@form" />
@@ -38,7 +38,7 @@
                         <!-- NO MESSAGE KEY, USE ICON INSTEAD -->
                         <ui:fragment rendered="#{cc.attrs.key == 'empty'}">
                             <button
-								id="#{cc.attrs.filter.column}BtnIcon"
+								id="#{cc.attrs.filter.name}BtnIcon"
 								jsf:styleClass="btn btn--icon btn-filter">
                                 <i class="fa fa-filter" aria-hidden="true"></i>
                                 <f:ajax execute="@form" render="@form" />

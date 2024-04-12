@@ -32,10 +32,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
-import com.rometools.rome.io.SyndFeedOutput;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.jsf.DynamicContent;
@@ -52,11 +50,11 @@ public class DynamicBean implements Serializable {
 
     private static final long serialVersionUID = -6628922677497179970L;
 
-    private final static Logger logger = LogManager.getLogger(DynamicBean.class);
+    private static final Logger logger = LogManager.getLogger(DynamicBean.class);
 
     private List<DynamicContent> components = new ArrayList<>();
-    private HtmlPanelGroup formGroup = null;
-    private HtmlPanelGroup headGroup = null;
+    private transient HtmlPanelGroup formGroup = null;
+    private transient HtmlPanelGroup headGroup = null;
 
     public void setFormGroup(HtmlPanelGroup group) {
         this.formGroup = group;
@@ -73,7 +71,7 @@ public class DynamicBean implements Serializable {
      * @return the formGroup
      * @throws DAOException
      */
-    public HtmlPanelGroup getFormGroup() throws DAOException {
+    public HtmlPanelGroup getFormGroup() {
         if (formGroup == null) {
             loadFormGroup();
         }
@@ -84,7 +82,7 @@ public class DynamicBean implements Serializable {
      * @return the formGroup
      * @throws DAOException
      */
-    public HtmlPanelGroup getHeadGroup() throws DAOException {
+    public HtmlPanelGroup getHeadGroup() {
         if (headGroup == null) {
             loadHeadGroup();
         }
@@ -99,7 +97,7 @@ public class DynamicBean implements Serializable {
 
         DynamicContentBuilder builder = new DynamicContentBuilder();
         for (DynamicContent content : components) {
-             builder.buildHead(content, this.headGroup);
+            builder.buildHead(content, this.headGroup);
         }
     }
 
@@ -107,39 +105,37 @@ public class DynamicBean implements Serializable {
      * @throws DAOException
      *
      */
-    private void loadFormGroup() throws DAOException {
+    private void loadFormGroup() {
 
         this.formGroup = new HtmlPanelGroup();
 
         DynamicContentBuilder builder = new DynamicContentBuilder();
         for (DynamicContent content : components) {
             UIComponent component = builder.build(content, this.formGroup);
-            if(component == null) {
-                logger.error("Error loading component " + component);
+            if (component == null) {
+                logger.error("Error loading component {}", component);
             } else {
-                logger.trace("Added dynamic content " + component);
+                logger.trace("Added dynamic content {}", component);
             }
         }
     }
 
-    public void addComponent(String id, String type, Map<String, Object> attributes ) {
+    public void addComponent(String id, String type, Map<String, Object> attributes) {
         DynamicContentType contentType = DynamicContentType.valueOf(type.toUpperCase());
         try {
             DynamicContent content = new DynamicContent(contentType, DynamicContentBuilder.getFilenameForType(contentType));
             content.setId(id);
             content.setAttributes(attributes);
             this.components.add(content);
-        } catch(IllegalArgumentException e) {
-            logger.error("Cannot resolve dynamic content type " + type);
+        } catch (IllegalArgumentException e) {
+            logger.error("Cannot resolve dynamic content type {}", type);
         }
     }
 
     public void receiveScriptCommand() {
-        System.out.println("Received script command");
-        Map<String, String> params = FacesContext.getCurrentInstance().
-                getExternalContext().getRequestParameterMap();
-        params.forEach( (key, value) -> System.out.println(key + ": " + value) );
+        logger.trace("Received script command");
+        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        params.forEach((key, value) -> logger.trace("{}: {}", key, value));
     }
-
 
 }

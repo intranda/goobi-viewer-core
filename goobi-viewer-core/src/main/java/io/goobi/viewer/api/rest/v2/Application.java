@@ -22,17 +22,23 @@
 package io.goobi.viewer.api.rest.v2;
 
 import javax.servlet.ServletConfig;
-import javax.servlet.http.HttpServlet;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Context;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
+import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.PersistentStorageBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 /**
  * <p>
@@ -43,13 +49,17 @@ import io.goobi.viewer.controller.DataManager;
 @ViewerRestServiceBinding
 public class Application extends ResourceConfig {
 
+    private static final Logger logger = LogManager.getLogger(Application.class);
+
     /**
-     * <p>
      * Constructor for ViewerApplication.
-     * </p>
+     * 
+     * @param servletConfig
      */
     public Application(@Context ServletConfig servletConfig) {
         super();
+        PersistentStorageBean applicationBean = (PersistentStorageBean) BeanUtils.getBeanByName("applicationBean", PersistentStorageBean.class);
+
         AbstractBinder binder = new AbstractBinder() {
 
             @Override
@@ -57,9 +67,18 @@ public class Application extends ResourceConfig {
                 String apiUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
                 apiUrl = apiUrl.replace("/rest", "/api/v2").replace("/api/v1", "/api/v2");
                 bind(new ApiUrls(apiUrl)).to(ApiUrls.class);
+                CMSTemplateManager templateManager = applicationBean.getTemplateManager();
+                MessageQueueManager messageBroker = applicationBean.getMessageBroker();
+                bind(templateManager).to(CMSTemplateManager.class);
+                bind(messageBroker).to(MessageQueueManager.class);
+                try {
+                    bind(DataManager.getInstance().getDao()).to(IDAO.class);
+                } catch (DAOException e) {
+                    logger.fatal("Unable to instantiate DAO for use in rest api", e);
+                }
             }
         };
-        this.init(binder, servletConfig);
+        this.init(binder);
     }
 
     /**
@@ -69,11 +88,10 @@ public class Application extends ResourceConfig {
      */
     public Application(AbstractBinder binder) {
         super();
-        this.init(binder, new HttpServlet() {
-        });
+        this.init(binder);
     }
 
-    private void init(AbstractBinder injectionBinder, ServletConfig servletConfig) {
+    private void init(AbstractBinder injectionBinder) {
         //Allow receiving multi-part POST requests
         register(MultiPartFeature.class);
         //inject properties into Resources classes
@@ -83,7 +101,6 @@ public class Application extends ResourceConfig {
         packages(true, "io.goobi.viewer.api.rest.filters");
         packages(true, "io.goobi.viewer.api.rest.exceptions");
         packages(true, "io.swagger");
-
 
     }
 

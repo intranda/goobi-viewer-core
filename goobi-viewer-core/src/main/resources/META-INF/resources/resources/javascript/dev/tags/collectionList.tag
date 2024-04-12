@@ -7,13 +7,12 @@
 		<div class="card-header">
 
 			<div class="card-thumbnail">
-				<img if="{collection.thumbnail}" class="img-fluid" src="{collection.thumbnail['@id']}"/>
+				<img if="{collection.thumbnail}" alt="{getValue(collection.label)}" class="img-fluid" src="{collection.thumbnail['@id']}"/>
 			</div>
 			
 			<h3 class="card-title">
-				<a if="{!hasChildren(collection)}" href="{getId(collection.rendering)}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a>
-				<a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false">
-					<span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span>
+				<a href="{getId(collection.rendering)}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a>
+				<a if="{hasChildren(collection)}" class="collapsed card-title-collapse" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false">
 					<i class="fa fa-angle-flip" aria-hidden="true"></i>
 				</a>
 			</h3>

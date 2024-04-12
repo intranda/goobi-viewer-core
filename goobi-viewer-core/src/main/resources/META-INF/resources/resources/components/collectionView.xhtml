@@ -11,15 +11,13 @@
     </composite:interface>
 
     <composite:implementation>
-   		 <ui:param name="collection" value="#{cc.attrs.collection}" />
-<!--    		 #{collection.reset(!collection.displayParentCollections)} -->
 
    		 <div class="collections">
    		 	<h:form id="collectionsForm" prependId="false">
    		 		<div class="collections__wrapper">
                 	<!-- COLLECTIONS -->
                 	<ul class="collection">
-                		<ui:repeat var="browseDcElement" value="#{collection.visibleDcElements}">
+                		<ui:repeat var="browseDcElement" value="#{cc.attrs.collection.visibleDcElements}">
                             <li class="collection__item collection__item--level-#{browseDcElement.level}" style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'padding-right:' : 'padding-left:'} #{browseDcElement.level * 32}px">
                 				<div class="row">
                                     <div class="col-2 col-sm-1 collection__structure-col">
@@ -28,7 +26,7 @@
                                             <div class="collection__structure text-center">
                                                 <button
                                                     class="btn btn-link"
-                                                    jsf:action="#{collection.toggleChildren(browseDcElement)}">
+                                                    jsf:action="#{cc.attrs.collection.toggleChildren(browseDcElement)}">
                                                 	<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__show_details}"/>
                                                     <h:panelGroup rendered="#{browseDcElement.hasSubelements and !browseDcElement.showSubElements}">
                                                         <i class="fa fa-plus-square-o" aria-hidden="true"></i>
@@ -47,7 +45,7 @@
 												<div class="row">
                                                     <div class="col-12">
 														<!-- TITLE -->
-														<h:outputLink value="#{collection.getCollectionUrl(browseDcElement)}" styleClass="#{collection.isTopVisibleElement(browseDcElement) ? 'collection__top-element' : ''}">
+														<h:outputLink value="#{cc.attrs.collection.getCollectionUrl(browseDcElement)}" styleClass="#{cc.attrs.collection.isTopVisibleElement(browseDcElement) ? 'collection__top-element' : ''}">
                                                             <h:outputText rendered="#{browseDcElement.displayNumberOfVolumes}" value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})" />
                                                             <h:outputText rendered="#{!browseDcElement.displayNumberOfVolumes}" value="#{msg[browseDcElement.label]}" />
                                                             <f:ajax render="@form" />

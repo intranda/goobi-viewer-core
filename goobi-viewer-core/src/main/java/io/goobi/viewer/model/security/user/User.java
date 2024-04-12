@@ -36,12 +36,46 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionBindingListener;
+import javax.servlet.http.Part;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.persistence.annotations.Index;
+import org.eclipse.persistence.annotations.PrivateOwned;
+
+import de.unigoettingen.sub.commons.util.PathConverter;
+import io.goobi.viewer.api.rest.v1.authentication.UserAvatarResource;
+import io.goobi.viewer.controller.BCrypt;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.exceptions.AuthenticationException;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.ActiveDocumentBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.CMSCategory;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
+import io.goobi.viewer.model.security.AccessPermission;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.License;
+import io.goobi.viewer.model.security.LicenseType;
+import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
+import io.goobi.viewer.model.transkribus.TranskribusSession;
+import io.goobi.viewer.solr.SolrConstants;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -54,39 +88,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSessionBindingEvent;
-import javax.servlet.http.HttpSessionBindingListener;
-import javax.servlet.http.Part;
-
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.persistence.annotations.Index;
-import org.eclipse.persistence.annotations.PrivateOwned;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import io.goobi.viewer.api.rest.v1.authentication.UserAvatarResource;
-import io.goobi.viewer.controller.BCrypt;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.exceptions.AuthenticationException;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.managedbeans.ActiveDocumentBean;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSPageTemplate;
-import io.goobi.viewer.model.security.AccessPermission;
-import io.goobi.viewer.model.security.IPrivilegeHolder;
-import io.goobi.viewer.model.security.License;
-import io.goobi.viewer.model.security.LicenseType;
-import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
-import io.goobi.viewer.model.transkribus.TranskribusSession;
-import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * <p>
@@ -125,7 +130,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     @Column(name = "email", nullable = false)
     private String email;
 
-    // TODO exclude from serialization
+    // TODO exclude from serialization (without using the "transient" keyword)
     @Column(name = "password_hash")
     private String passwordHash;
 
@@ -177,6 +182,13 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     @CollectionTable(name = "openid_accounts", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "claimed_identifier")
     private List<String> openIdAccounts = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_properties", joinColumns = @JoinColumn(name = "user_id"))
+    @MapKeyColumn(name = "property_name")
+    @Column(name = "property_value")
+    @PrivateOwned
+    private Map<String, String> userProperties = new HashMap<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     @PrivateOwned
@@ -246,8 +258,13 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         for (License license : blueprint.getLicenses()) {
             getLicenses().add(license);
         }
+        // Clone OpenID identifiers
         for (String openIdAccount : blueprint.getOpenIdAccounts()) {
             getOpenIdAccounts().add(openIdAccount);
+        }
+        // Clone properties
+        for (Entry<String, String> entry : blueprint.getUserProperties().entrySet()) {
+            userProperties.put(entry.getKey(), entry.getValue());
         }
     }
 
@@ -319,6 +336,15 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         }
 
         return NetTools.scrambleEmailAddress(email);
+    }
+
+    /**
+     * 
+     * @return HTML-escapted value of <code>getDisplayName()</code>
+     */
+    @Deprecated(since = "2023.11")
+    public String getDisplayNameEscaped() {
+        return StringEscapeUtils.escapeHtml4(getDisplayName());
     }
 
     /**
@@ -414,9 +440,9 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      */
     public AccessPermission canSatisfyAllAccessConditions(Set<String> requiredAccessConditions, String privilegeName, String pi)
             throws PresentationException, IndexUnreachableException, DAOException {
-        // logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi);
+        // logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi); //NOSONAR Debug
         if (isSuperuser()) {
-            // logger.trace("User '{}' is superuser, access granted.", getDisplayName());
+            // logger.trace("User '{}' is superuser, access granted.", getDisplayName()); //NOSONAR Debug
             return AccessPermission.granted();
         }
         if (requiredAccessConditions.isEmpty()) {
@@ -525,7 +551,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isMaySetRepresentativeImage() throws IndexUnreachableException, PresentationException, DAOException {
-        // logger.trace("isMaySetRepresentativeImage");
+        // logger.trace("isMaySetRepresentativeImage"); //NOSONAR Debug
         return isHasPrivilegeForCurrentRecord(LicenseType.LICENSE_TYPE_SET_REPRESENTATIVE_IMAGE, IPrivilegeHolder.PRIV_SET_REPRESENTATIVE_IMAGE,
                 recordsForWhichUserMaySetRepresentativeImage);
     }
@@ -586,10 +612,10 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * @throws DAOException
      */
     private AccessPermission isHasPrivilegeForRecord(String pi, String licenseType, String privilegeName,
-            Map<String, AccessPermission> alreadyCheckedPiMap)
+            final Map<String, AccessPermission> alreadyCheckedPiMap)
             throws PresentationException, IndexUnreachableException, DAOException {
         if (alreadyCheckedPiMap == null) {
-            alreadyCheckedPiMap = new HashMap<>();
+            throw new IllegalArgumentException("alreadyCheckedPiMap may not be null");
         }
         if (alreadyCheckedPiMap.containsKey(pi)) {
             return alreadyCheckedPiMap.get(pi);
@@ -609,7 +635,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      *
      * @param size
      * @param request
-     * @return
+     * @return Avatar URL
      */
     public String getAvatarUrl(int size, HttpServletRequest request) {
         return getAvatarType().getAvatar(this).getIconUrl(size, request);
@@ -712,11 +738,15 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * hasPrivilegesForTemplate.
      * </p>
      *
-     * @param templateId a {@link java.lang.String} object.
+     * @param template
      * @return true exactly if the user is not restricted to certain cmsTemplates or if the given templateId is among the allowed templates for the
      *         user of a usergroup she is in
      */
-    public boolean hasPrivilegesForTemplate(String templateId) {
+    public boolean hasPrivilegesForTemplate(CMSPageTemplate template) {
+        //if there is no template, assume you have all privileges
+        if (template == null) {
+            return true;
+        }
         // Abort if user not a CMS admin
         if (!isCmsAdmin()) {
             return false;
@@ -731,7 +761,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
             if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
                 continue;
             }
-            if (license.getAllowedCmsTemplates().contains(templateId)) {
+            if (license.getAllowedCmsTemplates().contains(template)) {
                 return true;
             }
         }
@@ -743,7 +773,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
                     if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
                         continue;
                     }
-                    if (license.getAllowedCmsTemplates().contains(templateId)) {
+                    if (license.getAllowedCmsTemplates().contains(template)) {
                         return true;
                     }
                 }
@@ -775,7 +805,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
             return allTemplates;
         }
 
-        Set<String> allowedTemplateIds = new HashSet<>(allTemplates.size());
+        Set<CMSPageTemplate> allowedTemplates = new HashSet<>(allTemplates.size());
         // Check user licenses
         for (License license : licenses) {
             if (!LicenseType.LICENSE_TYPE_CMS.equals(license.getLicenseType().getName())) {
@@ -786,7 +816,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
                 return allTemplates;
             }
             if (!license.getAllowedCmsTemplates().isEmpty()) {
-                allowedTemplateIds.addAll(license.getAllowedCmsTemplates());
+                allowedTemplates.addAll(license.getAllowedCmsTemplates());
             }
         }
         // Check user group licenses
@@ -801,7 +831,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
                         return allTemplates;
                     }
                     if (!license.getAllowedCmsTemplates().isEmpty()) {
-                        allowedTemplateIds.addAll(license.getAllowedCmsTemplates());
+                        allowedTemplates.addAll(license.getAllowedCmsTemplates());
                     }
                 }
             }
@@ -809,13 +839,13 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
             logger.error(e.getMessage(), e);
         }
         // allowedTemplateIds.add("template_general_generic");
-        if (allowedTemplateIds.isEmpty()) {
+        if (allowedTemplates.isEmpty()) {
             return Collections.emptyList();
         }
 
         List<CMSPageTemplate> ret = new ArrayList<>(allTemplates.size());
         for (CMSPageTemplate template : allTemplates) {
-            if (allowedTemplateIds.contains(template.getId())) {
+            if (allowedTemplates.contains(template)) {
                 ret.add(template);
             }
         }
@@ -1344,6 +1374,20 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
+     * @return the userProperties
+     */
+    public Map<String, String> getUserProperties() {
+        return userProperties;
+    }
+
+    /**
+     * @param userProperties the userProperties to set
+     */
+    public void setUserProperties(Map<String, String> userProperties) {
+        this.userProperties = userProperties;
+    }
+
+    /**
      * <p>
      * isSuperuser.
      * </p>
@@ -1604,10 +1648,24 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
                     uploadedFile.getInputStream(),
                     destFile,
                     StandardCopyOption.REPLACE_EXISTING);
-            this.localAvatarUpdated = System.currentTimeMillis();
+            if (!Files.exists(destFile)) {
+                throw new IOException("Uploaded file does not exist");
+            } else if (!isValidImageFile(destFile)) {
+                throw new IOException("Uploaded file is not a valid image file");
+            } else {
+                this.localAvatarUpdated = System.currentTimeMillis();
+            }
         } catch (IOException e) {
             logger.error("Error uploaded avatar file: {}", e.toString());
+            deleteAvatarFile();
+            throw e;
         }
+    }
+
+    private static boolean isValidImageFile(Path file) throws IOException {
+        String contentType1 = FileTools.probeContentType(PathConverter.toURI(file));
+        // String contentType2 = FileTools.getMimeTypeFromFile(file);
+        return contentType1.startsWith("image/");
     }
 
     public void deleteAvatarFile() throws IOException {

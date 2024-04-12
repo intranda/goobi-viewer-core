@@ -52,9 +52,9 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSCollection;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSSlider.SourceType;
+import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.cms.Selectable;
 
 /**
@@ -69,8 +69,6 @@ public class CmsSliderEditBean implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(CmsSliderEditBean.class);
 
-    private static final String COLLECTION_FIELD = "DC";
-
     private CMSSlider selectedSlider = null;
 
     private List<Selectable<CMSCategory>> selectableCategories;
@@ -79,15 +77,16 @@ public class CmsSliderEditBean implements Serializable {
 
     private String collectionField;
 
-
-
     /**
      *
      */
     public CmsSliderEditBean() {
         try {
-            selectableCategories = BeanUtils.getCmsBean().getAllCategories()
-                    .stream().map(cat -> new Selectable<CMSCategory>(cat, false)).collect(Collectors.toList());
+            selectableCategories = BeanUtils.getCmsBean()
+                    .getAllCategories()
+                    .stream()
+                    .map(cat -> new Selectable<CMSCategory>(cat, false))
+                    .collect(Collectors.toList());
             collectionField = getAllCollectionFields().get(0);
         } catch (DAOException e) {
             logger.error("Error getting cms categories", e);
@@ -106,10 +105,10 @@ public class CmsSliderEditBean implements Serializable {
     }
 
     private void setSolrField() {
-        if(this.selectedSlider != null && !this.selectedSlider.getCollections().isEmpty()) {
+        if (this.selectedSlider != null && !this.selectedSlider.getCollections().isEmpty()) {
             String solrField = this.selectedSlider.getCollections().get(0);
             solrField = solrField.substring(0, solrField.indexOf("/"));
-            if(this.getAllCollectionFields().contains(solrField)) {
+            if (this.getAllCollectionFields().contains(solrField)) {
                 this.collectionField = solrField;
             }
 
@@ -118,6 +117,8 @@ public class CmsSliderEditBean implements Serializable {
 
     /**
      * Set the selected slider via id string
+     * 
+     * @param idString
      * @throws DAOException
      */
     public void setSliderId(String idString) throws DAOException {
@@ -127,6 +128,8 @@ public class CmsSliderEditBean implements Serializable {
 
     /**
      * Set the selected slider via id
+     * 
+     * @param id
      * @throws DAOException
      */
     public void setSliderId(long id) throws DAOException {
@@ -148,44 +151,43 @@ public class CmsSliderEditBean implements Serializable {
         this.selectedSlider = new CMSSlider(type);
     }
 
-
     /**
-     * Persist the {@link #selectedSlider} to the database and return to slider overview page, ending the current jsf conversation
+     * Persist the {@link #selectedSlider} to the database and return to slider overview page, ending the current JSF conversation.
+     * 
+     * @return Navigation outcome
      */
     public String save() {
-        if(this.selectedSlider != null) {
+        if (this.selectedSlider != null) {
             try {
-                if(this.selectedSlider.getStyle() == null) {
+                if (this.selectedSlider.getStyle() == null) {
                     this.selectedSlider.setStyle("base");
                 }
-            boolean saved = false;
-            if(this.selectedSlider.getId() != null) {
-                saved = DataManager.getInstance().getDao().updateSlider(selectedSlider);
-            } else {
-                saved = DataManager.getInstance().getDao().addSlider(selectedSlider);
-            }
-            if(saved) {
-                Messages.info(null, "button__save__success", "\"" + selectedSlider.getName() + "\"");
-            } else {
-                Messages.error("button__save__error");
+                boolean saved = false;
+                if (this.selectedSlider.getId() != null) {
+                    saved = DataManager.getInstance().getDao().updateSlider(selectedSlider);
+                } else {
+                    saved = DataManager.getInstance().getDao().addSlider(selectedSlider);
+                }
+                if (saved) {
+                    Messages.info(null, "button__save__success", "\"" + selectedSlider.getName() + "\"");
+                } else {
+                    Messages.error("button__save__error");
 
-            }
-            } catch(DAOException e) {
+                }
+            } catch (DAOException e) {
                 logger.error("Error saving slider", e);
                 Messages.error(null, "button__save__error", e.toString());
                 return "";
             }
 
         }
-        return "";//"pretty:adminCmsSliders";
+        return "";
 
     }
-
 
     public String getReturnUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() +  "/admin/cms/slider/";
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/admin/cms/slider/";
     }
-
 
     public List<SourceType> getSourceTypes() {
         return Arrays.asList(SourceType.values());
@@ -193,11 +195,11 @@ public class CmsSliderEditBean implements Serializable {
 
     public List<CMSCollection> getAvailableCollections() {
         Locale locale = BeanUtils.getLocale();
-        if(cmsCollections == null) {
-                cmsCollections = getCollections(collectionField).stream()
-//                .map(collection -> collection.getLabel(BeanUtils.getLocale()))
-                .sorted( (c1, c2) -> ObjectUtils.compare(c1.getLabel(locale), c2.getLabel(locale)))
-                .collect(Collectors.toList());
+        if (cmsCollections == null) {
+            cmsCollections = getCollections(collectionField).stream()
+                    //                .map(collection -> collection.getLabel(BeanUtils.getLocale()))
+                    .sorted((c1, c2) -> ObjectUtils.compare(c1.getLabel(locale), c2.getLabel(locale)))
+                    .collect(Collectors.toList());
         }
         return cmsCollections;
     }
@@ -215,25 +217,21 @@ public class CmsSliderEditBean implements Serializable {
      * Writes all selected categories of {@link #selectableCategories} to the {@link #selectedSlider} if both exist
      */
     public void writeCategories() {
-        if(this.selectableCategories != null && this.selectedSlider != null) {
+        if (this.selectableCategories != null && this.selectedSlider != null) {
             this.selectedSlider.setCategories(this.selectableCategories.stream()
                     .filter(Selectable::isSelected)
                     .map(Selectable::getValue)
                     .map(CMSCategory::getId)
-                    .map(l -> l.toString())
+                    .map(Object::toString)
                     .collect(Collectors.toList()));
         }
     }
 
     private void readCategories() {
-        if(this.selectableCategories != null && this.selectedSlider != null) {
+        if (this.selectableCategories != null && this.selectedSlider != null) {
             this.selectableCategories.forEach(selCat -> {
                 Long catId = selCat.getValue().getId();
-                if(this.selectedSlider.getCategories().contains(catId.toString())) {
-                    selCat.setSelected(true);
-                } else {
-                    selCat.setSelected(false);
-                }
+                selCat.setSelected(this.selectedSlider.getCategories().contains(catId.toString()));
             });
         }
     }
@@ -246,27 +244,26 @@ public class CmsSliderEditBean implements Serializable {
     }
 
     public void setStyleFromRequestParameter() {
-        Map<String, String> params = FacesContext.getCurrentInstance().
-                getExternalContext().getRequestParameterMap();
+        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 
         String style = params.get("sliderStyle");
-        if(StringUtils.isNotBlank(style) && this.selectedSlider != null) {
+        if (StringUtils.isNotBlank(style) && this.selectedSlider != null) {
             selectedSlider.setStyle(style);
         }
     }
 
     public String getSliderSource() {
-        if(this.selectedSlider != null) {
+        if (this.selectedSlider != null) {
             try {
                 List<URI> list = new CMSSliderResource(selectedSlider).getSlides();
                 return new ObjectMapper().writeValueAsString(list);
-            } catch (ContentNotFoundException | IllegalRequestException | PresentationException | IndexUnreachableException | JsonProcessingException e) {
+            } catch (ContentNotFoundException | IllegalRequestException | PresentationException | IndexUnreachableException
+                    | JsonProcessingException e) {
                 logger.error("Unable to create slider source: {}", e.toString());
                 return "[]";
             }
-        } else {
-            return "[]";
         }
+        return "[]";
     }
 
     /**
@@ -285,7 +282,6 @@ public class CmsSliderEditBean implements Serializable {
     }
 
     public List<String> getAllCollectionFields() {
-        List<String> collections = DataManager.getInstance().getConfiguration().getConfiguredCollections();
-        return collections;
+        return DataManager.getInstance().getConfiguration().getConfiguredCollections();
     }
 }

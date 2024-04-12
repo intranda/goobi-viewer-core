@@ -21,7 +21,7 @@
                              <div class="collection-tiled__tile">
  	                            <h:panelGroup rendered="#{browseDcElement.opensInNewWindow}">
  	                          	    <div class="collection-tiled__header">
- 										<h:commandLink action="#{collection.expand(browseDcElement)}" styleClass="#{collection.isTopVisibleElement(browseDcElement) ? 'top-collection-elem' : ''}">
+ 										<a href="#{collection.getCollectionUrl(browseDcElement)}" class="#{collection.isTopVisibleElement(browseDcElement) ? 'top-collection-elem' : ''}">
  											<h:outputText
  												rendered="#{browseDcElement.displayNumberOfVolumes}"
  												value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})"
@@ -30,8 +30,7 @@
  												rendered="#{!browseDcElement.displayNumberOfVolumes}"
  												value="#{msg[browseDcElement.label]}"
  												title="#{msg[browseDcElement.label]}" />
- 											<f:ajax render="@form" />
- 										</h:commandLink>
+ 										</a>
  									</div>
  	                                <div class="collection-tiled__body">
  	                                    <!-- WITH DESCRIPTION -->

@@ -29,8 +29,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -41,7 +41,8 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.configuration2.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.ClientProtocolException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -53,8 +54,6 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaders;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -73,7 +72,7 @@ public class BasexEADParser {
 
     public static final Namespace NAMESPACE_EAD = Namespace.getNamespace("ead", "urn:isbn:1-931666-22-9");
 
-    private static final XPathFactory xFactory = XPathFactory.instance();
+    private static final XPathFactory XFACTORY = XPathFactory.instance();
 
     private final String basexUrl;
 
@@ -83,13 +82,13 @@ public class BasexEADParser {
 
     private Map<String, Entry<String, Boolean>> associatedRecordMap;
 
-
     //    private List<StringPair> eventList;
     //    private List<String> editorList;
 
     /**
      *
-     * @param configFilePath
+     * @param basexUrl
+     * @param searchIndex
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws ConfigurationException
@@ -104,29 +103,28 @@ public class BasexEADParser {
         this.associatedRecordMap = getAssociatedRecordPis(this.searchIndex);
     }
 
-    private static Map<String, Entry<String, Boolean>> getAssociatedRecordPis(SolrSearchIndex searchIndex) throws PresentationException, IndexUnreachableException {
-        if(searchIndex != null) {
-        return searchIndex
-                .search("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":*" + " +" + SolrConstants.PI + ":*",
-                        Arrays.asList(SolrConstants.ARCHIVE_ENTRY_ID, SolrConstants.PI, SolrConstants.BOOL_IMAGEAVAILABLE))
-                .stream()
-                .collect(Collectors.toMap(doc -> SolrTools.getAsString(doc.getFieldValue(SolrConstants.ARCHIVE_ENTRY_ID)),
-                        doc -> new SimpleEntry<String, Boolean>(SolrTools.getAsString(doc.getFieldValue(SolrConstants.PI)),
-                                SolrTools.getAsBoolean(doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE)))));
-        } else {
-            return Collections.emptyMap();
+    private static Map<String, Entry<String, Boolean>> getAssociatedRecordPis(SolrSearchIndex searchIndex)
+            throws PresentationException, IndexUnreachableException {
+        if (searchIndex != null) {
+            return searchIndex
+                    .search("+" + SolrConstants.ARCHIVE_ENTRY_ID + ":*" + " +" + SolrConstants.PI + ":*",
+                            Arrays.asList(SolrConstants.ARCHIVE_ENTRY_ID, SolrConstants.PI, SolrConstants.BOOL_IMAGEAVAILABLE))
+                    .stream()
+                    .collect(Collectors.toMap(doc -> SolrTools.getAsString(doc.getFieldValue(SolrConstants.ARCHIVE_ENTRY_ID)),
+                            doc -> new SimpleEntry<String, Boolean>(SolrTools.getAsString(doc.getFieldValue(SolrConstants.PI)),
+                                    SolrTools.getAsBoolean(doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE)))));
         }
+        return Collections.emptyMap();
     }
 
     /**
      * Get the database names and file names from the basex databases
      *
-     * @return
+     * @return List<ArchiveResource>
      * @throws HTTPException
      * @throws IOException
-     * @throws ClientProtocolException
      */
-    public List<ArchiveResource> getPossibleDatabases() throws ClientProtocolException, IOException, HTTPException {
+    public List<ArchiveResource> getPossibleDatabases() throws IOException, HTTPException {
         String response = NetTools.getWebContentGET(basexUrl + "databases");
         if (StringUtils.isBlank(response)) {
             return Collections.emptyList();
@@ -151,36 +149,30 @@ public class BasexEADParser {
                 }
             }
             return ret;
-
         } catch (JDOMException e) {
-            logger.error("Failed to parse response from " + (basexUrl + "databases"), e);
+            logger.error("Failed to parse response from {} databases", basexUrl, e);
             return Collections.emptyList();
         }
     }
-
-
 
     /**
      * Loads the given database and parses the EAD document.
      *
      * @param database
-     * @param document
      * @return Root element of the loaded tree
      * @throws IllegalStateException
      * @throws IOException
      * @throws HTTPException
      * @throws JDOMException
-     * @throws ConfigurationException
      */
     public ArchiveEntry loadDatabase(ArchiveResource database)
-            throws IllegalStateException, IOException, HTTPException, JDOMException, ConfigurationException {
+            throws IllegalStateException, IOException, HTTPException, JDOMException {
 
         Document document = retrieveDatabaseDocument(database);
 
         // parse ead file
         return parseEadFile(document);
     }
-
 
     /**
      * Reads the hierarchy from the given EAD document.
@@ -193,7 +185,6 @@ public class BasexEADParser {
         if (document == null) {
             throw new IllegalArgumentException("document may not be null");
         }
-
         Element collection = document.getRootElement();
         Element eadElement = collection.getChild("ead", NAMESPACE_EAD);
         ArchiveEntry rootElement = parseElement(1, 0, eadElement, configuredFields, associatedRecordMap);
@@ -204,8 +195,8 @@ public class BasexEADParser {
 
     /**
      *
-     * @param database
-     * @return
+     * @param archive
+     * @return {@link Document}
      * @throws IOException
      * @throws IllegalStateException
      * @throws HTTPException
@@ -214,13 +205,13 @@ public class BasexEADParser {
     private Document retrieveDatabaseDocument(ArchiveResource archive) throws IOException, IllegalStateException, HTTPException, JDOMException {
         if (archive != null) {
             String response;
-                String url = UriBuilder.fromPath(basexUrl).path("db").path(archive.getDatabaseName()).path(archive.getResourceName()).build().toString();
-                logger.trace("URL: {}", url);
-                response = NetTools.getWebContentGET(url);
+            String url =
+                    UriBuilder.fromPath(basexUrl).path("db").path(archive.getDatabaseName()).path(archive.getResourceName()).build().toString();
+            logger.trace("URL: {}", url);
+            response = NetTools.getWebContentGET(url);
 
             // get xml root element
-                Document document = openDocument(response);
-                return document;
+            return openDocument(response);
         }
         throw new IllegalStateException("Must provide database name before loading database");
     }
@@ -233,7 +224,8 @@ public class BasexEADParser {
      * @param hierarchy
      * @param element
      * @param configuredFields
-     * @return
+     * @param associatedPIs
+     * @return {@link ArchiveEntry}
      */
     private static ArchiveEntry parseElement(int order, int hierarchy, Element element, List<ArchiveMetadataField> configuredFields,
             Map<String, Entry<String, Boolean>> associatedPIs) {
@@ -250,14 +242,14 @@ public class BasexEADParser {
 
             List<String> stringValues = new ArrayList<>();
             if ("text".equalsIgnoreCase(emf.getXpathType())) {
-                XPathExpression<Text> engine = xFactory.compile(emf.getXpath(), Filters.text(), null, NAMESPACE_EAD);
+                XPathExpression<Text> engine = XFACTORY.compile(emf.getXpath(), Filters.text(), null, NAMESPACE_EAD);
                 List<Text> values = engine.evaluate(element);
                 for (Text value : values) {
                     String stringValue = value.getValue();
                     stringValues.add(stringValue);
                 }
             } else if ("attribute".equalsIgnoreCase(emf.getXpathType())) {
-                XPathExpression<Attribute> engine = xFactory.compile(emf.getXpath(), Filters.attribute(), null, NAMESPACE_EAD);
+                XPathExpression<Attribute> engine = XFACTORY.compile(emf.getXpath(), Filters.attribute(), null, NAMESPACE_EAD);
                 List<Attribute> values = engine.evaluate(element);
 
                 for (Attribute value : values) {
@@ -265,7 +257,7 @@ public class BasexEADParser {
                     stringValues.add(stringValue);
                 }
             } else {
-                XPathExpression<Element> engine = xFactory.compile(emf.getXpath(), Filters.element(), null, NAMESPACE_EAD);
+                XPathExpression<Element> engine = XFACTORY.compile(emf.getXpath(), Filters.element(), null, NAMESPACE_EAD);
                 List<Element> values = engine.evaluate(element);
                 for (Element value : values) {
                     String stringValue = value.getValue();
@@ -280,30 +272,24 @@ public class BasexEADParser {
         entry.setId(element.getAttributeValue("id"));
 
         Optional.ofNullable(eadheader)
-        .map(e -> e.getChild("filedesc", NAMESPACE_EAD))
-        .map(e -> e.getChild("titlestmt", NAMESPACE_EAD))
-        .map(e -> e.getChildText("titleproper", NAMESPACE_EAD))
-        .ifPresent(s -> entry.setLabel(s));
-
+                .map(e -> e.getChild("filedesc", NAMESPACE_EAD))
+                .map(e -> e.getChild("titlestmt", NAMESPACE_EAD))
+                .map(e -> e.getChildText("titleproper", NAMESPACE_EAD))
+                .ifPresent(s -> entry.setLabel(s));
 
         // nodeType
         // get child elements
         List<Element> clist = null;
         Element archdesc = element.getChild("archdesc", NAMESPACE_EAD);
         if (archdesc != null) {
-            String type = archdesc.getAttributeValue("otherlevel");
-            if (StringUtils.isBlank(type)) {
-                type = archdesc.getAttributeValue("level");
-            }
-            entry.setNodeType(type);
+            setNodeType(archdesc, entry);
             Element dsc = archdesc.getChild("dsc", NAMESPACE_EAD);
             if (dsc != null) {
                 clist = dsc.getChildren("c", NAMESPACE_EAD);
             }
 
         } else {
-            String type = element.getAttributeValue("level");
-            entry.setNodeType(type);
+            setNodeType(element, entry);
 
         }
 
@@ -346,13 +332,25 @@ public class BasexEADParser {
     }
 
     /**
+     * 
+     * @param node
+     * @param entry
+     */
+    public static void setNodeType(Element node, ArchiveEntry entry) {
+        String type = node.getAttributeValue("otherlevel");
+        if (StringUtils.isBlank(type)) {
+            type = node.getAttributeValue("level");
+        }
+        entry.setNodeType(type);
+    }
+
+    /**
      * Add the metadata to the configured level
      *
      * @param entry
      * @param emf
-     * @param stringValue
+     * @param stringValues
      */
-
     private static void addFieldToEntry(ArchiveEntry entry, ArchiveMetadataField emf, List<String> stringValues) {
         if (StringUtils.isBlank(entry.getLabel()) && emf.getXpath().contains("unittitle") && stringValues != null && !stringValues.isEmpty()) {
             entry.setLabel(stringValues.get(0));
@@ -395,6 +393,8 @@ public class BasexEADParser {
             case 7:
                 entry.getDescriptionControlAreaList().add(toAdd);
                 break;
+            default:
+                break;
         }
 
     }
@@ -403,7 +403,7 @@ public class BasexEADParser {
      * Parse the string response from the basex database into a xml document
      *
      * @param response
-     * @return
+     * @return {@link Document}
      * @throws IOException
      * @throws JDOMException
      */
@@ -417,8 +417,7 @@ public class BasexEADParser {
         builder.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
         builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
-        Document document = builder.build(new StringReader(response), "utf-8");
-        return document;
+        return builder.build(new StringReader(response), "utf-8");
 
     }
 
@@ -446,30 +445,25 @@ public class BasexEADParser {
      * Loads fields from the given configuration node.
      *
      * @param metadataConfig
-     * @return
+     * @return {@link BasexEADParser}
      * @throws ConfigurationException
      */
     public BasexEADParser readConfiguration(HierarchicalConfiguration<ImmutableNode> metadataConfig) throws ConfigurationException {
         if (metadataConfig == null) {
             throw new ConfigurationException("No basexMetadata configurations found");
         }
-
         // metadataConfig.setListDelimiter('&');
         metadataConfig.setExpressionEngine(new XPathExpressionEngine());
 
-        try {
-            List<HierarchicalConfiguration<ImmutableNode>> configurations = metadataConfig.configurationsAt("/metadata");
-            if (configurations == null) {
-                throw new ConfigurationException("No basexMetadata configurations found");
-            }
-            configuredFields = new ArrayList<>(configurations.size());
-            for (HierarchicalConfiguration<ImmutableNode> hc : configurations) {
-                ArchiveMetadataField field = new ArchiveMetadataField(hc.getString("@label"), hc.getInt("@type"), hc.getString("@xpath"),
-                        hc.getString("@xpathType", "element"));
-                configuredFields.add(field);
-            }
-        } catch (Exception e) {
-            throw new ConfigurationException("Error reading basexMetadata configuration", e);
+        List<HierarchicalConfiguration<ImmutableNode>> configurations = metadataConfig.configurationsAt("/metadata");
+        if (configurations == null) {
+            throw new ConfigurationException("Error reading basexMetadata configuration: No basexMetadata configurations found");
+        }
+        configuredFields = new ArrayList<>(configurations.size());
+        for (HierarchicalConfiguration<ImmutableNode> hc : configurations) {
+            ArchiveMetadataField field = new ArchiveMetadataField(hc.getString("@label"), hc.getInt("@type"), hc.getString("@xpath"),
+                    hc.getString("@xpathType", "element"));
+            configuredFields.add(field);
         }
 
         return this;

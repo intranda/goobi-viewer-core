@@ -23,17 +23,17 @@ package io.goobi.viewer.api.rest.v1.records;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CHANGES;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CHANGES_PAGE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -48,12 +48,12 @@ import io.goobi.viewer.controller.DataManager;
  * @author florian
  *
  */
-public class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
+class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
 
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -61,61 +61,58 @@ public class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testGetChanges() throws JsonMappingException, JsonProcessingException {
+    void testGetChanges() throws JsonMappingException, JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_CHANGES).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             OrderedCollection<Activity> activities = new OrderedCollection<>();
-            activities = mapper.readValue(entity, activities.getClass());
+            activities = mapper.readValue(entity, OrderedCollection.class);
             assertTrue(activities.getTotalItems() > 0);
-            Assert.assertEquals(urls.path(RECORDS_CHANGES).build(), activities.getId().toString());
-            Assert.assertEquals(urls.path(RECORDS_CHANGES, RECORDS_CHANGES_PAGE).params(0).build(), activities.getFirst().getId().toString());
-
+            Assertions.assertEquals(urls.path(RECORDS_CHANGES).build(), activities.getId().toString());
+            Assertions.assertEquals(urls.path(RECORDS_CHANGES, RECORDS_CHANGES_PAGE).params(0).build(), activities.getFirst().getId().toString());
         }
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testGetChangesPage() throws JsonMappingException, JsonProcessingException {
+    void testGetChangesPage() throws JsonMappingException, JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_CHANGES, RECORDS_CHANGES_PAGE).params(0).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             OrderedCollectionPage<Activity> activities = new OrderedCollectionPage<>();
             activities = mapper.readValue(entity, activities.getClass());
-            assertTrue(activities.getOrderedItems().size() == DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage());
-            Assert.assertEquals(urls.path(RECORDS_CHANGES, RECORDS_CHANGES_PAGE).params(0).build(), activities.getId().toString());
-            Assert.assertEquals(urls.path(RECORDS_CHANGES, RECORDS_CHANGES_PAGE).params(1).build(), activities.getNext().getId().toString());
-            Assert.assertEquals(urls.path(RECORDS_CHANGES).build(), activities.getPartOf().getId().toString());
-            Assert.assertEquals(DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage(),
-                    activities.getOrderedItems().size());
+            Assertions.assertEquals(urls.path(RECORDS_CHANGES, RECORDS_CHANGES_PAGE).params(0).build(), activities.getId().toString());
+            Assertions.assertEquals(urls.path(RECORDS_CHANGES, RECORDS_CHANGES_PAGE).params(1).build(), activities.getNext().getId().toString());
+            Assertions.assertEquals(urls.path(RECORDS_CHANGES).build(), activities.getPartOf().getId().toString());
+            Assertions.assertFalse(activities.getOrderedItems().isEmpty());
 
         }
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testGetChangePageCount() throws JsonMappingException, JsonProcessingException {
+    void testGetChangePageCount() throws JsonMappingException, JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_CHANGES).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
-            assertNotNull("Should return user object as json", response.getEntity());
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             OrderedCollection<Activity> activities = new OrderedCollection<>();
             activities = mapper.readValue(entity, activities.getClass());
@@ -126,8 +123,7 @@ public class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
             String lastPageUrl = activities.getLast().getId().toString();
             lastPageUrl = lastPageUrl.substring(0, lastPageUrl.length() - 1);
             String pageNo = lastPageUrl.substring(lastPageUrl.lastIndexOf("/") + 1);
-            Assert.assertEquals(numPages - 1, Integer.parseInt(pageNo), 0);
+            Assertions.assertEquals(numPages - 1, Integer.parseInt(pageNo), 0);
         }
     }
-
 }

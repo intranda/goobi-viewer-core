@@ -115,30 +115,27 @@ public class LitteraProvider extends HttpAuthenticationProvider {
      * @return a {@link io.goobi.viewer.model.security.authentication.model.LitteraAuthenticationResponse} object.
      * @throws java.io.IOException if any.
      */
-    protected LitteraAuthenticationResponse get(URI url, String username, String password) throws IOException {
-        url = UriBuilder.fromUri(url).queryParam(QUERY_PARAMETER_ID, username).queryParam(QUERY_PARAMETER_PW, password).build();
-        String xml = get(url);
-        LitteraAuthenticationResponse response = deserialize(xml);
-        return response;
+    protected LitteraAuthenticationResponse get(final URI url, String username, String password) throws IOException {
+        URI uri = UriBuilder.fromUri(url).queryParam(QUERY_PARAMETER_ID, username).queryParam(QUERY_PARAMETER_PW, password).build();
+        String xml = get(uri);
+        return deserialize(xml);
     }
 
     /**
      * @param xml
-     * @return
+     * @return {@link LitteraAuthenticationResponse}
      * @throws IOException
      * @throws JsonMappingException
      * @throws JsonParseException
      */
     private static LitteraAuthenticationResponse deserialize(String xml) throws IOException {
-        XmlMapper mapper = new XmlMapper();
-        LitteraAuthenticationResponse response = mapper.readValue(xml, LitteraAuthenticationResponse.class);
-        return response;
+        return new XmlMapper().readValue(xml, LitteraAuthenticationResponse.class);
     }
 
     /**
-     * @param request
+     * @param loginName
      * @param response
-     * @return
+     * @return Optional<User>
      * @throws AuthenticationProviderException
      */
     private static Optional<User> getUser(String loginName, LitteraAuthenticationResponse response) throws AuthenticationProviderException {
@@ -167,7 +164,7 @@ public class LitteraProvider extends HttpAuthenticationProvider {
                 user.setNickName(loginName);
                 user.setActive(true);
                 user.setEmail(DEFAULT_EMAIL.replace("{username}", loginName));
-                logger.debug("Created new user with nickname " + loginName);
+                logger.debug("Created new user with nickname {}", loginName);
             }
 
             // Add to bean and persist

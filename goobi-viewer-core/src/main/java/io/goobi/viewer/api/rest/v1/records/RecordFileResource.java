@@ -27,6 +27,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_CMDI;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_SOURCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,7 +36,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -44,6 +44,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
@@ -60,9 +62,9 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedExcep
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -89,12 +91,14 @@ public class RecordFileResource {
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
-    @Inject
-    private ApiUrls urls;
 
     private final String pi;
     private final TextResourceBuilder builder = new TextResourceBuilder();
 
+    /**
+     * 
+     * @param pi
+     */
     public RecordFileResource(
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
         this.pi = pi;
@@ -189,15 +193,14 @@ public class RecordFileResource {
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public String getCMDI(
             @Parameter(description = "Image file name for cmdi") @PathParam("filename") String filename,
-            @Parameter(description = "Language for CMDI") @QueryParam("lang") String lang)
+            @Parameter(description = "Language for CMDI") @QueryParam("lang") final String lang)
             throws ContentLibException, PresentationException, IndexUnreachableException, IOException {
         checkFulltextAccessConditions(pi, filename);
 
-        if (lang == null) {
-            lang = BeanUtils.getLocale().getLanguage();
-        }
-
-        final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(lang);
+        final Language language =
+                DataManager.getInstance()
+                        .getLanguageHelper()
+                        .getLanguage(lang == null ? BeanUtils.getLocale().getLanguage() : StringTools.stripJS(lang));
         Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         Path filePath = getDocumentLanguageVersion(cmdiPath, language);
         if (filePath != null && Files.isRegularFile(filePath)) {
@@ -211,12 +214,52 @@ public class RecordFileResource {
             }
         }
 
-        throw new ContentNotFoundException("Resource not found");
+        throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
+    }
+
+    @GET
+    @javax.ws.rs.Path(RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD)
+    @Operation(tags = { "records" }, summary = "Get cmdi for record file")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public StreamingOutput getDownloadedResource(
+            @Parameter(description = "download resource task id") @PathParam("taskId") String taskId,
+            @Parameter(description = "file path relative to the download directory") @PathParam("path") String path)
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException {
+
+        //TODO: check access conditions for some download action
+
+        Path downloadFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
+        Path taskFolder = downloadFolder.resolve(taskId);
+        Path resourceFile = taskFolder.resolve(Path.of(path));
+        if (Files.isRegularFile(resourceFile)) {
+            try {
+                servletResponse.setHeader("Content-Disposition",
+                        new StringBuilder("attachment;filename=").append(resourceFile.getFileName()).toString());
+                servletResponse.setHeader("Content-Length", String.valueOf(Files.size(resourceFile)));
+                String contentType = Files.probeContentType(resourceFile);
+                logger.trace("content type: {}", contentType);
+                if (StringUtils.isNotBlank(contentType)) {
+                    servletResponse.setContentType(contentType);
+                }
+            } catch (IOException e) {
+                logger.error("Failed to probe file content type");
+            }
+            return out -> {
+                try (InputStream in = Files.newInputStream(resourceFile)) {
+                    IOUtils.copy(in, out);
+                }
+            };
+        } else {
+            throw new ContentNotFoundException("No resource found at " + resourceFile);
+        }
+
     }
 
     /**
      * Throw an AccessDenied error if the request doesn't satisfy the access conditions
-     *
+     * 
+     * @param pi
+     * @param filename
      * @throws ServiceNotAllowedException
      */
     private void checkFulltextAccessConditions(String pi, String filename) throws ServiceNotAllowedException {

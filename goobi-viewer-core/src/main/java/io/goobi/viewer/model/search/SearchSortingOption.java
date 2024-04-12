@@ -42,6 +42,10 @@ public class SearchSortingOption implements Serializable {
 
     private final String field;
     private final boolean ascending;
+    /**
+     * true if this option is the default from the configuration and not set from the url path or a cms page
+     */
+    private boolean defaultOption = false;
 
     /**
      * Constructor for default sorting
@@ -98,7 +102,7 @@ public class SearchSortingOption implements Serializable {
 
     /**
      *
-     * @return
+     * @return Appropriate label
      * @should return translation of RANDOM if field RANDOM
      * @should return translation of RANDOM if field random seed
      * @should return translation of DEFAULT_SORT_FIELD_LABEL if field RELEVANCE
@@ -116,7 +120,7 @@ public class SearchSortingOption implements Serializable {
     }
 
     /**
-     * @return
+     * @return Appropriate sorting string
      * @should add exclamation mark prefix if descending
      * @should not add exclamation mark prefix is ascending
      * @should return empty string if field blank
@@ -173,6 +177,15 @@ public class SearchSortingOption implements Serializable {
             return StringUtils.equals(this.getField(), other.getField()) && this.isAscending() == other.isAscending();
         }
         return false;
+    }
+    
+    // s
+    public void setDefaultOption(boolean defaultOption) {
+        this.defaultOption = defaultOption;
+    }
+    
+    public boolean isDefaultOption() {
+        return defaultOption;
     }
 
     @Override

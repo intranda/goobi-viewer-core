@@ -32,6 +32,7 @@
 	        </ui:include>
 	    </ui:fragment>
 	
+	
 	    <!-- ADVANCED SEARCH INFO -->
 	    <ui:fragment rendered="#{searchType == 1}">
 	        <div class="search-list__adv-search-info">
@@ -48,7 +49,7 @@
 	    </ui:fragment>
 	
 	    <!-- CALENDAR SEARCH INFO -->
-	    <ui:fragment rendered="#{searchType == 3 and !searchBean.showReducedSearchOptions}">
+	    <ui:fragment rendered="#{searchType == 3}">
 	        <div class="search-list__adv-search-info">
 	            (
 	            <h:outputText value="#{msg.date}: " escape="false" />

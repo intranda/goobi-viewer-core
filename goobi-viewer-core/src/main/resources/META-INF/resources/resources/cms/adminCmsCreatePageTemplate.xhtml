@@ -1,0 +1,570 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentPageAdmin(cmsPageTemplateEditBean.editMode ? 'adminCmsTemplatesEdit' : 'adminCmsTemplatesNew')}" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:panelGroup id="cmsCreatePageAccessControl"
+			rendered="#{userBean.user.cmsAdmin}">
+			<div id="cmsCreatePage" class="cms-create-page">
+				<!-- BACK TO OVERVIEW -->
+				<h:form
+					rendered="#{cmsPageTemplateEditBean.selectedTemplate == null}">
+					<h:commandLink action="pretty:adminCmsOverview">
+						<h:outputText value="#{msg.cms_backToOverview}" />
+					</h:commandLink>
+				</h:form>
+
+				<h:panelGroup
+					rendered="#{cmsPageTemplateEditBean.selectedTemplate != null}">
+					<c:set scope="request" var="page"
+						value="#{cmsPageTemplateEditBean.selectedTemplate}" />
+					<div class="admin__title-bar">
+						<h1 class="admin__title">
+							<ui:fragment rendered="#{cmsPageTemplateEditBean.editMode}">
+		                    #{msg.cms__edit_template_title}
+		                    </ui:fragment>
+							<ui:fragment rendered="#{!cmsPageTemplateEditBean.editMode}">
+		                    #{msg.cms__create_template_title}
+		                    </ui:fragment>
+						</h1>
+						<!-- EXIT -->
+						<a
+							href="#{request.contextPath}#{navigationHelper.previousViewUrl}"
+							class="admin__content-inner-title-exit" data-toggle="tooltip"
+							data-placement="bottom" title="#{msg.admin__cms_back_to_page}"
+							aria-label="#{msg.admin__cms_back_to_page}"> </a>
+					</div>
+					
+					<viewerComponent:adminBreadcrumbs />
+
+					<div class="admin__content-inner-content">
+						<h:form id="create_page_form" prependId="false">
+
+							<div class="row">
+								<div class="col-12">
+
+
+									<div class="admin__content-wrapper">
+										<div class="admin__content-main -refreshHCsticky">
+											<!-- CREATE PAGE WRAPPER -->
+											<h:panelGroup id="createPageTemplateContentArea" class="cms-create-page__wrapper">
+												<div>
+													<!-- NAV TABS -->
+													<ul class="nav nav-tabs">
+
+
+														<li role="tab"
+															class="admin__language-tab #{page.isDefaultLocaleSelected() ? '-default-language':''} #{cmsPageTemplateEditBean.pageEditState == 'CONTENT' ? 'active':''}">
+
+															<h:commandLink role="button"
+																value="#{msg.cms__template}"
+																action="#{cmsPageTemplateEditBean.setPageEditState('CONTENT')}">
+																<f:ajax render="createPageTemplateContentArea" execute="@form"></f:ajax>
+															</h:commandLink>
+
+														</li>
+
+
+														<li
+															class="#{cmsPageTemplateEditBean.pageEditState == 'SIDEBAR' ? 'active':''} admin__language-tab  nav-tabs__sidebar-button">
+															<h:commandLink role="button"
+																value="#{msg.cms_pageSidebar}"
+																action="#{cmsPageTemplateEditBean.setPageEditState('SIDEBAR')}">
+																<f:ajax render="createPageTemplateContentArea" execute="@form"></f:ajax>
+															</h:commandLink>
+														</li>
+													</ul>
+
+													<div class="tab-content">
+														<!-- LOCALIZE TABS -->
+														<h:panelGroup
+															rendered="#{cmsPageTemplateEditBean.pageEditState == 'CONTENT'}">
+															<ui:param name="locale" value="#{page.selectedLocale}" />
+															<div
+																class="tab-pane admin__cms-create-page-inner #{page.selectedLocale == locale ? 'active':''}"
+																id="#{locale.language}">
+
+
+																<!-- PAGE CONTENT -->
+																<div class="edit-content-page edit-content-page-content">
+																	<!-- TITLE -->
+																	<div class="cms-module__option-group">
+																		<div class="cms-module__option-label">
+																			<label for="cmsTemplateTitle">#{msg.cms__template_name}*:</label>
+																		</div>
+																		<div class="cms-module__option-control">
+																			<h:inputText id="cmsTemplateTitle"
+																				styleClass="form-control"
+																				value="#{page.titleTranslations.text}"
+																				pt:data-target="watchedInput" />
+																		</div>
+																	</div>
+
+																	<!-- DESCRIPTION -->
+																	<div class="cms-module__option-group">
+																		<div class="cms-module__option-label">
+																			<label for="cmsCreatePageDesc">#{msg.label__cms_page_template_description__label}:</label>
+																		</div>
+																		<div class="cms-module__option-control">
+																			<h:inputTextarea id="cmsCreatePageDesc"
+																				styleClass="form-control tinyMCE"
+																				value="#{page.description.text}"
+																				pt:data-target="watchedInput" />
+																		</div>
+																	</div>
+
+																	<!--                                                              LOCK COMPONENTS -->
+
+
+																	<!--                                                             <label for="cmsCreatePageTitle">#{msg.label__cms_page_template__lock_components__label}:</label> -->
+
+																	<!--                                                             <viewerComponent:toggleSwitch name="lockComponentsSwitch" value="#{page.lockComponents}"/> -->
+
+
+
+
+																	<!-- CONTENT COMPONENTS ON THIS PAGE -->
+																	<h:commandScript name="refreshComponents"
+																		execute="pageComponents" render="pageComponents"></h:commandScript>
+
+																	<h:panelGroup layout="block" id="pageComponents"
+																		class="page-component-list admin__content-components-wrapper">
+
+																		<c:forEach var="cmsComponent"
+																			items="#{page.components}">
+
+																			<div class="admin__content-component">
+
+																				<!-- CONTENT COMPONENT INNER -->
+																				<div class="admin__content-component-inner">
+
+																					<!-- CONTENT HEADER + TOOLBAR -->
+																					<div class="admin__content-component-header">
+
+																						<h2 class="admin__content-component-heading">#{msg[cmsComponent.label]}</h2>
+
+																						<div
+																							class="admin__content-component-options #{!page.isDefaultLocaleSelected() ? '-hideIfNotDefault':''}">
+
+																							<ui:repeat var="attribute"
+																								value="#{cmsComponent.attributes.values()}">
+
+																								<ui:fragment
+																									rendered="#{attribute.display and attribute.type == 'toggle'}">
+
+																									<ui:repeat var="option"
+																										value="#{attribute.options}">
+
+																										<button
+																											jsf:action="#{cmsComponent.toggleAttribute(attribute.name, option.value)}"
+																											class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">
+																											#{msg[option.label]}
+																											<f:ajax execute="@this"
+																												render="pageComponents" />
+																										</button>
+
+																									</ui:repeat>
+
+																								</ui:fragment>
+
+																								<ui:fragment
+																									rendered="#{attribute.display and attribute.type != 'toggle'}">
+																									<ui:repeat var="option"
+																										value="#{attribute.options}">
+																										<button
+																											jsf:action="#{cmsComponent.setAttribute(attribute.name, option.value)}"
+																											class="admin__content-component-option #{option.value == attribute.value ? '-active' : ''}">
+																											#{msg[option.label]}
+																											<f:ajax render="pageComponents" />
+																										</button>
+																									</ui:repeat>
+																								</ui:fragment>
+
+																							</ui:repeat>
+
+																							<!-- SET THIS CONTENT COMPONENT TO PRIVATE - ONLY VISIBLE FOR ADMINS -->
+																							<button
+																								jsf:action="#{cmsComponent.togglePrivate()}"
+																								class="admin__content-component-option #{cmsComponent.isPrivate() ? '-active' : ''}">
+																								Private
+																								<f:ajax render="pageComponents" />
+																							</button>
+
+																						</div>
+
+																						<!-- CONTENT COMPONENT ORDER FUNCTIONS -->
+																						<ui:include
+																							src="/resources/cms/includes/orderContentItems.xhtml" />
+
+																					</div>
+
+																					<div class="admin__content-component-description">#{msg[cmsComponent.description]}</div>
+
+																				</div>
+																				<div class="admin__content-component-delete-wrapper">
+																					<!-- DELETE THIS CONTENT ITEM -->
+																					<button class="admin__content-component-delete"
+																						data-require-confirmation="true"
+																						data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.delete)}"
+																						jsf:action="#{page.removeComponent(cmsComponent)}">
+																						#{msg.delete}
+																						<f:ajax render="componentSelectionWrapper"
+																							onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
+																					</button>
+																				</div>
+
+																			</div>
+
+																		</c:forEach>
+																	</h:panelGroup>
+
+																	<!-- AVAILABLE CONTENT COMPONENTS -->
+																	<div class="admin__content-component-add-area">
+
+																		<div class="admin__content-component-add-area-label">#{msg.cms__page_new_component}</div>
+
+																		<div
+																			class="admin__content-component-add-select-wrapper">
+
+																			<h:panelGroup id="componentSelectionWrapper"
+																				layout="block"
+																				styleClass="custom-control custom-control--select">
+																				<h:selectOneMenu id="componentSelectList"
+																					styleClass="form-control"
+																					value="#{cmsPageTemplateEditBean.selectedComponent}">
+																					<f:selectItem itemLabel="#{msg.select}"
+																						itemValue="" />
+																					<f:selectItems
+																						value="#{cmsPageTemplateEditBean.getAvailableComponents(page)}"
+																						var="comp" itemLabel="#{msg[comp.label]}"
+																						itemValue="#{comp.templateFilename}"
+																						itemDescription="#{msg[comp.description]}" />
+																					<f:ajax event="valueChange" execute="@this"
+																						render="componentSelectionWrapper"></f:ajax>
+																				</h:selectOneMenu>
+
+																			</h:panelGroup>
+
+
+																			<button
+																				class="btn btn--full admin__content-component-add-area-button"
+																				jsf:action="#{cmsPageTemplateEditBean.addComponent()}">
+																				#{msg.cms__page_add_component}
+																				<f:ajax execute="@form" render="createPageTemplateContentArea :messages"></f:ajax>
+																			</button>
+
+																		</div>
+
+																	</div>
+
+																</div>
+
+
+
+
+															</div>
+
+														</h:panelGroup>
+
+														<!-- SIDEBAR EDITOR TAB -->
+														<div role="tabpanel" id="sidebarTab"
+															class="tab-pane #{cmsPageTemplateEditBean.pageEditState == 'SIDEBAR' ? 'active':''} sidebar-editor__wrapper">
+															<cmsComponent:cms_createPageSidebarEditorTab
+																id="sidebar_editor_component" page="#{page}" />
+														</div>
+													</div>
+
+												</div>
+											</h:panelGroup>
+										</div>
+
+										<div class="admin__content-side -sticky">
+
+											<div id="cmsCreatePageMetadataItemWrapper"
+												class="admin__default-block">
+
+												<h2>#{msg.admin__cms_template_visible}</h2>
+
+												<div class="admin__form-help-text in mb-4">#{msg.cms_pageMetadata_privacyStatus_help}</div>
+
+												<div class="admin__radio-switch mb-3">
+													<!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
+								            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
+													<input type="radio" jsf:id="cmsPageStatusVisibility_no"
+														pt:name="#{cmsPageStatusVisibility.clientId}"
+														value="#{false}"
+														pt:checked="#{page.published ? null : 'false'}" />
+													<h:outputLabel for="cmsPageStatusVisibility_no"
+														value="#{msg.no}" />
+													<input type="radio" jsf:id="cmsPageStatusVisibility_yes"
+														pt:name="#{cmsPageStatusVisibility.clientId}"
+														value="#{true}"
+														pt:checked="#{page.published ? 'false' : null}" />
+													<h:outputLabel for="cmsPageStatusVisibility_yes"
+														value="#{msg.yes}" />
+													<h:inputHidden id="cmsPageStatusVisibility_input"
+														binding="#{cmsPageStatusVisibility}"
+														value="#{page.published}"
+														rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
+													<span class="toggle-outside"><span
+														class="toggle-inside"></span></span>
+												</div>
+
+												<!-- CMS PAGE ACTION -->
+												<div
+													class="page-metadata-item page-metadata-item-action admin__sidebar-divider-top pt-3">
+													<ul>
+														<ui:fragment rendered="#{page.id != null}">
+															<li>
+																<!-- delete page --> <a role="button" href="#"
+																data-toggle="modal"
+																data-target="#deleteMediaModal-#{media.id}"
+																class="btn btn--danger"> #{msg.delete} </a> <!-- delete media modal -->
+																<div id="deleteMediaModal-#{media.id}" class="modal fade"
+																	tabindex="-1" role="dialog">
+																	<div class="modal-dialog">
+																		<div class="modal-content">
+																			<div class="modal-header">
+																				<h3 class="modal-title">#{msg.cms_deletePage_agree}</h3>
+																				<button type="button" class="close"
+																					data-dismiss="modal">
+																					<span aria-hidden="true"> <h:outputText
+																							value="&amp;times;" escape="false" />
+																					</span> <span class="sr-only">Close</span>
+																				</button>
+																			</div>
+																			<div class="modal-body">#{msg.cms_deletePage_confirmation}</div>
+																			<div class="modal-footer">
+																				<a href="#" class="btn" data-dismiss="modal">#{msg.cancel}</a>
+																				<h:commandLink action="pretty:adminCmsOverview"
+																					actionListener="#{cmsPageTemplateEditBean.deleteSelectedTemplate}"
+																					value="#{msg.cms_deletePage_agree}"
+																					styleClass="btn btn--danger">
+																					<f:ajax render="@none" />
+																				</h:commandLink>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</li>
+														</ui:fragment>
+														<li>
+															<!-- save page --> <h:commandButton type="submit"
+																action="#{cmsPageTemplateEditBean.saveTemplateAndForwardToEdit}"
+																id="save-button" styleClass="btn btn--success"
+																value="#{msg.cms_pageMetadata_save}"
+																onclick="$( '#AJAXLoader' ).show();">
+															</h:commandButton>
+														</li>
+													</ul>
+												</div>
+											</div>
+
+											<div class="admin__default-block">
+
+												<div id="lockTemplateOption">
+
+													<h2 class="mb-3">#{msg.label__cms_page_template__lock_components__label}</h2>
+
+													<viewerComponent:toggleSwitch name="lockComponentsSwitch"
+														value="#{page.lockComponents}" />
+
+													<div class="admin__form-help-text in mt-2">#{msg.label__cms_page_template__lock_components__description}</div>
+
+												</div>
+
+											</div>
+
+
+											<!-- CATEGORIES -->
+											<div class="admin__default-block">
+												<h:panelGroup id="classifications_group">
+													<h2>#{msg.admin__cms_categories}</h2>
+
+													<div class="admin__form-help-text in mb-3">#{msg.admin__cms_categories_help}</div>
+
+													<!-- METADATA ITEM SELECTED CATEGORIES -->
+													<h:panelGroup id="selected_categories">
+														<div
+															class="page-metadata-item__categories-selected-categories">
+															<ui:repeat var="category"
+																value="#{page.selectableCategories}">
+																<ui:fragment rendered="#{category.selected}">
+																	<div class="badge badge-violet">#{category.value.name}</div>
+																</ui:fragment>
+															</ui:repeat>
+														</div>
+													</h:panelGroup>
+
+													<!-- METADATA ITEM SELECTABLE CATEGORIES -->
+													<div
+														class="page-metadata-item__categories-selectable-categories">
+														<!-- METADATA ITEM SELECTABLE CATEGORIES SELECT -->
+														<div
+															class="page-metadata-item__categories-selectable-categories-select">
+															<div class="cms-module__option-dropdown">
+																<div class="cms-module__option-dropdown-trigger"
+																	data-toggle="option-dropdown">#{msg.admin__category_select}</div>
+																<ul>
+																	<ui:repeat var="selectable"
+																		value="#{page.selectableCategories}">
+																		<li><label> <h:selectBooleanCheckbox
+																					type="checkbox" value="#{selectable.selected}">
+																					<f:ajax
+																						render="metadata_component:selected_categories" />
+																				</h:selectBooleanCheckbox> #{selectable.value.name}
+																		</label></li>
+																	</ui:repeat>
+																</ul>
+															</div>
+														</div>
+													</div>
+												</h:panelGroup>
+											</div>
+
+
+											<!-- SET SUBTHEME -->
+											<div class="admin__default-block">
+												<h2>#{msg.cms_page_subtheme_discriminator}</h2>
+
+												<div class="admin__form-help-text in mb-3">#{msg.cms_page_subtheme_discriminator_help}</div>
+
+												<!-- AREA FOR AJAX REFRESH -->
+												<h:panelGroup id="subthemeDiscriminatorGroup">
+													<!-- VALIDATION MESSAGE -->
+													<div class="cms-module__option-message">
+														<h:messages for="subthemeDiscriminator"
+															infoClass="cms-module__option-message-status success"
+															warnClass="cms-module__option-message-status warning"
+															errorClass="cms-module__option-message-status danger" />
+
+														<div class="cms-module__option-message-mark">
+															<i class="fa fa-check" aria-hidden="true"></i> <i
+																class="fa fa-exclamation" aria-hidden="true"></i>
+														</div>
+													</div>
+
+													<!-- SELECT MENU -->
+													<div class="custom-control custom-control--select">
+														<h:selectOneMenu id="subthemeDiscriminator"
+															styleClass="form-control"
+															value="#{page.subThemeDiscriminatorValue}"
+															disabled="#{!configurationBean.subthemeDiscriminatorFieldSet}"
+															required="#{!userBean.user.hasPrivilegeForAllSubthemeDiscriminatorValues() and configurationBean.subthemeDiscriminatorFieldSet}"
+															requiredMessage="#{msg.cms_page_subtheme_discriminator_required_msg}">
+															<f:selectItem
+																itemDisabled="#{cmsBean.isSubthemeRequired(userBean.user)}"
+																itemValue="#{null}" itemLabel="-" />
+															<f:selectItems
+																value="#{cmsBean.getAllowedSubthemeDiscriminatorValues(userBean.user)}" />
+															<f:ajax event="change"
+																render="subthemeDiscriminatorGroup" />
+														</h:selectOneMenu>
+													</div>
+												</h:panelGroup>
+												<!-- INLINE HELP -->
+												<span class="cms-module__option-control-helptext">#{msg.cms_page_subtheme_discriminator_help}</span>
+											</div>
+
+											<!-- ADD CSS CLASS FOR THIS CMS PAGE -->
+											<div class="admin__default-block">
+
+												<h2>#{msg.cms_wrapperElementClass}</h2>
+
+												<div class="admin__form-help-text in mb-3">#{msg.cms_wrapperElementClass_help}</div>
+
+												<!-- AREA FOR AJAX REFRESH -->
+												<h:panelGroup id="cssClassGroup">
+													<!-- VALIDATION MESSAGE -->
+													<div class="cms-module__option-message">
+														<h:messages for="cssClass"
+															infoClass="cms-module__option-message-status success"
+															warnClass="cms-module__option-message-status warning"
+															errorClass="cms-module__option-message-status danger" />
+
+														<div class="cms-module__option-message-mark">
+															<i class="fa fa-check" aria-hidden="true"></i> <i
+																class="fa fa-exclamation" aria-hidden="true"></i>
+														</div>
+													</div>
+
+													<!-- INPUT TEXT -->
+													<h:inputText id="cssClass"
+														value="#{page.wrapperElementClass}"
+														styleClass="form-control"
+														pt:data-target="quickCSSInputField" />
+												</h:panelGroup>
+												<div data-target="cmsPageJumpToQuickCSSLink"
+													class="admin__small-info mt-2">
+													<a target="_blank"
+														href="#{request.contextPath}/admin/themes/edit/#{adminThemesBean.mainThemeName}#quickCSS">#{msg.cms_wrapperElementClass_quickCSS}</a>
+												</div>
+
+											</div>
+
+										</div>
+
+									</div>
+								</div>
+							</div>
+						</h:form>
+					</div>
+
+				</h:panelGroup>
+
+				<!-- SCRIPT FOR JUMP TO QUICK CSS LINK -->
+				<script>
+				$( document ).ready(function() {
+					if ( !$('[data-target="quickCSSInputField"]').val()) {
+						$('[data-target="cmsPageJumpToQuickCSSLink"]').hide();
+					}
+					
+					
+					$('[data-target="quickCSSInputField"]').keyup(function() {
+						if ( !$('[data-target="quickCSSInputField"]').val()) {
+							$('[data-target="cmsPageJumpToQuickCSSLink"]').fadeOut('fast');
+						} else {
+							$('[data-target="cmsPageJumpToQuickCSSLink"]').fadeIn('fast');
+						}
+					});
+				});
+				</script>
+
+				<script type="text/javascript">
+                  
+                	var createPageConfig = {
+						selectedPageID : "#{cmsPageTemplateEditBean.selectedTemplate.id}",
+						inputFields : $(".content-input"),
+						prevBtn : $("#preview-button"),
+						prevDescription : $("#previewDescription"),
+						saveBtn : $('a[id*="save-button"]'),
+						sortablesConfig : {
+							componentListInput : document.getElementById("sidebar_editor_component:itemOrderInput"),
+							editButton : $(".widget-edit"),
+							availableItemList : "#availableItemList",
+							visibleItemList : "#visibleItemList"
+						}
+					};
+
+
+					cmsJS.createPage.init(createPageConfig);
+                </script>
+			</div>
+		</h:panelGroup>
+	</ui:define>
+</ui:composition>

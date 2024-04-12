@@ -60,6 +60,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.termbrowsing.BrowseTerm;
 import io.goobi.viewer.model.termbrowsing.BrowseTermComparator;
 import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
@@ -82,6 +83,10 @@ public class BrowseBean implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(BrowseBean.class);
 
+    private static final String MSG_ERR_FIELDS_NOT_CONFIGURED = "browse_errFieldNotConfigured";
+
+    @Inject
+    private NavigationHelper navigationHelper;
     @Inject
     private BreadcrumbBean breadcrumbBean;
     @Inject
@@ -102,7 +107,7 @@ public class BrowseBean implements Serializable {
     /** Escaped term list for the current result page (browsing menu). Used for URL construction. */
     private List<String> browseTermListEscaped;
     private List<Long> browseTermHitCountList;
-    Map<String, List<String>> availableStringFilters = new HashMap<>();
+    private Map<String, List<String>> availableStringFilters = new HashMap<>();
     /** This is used for filtering term browsing by the starting letter. */
     private String currentStringFilter = "";
     /** Optional filter query */
@@ -350,7 +355,7 @@ public class BrowseBean implements Serializable {
     /**
      * Action method for JSF.
      *
-     * @return
+     * @return Navigation outcome
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -359,6 +364,9 @@ public class BrowseBean implements Serializable {
             return searchTerms();
         } catch (RedirectException e) {
             // Redirect to filter URL requested
+            if (MSG_ERR_FIELDS_NOT_CONFIGURED.equals(e.getMessage())) {
+                return "pretty:error";
+            }
             return "pretty:searchTerm4";
         }
     }
@@ -387,7 +395,6 @@ public class BrowseBean implements Serializable {
 
             // Sort filters
             Locale locale = null;
-            NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
             if (navigationHelper != null) {
                 locale = navigationHelper.getLocale();
             } else {
@@ -406,27 +413,35 @@ public class BrowseBean implements Serializable {
             if (currentBmfc == null) {
                 logger.error("No configuration found for term field '{}'.", browsingMenuField);
                 resetTerms();
-                Messages.error(ViewerResourceBundle.getTranslation("browse_errFieldNotConfigured", null).replace("{0}", browsingMenuField));
-                throw new RedirectException("");
+                Messages.error(ViewerResourceBundle.getTranslation(MSG_ERR_FIELDS_NOT_CONFIGURED, null).replace("{0}", browsingMenuField));
+                throw new RedirectException(MSG_ERR_FIELDS_NOT_CONFIGURED);
             }
 
-            String useFilterQuery = "";
-            if (StringUtils.isNotEmpty(filterQuery)) {
-                useFilterQuery += " +(" + filterQuery + ")";
-            }
+            String useFilterQuery = generateFilterQuery((!DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled()
+                    || DataManager.getInstance().getConfiguration().getSearchResultGroups().isEmpty())
+                            ? Collections.singletonList(SearchResultGroup.createDefaultGroup())
+                            : DataManager.getInstance().getConfiguration().getSearchResultGroups());
+            // logger.trace("useFilterQuery: {}", useFilterQuery); //NOSONAR Sometimes needed for debugging
 
             // Populate the list of available starting characters with ones that actually exist in the complete terms list
-            if (availableStringFilters.get(browsingMenuField) == null) {
-                terms = SearchHelper.getFilteredTerms(currentBmfc, "", useFilterQuery, 0, 0, new BrowseTermComparator(locale));
-                if (availableStringFilters.get(browsingMenuField) == null || filterQuery != null) {
-                    logger.trace("Populating search term filters for field '{}'...", browsingMenuField);
-                    availableStringFilters.put(browsingMenuField, new ArrayList<>());
+            String browsingMenuFieldForCurrentLanguage = getBrowsingMenuFieldForLanguage(locale.getLanguage());
+            if (availableStringFilters.get(browsingMenuFieldForCurrentLanguage) == null) {
+                logger.trace("Collecting available filters for {}", browsingMenuFieldForCurrentLanguage);
+                int numRows = StringUtils.isNotEmpty(currentBmfc.getSortField()) ? SolrSearchIndex.MAX_HITS : 0;
+                terms = SearchHelper.getFilteredTerms(currentBmfc, "", useFilterQuery, 0, numRows, new BrowseTermComparator(locale),
+                        locale.getLanguage());
+                if (availableStringFilters.get(browsingMenuFieldForCurrentLanguage) == null || filterQuery != null) {
+                    logger.trace("Populating search term filters for field '{}'...", browsingMenuFieldForCurrentLanguage);
+                    availableStringFilters.put(browsingMenuFieldForCurrentLanguage, new ArrayList<>());
                     for (BrowseTerm term : terms) {
                         String rawTerm;
                         if (StringUtils.isNotEmpty(term.getSortTerm())) {
                             rawTerm = term.getSortTerm();
                         } else {
                             rawTerm = term.getTerm();
+                        }
+                        if (StringUtils.isEmpty(rawTerm)) {
+                            continue;
                         }
                         String firstChar;
                         if (StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars())) {
@@ -439,26 +454,26 @@ public class BrowseBean implements Serializable {
                         } else {
                             firstChar = rawTerm.substring(0, 1).toUpperCase();
                         }
-                        if (!availableStringFilters.get(browsingMenuField).contains(firstChar) && !"-".equals(firstChar)) {
-                            availableStringFilters.get(browsingMenuField).add(firstChar);
+                        if (!availableStringFilters.get(browsingMenuFieldForCurrentLanguage).contains(firstChar) && !"-".equals(firstChar)) {
+                            availableStringFilters.get(browsingMenuFieldForCurrentLanguage).add(firstChar);
                         }
                     }
                 }
 
-                Collections.sort(availableStringFilters.get(browsingMenuField), new AlphanumCollatorComparator(Collator.getInstance(locale)));
-                // logger.debug(availableStringFilters.toString());
+                Collections.sort(availableStringFilters.get(browsingMenuFieldForCurrentLanguage),
+                        new AlphanumCollatorComparator(Collator.getInstance(locale)));
             }
 
             // If no filter is set, redirect to first available filter (if so configured)
             if (StringUtils.isEmpty(currentStringFilter) && currentBmfc.isAlwaysApplyFilter()
-                    && availableStringFilters.get(browsingMenuField) != null
-                    && !availableStringFilters.get(browsingMenuField).isEmpty()) {
+                    && availableStringFilters.get(browsingMenuFieldForCurrentLanguage) != null
+                    && !availableStringFilters.get(browsingMenuFieldForCurrentLanguage).isEmpty()) {
                 currentStringFilter = selectRedirectFilter();
                 logger.trace("Redirecting to filter: {}", currentStringFilter);
                 throw new RedirectException("");
             }
 
-            hitsCount = SearchHelper.getFilteredTermsCount(currentBmfc, currentStringFilter, useFilterQuery);
+            hitsCount = SearchHelper.getFilteredTermsCount(currentBmfc, currentStringFilter, useFilterQuery, locale.getLanguage());
             if (hitsCount == 0) {
                 resetTerms();
                 return "searchTermList";
@@ -479,7 +494,7 @@ public class BrowseBean implements Serializable {
             // Get terms for the current page
             logger.trace("Fetching terms for page {} ({} - {})", currentPage, start, end - 1);
             terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, useFilterQuery, 0, SolrSearchIndex.MAX_HITS,
-                    new BrowseTermComparator(locale));
+                    new BrowseTermComparator(locale), locale.getLanguage());
 
             for (int i = start; i < end; ++i) {
                 if (i >= terms.size()) {
@@ -512,6 +527,34 @@ public class BrowseBean implements Serializable {
     }
 
     /**
+     * @param resultGroups
+     * @return Generated filter query or empty string
+     * @should return empty string if no filterQuery or result groups available
+     * @should generate filter query correctly
+     */
+    String generateFilterQuery(List<SearchResultGroup> resultGroups) {
+        if (StringUtils.isEmpty(filterQuery) && (resultGroups == null || resultGroups.size() < 2)) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        if (StringUtils.isNotEmpty(filterQuery)) {
+            sb.append("+(").append(filterQuery).append(")");
+        }
+        if (resultGroups.size() > 1) {
+            sb.append(" +(");
+            for (SearchResultGroup resultGroup : resultGroups) {
+                if (StringUtils.isNotEmpty(resultGroup.getQuery())) {
+                    sb.append(" (").append(resultGroup.getQuery()).append(")");
+                }
+            }
+            sb.append(")");
+        }
+
+        return "+(" + sb.toString().trim() + ")";
+    }
+
+    /**
      * Selects a filter string for automatic redirecting, prioritizing letters, followed by numbers and finally by the first available filter.
      *
      * @return Selected filter string
@@ -519,20 +562,22 @@ public class BrowseBean implements Serializable {
      * @should return numerical filter if available
      * @should return first filter if no other available
      */
-    String selectRedirectFilter() {
+    public String selectRedirectFilter() {
         if (availableStringFilters.isEmpty()) {
             return null;
         }
 
         String numericalFilter = null;
         String alphaFilter = null;
-        for (String filter : availableStringFilters.get(browsingMenuField)) {
+        String browsingMenuFieldForCurrentLanguage =
+                getBrowsingMenuFieldForLanguage(navigationHelper != null ? navigationHelper.getLocaleString() : null);
+        for (String filter : availableStringFilters.get(browsingMenuFieldForCurrentLanguage)) {
             switch (filter) {
                 case "0-9":
                     numericalFilter = filter;
                     break;
                 default:
-                    if (filter.matches("[A-ZÄÁÀÂÖÓÒÔÜÚÙÛÉÈÊ]{1}") && alphaFilter == null) {
+                    if (filter.matches("[A-ZÄÁÀÂÖÓÒÔÜÚÙÛÉÈÊ]") && alphaFilter == null) {
                         alphaFilter = filter;
                     }
                     break;
@@ -544,7 +589,33 @@ public class BrowseBean implements Serializable {
         } else if (numericalFilter != null) {
             return numericalFilter;
         } else {
-            return availableStringFilters.get(browsingMenuField).get(0);
+            return availableStringFilters.get(browsingMenuFieldForCurrentLanguage).get(0);
+        }
+    }
+
+    /**
+     * 
+     * @param language Requested language
+     * @return browsingMenuField (modified for given language if placeholder found)
+     * @should return field for given language if placeholder found
+     * @should return browsingMenuField if no language placeholder
+     */
+    public String getBrowsingMenuFieldForLanguage(final String language) {
+        String useLanguage = language;
+        if (useLanguage == null) {
+            useLanguage = "";
+        }
+        useLanguage = useLanguage.toUpperCase();
+
+        synchronized (this) {
+            if (StringUtils.isEmpty(browsingMenuField)) {
+                return "-";
+            }
+
+            if (browsingMenuField.endsWith(SolrConstants.MIDFIX_LANG + "{}")) {
+                return browsingMenuField.replace("{}", useLanguage);
+            }
+            return browsingMenuField;
         }
     }
 
@@ -572,15 +643,16 @@ public class BrowseBean implements Serializable {
      *
      * @param browsingMenuField the browsingMenuField to set
      */
-    public void setBrowsingMenuField(String browsingMenuField) {
+    public void setBrowsingMenuField(final String browsingMenuField) {
         synchronized (this) {
-            if ("-".equals(browsingMenuField)) {
-                browsingMenuField = "";
+            String useBrowsingMenuField = browsingMenuField;
+            if (useBrowsingMenuField == null || "-".equals(useBrowsingMenuField)) {
+                useBrowsingMenuField = "";
             }
             try {
-                this.browsingMenuField = URLDecoder.decode(browsingMenuField, SearchBean.URL_ENCODING);
+                this.browsingMenuField = URLDecoder.decode(useBrowsingMenuField, SearchBean.URL_ENCODING);
             } catch (UnsupportedEncodingException e) {
-                this.browsingMenuField = browsingMenuField;
+                this.browsingMenuField = useBrowsingMenuField;
             }
         }
     }
@@ -687,7 +759,24 @@ public class BrowseBean implements Serializable {
      * @return the availableStringFilters
      */
     public List<String> getAvailableStringFilters() {
-        return availableStringFilters.get(browsingMenuField);
+        String field = getBrowsingMenuFieldForLanguage(navigationHelper != null ? navigationHelper.getLocaleString() : null);
+        if (availableStringFilters.get(field) == null) {
+            try {
+                searchTerms();
+            } catch (PresentationException | IndexUnreachableException | RedirectException e) {
+                //
+            }
+        }
+        return availableStringFilters.get(field);
+    }
+
+    /**
+     * Getter for unit tests.
+     * 
+     * @return the availableStringFilters
+     */
+    Map<String, List<String>> getAvailableStringFiltersMap() {
+        return availableStringFilters;
     }
 
     /**
@@ -713,15 +802,16 @@ public class BrowseBean implements Serializable {
      *
      * @param currentStringFilter the currentStringFilter to set
      */
-    public void setCurrentStringFilter(String currentStringFilter) {
+    public void setCurrentStringFilter(final String currentStringFilter) {
         synchronized (this) {
-            if (StringUtils.equals(currentStringFilter, "-")) {
-                currentStringFilter = "";
+            String useCurrentStringFilter = currentStringFilter;
+            if (StringUtils.equals(useCurrentStringFilter, "-")) {
+                useCurrentStringFilter = "";
             }
             try {
-                this.currentStringFilter = URLDecoder.decode(currentStringFilter, SearchBean.URL_ENCODING);
+                this.currentStringFilter = URLDecoder.decode(useCurrentStringFilter, SearchBean.URL_ENCODING);
             } catch (UnsupportedEncodingException e) {
-                this.currentStringFilter = currentStringFilter;
+                this.currentStringFilter = useCurrentStringFilter;
             }
         }
     }
@@ -808,27 +898,49 @@ public class BrowseBean implements Serializable {
 
     /**
      * <p>
-     * getBrowsingMenuItems.
+     * Returns the list of fields configured for term browsing to be listed in term browsing widgets.
      * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @return List of browsing menu items
+     * @should skip items that have skipInWidget true
      * @should skip items for language-specific fields if no language was given
      * @should skip items for language-specific fields if they don't match given language
+     * @should return language-specific fields with placeholder
      */
-    public List<String> getBrowsingMenuItems(String language) {
-        if (language != null) {
-            language = language.toUpperCase();
+    public List<String> getBrowsingMenuItems(final String language) {
+        String useLanguage = language;
+        if (useLanguage != null) {
+            useLanguage = useLanguage.toUpperCase();
         }
         List<String> ret = new ArrayList<>();
         for (BrowsingMenuFieldConfig bmfc : DataManager.getInstance().getConfiguration().getBrowsingMenuFields()) {
+            if (bmfc.isSkipInWidget()) {
+                logger.trace("Browsing field {} is configured to be skipped in the menu.", bmfc.getField());
+                continue;
+            }
             if (bmfc.getField().contains(SolrConstants.MIDFIX_LANG)
-                    && (language == null || !bmfc.getField().contains(SolrConstants.MIDFIX_LANG + language))) {
-                logger.trace("Skipped {}", bmfc.getField());
+                    && (useLanguage == null || !(bmfc.getField().contains(SolrConstants.MIDFIX_LANG + useLanguage)
+                            || bmfc.getField().contains(SolrConstants.MIDFIX_LANG + "{}")))) {
+                logger.trace("Skipped term browsing field {} due to language mismatch.", bmfc.getField());
                 continue;
             }
             ret.add(bmfc.getField());
         }
+
+        return ret;
+    }
+
+    /**
+     * 
+     * @return List of configured browsing menu fields
+     */
+    public List<String> getConfiguredBrowsingMenuFields() {
+        List<String> ret = new ArrayList<>();
+        for (BrowsingMenuFieldConfig bmfc : DataManager.getInstance().getConfiguration().getBrowsingMenuFields()) {
+            ret.add(bmfc.getField());
+        }
+
         return ret;
     }
 
@@ -930,7 +1042,7 @@ public class BrowseBean implements Serializable {
     /**
      * 
      * @param field
-     * @return
+     * @return {@link CollectionView}
      */
     public CollectionView getOrCreateCollection(String field) {
         CollectionView collection = getCollection(field);
@@ -939,16 +1051,6 @@ public class BrowseBean implements Serializable {
             collection = getCollection(field);
         }
         return collection;
-    }
-
-    private static String getFacetField(String field) {
-        if (field.startsWith("MD_")) {
-            return field.replace("MD_", "FACET_");
-        } else if (field.equals("YEAR") || field.equals("DC")) {
-            return "FACET_" + field;
-        } else {
-            return field;
-        }
     }
 
     /**
@@ -1007,9 +1109,9 @@ public class BrowseBean implements Serializable {
     /**
      * TODO translation from DB
      *
-     * @param colletionField
+     * @param collectionField
      * @param collectionValue
-     * @return
+     * @return {@link String}
      * @should return hierarchy correctly
      */
     public String getCollectionHierarchy(String collectionField, String collectionValue) {
@@ -1044,7 +1146,7 @@ public class BrowseBean implements Serializable {
      *
      * @param field Collection field name
      * @param value Collection raw name
-     * @return
+     * @return Translated collection name
      */
     public String getTranslationForCollectionName(String field, String value) {
         logger.trace("getTranslationForCollectionName: {}:{}", field, value);
@@ -1062,7 +1164,7 @@ public class BrowseBean implements Serializable {
     public long getRecordCount(String collectionField, String collectionName) {
         CollectionView view = this.getOrCreateCollection(collectionField);
         return Optional.ofNullable(view.getCollectionElement(collectionName))
-                .map(e -> e.getNumberOfVolumes())
-                .orElse(0l);
+                .map(BrowseDcElement::getNumberOfVolumes)
+                .orElse(0L);
     }
 }

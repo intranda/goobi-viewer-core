@@ -45,6 +45,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v2.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 
@@ -59,19 +60,37 @@ public class IIIFUrlHandler {
     /**
      *
      */
-    private static final String UTF_8 = "UTF-8";
     private static final Logger logger = LogManager.getLogger(IIIFUrlHandler.class);
 
     private final AbstractApiUrlManager urls;
 
+    /**
+     * 
+     * @param urls
+     */
     public IIIFUrlHandler(AbstractApiUrlManager urls) {
         this.urls = urls;
+    }
+
+    public IIIFUrlHandler(URI apiUrl) {
+        this.urls = new ApiUrls(apiUrl.toString());
     }
 
     public IIIFUrlHandler() {
         this.urls = null;
     }
 
+    /**
+     * 
+     * @param fileUrl
+     * @param docStructIdentifier
+     * @param region
+     * @param size
+     * @param rotation
+     * @param quality
+     * @param format
+     * @return Generated URL
+     */
     public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality,
             String format) {
         String apiUrl = this.urls == null ? DataManager.getInstance().getConfiguration().getIIIFApiUrl() : this.urls.getApiUrl() + "/";
@@ -82,17 +101,19 @@ public class IIIFUrlHandler {
     /**
      * Returns a link to the actual image of the given page, delivered via IIIF api using the given parameters
      *
+     * @param apiUrl
+     * @param inFileUrl a {@link java.lang.String} object.
+     * @param docStructIdentifier
      * @param region a {@link java.lang.String} object.
      * @param size a {@link java.lang.String} object.
      * @param rotation a {@link java.lang.String} object.
-     * @param fileUrl a {@link java.lang.String} object.
-     * @param docStructIdentifier a {@link java.lang.String} object.
      * @param quality a {@link java.lang.String} object.
      * @param format a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @return Generated URL
      */
-    public String getIIIFImageUrl(String apiUrl, String fileUrl, String docStructIdentifier, String region, String size, String rotation,
-            String quality, String format) {
+    public String getIIIFImageUrl(String apiUrl, final String inFileUrl, final String docStructIdentifier, String region, String size,
+            String rotation, String quality, String format) {
+        String fileUrl = inFileUrl;
         try {
             if (PathConverter.isInternalUrl(fileUrl) || ImageHandler.isRestrictedUrl(fileUrl)) {
                 try {
@@ -144,32 +165,34 @@ public class IIIFUrlHandler {
                     return sb.toString();
                 }
             } else {
+                String usedocStructIdentifier = docStructIdentifier;
                 if (urls != null) {
                     //In the case of multivolume thumbnails in first-volume mode, a path consisting of both pi and filename is given.
                     //parse that path to get correct url for thumbnail
                     //TODO: find a more robust solution
                     Path filePath = Paths.get(fileUrl);
                     if (filePath.getNameCount() == 2) {
-                        docStructIdentifier = filePath.getName(0).toString();
+                        usedocStructIdentifier = filePath.getName(0).toString();
                         fileUrl = filePath.getName(1).toString();
                     }
                     return urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
-                            .params(URLEncoder.encode(docStructIdentifier, UTF_8), URLEncoder.encode(fileUrl, UTF_8), region, size, rotation,
+                            .params(URLEncoder.encode(usedocStructIdentifier, StringTools.DEFAULT_ENCODING),
+                                    URLEncoder.encode(fileUrl, StringTools.DEFAULT_ENCODING), region, size, rotation,
                                     "default", format)
                             .build();
                 }
                 //if the fileUrl contains a "/", then the part before that is the actual docStructIdentifier
                 int separatorIndex = fileUrl.indexOf("/");
                 if (separatorIndex > 0) {
-                    docStructIdentifier = fileUrl.substring(0, separatorIndex);
+                    usedocStructIdentifier = fileUrl.substring(0, separatorIndex);
                     fileUrl = fileUrl.substring(separatorIndex + 1);
                 }
 
                 StringBuilder sb = new StringBuilder(apiUrl);
                 sb.append("image/{pi}/{filename}"
-                        .replace("{pi}", URLEncoder.encode(docStructIdentifier, UTF_8))
+                        .replace("{pi}", URLEncoder.encode(usedocStructIdentifier, StringTools.DEFAULT_ENCODING))
                         .replace("{filename}",
-                                URLEncoder.encode(fileUrl, UTF_8)))
+                                URLEncoder.encode(fileUrl, StringTools.DEFAULT_ENCODING)))
                         .append("/");
                 sb.append(region).append("/");
                 sb.append(size).append("/");
@@ -179,7 +202,7 @@ public class IIIFUrlHandler {
                 return sb.toString();
             }
         } catch (URISyntaxException e) {
-            logger.error("Not a valid url: " + fileUrl, e.getMessage());
+            logger.error("Not a valid URL: {} ({})", fileUrl, e.getMessage());
             return "";
         } catch (UnsupportedEncodingException e) {
             logger.error(e.getMessage());
@@ -198,11 +221,9 @@ public class IIIFUrlHandler {
      * @param format a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getIIIFImageUrl(String baseUrl, RegionRequest region, Scale size, Rotation rotation, Colortype quality, ImageFileFormat format) {
-        if (StringUtils.isNotBlank(baseUrl) && !baseUrl.endsWith("/")) {
-            baseUrl += "/";
-        }
-        StringBuilder url = new StringBuilder(baseUrl);
+    public String getIIIFImageUrl(final String baseUrl, RegionRequest region, Scale size, Rotation rotation, Colortype quality,
+            ImageFileFormat format) {
+        StringBuilder url = new StringBuilder(StringTools.appendTrailingSlash(baseUrl));
         url.append(region).append("/");
         url.append(size).append("/");
         url.append(Math.round(rotation.getRotation())).append("/");

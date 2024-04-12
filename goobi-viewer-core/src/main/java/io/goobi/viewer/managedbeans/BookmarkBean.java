@@ -74,6 +74,8 @@ public class BookmarkBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(BookmarkBean.class);
 
     @Inject
+    private CaptchaBean captchaBean;
+    @Inject
     private UserBean userBean;
     @Inject
     private NavigationHelper navigationHelper;
@@ -93,12 +95,12 @@ public class BookmarkBean implements Serializable {
      * An email-address which a user may enter to receive the session store bookmark list as mail
      */
     private String sessionBookmarkListEmail = "";
-    private static String KEY_BOOKMARK_LIST_EMAIL_SUBJECT = "bookmarkList_session_mail_header";
-    private static String KEY_BOOKMARK_LIST_EMAIL_BODY = "bookmarkList_session_mail_body";
-    private static String KEY_BOOKMARK_LIST_EMAIL_ITEM = "bookmarkList_session_mail_list";
-    private static String KEY_BOOKMARK_LIST_EMAIL_EMPTY_LIST = "bookmarkList_session_mail_emptylist";
-    private static String KEY_BOOKMARK_LIST_EMAIL_ERROR = "bookmarkList_session_mail_error";
-    private static String KEY_BOOKMARK_LIST_EMAIL_SUCCESS = "bookmarkList_session_mail_success";
+    private static final String KEY_BOOKMARK_LIST_EMAIL_SUBJECT = "bookmarkList_session_mail_header";
+    private static final String KEY_BOOKMARK_LIST_EMAIL_BODY = "bookmarkList_session_mail_body";
+    private static final String KEY_BOOKMARK_LIST_EMAIL_ITEM = "bookmarkList_session_mail_list";
+    private static final String KEY_BOOKMARK_LIST_EMAIL_EMPTY_LIST = "bookmarkList_session_mail_emptylist";
+    private static final String KEY_BOOKMARK_LIST_EMAIL_ERROR = "bookmarkList_session_mail_error";
+    private static final String KEY_BOOKMARK_LIST_EMAIL_SUCCESS = "bookmarkList_session_mail_success";
 
     /**
      * Empty Constructor.
@@ -147,7 +149,7 @@ public class BookmarkBean implements Serializable {
      * cases.
      *
      * @param bookmarkList
-     * @return
+     * @return true if bookmarkList saved successfully; false otherwise
      */
     static boolean saveBookmarkListAction(BookmarkList bookmarkList) {
         UserBean userBean = BeanUtils.getUserBean();
@@ -206,7 +208,7 @@ public class BookmarkBean implements Serializable {
         try {
             UserBean userBean = BeanUtils.getUserBean();
             if (userBean != null && userBean.getUser() != null && DataManager.getInstance().getDao().deleteBookmarkList(currentBookmarkList)) {
-                logger.debug("BookmarkList '" + currentBookmarkList.getName() + "' deleted.");
+                logger.debug("BookmarkList '{}' deleted.", currentBookmarkList.getName());
                 String msg = ViewerResourceBundle.getTranslation("bookmarkList_deleteSuccess", null);
                 Messages.info(msg.replace("{0}", currentBookmarkList.getName()));
                 resetCurrentBookmarkListAction();
@@ -222,28 +224,12 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * Shares currentBookmarkList with currentUserGroup.
-     *
-     * @deprecated not used anymore. Replaced by assigning share key
-     */
-    public void shareCurrentBookmarkListAction() {
-        UserBean userBean = BeanUtils.getUserBean();
-        if (userBean != null && userBean.getUser() != null && currentBookmarkList.addGroupShare(currentUserGroup)) {
-            Messages.info("bookmarkList_shareWin");
-            logger.debug("BookmarkList '" + currentBookmarkList.getName() + "' shared with user group '" + currentUserGroup.getName() + "'.");
-            return;
-        }
-        Messages.error("bookmarkList_shareFail");
-    }
-
-    /**
      * Removes currentUserGroup from the shares list of currentBookmarkList.
      */
     public void unshareCurrentBookmarkListAction() {
-        UserBean userBean = BeanUtils.getUserBean();
         if (userBean != null && userBean.getUser() != null && currentBookmarkList.removeGroupShare(currentUserGroup)) {
             Messages.info("bookmarkList_unshareWin");
-            logger.debug("BookmarkList '" + currentBookmarkList.getName() + "' unshared with user group '" + currentUserGroup.getName() + "'.");
+            logger.debug("BookmarkList '{}' unshared with user group '{}'.", currentBookmarkList.getName(), currentUserGroup.getName());
             return;
         }
         Messages.error("bookmarkList_unshareFail");
@@ -256,7 +242,6 @@ public class BookmarkBean implements Serializable {
         logger.trace("resetCurrentBookmarkListAction");
         currentBookmarkListSharedKey = null;
         currentBookmarkList = new BookmarkList();
-        UserBean userBean = BeanUtils.getUserBean();
         if (userBean != null) {
             currentBookmarkList.setOwner(userBean.getUser());
         }
@@ -327,13 +312,12 @@ public class BookmarkBean implements Serializable {
      * @param bookmark a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
      */
     public void deleteCurrentItemAction(Bookmark bookmark) {
-        UserBean userBean = BeanUtils.getUserBean();
         if (bookmark != null && userBean != null && userBean.getUser() != null && currentBookmarkList != null) {
             try {
                 if (currentBookmarkList.removeItem(bookmark) && DataManager.getInstance().getDao().updateBookmarkList(currentBookmarkList)) {
                     String msg = ViewerResourceBundle.getTranslation("bookmarkList_removeBookmarkSuccess", null);
                     Messages.info(msg.replace("{0}", bookmark.getPi()));
-                    logger.debug("Bookmark '" + bookmark.getName() + "' deleted.");
+                    logger.debug("Bookmark '{}' deleted.", bookmark.getName());
                     return;
                 }
             } catch (DAOException e) {
@@ -399,7 +383,6 @@ public class BookmarkBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<BookmarkList> getBookmarkLists() throws DAOException {
-        UserBean userBean = BeanUtils.getUserBean();
         if (userBean != null) {
             return getBookmarkListsForUser(userBean.getUser());
         }
@@ -497,7 +480,8 @@ public class BookmarkBean implements Serializable {
             for (BookmarkList bookmarkList : getBookmarkListsForUser(userBean.getUser())) {
                 if (bookmarkList.getName().equals(name) && bookmarkList.getOwner().equals(userBean.getUser())) {
                     ((UIInput) toValidate).setValid(false);
-                    logger.debug("BookmarkList '{}' for user '{}' could not be added. A bookmark list with this name for this use may already exist.", currentBookmarkList.getName(),  userBean.getEmail());
+                    logger.debug("BookmarkList '{}' for user '{}' could not be added. A bookmark list with this name for this use may already exist.",
+                            currentBookmarkList.getName(), userBean.getEmail());
                     String msg = ViewerResourceBundle.getTranslation("bookmarkList_createBookmarkListNameExists", null);
                     FacesMessage message =
                             new FacesMessage(FacesMessage.SEVERITY_ERROR, ViewerResourceBundle.getTranslation(msg.replace("{0}", name), null), null);
@@ -823,7 +807,18 @@ public class BookmarkBean implements Serializable {
             return;
         }
 
+        // Check whether the security question has been answered correct, if configured
+        if (captchaBean != null && !captchaBean.checkAnswer()) {
+            Messages.error("user__security_question_wrong");
+            logger.debug("Wrong security question answer.");
+            return;
+        }
+
         DataManager.getInstance().getBookmarkManager().getBookmarkList(BeanUtils.getRequest().getSession(false)).ifPresent(bookmarkList -> {
+            if (bookmarkList.getItems().isEmpty()) {
+                Messages.error(ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_EMPTY_LIST, null));
+                return;
+            }
             String body =
                     SessionStoreBookmarkManager.generateBookmarkListInfo(ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_BODY, null),
                             ViewerResourceBundle.getTranslation(KEY_BOOKMARK_LIST_EMAIL_ITEM, null),
@@ -864,7 +859,7 @@ public class BookmarkBean implements Serializable {
     }
 
     /**
-     * @param newBookmarkName the newBookmarkName to set
+     * @param newBookmarkListName the newBookmarkListName to set
      */
     public void setNewBookmarkListName(String newBookmarkListName) {
         this.newBookmarkListName = newBookmarkListName;
@@ -876,5 +871,4 @@ public class BookmarkBean implements Serializable {
         saveBookmarkListAction(list);
         setNewBookmarkListName("");
     }
-
 }

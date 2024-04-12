@@ -32,7 +32,7 @@
 						<span class="title__header-label">#{activeDocumentBean.titleBarLabel}</span>
 	
 			            <!-- ADD TO BOOKMARK -->
-			            <ui:fragment rendered="#{configurationBean.bookshelvesEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
+			            <ui:fragment rendered="#{configurationBean.bookmarksEnabled and activeDocumentBean.viewManager.metadataViewOnly}">
 			                    <button type="button" class="btn btn--icon metadata__bookmark-button" aria-label="#{msg.bookmarkList_addToBookmarkList}"
 			                        data-bookmark-list-type="add" 
 			                        data-pi="#{activeDocumentBean.viewManager.pi}"
@@ -59,7 +59,7 @@
             <viewerComponent:modalDownloadTicket />
             <div class="clearfix"></div>
         </h:panelGroup>
-	    
+
         <c:forEach items="#{metadataBean.getMetadataElementList(metadataViewIndex)}" var="metadataElement" varStatus="status">
             <ui:include src="/resources/includes/metadata/metadataElement.xhtml">
             	<ui:param name="metadataElement" value="#{metadataElement}"/>
@@ -90,13 +90,8 @@
 										<ui:fragment rendered="#{metadata.group}">
 											<c:forEach items="#{metadata.values}" var="val">
 												<dd>
-													<h:outputFormat value="#{msg[val.masterValue]}"
+													<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}"
 														escape="false">
-														<c:forEach begin="0" end="#{metadata.paramCount - 0}"
-															var="ind">
-															<f:param value="#{val.getParamLabelWithColon(ind)}" />
-															<f:param value="#{val.getComboValueShort(ind)}" />
-														</c:forEach>
 													</h:outputFormat>
 												</dd>
 											</c:forEach>
@@ -107,10 +102,7 @@
 	                                    <c:forEach items="#{metadata.values}" var="val">
 	                                    	<dd>
 	                                            <span class="metadata__element-value">
-	                                                <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-	                                                    <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind">
-	                                                        <f:param value="#{val.getComboValueShort(ind)}" />
-	                                                    </c:forEach>
+	                                                <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
 	                                                </h:outputFormat>
 	                                            </span>
 	                                    	</dd>

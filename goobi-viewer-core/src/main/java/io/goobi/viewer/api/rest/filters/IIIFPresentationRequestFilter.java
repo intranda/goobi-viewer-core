@@ -99,14 +99,23 @@ public class IIIFPresentationRequestFilter implements ContainerRequestFilter {
      */
     public static boolean forwardToCanonicalUrl(String pi, String imageName, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        if (imageName != null && !imageName.contains(".") && imageName.matches("\\d+")) {
+        if (imageName != null && !imageName.contains(".")) {
             try {
-                Optional<String> filename = DataManager.getInstance().getSearchIndex().getFilename(pi, Integer.parseInt(imageName));
+                Optional<String> filename = DataManager.getInstance().getSearchIndex().getFilename(pi, imageName);
+
                 if (filename.isPresent()) {
                     String redirectURI = request.getRequestURI().replace("/" + imageName + "/", "/" + filename.get() + "/");
                     response.sendRedirect(redirectURI);
                     return true;
+                } else if (imageName.matches("\\d+")) {
+                    filename = DataManager.getInstance().getSearchIndex().getFilename(pi, Integer.parseInt(imageName));
+                    if (filename.isPresent()) {
+                        String redirectURI = request.getRequestURI().replace("/" + imageName + "/", "/" + filename.get() + "/");
+                        response.sendRedirect(redirectURI);
+                        return true;
+                    }
                 }
+
             } catch (NumberFormatException | PresentationException | IndexUnreachableException e) {
                 logger.error("Unable to resolve image file for image order {} and pi {}", imageName, pi);
             }

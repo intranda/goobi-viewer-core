@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.administration.legal;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,15 +39,16 @@ import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
- * Class to persist settings for the cookie banner.
- * Only one instance of this class should be persisted in the database
+ * Class to persist settings for the cookie banner. Only one instance of this class should be persisted in the database
  *
  * @author florian
  *
  */
 @Entity
 @Table(name = "cookie_banner")
-public class CookieBanner {
+public class CookieBanner implements Serializable {
+
+    private static final long serialVersionUID = 7200913959493405687L;
 
     /** Unique database ID. */
     @Id
@@ -68,7 +70,8 @@ public class CookieBanner {
     private boolean active = false;
 
     /**
-     * The time after which a user must have agreed to the banner. If the browser's local storage contains a different value, the cookie banner must be accepted again
+     * The time after which a user must have agreed to the banner. If the browser's local storage contains a different value, the cookie banner must
+     * be accepted again
      */
     @Column(name = "requires_consent_after", nullable = false)
     private LocalDateTime requiresConsentAfter = LocalDateTime.now();
@@ -76,7 +79,7 @@ public class CookieBanner {
     /**
      * IDs of CMS Pages on which the cookie banner should not be displayed
      */
-    @Column(name="ignore_on")
+    @Column(name = "ignore_on")
     @Convert(converter = NumberListConverter.class)
     private List<Long> ignoreList = new ArrayList<>();
 
@@ -89,6 +92,8 @@ public class CookieBanner {
 
     /**
      * Cloning constructor
+     * 
+     * @param orig
      */
     public CookieBanner(CookieBanner orig) {
         this.id = orig.id;
@@ -128,6 +133,7 @@ public class CookieBanner {
 
     /**
      * set the database id
+     * 
      * @param id
      */
     public void setId(Long id) {
@@ -144,6 +150,7 @@ public class CookieBanner {
 
     /**
      * set the {@link CookieBanner#ignoreList}
+     * 
      * @param ignoreList
      */
     public void setIgnoreList(List<Long> ignoreList) {
@@ -160,6 +167,7 @@ public class CookieBanner {
 
     /**
      * set the {@link #requiresConsentAfter}
+     * 
      * @param requiresConsentAfter
      */
     public void setRequiresConsentAfter(LocalDateTime requiresConsentAfter) {

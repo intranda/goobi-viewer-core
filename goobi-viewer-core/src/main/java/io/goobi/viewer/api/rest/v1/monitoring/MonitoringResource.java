@@ -21,6 +21,11 @@
  */
 package io.goobi.viewer.api.rest.v1.monitoring;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -30,16 +35,25 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.servlet.model.ApplicationInfo;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ApplicationResource;
 import io.goobi.viewer.Version;
-import io.goobi.viewer.api.rest.model.MonitoringStatus;
+import io.goobi.viewer.api.rest.model.monitoring.MonitoringStatus;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.HTTPException;
+import io.goobi.viewer.modules.IModule;
+import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 
 @Path(ApiUrls.MONITORING)
@@ -52,13 +66,11 @@ public class MonitoringResource {
     private HttpServletResponse servletResponse;
     @Context
     private ContainerRequestContext requestContext;
+    @Inject
+    private MessageQueueManager messageBroker;
 
     /**
-     *
-     * @param content
-     * @param thumbs
-     * @param pdf
-     * @return
+     * @return {@link MonitoringStatus} as JSON
      */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
@@ -69,38 +81,98 @@ public class MonitoringResource {
 
         // Check Solr
         if (!DataManager.getInstance().getSearchIndex().pingSolrIndex()) {
-            ret.setSolr(MonitoringStatus.STATUS_ERROR);
+            ret.getMonitoring().put(MonitoringStatus.KEY_SOLR, MonitoringStatus.STATUS_ERROR);
             logger.warn("Solr monitoring check failed.");
+        }
+
+        // Check Solr schema version
+        String[] result = SolrTools.checkSolrSchemaName();
+        int status = Integer.parseInt(result[0]);
+        if (status != 200) {
+            ret.getMonitoring().put(MonitoringStatus.KEY_SOLRSCHEMA, result[1]);
         }
 
         // Check DB
         try {
             if (!DataManager.getInstance().getDao().checkAvailability()) {
-                ret.setDatabase(MonitoringStatus.STATUS_ERROR);
+                ret.getMonitoring().put(MonitoringStatus.KEY_DATABASE, MonitoringStatus.STATUS_ERROR);
                 logger.warn("DB monitoring check failed.");
             }
         } catch (DAOException e) {
-            ret.setDatabase(MonitoringStatus.STATUS_ERROR);
+            ret.getMonitoring().put(MonitoringStatus.KEY_DATABASE, MonitoringStatus.STATUS_ERROR);
             logger.warn("DB monitoring check failed.");
         }
 
         // Check image delivery
         try {
-            //            new FooterResource(servletRequest).getImage(requestContext, servletRequest, "full", "100,", "0", "default", "jpg");
             NetTools.getWebContentGET(
                     DataManager.getInstance().getConfiguration().getRestApiUrl() + "records/-/files/footer/-/full/100,/0/default.jpg");
-        } catch (Exception e) {
-            ret.setImages(MonitoringStatus.STATUS_ERROR);
+        } catch (HTTPException | IOException e) {
+            ret.getMonitoring().put(MonitoringStatus.KEY_IMAGES, MonitoringStatus.STATUS_ERROR);
             logger.warn("Image delivery monitoring check failed.");
+        }
+
+        // Check message queue status
+        if (messageBroker != null) {
+            ret.getMonitoring()
+                    .put(MonitoringStatus.KEY_MESSAGE_QUEUE,
+                            messageBroker.isQueueRunning() ? MonitoringStatus.STATUS_OK : MonitoringStatus.STATUS_ERROR);
+        } else {
+            logger.warn("MessageQueueManager injection failed.");
+        }
+
+        // viewer-core version
+        Map<String, String> coreVersion = ret.getVersions().computeIfAbsent("core", k -> new HashMap<>(2));
+        coreVersion.put("version", Version.VERSION);
+        coreVersion.put("hash", Version.BUILDVERSION);
+
+        // connector version
+        Map<String, String> connectorVersion = ret.getVersions().computeIfAbsent("connector", k -> new HashMap<>(2));
+        setVersionValues(connectorVersion, DataManager.getInstance().getConnectorVersion());
+
+        // indexer version
+        Map<String, String> indexerVersion = ret.getVersions().computeIfAbsent("indexer", k -> new HashMap<>(2));
+        setVersionValues(indexerVersion, DataManager.getInstance().getIndexerVersion());
+
+        // ICS version
+        Map<String, String> icsVersion = ret.getVersions().computeIfAbsent("contentserver", k -> new HashMap<>(2));
+        try {
+            ApplicationInfo info = new ApplicationResource().getApplicationInfo();
+            String json = new ObjectMapper().writeValueAsString(info);
+            setVersionValues(icsVersion, json);
+        } catch (ContentNotFoundException | IOException e) {
+            logger.error(e.getMessage());
+        }
+
+        //  module versions
+        for (IModule module : DataManager.getInstance().getModules()) {
+            Map<String, String> moduleVersion = ret.getVersions().computeIfAbsent(module.getId(), k -> new HashMap<>(2));
+            setVersionValues(moduleVersion, module.getVersionJson());
         }
 
         return ret;
     }
 
+    /**
+     * 
+     * @param versionMap
+     * @param versionJson
+     */
+    private static void setVersionValues(Map<String, String> versionMap, String versionJson) {
+        versionMap.put("version", JsonTools.getVersion(versionJson));
+        versionMap.put("hash", JsonTools.getGitRevision(versionJson));
+    }
+
+    /**
+     * 
+     * @return Formatted version string
+     * @deprecated Use /api/v1/monitoring/
+     */
+    @Deprecated(since = "23.02")
     @GET
     @Path(ApiUrls.MONITORING_CORE_VERSION)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Reports the Goobi viewer core version", tags = { "monitoring" })
+    @Operation(summary = "DEPRECATED: Reports the Goobi viewer core version", tags = { "monitoring" })
     public String getCoreVersion() {
         return JsonTools.formatVersionString(Version.asJSON());
     }

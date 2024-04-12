@@ -12,6 +12,7 @@
 
     <composite:interface />
 
+    <!-- LEGACY CITATION/DOWNLOADS WIDGET -->
     <composite:implementation>
         <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsage and !activeDocumentBean.group}">
             <div id="widgetUsage" class="widget widget-usage">
@@ -36,9 +37,7 @@
                         </p>
                     </ui:fragment>
 
-                    <!-- WORK -->
-                    <h3 id="titleWork" class="widget-usage__subtitle">#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}</h3>
-
+                	<!-- WORK -->
                     <viewerComponent:downloadsWork/>
 
                     <viewerComponent:downloadsStruct/>

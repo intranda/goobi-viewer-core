@@ -38,7 +38,6 @@
 		<nature>org.eclipse.jem.workbench.JavaEMFNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.wst.common.modulecore.ModuleCoreNature</nature>
-		<nature>net.sourceforge.pmd.eclipse.plugin.pmdNature</nature>
 	</natures>
 	<linkedResources>
 		<link>
@@ -49,7 +48,7 @@
 	</linkedResources>
 	<filteredResources>
 		<filter>
-			<id>1637657624981</id>
+			<id>1670928262558</id>
 			<name></name>
 			<type>30</type>
 			<matcher>

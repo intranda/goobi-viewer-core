@@ -25,17 +25,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.CmsBean;
+import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.search.SearchInterface;
 import io.goobi.viewer.model.viewer.PageType;
 
@@ -116,9 +118,8 @@ public class PageList implements Iterable<String> {
     public boolean equals(Object obj) {
         if (obj != null) {
             return this.toString().equals(obj.toString());
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
@@ -163,9 +164,8 @@ public class PageList implements Iterable<String> {
     public String getPage(int index) {
         if (pages.size() > index) {
             return pages.get(index);
-        } else {
-            return "";
         }
+        return "";
     }
 
     /**
@@ -193,16 +193,16 @@ public class PageList implements Iterable<String> {
      */
     public SearchInterface getSearch(int pageIndex) throws NumberFormatException, DAOException {
         SearchInterface search = null;
-        String page = getPage(pageIndex);
-        if (isCMSPage(page)) {
-            CMSPage cmsPage = DataManager.getInstance().getDao().getCMSPage(Long.parseLong(getPage()));
-            if (cmsPage != null) {
-                search = cmsPage.getSearch();
-            }
-        }
-        if (search == null) {
-            search = BeanUtils.getSearchBean();
-        }
+        //        String page = getPage(pageIndex);
+        //        if (isCMSPage(page)) {
+        //            CMSPage cmsPage = DataManager.getInstance().getDao().getCMSPage(Long.parseLong(getPage()));
+        //            if (cmsPage != null) {
+        //                search = cmsPage.getSearch();
+        //            }
+        //        }
+        //        if (search == null) {
+        //            search = BeanUtils.getSearchBean();
+        //        }
         return search;
     }
 
@@ -231,10 +231,10 @@ public class PageList implements Iterable<String> {
     }
 
     /**
-     *
+     * @param page
      * @return true if the given string is a number, i.e. it is the identifier of a cms page
      */
-    private boolean isCMSPage(String page) {
+    private static boolean isCMSPage(String page) {
         return page.matches("\\d+");
     }
 
@@ -264,7 +264,7 @@ public class PageList implements Iterable<String> {
      * </p>
      *
      * @param idString a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.CMSPage} object.
+     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public CMSPage getPage(String idString) throws DAOException {

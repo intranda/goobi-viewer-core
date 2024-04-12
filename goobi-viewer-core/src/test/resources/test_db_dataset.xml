@@ -12,6 +12,11 @@
         active="true" suspended="true" superuser="false" last_name="last 3"
         first_name="first 3" comments="no comments 3" score="-1"
         avatar_type="DEFAULT" />
+        
+    <user_properties user_id="1" property_name="sso_id" property_value="1234" />
+    <user_properties user_id="2" property_name="sso_id" property_value="5678" />
+    <user_properties user_id="2" property_name="foo" property_value="bar" />
+    <user_properties user_id="3" property_name="foo" property_value="bar" />
 
 	<openid_accounts user_id="1" claimed_identifier="user_1_claimed_identifier_1" />
 	<openid_accounts user_id="1" claimed_identifier="user_1_claimed_identifier_2" />
@@ -148,8 +153,8 @@
     <cms_media_item_metadata owner_media_item_id="1" language="de" name="Bild 1" description="Beschreibung 1" />
     <cms_media_item_metadata owner_media_item_id="1" language="en" name="Image 1" description="Description 1" />
 		
-	<cms_geomap geomap_id="1" creator_id="1" date_created="2020-04-23 09:10:52" date_updated="2020-04-23 09:10:52" map_type="1" initial_view="{&quot;zoom&quot;:8,&quot;center&quot;:[6.501159667968751,49.89109559573688]}"></cms_geomap>
-    <cms_geomap geomap_id="2" creator_id="3" date_created="2020-04-23 09:10:52" date_updated="2020-04-23 09:10:52" map_type="1" initial_view="{&quot;zoom&quot;:5,&quot;center&quot;:[11.073397,49.451993]}"></cms_geomap>
+	<cms_geomap geomap_id="1" creator_id="1" date_created="2020-04-23 09:10:52" date_updated="2020-04-23 09:10:52" initial_view="{&quot;zoom&quot;:8,&quot;center&quot;:[6.501159667968751,49.89109559573688]}"></cms_geomap>
+    <cms_geomap geomap_id="2" creator_id="3" date_created="2020-04-23 09:10:52" date_updated="2020-04-23 09:10:52" initial_view="{&quot;zoom&quot;:5,&quot;center&quot;:[11.073397,49.451993]}"></cms_geomap>
     
     <cms_geomap_translation translation_id="1" language="de" tag="Title" value="Kartentitel 1" owner_id="1"></cms_geomap_translation>
     <cms_geomap_translation translation_id="2" language="de" tag="Description" value="Kartenbeschreibung 1" owner_id="1"></cms_geomap_translation>
@@ -157,69 +162,70 @@
     <cms_geomap_translation translation_id="4" language="en" tag="Description" value="Map description 1" owner_id="1"></cms_geomap_translation>
     <cms_geomap_translation translation_id="5" language="de" tag="Title" value="Kartentitel 2" owner_id="2"></cms_geomap_translation>
     
-    <cms_geomap_features geomap_id="1" features="{&quot;view&quot;:{&quot;center&quot;:[6.064453125000001,49.57795219958587],&quot;zoom&quot;:5},&quot;geometry&quot;:{&quot;coordinates&quot;:[6.064453125000001,49.57795219958587],&quot;type&quot;:&quot;Point&quot;},&quot;id&quot;:1,&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{&quot;description&quot;:{&quot;de&quot;:[&quot;Hauptstadt des gleichnamigen Fürstentums. &lt;a target=\&quot;_blank\&quot; href=\&quot;https://en.wikipedia.org/wiki/Luxembourg\&quot;>Wikipedia&lt;\/a>&quot;]},&quot;title&quot;:{&quot;de&quot;:[&quot;Luxemburg&quot;],&quot;en&quot;:[&quot;Luxembourg&quot;],&quot;fr&quot;:[&quot;Luxembourg&quot;]}}}"></cms_geomap_features>
-    <cms_geomap_features geomap_id="2" features="{&quot;view&quot;:{&quot;center&quot;:[9.799804687500002,51.449899262572615],&quot;zoom&quot;:5},&quot;geometry&quot;:{&quot;coordinates&quot;:[9.799804687500002,51.449899262572615],&quot;type&quot;:&quot;Point&quot;},&quot;id&quot;:2,&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{&quot;description&quot;:&quot;&quot;,&quot;title&quot;:{&quot;de&quot;:[&quot;Irgendwo in Deutschland&quot;]}}}"></cms_geomap_features>
+    <cms_geomap_featureset featureset_id="1" owner_geomap="1" feature_source="manual"></cms_geomap_featureset>
+    <cms_geomap_featureset featureset_id="2" owner_geomap="2" feature_source="manual"></cms_geomap_featureset>
+    
+    <cms_geomap_features featureset_id="1" features="{&quot;view&quot;:{&quot;center&quot;:[6.064453125000001,49.57795219958587],&quot;zoom&quot;:5},&quot;geometry&quot;:{&quot;coordinates&quot;:[6.064453125000001,49.57795219958587],&quot;type&quot;:&quot;Point&quot;},&quot;id&quot;:1,&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{&quot;description&quot;:{&quot;de&quot;:[&quot;Hauptstadt des gleichnamigen Fürstentums. &lt;a target=\&quot;_blank\&quot; href=\&quot;https://en.wikipedia.org/wiki/Luxembourg\&quot;>Wikipedia&lt;\/a>&quot;]},&quot;title&quot;:{&quot;de&quot;:[&quot;Luxemburg&quot;],&quot;en&quot;:[&quot;Luxembourg&quot;],&quot;fr&quot;:[&quot;Luxembourg&quot;]}}}"></cms_geomap_features>
+    <cms_geomap_features featureset_id="2" features="{&quot;view&quot;:{&quot;center&quot;:[9.799804687500002,51.449899262572615],&quot;zoom&quot;:5},&quot;geometry&quot;:{&quot;coordinates&quot;:[9.799804687500002,51.449899262572615],&quot;type&quot;:&quot;Point&quot;},&quot;id&quot;:2,&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{&quot;description&quot;:&quot;&quot;,&quot;title&quot;:{&quot;de&quot;:[&quot;Irgendwo in Deutschland&quot;]}}}"></cms_geomap_features>
     	
     <cms_sliders source_type="0" slider_id="1" name="Query Slider" description="Slider from solr query" style="base" query="PI:1 PI:2 PI:3" />
     <cms_sliders source_type="1" slider_id="2" name="Collections Slider" description="Slider from collections" style="base" collections="dcone,dctwo,dcthree" />
     <cms_sliders source_type="2" slider_id="3" name="CMSPage Slider" description="Slider from solr CMS pages" style="base" categories="tag1,tag2" />
     
     <cms_collections cms_collection_id="1" solr_field="DC" solr_value="dcimage" media_item_id="1" />
-		
-	<cms_pages cms_page_id="1" template_id="template_simple" date_created="2015-01-13 14:35:00.000000000" date_updated="2015-01-13 14:35:00.000000000"
-	    published="true" use_default_sidebar="false"/>
-	<cms_pages cms_page_id="2" template_id="template_simple" date_created="2015-01-13 14:40:00.000000000" date_updated="2015-01-13 14:40:00.000000000"
-        published="false" use_default_sidebar="true"/>
-    <cms_pages cms_page_id="3" template_id="template_simple" date_created="2015-01-13 14:40:00.000000000" date_updated="2015-01-13 14:40:00.000000000"
-        published="true" use_default_sidebar="true" related_pi="PI_1" use_as_default_record_view="true" />
-        
-    <cms_properties id="1" property_key="DISPLAY_CHILD_TAGS_AS_HEADERS" property_value="false" owner_page_id="3"/>  
-        
+    	        
+	<cms_pages cms_page_id="1" date_created="2015-01-13 14:35:00.000000000" date_updated="2015-01-13 14:35:00.000000000"
+	    publication_status="PUBLISHED" use_default_sidebar="false" title="{&quot;en&quot;: &quot;title 1&quot;}"/>
+	<cms_pages cms_page_id="2" date_created="2015-01-13 14:40:00.000000000" date_updated="2015-01-13 14:40:00.000000000"
+        publication_status="PRIVATE" use_default_sidebar="true" title="{&quot;en&quot;: &quot;title 2&quot;}"/>
+    <cms_pages cms_page_id="3" date_created="2015-01-13 14:40:00.000000000" date_updated="2015-01-13 14:40:00.000000000"
+        publication_status="PUBLISHED" use_default_sidebar="true" related_pi="PI_1" use_as_default_record_view="true" 
+        title="{&quot;en&quot;: &quot;title 3&quot;}"/>
+
+    <cms_components component_id="1" publication_state="PUBLISHED" template_filename="htmltext.xml" component_order="1" owning_page_id="1"/>
+    <cms_components component_id="2" publication_state="PUBLISHED" template_filename="image.xml" component_order="2" owning_page_id="1"/>
+    <cms_components component_id="3" publication_state="PUBLISHED" template_filename="text.xml" component_order="1" owning_page_id="2"/>
+    <cms_components component_id="4" publication_state="PUBLISHED" template_filename="textwithimage.xml" component_order="1" owning_page_id="3"/>        
+    <cms_components component_id="5" publication_state="PUBLISHED" template_filename="sliderandmap.xml" component_order="1" owning_page_id="3"/>        
+     		     
+    <cms_content content_type="mediumtext" cms_content_id="1" item_id="text" owning_component_id="1" mediumtext_text="{&quot;en&quot;: &quot;Some longer html-text&quot;}" />   
+    <cms_content content_type="media" cms_content_id="2" item_id="image" owning_component_id="2" media_item_id="1" />   
+    <cms_content content_type="shorttext" cms_content_id="3" item_id="text" owning_component_id="3" shorttext_text="{&quot;en&quot;: &quot;Some text&quot;}" />   
+    <cms_content content_type="mediumtext" cms_content_id="4" item_id="text" owning_component_id="4" mediumtext_text="{&quot;en&quot;: &quot;Some longer html-text next to an image&quot;}" />   
+    <cms_content content_type="media" cms_content_id="5" item_id="image" owning_component_id="4" media_item_id="4" />   
+    <cms_content content_type="slider" cms_content_id="6" item_id="slider" owning_component_id="5" slider_id="1" />   
+    <cms_content content_type="geomap" cms_content_id="7" item_id="map" owning_component_id="5" geomap_id="1" />   
+
+	<cms_page_sidebar_elements cms_sidebar_element_id="1" owner_page_id="2" sort_order="1" generation_type="AUTOMATIC" content_type="content_type" geomap_id="1"/>
+
     <cms_static_pages static_page_id="1" static_page_name="index" cms_page_Id="1"/>
     <cms_static_pages static_page_id="2" static_page_name="search"/>
-    
-        
-    <cms_page_language_versions cms_page_language_version_id="1" owner_page_id="1" language="de" status="FINISHED"
-        title="Titel 1" menu_title="Menütitel 1" />
-    <cms_page_language_versions cms_page_language_version_id="2" owner_page_id="1" language="en" status="FINISHED"
-        title="Title 1" menu_title="Menu title 1" />
-    <cms_page_language_versions cms_page_language_version_id="3" owner_page_id="2" language="global" status="FINISHED"
-        title="Title 1" menu_title="Menu title 1"/>
-        
-    <cms_content_items cms_content_item_id="1" item_id="C1" type="HTML"  owner_page_language_version_id="1"
-        html_fragment="&lt;b&gt;Hello CMS&lt;/b&gt;" />
-    <cms_content_items cms_content_item_id="2" item_id="C2" type="MEDIA" owner_page_language_version_id="1"
-        media_item_id="1" />
-    <cms_content_items cms_content_item_id="3" item_id="C3" type="SOLRQUERY" owner_page_language_version_id="1"
-        solr_query="PI:*" solr_sort_fields="SORT_TITLE,DATECREATED" elements_per_page="20" />
-    <cms_content_items cms_content_item_id="4" item_id="C4" type="PAGELIST" owner_page_language_version_id="1" 
-    	elements_per_page="5" />
-    <cms_content_items cms_content_item_id="5" item_id="C5" type="GEOMAP" geomap_id="1" owner_page_language_version_id="1"/>
-    <cms_content_items cms_content_item_id="6" item_id="C6" type="GEOMAP" geomap_id="1" owner_page_language_version_id="3"/>
-    <cms_content_items cms_content_item_id="7" item_id="C7" type="SLIDER" slider_id="1" owner_page_language_version_id="3"/>
-    
+
     <cms_page_cms_categories page_id="1" category_id="4" />
     <cms_page_cms_categories page_id="1" category_id="5" />
     <cms_page_cms_categories page_id="2" category_id="4" />
     <cms_page_cms_categories page_id="3" category_id="6" />
-    
-    <cms_content_item_cms_categories content_item_id="4" category_id="4" />
-    
+        
     <cms_navigation_items cms_navigation_item_id="1" item_label="item 1" page_url="url 1" item_order="1" />
     <cms_navigation_items cms_navigation_item_id="2" item_label="item 2" page_url="url 2" item_order="1"
         parent_item_id="1" cms_page_id="2" />
     <cms_navigation_items cms_navigation_item_id="3" item_label="item 3" page_url="url 3" item_order="2"
         parent_item_id="1" cms_page_id="2" />
     <cms_navigation_items cms_navigation_item_id="4" item_label="item 4" page_url="url 4" item_order="2" />
-    
-    <cms_page_template_enabled cms_page_template_enabled_id="1" template_id="template_disabled" enabled="false" />
-    
+        
     <cms_record_notes note_type="SINGLE" cms_record_note_id="1" record_pi="PI1" record_title="Titel 1" note_title="{&quot;en&quot;: &quot;Notes 1&quot;, &quot;de&quot;: &quot;Bemerkungen 1&quot;}" note_text="{&quot;en&quot;: &quot;&lt;p&gt;First paragraph&lt;/p&gt;&quot;, &quot;de&quot; : &quot;&lt;p&gt;Erster Paragraph&lt;/p&gt;&quot;}" display_note="true" ></cms_record_notes>
     <cms_record_notes note_type="SINGLE" cms_record_note_id="2" record_pi="PI1" record_title="Titel 1" note_title="{&quot;en&quot;: &quot;Notes 2&quot;, &quot;de&quot;: &quot;Bemerkungen 2&quot;}" note_text="lorem ipsum" display_note="false"></cms_record_notes>
     <cms_record_notes note_type="SINGLE" cms_record_note_id="3" record_pi="PI2" record_title="Titel 2" note_title="{&quot;en&quot;: &quot;Notes 3&quot;, &quot;de&quot;: &quot;Bemerkungen 3&quot;}" note_text="loram ipsum" display_note="true"></cms_record_notes>
     <cms_record_notes note_type="MULTI" cms_record_note_id="4" query="PI:mnha*" note_title="{&quot;en&quot;: &quot;Notes 3&quot;, &quot;de&quot;: &quot;Bemerkungen MNHA&quot;}" note_text="loram ipsum" display_note="true"></cms_record_notes>
     <cms_record_notes note_type="MULTI" cms_record_note_id="5"  query="DC:dctext*" note_title="{&quot;en&quot;: &quot;Notes 3&quot;, &quot;de&quot;: &quot;Bemerkungen OCR&quot;}" note_text="loram ipsum" display_note="false"></cms_record_notes>
     
+    <cms_highlights highlight_id="1" enabled="true" name="Objekt des Monats Januar" target_type="RECORD" record_identifier="PPN12345" 
+    	date_start="2023-01-01 00:00:00.000000000" date_end="2023-02-01 00:00:00.000000000" image_mode="RECORD_REPRESENTATIVE"/>
+    <cms_highlights highlight_id="2" enabled="false" name="Objekt des Monats Februar" target_type="RECORD" record_identifier="PPN67890" 
+    	date_start="2023-02-01 00:00:00.000000000" date_end="2023-03-01 00:00:00.000000000" image_mode="RECORD_REPRESENTATIVE"/>
+    <cms_highlights highlight_id="3" enabled="true" name="Deaktiviertes Objekt" target_type="URL" target_url="viewer/cms/99/" 
+    	date_start="2023-03-01 00:00:00.000000000" date_end="2023-04-01 00:00:00.000000000" image_mode="NO_IMAGE"/>
+    	
     <download_jobs download_job_id="1" type="pdf" identifier="187277c96410b2358a36e2eb6c8ad76f8610a022d2cd95b180b94a76a1cb118a" pi="PI_1"
         status="WAITING" last_requested="2016-06-01 00:00:00" ttl="3600" />
     <download_jobs download_job_id="2" type="epub" identifier="4b689c5bd24d94ef88bedfd39d8819f8ef3a3676c52dc4f6acb50c7e8f3aab04" pi="PI_1" logid="LOG_0001"

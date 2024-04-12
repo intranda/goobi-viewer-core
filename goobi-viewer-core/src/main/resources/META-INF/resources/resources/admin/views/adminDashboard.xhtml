@@ -1,10 +1,10 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-                xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:h="http://xmlns.jcp.org/jsf/html"
+				xmlns:f="http://xmlns.jcp.org/jsf/core"
+				xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+				xmlns:jsf="http://xmlns.jcp.org/jsf"
+				xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
                 xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
                 xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
@@ -23,15 +23,18 @@
                     <div class="admin__title-bar">
                         <h1 class="admin__title">#{msg.admin__dashboard}</h1>
                     </div>
+                    	
+                    	<!-- NO BREADCRUMB FOR ADMIN BACKEND START PAGE -->
+<!--                     <viewerComponent:adminBreadcrumbs /> -->
+                    
                     <div class="admin__content-inner-content">
                         <div class="admin__entry-list -w33">
-
 
                             <!-- WELCOME -->
                             <div class="admin__boxed-entry -no-actions -w33">
                                 <div class="admin__dashboard-user-welcome">
                                 	<div class="admin__dashboard-user-welcome-left">
-	                                    <h2>#{msg.admin__dashboard_hello} #{userBean.user.nickName}</h2>
+	                                    <h2>#{msg.admin__dashboard_hello} <h:outputText value="#{userBean.user.nickName}" escape="true" /></h2>
 	                                    <p>#{msg.admin__dashboard_documentation}:<br/>
 	                                        <a class="-bluelink" href="https://docs.goobi.io" target="_blank" rel="noopener">https://docs.goobi.io</a>
 	                                    </p>
@@ -78,7 +81,9 @@
                                     <div class="row no-gutters admin__table-entry" role="row">
                                         <div class="col-6 d-flex flex-column" role="gridcell">
                                             <!-- PAGE TITLE -->
-                                            <span class="admin__last-pages-title">#{page.title}</span>
+                                            <span class="admin__last-pages-title">
+                                                <h:outputText value="#{page.title}" escape="true" />
+                                            </span>
                                             <!-- ACTIONS -->
                                             <div>
                                                 <!-- SHOW -->
@@ -128,7 +133,7 @@
                                                     <div class="pl-5 -textlink">
                                                         #{accessCondition}
                                                     </div>
-                                                    <div class="d-flex justify-content-end ml-2">
+                                                    <div class="d-flex justify-content-end ml-auto">
                                                         <span>#{msg.admin__licenses_configure_license_now}</span>
                                                     </div>
                                                 </h:commandLink>
@@ -166,7 +171,10 @@
 																<div class="admin__download-tickets-dashboard-row-value">#{ticket.title.length() gt 50 ? ticket.title.substring(0,50).concat('...') : ticket.title}</div>
 																<ui:fragment rendered="#{ticket.requestMessage != null}">
 																	<div class="admin__download-tickets-dashboard-row-key">#{msg.message}:</div>
-																	<div class="admin__download-tickets-dashboard-row-value">#{ticket.requestMessage.length() gt 100 ? ticket.requestMessage.substring(0,100).concat('...') : ticket.requestMessage}</div>
+																	<div class="admin__download-tickets-dashboard-row-value">
+																	     <h:outputText value="#{ticket.requestMessage.length() gt 100 ? ticket.requestMessage.substring(0,100).concat('...') : ticket.requestMessage}"
+																	         escape="true" />
+																	</div>
 								                            	</ui:fragment>
 								                            </div>
 <!-- 								                            <div class="col-3 d-flex justify-content-end"> -->
@@ -363,6 +371,49 @@
                                     </div>
                                 </div>
                             </ui:fragment>
+                            
+                            <!-- TASK QUEUE WARNING -->
+                            <h:panelGroup rendered="#{userBean.admin and messageQueueBean.paused or userBean.admin and quartzBean.paused}" styleClass="admin__boxed-entry -no-actions -w33 -warning" layout="block" id="runningTasksDashboardWarning">
+	                            <div class="row">
+	                                <h2 class="col-12">#{msg.admin__tasks__title}</h2>
+	                            </div>
+	                            <div class="row">
+	                                <div class="col-12">
+	                                <p>#{msg.admin__tasks__currently_paused}:</p>
+										<ui:fragment
+											rendered="#{userBean.admin and messageQueueBean.paused}">
+
+											<a
+												href="#{request.contextPath}/admin/tasks"
+												class="row admin__translations-not-translated-entry"
+												aria-label="Bearbeiten: Solr-Feldnamen">
+												<div class="col-8 pl-5 -textlink">
+													#{msg.admin__tasks__running_tasks_off}</div>
+												<div class="col-4 d-flex justify-content-end">
+													<span> #{msg.show}</span>
+												</div>
+											</a>
+
+										</ui:fragment>
+
+										<ui:fragment rendered="#{userBean.admin and quartzBean.paused}">
+											<a
+												href="#{request.contextPath}/admin/tasks"
+												class="row admin__translations-not-translated-entry"
+												aria-label="Bearbeiten: Solr-Feldnamen">
+												<div class="col-8 pl-5 -textlink">
+													#{msg.admin__tasks__quartz_off}</div>
+												<div class="col-4 d-flex justify-content-end">
+													<span> #{msg.show}</span>
+												</div>
+											</a>
+										</ui:fragment>
+	
+	                                </div>
+	                            </div>
+							</h:panelGroup>
+                            
+                            
                         </div>
                     </div>
                 </div>

@@ -29,6 +29,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.persistence.annotations.PrivateOwned;
+
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.security.License;
+import io.goobi.viewer.model.security.Role;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,16 +49,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-
-import org.eclipse.persistence.annotations.PrivateOwned;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.security.License;
-import io.goobi.viewer.model.security.Role;
 
 /**
  * <p>
@@ -394,7 +393,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
 
     /**
      *
-     * @return
+     * @return number of members in this group
      * @throws DAOException
      * @should count correctly
      */
@@ -448,7 +447,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
 
     /**
      *
-     * @return
+     * @return Set<User>
      * @throws DAOException
      * @should return all members and owner
      */

@@ -9,17 +9,17 @@
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
-	<composite:interface />
+	<composite:interface>
+		<composite:attribute name="page" required="true" />
+	</composite:interface>
 
 	<composite:implementation>
-		<div role="tabpanel"
-			class="tab-pane #{cmsBean.selectedLocale == null ? 'active':''} sidebar-editor__wrapper"
-			id="sidebarTab">
+		
 
 			<!-- sidebar editor -->
 
 				<h:panelGroup id="sidebarEditorWrapper" styleClass="sidebar-editor" layout="block">
-					<h:panelGroup rendered="#{!cmsBean.selectedPage.useDefaultSidebar}">
+					<h:panelGroup rendered="#{!cc.attrs.page.useDefaultSidebar}">
 
 
 							<h:panelGroup layout="block" id="selectedWidgetsGroup" class="sidebar-editor__left">
@@ -28,9 +28,10 @@
 								<div class="sidebar-editor__left-inner">
 
 									<ui:repeat var="element" varStatus="status"
-										value="#{cmsBean.selectedPage.sidebarElements}">
+										value="#{cc.attrs.page.sidebarElements}">
 
-										<div class="sidebar-editor__widget-item">
+										<div class="sidebar-editor__widget-item #{element.contentType.isAllowedForPage(page) ? '' : '-disabled'}" 
+										data-toggle="tooltip" title="#{element.contentType.isAllowedForPage(page) ? '' : msg.info__disabled__search_page_only}">
 											<!-- MOVE ITEM UP OR DOWN -->
 											<div class="sidebar-editor__move-wrapper">
 
@@ -38,16 +39,16 @@
 													<i class="fa fa-chevron-up" aria-hidden="true"></i>
 												</button>
 
-												<button data-toggle="tooltip" data-placement="top" title="#{msg.cms_pageSidebar_widget_tooltip_up}"
+												<button data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_up}"
 													class="btn btn--clean sidebar-editor__move-up" rendered="#{!status.first}"
-													jsf:action="#{cmsBean.selectedPage.moveUpSidebarElement(element)}">
+													jsf:action="#{cc.attrs.page.moveUpSidebarElement(element)}">
 													<i class="fa fa-chevron-up" aria-hidden="true"></i>
 													<f:ajax render="sidebar_editor_component:selectedWidgetsGroup"></f:ajax>
 												</button>
 
-												<button data-toggle="tooltip" data-placement="top" title="#{msg.cms_pageSidebar_widget_tooltip_down}" 
+												<button data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_down}" 
 													class="btn btn--clean sidebar-editor__move-down" rendered="#{!status.last}"
-													jsf:action="#{cmsBean.selectedPage.moveDownSidebarElement(element)}">
+													jsf:action="#{cc.attrs.page.moveDownSidebarElement(element)}">
 													<i class="fa fa-chevron-down " aria-hidden="true"></i>
 													<f:ajax render="sidebar_editor_component:selectedWidgetsGroup"></f:ajax>
 												</button>
@@ -59,42 +60,10 @@
 											</div>
 											
 											<div class="sidebar-editor__icon">
-	                                        	<ui:fragment rendered="#{element.contentType.name == 'WIDGET_RSSFEED'}" >
-	                                        		<i class="fa fa-rss" aria-hidden="true"></i>
+	                                        	<ui:fragment rendered="#{not empty widget.contentType.iconClass}">
+	                                        		<i class="#{widget.contentType.iconClass}" aria-hidden="true"></i>
 	                                        	</ui:fragment>
-	                                        	<!-- FACETS TITLE -->
-	                                        	<ui:fragment rendered="#{element.contentType.name == 'WIDGET_FACETTING'}" >
-	                                        		<i class="fa fa-list-ul" aria-hidden="true"></i>
-	                                        	</ui:fragment>
-	                                        	<!-- FACETS 2 TITLE -->
-	                                        	<ui:fragment rendered="#{element.contentType.name == 'WIDGET_FIELDFACETS'}" >
-	                                        		<i class="fa fa-list-ul" aria-hidden="true"></i>
-	                                        	</ui:fragment>
-	                                        	<!-- PAGES TITLE -->
-	                                        	<ui:fragment rendered="#{element.contentType.name == 'WIDGET_CMSPAGES'}" >
-	                                        		<i class="fa fa-clone" aria-hidden="true"></i>
-	                                        	</ui:fragment>
-	                                        	<!-- HTML TITLE -->
-	                                        	<ui:fragment rendered="#{element.contentType.name == 'WIDGET_HTML'}" >
-	                                        		<i class="fa fa-code" aria-hidden="true"></i>
-	                                        	</ui:fragment>
-	                                        	<!-- MAP TITLE -->
-	                                        	<ui:fragment rendered="#{element.contentType.name == 'WIDGET_CMSGEOMAP'}" >
-	                                        		<i class="fa fa-map-o" aria-hidden="true"></i>
-	                                        	</ui:fragment>
-	                                        	<!-- SEARCH TITLE -->
-	                                        	<ui:fragment rendered="#{element.contentType.name == 'WIDGET_SEARCH'}" >
-	                                        		<i class="fa fa-search" aria-hidden="true"></i>
-	                                        	</ui:fragment>
-	                                        	<!-- WORK COUNT TITLE -->
-	                                        	<ui:fragment rendered="#{element.contentType.name == 'WIDGET_WORKCOUNT'}" >
-	                                        		<i class="fa fa-circle-o" aria-hidden="true"></i>
-	                                        	</ui:fragment>
-	                                        	<!-- BROWSING TITLE -->
-	                                        	<ui:fragment rendered="#{element.contentType.name == 'WIDGET_BROWSING'}" >
-	                                        		<i class="fa fa-list-alt" aria-hidden="true"></i>
-	                                        	</ui:fragment>
-	                                      </div>  	
+	                                      	</div>  	
 
 											<!-- ITEM LABEL -->
 											<div class="sidebar-editor__widget-item-label">#{element.title.textOrDefault}</div>
@@ -102,7 +71,7 @@
 											<!-- ITEM DELETE -->
 											<button
 													class="admin__table-action-link sidebar-editor__widget-item-delete-button -redlink"
-													jsf:action="#{cmsBean.selectedPage.removeSidebarElement(element)}"
+													jsf:action="#{cc.attrs.page.removeSidebarElement(element)}"
 													aria-label="#{msg.delete}">
 													<f:ajax render="@form"/>
 													#{msg.delete}
@@ -120,46 +89,16 @@
 								<div class="sidebar-editor__right-inner">
 
 									<ui:repeat var="widget" value="#{cmsPageEditBean.sidebarWidgets.keySet().stream().sorted().toList()}" varStatus="status">
-										<ui:fragment rendered="#{!cmsBean.selectedPage.containsSidebarElement(widget)}">
-											<div class="sidebar-editor__choose-widget-item">
+										<ui:fragment rendered="#{!cc.attrs.page.containsSidebarElement(widget)}">
+
+											<div class="sidebar-editor__choose-widget-item #{widget.contentType.isAllowedForPage(page) ? '' : '-disabled'}"
+											data-toggle="tooltip" title="#{widget.contentType.isAllowedForPage(page) ? '' : msg.info__disabled__search_page_only}">
 											  <input type="checkbox" id="scales#{status.index}" name="scales#{status.index}" jsf:value="#{cmsPageEditBean.sidebarWidgets[widget]}">
 											  	<f:ajax event="change"></f:ajax>
 											  </input>
 
-	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_RSSFEED'}" >
-	                                        		<i class="fa fa-rss" aria-hidden="true"></i>
-	                                        	</ui:fragment>
-	                                        	<!-- FACETS TITLE -->
-	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_FACETTING'}" >
-	                                        		<i class="fa fa-list-ul" aria-hidden="true"></i>
-	                                        	</ui:fragment>
-	                                        	<!-- FACETS 2 TITLE -->
-	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_FIELDFACETS'}" >
-	                                        		<i class="fa fa-list-ul" aria-hidden="true"></i>
-	                                        	</ui:fragment>
-	                                        	<!-- PAGES TITLE -->
-	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_CMSPAGES'}" >
-	                                        		<i class="fa fa-clone" aria-hidden="true"></i>
-	                                        	</ui:fragment>
-	                                        	<!-- HTML TITLE -->
-	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_HTML'}" >
-	                                        		<i class="fa fa-code" aria-hidden="true"></i>
-	                                        	</ui:fragment>
-	                                        	<!-- MAP TITLE -->
-	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_CMSGEOMAP'}" >
-	                                        		<i class="fa fa-map-o" aria-hidden="true"></i>
-	                                        	</ui:fragment>
-	                                        	<!-- SEARCH TITLE -->
-	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_SEARCH'}" >
-	                                        		<i class="fa fa-search" aria-hidden="true"></i>
-	                                        	</ui:fragment>
-	                                        	<!-- WORK COUNT TITLE -->
-	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_WORKCOUNT'}" >
-	                                        		<i class="fa fa-circle-o" aria-hidden="true"></i>
-	                                        	</ui:fragment>
-	                                        	<!-- BROWSING TITLE -->
-	                                        	<ui:fragment rendered="#{widget.contentType.name == 'WIDGET_BROWSING'}" >
-	                                        		<i class="fa fa-list-alt" aria-hidden="true"></i>
+	                                        	<ui:fragment rendered="#{not empty widget.contentType.iconClass}">
+	                                        		<i class="#{widget.contentType.iconClass}" aria-hidden="true"></i>
 	                                        	</ui:fragment>
 
 											  <label for="scales#{status.index}">#{widget.title.textOrDefault}</label>
@@ -175,22 +114,21 @@
 									</ui:repeat>
 
 
-									<button class="btn btn--default sidebar-editor__add-widgets-button" jsf:action="#{cmsBean.selectedPage.addToSidebar(cmsPageEditBean.getAndResetSelectedWidgets())}">
+									<button class="btn btn--default sidebar-editor__add-widgets-button" jsf:action="#{cc.attrs.page.addToSidebar(cmsPageEditBean.getAndResetSelectedWidgets())}">
 										#{msg.action__add_to_sidebar}
 										<f:ajax render="@form"/>
 									</button>
 
 								</div>
 
-
-
 							</h:panelGroup>
 					</h:panelGroup>
 				</h:panelGroup>
+				
 				<!-- choose standard sidebar for current page -->
 				<div class="sidebar-editor__choose-standard">
 					<h:selectBooleanCheckbox id="checkboxUseDefaultSidebar"
-						value="#{cmsBean.selectedPage.useDefaultSidebar}"
+						value="#{cc.attrs.page.useDefaultSidebar}"
 						onclick="cmsJS.createPage.disablePreview();">
 						<span><h:outputText value="#{msg.cms_pageSidebarUseDefault}" /></span>
 						<f:ajax event="change" render="sidebarEditorWrapper" />
@@ -198,8 +136,7 @@
 							value="#{msg.cms_pageSidebarUseDefault}" />
 					</h:selectBooleanCheckbox>
 				</div>
-
-			</div>
+				
 	</composite:implementation>
 
 

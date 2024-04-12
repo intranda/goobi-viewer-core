@@ -21,9 +21,8 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,11 +30,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
@@ -44,22 +43,23 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.model.cms.CMSCollection;
-import io.goobi.viewer.model.cms.CMSContentItem;
-import io.goobi.viewer.model.cms.CMSMediaItem;
-import io.goobi.viewer.model.cms.CMSPage;
-import io.goobi.viewer.model.cms.CMSPageLanguageVersion;
+import io.goobi.viewer.managedbeans.CollectionViewBean;
+import io.goobi.viewer.model.cms.collections.CMSCollection;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.viewer.collections.CollectionView;
-import io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement;
 import io.goobi.viewer.model.viewer.collections.CollectionView.BrowseDataProvider;
+import io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
+class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
 
     List<String> collections;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
@@ -68,7 +68,7 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
      * @throws java.lang.Exception
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         collections = Arrays.asList(new String[] { "a", "a.b", "a.b.c", "a.b.d", "b", "b.a", "b.b", "c", "c.a", "c.b", "c.c", "c.c.a", "c.c.b", "c.d",
@@ -79,40 +79,40 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
      * @throws java.lang.Exception
      */
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     @Test
-    public void test() throws IndexUnreachableException, IllegalRequestException {
+    void test() throws IndexUnreachableException, IllegalRequestException {
         CollectionView collection = new CollectionView(SolrConstants.DC, getTestProvider());
         collection.populateCollectionList();
         List<HierarchicalBrowseDcElement> topElements = new ArrayList<>(collection.getVisibleDcElements());
-        assertTrue(topElements.size() == 4);
-        assertTrue(topElements.get(0).getName() == "a");
-        assertTrue(topElements.get(1).getName() == "c");
-        assertTrue(topElements.get(2).getName() == "b");
-        assertTrue(topElements.get(3).getName() == "d");
+        assertEquals(4, topElements.size());
+        assertEquals("a", topElements.get(0).getName());
+        assertEquals("c", topElements.get(1).getName());
+        assertEquals("b", topElements.get(2).getName());
+        assertEquals("d", topElements.get(3).getName());
 
         collection.showAll();
         List<HierarchicalBrowseDcElement> allElements = collection.getVisibleDcElements();
-        assertTrue(allElements.size() == 18);
-        assertTrue(allElements.get(3).getName() == "a.b.d");
-        assertTrue(allElements.get(14).getName() == "b");
-        assertTrue(allElements.get(5).getName() == "c.c");
-        assertTrue(allElements.get(8).getName() == "c.a");
-        assertTrue(allElements.get(11).getName() == "c.d.b");
-        assertTrue(allElements.get(12).getName() == "c.d.a");
+        assertEquals(18, allElements.size());
+        assertEquals("a.b.d", allElements.get(3).getName());
+        assertEquals("b", allElements.get(14).getName());
+        assertEquals("c.c", allElements.get(5).getName());
+        assertEquals("c.a", allElements.get(8).getName());
+        assertEquals("c.d.b", allElements.get(11).getName());
+        assertEquals("c.d.a", allElements.get(12).getName());
     }
 
-//    @Test
-//    public void testExpandCollection() throws IndexUnreachableException, IllegalRequestException {
-//        CollectionView collection = new CollectionView(SolrConstants.DC, getTestProvider());
-//        collection.setBaseElementName("c.c");
-//        collection.populateCollectionList();
-//        List<HierarchicalBrowseDcElement> topElements = new ArrayList<>(collection.getVisibleDcElements());
-//    }
+    //    @Test
+    //    void testExpandCollection() throws IndexUnreachableException, IllegalRequestException {
+    //        CollectionView collection = new CollectionView(SolrConstants.DC, getTestProvider());
+    //        collection.setBaseElementName("c.c");
+    //        collection.populateCollectionList();
+    //        List<HierarchicalBrowseDcElement> topElements = new ArrayList<>(collection.getVisibleDcElements());
+    //    }
 
     /**
      * @return
@@ -136,14 +136,15 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return identifier resolver url if single record and pi known
      */
     @Test
-    public void getCollectionUrl_shouldReturnIdentifierResolverUrlIfSingleRecordAndPiKnown() throws Exception {
+    void getCollectionUrl_shouldReturnIdentifierResolverUrlIfSingleRecordAndPiKnown() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("collections.redirectToWork", true);
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork());
+        Assertions.assertTrue(DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork());
 
         CollectionView col = new CollectionView("foo", getTestProvider());
-        HierarchicalBrowseDcElement element = new HierarchicalBrowseDcElement("bar", 1, "foo", null, col.getSplittingChar(), col.getDisplayNumberOfVolumesLevel());
+        HierarchicalBrowseDcElement element =
+                new HierarchicalBrowseDcElement("bar", 1, "foo", null, col.getSplittingChar(), col.getDisplayNumberOfVolumesLevel());
         element.setSingleRecordUrl("/object/PI123/1/LOG_0001/");
-        Assert.assertEquals("/object/PI123/1/LOG_0001/", col.getCollectionUrl(element));
+        Assertions.assertEquals("/object/PI123/1/LOG_0001/", col.getCollectionUrl(element));
     }
 
     /**
@@ -151,23 +152,28 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies escape critical url chars in collection name
      */
     @Test
-    public void getCollectionUrl_shouldEscapeCriticalUrlCharsInCollectionName() throws Exception {
+    void getCollectionUrl_shouldEscapeCriticalUrlCharsInCollectionName() throws Exception {
         CollectionView col = new CollectionView("foo", getTestProvider());
-        HierarchicalBrowseDcElement element = new HierarchicalBrowseDcElement("foo/bar", 2, SolrConstants.DC, null, col.getSplittingChar(), col.getDisplayNumberOfVolumesLevel());
-        Assert.assertEquals("/search/-/-/1/-/foo%3AfooU002Fbar/", col.getCollectionUrl(element));
+        HierarchicalBrowseDcElement element =
+                new HierarchicalBrowseDcElement("foo/bar", 2, SolrConstants.DC, null, col.getSplittingChar(), col.getDisplayNumberOfVolumesLevel());
+        Assertions.assertEquals("/search/-/-/1/-/foo%3AfooU002Fbar/", col.getCollectionUrl(element));
     }
 
     @Test
-    public void loadCMSCollection_addCMSCollectionInfo() throws PresentationException, IndexUnreachableException, IllegalRequestException, DAOException {
+    void loadCMSCollection_addCMSCollectionInfo() throws PresentationException, IndexUnreachableException, IllegalRequestException, DAOException {
         CMSPage page = new CMSPage();
         page.setId(1l);
-        CMSPageLanguageVersion lang = new CMSPageLanguageVersion("global");
-        lang.setOwnerPage(page);
-        CMSContentItem contentItem = new CMSContentItem();
-        contentItem.setCollectionField("DC");
-        contentItem.setOwnerPageLanguageVersion(lang);
-        CollectionView collection = contentItem.initializeCollection();
-        HierarchicalBrowseDcElement element = collection.getVisibleDcElements().stream().filter(ele -> ele.getName().equals("dcimage")).findAny().orElse(null);
+        PersistentCMSComponent component = new PersistentCMSComponent();
+        component.setOwningPage(page);
+        CMSCollectionContent contentItem = new CMSCollectionContent();
+        contentItem.setSolrField("DC");
+        contentItem.setOwningComponent(component);
+
+        CollectionViewBean collectionViewBean = new CollectionViewBean();
+        CollectionView collection = collectionViewBean.getCollection(contentItem, 0, false, false, false);
+
+        HierarchicalBrowseDcElement element =
+                collection.getVisibleDcElements().stream().filter(ele -> ele.getName().equals("dcimage")).findAny().orElse(null);
         assertNotNull(element);
         assertNotNull(element.getInfo());
         assertEquals(CMSCollection.class, element.getInfo().getClass());
@@ -175,36 +181,34 @@ public class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(mediaItem.getIconURI(), element.getInfo().getIconURI());
     }
 
-
     /**
      * @see Configuration#getCollectionDefaultSortField(String)
      * @verifies give priority to exact matches
      */
     @Test
-    public void getCollectionDefaultSortField_shouldGivePriorityToExactMatches() throws Exception {
+    void getCollectionDefaultSortField_shouldGivePriorityToExactMatches() throws Exception {
         Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(SolrConstants.DC);
-        Assert.assertEquals("SORT_TITLE", CollectionView.getCollectionDefaultSortField("collection1", sortFields));
+        Assertions.assertEquals("SORT_TITLE", CollectionView.getCollectionDefaultSortField("collection1", sortFields));
     }
-
-
 
     /**
      * @see Configuration#getCollectionDefaultSortField(String)
      * @verifies return correct field for collection
      */
     @Test
-    public void getCollectionDefaultSortField_shouldReturnCorrectFieldForCollection() throws Exception {
+    void getCollectionDefaultSortField_shouldReturnCorrectFieldForCollection() throws Exception {
         Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(SolrConstants.DC);
-        Assert.assertEquals("SORT_CREATOR", CollectionView.getCollectionDefaultSortField("collection1.sub1", sortFields));
+        Assertions.assertEquals("SORT_CREATOR", CollectionView.getCollectionDefaultSortField("collection1.sub1", sortFields));
     }
+
     /**
      * @see Configuration#getCollectionDefaultSortField(String)
      * @verifies return hyphen if collection not found
      */
     @Test
-    public void getCollectionDefaultSortField_shouldReturnHyphenIfCollectionNotFound() throws Exception {
+    void getCollectionDefaultSortField_shouldReturnHyphenIfCollectionNotFound() throws Exception {
         Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(SolrConstants.DC);
-        Assert.assertEquals("-", CollectionView.getCollectionDefaultSortField("nonexistingcollection", sortFields));
+        Assertions.assertEquals("-", CollectionView.getCollectionDefaultSortField("nonexistingcollection", sortFields));
     }
 
 }

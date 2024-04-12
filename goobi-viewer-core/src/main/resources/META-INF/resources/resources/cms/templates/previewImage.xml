@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+	<label>cms_component__previewimage__label</label>
+	<description>cms_component__previewimage__desc</description>
+	<icon>cms/components/frontend/component/icon/image.png</icon>
+	<scope>preview</scope>
+	<content>
+		<item id="image">
+			<label>cms_component__image__label</label>
+			<description>cms_component__image_desc</description>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>media</name>
+			</jsfComponent>
+		</item>
+	</content>
+
+</component>

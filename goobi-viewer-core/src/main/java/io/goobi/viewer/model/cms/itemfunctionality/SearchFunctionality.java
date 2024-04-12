@@ -24,7 +24,6 @@ package io.goobi.viewer.model.cms.itemfunctionality;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,8 +35,8 @@ import java.util.stream.Stream;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -48,7 +47,6 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.maps.GeoMap;
-import io.goobi.viewer.model.search.IFacetItem;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchInterface;
@@ -76,8 +74,6 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      */
     private final String baseUrl;
     private final String pageFacetString;
-
-    //    private SearchBean searchBean;
 
     /**
      * <p>
@@ -116,6 +112,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
                     }
                     final FacesContext context = FacesContext.getCurrentInstance();
                     String redirectUrl = path.getApplicationName() + path.getCombinedPrettyfiedUrl();
+                    redirectUrl = StringTools.appendTrailingSlash(redirectUrl);
                     try {
                         context.getExternalContext().redirect(redirectUrl);
                     } catch (IOException e) {
@@ -173,7 +170,8 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * <p>
      * search.
      * </p>
-     *
+     * 
+     * @param subtheme
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -186,12 +184,13 @@ public class SearchFunctionality implements Functionality, SearchInterface {
             logger.error("Cannot search: SearchBean is null");
             return;
         }
-        searchBean.setCustomFilterQuery(getCompleteFilterString(subtheme));
-        searchBean.search();
+        searchBean.search(getCompleteFilterString(subtheme));
     }
 
     /**
-     * @return
+     * 
+     * @param subtheme
+     * @return {@link String}
      */
     private String getCompleteFilterString(String subtheme) {
 
@@ -211,7 +210,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
 
     /**
      * @param subtheme
-     * @return
+     * @return Solr query part for subtheme
      */
     private static String getSubthemeFilter(String subtheme) {
         if (StringUtils.isNotBlank(subtheme)) {
@@ -264,7 +263,8 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /** {@inheritDoc} */
     @Override
     public void setPageNo(int pageNo) {
-        getSearchBean().setCurrentPage(pageNo);
+
+        Optional.ofNullable(getSearchBean()).ifPresent(bean -> bean.setCurrentPage(pageNo));
     }
 
     /* (non-Javadoc)
@@ -273,7 +273,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /** {@inheritDoc} */
     @Override
     public int getPageNo() {
-        return getSearchBean().getCurrentPage();
+        return Optional.ofNullable(getSearchBean()).map(SearchBean::getCurrentPage).orElse(1);
     }
 
     /** {@inheritDoc} */
@@ -324,7 +324,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * @return the facetString
      */
     public String getFacetString() {
-        return getSearchBean().getFacets().getCurrentFacetString();
+        return getSearchBean().getFacets().getActiveFacetString();
     }
 
     /**
@@ -335,22 +335,8 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * @param facetString the facetString to set
      */
     public void setFacetString(String facetString) {
-        getSearchBean().getFacets().setCurrentFacetString(facetString);
+        getSearchBean().getFacets().setActiveFacetString(facetString);
     }
-
-    //    /**
-    //     * @return the collection
-    //     */
-    //    public String getCollection() {
-    //        return getSearchBean().getFacets().getCurrentFacetString();
-    //    }
-
-    //    /**
-    //     * @param collection the collection to set
-    //     */
-    //    public void setCollection(String collection) {
-    //        getSearchBean().getFacets().setCurrentFacetString(collection);
-    //    }
 
     /**
      * <p>
@@ -396,14 +382,6 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         //        path = ViewerPathBuilder.resolve(path, getCollection());
         // URL-encoder query, if necessary (otherwise, exceptions might occur)
         String queryString = getQueryString();
-        //        try {
-        //            if (!StringTools.isStringUrlEncoded(queryString, StringTools.DEFAULT_ENCODING)) {
-        //                queryString = URLEncoder.encode(queryString, StringTools.DEFAULT_ENCODING);
-        //            }
-        //        } catch (UnsupportedEncodingException e) {
-        //            logger.error(e.getMessage());
-        //        }
-
         path = ViewerPathBuilder.resolve(path, queryString);
         path = ViewerPathBuilder.resolve(path, Integer.toString(getPageNo()));
         path = ViewerPathBuilder.resolve(path, getSortString());
@@ -436,11 +414,12 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     public String changeSorting() throws IOException {
         String sortString = getSearchBean().getSortString();
         String url = getSortUrl(sortString, false);
-        FacesContext.getCurrentInstance().getExternalContext()
-        .redirect(url);
+        FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .redirect(url);
         return "";
     }
-    
+
     /**
      * <p>
      * getSortUrl.
@@ -450,9 +429,8 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * @param descending a boolean.
      * @return a {@link java.lang.String} object.
      */
-    public String getSortUrl(String sortString, boolean descending) {
-        sortString = (descending ? "!" : "") + sortString;
-        return getUrlPrefix() + getPageNo() + "/" + getUrlSuffix(sortString);
+    public String getSortUrl(final String sortString, final boolean descending) {
+        return getUrlPrefix() + getPageNo() + "/" + getUrlSuffix((descending ? "!" : "") + sortString);
     }
 
     /**
@@ -482,7 +460,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * @return a {@link java.lang.String} object.
      */
     public String removeFacet(String facet) {
-        final String currentFacetString = getSearchBean().getFacets().getCurrentFacetString();
+        final String currentFacetString = getSearchBean().getFacets().getActiveFacetString();
         String separator = ";;";
         try {
             separator = URLEncoder.encode(separator, "utf-8");

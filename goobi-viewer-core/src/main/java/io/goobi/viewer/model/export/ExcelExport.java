@@ -53,10 +53,7 @@ public class ExcelExport {
 
         try {
             workbook.write(os);
-            if (Thread.interrupted()) {
-                return false;
-            }
-            return true;
+            return Thread.interrupted();
         } catch (IOException e) {
             logger.error(e.getMessage(), e.getCause());
             return false;

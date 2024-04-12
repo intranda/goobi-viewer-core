@@ -30,10 +30,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
-import io.goobi.viewer.controller.DataManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Table of contents and associated functionality for a record.
@@ -84,8 +82,8 @@ public class ArchiveTree implements Serializable {
 
         setTrueRootElement(root);
 
-            List<ArchiveEntry> tree = root.getAsFlatList(true);
-            entryMap.put(DEFAULT_GROUP, tree);
+        List<ArchiveEntry> tree = root.getAsFlatList(true);
+        entryMap.put(DEFAULT_GROUP, tree);
     }
 
     /**
@@ -128,7 +126,7 @@ public class ArchiveTree implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<ArchiveEntry> getFlatView() {
-        // logger.trace("getFlatView");
+        // logger.trace("getFlatView"); //NOSONAR Sometimes needed for debugging
         return getViewForGroup(DEFAULT_GROUP);
     }
 
@@ -174,23 +172,21 @@ public class ArchiveTree implements Serializable {
                 return;
             }
             int lastLevel = 0;
-            int lastParent = 0;
             List<ArchiveEntry> entries = entryMap.get(group);
-            for(int index = 0; index < entries.size(); index++) {
+            for (int index = 0; index < entries.size(); index++) {
                 // Current element index
-                    ArchiveEntry entry = entries.get(index);
-                    if (lastLevel < entry.getHierarchyLevel() && index > 0) {
-                        if (entry.getHierarchyLevel() > collapseLevel) {
-                            entries.get(index - 1).setExpanded(false);
-                            entry.setVisible(false);
-                        } else {
-                            entries.get(index - 1).setExpanded(true);
-                        }
-                    } else if (entry.getHierarchyLevel() > collapseLevel) {
+                ArchiveEntry entry = entries.get(index);
+                if (lastLevel < entry.getHierarchyLevel() && index > 0) {
+                    if (entry.getHierarchyLevel() > collapseLevel) {
+                        entries.get(index - 1).setExpanded(false);
                         entry.setVisible(false);
+                    } else {
+                        entries.get(index - 1).setExpanded(true);
                     }
-                    lastParent = index;
-                    lastLevel = entry.getHierarchyLevel();
+                } else if (entry.getHierarchyLevel() > collapseLevel) {
+                    entry.setVisible(false);
+                }
+                lastLevel = entry.getHierarchyLevel();
             }
             treeBuilt = true;
             resetCollapseLevel(getRootElement(), collapseLevel);
@@ -226,7 +222,7 @@ public class ArchiveTree implements Serializable {
      * @return the selectedEntry
      */
     public ArchiveEntry getSelectedEntry() {
-        // logger.trace("getSelectedEntry");
+        // logger.trace("getSelectedEntry"); //NOSONAR Sometimes needed for debugging
         return selectedEntry;
     }
 
@@ -262,7 +258,7 @@ public class ArchiveTree implements Serializable {
 
     /**
      *
-     * @return
+     * @return Root element for the default group
      */
     public ArchiveEntry getRootElement() {
         return getRootElement(DEFAULT_GROUP);
@@ -271,7 +267,7 @@ public class ArchiveTree implements Serializable {
     /**
      *
      * @param group
-     * @return
+     * @return Root element for the given group
      */
     public ArchiveEntry getRootElement(String group) {
         if (group == null || entryMap == null || entryMap.isEmpty()) {
@@ -361,16 +357,15 @@ public class ArchiveTree implements Serializable {
     /**
      * Get the hierarchical tree as a flat list
      *
-     * @return
+     * @return List<ArchiveEntry>
      */
 
     public List<ArchiveEntry> getFlatEntryList() {
-        if (flatEntryList == null) {
-            if (trueRootElement != null) {
-                flatEntryList = new LinkedList<>();
-                flatEntryList.addAll(trueRootElement.getAsFlatList(false));
-            }
+        if (flatEntryList == null && trueRootElement != null) {
+            flatEntryList = new LinkedList<>();
+            flatEntryList.addAll(trueRootElement.getAsFlatList(false));
         }
+
         return flatEntryList;
     }
 
@@ -432,8 +427,8 @@ public class ArchiveTree implements Serializable {
      * Return this node if it has the given identifier or the first of its descendents with the identifier
      *
      * @param identifier
-     * @param topNode
-     * @return
+     * @param node
+     * @return Optional<ArchiveEntry>
      */
     private Optional<ArchiveEntry> findEntry(String identifier, ArchiveEntry node) {
         if (StringUtils.isNotBlank(identifier)) {

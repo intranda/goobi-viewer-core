@@ -1,0 +1,45 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"   
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+
+	<ui:define name="metadata">
+		<f:metadata />
+	</ui:define>
+
+	<composite:interface />
+
+	<composite:implementation>
+
+		<!-- CONTENT ITEM ORDER FUNCTIONS: SHOWS POSITION NUMBER AND USER IS ABLE TO MOVE ITEM UP AND DOWN IN LIST -->
+	    <div class="admin__content-component-order-wrapper">
+	    
+	    	<div class="admin__content-component-order-inner-wrapper">
+	
+				<!-- UP IN ORDER BUTTON -->
+				<button jsf:disabled="#{!cmsComponent.isPageScope() || page.isFirstComponent(cmsComponent)}" class="admin__content-component-order-arrow-up" jsf:action="#{page.decrementOrder(cmsComponent)}" data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_up}">
+					<i class="fa fa-chevron-up" aria-hidden="true"></i>
+					<f:ajax render="@none" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
+				</button>
+	
+<!-- 			    <div class="admin__content-component-order-number">#{cmsComponent.order}</div> -->
+	
+			    <!-- DOWN IN ORDER BUTTON -->
+				<button jsf:disabled="#{!cmsComponent.isPageScope() || page.isLastComponent(cmsComponent)}" class="admin__content-component-order-arrow-down" jsf:action="#{page.incrementOrder(cmsComponent)}" data-toggle="tooltip" data-placement="top" title="#{msg.cms__tooltip__move_down}">
+					<i class="fa fa-chevron-down" aria-hidden="true"></i>
+					<f:ajax render="@none" onevent="e => {if(e.status == 'success')refreshComponents()}"></f:ajax>
+				</button>
+
+			
+			</div>
+
+	    </div>
+
+	</composite:implementation>
+</ui:composition>

@@ -60,31 +60,67 @@ import io.goobi.viewer.solr.SolrSearchIndex;
  */
 public abstract class AbstractPageLoader implements IPageLoader {
 
+    private static final long serialVersionUID = 7546256768016555405L;
+
     private static final Logger logger = LogManager.getLogger(AbstractPageLoader.class);
 
     /** All fields to be fetched when loading page documents. Any new required fields must be added to this array. */
     protected static final String[] FIELDS = { SolrConstants.PI_TOPSTRUCT, SolrConstants.PHYSID, SolrConstants.ORDER, SolrConstants.ORDERLABEL,
             SolrConstants.IDDOC_OWNER, SolrConstants.MIMETYPE, SolrConstants.FILEIDROOT, SolrConstants.FILENAME, SolrConstants.FILENAME_ALTO,
-            SolrConstants.FILENAME_FULLTEXT, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.FILENAME_MPEG, SolrConstants.FILENAME_MPEG3,
-            SolrConstants.FILENAME_MP4, SolrConstants.FILENAME_OGG, SolrConstants.FILENAME_WEBM, SolrConstants.FULLTEXTAVAILABLE,
-            SolrConstants.DATAREPOSITORY, SolrConstants.IMAGEURN, SolrConstants.WIDTH, SolrConstants.HEIGHT, SolrConstants.ACCESSCONDITION,
-            SolrConstants.MDNUM_FILESIZE, SolrConstants.BOOL_IMAGEAVAILABLE, SolrConstants.BOOL_DOUBLE_IMAGE };
+            SolrConstants.FILENAME_FULLTEXT, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.FILENAME + "_JPEG", SolrConstants.FILENAME_MPEG,
+            SolrConstants.FILENAME_MPEG3, SolrConstants.FILENAME_MP4, SolrConstants.FILENAME_OGG, SolrConstants.FILENAME + "_TIFF",
+            SolrConstants.FILENAME_WEBM, SolrConstants.FULLTEXTAVAILABLE, SolrConstants.DATAREPOSITORY, SolrConstants.IMAGEURN, SolrConstants.WIDTH,
+            SolrConstants.HEIGHT, SolrConstants.ACCESSCONDITION, SolrConstants.MDNUM_FILESIZE, SolrConstants.BOOL_IMAGEAVAILABLE,
+            SolrConstants.BOOL_DOUBLE_IMAGE };
+
+    /**
+     * Creates and returns the appropriate loader instance for the given <code>StructElement</code>. Only creates loaders that load pages.
+     *
+     * @param topStructElement Top level <code>StructElement</code> of the record
+     * @return Appropriate page loader implementation for the given record topStructElement
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     */
+    public static AbstractPageLoader create(StructElement topStructElement) throws IndexUnreachableException, PresentationException, DAOException {
+        return create(topStructElement, true);
+    }
 
     /**
      * Creates and returns the appropriate loader instance for the given <code>StructElement</code>.
      *
      * @param topStructElement Top level <code>StructElement</code> of the record
-     * @return
+     * @param loadPages If true, created an appropriate page loader; if false (e.g. for TOC building), create a dummy loader
+     * @return Appropriate page loader implementation for the given record topStructElement
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws PresentationException
      * @should return EagerPageLoader if page count below threshold
      * @should return LeanPageLoder if page count at or above threshold
      */
-    public static AbstractPageLoader create(StructElement topStructElement)
+    public static AbstractPageLoader create(StructElement topStructElement, boolean loadPages)
+            throws IndexUnreachableException, PresentationException, DAOException {
+        if (!loadPages) {
+            // Page loader that skips loading any pages for speed (e.g. TOC creation via REST)
+            return new EmptyPageLoader(topStructElement);
+        }
+
+        return create(topStructElement, Collections.emptyList());
+    }
+
+    /**
+     * 
+     * @param topStructElement
+     * @param pageNosToLoad List of page numbers to load; empty list means all pages
+     * @return Appropriate page loader implementation for the given record topStructElement
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
+     */
+    public static AbstractPageLoader create(StructElement topStructElement, List<Integer> pageNosToLoad)
             throws IndexUnreachableException, PresentationException, DAOException {
         int numPages = topStructElement.getNumPages();
-        if (numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold()) {
+        if (pageNosToLoad.isEmpty() && numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold()) {
             return new EagerPageLoader(topStructElement);
         }
         logger.debug("Record has {} pages, using a lean page loader to limit memory usage.", numPages);
@@ -96,7 +132,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
      *
      * @param format a {@link java.lang.String} object.
      * @param locale a {@link java.util.Locale} object.
-     * @should replace numpages currectly
+     * @should replace numpages correctly
      * @should replace message keys correctly
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -256,6 +292,10 @@ public abstract class AbstractPageLoader implements IPageLoader {
         pe.setFulltextFileName((String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT));
         // ALTO filename
         pe.setAltoFileName((String) doc.getFirstValue(SolrConstants.FILENAME_ALTO));
+        // TIFF filename
+        pe.setFilePathTiff((String) doc.getFirstValue(SolrConstants.FILENAME + "_TIFF"));
+        // JPEG filename
+        pe.setFilePathJpeg((String) doc.getFirstValue(SolrConstants.FILENAME + "_JPEG"));
 
         // Access conditions
         if (doc.getFieldValues(SolrConstants.ACCESSCONDITION) != null) {

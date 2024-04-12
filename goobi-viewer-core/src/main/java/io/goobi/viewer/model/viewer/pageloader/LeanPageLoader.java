@@ -142,7 +142,7 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.IPageLoader#generateSelectItems(java.util.List, java.util.List, java.lang.String, java.lang.Boolean, java.util.Locale)
+     * @see io.goobi.viewer.model.viewer.IPageLoader#generateSelectItems(List, List, String, Boolean, Locale)
      */
     /** {@inheritDoc} */
     @Override
@@ -191,7 +191,7 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
      * @param nextPageNo
      * @param orderLabel
      * @param nextOderLabel
-     * @return
+     * @return {@link SelectItem}
      */
     static SelectItem buildPageSelectItem(String labelTemplate, int pageNo, Integer nextPageNo, String orderLabel, String nextOderLabel) {
         if (labelTemplate == null) {
@@ -293,5 +293,15 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
         }
 
         return loadPageFromDoc(result.get(0), pi, topElement, null);
+    }
+
+    @Override
+    public PhysicalElement findPageForFilename(String filename) {
+        try {
+            return loadPage(-1, filename);
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.error("Failed to load page with filename {}. Cause: {}", filename, e.toString());
+            return null;
+        }
     }
 }

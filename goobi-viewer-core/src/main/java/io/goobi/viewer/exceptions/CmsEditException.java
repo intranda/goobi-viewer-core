@@ -28,6 +28,8 @@ package io.goobi.viewer.exceptions;
  */
 public class CmsEditException extends PresentationException {
 
+    private static final long serialVersionUID = 2963473426091888685L;
+
     /**
      * <p>
      * Constructor for CmsEditException.
@@ -38,7 +40,6 @@ public class CmsEditException extends PresentationException {
      */
     public CmsEditException(String string, Throwable e) {
         super(string, e);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -50,7 +51,6 @@ public class CmsEditException extends PresentationException {
      */
     public CmsEditException(String string) {
         super(string);
-        // TODO Auto-generated constructor stub
     }
 
 }

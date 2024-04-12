@@ -21,14 +21,19 @@
  */
 package io.goobi.viewer.api.rest.v2.records;
 
-import static io.goobi.viewer.api.rest.v2.ApiUrls.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_ALTO;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_PLAINTEXT;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_SOURCE;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_TEI;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_CANVAS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -39,10 +44,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.jdom2.JDOMException;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.api.rest.v2.AbstractRestApiTest;
 import io.goobi.viewer.controller.DataManager;
@@ -51,7 +56,7 @@ import io.goobi.viewer.controller.DataManager;
  * @author florian
  *
  */
-public class RecordFileResourceTest extends AbstractRestApiTest {
+class RecordFileResourceTest extends AbstractRestApiTest {
 
     private static final String PI = "PPN743674162";
     private static final String PI_SPACE_IN_FILENAME = "ARVIErdm5";
@@ -61,7 +66,7 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
      * @throws java.lang.Exception
      */
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -70,7 +75,7 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
      * @throws java.lang.Exception
      */
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
@@ -82,13 +87,13 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
      * @throws JDOMException
      */
     @Test
-    public void testGetAlto() throws JDOMException, IOException {
+    void testGetAlto() throws JDOMException, IOException {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_ALTO).params(PI, FILENAME + ".xml").build();
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.TEXT_XML)
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
+            assertEquals(200, response.getStatus(), "Should return status 200");
             String data = response.readEntity(String.class);
             assertTrue(StringUtils.isNotBlank(data));
         }
@@ -101,13 +106,13 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
      * @throws JDOMException
      */
     @Test
-    public void testGetPlaintext() throws JDOMException, IOException {
+    void testGetPlaintext() throws JDOMException, IOException {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(PI, FILENAME + ".txt").build();
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.TEXT_PLAIN)
                 .get()) {
-            assertEquals(response.getStatusInfo().getReasonPhrase(), 200, response.getStatus());
+            assertEquals(200, response.getStatus(), response.getStatusInfo().getReasonPhrase());
             String data = response.readEntity(String.class);
             assertTrue(StringUtils.isNotBlank(data));
         }
@@ -120,26 +125,25 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
      * @throws JDOMException
      */
     @Test
-    public void testGetTEI() throws JDOMException, IOException {
+    void testGetTEI() throws JDOMException, IOException {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_TEI).params(PI, FILENAME + ".xml").build();
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.TEXT_XML)
                 .get()) {
-            assertEquals(response.getStatusInfo().getReasonPhrase(), 200, response.getStatus());
+            assertEquals(200, response.getStatus(), response.getStatusInfo().getReasonPhrase());
             String data = response.readEntity(String.class);
             assertTrue(StringUtils.isNotBlank(data));
         }
     }
 
-
     @Test
-    public void testGetSourceFile() {
+    void testGetSourceFile() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_SOURCE).params(PI, "text.txt").build();
         try (Response response = target(url)
                 .request()
                 .get()) {
-            assertEquals(response.getStatusInfo().getReasonPhrase(), 200, response.getStatus());
+            assertEquals(200, response.getStatus(), response.getStatusInfo().getReasonPhrase());
             String contentType = response.getHeaderString("Content-Type");
             String entity = response.readEntity(String.class);
             assertEquals("application/octet-stream", contentType);
@@ -148,51 +152,52 @@ public class RecordFileResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    public void testGetMissingSourceFile() {
+    void testGetMissingSourceFile() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_SOURCE).params(PI, "bla.txt").build();
         try (Response response = target(url)
                 .request()
                 .get()) {
-            assertEquals(response.getStatusInfo().getReasonPhrase(), 404, response.getStatus());
-
+            assertEquals(404, response.getStatus(), response.getStatusInfo().getReasonPhrase());
         }
     }
 
     @Test
-    public void testGetSourceFilePathTraversalAttack() {
+    void testGetSourceFilePathTraversalAttack() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_SOURCE).params(PI, "/../../../../..//etc/passwd").build();
         try (Response response = target(url)
                 .request()
                 .get()) {
-            assertEquals("Should return status 404", 404, response.getStatus());
+            assertEquals(404, response.getStatus(), "Should return status 404");
         }
     }
 
     @Test
-    public void testEscapeFilenamesInUrls() {
+    void testEscapeFilenamesInUrls() {
         DataManager.getInstance().getConfiguration().overrideValue("webapi.iiif.rendering.viewer[@enabled]", true);
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer());
+        Assertions.assertTrue(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer());
         DataManager.getInstance().getConfiguration().overrideValue("webapi.iiif.rendering.pdf[@enabled]", true);
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF());
+        Assertions.assertTrue(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF());
 
         String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(PI_SPACE_IN_FILENAME, "1").build();
         try (Response response = target(url)
                 .request()
                 .get()) {
-            assertEquals("Should return status 200", 200, response.getStatus());
+            assertEquals(200, response.getStatus(), "Should return status 200");
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
             JSONObject canvas = new JSONObject(entity);
             JSONArray renderings = canvas.getJSONArray("rendering");
             assertFalse(renderings.isEmpty());
             List linkList = renderings.toList();
-            Map pdfLink = renderings.toList().stream().map(object -> (Map)object)
+            Map pdfLink = renderings.toList()
+                    .stream()
+                    .map(object -> (Map) object)
                     .filter(map -> "Text".equals(map.get("type")))
-                    .findAny().orElse(null);
-            assertNotNull("No PDF link in canvas", pdfLink);
+                    .findAny()
+                    .orElse(null);
+            assertNotNull(pdfLink, "No PDF link in canvas");
             String id = (String) pdfLink.get("id");
-            Assert.assertTrue("Wrong filename in " + id, id.contains("erdmagnetisches+observatorium+vi_blatt_5.tif"));
+            Assertions.assertTrue(id.contains("erdmagnetisches+observatorium+vi_blatt_5.tif"), "Wrong filename in " + id);
         }
     }
-
 }

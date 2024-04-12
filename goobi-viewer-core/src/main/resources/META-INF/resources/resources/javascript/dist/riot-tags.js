@@ -1,13 +1,12 @@
-riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div class="admin-cms-media__upload {isDragover ? \'is-dragover\' : \'\'}" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><i class="fa fa-exclamation-circle" aria-hidden="true"></i><span></span></div></div></div><div if="{this.opts.showFiles}" class="admin-cms-media__list-files {this.uploadedFiles.length > 0 ? \'in\' : \'\'}" ref="filesZone"><div each="{file in this.uploadedFiles}" class="admin-cms-media__list-files__file"><img riot-src="{file}" alt="{getFilename(file)}" title="{getFilename(file)}"><div class="delete_overlay" onclick="{deleteFile}"><i class="fa fa-trash" aria-hidden="true"></i></div></div></div></div>', '', '', function(opts) {
+riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div class="admin-cms-media__upload" ref="dropZone"><div class="admin-cms-media__upload-input"><p> {opts.msg.uploadText} <br><small>({opts.msg.allowedFileTypes}: {fileTypes})</small></p><label for="file" class="btn btn--default">{opts.msg.buttonUpload}</label><input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" onchange="{buttonFilesSelected}"></div><div class="admin-cms-media__upload-messages"><div class="admin-cms-media__upload-message uploading"><i class="fa fa-spinner fa-pulse fa-fw"></i> {opts.msg.mediaUploading} </div><div class="admin-cms-media__upload-message success"><i class="fa fa-check-square-o" aria-hidden="true"></i> {opts.msg.mediaFinished} </div><div class="admin-cms-media__upload-message error"><i class="fa fa-exclamation-circle" aria-hidden="true"></i><span></span></div></div></div><div if="{this.opts.showFiles}" class="admin-cms-media__list-files {this.uploadedFiles.length > 0 ? \'in\' : \'\'}" ref="filesZone"><div each="{file in this.uploadedFiles}" class="admin-cms-media__list-files__file"><img riot-src="{file}" alt="{getFilename(file)}" title="{getFilename(file)}"><div class="delete_overlay" onclick="{deleteFile}"><i class="fa fa-trash" aria-hidden="true"></i></div></div></div></div>', '', '', function(opts) {
         this.files = [];
         this.displayFiles = [];
         this.uploadedFiles = []
         if(this.opts.fileTypes) {
             this.fileTypes = this.opts.fileTypes;
         } else {
-        	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf, svg, ico';
+        	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf, svg, ico, mp4';
         }
-        this.isDragover = false;
 
         this.on('mount', function () {
             if(this.opts.showFiles) {
@@ -21,21 +20,21 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         this.initDrop = function() {
 			var dropZone = (this.refs.dropZone);
 
-            dropZone.addEventListener('dragover', function (e) {
+            dropZone.addEventListener('dragover', e => {
                 e.stopPropagation();
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'copy';
 
                 $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading, .admin-cms-media__upload-message.success, .admin-cms-media__upload-message.error').removeClass('in-progress');
 
-                this.isDragover = true;
+                this.setDragover(true);
                 this.update();
-            }.bind(this));
+            });
 
-            dropZone.addEventListener('dragleave', function (e) {
-                this.isDragover = false;
+            dropZone.addEventListener('dragleave', e => {
+                this.setDragover(false);
                 this.update();
-            }.bind(this));
+            });
 
             dropZone.addEventListener('drop', (e) => {
                 e.stopPropagation();
@@ -61,7 +60,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
                 }
     			this.uploadFiles()
     			.then( () => {
-    			    this.isDragover = false;
+    			    this.setDragover(false);
     			    this.update();
     			})
 
@@ -103,13 +102,21 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').addClass('in-progress');
 
             for (i = 0; i < this.files.length; i++) {
+            	if(this.opts.fileTypeValidator) {
+            		let regex = this.opts.fileTypeValidator;
+            		if(!this.files[i]?.name?.match(regex)) {
+	            		let errormessage = "File " + this.files[i].name + " is not allowed for upload";
+	            		console.log(errormessage)
+	            		uploads.push(Promise.reject(errormessage));
+	            		continue;
+            		}
+            	}
                 uploads.push(this.uploadFile(i));
             }
 
             return Promise.allSettled(uploads).then(function(results) {
              	var errorMsg = "";
                  results.forEach(function (result) {
-
                      if (result.status === "fulfilled") {
                      	var value = result.value;
                      	this.fileUploaded(value);
@@ -147,6 +154,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         }.bind(this)
 
         this.fileUploadError = function(responseText) {
+        	console.log("fileUploadError", responseText);
             $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.uploading').removeClass('in-progress');
         	if (responseText) {
                 $('.admin-cms-media__upload-messages, .admin-cms-media__upload-message.error').addClass('in-progress');
@@ -255,6 +263,19 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
                 filename = filename.slice(0,filenameEnd);
             }
             return filename;
+        }.bind(this)
+
+        this.setDragover = function(dragover) {
+        	this.isDragover = dragover;
+        	var dropZone = (this.refs.dropZone);
+        	if(dropZone) {
+        		if(dragover) {
+        			dropZone.classList.add("isdragover");
+        		} else {
+        			dropZone.classList.remove("isdragover");
+        		}
+        	}
+
         }.bind(this)
 });
 
@@ -785,7 +806,447 @@ this.msg = function(key) {
 }.bind(this)
 
 });
-riot.tag2('collectionlist', '<div if="{collections}" each="{collection, index in collections}" class="card-group"><div class="card" role="tablist"><div class="card-header"><div class="card-thumbnail"><img if="{collection.thumbnail}" class="img-fluid" riot-src="{collection.thumbnail[\'@id\']}"></div><h3 class="card-title"><a if="{!hasChildren(collection)}" href="{getId(collection.rendering)}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><span>{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</span><i class="fa fa-angle-flip" aria-hidden="true"></i></a></h3><div class="tpl-stacked-collection__actions"><div class="tpl-stacked-collection__info-toggle"><a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><i class="fa fa-info-circle" aria-hidden="true"></i></a></div><div class="card-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div></div><div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><p class="tpl-stacked-collection__long-info"><raw html="{getDescription(collection)}"></raw></p></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><div class="card-body"><subcollection if="{collection.members && collection.members.length > 0}" collection="{collection}" language="{this.opts.language}" defaultlanguage="{this.opts.defaultlanguage}"></subcollection></div></div></div></div>', '', 'class="tpl-stacked-collection__collection-list"', function(opts) {
+riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronology-slider" if="{this.yearList.length > 0}"><div class="chronology-slider__container" ref="container"><canvas class="chronology-slider__chart" ref="chart"></canvas><canvas class="chronology-slider__draw" ref="draw"></canvas></div><div class="chronology-slider__input-wrapper"><input onchange="{setStartYear}" data-input="number" aria-label="Start" class="form-control chronology-slider__input-start" ref="input_start" riot-value="{startYear}"></input><div class="chronology-slider__between-year-symbol">-</div><input onchange="{setEndYear}" data-input="number" aria-label="End" class="form-control chronology-slider__input-end" ref="input_end" riot-value="{endYear}"></input><button ref="button_search" class="btn btn--full chronology-slider__ok-button" data-trigger="triggerFacettingGraph" onclick="{setRange}">{msg.ok}</button></div></div><div hidden ref="line" class="chronology-slider__graph-line"></div><div hidden ref="area" class="chronology-slider__graph-area"></div><div hidden ref="range" class="chronology-slider__graph-range"></div>', '', '', function(opts) {
+
+
+		this.yearList = [1];
+		this.msg = {};
+		this.on( 'mount', function() {
+
+			this.lineColor = window.getComputedStyle(this.refs?.line)?.color;
+			this.areaColor = window.getComputedStyle(this.refs?.area)?.color;
+			this.rangeBorderColor = window.getComputedStyle(this.refs?.range)?.color;
+			this.rangeFillColor = window.getComputedStyle(this.refs?.range)?.backgroundColor;
+			this.rangeOpacity = window.getComputedStyle(this.refs?.range)?.opacity;
+
+			let completeYearMap = this.generateCompleteYearMap(this.opts.datamap);
+
+			let chartElement = this.refs.chart;
+			this.yearList = Array.from(completeYearMap.keys()).map(y => parseInt(y));
+			this.yearValues = Array.from(completeYearMap.values());
+			this.startYear = parseInt(opts.startYear);
+			this.endYear = parseInt(opts.endYear);
+			this.minYear = this.yearList[0];
+			this.maxYear = this.yearList[this.yearList.length - 1];
+			this.valueInput = document.getElementById(opts.valueInput);
+			this.updateFacet = document.getElementById(opts.updateFacet);
+			this.loader = document.getElementById(opts.loader);
+			this.msg = opts.msg;
+			this.rtl = $( this.refs.slider ).closest('[dir="rtl"]').length > 0;
+			this.reloadingPage = false;
+
+			this.chartConfig = {
+					type: "line",
+					data: {
+						labels: this.yearList,
+						datasets: [
+							{
+								data: this.yearValues,
+								borderWidth: 1,
+								borderColor: this.lineColor,
+								backgroundColor: this.areaColor,
+								fill: "origin",
+							}
+						]
+					},
+					options: {
+
+						elements: {
+							point: {
+								pointStyle: false,
+							}
+						},
+						plugins: {
+							legend: {
+						        display: false
+						    },
+							tooltip: {
+								  enabled: this.opts.showTooltip?.toLowerCase() == "true",
+							      mode: 'index',
+							      intersect: false,
+							      displayColors: false,
+
+							      callbacks: {
+							    	  label: item => item.raw + " " + this.msg.hits
+							      }
+							},
+						},
+						scales: {
+							y: {
+								beginAtZero: true,
+								display: false,
+							},
+							x: {
+								type: "time",
+
+								time: {
+									unit: "year",
+									tooltipFormat: "yyyy",
+									displayFormats: {
+										"year" : "yyyy"
+									},
+									parser: s => {
+										let date = new Date();
+										date.setYear(parseInt(s));
+										return date.getTime();
+									}
+								},
+							    ticks: {
+							    	maxTicksLimit: 5,
+							    	maxRotation: 0,
+							    }
+							}
+						}
+					}
+
+			}
+			if(this.refs.chart) {
+
+				this.chart = new Chart(chartElement, this.chartConfig);
+				this.initDraw();
+
+				if(this.startYear > this.yearList[0] || this.endYear < this.yearList[this.yearList.length-1]) {
+					this.drawInitialRange();
+				}
+				this.update();
+			}
+		})
+
+		this.generateCompleteYearMap = function(datamap) {
+			let keys = Array.from(datamap.keys());
+			let startYear = parseInt(keys[0]);
+			let endYear = parseInt(keys[keys.length-1]);
+			let yearMap = new Map();
+			for(let year = startYear; year <= endYear; year++) {
+				let value = datamap.get(year.toString());
+				yearMap.set(year, value !== undefined ? value : 0);
+			}
+			return yearMap;
+		}.bind(this)
+
+		this.drawInitialRange = function() {
+			var points = this.chart.getDatasetMeta(0).data;
+			if(points && points.length){
+				let startYearIndex = this.yearList.indexOf(this.startYear);
+				let endYearIndex = this.yearList.indexOf(this.endYear);
+				let x1 = points[startYearIndex].x;
+				let x2 = points[endYearIndex].x;
+				this.drawRect(x1, x2, this.refs.draw);
+			}
+		}.bind(this)
+
+		this.initDraw = function() {
+			let width = this.refs.chart.offsetWidth;
+			let height = this.refs.chart.offsetHeight;
+			this.refs.draw.style.width = width + "px";
+			this.refs.draw.style.height = height + "px";
+			this.refs.draw.style.position = "absolute";
+			this.refs.draw.style.top = 0;
+			this.refs.container.style.position = "relative";
+
+			let startPoint = undefined;
+ 			let initialYear = undefined;
+			let drawing = false;
+
+			this.refs.draw.addEventListener("mousedown", e => {
+				if(!this.refs["button_search"].disabled) {
+					initialYear = this.calculateYearFromEvent(e);
+					this.startYear = initialYear;
+					this.endYear = initialYear;
+					startPoint = this.getPointFromEvent(e, this.refs.draw);
+					drawing = true;
+					this.refs.draw.getContext("2d").clearRect(0, 0, this.refs.draw.width, this.refs.draw.height);
+					this.update();
+				}
+			})
+			this.refs.draw.addEventListener("mouseout", e => {
+				if(drawing) {
+
+					drawing = false;
+				}
+				let event = new MouseEvent("mouseout", {
+					bubbles: false,
+					target: e.target,
+					clientX: e.clientX,
+					clientY: e.clientY
+				});
+				this.refs.chart.dispatchEvent(event);
+			});
+			this.refs.draw.addEventListener("mousemove", e => {
+				if(drawing) {
+					let year = this.calculateYearFromEvent(e);
+					if(!isNaN(year)) {
+						if(year < initialYear) {
+							this.endYear = initialYear;
+							this.startYear = year;
+						} else {
+							this.endYear = year;
+							this.startYear = initialYear;
+						}
+						this.startYear = Math.min(year, this.startYear);
+						this.endYear = Math.max(year, this.endYear);
+						let currPoint = this.getPointFromEvent(e, this.refs.draw);
+						this.drawRect(startPoint.x, currPoint.x, this.refs.draw);
+						this.update();
+					}
+				} else {
+					let event = new MouseEvent("mousemove", {
+						bubbles: false,
+						target: e.target,
+						clientX: e.clientX,
+						clientY: e.clientY
+					});
+					this.refs.chart.dispatchEvent(event);
+				}
+			})
+			this.refs.draw.addEventListener("mouseup", e => {
+				if(drawing) {
+					drawing = false;
+					if(this.startYear && this.endYear) {
+						this.setRange();
+					}
+					this.update();
+				}
+			})
+		}.bind(this)
+
+		this.drawRect = function(x1, x2, canvas) {
+			let scaleX = canvas.width/canvas.getBoundingClientRect().width;
+
+		    let x1Scaled = x1*scaleX;
+		    let x2Scaled = x2*scaleX;
+			let drawContext = canvas.getContext("2d");
+			drawContext.clearRect(0,0, canvas.width, canvas.height);
+			drawContext.beginPath();
+			drawContext.rect(x1Scaled, 1, x2Scaled-x1Scaled, canvas.height-1);
+			drawContext.globalAlpha = 1;
+			drawContext.strokeStyle = this.rangeBorderColor;
+			drawContext.stroke();
+ 			drawContext.globalAlpha = this.rangeOpacity;
+			drawContext.fillStyle = this.rangeFillColor;
+			drawContext.fill();
+		}.bind(this)
+
+		this.setStartYear = function(e) {
+			e.preventUpdate = true;
+			let year = parseInt(e.target.value);
+			this.startYear = Math.min.apply(Math, this.yearList.filter((x) => x >= year));
+			this.fixDateOrder();
+		}.bind(this)
+
+		this.setEndYear = function(e) {
+			e.preventUpdate = true;
+			let year = parseInt(e.target.value);
+			this.endYear = Math.max.apply(Math, this.yearList.filter((x) => x <= year));
+			this.fixDateOrder();
+		}.bind(this)
+
+		this.fixDateOrder = function() {
+			if(this.startYear > this.endYear) {
+				let temp = this.startYear;
+				this.startYear = this.endYear;
+				this.endYear = temp;
+			}
+		}.bind(this)
+
+		this.setRange = function() {
+
+			    $( this.loader ).addClass( 'active' );
+
+			    Array.from(document.getElementsByClassName("chronology-slider__input-start")).forEach(element => element.disabled = true);
+			    Array.from(document.getElementsByClassName("chronology-slider__input-end")).forEach(element => element.disabled = true);
+			    Array.from(document.getElementsByClassName("chronology-slider__ok-button")).forEach(element => element.disabled = true);
+
+			    let value = '[' + this.startYear + ' TO ' + this.endYear + ']' ;
+			    $( this.valueInput ).val(value);
+
+			    $( this.updateFacet ).click();
+		}.bind(this)
+
+		this.calculateYearFromEvent = function(e) {
+			var activePoints = this.chart.getElementsAtEventForMode(e, 'nearest', { axis: "x" }, true);
+		    if(activePoints.length > 0) {
+		    	let year = this.yearList[activePoints[0].index];
+		    	return year;
+		    }
+		}.bind(this)
+
+		this.getPointFromEvent = function(e, canvas) {
+			let currX = e.clientX - canvas.getBoundingClientRect().left;
+		    let currY = e.clientY - canvas.getBoundingClientRect().top;
+		    return {x: currX, y: currY};
+		}.bind(this)
+
+	  this.on('update', function(){
+		$(".chronology-slider__input-start, .chronology-slider__input-end").keyup(function(event) {
+		    if (event.keyCode === 13) {
+		        $('[data-trigger="triggerFacettingGraph"]').click();
+		    }
+		});
+	  })
+
+	  this.on('mount', function(){
+		$(".chronology-slider__input-start, .chronology-slider__input-end").keyup(function(event) {
+		    if (event.keyCode === 13) {
+		        $('[data-trigger="triggerFacettingGraph"]').click();
+		    }
+		});
+	  })
+
+});
+riot.tag2('chronologyslider', '<div class="widget-chronology-slider__item chronology-slider-start"><input ref="inputStart" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{startYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider-end"><input ref="inputEnd" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{endYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider"><div class="widget-chronology-slider__slider" ref="slider"></div></div>', '', '', function(opts) {
+
+this.msg={}
+this.on("mount", () => {
+	this.yearList = JSON.parse(opts.yearList);
+	this.startYear = parseInt(opts.startYear);
+	this.endYear = parseInt(opts.endYear);
+	this.minYear = this.yearList[0];
+	this.maxYear = this.yearList[this.yearList.length - 1];
+	this.valueInput = document.getElementById(opts.valueInput);
+	this.updateFacet = document.getElementById(opts.updateFacet);
+	this.loader = document.getElementById(opts.loader);
+	this.msg = opts.msg;
+	this.rtl = $( this.refs.slider ).closest('[dir="rtl"]').length > 0;
+	this.update();
+});
+
+this.on("updated", () => {
+	this.initSlider();
+	this.initChangeEvents();
+	this.setHandlePositions();
+});
+
+this.initSlider = function() {
+	let options = {
+			range: true,
+			isRTL: this.rtl,
+			min: 0,
+			max: this.yearList.length - 1,
+			values: [ this.yearList.indexOf( this.startYear ), this.yearList.indexOf( this.endYear ) ],
+			slide: ( event, ui ) => {
+
+				$( this.refs.inputStart ).val( this.yearList[ ui.values[ 0 ] ] );
+				$( this.refs.inputEnd ).val( this.yearList[ ui.values[ 1 ] ] );
+
+				if (this.rtl) {
+
+					if ( ui.values[ 0 ] == ui.values[ 1 ] ) {
+		        		$(this.refs.slider).find( ".ui-slider-handle" ).first().css('margin-right', '0px');
+		        		$(this.refs.slider).find( ".ui-slider-handle" ).last().css('margin-left', '-10px');
+		        	}	else {
+		        		$(this.refs.slider).find( ".ui-slider-handle" ).last().css('margin-left', '0px');
+					}
+
+					$(this.refs.slider).find( ".ui-slider-handle" ).first().css('margin-left', '-10px');
+
+				}
+				else {
+
+	    			this.$getLastHandle().css('margin-left', -1 * this.$getLastHandle().width() * ( ui.values[ 1 ] / this.$getSlider().slider('option', 'max')));
+
+	    			this.$getFirstHandle().css('margin-left', -1 * this.$getFirstHandle().width() * ( ui.values[ 0 ] / this.$getSlider().slider('option', 'max')));
+
+				}
+
+			},
+			change: ( event, ui ) => {
+				var startDate = parseInt( $( this.refs.inputStart ).val() );
+				var endDate = parseInt( $( this.refs.inputEnd ).val() );
+
+				startDate =  this.yearList[ui.values[0]];
+				endDate =  this.yearList[ui.values[1]];
+
+				if(endDate >= startDate) {
+
+				    $( this.loader ).addClass( 'active' );
+
+				    let value = '[' + startDate + ' TO ' + endDate + ']' ;
+				    $( this.valueInput ).val(value);
+
+				   $( this.updateFacet ).click();
+				}
+
+			},
+		}
+
+    $( this.refs.slider ).slider(options);
+}.bind(this)
+
+this.setHandlePositions = function() {
+
+	let firstHandlePos = parseInt( $(this.refs.slider).find(".ui-slider-handle:first" ).css('left') );
+	let lastHandlePos = parseInt( $(this.refs.slider).find(".ui-slider-handle:last" ).css('left') );
+
+	if (this.rtl) {
+
+		$(this.refs.slider).find(".ui-slider-handle" ).first().css('margin-left', '-10px');
+		$(this.refs.slider).find(".ui-slider-handle" ).last().css('margin-left', '0px');
+
+    	if ( firstHandlePos == lastHandlePos ) {
+    		$(this.refs.slider).find(".ui-slider-handle" ).last().css('margin-left', '-10px');
+    	}
+
+	} else {
+		$(this.refs.slider).find(".ui-slider-handle" ).last().css('margin-left', -1 * $(this.refs.slider).find(".ui-slider-handle" ).last().width() * ($(this.refs.slider).slider( "values", 1 ) / $(this.refs.slider).slider('option', 'max')));
+		$(this.refs.slider).find(".ui-slider-handle" ).first().css('margin-left', -1 * $(this.refs.slider).find(".ui-slider-handle" ).first().width() * ($(this.refs.slider).slider( "values", 0 ) / $(this.refs.slider).slider('option', 'max')));
+	}
+}.bind(this)
+
+this.initChangeEvents = function() {
+	$(this.refs.inputStart).on("change", (event) => {
+
+      let value = parseInt(event.target.value);
+      if(!isNaN(value)) {
+          let yearIndex = this.getClosestYearIndexAbove(value, this.yearList);
+
+          $(this.refs.slider).slider( "values", 0, yearIndex );
+      }
+  })
+  $(this.refs.inputEnd).on("change", (event) => {
+      let value = parseInt(event.target.value);
+      if(!isNaN(value)) {
+          let yearIndex = this.getClosestYearIndexBelow(value, this.yearList);
+
+          $(this.refs.slider).slider( "values", 1, yearIndex );
+      }
+  })
+}.bind(this)
+
+this.getClosestYearIndexAbove = function(value, years) {
+    for (var i = 0; i < years.length; i++) {
+        let year = years[i];
+        if(year >= value) {
+            return i;
+        }
+    }
+    return years.length-1;
+}.bind(this)
+
+this.getClosestYearIndexBelow = function(value, years) {
+    for (var i = years.length; i > -1 ; i--) {
+        let year = years[i];
+        if(year <= value) {
+            return i;
+        }
+    }
+    return 0;
+}.bind(this)
+
+this.$getFirstHandle = function() {
+	return $(this.refs.slider).find( ".ui-slider-handle" ).first();
+}.bind(this)
+
+this.$getLastHandle = function() {
+	return $(this.refs.slider).find( ".ui-slider-handle" ).last();
+}.bind(this)
+
+this.$getSlider = function() {
+	return $(this.refs.slider);
+}.bind(this)
+
+});
+riot.tag2('collectionlist', '<div if="{collections}" each="{collection, index in collections}" class="card-group"><div class="card" role="tablist"><div class="card-header"><div class="card-thumbnail"><img if="{collection.thumbnail}" alt="{getValue(collection.label)}" class="img-fluid" riot-src="{collection.thumbnail[\'@id\']}"></div><h3 class="card-title"><a href="{getId(collection.rendering)}">{getValue(collection.label)} ({viewerJS.iiif.getContainedWorks(collection)})</a><a if="{hasChildren(collection)}" class="collapsed card-title-collapse" href="#collapse-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><i class="fa fa-angle-flip" aria-hidden="true"></i></a></h3><div class="tpl-stacked-collection__actions"><div class="tpl-stacked-collection__info-toggle"><a if="{hasDescription(collection)}" href="#description-{this.opts.setindex}-{index}" role="button" data-toggle="collapse" aria-expanded="false"><i class="fa fa-info-circle" aria-hidden="true"></i></a></div><div class="card-rss"><a href="{viewerJS.iiif.getRelated(collection, \'Rss feed\')[\'@id\']}"><i class="fa fa-rss" aria-hidden="true"></i></a></div></div></div><div if="{hasDescription(collection)}" id="description-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><p class="tpl-stacked-collection__long-info"><raw html="{getDescription(collection)}"></raw></p></div><div if="{hasChildren(collection)}" id="collapse-{this.opts.setindex}-{index}" class="card-collapse collapse" role="tabcard" aria-expanded="false"><div class="card-body"><subcollection if="{collection.members && collection.members.length > 0}" collection="{collection}" language="{this.opts.language}" defaultlanguage="{this.opts.defaultlanguage}"></subcollection></div></div></div></div>', '', 'class="tpl-stacked-collection__collection-list"', function(opts) {
 
 riot.tag('raw', '', function(opts) {
     this.root.innerHTML = opts.html;
@@ -942,7 +1403,7 @@ this.compareMembers = function(m1, m2, compareMode) {
         } else {
             return res;
         }
-    } else {
+    } else if(compareMode && compareMode.toLocaleLowerCase() == "alphanumeric"){
         return viewerJS.helper.compareAlphanumerical(l1, l2);
     }
 }.bind(this)
@@ -1630,7 +2091,7 @@ this.initMap = function() {
         mapId : "geoMap_" + this.opts.index,
         language: Crowdsourcing.translator.language,
         tilesource: this.opts.geomap.tilesource,
-        layer: {
+        layers: [{
 	        allowMovingFeatures: !this.opts.item.isReviewMode(),
 	        popover: undefined,
 	        emptyMarkerMessage: undefined,
@@ -1643,7 +2104,7 @@ this.initMap = function() {
 	            icon: "fa-circle",
 	            svg: true
 	        }
-        }
+        }]
     })
 
     let initialView = $.extend(true, {}, DEFAULT_VIEW, this.opts.geomap.initialView);
@@ -1715,7 +2176,7 @@ this.removeFeature = function(feature) {
 });
 
 
-riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-controls__actions"><div onclick="{toggleThumbs}" class="image-controls__action thumbs {this.opts.imagecount < 2 ? \'d-none\' : \'\'} {this.opts.showthumbs ? \'in\' : \'\'}"><a></a></div><div if="{this.opts.image}" class="image-controls__action back {this.opts.imageindex === 0 ? \'-inactive\' : \'\'}"><a onclick="{previousItem}"><i class="image-back"></i></a></div><div if="{this.opts.image}" class="image-controls__action forward {this.opts.imageindex === this.opts.imagecount -1 ? \'-inactive\' : \'\'}"><a onclick="{nextItem}"><i class="image-forward"></i></a></div><div if="{this.opts.image}" class="image-controls__action rotate-left"><a onclick="{rotateLeft}"><i class="image-rotate_left"></i></a></div><div if="{this.opts.image}" class="image-controls__action rotate-right"><a onclick="{rotateRight}"><i class="image-rotate_right"></i></a></div><div if="{this.opts.image}" class="image-controls__action zoom-slider-wrapper"><input type="range" min="0" max="1" value="0" step="0.01" class="slider zoom-slider" aria-label="zoom slider"></div></div></div>', '', '', function(opts) {
+riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-controls__actions"><div onclick="{toggleThumbs}" class="image-controls__action thumbs {this.opts.imagecount < 2 ? \'d-none\' : \'\'} {this.opts.showthumbs ? \'in\' : \'\'}"><a></a></div><div if="{this.opts.image}" class="image-controls__action -imageControlsFont back {this.opts.imageindex === 0 ? \'-inactive\' : \'\'}"><a onclick="{previousItem}"><i class="image-back"></i></a></div><div if="{this.opts.image}" class="image-controls__action -imageControlsFont forward {this.opts.imageindex === this.opts.imagecount -1 ? \'-inactive\' : \'\'}"><a onclick="{nextItem}"><i class="image-forward"></i></a></div><div if="{this.opts.image}" class="image-controls__action -imageControlsFont rotate-left"><a onclick="{rotateLeft}"><i class="image-rotate_left"></i></a></div><div if="{this.opts.image}" class="image-controls__action -imageControlsFont rotate-right"><a onclick="{rotateRight}"><i class="image-rotate_right"></i></a></div><div if="{this.opts.image}" class="image-controls__action zoom-slider-wrapper"><input type="range" min="0" max="1" value="0" step="0.01" class="slider zoom-slider" aria-label="zoom slider"></div></div></div>', '', '', function(opts) {
 
     this.rotateRight = function()
     {
@@ -2319,6 +2780,252 @@ riot.tag2('richtextquestion', '<div if="{this.showInstructions()}" class="annota
 });
 
 
+
+riot.tag2('external-resource-download', '<div class="download-external-resource__list"><div class="download-external-resource__item" each="{url in urls}"><div class="download-external-resource__error_wrapper {isError(url) ? \'-active\' : \'\'}"><i class="fa fa-exclamation-triangle"></i><label class="download-external-resource__error">{getErrorMessage(url)}</label></div><div class="download-external-resource__inner-wrapper {isFinished(url) ? \'\' : \'-active\'}"><span class="download-external-resource__label">{url}</span><button class="download-external-resource__order download-external-resource__button btn btn--full {isRequested(url)|isError(url)|isFinished(url) ? \'\' : \'-active\'}" onclick="{startDownloadTask}">{msg.downloadButton}</button><div class="download-external-resource__waiting_animation {isWaiting(url) ? \'-active\' : \'\'}"><img riot-src="{preloader}" class="img-responsive" alt="{msg.action__external_files__download_in_queue}" title="{msg.action__external_files__download_in_queue}"></div><div class="download-external-resource__loading_animation {isDownloading(url) ? \'-active\' : \'\'}"><progress riot-value="{getDownloadProgress(url)}" max="{getDownloadSize(url)}" title="{getDownloadProgressLabel(url)}">{getDownloadProgressLabel(url)}</progress></div></div><div class="download-external-resource__results {isFinished(url) ? \'-active\' : \'\'}"><virtual each="{object in getFiles(url)}"><div class="born-digital__items-wrapper"><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filename}</span></div><div class="born-digital__item"><span>{object.path}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filedescription}</span></div><div class="born-digital__item"><span>{object.description}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filesize}</span></div><div class="born-digital__item"><span>{object.size}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__fileformat}</span></div><div class="born-digital__item"><span>{msg[object.mimeType]}</span></div><div class="born-digital__item-download-last"><a class="born-digital__item__download btn btn--full" href="{object.url}" target="_blank">{msg.action__born_digital__download}</a></div></div></virtual></div></div></div>', '', '', function(opts) {
+      this.urls = [];
+      this.downloads = new Map();
+      this.updateListeners = new Map();
+      this.updateDelay = 1000;
+      this.ws = null;
+      this.contextPath = "";
+      this.preloader = "/resources/images/ajax_preloader.gif";
+      this.msg = {
+    		  action__external_files__order_download: "action__external_files__order_download",
+    		  action__external_files__cancel_download: "action__external_files__cancel_download",
+    		  action__external_files__download_in_queue: "action__external_files__download_in_queue",
+    		  label__born_digital__filename: "label__born_digital__filename",
+    		  label__born_digital__filedescription: "label__born_digital__filedescription",
+    		  label__born_digital__filesize: "label__born_digital__filesize",
+    		  label__born_digital__fileformat: "label__born_digital__fileformat",
+    		  action__born_digital__download: "label__born_digital__fileformat",
+    		  label__born_digital__downloading: "label__born_digital__downloading",
+      }
+
+      this.on("mount", () => {
+    	  console.log("mounting external resource download", this, this.opts);
+      	this.urls = this.opts.urls;
+      	this.pi = this.opts.pi;
+      	this.msg = this.opts.msg;
+      	this.contextPath = this.opts.contextPath ? this.opts.contextPath : this.contextPath;
+      	this.preloader = this.contextPath + this.preloader;
+      	this.msg = $.extend(true, {}, this.msg, this.opts.msg ? this.opts.msg : {});
+      	this.ws = this.initWebSocket();
+      	this.ws.onOpen.subscribe(() => {
+      		rxjs.from(this.urls).pipe(
+      			rxjs.operators.flatMap(url => this.sendMessage(this.createSocketMessage(this.pi, url, "update")))
+      		).subscribe(() => {});
+      	})
+      	console.log("mount download external resources for urls ", this.urls);
+      	this.update();
+      });
+
+      this.on("unmount", () => {
+    	  if (this.ws && this.ws.isOpen()) {
+              this.ws.close();
+          }
+    	  this.updateListeners.forEach(value => value.cancel());
+      });
+
+      this.initWebSocket = function() {
+
+        const socket = new viewerJS.WebSocket(window.location.host, this.contextPath, viewerJS.WebSocket.PATH_DOWNLOAD_TASK);
+        console.log("created web socket ", socket.socket.url);
+        socket.onMessage.subscribe( (event) => {
+          this.handleUpdateMessage(event);
+          this.update();
+        });
+        return socket;
+      }.bind(this)
+
+      this.sendMessage = function(message) {
+
+    	  if(typeof message != "string") {
+    		message = JSON.stringify(message);
+    	  }
+    	  this.ws.sendMessage(message);
+    	  return new Promise((resolve, reject) => {
+    		 rxjs.merge(this.ws.onMessage, this.ws.onError).pipe(rxjs.operators.first()).subscribe(e => resolve(e));
+    	  });
+      }.bind(this)
+
+      this.startDownloadTask = function(e) {
+
+    	const urlToDownload = e.item.url;
+    	if(urlToDownload) {
+    		if(this.updateListeners.has(urlToDownload)) {
+    			this.updateListeners.get(urlToDownload).cancel();
+    		}
+	      	this.sendMessage({pi: this.pi, url: urlToDownload, action: 'startdownload'});
+	        const listener = viewerJS.helper.repeatPromise(() => this.sendMessage(this.createSocketMessage(this.pi, urlToDownload, "update")), this.updateDelay);
+	        this.updateListeners.set(urlToDownload, listener);
+	        listener.then(() => {});
+    	} else {
+    		console.error("No url found to download");
+    	}
+      }.bind(this)
+
+      this.handleUpdateMessage = function(event) {
+    	  let data = this.parseSocketMessage(event.data);
+          if(data == null) {
+        	  this.handleError("Not a valid message object: " + event.data);
+          } else if(data.pi == this.pi && data.url && data.status) {
+
+        	  switch(data.status) {
+        	  case "waiting":
+        	  case "processing":
+	        	  this.downloads.set(data.url, data);
+	        	  if(!this.updateListeners.has(data.url)) {
+
+	        		const listener = viewerJS.helper.repeatPromise(() => this.sendMessage(this.createSocketMessage(this.pi, data.url, "update")), this.updateDelay);
+			        this.updateListeners.set(data.url, listener);
+			        listener.then(() => {});
+
+	        	  }
+        		  break;
+        	  case "complete":
+        		  if(data.files && data.files.length > 0) {
+        			  data = $.extend(true, {}, this.downloads.get(data.url), data);
+    	        	  console.log("download completed", data);
+    	        	  this.downloads.set(data.url, data);
+    	        	  this.cancelListener(data.url);
+        		  } else {
+    	        	  this.downloads.set(data.url, data);
+    		          this.sendMessage(this.createSocketMessage(this.pi, data.url, 'listfiles'));
+        		  }
+        		  break;
+        	  case "error":
+        		  console.log("error in ", data);
+        		  this.downloads.set(data.url, data);
+        		  this.cancelListener(data.url);
+          		  break;
+        	  case "canceled":
+        		  if(this.downloads.has(data.url)) {
+	        		  this.downloads.delete(data.url);
+        		  }
+        		  this.cancelListener(data.url);
+        		  break;
+        	  case "dormant":
+        	  }
+
+          } else {
+        	  this.handleError("Wrong or insufficient data in message object: " + event.data);
+        	  this.updateListeners.forEach(value => value.cancel());
+        	  this.updateListeners = new Map();
+          }
+      }.bind(this)
+
+      this.cancelListener = function(url) {
+    	  if(this.updateListeners.has(url)) {
+      	  	this.updateListeners.get(url).cancel();
+	  		this.updateListeners.delete(url);
+      	  }
+      }.bind(this)
+
+      this.handleError = function(message) {
+    	  alert(message);
+      }.bind(this)
+
+      this.isRequested = function(url) {
+    	  return this.downloads.has(url) && this.downloads.get(url).status !== 'dormant';
+      }.bind(this)
+
+      this.isDownloading = function(url) {
+    	return this.downloads.get(url)?.status == 'processing';
+      }.bind(this)
+
+      this.isWaiting = function(url) {
+    	  return this.downloads.get(url)?.status == 'waiting';
+      }.bind(this)
+
+      this.isFinished = function(url) {
+    	  return this.downloads.get(url)?.status == 'complete';
+      }.bind(this)
+
+      this.getDownloadProgress = function(url) {
+   	  	if(this.getDownloadSize(url) <= 0 || isNaN(this.getDownloadSize(url))) {
+   	  		return undefined;
+   	  	}
+    	return this.downloads.get(url)?.progress;
+      }.bind(this)
+
+      this.getDownloadProgressLabel = function(url) {
+    	  let fraction = this.getDownloadProgress(url)/this.getDownloadSize(url);
+    	  if(isNaN(fraction) || fraction < 0) {
+    		  console.log("title: ", this.msg.label__born_digital__downloading)
+    		  return this.msg.label__born_digital__downloading;
+    	  } else {
+    		  return this.msg.label__born_digital__downloading + ": " + (fraction * 100) + "%";
+    	  }
+      }.bind(this)
+
+      this.getDownloadSize = function(url) {
+    	  return this.downloads.get(url)?.resourceSize;
+      }.bind(this)
+
+      this.getFiles = function(url) {
+    	  console.log("get files ", url, this.downloads.get(url));
+    	  return this.downloads.get(url)?.files;
+      }.bind(this)
+
+      this.isError = function(url) {
+    	  return this.downloads.get(url)?.status == "error";
+      }.bind(this)
+
+      this.getErrorMessage = function(url) {
+    	  return this.downloads.get(url)?.errorMessage;
+      }.bind(this)
+
+      this.cancelDownload = function(e) {
+    	  const url = e.item.url;
+    	  if(url && this.downloads.has(url)) {
+	    	  this.sendMessage(this.createSocketMessage(this.pi, url, 'canceldownload'));
+	    	  this.downloads.delete(url);
+	    	  if(this.updateListeners.has(url)) {
+	  			this.updateListeners.get(url).cancel();
+	  			this.updateListeners.delete(url);
+	  		  }
+
+    	  }
+    	  this.update();
+      }.bind(this)
+
+      this.parseSocketMessage = function(jsonString) {
+    	  try {
+    	        const json = JSON.parse(jsonString);
+    	        if(!viewerJS.jsonValidator.validate(json)) {
+    	        	throw new Error("The json object does not conform to the json signature " + json.jsonSignature);
+    	        } else {
+    	        	return json;
+    	        }
+    	    } catch (error) {
+    	        console.error('Error parsing socket message string as JSON:', jsonString, error.message);
+    	        return null;
+    	    }
+      }.bind(this)
+
+      this.createSocketMessage = function(pi, url, action) {
+    	  if(this.downloads.has(url)) {
+    		  let oldMessage = this.downloads.get(url);
+    		  let newMessage = $.extend(true, {}, oldMessage, {pi: pi, url: url, action: action});
+
+    		  return newMessage;
+    	  } else {
+
+    		  return {
+    		  	  pi: pi,
+	    		  url: url,
+	    		  action: action,
+	    		  messageQueueId: undefined,
+	    		  progress: 0,
+	    		  resourceSize: 1,
+	    		  status: undefined,
+	    		  files: []
+	    	  }
+    	  }
+      }.bind(this)
+
+});
+
 riot.tag2('fsthumbnailimage', '<div class="fullscreen__view-image-thumb-preloader" if="{preloader}"></div><img ref="image" alt="Thumbnail Image">', '', '', function(opts) {
     	this.preloader = false;
 
@@ -2431,9 +3138,237 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     	    }
     	}.bind(this)
 });
+riot.tag2('featuresetfilter', '<ul if="{filters.length > 0}"><li each="{filter in filters}" class="{filter.styleClass}"><label>{filter.label}</label><div><input type="radio" name="options_{filter.field}" id="options_{filter.field}_all" value="" checked onclick="{resetFilter}"><label for="options_{filter.field}_all">{opts.msg.alle}</label></div><div each="{option, index in filter.options}"><input type="radio" name="options_{filter.field}" id="options_{filter.field}_{index}" riot-value="{option.name}" onclick="{setFilter}"><label for="options_{filter.field}_{index}">{option.name}</label></div></li></ul>', '', '', function(opts) {
+
+this.filters = [];
+
+this.on("mount", () => {
+	this.geomap = this.opts.geomap;
+	this.featureGroups = this.opts.featureGroups;
+	this.filters = this.createFilters(this.opts.filters, this.featureGroups);
+	this.geomap.onActiveLayerChange.subscribe(groups => {
+		this.featureGroups = groups;
+		this.filters = this.createFilters(this.opts.filters, this.featureGroups);
+ 		this.update();
+	})
+	this.update();
+})
+
+this.createFilters = function(filterMap, featureGroups) {
+	let filters = [];
+	for (const entry of filterMap.entries()) {
+		let layerName = entry[0];
+		let filterConfigs = entry[1];
+		let groups = featureGroups.filter(g => this.getLayerName(g) == layerName);
+		if(layerName && filterConfigs && filterConfigs.length > 0 && groups.length > 0) {
+			filterConfigs.forEach(filterConfig => {
+				let filter = {
+						field: filterConfig.value,
+						label: filterConfig.label,
+						styleClass: filterConfig.styleClass,
+						layers: groups,
+						options: this.findValues(groups, filterConfig.value).map(v => {
+							return {
+								name: v,
+								field: filterConfig.value
+							}
+						}),
+					};
+				filters.push(filter);
+			});
+		}
+	}
+	return filters.filter(filter => filter.options.length > 1);
+}.bind(this)
+
+this.getLayerName = function(layer) {
+	let name = viewerJS.iiif.getValue(layer.config.label, this.opts.defaultLocale);
+	return name;
+}.bind(this)
+
+this.getFilterName = function(filter) {
+	let name = viewerJS.iiif.getValue(filter.label, this.opts.defaultLocale);
+	return name;
+}.bind(this)
+
+this.findValues = function(featureGroups, filterField) {
+	return Array.from(new Set(this.findEntities(featureGroups, filterField)
+	.map(e => e[filterField]).map(a => a[0])
+	.map(value => viewerJS.iiif.getValue(value, this.opts.locale, this.opts.defaultLocale)).filter(e => e)));
+}.bind(this)
+
+this.findEntities = function(featureGroups, filterField) {
+	let entities = featureGroups.flatMap(group => group.markers).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
+	return entities;
+}.bind(this)
+
+this.resetFilter = function(event) {
+	let filter = event.item.filter;
+	filter.layers.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, undefined)));
+}.bind(this)
+
+this.setFilter = function(event) {
+	let filter = this.getFilterForField(event.item.option.field);
+	let value = event.item.option.name;
+	filter.layers.forEach(g => g.showMarkers(entity => this.isShowMarker(entity, filter, value)));
+}.bind(this)
+
+this.isShowMarker = function(entity, filter, value) {
+	let filters = this.filters.filter(f => f.layers.filter(g => filter.layers.includes(g)).length > 0);
+
+	filter.selectedValue = value;
+	let match = filters.map(filter => {
+		if(filter.selectedValue) {
+			let show = entity[filter.field] != undefined && entity[filter.field].map(v => viewerJS.iiif.getValue(v, this.opts.locale, this.opts.defaultLocale)).includes(filter.selectedValue);
+			return show;
+		} else {
+			return true;
+		}
+	})
+	.every(match => match);
+	return match;
+}.bind(this)
+
+this.getFilterForField = function(field) {
+	return this.filters.find(f => f.field == field);
+}.bind(this)
+
+});
+riot.tag2('featuresetselector', '<div class="tab" if="{featureGroups.length > 1}"><button each="{featureGroup, index in featureGroups}" class="tablinks {isActive(featureGroup) ? \'-active\':\'\'}" onclick="{setFeatureGroup}">{getLabel(featureGroup)}</button></div>', '', '', function(opts) {
+
+this.featureGroups = [];
+
+this.on("mount", () => {
+	this.featureGroups = opts.featureGroups;
+	this.geomap = opts.geomap;
+	this.update();
+})
+
+this.setFeatureGroup = function(event) {
+	let featureGroup = event.item.featureGroup;
+	this.geomap.setActiveLayers([featureGroup]);
+}.bind(this)
+
+this.getLabel = function(featureGroup) {
+	return viewerJS.iiif.getValue(featureGroup.config.label, this.opts.locale, this.opts.defaultLocale);
+}.bind(this)
+
+this.isActive = function(featureGroup) {
+	return featureGroup.active;
+}.bind(this)
+
+});
+riot.tag2('geojsonfeaturelist', '<div class="custom-map__sidebar-inner-wrapper"><div class="custom-map__sidebar-inner-top"><h4 class="custom-map__sidebar-inner-heading"><rawhtml content="{getListLabel()}"></rawhtml></h4><input if="{getVisibleEntities().length > 0}" class="custom-map__sidebar-inner-search-input" type="text" ref="search" oninput="{filterList}"></input></div><div class="custom-map__sidebar-inner-bottom"><ul if="{getVisibleEntities().length > 0}" class="custom-map__inner-wrapper-list"><li class="custom-map__inner-wrapper-list-entry" each="{entity in getVisibleEntities()}"><a href="{getLink(entity)}"><rawhtml content="{getEntityLabel(entity)}"></rawhtml></a></li></ul></div></div>', '', 'onclick="{preventBubble}"', function(opts) {
+
+this.entities = [];
+this.filteredEntities = undefined;
+
+this.on("mount", () => {
+	this.opts.featureGroups.forEach(group => {
+		group.onFeatureClick.subscribe(f => {
+			this.title = f.properties?.title;
+			this.setEntities(f.properties?.entities?.filter(e => e.visible !== false).filter(e => this.getEntityLabel(e)?.length > 0));
+		});
+	})
+	this.opts.geomap.onMapClick.subscribe(e => this.hide());
+	this.hide();
+})
+
+this.setEntities = function(entities) {
+
+	this.entities = [];
+	this.filteredEntities = undefined;
+	if(this.refs["search"]) {
+		this.refs["search"].value = "";
+	}
+	if(entities?.length || this.opts.showAlways) {
+		this.entities = entities;
+		this.show();
+		this.update();
+	}
+}.bind(this)
+
+this.getVisibleEntities = function() {
+	if(!this.entities) {
+		return [];
+	} else if(this.filteredEntities === undefined) {
+		return this.entities;
+	} else {
+		return this.filteredEntities;
+	}
+}.bind(this)
+
+this.preventBubble = function(e) {
+	event.stopPropagation();
+}.bind(this)
+
+this.filterList = function(e) {
+	let filter = e.target.value;
+	if(filter) {
+		this.filteredEntities = this.entities.filter(e => this.getLabel(e).toLowerCase().includes(filter.toLowerCase() ));
+	} else {
+		this.filteredEntities = undefined;
+	}
+}.bind(this)
+
+this.getEntityLabel = function(entity) {
+	if(entity) {
+		return this.getLabel(entity);
+	}
+}.bind(this)
+
+this.getListLabel = function() {
+	if(this.title) {
+		let label = viewerJS.iiif.getValue(this.title, this.opts.locale, this.opts.defaulLocale);
+		return label;
+	}
+}.bind(this)
+
+this.getLink = function(entity) {
+	if(entity) {
+		let labels = this.opts.entityLinkFormat;
+		label = labels.map(format => {
+			let groups = [...format.matchAll(/\${(.*?)}/g)];
+			let l = "";
+			groups.forEach(group => {
+				if(group.length > 1) {
+					let value = entity[group[1]]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ");
+					if(value) {
+						l += format.replaceAll(group[0], value ? value : "");
+					}
+				}
+			})
+			return l;
+		}).join("");
+		return label;
+
+	}
+}.bind(this)
+
+this.getLabel = function(entity) {
+
+	if(entity.title) {
+		let label = viewerJS.iiif.getValue(entity.title, this.opts.locale, this.opts.defaulLocale);
+		return label;
+	} else {
+		return "";
+	}
+
+}.bind(this)
+
+this.hide = function() {
+	this.root.style.display = "none";
+}.bind(this)
+
+this.show = function() {
+	this.root.style.display = "block";
+}.bind(this)
+
+});
 riot.tag2('geomapsearch', '<yield><div class="geo-map__wrapper"><div ref="geocoder" class="geocoder"></div><div class="geo-map__buttons-wrapper"></div><div ref="map" class="geo-map"></div></div>', '', '', function(opts) {
 
 this.on("mount", function() {
+
 	this.geoMap = this.initMap();
 	this.drawLayer = this.initDrawLayer(this.geoMap);
     if(this.opts.area) {
@@ -2443,11 +3378,11 @@ this.on("mount", function() {
 	    this.initGeocoder(this.geoMap);
 	    this.drawnItems = this.initMapDraw(this.geoMap, this.drawLayer);
 	}
-	this.hitsLayer = this.initHitsLayer(this.geoMap);
+ 	this.hitsLayer = this.initHitsLayer(this.geoMap);
 	if(this.opts.toggleFeatures) {
 		this.initToggleLayer(this.geoMap, this.hitsLayer, this.opts.toggleFeatures);
 	}
-	if(this.opts.heatmap?.showSearchResultsHeatmap) {
+	if(this.opts.heatmap?.enabled) {
 		this.heatmap = this.initHeatmap(this.hitsLayer)
 	}
 });
@@ -2470,11 +3405,7 @@ this.initMap = function() {
 
 this.initDrawLayer = function(map) {
     let drawLayer = new viewerJS.GeoMap.featureGroup(map, {
-   	    style : {
-         	fillColor : "#d9534f",
-         	color : "#d9534f",
-         	fillOpacity : 0.3,
-        	}
+   	    style : this.opts.areaLayer.style
     });
 	return drawLayer;
 }.bind(this)
@@ -2708,7 +3639,9 @@ this.getType = function(layer) {
 
 this.initHitsLayer = function(map) {
     this.opts.hitsLayer.language = viewerJS.translator.language;
-	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer)
+	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer);
+	map.layers.push(hitsLayer);
+
 	hitsLayer.init(this.opts.features, false);
 	hitsLayer.onFeatureClick.subscribe(f => {
 		if(f.properties && f.properties.link) {
@@ -2916,7 +3849,7 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 
 });
 
-riot.tag2('metadataeditor', '<div if="{this.metadataList}"><ul class="nav nav-tabs"><li each="{language, index in this.opts.languages}" class="{language == this.currentLanguage ? \'active\' : \'\'}"><a onclick="{this.setCurrentLanguage}">{language}</a></li></ul><div class="tab-content"><div class="tab-pane active"><div class="input_form"><div each="{metadata, index in this.metadataList}" class="input_form__option_group"><div class="input_form__option_label"><label for="input-{metadata.property}">{metadata.label}:</label></div><div class="input_form__option_marker {metadata.required ? \'in\' : \'\'}"><label>*</label></div><div class="input_form__option_control"><input tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type != \'longtext\'}" type="{metadata.type}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"><textarea tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type == \'longtext\'}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"></textarea></div><div if="{metadata.helptext}" class="input_form__option_help"><button type="button" class="btn btn--clean" data-toggle="helptext" for="help_{metadata.property}"><i class="fa fa-question-circle" aria-hidden="true"></i></button></div><div if="{metadata.helptext}" id="help_{metadata.property}" class="input_form__option_control_helptext">{metadata.helptext}</div></div><div class="input_form__actions"><a if="{this.opts.deleteListener}" disabled="{this.mayDelete() ? \'\' : \'disabled\'}" class="btn btn--clean delete" onclick="{this.notifyDelete}">{this.opts.deleteLabel}</a></div></div></div></div></div>', '', '', function(opts) {
+riot.tag2('metadataeditor', '<div if="{this.metadataList}"><h2>Pin content</h2><div class="admin__language-tabs"><ul class="nav nav-tabs"><li each="{language, index in this.opts.languages}" class="admin__language-tab {language == this.currentLanguage ? \'active\' : \'\'}"><a onclick="{this.setCurrentLanguage}">{language}</a></li></ul></div><div class="cms__geomap__featureset_panel "><div class="active"><div class="input_form"><div each="{metadata, index in this.metadataList}" class="input_form__option_group"><div class="input_form__option_label"><label for="input-{metadata.property}">{metadata.label}:</label></div><div class="input_form__option_marker {metadata.required ? \'in\' : \'\'}"><label>*</label></div><div class="input_form__option_control"><input tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type != \'longtext\'}" type="{metadata.type}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"><textarea tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type == \'longtext\'}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"></textarea></div><div if="{metadata.helptext}" class="input_form__option_help"><button type="button" class="btn btn--clean" data-toggle="helptext" for="help_{metadata.property}"><i class="fa fa-question-circle" aria-hidden="true"></i></button></div><div if="{metadata.helptext}" id="help_{metadata.property}" class="input_form__option_control_helptext">{metadata.helptext}</div></div><div class="admin__geomap-edit-delete-wrapper"><a if="{this.opts.deleteListener}" disabled="{this.mayDelete() ? \'\' : \'disabled\'}" class="btn btn--clean -redlink" onclick="{this.notifyDelete}">{this.opts.deleteLabel}</a></div></div></div></div></div>', '', '', function(opts) {
 
  	this.on("mount", () => {
  	    this.currentLanguage = this.opts.currentLanguage;
@@ -3009,15 +3942,15 @@ riot.tag2('pdfdocument', '<div class="pdf-container"><pdfpage each="{page, index
 		this.pages = [];
 
 		var loadingTask = pdfjsLib.getDocument( this.opts.data );
-	    loadingTask.promise.then( function( pdf ) {
+	    loadingTask.promise.then( ( pdf ) => {
 	        var pageLoadingTasks = [];
 	        for(var pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
    		        var page = pdf.getPage(pageNo);
    		        pageLoadingTasks.push(page);
    		    }
    		    return Promise.allSettled(pageLoadingTasks);
-	    }.bind(this))
-	    .then(function(results) {
+	    })
+	    .then( (results) => {
 			results.forEach(result => {
 			    if (result.status === "fulfilled") {
                 	var page = result.value;
@@ -3027,10 +3960,11 @@ riot.tag2('pdfdocument', '<div class="pdf-container"><pdfpage each="{page, index
                 }
 			});
 			this.update();
-        }.bind(this))
-	    .then( function() {
+        })
+	    .then( () => {
 			$(".pdf-container").show();
-            $( '#literatureLoader' ).hide();
+			console.log("loader", this.opts.loaderSelector);
+            $(this.opts.loaderSelector).hide();
 		} );
 
 });
@@ -3143,7 +4077,20 @@ this.addCloseHandler = function() {
 });
 
 
-riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><div class="swiper-image slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><div class="swiper-description slider-{this.opts.stylename}__description">{this.opts.description}</div></a>', '', '', function(opts) {
+riot.tag2('rawhtml', '', '', '', function(opts) {
+  this.on("mount", () => {
+	    this.root.innerHTML = opts.content;
+	  })
+  this.on("updated", () => {
+    this.root.innerHTML = opts.content;
+  })
+});
+riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><div class="swiper-image slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><div class="swiper-description slider-{this.opts.stylename}__description" ref="description"></div></a>', '', '', function(opts) {
+		this.on("mount", () => {
+			this.refs.description.innerHTML = this.opts.description
+		});
+});
+riot.tag2('slide_indexslider', '<a class="slider-{this.opts.stylename}__link-wrapper" href="{this.opts.link}"><div class="swiper-heading slider-mnha__header">{this.opts.label}</div><img class="slider-{this.opts.stylename}__image" loading="lazy" riot-src="{this.opts.image}"><div class="swiper-lazy-preloader"></div></a>', '', '', function(opts) {
 });
 riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><a class="slider-{this.opts.stylename}__info-link" href="{this.opts.link}"><div class="slider-{this.opts.stylename}__info-symbol"><svg width="6" height="13" viewbox="0 0 6 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.664 1.21C4.664 2.134 4.092 2.728 3.168 2.728C2.354 2.728 1.936 2.134 1.936 1.474C1.936 0.506 2.706 0 3.454 0C4.136 0 4.664 0.506 4.664 1.21ZM5.258 11.528C4.664 12.1 3.586 12.584 2.42 12.716C1.386 12.496 0.748 11.792 0.748 10.78C0.748 10.362 0.836 9.658 1.1 8.58C1.276 7.81 1.452 6.534 1.452 5.852C1.452 5.588 1.43 5.302 1.408 5.236C1.144 5.17 0.726 5.104 0.198 5.104L0 4.488C0.572 4.07 1.716 3.718 2.398 3.718C3.542 3.718 4.202 4.312 4.202 5.566C4.202 6.248 4.026 7.194 3.828 8.118C3.542 9.328 3.432 10.12 3.432 10.472C3.432 10.802 3.454 11.022 3.542 11.154C3.96 11.066 4.4 10.868 4.928 10.56L5.258 11.528Z" fill="white"></path></svg></div><div class="slider-single-story__info-phrase">{this.opts.label}</div></a>', '', '', function(opts) {
 });
@@ -3256,9 +4203,9 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
     }.bind(this)
 
     this.translate = function(text) {
-    	let translation =  viewerJS.iiif.getValue(text, this.opts.language);
+    	let translation =  viewerJS.iiif.getValue(text, this.opts.language, this.opts.defaultlanguage);
     	if(!translation) {
-    			translation = viewerJS.getMetadataValue(text, this.opts.language);
+    			translation = viewerJS.getMetadataValue(text, this.opts.language, this.opts.defaultlanguage);
     	}
     	return translation;
     }.bind(this)
@@ -3582,17 +4529,22 @@ this.thumbnails = [];
 this._debug = false;
 
 this.on("mount", () => {
-
+	if(this._debug)console.log("mount ", this.opts);
 	this.type = opts.type ? opts.type : "items";
 	this.language = opts.language ? opts.language : "en";
 	this.imageSize = opts.imagesize;
+	if(this.opts.index === undefined) {
+		this.opts.index = 0;
+	}
 
 	let source = opts.source;
 	if(viewerJS.isString(source)) {
 		fetch(source)
 		.then(response => response.json())
-
-		.then(json => this.loadThumbnails(json, this.type));
+		.then(json => this.loadThumbnails(json, this.type))
+		.catch(e => {
+			console.error("Error reading manifest from ", source);
+		})
 	} else {
 		this.loadThumbnails(source, this.type);
 	}
@@ -3611,22 +4563,26 @@ this.on("updated", () => {
 
 this.loadThumbnails = function(source, type) {
     if(this._debug)console.log("Loading thumbnails from ", source);
-
-	switch(type) {
-		case "structures":
-			rxjs.from(source.structures)
-			.pipe(
-					rxjs.operators.map(range => this.getFirstCanvas(range, true)),
-					rxjs.operators.concatMap(canvas => this.loadCanvas(canvas))
-					)
-			.subscribe(item => this.addThumbnail(item));
-			break;
-		case "sequence":
-			this.createThumbnails(source.sequences[0].canvases);
-			break;
-		case "items":
-		case "default":
-			this.createThumbnails(source.items)
+	if(source) {
+		switch(type) {
+			case "structures":
+				if(this._debug)console.log("structures", source.structures);
+				rxjs.from(source.structures)
+				.pipe(
+						rxjs.operators.map(range => this.getFirstCanvas(range, true)),
+						rxjs.operators.concatMap(canvas => this.loadCanvas(canvas))
+						)
+				.subscribe(item => this.addThumbnail(item));
+				break;
+			case "sequence":
+				this.createThumbnails(source.sequences[0].canvases);
+				break;
+			case "items":
+			case "default":
+				this.createThumbnails(source.items)
+		}
+	} else {
+		throw "source manifest not defined";
 	}
 
 }.bind(this)

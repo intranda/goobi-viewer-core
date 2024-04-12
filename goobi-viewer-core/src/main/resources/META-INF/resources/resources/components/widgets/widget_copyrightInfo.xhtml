@@ -28,9 +28,9 @@
 			<div class="widget-copyright-info__inner widget__body">
 
 				<div class="widget-copyright-info__container
-									#{activeDocumentBean.viewManager.copyrightIndicatorStatus.status.name() == 'OPEN' ? '-green' : ''}
-									#{activeDocumentBean.viewManager.copyrightIndicatorStatus.status.name() == 'PARTIAL' ? '-yellow' : ''}
-									#{activeDocumentBean.viewManager.copyrightIndicatorStatus.status.name() == 'LOCKED' ? '-red' : ''}">
+									#{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'OPEN' ? '-green' : ''}
+									#{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'PARTIAL' ? '-yellow' : ''}
+									#{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'LOCKED' ? '-red' : ''}">
 	
 	
 					<div class="widget-copyright-info__lock">
@@ -53,7 +53,7 @@
 							items="#{activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">
 							<ui:include
 								src="#{navigationHelper.getResource('images/licence/'.concat(icon))}" />
-						</c:forEach>
+						    </c:forEach>
 
 					</div>
 				</div>
@@ -68,8 +68,9 @@
 	
 								<div class="widget-copyright-info__access-licence-info">
 									<h3>#{msg.copyright_indicator__access_restriction}</h3>
-									<h:outputText escape="false"
-										value="#{msg[activeDocumentBean.viewManager.copyrightIndicatorStatus.description]}" />
+                                    <c:forEach var="iStatus" items="#{activeDocumentBean.viewManager.copyrightIndicatorStatuses}">
+                                        <h:outputText escape="false" value="#{msg[iStatus.description]}" /><br />
+                                    </c:forEach>
 								</div>
 								
 								<div class="widget-copyright-info__copyright-info">
@@ -90,14 +91,15 @@
 								
 								<div class="widget-copyright-info__access-licence-info">
 									<h3>#{msg.copyright_indicator__access_restriction}</h3>
-									<h:outputText escape="false" value="#{msg[activeDocumentBean.viewManager.copyrightIndicatorStatus.description]}" />
+									<c:forEach var="iStatus" items="#{activeDocumentBean.viewManager.copyrightIndicatorStatuses}">
+									    <h:outputText escape="false" value="#{msg[iStatus.description]}" /><br />
+									</c:forEach>
 								</div>
 								
 								<div class="widget-copyright-info__copyright-info">
 									<h3>#{msg.copyright_indicator__copyright_licence}</h3>
 									<h:outputText escape="false" value="#{msg[activeDocumentBean.viewManager.copyrightIndicatorLicense.description]}" />
 								</div>
-
 
 							</div>
 						</div>

@@ -28,7 +28,8 @@ package io.goobi.viewer.model.viewer.collections;
 public enum Sorting {
 
     alphanumeric("label__sort_alphanumeric"),
-    numeric("label__sort_numeric");
+    numeric("label__sort_numeric"),
+    defaultsorting("label__default");
 
     private String label;
 

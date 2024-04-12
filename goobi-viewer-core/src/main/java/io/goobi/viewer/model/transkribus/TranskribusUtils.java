@@ -27,14 +27,13 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.http.client.ClientProtocolException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -49,7 +48,7 @@ import io.goobi.viewer.model.job.JobStatus;
  * TranskribusUtils class.
  * </p>
  */
-public class TranskribusUtils {
+public final class TranskribusUtils {
 
     private static final Logger logger = LogManager.getLogger(TranskribusUtils.class);
 
@@ -64,6 +63,13 @@ public class TranskribusUtils {
     private static final String URLPART_GRANT_COLLECTION_PRIVS = "collections/{collId}/addOrModifyUserInCollection";
     private static final String URLPART_LOGIN = "auth/login";
 
+    private static final String ERROR_BASEURL_NULL = "baseUrl may not be null";
+
+    /** Private constructor. */
+    private TranskribusUtils() {
+        //
+    }
+
     /**
      * <p>
      * ingestRecord.
@@ -74,14 +80,13 @@ public class TranskribusUtils {
      * @param pi a {@link java.lang.String} object.
      * @param metsResolverUrlRoot Root of the METS resolver URL (without the identifier).
      * @return a {@link io.goobi.viewer.model.transkribus.TranskribusJob} object.
-     * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if any.
      * @throws org.jdom2.JDOMException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public static TranskribusJob ingestRecord(String restApiUrl, TranskribusSession userSession, String pi, String metsResolverUrlRoot)
-            throws ClientProtocolException, IOException, HTTPException, JDOMException, DAOException {
+            throws IOException, HTTPException, JDOMException, DAOException {
         if (pi == null) {
             throw new IllegalArgumentException("pi may not be null");
         }
@@ -112,8 +117,8 @@ public class TranskribusUtils {
         // Get this viewer's Transkribus session metadata
         TranskribusSession viewerSession = login(restApiUrl, DataManager.getInstance().getConfiguration().getTranskribusUserName(),
                 DataManager.getInstance().getConfiguration().getTranskribusPassword());
-        logger.trace(DataManager.getInstance().getConfiguration().getTranskribusUserName() + " - "
-                + DataManager.getInstance().getConfiguration().getTranskribusPassword());
+        logger.trace("{} - {}", DataManager.getInstance().getConfiguration().getTranskribusUserName(),
+                DataManager.getInstance().getConfiguration().getTranskribusPassword());
         if (viewerSession == null) {
             logger.error("No viewer session");
             return null;
@@ -156,15 +161,12 @@ public class TranskribusUtils {
      * @param userName a {@link java.lang.String} object.
      * @param password a {@link java.lang.String} object.
      * @return a {@link io.goobi.viewer.model.transkribus.TranskribusSession} object.
-     * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
      * @throws org.jdom2.JDOMException if any.
-     * @throws io.goobi.viewer.exceptions.HTTPException if any.
      */
-    public static TranskribusSession login(String baseUrl, String userName, String password)
-            throws ClientProtocolException, IOException, JDOMException, HTTPException {
+    public static TranskribusSession login(String baseUrl, String userName, String password) throws IOException, JDOMException {
         if (baseUrl == null) {
-            throw new IllegalArgumentException("baseUrl may not be null");
+            throw new IllegalArgumentException(ERROR_BASEURL_NULL);
         }
         if (userName == null) {
             throw new IllegalArgumentException("userName may not be null");
@@ -190,15 +192,12 @@ public class TranskribusUtils {
      * @param password a {@link java.lang.String} object.
      * @return JDOM object containing the API response
      * @should auth correctly
-     * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
      * @throws org.jdom2.JDOMException if any.
-     * @throws io.goobi.viewer.exceptions.HTTPException if any.
      */
-    public static Document auth(String baseUrl, String userName, String password)
-            throws ClientProtocolException, IOException, JDOMException, HTTPException {
+    public static Document auth(String baseUrl, String userName, String password) throws IOException, JDOMException {
         if (baseUrl == null) {
-            throw new IllegalArgumentException("baseUrl may not be null");
+            throw new IllegalArgumentException(ERROR_BASEURL_NULL);
         }
         if (userName == null) {
             throw new IllegalArgumentException("userName may not be null");
@@ -214,10 +213,13 @@ public class TranskribusUtils {
     }
 
     //    public static Document oauth(String endpoint, String clientId) {
-    //        String oAuthState = new StringBuilder(String.valueOf(System.currentTimeMillis())).append(Helper.getServletPathWithHostAsUrlFromJsfContext())
+    //        String oAuthState = 
+    //           new StringBuilder(String.valueOf(System.currentTimeMillis())).append(Helper.getServletPathWithHostAsUrlFromJsfContext())
     //                .toString();
-    //        OAuthClientRequest request = OAuthClientRequest.authorizationProvider(OAuthProviderType.GOOGLE).setResponseType(ResponseType.CODE.name()
-    //                .toLowerCase()).setClientId(clientId).setRedirectURI(Helper.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
+    //        OAuthClientRequest request = 
+    // OAuthClientRequest.authorizationProvider(OAuthProviderType.GOOGLE).setResponseType(ResponseType.CODE.name()
+    //                .toLowerCase()).setClientId(clientId)
+    //        .setRedirectURI(Helper.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
     //                .setState(oAuthState).setScope("openid email").buildQueryMessage();
     //
     //    }
@@ -230,15 +232,13 @@ public class TranskribusUtils {
      * @param collectionName a {@link java.lang.String} object.
      * @should retrieve correct id
      * @return a {@link java.lang.String} object.
-     * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if any.
      */
-    public static String getCollectionId(String baseUrl, String sessionId, String collectionName)
-            throws ClientProtocolException, IOException, HTTPException {
+    public static String getCollectionId(String baseUrl, String sessionId, String collectionName) throws IOException, HTTPException {
         logger.trace("getCollectionId: {}", collectionName);
         if (baseUrl == null) {
-            throw new IllegalArgumentException("baseUrl may not be null");
+            throw new IllegalArgumentException(ERROR_BASEURL_NULL);
         }
         if (collectionName == null) {
             throw new IllegalArgumentException("collection may not be null");
@@ -277,15 +277,11 @@ public class TranskribusUtils {
      * @should create collection and return numeric id
      * @param collectionName a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
-     * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
-     * @throws io.goobi.viewer.exceptions.HTTPException if any.
-     * @throws org.jdom2.JDOMException if any.
      */
-    protected static String createCollection(String baseUrl, String sessionId, String collectionName)
-            throws ClientProtocolException, IOException, HTTPException, JDOMException {
+    protected static String createCollection(String baseUrl, String sessionId, String collectionName) throws IOException {
         if (baseUrl == null) {
-            throw new IllegalArgumentException("baseUrl may not be null");
+            throw new IllegalArgumentException(ERROR_BASEURL_NULL);
         }
         if (sessionId == null) {
             throw new IllegalArgumentException("sessionId may not be null");
@@ -314,15 +310,12 @@ public class TranskribusUtils {
      * @param sendMail a boolean.
      * @should grant privs correctly
      * @return a boolean.
-     * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
-     * @throws io.goobi.viewer.exceptions.HTTPException if any.
-     * @throws org.jdom2.JDOMException if any.
      */
     protected static boolean grantCollectionPrivsToViewer(String baseUrl, String sessionId, String collectionId, String recipientUserId,
-            boolean sendMail) throws ClientProtocolException, IOException, HTTPException, JDOMException {
+            boolean sendMail) throws IOException {
         if (baseUrl == null) {
-            throw new IllegalArgumentException("baseUrl may not be null");
+            throw new IllegalArgumentException(ERROR_BASEURL_NULL);
         }
         if (sessionId == null) {
             throw new IllegalArgumentException("sessionId may not be null");
@@ -359,15 +352,12 @@ public class TranskribusUtils {
      * @param viewerCollectionId a {@link java.lang.String} object.
      * @should ingest record correctly
      * @return a {@link io.goobi.viewer.model.transkribus.TranskribusJob} object.
-     * @throws org.apache.http.client.ClientProtocolException if any.
-     * @throws java.io.IOException if any.
-     * @throws io.goobi.viewer.exceptions.HTTPException if any.
-     * @throws org.jdom2.JDOMException if any.
+     * @throws java.io.IOException if any. o
      */
     protected static TranskribusJob ingestRecordToCollections(String baseUrl, TranskribusSession session, String pi, String metsUrl,
-            String userCollectionId, String viewerCollectionId) throws ClientProtocolException, IOException, HTTPException, JDOMException {
+            String userCollectionId, String viewerCollectionId) throws IOException {
         if (baseUrl == null) {
-            throw new IllegalArgumentException("baseUrl may not be null");
+            throw new IllegalArgumentException(ERROR_BASEURL_NULL);
         }
         if (session == null) {
             throw new IllegalArgumentException("session may not be null");
@@ -412,14 +402,12 @@ public class TranskribusUtils {
      * @param jobId a {@link java.lang.String} object.
      * @should return correct status
      * @return a {@link io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus} object.
-     * @throws org.apache.http.client.ClientProtocolException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if any.
      */
-    protected static JobStatus checkJobStatus(String baseUrl, String sessionId, String jobId)
-            throws ClientProtocolException, IOException, HTTPException {
+    protected static JobStatus checkJobStatus(String baseUrl, String sessionId, String jobId) throws IOException, HTTPException {
         if (baseUrl == null) {
-            throw new IllegalArgumentException("baseUrl may not be null");
+            throw new IllegalArgumentException(ERROR_BASEURL_NULL);
         }
         if (sessionId == null) {
             throw new IllegalArgumentException("sessionId may not be null");
@@ -445,6 +433,9 @@ public class TranskribusUtils {
                             return JobStatus.READY;
                         case "FAILED":
                             return JobStatus.ERROR;
+                        default:
+                            logger.warn("Unknown state: {}", state);
+                            break;
                     }
                 }
             }

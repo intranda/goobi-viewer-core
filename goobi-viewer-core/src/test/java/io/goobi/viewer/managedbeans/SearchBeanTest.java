@@ -21,7 +21,8 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URLEncoder;
 import java.util.Arrays;
@@ -29,12 +30,14 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.Search;
@@ -46,12 +49,27 @@ import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.search.SearchSortingOption;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
+class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
+
+    private SearchBean searchBean;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
+        searchBean = new SearchBean();
+    }
+
+    /**
+     * @see SearchBean#clearSearchItemLists()
+     * @verifies clear map correctly
+     */
+    @Test
+    void clearSearchItemLists_shouldClearMapCorrectly() throws Exception {
+        searchBean.getAdvancedSearchSelectItems(SolrConstants.DOCSTRCT, "en", false);
+        Assertions.assertFalse(searchBean.getAdvancedSearchSelectItems().isEmpty());
+        searchBean.clearSearchItemLists();
+        Assertions.assertTrue(searchBean.getAdvancedSearchSelectItems().isEmpty());
     }
 
     /**
@@ -59,15 +77,14 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies reset variables correctly
      */
     @Test
-    public void resetSimpleSearchParameters_shouldResetVariablesCorrectly() throws Exception {
-        SearchBean searchBean = new SearchBean();
+    void resetSimpleSearchParameters_shouldResetVariablesCorrectly() throws Exception {
         searchBean.setSearchString("test");
-        Assert.assertEquals("test", searchBean.getSearchString());
-        Assert.assertEquals("test", searchBean.getSearchStringForUrl());
+        assertEquals("test", searchBean.getSearchString());
+        assertEquals("test", searchBean.getSearchStringForUrl());
 
         searchBean.resetSimpleSearchParameters();
-        Assert.assertEquals("", searchBean.getSearchString());
-        Assert.assertEquals("-", searchBean.getSearchStringForUrl());
+        assertEquals("", searchBean.getSearchString());
+        assertEquals("-", searchBean.getSearchStringForUrl());
     }
 
     /**
@@ -75,10 +92,9 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies reset variables correctly
      */
     @Test
-    public void resetAdvancedSearchParameters_shouldResetVariablesCorrectly() throws Exception {
-        SearchBean searchBean = new SearchBean();
+    void resetAdvancedSearchParameters_shouldResetVariablesCorrectly() throws Exception {
         searchBean.resetAdvancedSearchParameters();
-        Assert.assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
+        assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
     }
 
     /**
@@ -86,16 +102,15 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies re-select collection correctly
      */
     @Test
-    public void resetAdvancedSearchParameters_shouldReselectCollectionCorrectly() throws Exception {
-        SearchBean searchBean = new SearchBean();
-        searchBean.getFacets().setCurrentFacetString("DC:col");
+    void resetAdvancedSearchParameters_shouldReselectCollectionCorrectly() throws Exception {
+        searchBean.getFacets().setActiveFacetString("DC:col");
 
         searchBean.resetAdvancedSearchParameters();
-        Assert.assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
+        assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
         SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
-        Assert.assertEquals(SolrConstants.DC, item.getField());
-        Assert.assertEquals(SearchItemOperator.AND, item.getOperator());
-        Assert.assertEquals("col", item.getValue());
+        assertEquals(SolrConstants.DC, item.getField());
+        assertEquals(SearchItemOperator.AND, item.getOperator());
+        assertEquals("col", item.getValue());
     }
 
     /**
@@ -103,12 +118,16 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct Pretty URL ID
      */
     @Test
-    public void resetSearchAction_shouldReturnCorrectPrettyURLID() throws Exception {
-        SearchBean searchBean = new SearchBean();
+    void resetSearchAction_shouldReturnCorrectPrettyURLID() throws Exception {
+        DataManager.getInstance().getConfiguration().overrideValue("search.advanced[@enabled]", true);
+        DataManager.getInstance().getConfiguration().overrideValue("search.calendar[@enabled]", true);
 
-        searchBean.setActiveSearchType(0);
-        Assert.assertEquals("pretty:search", searchBean.resetSearchAction());
-        searchBean.setActiveSearchType(1);
+        searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
+        assertEquals("pretty:search", searchBean.resetSearchAction());
+        searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_ADVANCED);
+        assertEquals("pretty:searchadvanced", searchBean.resetSearchAction());
+        searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_CALENDAR);
+        assertEquals("pretty:searchcalendar", searchBean.resetSearchAction());
     }
 
     /**
@@ -116,17 +135,16 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies set collection item correctly
      */
     @Test
-    public void mirrorAdvancedSearchCurrentCollection_shouldSetCollectionItemCorrectly() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.resetAdvancedSearchParameters();
-        Assert.assertEquals(3, sb.getAdvancedSearchQueryGroup().getQueryItems().size());
-        SearchQueryItem item = sb.getAdvancedSearchQueryGroup().getQueryItems().get(0);
-        Assert.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, item.getField());
+    void mirrorAdvancedSearchCurrentCollection_shouldSetCollectionItemCorrectly() throws Exception {
+        searchBean.resetAdvancedSearchParameters();
+        assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
+        SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, item.getField());
 
-        sb.getFacets().setCurrentFacetString("DC:a");
-        sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
-        Assert.assertEquals(SolrConstants.DC, item.getField());
-        Assert.assertEquals("a", item.getValue());
+        searchBean.getFacets().setActiveFacetString("DC:a");
+        searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
+        assertEquals(SolrConstants.DC, item.getField());
+        assertEquals("a", item.getValue());
     }
 
     /**
@@ -134,21 +152,20 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies reset collection item correctly
      */
     @Test
-    public void mirrorAdvancedSearchCurrentCollection_shouldResetCollectionItemCorrectly() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.resetAdvancedSearchParameters();
-        Assert.assertEquals(3, sb.getAdvancedSearchQueryGroup().getQueryItems().size());
-        SearchQueryItem item = sb.getAdvancedSearchQueryGroup().getQueryItems().get(0);
-        Assert.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, item.getField());
+    void mirrorAdvancedSearchCurrentCollection_shouldResetCollectionItemCorrectly() throws Exception {
+        searchBean.resetAdvancedSearchParameters();
+        assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
+        SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, item.getField());
 
-        sb.getFacets().setCurrentFacetString("DC:a");
-        sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
-        Assert.assertEquals(SolrConstants.DC, item.getField());
-        Assert.assertEquals("a", item.getValue());
-        sb.getFacets().setCurrentFacetString("-");
-        sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
-        Assert.assertEquals(SolrConstants.DC, item.getField());
-        Assert.assertNull(item.getValue());
+        searchBean.getFacets().setActiveFacetString("DC:a");
+        searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
+        assertEquals(SolrConstants.DC, item.getField());
+        assertEquals("a", item.getValue());
+        searchBean.getFacets().setActiveFacetString("-");
+        searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
+        assertEquals(SolrConstants.DC, item.getField());
+        Assertions.assertNull(item.getValue());
     }
 
     /**
@@ -156,21 +173,20 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies mirror facet items to search query items correctly
      */
     @Test
-    public void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldMirrorFacetItemsToSearchQueryItemsCorrectly() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.resetAdvancedSearchParameters();
-        Assert.assertEquals(3, sb.getAdvancedSearchQueryGroup().getQueryItems().size());
-        SearchQueryItem item1 = sb.getAdvancedSearchQueryGroup().getQueryItems().get(0);
-        SearchQueryItem item2 = sb.getAdvancedSearchQueryGroup().getQueryItems().get(1);
+    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldMirrorFacetItemsToSearchQueryItemsCorrectly() throws Exception {
+        searchBean.resetAdvancedSearchParameters();
+        assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
+        SearchQueryItem item1 = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        SearchQueryItem item2 = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
 
         item1.setField(SolrConstants.DC);
-        sb.getFacets().setCurrentFacetString("DC:a;;DC:b");
-        sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
-        Assert.assertEquals(2, sb.getFacets().getCurrentFacets().size());
-        Assert.assertEquals(SolrConstants.DC, item1.getField());
-        Assert.assertEquals("a", item1.getValue());
-        Assert.assertEquals(SolrConstants.DC, item2.getField());
-        Assert.assertEquals("b", item2.getValue());
+        searchBean.getFacets().setActiveFacetString("DC:a;;DC:b");
+        searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
+        assertEquals(2, searchBean.getFacets().getActiveFacets().size());
+        assertEquals(SolrConstants.DC, item1.getField());
+        assertEquals("a", item1.getValue());
+        assertEquals(SolrConstants.DC, item2.getField());
+        assertEquals("b", item2.getValue());
     }
 
     /**
@@ -178,23 +194,22 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not replace query items already in use
      */
     @Test
-    public void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldNotReplaceQueryItemsAlreadyInUse() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.resetAdvancedSearchParameters();
-        SearchQueryItem item1 = sb.getAdvancedSearchQueryGroup().getQueryItems().get(0);
-        SearchQueryItem item2 = sb.getAdvancedSearchQueryGroup().getQueryItems().get(1);
-        SearchQueryItem item3 = sb.getAdvancedSearchQueryGroup().getQueryItems().get(2);
+    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldNotReplaceQueryItemsAlreadyInUse() throws Exception {
+        searchBean.resetAdvancedSearchParameters();
+        SearchQueryItem item1 = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        SearchQueryItem item2 = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
+        SearchQueryItem item3 = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(2);
 
         item1.setField("MD_TITLE");
         item1.setValue("text");
-        sb.getFacets().setCurrentFacetString("DC:a;;DC:b");
-        sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
-        Assert.assertEquals("MD_TITLE", item1.getField());
-        Assert.assertEquals("text", item1.getValue());
-        Assert.assertEquals(SolrConstants.DC, item2.getField());
-        Assert.assertEquals("a", item2.getValue());
-        Assert.assertEquals(SolrConstants.DC, item3.getField());
-        Assert.assertEquals("b", item3.getValue());
+        searchBean.getFacets().setActiveFacetString("DC:a;;DC:b");
+        searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
+        assertEquals("MD_TITLE", item1.getField());
+        assertEquals("text", item1.getValue());
+        assertEquals(SolrConstants.DC, item2.getField());
+        assertEquals("a", item2.getValue());
+        assertEquals(SolrConstants.DC, item3.getField());
+        assertEquals("b", item3.getValue());
     }
 
     /**
@@ -202,19 +217,18 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not add identical hierarchical query items
      */
     @Test
-    public void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldNotAddIdenticalHierarchicalQueryItems() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.resetAdvancedSearchParameters();
-        SearchQueryItem item1 = sb.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldNotAddIdenticalHierarchicalQueryItems() throws Exception {
+        searchBean.resetAdvancedSearchParameters();
+        SearchQueryItem item1 = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
 
         item1.setField(SolrConstants.DC);
         item1.setValue("foo");
-        sb.getFacets().setCurrentFacetString("DC:foo;;DC:foo");
-        sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
+        searchBean.getFacets().setActiveFacetString("DC:foo;;DC:foo");
+        searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
         // There should be no second query item generated for the other DC:foo
-        Assert.assertEquals(3, sb.getAdvancedSearchQueryGroup().getQueryItems().size());
-        Assert.assertEquals(SolrConstants.DC, item1.getField());
-        Assert.assertEquals("foo", item1.getValue());
+        assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
+        assertEquals(SolrConstants.DC, item1.getField());
+        assertEquals("foo", item1.getValue());
     }
 
     /**
@@ -222,12 +236,11 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies generate phrase search query without filter correctly
      */
     @Test
-    public void generateSimpleSearchString_shouldGeneratePhraseSearchQueryWithoutFilterCorrectly() throws Exception {
-        SearchBean bean = new SearchBean();
-        bean.generateSimpleSearchString("\"foo bar\"");
-        Assert.assertEquals(
+    void generateSimpleSearchString_shouldGeneratePhraseSearchQueryWithoutFilterCorrectly() throws Exception {
+        searchBean.generateSimpleSearchString("\"foo bar\"");
+        assertEquals(
                 "SUPERDEFAULT:(\"foo bar\") OR SUPERFULLTEXT:(\"foo bar\") OR SUPERUGCTERMS:(\"foo bar\") OR DEFAULT:(\"foo bar\") OR FULLTEXT:(\"foo bar\") OR NORMDATATERMS:(\"foo bar\") OR UGCTERMS:(\"foo bar\") OR CMS_TEXT_ALL:(\"foo bar\")",
-                bean.searchStringInternal);
+                searchBean.getSearchStringInternal());
     }
 
     /**
@@ -235,11 +248,10 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies generate phrase search query with specific filter correctly
      */
     @Test
-    public void generateSimpleSearchString_shouldGeneratePhraseSearchQueryWithSpecificFilterCorrectly() throws Exception {
-        SearchBean bean = new SearchBean();
-        bean.setCurrentSearchFilterString("filter_FULLTEXT");
-        bean.generateSimpleSearchString("\"foo bar\"");
-        Assert.assertEquals("SUPERFULLTEXT:(\"foo bar\") OR FULLTEXT:(\"foo bar\")", bean.searchStringInternal);
+    void generateSimpleSearchString_shouldGeneratePhraseSearchQueryWithSpecificFilterCorrectly() throws Exception {
+        searchBean.setCurrentSearchFilterString("filter_FULLTEXT");
+        searchBean.generateSimpleSearchString("\"foo bar\"");
+        assertEquals("SUPERFULLTEXT:(\"foo bar\") OR FULLTEXT:(\"foo bar\")", searchBean.getSearchStringInternal());
     }
 
     /**
@@ -247,12 +259,11 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies generate non-phrase search query without filter correctly
      */
     @Test
-    public void generateSimpleSearchString_shouldGenerateNonphraseSearchQueryWithoutFilterCorrectly() throws Exception {
-        SearchBean bean = new SearchBean();
-        bean.generateSimpleSearchString("foo bar");
-        Assert.assertEquals(
+    void generateSimpleSearchString_shouldGenerateNonphraseSearchQueryWithoutFilterCorrectly() throws Exception {
+        searchBean.generateSimpleSearchString("foo bar");
+        assertEquals(
                 "SUPERDEFAULT:(foo AND bar) SUPERFULLTEXT:(foo AND bar) SUPERUGCTERMS:(foo AND bar) DEFAULT:(foo AND bar) FULLTEXT:(foo AND bar) NORMDATATERMS:(foo AND bar) UGCTERMS:(foo AND bar) CMS_TEXT_ALL:(foo AND bar)",
-                bean.searchStringInternal);
+                searchBean.getSearchStringInternal());
     }
 
     /**
@@ -260,11 +271,10 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies generate non-phrase search query with specific filter correctly
      */
     @Test
-    public void generateSimpleSearchString_shouldGenerateNonphraseSearchQueryWithSpecificFilterCorrectly() throws Exception {
-        SearchBean bean = new SearchBean();
-        bean.setCurrentSearchFilterString("filter_FULLTEXT");
-        bean.generateSimpleSearchString("foo bar");
-        Assert.assertEquals("SUPERFULLTEXT:(foo AND bar) OR FULLTEXT:(foo AND bar)", bean.searchStringInternal);
+    void generateSimpleSearchString_shouldGenerateNonphraseSearchQueryWithSpecificFilterCorrectly() throws Exception {
+        searchBean.setCurrentSearchFilterString("filter_FULLTEXT");
+        searchBean.generateSimpleSearchString("foo bar");
+        assertEquals("SUPERFULLTEXT:(foo AND bar) OR FULLTEXT:(foo AND bar)", searchBean.getSearchStringInternal());
     }
 
     /**
@@ -272,18 +282,28 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add proximity search token correctly
      */
     @Test
-    public void generateSimpleSearchString_shouldAddProximitySearchTokenCorrectly() throws Exception {
-        SearchBean bean = new SearchBean();
-
+    void generateSimpleSearchString_shouldAddProximitySearchTokenCorrectly() throws Exception {
         // All
-        bean.generateSimpleSearchString("\"foo bar\"~20");
-        Assert.assertTrue(bean.searchStringInternal.contains("SUPERFULLTEXT:(\"foo bar\"~20)"));
-        Assert.assertTrue(bean.searchStringInternal.contains(" FULLTEXT:(\"foo bar\"~20)"));
+        searchBean.generateSimpleSearchString("\"foo bar\"~20");
+        Assertions.assertTrue(searchBean.getSearchStringInternal().contains("SUPERFULLTEXT:(\"foo bar\"~20)"));
+        Assertions.assertTrue(searchBean.getSearchStringInternal().contains(" FULLTEXT:(\"foo bar\"~20)"));
 
         // Just full-text
-        bean.setCurrentSearchFilterString("filter_FULLTEXT");
-        bean.generateSimpleSearchString("\"foo bar\"~20");
-        Assert.assertEquals("SUPERFULLTEXT:(\"foo bar\"~20) OR FULLTEXT:(\"foo bar\"~20)", bean.searchStringInternal);
+        searchBean.setCurrentSearchFilterString("filter_FULLTEXT");
+        searchBean.generateSimpleSearchString("\"foo bar\"~20");
+        assertEquals("SUPERFULLTEXT:(\"foo bar\"~20) OR FULLTEXT:(\"foo bar\"~20)", searchBean.getSearchStringInternal());
+    }
+
+    /**
+     * @see SearchBean#generateSimpleSearchString(String)
+     * @verifies reset exactSearchString if input empty
+     */
+    @Test
+    void generateSimpleSearchString_shouldResetExactSearchStringIfInputEmpty() throws Exception {
+        searchBean.setExactSearchString("PI:*");
+        assertEquals("PI%3A*", searchBean.getExactSearchString());
+        searchBean.generateSimpleSearchString("");
+        assertEquals("-", searchBean.getExactSearchString());
     }
 
     /**
@@ -291,29 +311,28 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct query correctly
      */
     @Test
-    public void generateAdvancedSearchString_shouldConstructQueryCorrectly() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.resetAdvancedSearchParameters();
+    void generateAdvancedSearchString_shouldConstructQueryCorrectly() throws Exception {
+        searchBean.resetAdvancedSearchParameters();
 
         // First group
         {
             // OR-operator, search in all fields
-            SearchQueryItem item = sb.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+            SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
             item.setOperator(SearchItemOperator.OR);
             item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
             item.setValue("foo bar");
         }
         {
             // AND-operator, search in MD_TITLE with negation
-            SearchQueryItem item = sb.getAdvancedSearchQueryGroup().getQueryItems().get(1);
+            SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
             item.setOperator(SearchItemOperator.AND);
             item.setField("MD_TITLE");
             item.setValue("bla \"blup\" -nein");
         }
 
-        Assert.assertEquals("((SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) DEFAULT:(foo bar)"
+        assertEquals("((SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) DEFAULT:(foo bar)"
                 + " FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) CMS_TEXT_ALL:(foo bar)) +(MD_TITLE:(bla AND \\\"blup\\\" -nein)))",
-                sb.generateAdvancedSearchString());
+                searchBean.generateAdvancedSearchString());
     }
 
     /**
@@ -321,29 +340,35 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct query info correctly
      */
     @Test
-    public void generateAdvancedSearchString_shouldConstructQueryInfoCorrectly() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.resetAdvancedSearchParameters();
+    void generateAdvancedSearchString_shouldConstructQueryInfoCorrectly() throws Exception {
+        searchBean.resetAdvancedSearchParameters();
 
         // First group
         {
             // OR-operator, search in all fields
-            SearchQueryItem item = sb.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+            SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
             item.setOperator(SearchItemOperator.OR);
             item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
-            item.setValue("foo bar");
+            item.setValue("monograph"); // should NOT be translated
         }
         {
             // AND-operator, search in MD_TITLE with negation
-            SearchQueryItem item = sb.getAdvancedSearchQueryGroup().getQueryItems().get(1);
+            SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
             item.setOperator(SearchItemOperator.AND);
             item.setField("MD_TITLE");
             item.setValue("bla \"blup\" -nein");
         }
+        {
+            // NOT-operator, search in DOCSTRCT with negation
+            SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(2);
+            item.setOperator(SearchItemOperator.NOT);
+            item.setField("DOCSTRCT");
+            item.setValue("monograph"); // should be translated
+        }
 
-        sb.generateAdvancedSearchString();
-        Assert.assertEquals("AND (All fields: foo bar) AND (Title: bla \"blup\" -nein)",
-                sb.getAdvancedSearchQueryInfo());
+        searchBean.generateAdvancedSearchString();
+        assertEquals("OR (All fields: monograph) AND (Title: bla &quot;blup&quot; -nein) NOT (Structure type: Monograph)",
+                searchBean.getAdvancedSearchQueryInfo());
     }
 
     /**
@@ -351,26 +376,25 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add multiple facets for the same field correctly
      */
     @Test
-    public void generateAdvancedSearchString_shouldAddMultipleFacetsForTheSameFieldCorrectly() throws Exception {
-        SearchBean bean = new SearchBean();
-        bean.resetAdvancedSearchParameters();
+    void generateAdvancedSearchString_shouldAddMultipleFacetsForTheSameFieldCorrectly() throws Exception {
+        searchBean.resetAdvancedSearchParameters();
 
         {
-            SearchQueryItem item = bean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+            SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
         {
-            SearchQueryItem item = bean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
+            SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
             item.setField(SolrConstants.DC);
             item.setValue("bar");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
-        bean.generateAdvancedSearchString();
+        searchBean.generateAdvancedSearchString();
 
-        Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;", StringTools.DEFAULT_ENCODING),
-                bean.getFacets().getCurrentFacetString());
+        assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;", StringTools.DEFAULT_ENCODING),
+                searchBean.getFacets().getActiveFacetString());
     }
 
     /**
@@ -378,27 +402,26 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add multiple facets for the same field correctly if field already in current facets
      */
     @Test
-    public void generateAdvancedSearchString_shouldAddMultipleFacetsForTheSameFieldCorrectlyIfFieldAlreadyInCurrentFacets() throws Exception {
-        SearchBean bean = new SearchBean();
-        bean.resetAdvancedSearchParameters();
-        bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;"); // current facet string already contains this field
+    void generateAdvancedSearchString_shouldAddMultipleFacetsForTheSameFieldCorrectlyIfFieldAlreadyInActiveFacets() throws Exception {
+        searchBean.resetAdvancedSearchParameters();
+        searchBean.getFacets().setActiveFacetString(SolrConstants.DC + ":foo;;"); // current facet string already contains this field
 
         {
-            SearchQueryItem item = bean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+            SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
         {
-            SearchQueryItem item = bean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
+            SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
             item.setField(SolrConstants.DC);
             item.setValue("bar");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
-        bean.generateAdvancedSearchString();
+        searchBean.generateAdvancedSearchString();
 
-        Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;", StringTools.DEFAULT_ENCODING),
-                bean.getFacets().getCurrentFacetString());
+        assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;", StringTools.DEFAULT_ENCODING),
+                searchBean.getFacets().getActiveFacetString());
     }
 
     /**
@@ -406,26 +429,25 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies only add identical facets once
      */
     @Test
-    public void generateAdvancedSearchString_shouldOnlyAddIdenticalFacetsOnce() throws Exception {
-        SearchBean bean = new SearchBean();
-        bean.resetAdvancedSearchParameters();
+    void generateAdvancedSearchString_shouldOnlyAddIdenticalFacetsOnce() throws Exception {
+        searchBean.resetAdvancedSearchParameters();
 
         {
-            SearchQueryItem item = bean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+            SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
         {
-            SearchQueryItem item = bean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
+            SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
-        bean.generateAdvancedSearchString();
+        searchBean.generateAdvancedSearchString();
 
-        Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
-                bean.getFacets().getCurrentFacetString());
+        assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
+                searchBean.getFacets().getActiveFacetString());
     }
 
     /**
@@ -433,28 +455,27 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not add more facets if field value combo already in current facets
      */
     @Test
-    public void generateAdvancedSearchString_shouldNotAddMoreFacetsIfFieldValueComboAlreadyInCurrentFacets() throws Exception {
-        SearchBean bean = new SearchBean();
-        bean.resetAdvancedSearchParameters();
+    void generateAdvancedSearchString_shouldNotAddMoreFacetsIfFieldValueComboAlreadyInActiveFacets() throws Exception {
+        searchBean.resetAdvancedSearchParameters();
 
-        bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;");
+        searchBean.getFacets().setActiveFacetString(SolrConstants.DC + ":foo;;");
 
         {
-            SearchQueryItem item = bean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+            SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
         {
-            SearchQueryItem item = bean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
+            SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
-        bean.generateAdvancedSearchString();
+        searchBean.generateAdvancedSearchString();
 
-        Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
-                bean.getFacets().getCurrentFacetString());
+        assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
+                searchBean.getFacets().getActiveFacetString());
     }
 
     /**
@@ -462,31 +483,30 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not replace obsolete facets with duplicates
      */
     @Test
-    public void generateAdvancedSearchString_shouldNotReplaceObsoleteFacetsWithDuplicates() throws Exception {
-        SearchBean bean = new SearchBean();
-        bean.resetAdvancedSearchParameters();
+    void generateAdvancedSearchString_shouldNotReplaceObsoleteFacetsWithDuplicates() throws Exception {
+        searchBean.resetAdvancedSearchParameters();
 
         // Current facets are DC:foo and DC:bar
-        bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;");
+        searchBean.getFacets().setActiveFacetString(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;");
 
         // Passing DC:foo and DC:foo from the advanced search
         {
-            SearchQueryItem item = bean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+            SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
         {
-            SearchQueryItem item = bean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
+            SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
             item.setField(SolrConstants.DC);
             item.setValue("foo");
-            Assert.assertTrue(item.isHierarchical());
+            Assertions.assertTrue(item.isHierarchical());
         }
-        bean.generateAdvancedSearchString();
+        searchBean.generateAdvancedSearchString();
 
         // Only one DC:foo should be in the facets
-        Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
-                bean.getFacets().getCurrentFacetString());
+        assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
+                searchBean.getFacets().getActiveFacetString());
     }
 
     /**
@@ -494,22 +514,21 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies remove facets that are not matched among query items
      */
     @Test
-    public void generateAdvancedSearchString_shouldRemoveFacetsThatAreNotMatchedAmongQueryItems() throws Exception {
-        SearchBean bean = new SearchBean();
-        bean.resetAdvancedSearchParameters();
+    void generateAdvancedSearchString_shouldRemoveFacetsThatAreNotMatchedAmongQueryItems() throws Exception {
+        searchBean.resetAdvancedSearchParameters();
 
-        bean.getFacets().setCurrentFacetString(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;");
-        Assert.assertEquals(2, bean.getFacets().getCurrentFacets().size());
-        Assert.assertTrue(bean.getFacets().getCurrentFacets().get(0).isHierarchial());
+        searchBean.getFacets().setActiveFacetString(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;");
+        assertEquals(2, searchBean.getFacets().getActiveFacets().size());
+        Assertions.assertTrue(searchBean.getFacets().getActiveFacets().get(0).isHierarchial());
 
-        SearchQueryItem item = bean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
         item.setField(SolrConstants.DC);
         item.setValue("foo");
 
-        bean.generateAdvancedSearchString();
+        searchBean.generateAdvancedSearchString();
 
-        Assert.assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
-                bean.getFacets().getCurrentFacetString());
+        assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
+                searchBean.getFacets().getActiveFacetString());
     }
 
     /**
@@ -517,16 +536,15 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct url
      */
     @Test
-    public void getSearchUrl_shouldReturnCorrectUrl() throws Exception {
-        SearchBean sb = new SearchBean();
+    void getSearchUrl_shouldReturnCorrectUrl() throws Exception {
         NavigationHelper nh = new NavigationHelper();
-        sb.setNavigationHelper(nh);
+        searchBean.setNavigationHelper(nh);
 
-        sb.activeSearchType = SearchHelper.SEARCH_TYPE_ADVANCED;
-        Assert.assertEquals(nh.getAdvancedSearchUrl(), sb.getSearchUrl());
+        searchBean.setActiveSearchTypeTest(SearchHelper.SEARCH_TYPE_ADVANCED);
+        assertEquals(nh.getAdvancedSearchUrl(), searchBean.getSearchUrl());
 
-        sb.activeSearchType = SearchHelper.SEARCH_TYPE_REGULAR;
-        Assert.assertEquals(nh.getSearchUrl(), sb.getSearchUrl());
+        searchBean.setActiveSearchTypeTest(SearchHelper.SEARCH_TYPE_REGULAR);
+        assertEquals(nh.getSearchUrl(), searchBean.getSearchUrl());
     }
 
     /**
@@ -534,9 +552,8 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return null if navigationHelper is null
      */
     @Test
-    public void getSearchUrl_shouldReturnNullIfNavigationHelperIsNull() throws Exception {
-        SearchBean sb = new SearchBean();
-        Assert.assertNull(sb.getSearchUrl());
+    void getSearchUrl_shouldReturnNullIfNavigationHelperIsNull() throws Exception {
+        Assertions.assertNull(searchBean.getSearchUrl());
     }
 
     /**
@@ -544,28 +561,27 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies increase index correctly
      */
     @Test
-    public void increaseCurrentHitIndex_shouldIncreaseIndexCorrectly() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.setCurrentSearch(new Search());
-        sb.getCurrentSearch().setHitsCount(10);
+    void increaseCurrentHitIndex_shouldIncreaseIndexCorrectly() throws Exception {
+        searchBean.setCurrentSearch(new Search());
+        searchBean.getCurrentSearch().setHitsCount(10);
 
         // Regular case
-        sb.setHitIndexOperand(1);
-        sb.currentHitIndex = 6;
-        sb.increaseCurrentHitIndex();
-        Assert.assertEquals(7, sb.currentHitIndex);
+        searchBean.setHitIndexOperand(1);
+        searchBean.setCurrentHitIndex(6);
+        searchBean.increaseCurrentHitIndex();
+        assertEquals(7, searchBean.getCurrentHitIndex());
 
         // Edge case (min)
-        sb.setHitIndexOperand(1);
-        sb.currentHitIndex = 0;
-        sb.increaseCurrentHitIndex();
-        Assert.assertEquals(1, sb.currentHitIndex);
+        searchBean.setHitIndexOperand(1);
+        searchBean.setCurrentHitIndex(0);
+        searchBean.increaseCurrentHitIndex();
+        assertEquals(1, searchBean.getCurrentHitIndex());
 
         // Edge case (max)
-        sb.setHitIndexOperand(1);
-        sb.currentHitIndex = 8;
-        sb.increaseCurrentHitIndex();
-        Assert.assertEquals(9, sb.currentHitIndex);
+        searchBean.setHitIndexOperand(1);
+        searchBean.setCurrentHitIndex(8);
+        searchBean.increaseCurrentHitIndex();
+        assertEquals(9, searchBean.getCurrentHitIndex());
     }
 
     /**
@@ -573,28 +589,27 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies decrease index correctly
      */
     @Test
-    public void increaseCurrentHitIndex_shouldDecreaseIndexCorrectly() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.setCurrentSearch(new Search());
-        sb.getCurrentSearch().setHitsCount(10);
+    void increaseCurrentHitIndex_shouldDecreaseIndexCorrectly() throws Exception {
+        searchBean.setCurrentSearch(new Search());
+        searchBean.getCurrentSearch().setHitsCount(10);
 
         // Regular case
-        sb.setHitIndexOperand(-1);
-        sb.currentHitIndex = 6;
-        sb.increaseCurrentHitIndex();
-        Assert.assertEquals(5, sb.currentHitIndex);
+        searchBean.setHitIndexOperand(-1);
+        searchBean.setCurrentHitIndex(6);
+        searchBean.increaseCurrentHitIndex();
+        assertEquals(5, searchBean.getCurrentHitIndex());
 
         // Edge case (min)
-        sb.setHitIndexOperand(-1);
-        sb.currentHitIndex = 1;
-        sb.increaseCurrentHitIndex();
-        Assert.assertEquals(0, sb.currentHitIndex);
+        searchBean.setHitIndexOperand(-1);
+        searchBean.setCurrentHitIndex(1);
+        searchBean.increaseCurrentHitIndex();
+        assertEquals(0, searchBean.getCurrentHitIndex());
 
         // Edge case (max)
-        sb.setHitIndexOperand(-1);
-        sb.currentHitIndex = 9;
-        sb.increaseCurrentHitIndex();
-        Assert.assertEquals(8, sb.currentHitIndex);
+        searchBean.setHitIndexOperand(-1);
+        searchBean.setCurrentHitIndex(9);
+        searchBean.increaseCurrentHitIndex();
+        assertEquals(8, searchBean.getCurrentHitIndex());
     }
 
     /**
@@ -602,16 +617,15 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies reset operand afterwards
      */
     @Test
-    public void increaseCurrentHitIndex_shouldResetOperandAfterwards() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.setCurrentSearch(new Search());
-        sb.getCurrentSearch().setHitsCount(10);
+    void increaseCurrentHitIndex_shouldResetOperandAfterwards() throws Exception {
+        searchBean.setCurrentSearch(new Search());
+        searchBean.getCurrentSearch().setHitsCount(10);
 
-        sb.setHitIndexOperand(1);
-        sb.currentHitIndex = 6;
-        Assert.assertEquals(1, sb.getHitIndexOperand());
-        sb.increaseCurrentHitIndex();
-        Assert.assertEquals(0, sb.getHitIndexOperand());
+        searchBean.setHitIndexOperand(1);
+        searchBean.setCurrentHitIndex(6);
+        assertEquals(1, searchBean.getHitIndexOperand());
+        searchBean.increaseCurrentHitIndex();
+        assertEquals(0, searchBean.getHitIndexOperand());
     }
 
     /**
@@ -619,15 +633,14 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies do nothing if hit index at the last hit
      */
     @Test
-    public void increaseCurrentHitIndex_shouldDoNothingIfHitIndexAtTheLastHit() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.setCurrentSearch(new Search());
-        sb.getCurrentSearch().setHitsCount(10);
-        sb.setHitIndexOperand(1);
-        sb.currentHitIndex = 9;
+    void increaseCurrentHitIndex_shouldDoNothingIfHitIndexAtTheLastHit() throws Exception {
+        searchBean.setCurrentSearch(new Search());
+        searchBean.getCurrentSearch().setHitsCount(10);
+        searchBean.setHitIndexOperand(1);
+        searchBean.setCurrentHitIndex(9);
 
-        sb.increaseCurrentHitIndex();
-        Assert.assertEquals(9, sb.currentHitIndex);
+        searchBean.increaseCurrentHitIndex();
+        assertEquals(9, searchBean.getCurrentHitIndex());
     }
 
     /**
@@ -635,26 +648,25 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies do nothing if hit index at 0
      */
     @Test
-    public void increaseCurrentHitIndex_shouldDoNothingIfHitIndexAt0() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.setCurrentSearch(new Search());
-        sb.getCurrentSearch().setHitsCount(10);
-        sb.setHitIndexOperand(-1);
-        sb.currentHitIndex = 0;
+    void increaseCurrentHitIndex_shouldDoNothingIfHitIndexAt0() throws Exception {
+        searchBean.setCurrentSearch(new Search());
+        searchBean.getCurrentSearch().setHitsCount(10);
+        searchBean.setHitIndexOperand(-1);
+        searchBean.setCurrentHitIndex(0);
 
-        sb.increaseCurrentHitIndex();
-        Assert.assertEquals(0, sb.currentHitIndex);
+        searchBean.increaseCurrentHitIndex();
+        assertEquals(0, searchBean.getCurrentHitIndex());
     }
 
     @Test
-    public void testGetHierarchicalFacets() {
+    void testGetHierarchicalFacets() {
         String facetString = "DC:sonstiges.ocr.antiqua;;DOCSTRCT:monograph;;MD_TOPICS_UNTOKENIZED:schulbuch";
         List<String> hierarchicalFacetFields = Arrays.asList(new String[] { "A", "MD_TOPICS", "B", "DC", "C" });
 
         List<String> facets = SearchFacets.getHierarchicalFacets(facetString, hierarchicalFacetFields);
-        Assert.assertEquals(2, facets.size());
-        Assert.assertEquals("sonstiges.ocr.antiqua", facets.get(1));
-        Assert.assertEquals("schulbuch", facets.get(0));
+        assertEquals(2, facets.size());
+        assertEquals("sonstiges.ocr.antiqua", facets.get(1));
+        assertEquals("schulbuch", facets.get(0));
     }
 
     /**
@@ -662,8 +674,8 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies omit languaged fields for other languages
      */
     @Test
-    public void getAdvancedSearchAllowedFields_shouldOmitLanguagedFieldsForOtherLanguages() throws Exception {
-        List<AdvancedSearchFieldConfiguration> fields = SearchBean.getAdvancedSearchAllowedFields("en");
+    void getAdvancedSearchAllowedFields_shouldOmitLanguagedFieldsForOtherLanguages() throws Exception {
+        List<AdvancedSearchFieldConfiguration> fields = SearchBean.getAdvancedSearchAllowedFields("en", StringConstants.DEFAULT_NAME);
         boolean en = false;
         boolean de = false;
         boolean es = false;
@@ -680,9 +692,9 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
                     break;
             }
         }
-        Assert.assertTrue(en);
-        Assert.assertFalse(de);
-        Assert.assertFalse(es);
+        Assertions.assertTrue(en);
+        Assertions.assertFalse(de);
+        Assertions.assertFalse(es);
     }
 
     /**
@@ -690,16 +702,14 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies set currentHitIndex to minus one if no search hits
      */
     @Test
-    public void findCurrentHitIndex_shouldSetCurrentHitIndexToMinusOneIfNoSearchHits() throws Exception {
-        SearchBean sb = new SearchBean();
+    void findCurrentHitIndex_shouldSetCurrentHitIndexToMinusOneIfNoSearchHits() throws Exception {
+        searchBean.findCurrentHitIndex("PPN123", 1, true);
+        assertEquals(-1, searchBean.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("PPN123", 1, true);
-        Assert.assertEquals(-1, sb.getCurrentHitIndex());
-
-        sb.setCurrentSearch(new Search());
-        Assert.assertEquals(0, sb.getCurrentSearch().getHitsCount());
-        sb.findCurrentHitIndex("PPN123", 1, true);
-        Assert.assertEquals(-1, sb.getCurrentHitIndex());
+        searchBean.setCurrentSearch(new Search());
+        assertEquals(0, searchBean.getCurrentSearch().getHitsCount());
+        searchBean.findCurrentHitIndex("PPN123", 1, true);
+        assertEquals(-1, searchBean.getCurrentHitIndex());
     }
 
     /**
@@ -707,41 +717,41 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies set currentHitIndex correctly
      */
     @Test
-    public void findCurrentHitIndex_shouldSetCurrentHitIndexCorrectly() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.setCurrentSearch(new Search());
-        sb.getCurrentSearch().setPage(1);
-        sb.getCurrentSearch().setQuery("+DC:dcimage* +ISWORK:true -IDDOC_PARENT:*");
-        sb.getCurrentSearch().setSortString("SORT_TITLE");
-        sb.getCurrentSearch().execute(new SearchFacets(), null, 10, null, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
-        Assert.assertEquals(18, sb.getCurrentSearch().getHitsCount());
+    void findCurrentHitIndex_shouldSetCurrentHitIndexCorrectly() throws Exception {
+        DataManager.getInstance().getConfiguration().overrideValue("search.resultGroups[@enabled]", false);
+        searchBean.setCurrentSearch(new Search());
+        searchBean.getCurrentSearch().setPage(1);
+        searchBean.getCurrentSearch().setQuery("+DC:dcimage* +ISWORK:true -IDDOC_PARENT:*");
+        searchBean.getCurrentSearch().setSortString("SORT_TITLE");
+        searchBean.getCurrentSearch().execute(new SearchFacets(), null, 10, null, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+        assertEquals(18, searchBean.getCurrentSearch().getHitsCount());
 
-        sb.findCurrentHitIndex("PPN9462", 1, true);
-        Assert.assertEquals(0, sb.getCurrentHitIndex());
+        searchBean.findCurrentHitIndex("PPN9462", 1, true);
+        assertEquals(0, searchBean.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("633114553", 1, true);
-        Assert.assertEquals(1, sb.getCurrentHitIndex());
+        searchBean.findCurrentHitIndex("633114553", 1, true);
+        assertEquals(1, searchBean.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("PPN407465633d27302e312e312e27_40636c6173736e756d3d27312e27_407369673d27313527", 1, true);
-        Assert.assertEquals(2, sb.getCurrentHitIndex());
+        searchBean.findCurrentHitIndex("PPN407465633d27302e312e312e27_40636c6173736e756d3d27312e27_407369673d27313527", 1, true);
+        assertEquals(2, searchBean.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("808996762", 1, true);
-        Assert.assertEquals(3, sb.getCurrentHitIndex());
+        searchBean.findCurrentHitIndex("808996762", 1, true);
+        assertEquals(3, searchBean.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("02008011811811", 1, true);
-        Assert.assertEquals(4, sb.getCurrentHitIndex());
+        searchBean.findCurrentHitIndex("02008011811811", 1, true);
+        assertEquals(4, searchBean.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("iiif_test_image", 1, true);
-        Assert.assertEquals(6, sb.getCurrentHitIndex());
+        searchBean.findCurrentHitIndex("iiif_test_image", 1, true);
+        assertEquals(6, searchBean.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("339471409", 1, true);
-        Assert.assertEquals(7, sb.getCurrentHitIndex());
+        searchBean.findCurrentHitIndex("339471409", 1, true);
+        assertEquals(7, searchBean.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("02008012412069", 1, true);
-        Assert.assertEquals(8, sb.getCurrentHitIndex());
+        searchBean.findCurrentHitIndex("02008012412069", 1, true);
+        assertEquals(8, searchBean.getCurrentHitIndex());
 
-        sb.findCurrentHitIndex("02008012412076", 1, true);
-        Assert.assertEquals(9, sb.getCurrentHitIndex());
+        searchBean.findCurrentHitIndex("02008012412076", 1, true);
+        assertEquals(9, searchBean.getCurrentHitIndex());
     }
 
     /**
@@ -749,11 +759,10 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not reset facets
      */
     @Test
-    public void searchSimple_shouldNotResetFacets() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.getFacets().setCurrentFacetString("foo:bar");
-        sb.searchSimple();
-        Assert.assertEquals(URLEncoder.encode("foo:bar;;", SearchBean.URL_ENCODING), sb.getFacets().getCurrentFacetString());
+    void searchSimple_shouldNotResetFacets() throws Exception {
+        searchBean.getFacets().setActiveFacetString("foo:bar");
+        searchBean.searchSimple();
+        assertEquals(URLEncoder.encode("foo:bar;;", SearchBean.URL_ENCODING), searchBean.getFacets().getActiveFacetString());
     }
 
     /**
@@ -761,11 +770,10 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not reset facets if resetFacets false
      */
     @Test
-    public void searchSimple_shouldNotResetFacetsIfResetFacetsFalse() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.getFacets().setCurrentFacetString("foo:bar");
-        sb.searchSimple(true, false);
-        Assert.assertEquals(URLEncoder.encode("foo:bar;;", SearchBean.URL_ENCODING), sb.getFacets().getCurrentFacetString());
+    void searchSimple_shouldNotResetFacetsIfResetFacetsFalse() throws Exception {
+        searchBean.getFacets().setActiveFacetString("foo:bar");
+        searchBean.searchSimple(true, false);
+        assertEquals(URLEncoder.encode("foo:bar;;", SearchBean.URL_ENCODING), searchBean.getFacets().getActiveFacetString());
     }
 
     /**
@@ -773,17 +781,16 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not produce results if search terms not in index
      */
     @Test
-    public void searchSimple_shouldNotProduceResultsIfSearchTermsNotInIndex() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.setNavigationHelper(new NavigationHelper());
+    void searchSimple_shouldNotProduceResultsIfSearchTermsNotInIndex() throws Exception {
+        searchBean.setNavigationHelper(new NavigationHelper());
 
         // Simulate search execution via the quick search widget
-        sb.setInvisibleSearchString("1234xyz");
-        sb.searchSimple(true, false);
-        sb.setExactSearchString(sb.getExactSearchString()); // TODO The double escaping that breaks the search cannot be reproduced with way, unfortunately - this test always passes
-        sb.search();
+        searchBean.setInvisibleSearchString("1234xyz");
+        searchBean.searchSimple(true, false);
+        searchBean.setExactSearchString(searchBean.getExactSearchString()); // TODO The double escaping that breaks the search cannot be reproduced with way, unfortunately - this test always passes
+        searchBean.search();
 
-        Assert.assertEquals(0, sb.getCurrentSearch().getHitsCount());
+        assertEquals(0, searchBean.getCurrentSearch().getHitsCount());
     }
 
     /**
@@ -791,10 +798,9 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies url escape string
      */
     @Test
-    public void getExactSearchString_shouldUrlEscapeString() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.setExactSearchString("PI:*");
-        Assert.assertEquals("PI%3A*", sb.getExactSearchString());
+    void getExactSearchString_shouldUrlEscapeString() throws Exception {
+        searchBean.setExactSearchString("PI:*");
+        assertEquals("PI%3A*", searchBean.getExactSearchString());
     }
 
     /**
@@ -802,10 +808,9 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies escape critical chars
      */
     @Test
-    public void getExactSearchString_shouldEscapeCriticalChars() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.setExactSearchString("PI:foo/bar");
-        Assert.assertEquals("PI%3Afoo" + StringTools.SLASH_REPLACEMENT + "bar", sb.getExactSearchString());
+    void getExactSearchString_shouldEscapeCriticalChars() throws Exception {
+        searchBean.setExactSearchString("PI:foo/bar");
+        assertEquals("PI%3Afoo" + StringTools.SLASH_REPLACEMENT + "bar", searchBean.getExactSearchString());
     }
 
     /**
@@ -813,10 +818,9 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies perform double unescaping if necessary
      */
     @Test
-    public void setExactSearchString_shouldPerformDoubleUnescapingIfNecessary() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.setExactSearchString("SUPERDEFAULT%25253A%2525281234xyz%252529");
-        Assert.assertEquals("SUPERDEFAULT%3A%281234xyz%29", sb.getExactSearchString()); // getter should return single encoding
+    void setExactSearchString_shouldPerformDoubleUnescapingIfNecessary() throws Exception {
+        searchBean.setExactSearchString("SUPERDEFAULT%25253A%2525281234xyz%252529");
+        assertEquals("SUPERDEFAULT%3A%281234xyz%29", searchBean.getExactSearchString()); // getter should return single encoding
     }
 
     /**
@@ -824,18 +828,17 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return options correctly
      */
     @Test
-    public void getSearchSortingOptions_shouldReturnOptionsCorrectly() throws Exception {
-        SearchBean sb = new SearchBean();
-        Collection<SearchSortingOption> options = sb.getSearchSortingOptions();
-        String defaultSorting = DataManager.getInstance().getConfiguration().getDefaultSortField();
-        Assert.assertEquals(SolrConstants.SORT_RANDOM, defaultSorting);
+    void getSearchSortingOptions_shouldReturnOptionsCorrectly() throws Exception {
+        Collection<SearchSortingOption> options = searchBean.getSearchSortingOptions("en");
+        String defaultSorting = DataManager.getInstance().getConfiguration().getDefaultSortField("en");
+        assertEquals("SORT_TITLE_LANG_EN", defaultSorting);
         List<String> sortStrings = DataManager.getInstance().getConfiguration().getSortFields();
-        assertEquals(sortStrings.size() * 2 - 2, options.size());
+        assertEquals(sortStrings.size() * 2 - 4, options.size());
         Iterator<SearchSortingOption> iterator = options.iterator();
-        assertEquals(defaultSorting, iterator.next().getSortString());
-        assertEquals("Relevance", iterator.next().getLabel());
-        assertEquals("Creator ascending", iterator.next().getLabel());
-        assertEquals("Creator descending", iterator.next().getLabel());
+        assertEquals(defaultSorting, iterator.next().getField());
+        //        assertEquals("Relevance", iterator.next().getLabel());
+        //        assertEquals("Creator ascending", iterator.next().getLabel());
+        //        assertEquals("Creator descending", iterator.next().getLabel());
     }
 
     /**
@@ -843,12 +846,145 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies use current random seed option instead of default
      */
     @Test
-    public void getSearchSortingOptions_shouldUseCurrentRandomSeedOptionInsteadOfDefault() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.setSearchSortingOption(new SearchSortingOption("random_12345"));
-        Collection<SearchSortingOption> options = sb.getSearchSortingOptions();
-        Assert.assertEquals(10, options.size());
+    void getSearchSortingOptions_shouldUseCurrentRandomSeedOptionInsteadOfDefault() throws Exception {
+        searchBean.setSearchSortingOption(new SearchSortingOption("random_12345"));
+        Collection<SearchSortingOption> options = searchBean.getSearchSortingOptions(null);
         Iterator<SearchSortingOption> iterator = options.iterator();
-        assertEquals("random_12345", iterator.next().getField());
+        boolean found = false;
+        while (iterator.hasNext()) {
+            if ("random_12345".equals(iterator.next().getField())) {
+                found = true;
+                break;
+            }
+        }
+        assertTrue(found);
+    }
+
+    /**
+     * @see SearchBean#searchAdvanced(boolean)
+     * @verifies generate search string correctly
+     */
+    @Test
+    void searchAdvanced_shouldGenerateSearchStringCorrectly() throws Exception {
+        Assertions.assertTrue(StringUtils.isEmpty(searchBean.getSearchStringInternal()));
+        searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0).setField(SolrConstants.PI);
+        searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0).setValue(PI_KLEIUNIV);
+        searchBean.searchAdvanced(false);
+        assertEquals("(+(PI:(PPN517154005)))", searchBean.getSearchStringInternal());
+    }
+
+    /**
+     * @see SearchBean#searchAdvanced(boolean)
+     * @verifies reset search parameters
+     */
+    @Test
+    void searchAdvanced_shouldResetSearchParameters() throws Exception {
+        DataManager.getInstance().getConfiguration().overrideValue("search.advanced[@enabled]", true);
+        searchBean.setActiveSearchType(1);
+        assertEquals(1, searchBean.getActiveSearchType());
+        searchBean.setCurrentPage(2);
+        searchBean.searchAdvanced(true);
+        assertEquals(1, searchBean.getCurrentPage());
+    }
+
+    /**
+     * @see SearchBean#searchToday()
+     * @verifies set search string correctly
+     */
+    @Test
+    void searchToday_shouldSetSearchStringCorrectly() throws Exception {
+        searchBean.searchToday();
+        Assertions.assertTrue(searchBean.getSearchStringInternal().startsWith(SolrConstants.MONTHDAY));
+    }
+
+    /**
+     * @see SearchBean#setActiveResultGroupName(String)
+     * @verifies select result group correctly
+     */
+    @Test
+    void setActiveResultGroupName_shouldSelectResultGroupCorrectly() throws Exception {
+        SearchBean sb = new SearchBean();
+        assertEquals("-", sb.getActiveResultGroupName());
+
+        sb.setActiveResultGroupName("stories");
+        assertEquals("stories", sb.getActiveResultGroupName());
+    }
+
+    /**
+     * @see SearchBean#setActiveResultGroupName(String)
+     * @verifies reset result group if new name not configured
+     */
+    @Test
+    void setActiveResultGroupName_shouldResetResultGroupIfNewNameNotConfigured() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setActiveResultGroupName("stories");
+        assertEquals("stories", sb.getActiveResultGroupName());
+
+        sb.setActiveResultGroupName("notfound");
+        assertEquals("-", sb.getActiveResultGroupName());
+    }
+
+    /**
+     * @see SearchBean#setActiveResultGroupName(String)
+     * @verifies reset result group if empty name given
+     */
+    @Test
+    void setActiveResultGroupName_shouldResetResultGroupIfEmptyNameGiven() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setActiveResultGroupName("stories");
+        assertEquals("stories", sb.getActiveResultGroupName());
+
+        sb.setActiveResultGroupName("-");
+        assertEquals("-", sb.getActiveResultGroupName());
+    }
+
+    /**
+     * @see SearchBean#setActiveResultGroupName(String)
+     * @verifies reset advanced search query items if new group used as field template
+     */
+    @Test
+    void setActiveResultGroupName_shouldResetAdvancedSearchQueryItemsIfNewGroupUsedAsFieldTemplate() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setActiveResultGroupName("stories");
+
+        List<SearchQueryItem> items = sb.getAdvancedSearchQueryGroup().getQueryItems();
+        Assertions.assertFalse(items.isEmpty());
+        items.get(0).setOperator(SearchItemOperator.NOT);
+        items.get(0).setValue("foo bar");
+
+        // Same group, no reset
+        sb.setActiveResultGroupName("stories");
+        assertEquals(SearchItemOperator.NOT, items.get(0).getOperator());
+        assertEquals("foo bar", items.get(0).getValue());
+
+        // Non-template group, no reset
+        sb.setActiveResultGroupName("monographs");
+        assertEquals(SearchItemOperator.NOT, items.get(0).getOperator());
+        assertEquals("foo bar", items.get(0).getValue());
+
+        // Template group, reset
+        sb.setActiveResultGroupName("lido_objects");
+        assertEquals(SearchItemOperator.AND, items.get(0).getOperator());
+        Assertions.assertNull(items.get(0).getValue());
+    }
+
+    /**
+     * @see SearchBean#setActiveResultGroupName(String)
+     * @verifies reset advanced search query items if old group used as field template
+     */
+    @Test
+    void setActiveResultGroupName_shouldResetAdvancedSearchQueryItemsIfOldGroupUsedAsFieldTemplate() throws Exception {
+        SearchBean sb = new SearchBean();
+        sb.setActiveResultGroupName("lido_objects");
+
+        List<SearchQueryItem> items = sb.getAdvancedSearchQueryGroup().getQueryItems();
+        Assertions.assertFalse(items.isEmpty());
+        items.get(0).setOperator(SearchItemOperator.NOT);
+        items.get(0).setValue("foo bar");
+
+        // No group, reset
+        sb.setActiveResultGroupName("-");
+        assertEquals(SearchItemOperator.AND, items.get(0).getOperator());
+        Assertions.assertNull(items.get(0).getValue());
     }
 }

@@ -82,7 +82,8 @@ public class IdentifierResolver extends HttpServlet {
     private static final String ERRTXT_TARGET_FIELD_NOT_FOUND =
             "A document was found but it did not contain the specified target field name required for the mapping. Target field name is: ";
     private static final String ERRTXT_NO_ARGUMENT =
-            "You didnt not specify a source field value for the mapping. Append the value to the URL as a request parameter; expected param name is :";
+            "You didnt not specify a source field value for the mapping."
+                    + " Append the value to the URL as a request parameter; expected param name is :";
     private static final String ERRTXT_ILLEGAL_IDENTIFIER = "Illegal identifier";
     //    private static final String ERRTXT_MULTIMATCH = "Multiple documents matched the search query. No unambiguous mapping possible.";
     //    private static final String ERRTXT_NOCFG = "The configuration file lucene_url_mapper_config.xml could not be loaded. ";
@@ -125,8 +126,8 @@ public class IdentifierResolver extends HttpServlet {
      *
      * @should return 400 if record identifier missing
      * @should return 404 if record not found
-     * @should return 500 if record field name bad
-     * @should return 500 if record field value bad
+     * @should return 400 if record field name bad
+     * @should return 400 if record field value bad
      * @should forward to relative url
      * @should redirect to full url
      */
@@ -202,6 +203,7 @@ public class IdentifierResolver extends HttpServlet {
                     if (!found) {
                         try {
                             doPageSearch(fieldValue, request, response);
+                            return;
                         } catch (IOException | ServletException e) {
                             logger.error(e.getMessage());
                         }
@@ -218,6 +220,15 @@ public class IdentifierResolver extends HttpServlet {
                 // 3.2 show multiple match, that indicates corrupted index
                 try {
                     redirectToError(HttpServletResponse.SC_CONFLICT, fieldValue, request, response);
+                } catch (IOException | ServletException e) {
+                    logger.error(e.getMessage());
+                }
+                return;
+            }
+
+            if (hits.getNumFound() == 0) {
+                try {
+                    redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
                 } catch (IOException | ServletException e) {
                     logger.error(e.getMessage());
                 }
@@ -323,11 +334,18 @@ public class IdentifierResolver extends HttpServlet {
                 }
             }
         } catch (PresentationException | IndexUnreachableException e) {
-            logger.debug(e.getMessage());
-            try {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            } catch (IOException e1) {
-                logger.error(e1.getMessage());
+            if (e.getMessage().contains("undefined field")) {
+                try {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Undefined field name: " + fieldName);
+                } catch (IOException e1) {
+                    logger.error(e1.getMessage());
+                }
+            } else {
+                try {
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                } catch (IOException e1) {
+                    logger.error(e1.getMessage());
+                }
             }
         }
     }
@@ -343,7 +361,7 @@ public class IdentifierResolver extends HttpServlet {
      * @throws ServletException
      */
     private void doPageSearch(String fieldValue, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        // logger.trace("doPageSearch {}", fieldValue);
+        // logger.trace("doPageSearch {}", fieldValue); //NOSONAR Debug
         // A.1 Search for documents, that contain the request param in their page field
 
         // A.2 Evaluate the search
@@ -434,6 +452,7 @@ public class IdentifierResolver extends HttpServlet {
         if (DataManager.getInstance().getConfiguration().isUrnDoRedirect()) {
             String absoluteUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + result;
             try {
+                logger.trace("Redirecting to: {}", absoluteUrl);
                 response.sendRedirect(absoluteUrl);
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
@@ -454,7 +473,7 @@ public class IdentifierResolver extends HttpServlet {
      * @param moreFields
      * @param moreValues
      * @param request
-     * @return
+     * @return {@link SolrDocumentList}
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -466,7 +485,7 @@ public class IdentifierResolver extends HttpServlet {
                 .append(ClientUtils.escapeQueryChars(fieldName.toUpperCase()))
                 .append(':')
                 .append('"')
-                .append(fieldValue)
+                .append(ClientUtils.escapeQueryChars(fieldValue))
                 .append('"');
 
         // Add additional field/value pairs to the query
@@ -483,7 +502,7 @@ public class IdentifierResolver extends HttpServlet {
 
         sbQuery.append(SearchHelper.getAllSuffixes(request, false, false));
         String query = StringTools.stripPatternBreakingChars(sbQuery.toString());
-        // logger.trace("query: {}", query);
+        logger.trace("query: {}", query); //NOSONAR Sometimes needed for debugging
 
         // 3. evaluate the search
         return DataManager.getInstance().getSearchIndex().search(query);
@@ -501,6 +520,7 @@ public class IdentifierResolver extends HttpServlet {
     private static void redirectToError(int code, String identifier, HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String url = "/error/";
+        response.setStatus(code);
         switch (code) {
             case HttpServletResponse.SC_NOT_FOUND:
                 request.setAttribute("type", "recordNotFound");
@@ -524,6 +544,12 @@ public class IdentifierResolver extends HttpServlet {
         request.getRequestDispatcher(url).forward(request, response);
     }
 
+    /**
+     * 
+     * @param targetDoc
+     * @param pageResolverUrl
+     * @return Generated URL
+     */
     public static String constructUrl(SolrDocument targetDoc, boolean pageResolverUrl) {
         int order = 1;
         if (targetDoc.containsKey(SolrConstants.THUMBPAGENO)) {
@@ -538,7 +564,8 @@ public class IdentifierResolver extends HttpServlet {
      *
      * @param targetDoc
      * @param pageResolverUrl
-     * @return
+     * @param order
+     * @return Generated URL
      * @should construct url correctly
      * @should construct anchor url correctly
      * @should construct group url correctly
@@ -550,6 +577,7 @@ public class IdentifierResolver extends HttpServlet {
         String docStructType = (String) targetDoc.getFieldValue(SolrConstants.DOCSTRCT);
         String mimeType = (String) targetDoc.getFieldValue(SolrConstants.MIMETYPE);
         String topstructPi = (String) targetDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
+        boolean topstruct = SolrTools.getAsBoolean(targetDoc.getFieldValue(SolrConstants.ISWORK));
         boolean anchorOrGroup = SolrTools.isAnchor(targetDoc) || SolrTools.isGroup(targetDoc);
         boolean hasImages = targetDoc.containsKey(SolrConstants.ORDER) || (targetDoc.containsKey(SolrConstants.THUMBNAIL)
                 && !StringUtils.isEmpty((String) targetDoc.getFieldValue(SolrConstants.THUMBNAIL)));
@@ -559,7 +587,7 @@ public class IdentifierResolver extends HttpServlet {
         StringBuilder sb = new StringBuilder("/");
         sb.append(DataManager.getInstance()
                 .getUrlBuilder()
-                .buildPageUrl(topstructPi, order, (String) targetDoc.getFieldValue(SolrConstants.LOGID), pageType, true));
+                .buildPageUrl(topstructPi, order, (String) targetDoc.getFieldValue(SolrConstants.LOGID), pageType, topstruct || anchorOrGroup));
 
         // logger.trace("Resolved to: {}", sb.toString());
         return sb.toString();

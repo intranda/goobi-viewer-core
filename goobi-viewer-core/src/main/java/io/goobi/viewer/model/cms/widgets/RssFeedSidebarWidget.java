@@ -21,16 +21,14 @@
  */
 package io.goobi.viewer.model.cms.widgets;
 
+import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
-import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
-import io.goobi.viewer.solr.SolrConstants;
-
 /**
- * A subtype of {@link CustomSidebarWidget} to display a RSS feed of selected records.
- * The default settings show a list of the five last imported records
+ * A subtype of {@link CustomSidebarWidget} to display a RSS feed of selected records. The default settings show a list of the five last imported
+ * records
  *
  * @author florian
  *
@@ -38,6 +36,8 @@ import io.goobi.viewer.solr.SolrConstants;
 @Entity
 @DiscriminatorValue("RssFeedSidebarWidget")
 public class RssFeedSidebarWidget extends CustomSidebarWidget {
+
+    private static final long serialVersionUID = 6410849010435447708L;
 
     @Column(name = "filter_query", nullable = true, columnDefinition = "MEDIUMTEXT")
     private String filterQuery = "";
@@ -57,6 +57,7 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
 
     /**
      * Cloning constructor
+     * 
      * @param o
      */
     public RssFeedSidebarWidget(RssFeedSidebarWidget o) {
@@ -69,55 +70,70 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
 
     /**
      * If this query is not empty only records matching this SOLR query are listed
+     * 
      * @return the filterQuery
      */
     public String getFilterQuery() {
         return filterQuery;
     }
+
     /**
      * Set the {@link #getFilterQuery() filter query}
+     * 
      * @param filterQuery the filterQuery to set
      */
     public void setFilterQuery(String filterQuery) {
         this.filterQuery = filterQuery;
     }
+
     /**
      * A SOLR field to select and sort the listed entries by.
+     * 
      * @return the sortField
      */
     public String getSortField() {
         return sortField;
     }
+
     /**
      * Set the {@link #getSortField() sort field}
+     * 
      * @param sortField the sortField to set
      */
     public void setSortField(String sortField) {
         this.sortField = sortField;
     }
+
     /**
      * Whether the records are selected and sorted ins descending order
+     * 
      * @return the descendingSorting
      */
     public boolean isDescendingSorting() {
         return descendingSorting;
     }
+
     /**
      * Set the {@link #isDescendingSorting() descending sorting}
+     * 
      * @param descendingSorting the descendingSorting to set
      */
     public void setDescendingSorting(boolean descendingSorting) {
         this.descendingSorting = descendingSorting;
     }
+
     /**
      * The number of entries to display
+     * 
      * @return The number of entries to display
      */
     public int getNumEntries() {
         return numEntries;
     }
+
     /**
      * Set the number of entries to display
+     * 
      * @param numEntries the numEntries to set
      */
     public void setNumEntries(int numEntries) {
@@ -128,6 +144,5 @@ public class RssFeedSidebarWidget extends CustomSidebarWidget {
     public CustomWidgetType getType() {
         return CustomWidgetType.WIDGET_RSSFEED;
     }
-
 
 }

@@ -21,20 +21,20 @@
  */
 package io.goobi.viewer.model.maps;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author florian
  *
  */
-public class PolygonTest {
+class PolygonTest {
 
     @Test
-    public void test() {
+    void test() {
         Polygon p1 = new Polygon(Arrays.asList(new Point(Double.parseDouble("1"), 2)));
         Polygon p2 = new Polygon(Arrays.asList(new Point(Double.parseDouble("1"), 2)));
         Polygon p3 = new Polygon(Arrays.asList(new Point(2, 2)));

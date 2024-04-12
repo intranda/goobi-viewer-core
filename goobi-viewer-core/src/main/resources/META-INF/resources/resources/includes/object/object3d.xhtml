@@ -13,7 +13,7 @@
     <!-- IMAGE CONTAINER -->
     <div id="objectContainer" class="view-object__object-3d">        
         <!-- MAP -->
-        <div id="world" class="view-object__object-3d-world">
+        <div id="world" class="view-object__object-3d-world" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
             <div id="ajaxloader_image">
                 <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
             </div>
@@ -63,8 +63,8 @@
 	 			        rotateRight: '.image-rotate_right'
 	 			    },
 	 			   yAxis: {
-	 			        rotateLeft: '#rotate-left-y',
-	 			        rotateRight: '#rotate-right-y'
+	 			        rotateLeft: '.image-controls__action.rotate-left',
+	 			        rotateRight: '.image-controls__action.rotate-right'
 	 			    },
 	 			   zAxis: {
 	 			        rotateLeft: '#rotate-left-z',
@@ -96,11 +96,6 @@
 	 					color: 0x44bb33
 	 				},
 	 			focus: true,
-	 			onTick: function(object, time) {
-	 				if(object) {
-// 	 	 				object.rotation.set(0,  Math.PI/180 * time, 0);
-	 				}
-	 			}
 	 		 }).then(function(object) {
 	 	       	 $('#ajaxloader_image').fadeOut(2000);
 	 		 	world.render();

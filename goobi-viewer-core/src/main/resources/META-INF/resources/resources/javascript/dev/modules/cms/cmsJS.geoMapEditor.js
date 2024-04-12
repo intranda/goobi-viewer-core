@@ -44,17 +44,10 @@ var cmsJS = ( function( cms ) {
             descLabel: "description",
             descHelp: "help description",
             deleteLabel: "delete"
-        },
-        heatmap: {
-	    	showSearchResultsHeatmap: false,
-	    	heatmapUrl: "/viewer/api/v1/index/spatial/heatmap/{solrField}",
-	    	featureUrl: "/viewer/api/v1/index/spatial/search/{solrField}",
-	    	filterQuery: "BOOL_WKT_COORDS:*",
-	        labelField: "LABEL",
         }
     };
     
-    cms.GeoMapEditor = function(config){
+    cms.GeoMapEditor = function(config) {
         this.config = $.extend({}, _defaults, config);
         this.currentFeature = undefined;
         this.onDeleteClick = new rxjs.Subject();
@@ -63,13 +56,14 @@ var cmsJS = ( function( cms ) {
         
         this.geoMap = new viewerJS.GeoMap({
             language: this.config.displayLanguage,
-            layer : {
+            layers: [{
             	language: this.config.displayLanguage,
 	            popover: this.config.popover,
 	            emptyMarkerMessage: this.config.msg.emptyMarker,
 	            allowMovingFeatures: this.config.allowEditFeatures,
-            }
+            }],
         });
+        
         
         this.geoMap.onMapRightclick
         .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures), rxjs.operators.map(geojson => this.addFeature(geojson)))
@@ -78,16 +72,6 @@ var cmsJS = ( function( cms ) {
         this.geoMap.onMapClick
         .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures))
         .subscribe(() => this.setCurrentFeature());
-        
-        this.geoMap.layers.forEach(l => l.onFeatureClick
-	        .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures))
-	        .subscribe(geojson => this.setCurrentFeature(geojson, true))
-        );
-        
-        this.geoMap.layers.forEach(l => l.onFeatureMove
-	        .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures), rxjs.operators.map(geojson => this.setCurrentFeature(geojson)))
-	        .subscribe(() => this.saveFeatures())
-	   );
         
         this.geoMap.onMapMove
         .subscribe(() => this.saveView())
@@ -111,52 +95,69 @@ var cmsJS = ( function( cms ) {
     }
     
     cms.GeoMapEditor.prototype.init = function(defaultView) {
-        let features = JSON.parse($(this.config.featuresInput).val());
-        this.geoMap.init(this.getView(defaultView), features);
+        this.geoMap.init(this.getView(defaultView))
+        .then( () => {
+	        
+	        if($("metadataEditor").length > 0) {  
+	            if(this.metadataEditor) {
+	                this.metadataEditor.forEach(component => {
+	                    component.unmount(true);
+	                })
+	            }
+	            this.metadataEditor = riot.mount("metadataEditor", {
+	                languages: this.config.supportedLanguages,
+	                metadata: undefined,
+	                provider: this.metadataProvider,
+	                currentLanguage: this.config.displayLanguage,
+	                updateListener: this.onMetadataUpdate,
+	                deleteListener : this.onDeleteClick,
+	                deleteLabel : this.config.msg.deleteLabel
+	            });
+	        }
+		});
         
-        //display search results as heatmap
-    	if(this.config.heatmap.showSearchResultsHeatmap) {	        	    
-        	this.heatmap = L.solrHeatmap(this.config.heatmap.heatmapUrl, this.config.heatmap.featureUrl, this.geoMap.layers[0], {
-        	    field: "WKT_COORDS",
-        	    type: "clusters",
-        	    filterQuery: this.config.heatmap.filterQuery,
-        	    labelField: this.config.heatmap.labelField,
-        	    queryAdapter: "goobiViewer"    
-        	});
-        	this.heatmap.addTo(this.geoMap.map);
-    	}    
-        
-        if($("metadataEditor").length > 0) {  
-            if(this.metadataEditor) {
-                this.metadataEditor.forEach(component => {
-                    component.unmount(true);
-                })
-            }
-            this.metadataEditor = riot.mount("metadataEditor", {
-                languages: this.config.supportedLanguages,
-                metadata: undefined,
-                provider: this.metadataProvider,
-                currentLanguage: this.config.displayLanguage,
-                updateListener: this.onMetadataUpdate,
-                deleteListener : this.onDeleteClick,
-                deleteLabel : this.config.msg.deleteLabel
-            });
-        }
     }
     
+    cms.GeoMapEditor.prototype.addFeatureGroup = function(config, features) {
+		let featureGroup = this.geoMap.addFeatureGroup(config, features);
+		featureGroup.onFeatureClick
+	        .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures),
+	        	  rxjs.operators.takeWhile(f => this.isInActiveGroup(f)))
+	        .subscribe(geojson => this.setCurrentFeature(geojson, true));
+	    featureGroup.onFeatureMove
+	        .pipe(rxjs.operators.takeWhile(() => this.config.allowEditFeatures), rxjs.operators.map(geojson => this.setCurrentFeature(geojson)))
+	        .subscribe(() => this.saveFeatures());
+	    featureGroup.onFeatureMove.subscribe(f => console.log("Moving feature ", f))
+	    return featureGroup;
+	};
+
+    
     cms.GeoMapEditor.prototype.addFeature = function(geojson) {
-        this.currentFeature = geojson;
-        this.geoMap.layers[0].addMarker(geojson).openPopup();
-        this.updateMetadata(geojson);
+		console.log("add feature ", geojson, " to ", this.activeFeatureGroup);
+        if(this.activeFeatureGroup) {
+			console.log("Add feature ", geojson, " to active group ", this.activeFeatureGroup);		
+	        this.currentFeature = geojson;
+	        this.activeFeatureGroup.addMarker(geojson).openPopup();
+        	this.updateMetadata(geojson);
+		}
     }
     
     cms.GeoMapEditor.prototype.saveFeatures = function() {
-        $(this.config.featuresInput).val(JSON.stringify(this.geoMap.layers[0].getFeatures()));
+	    if(this.activeFeatureGroup) {
+	    	//temporarily remove layer property of features to avoid cyclic references while serializing
+	    	this.activeFeatureGroup.getFeatures()?.forEach(f => f.layer = undefined);
+	        $(this.config.featuresInput).val(JSON.stringify(this.activeFeatureGroup.getFeatures()));
+	        this.activeFeatureGroup.getFeatures()?.forEach(f => f.layer = this.activeFeatureGroup);
+	    }
     }
     
     cms.GeoMapEditor.prototype.saveView = function() {
         $(this.config.viewInput).val(JSON.stringify(this.geoMap.getView()));
     }
+
+    cms.GeoMapEditor.prototype.isInActiveGroup = function(feature) {
+		return this.activeFeatureGroup?.getFeatures().includes(feature);
+	}
 
 
     /**
@@ -207,17 +208,17 @@ var cmsJS = ( function( cms ) {
     }
     
     cms.GeoMapEditor.prototype.deleteCurrentFeature = function() {
-        if(this.currentFeature) {
-            this.geoMap.layers[0].removeMarker(this.currentFeature);
+        if(this.currentFeature && this.activeFeatureGroup) {
+            this.activeFeatureGroup.removeMarker(this.currentFeature);
             this.currentFeature = undefined;
             this.updateMetadata();
         }
     }
     
     cms.GeoMapEditor.prototype.updateCurrentFeatureMetadata = function(metadata) {
-        if(this.currentFeature && metadata) {                                                
+        if(this.activeFeatureGroup && this.currentFeature && metadata) {                                                
             this.currentFeature.properties[metadata.property] = metadata.value;
-            this.geoMap.layers[0].updateMarker(this.currentFeature.id);
+            this.activeFeatureGroup.updateMarker(this.currentFeature.id);
         }
     }
     
@@ -229,8 +230,8 @@ var cmsJS = ( function( cms ) {
             } else {                
                 view = JSON.parse(view);
             }
-            if(this.geoMap.layers[0].getFeatures().length > 0) {            
-                return this.geoMap.getViewAroundFeatures(this.geoMap.layers[0].getFeatures(), view.zoom);
+            if(this.activeFeatureGroup?.getFeatures()?.length > 0) {            
+                return this.geoMap.getViewAroundFeatures(this.activeFeatureGroup.getFeatures(), view.zoom);
             } else {           
                 return view;
             }
@@ -247,8 +248,8 @@ var cmsJS = ( function( cms ) {
             } else {                
                 view = JSON.parse(view);
             }
-            if(this.geoMap.layers[0].getFeatures().length > 0) {            
-                this.geoMap.setView(this.geoMap.getViewAroundFeatures(this.geoMap.layers[0].getFeatures(), view.zoom));
+            if(this.activeFeatureGroup?.getFeatures()?.length > 0) {            
+                this.geoMap.setView(this.geoMap.getViewAroundFeatures(this.activeFeatureGroup.getFeatures(), view.zoom));
             } else {           
                 this.geoMap.setView(view);
             }
@@ -266,20 +267,22 @@ var cmsJS = ( function( cms ) {
         let features = JSON.parse($(this.config.featuresInput).val())
         if(_debug)console.log("update features", features);
         features.forEach( feature => {
-            this.geoMap.layers[0].addMarker(feature);
+            this.activeFeatureGroup?.addMarker(feature);
         })
     }
     
     cms.GeoMapEditor.prototype.setAllowEditFeatures = function(allow) {
         this.config.allowEditFeatures = allow;
-        this.geoMap.layers[0].config.allowMovingFeatures = allow;
-        this.geoMap.layers[0].markers.filter(m => m.dragging).forEach(marker => {
-            if(allow) {
-                marker.dragging.enable();
-            } else {
-                marker.dragging.disable();
-            }
-        })
+        if(this.activeFeatureGroup) {			
+	        this.activeFeatureGroup.config.allowMovingFeatures = allow;
+	        this.activeFeatureGroup.markers.filter(m => m.dragging).forEach(marker => {
+	            if(allow) {
+	                marker.dragging.enable();
+	            } else {
+	                marker.dragging.disable();
+	            }
+	        })
+		}
     }
 
         

@@ -44,7 +44,7 @@
 				                <div class="form-group form-row">
 				                    <label id="feedbackModal__labelFeedbackRecipient" for="feedbackModal__feedbackRecipient" class="col-lg-3 control-label">#{msg.recipient}:</label>
 				                    <div class="col-12 col-lg-9">
-									   <h:selectOneMenu styleClass="custom-control custom-control--select feedback-modal__recipient-dropdown" id="feedbackModal__feedbackRecipient" value="#{userBean.feedback.recipientAddress}" immediate="true">
+									   <h:selectOneMenu styleClass="custom-control custom-control--select feedback-modal__recipient-dropdown" id="feedbackModal__feedbackRecipient" value="#{feedbackBean.feedback.recipientAddress}" immediate="true">
 									       <c:forEach var="recipient" items="#{configurationBean.feedbackEmailRecipients}">
 									       	<f:selectItem itemLabel="#{recipient.label}" itemValue="#{recipient.emailAddress}" pt:data-recipient-id="#{recipient.id}" ></f:selectItem>
 									       </c:forEach>
@@ -63,7 +63,7 @@
 									
 									<div class="col-12 col-lg-9">
 										<h:inputText id="feedbackModal__feedbackName" styleClass="form-control"
-											value="#{userBean.feedback.name}" required="true"
+											value="#{feedbackBean.feedback.name}" required="true"
 											requiredMessage="#{msg.errFeedbackNameRequired}"
 											aria-labelledby="labelFeedbackName" pt:data-require-input-text="feedbackInput">
 											<f:passThroughAttribute name="aria-labelledby"
@@ -77,13 +77,13 @@
 									<label id="feedbackModal__labelFeedbackLastName" for="feedbackModal__feedbackLastName"
 										class="control-label">#{msg.nameLast}:</label>
 									<h:inputText id="feedbackModal__feedbackLastName" styleClass="form-control"
-										value="#{userBean.lastName}"
+										value="#{feedbackBean.lastName}"
 										aria-labelledby="feedbackModal__labelFeedbackLastName" />
 								</div>
 
 
 								<!-- E-MAIL FOR NOT LOGGED IN USERS -->
-								<h:panelGroup rendered="#{!userBean.loggedIn}" layout="block"
+								<h:panelGroup rendered="#{!feedbackBean.loggedIn}" layout="block" 
 									styleClass="form-group form-row" id="emailGroup">
 									<label id="feedbackModal__labelFeedbackEmail" for="feedback-modal__feedbackEmail"
 										class="col-lg-3 control-label">
@@ -102,19 +102,19 @@
 													class="fa fa-exclamation" aria-hidden="true"></i>
 											</div>
 										</div>
-										<h:inputText id="feedbackModal__feedbackEmail" label="feedbackEmail"
+										<h:inputText id="feedbackModal__feedbackEmail" label="feedbackEmail" pt:type="email"
 											immediate="true" required="true" pt:data-require-input-text="feedbackInput"
-											value="#{userBean.feedback.senderAddress}" styleClass="form-control">
+											value="#{feedbackBean.feedback.senderAddress}" styleClass="form-control">
 											<f:passThroughAttribute name="aria-labelledby"
 												value="feedbackModal__labelFeedbackEmail" />
-											<f:validator validatorId="emailValidator" for="feedbackEmail" />
-											<f:ajax render="emailGroup" />
+<!-- 											<f:validator validatorId="emailValidator" for="feedbackModal:feedbackEmail" /> -->
+<!-- 											<f:ajax event="change" render="feedbackModal:feedbackModal__feedbackEmail" /> -->
 										</h:inputText>
 									</div>
 								</h:panelGroup>
 
 								<!-- E-MAIL FOR LOGGED IN USERS -->
-								<h:panelGroup rendered="#{userBean.loggedIn}" layout="block"
+								<h:panelGroup rendered="#{feedbackBean.loggedIn}" layout="block"
 									styleClass="form-group form-row" id="emailGroup2">
 									<label id="labelFeedbackEmail2" for="feedbackEmail2"
 										class="col-lg-3 control-label">#{msg.email}:</label>
@@ -132,12 +132,12 @@
 										</div>
 										<h:inputText id="feedbackEmail2" label="feedbackEmail2"
 											immediate="true" required="true" disabled="true" pt:data-require-input-text="feedbackInput"
-											value="#{userBean.feedback.senderAddress}" styleClass="form-control">
+											value="#{feedbackBean.feedback.senderAddress}" styleClass="form-control">
 											<f:passThroughAttribute name="aria-labelledby"
 												value="labelFeedbackEmail2" />
 											<f:validator validatorId="emailValidator"
 												for="feedbackEmail2" />
-											<f:ajax render="emailGroup2" />
+											<f:ajax render="feedbackModal:emailGroup2" />
 										</h:inputText>
 									</div>
 								</h:panelGroup>
@@ -153,7 +153,7 @@
 									<div class="col-12 col-lg-9">
 										<h:inputTextarea id="feedback-modal__feedbackMessage"
 											styleClass="form-control"
-											value="#{userBean.feedback.message}" required="true"
+											value="#{feedbackBean.feedback.message}" required="true"
 											pt:data-require-input-text="feedbackInput"
 											requiredMessage="#{msg.errFeedbackMessageRequired}">
 											<f:passThroughAttribute name="aria-labelledby"
@@ -164,12 +164,12 @@
 
 								<!-- SECURITY QUESTION -->
 								<ui:fragment
-									rendered="#{captchaBean.resetSecurityQuestion() and captchaBean.securityQuestion != null}">
+									rendered="#{feedbackBean.captchaBean.resetSecurityQuestion() and feedbackBean.captchaBean.securityQuestion != null}">
 									<div class="form-group form-row mb-0">
 										<label id="feedback-modal__feedbackSecurityQuestion" for="feedback-modal__feedbackSecurityQuestion"
 											class="col-lg-3 control-label">#{msg.user__security_question}:</label>
 										<div class="col-12 col-12 col-lg-9 composite-control pt-0">
-											<span class="control-label d-block pb-1">#{msg[captchaBean.securityQuestion.questionKey]}:</span>
+											<span class="control-label d-block pb-1">#{msg[feedbackBean.captchaBean.securityQuestion.questionKey]}:</span>
 											<h:messages for="feedbackSecurityQuestion"
 												styleClass="m-0 p-0 pb-1 list-unstyled"
 												infoClass="cms-module__option-message-status success"
@@ -180,7 +180,7 @@
 												pt:data-require-input-text="feedbackInput"
 												pt:aria-labelledby="feedback-modal__feedbackSecurityQuestion"
 												pt:autocomplete="new-password"
-												value="#{captchaBean.securityAnswer}" required="true"
+												value="#{feedbackBean.captchaBean.securityAnswer}" required="true"
 												requiredMessage="#{msg.user__security_question_required_msg}">
 						                	</h:inputText>
 										</div>
@@ -189,7 +189,7 @@
 							</div>
 								<!-- REQUIRED CHECKBOX FOR USAGE OF PERSONAL DATA OR ANYTHING ELSE -->
 								<!-- TO DO: CONFIG SWITCH FOR THIS RENDERED CONDITION CHECKBOX, VALUE + ADDITIONAL TEXT WHICH IS SEND BY FORM(?) -->
-<!-- 								<ui:fragment rendered="#{userBean.userFeedbackAdditionalCheckbox()"> -->
+<!-- 								<ui:fragment rendered="#{feedbackBean.userFeedbackAdditionalCheckbox()"> -->
 									<div class="feedback-modal__required-checkbox-wrapper">
 									  
 									  	<div class="form-row">
@@ -225,7 +225,7 @@
 								<div class="col-sm-12 d-flex justify-content-end">
 									<h:commandButton styleClass="btn btn--full"
 										value="#{msg.submit}" pt:data-require-input="feedbackInput"
-										action="#{userBean.submitFeedbackAction(true)}" />
+										action="#{feedbackBean.submitFeedbackAction(true)}" />
 								</div>
 							</div>
 

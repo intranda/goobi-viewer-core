@@ -7,23 +7,23 @@
 			</a>
 		</div>
 		<!-- NEXT AND BACK -->
-		<div if="{this.opts.image}" class="image-controls__action back {this.opts.imageindex === 0 ? '-inactive' : ''}">
+		<div if="{this.opts.image}" class="image-controls__action -imageControlsFont back {this.opts.imageindex === 0 ? '-inactive' : ''}">
 			<a onclick="{previousItem}">
 				<i class="image-back"></i>
 			</a>
 		</div>
-		<div if="{this.opts.image}" class="image-controls__action forward {this.opts.imageindex === this.opts.imagecount -1 ? '-inactive' : ''}">
+		<div if="{this.opts.image}" class="image-controls__action -imageControlsFont forward {this.opts.imageindex === this.opts.imagecount -1 ? '-inactive' : ''}">
 			<a onclick="{nextItem}">
 				<i class="image-forward"></i>
 			</a>
 		</div>
 		<!-- ROTATE LEFT + RIGHT -->			
-		<div if="{this.opts.image}" class="image-controls__action rotate-left">
+		<div if="{this.opts.image}" class="image-controls__action -imageControlsFont rotate-left">
 			<a onclick="{rotateLeft}">
 				<i class="image-rotate_left"></i>
 			</a>
 		</div>
-		<div if="{this.opts.image}" class="image-controls__action rotate-right">
+		<div if="{this.opts.image}" class="image-controls__action -imageControlsFont rotate-right">
 			<a onclick="{rotateRight}">
 				<i class="image-rotate_right"></i>
 			</a>

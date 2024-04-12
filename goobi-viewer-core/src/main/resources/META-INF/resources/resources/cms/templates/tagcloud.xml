@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+	<jsfComponent>
+		<library>cms/components/frontend/component</library>
+		<name>tagcloud</name>
+	</jsfComponent>
+	<label>cms_component__tagcloud_label</label>
+	<description>cms_component__tagcloud_desc</description>
+	<icon>cms/components/frontend/component/icon/tagcloud.png</icon>
+</component>

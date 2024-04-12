@@ -11,7 +11,7 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('feedback', false, true)}" />
-			<f:viewAction action="#{userBean.createFeedback}" />
+			<f:viewAction action="#{feedbackBean.createFeedback}" />
 		</f:metadata>
 	</ui:define>
 

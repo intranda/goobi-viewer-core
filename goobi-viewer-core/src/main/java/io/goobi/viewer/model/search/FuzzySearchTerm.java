@@ -26,10 +26,9 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.controller.DamerauLevenshtein;
 import io.goobi.viewer.controller.StringTools;
 
-
 /**
- * Class for extracting the actual search term from a fuzzy search.
- * For creating a fuzzy search term see {@link SearchHelper#addFuzzySearchToken(String, String, String)}
+ * Class for extracting the actual search term from a fuzzy search. For creating a fuzzy search term see
+ * {@link SearchHelper#addFuzzySearchToken(String, String, String)}
  *
  * @author florian
  *
@@ -57,8 +56,8 @@ public class FuzzySearchTerm {
      */
     public static final String NOT_WORD_PATTERN = "[^\\p{L}=-_\\d⸗¬]*";
     /**
-     * Regex matching a word (according to {@link #WORD_PATTERN}, surrounded by other characters (according to {@link #NOT_WORD_PATTERN}.
-     * The word itself is the first capture group
+     * Regex matching a word (according to {@link #WORD_PATTERN}, surrounded by other characters (according to {@link #NOT_WORD_PATTERN}. The word
+     * itself is the first capture group
      */
     public static final String WORD_SURROUNDED_BY_OTHER_CHARACTERS = NOT_WORD_PATTERN + "(" + WORD_PATTERN + ")" + NOT_WORD_PATTERN;
 
@@ -70,10 +69,13 @@ public class FuzzySearchTerm {
 
     public FuzzySearchTerm(String term) {
         this.fullTerm = term;
-        if(isFuzzyTerm(term)) {
-            this.term = this.fullTerm.replaceAll("[*]{0,1}("+WORD_PATTERN+")[*]{0,1}~\\d", "$1").toLowerCase(); //NOSONAR   no catastrophic backtracking detected
-            this.maxDistance = Integer.parseInt(this.fullTerm.replaceAll("[*]{0,1}"+WORD_PATTERN+"[*]{0,1}~(\\d)", "$1")); //NOSONAR   no catastrophic backtracking detected
-            wildcardBack = this.fullTerm.endsWith("*~"+this.maxDistance);
+        if (isFuzzyTerm(term)) {
+            this.term =
+                    this.fullTerm.replaceAll("[*]{0,1}([^\\p{L}=-_\\d⸗¬*]*)[*]{0,1}~\\d", "$1") //NOSONAR no catastrophic backtracking detected
+                            .toLowerCase();
+            this.maxDistance = Integer.parseInt(this.fullTerm
+                    .replaceAll("[*]{0,1}" + WORD_PATTERN + "[*]{0,1}~(\\d)", "$1")); //NOSONAR no catastrophic backtracking detected
+            wildcardBack = this.fullTerm.endsWith("*~" + this.maxDistance);
         } else {
             this.term = term;
             this.maxDistance = 0;
@@ -103,59 +105,74 @@ public class FuzzySearchTerm {
     }
 
     public static boolean isFuzzyTerm(String term) {
-        return term.matches("[*]{0,1}"+WORD_PATTERN+"[*]{0,1}~\\d");
+        return term.matches("[*]{0,1}" + WORD_PATTERN + "[*]{0,1}~\\d");
     }
 
     /**
      * Test if a given text containing a single word
+     * 
      * @param text
-     * @return
+     * @return boolean
      */
-    public boolean matches(String text) {
-        text = cleanup(text);
+    public boolean matches(final String text) {
+        String t = cleanup(text);
         String termToMatch = cleanup(this.term);
-        if((wildcardFront || wildcardBack) && text.length() >= termToMatch.length()-this.maxDistance) {
-            for(int pos = 0; pos < text.length()-(termToMatch.length()-this.maxDistance); pos++) {
-                for(int length=termToMatch.length()-this.maxDistance; length <= Math.min(text.length()-pos, termToMatch.length()+maxDistance); length++) {
-                    String subString = text.substring(pos, pos+length);
+        if ((wildcardFront || wildcardBack) && t.length() >= termToMatch.length() - this.maxDistance) {
+            for (int pos = 0; pos < t.length() - (termToMatch.length() - this.maxDistance); pos++) {
+                for (int length = termToMatch.length() - this.maxDistance; length <= Math.min(t.length() - pos,
+                        termToMatch.length() + maxDistance); length++) {
+                    String subString = t.substring(pos, pos + length);
                     int distance = new DamerauLevenshtein(subString, termToMatch).getSimilarity();
-                    if(distance <= maxDistance) {
+                    if (distance <= maxDistance) {
                         return true;
                     }
                 }
             }
             return false;
-        } else if( Math.abs(text.length() - termToMatch.length()) <= this.maxDistance) {
-            int distance = new DamerauLevenshtein(text, termToMatch).getSimilarity();
+        } else if (Math.abs(t.length() - termToMatch.length()) <= this.maxDistance) {
+            int distance = new DamerauLevenshtein(t, termToMatch).getSimilarity();
             return distance <= maxDistance;
         } else {
             return false;
         }
     }
 
-    private String cleanup(String text) {
-        if(StringUtils.isNotBlank(text)) {
-            text = cleanHyphenations(text);
-            text = StringTools.removeDiacriticalMarks(text);
-            text = StringTools.replaceCharacterVariants(text);
-            text = text.toLowerCase();
-            text = text.replaceAll(WORD_SURROUNDED_BY_OTHER_CHARACTERS, "$1"); //NOSONAR  removes anything before and after the word, backtracking save
+    /**
+     * 
+     * @param text
+     * @return Cleaned-up text
+     */
+    private static String cleanup(final String text) {
+        String ret = text;
+        if (StringUtils.isNotBlank(ret)) {
+            ret = cleanHyphenations(ret);
+            ret = StringTools.removeDiacriticalMarks(ret);
+            ret = StringTools.replaceCharacterVariants(ret);
+            ret = ret.toLowerCase();
+            ret =
+                    ret.replaceAll(WORD_SURROUNDED_BY_OTHER_CHARACTERS, "$1"); //NOSONAR removes anything before and after the word, backtracking save
         }
-        return text;
+
+        return ret;
     }
 
-    private String cleanHyphenations(String text) {
+    /**
+     * 
+     * @param text
+     * @return Cleaned-up text
+     */
+    private static String cleanHyphenations(String text) {
         return text.replaceAll("[⸗¬-]", "");
     }
 
     public static int calculateOptimalDistance(String term) {
-        if(StringUtils.isBlank(term)) {
+        if (StringUtils.isBlank(term)) {
             return 0;
-        } else if(term.matches(IGNORE_FUZZY_PATTERN)) {
+        } else if (term.matches(IGNORE_FUZZY_PATTERN)) {
             return 0;
-        } else if(term.length() < FUZZY_THRESHOLD_DISTANCE_1) {
+        } else if (term.length() < FUZZY_THRESHOLD_DISTANCE_1) {
             return 0;
-        } else if(term.length() < FUZZY_THRESHOLD_DISTANCE_2) {
+        } else if (term.length() < FUZZY_THRESHOLD_DISTANCE_2) {
             return 1;
         } else {
             return 2;

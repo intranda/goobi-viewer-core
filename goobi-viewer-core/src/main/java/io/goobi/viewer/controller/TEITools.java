@@ -26,6 +26,7 @@ import java.io.IOException;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -34,18 +35,24 @@ import org.apache.logging.log4j.LogManager;
  * TEITools class.
  * </p>
  */
-public class TEITools {
+public final class TEITools {
 
-    private final static Logger logger = LogManager.getLogger(TEITools.class);
+    private static final Logger logger = LogManager.getLogger(TEITools.class);
+
+    public static final Namespace NAMESPACE_TEI = Namespace.getNamespace("tei", "http://www.tei-c.org/ns/1.0");
+
+    /** Private constructor. */
+    private TEITools() {
+    }
 
     /**
      * Returns the full-text part of the given TEI document string.
      *
      * @param tei Full TEI document as string
      * @return TEI full-text element
-     * @should extract fulltext correctly
      * @throws org.jdom2.JDOMException if any.
      * @throws java.io.IOException if any.
+     * @should extract fulltext correctly
      */
     public static String getTeiFulltext(String tei) throws JDOMException, IOException {
         if (tei == null) {
@@ -59,7 +66,6 @@ public class TEITools {
         if (doc.getRootElement() != null) {
             Element eleText = doc.getRootElement().getChild("text", null);
             if (eleText != null && eleText.getChild("body", null) != null) {
-                // String language = eleText.getAttributeValue("lang", Namespace.getNamespace("xml", "http://www.w3.org/XML/1998/namespace"));
                 Element eleBody = eleText.getChild("body", null);
                 Element eleNewRoot = new Element("tempRoot");
                 for (Element ele : eleBody.getChildren()) {

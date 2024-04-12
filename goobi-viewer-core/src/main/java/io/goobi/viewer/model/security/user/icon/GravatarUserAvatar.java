@@ -72,7 +72,7 @@ public class GravatarUserAvatar implements UserAvatar {
     /**
      *
      * @param size
-     * @return
+     * @return Gravatar URL
      */
     private String getGravatarUrl(int size) {
         if (StringUtils.isNotEmpty(email)) {
@@ -88,7 +88,7 @@ public class GravatarUserAvatar implements UserAvatar {
      * @return
      */
     static String hex(byte[] array) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < array.length; ++i) {
             sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
         }
@@ -100,15 +100,13 @@ public class GravatarUserAvatar implements UserAvatar {
      * Gravatar requires MD5.
      * 
      * @param message
-     * @return
+     * @return MD5 hash of message
      */
     static String md5Hex(String message) {
         try {
-            MessageDigest md = MessageDigest.getInstance("MD5"); //NOSONAR
+            MessageDigest md = MessageDigest.getInstance("MD5"); //NOSONAR Gravatar requires MD5
             return hex(md.digest(message.getBytes("CP1252")));
-        } catch (NoSuchAlgorithmException e) {
-            logger.error(e.getMessage());
-        } catch (UnsupportedEncodingException e) {
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             logger.error(e.getMessage());
         }
         return null;

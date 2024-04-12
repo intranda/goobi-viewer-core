@@ -24,7 +24,11 @@
                 <!-- MEDIA ITEM OVERLAY -->
                 <div class="admin-cms-media__overlay"></div>
             
-                <h1 class="admin__content-inner-title">#{msg.cms_overviewMedia}</h1>
+                <div class="admin__title-bar">
+                    <h1 class="admin__title">#{msg.cms_overviewMedia}</h1>
+                </div>
+
+				<viewerComponent:adminBreadcrumbs />
 
                 <div class="admin__content-inner-content">
                     <!-- UPLOAD -->
@@ -57,6 +61,8 @@
         <script type="text/javascript">
         	var adminMediaConfig = {
             	postUrl: '#{navigationHelper.applicationUrl}api/v1/cms/media/files/',
+            	fileTypes: "#{cmsMediaBean.getAllTypes()}",
+            	fileTypeValidator: /#{cmsMediaBean.getMediaFilter().replace('(?i)', '')}/i,
             	msg: {
             		buttonUpload: "#{msg.button__upload}",
             		uploadText: "#{msg.admin__media_upload_text}",

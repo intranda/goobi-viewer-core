@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="customTemplateHome" version="2018-04-16">
+    <name>Startseite</name>
+    <description>Dieses Template stellt die Startseite dar. Sie besteht aus einer dynamisch erzeugten Bildergallerie, einer Anzeige der verfügbaren Werke und einem RSS-Feed.</description>
+    <icon>custom_template_01_home.png</icon>
+    <html>themes/mnha/cms/templates/views/custom_template_01_home.xhtml</html>
+    <content>
+        <item id="grid" order="1" label="Gallerie" type="TILEGRID" mandatory="false" />
+        <item id="image" order="2" label="Bild zur Objektanzahl" type="MEDIA" mandatory="false" />
+    </content>
+</cms_page_template>

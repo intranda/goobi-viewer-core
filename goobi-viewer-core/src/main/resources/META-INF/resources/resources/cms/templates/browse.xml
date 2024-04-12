@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+	<jsfComponent>
+		<library>cms/components/frontend/component</library>
+		<name>browse</name>
+	</jsfComponent>
+	<label>cms_component__browse__label</label>
+	<description>cms_component__browse__desc</description>
+	<icon>cms/components/frontend/component/icon/text.png</icon>
+	<content>
+		<item id="browse">
+			<label>cms_component__browse__label</label>
+			<description>cms_content__browse__desc</description>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSBrowseContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>browse</name>
+			</jsfComponent>
+		</item>
+	</content>
+
+	<attribute name="hideOnScreenSizes" type="toggle">
+		<value label="Hide on desktop">hideDesktop</value>
+		<value label="Hide on mobile">hideMobile</value>
+	</attribute>
+	
+</component>

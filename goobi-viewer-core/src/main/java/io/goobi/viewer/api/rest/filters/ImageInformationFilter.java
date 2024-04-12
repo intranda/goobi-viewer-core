@@ -40,9 +40,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.image.ImageProfile;
@@ -117,7 +117,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
             imageType = getImageType((ImageInformation) responseObject);
 
             try {
-                boolean mayZoom = isZoomingAllowed(request);
+                boolean mayZoom = isZoomingAllowed();
                 List<Integer> imageSizes = getImageSizesFromConfig(mayZoom);
                 setImageSizes((ImageInformation) responseObject, imageSizes);
                 setMaxImageSizes((ImageInformation) responseObject, mayZoom);
@@ -136,10 +136,9 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * @param request
-     * @return
+     * @return true if zoom allowed; false otherwise
      */
-    private boolean isZoomingAllowed(ContainerRequestContext request) {
+    private boolean isZoomingAllowed() {
         if (DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth() > 0) {
             String pi = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_PI);
             String filename = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
@@ -157,7 +156,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * @param responseObject
+     * @param info
      * @throws ViewerConfigurationException
      */
     private void setWatermark(ImageInformation info) {
@@ -173,7 +172,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
                         BeanUtils.getImageDeliveryBean().getFooter().getWatermarkUrl(page, element, Optional.ofNullable(pageType));
                 watermarkUrl.ifPresent(url -> info.setLogo(url));
             } catch (DAOException | ViewerConfigurationException | IndexUnreachableException | PresentationException e) {
-                logger.error("Unable to add watermark to image information: " + e.toString(), e);
+                logger.error("Unable to add watermark to image information: {}", e.getMessage(), e);
             }
         }
     }
@@ -181,7 +180,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     /**
      * @param filename
      * @param element
-     * @return
+     * @return Optional<PhysicalElement>
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws PresentationException
@@ -191,7 +190,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
             IPageLoader pageLoader = AbstractPageLoader.create(element);
             return Optional.ofNullable(pageLoader.getPageForFileName(filename));
         } catch (PresentationException | IndexUnreachableException | DAOException e) {
-            logger.error("Unbale to get page for file " + filename + " in " + element);
+            logger.error("Unbale to get page for file {} in {}", filename, element);
             return Optional.empty();
         }
     }
@@ -207,6 +206,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public Optional<StructElement> getStructElement(String pi) throws PresentationException, IndexUnreachableException {
+        // logger.trace("getStructElement: {}", pi); //NOSONAR Debug
         String query = new StringBuilder(SolrConstants.PI).append(':').append(pi).toString();
         List<String> fieldList = new ArrayList<>(Arrays.asList(WatermarkHandler.REQUIRED_SOLR_FIELDS));
         fieldList.addAll(DataManager.getInstance().getConfiguration().getWatermarkIdField());
@@ -220,8 +220,8 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * @param responseObject
-     * @return
+     * @param info
+     * @return {@link ImageType}
      */
     private static ImageType getImageType(ImageInformation info) {
         String id = info.getId().toString();
@@ -237,6 +237,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      * Write
      *
      * @param info
+     * @param mayZoom
      */
     private static void setMaxImageSizes(ImageInformation info, boolean mayZoom) {
 
@@ -265,7 +266,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     /**
      * Set the IIIF image info property "sizes". Create one size object per entry of imageSizes. Values of imageSizes are interpreted as width
      *
-     * @param responseObject
+     * @param imageInfo
      * @param imageSizes
      */
     private static void setImageSizes(ImageInformation imageInfo, List<Integer> imageSizes) {
@@ -283,8 +284,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
 
     /**
      * @param mayZoom
-     * @param responseObject
-     * @return
+     * @return List<Integer>
      * @throws ViewerConfigurationException
      */
     private List<Integer> getImageSizesFromConfig(boolean mayZoom) throws ViewerConfigurationException {
@@ -309,7 +309,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * @return
+     * @return List<ImageTile>
      * @throws ViewerConfigurationException
      */
     private List<ImageTile> getTileSizesFromConfig() throws ViewerConfigurationException {
@@ -326,7 +326,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * @param responseObject
+     * @param imageInfo
      * @param tileSizes
      */
     private static void setTileSizes(ImageInformation imageInfo, List<ImageTile> tileSizes) {

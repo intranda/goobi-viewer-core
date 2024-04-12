@@ -54,8 +54,11 @@ import de.intranda.api.annotation.oa.TextualResource;
 import de.intranda.api.iiif.presentation.v2.AnnotationList;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.annotation.AnnotationConverter;
+import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -77,12 +80,13 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
      * converted to OpenAnnotations here
      *
      * @param pi The persistent identifier of the work to query
-     * @return A map of page numbers (1-based) mapped to a list of associated annotations
      * @param urlOnlyTarget a boolean.
+     * @param request
+     * @return A map of page numbers (1-based) mapped to a list of associated annotations
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public Map<Integer, List<OpenAnnotation>> getCrowdsourcingAnnotations(String pi, boolean urlOnlyTarget, HttpServletRequest request)
+    public Map<Integer, List<OpenAnnotation>> getCrowdsourcingAnnotationsFromSolr(String pi, boolean urlOnlyTarget, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException {
         List<SolrDocument> ugcDocs = getAnnotationDocuments(getAnnotationQuery(pi), request);
         Map<Integer, List<OpenAnnotation>> annoMap = new HashMap<>();
@@ -90,11 +94,33 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
             for (SolrDocument doc : ugcDocs) {
                 OpenAnnotation anno = createUGCOpenAnnotation(pi, doc, urlOnlyTarget);
                 Integer page = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
-                List<OpenAnnotation> annoList = annoMap.get(page);
-                if (annoList == null) {
-                    annoList = new ArrayList<>();
-                    annoMap.put(page, annoList);
-                }
+                List<OpenAnnotation> annoList = annoMap.computeIfAbsent(page, k -> new ArrayList<>());
+                annoList.add(anno);
+            }
+        }
+        return annoMap;
+    }
+
+    /**
+     * Get all annotations for the given PI from the DAO, sorted by page number. The annotations are stored as DOCTYPE:UGC in the SOLR and are
+     * converted to OpenAnnotations here
+     *
+     * @param pi The persistent identifier of the work to query
+     * @param urlOnlyTarget a boolean.
+     * @param request
+     * @return A map of page numbers (1-based) mapped to a list of associated annotations
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public Map<Integer, List<OpenAnnotation>> getCrowdsourcingAnnotations(String pi, boolean urlOnlyTarget, HttpServletRequest request)
+            throws DAOException {
+        List<CrowdsourcingAnnotation> pAnnos = DataManager.getInstance().getDao().getAnnotationsForWork(pi);
+        Map<Integer, List<OpenAnnotation>> annoMap = new HashMap<>();
+        if (pAnnos != null) {
+            for (CrowdsourcingAnnotation pAnno : pAnnos) {
+                OpenAnnotation anno = new AnnotationConverter().getAsOpenAnnotation(pAnno);
+                Integer page = Optional.ofNullable(pAnno).map(CrowdsourcingAnnotation::getTargetPageOrder).orElse(null);
+                List<OpenAnnotation> annoList = annoMap.computeIfAbsent(page, k -> new ArrayList<>());
                 annoList.add(anno);
             }
         }
@@ -109,8 +135,7 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
         SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(queryBuilder.toString());
         if (docList != null && !docList.isEmpty()) {
             SolrDocument doc = docList.get(0);
-            IAnnotation anno = createUGCOpenAnnotation(doc, false);
-            return anno;
+            return createUGCOpenAnnotation(doc, false);
         }
 
         return null;
@@ -142,7 +167,8 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
      * @return a {@link de.intranda.api.annotation.oa.OpenAnnotation} object.
      */
     public OpenAnnotation createUGCOpenAnnotation(String pi, SolrDocument doc, boolean urlOnlyTarget) {
-        String id = Optional.ofNullable(doc.getFieldValue(SolrConstants.MD_ANNOTATION_ID)).map(SolrTools::getAsString)
+        String id = Optional.ofNullable(doc.getFieldValue(SolrConstants.MD_ANNOTATION_ID))
+                .map(SolrTools::getAsString)
                 .map(i -> i.replace("annotation_", ""))
                 .orElse(doc.getFieldValue(SolrConstants.IDDOC).toString());
         Integer pageOrder = Optional.ofNullable(doc.getFieldValue(SolrConstants.ORDER)).map(o -> (Integer) o).orElse(null);
@@ -168,10 +194,10 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
 
     /**
      * @param pi
-     * @param urlOnlyTarget
-     * @param anno
-     * @param coordString
      * @param pageOrder
+     * @param coordString
+     * @param urlOnlyTarget
+     * @return {@link IResource}
      */
     public IResource createFragmentTarget(String pi, int pageOrder, String coordString, boolean urlOnlyTarget) {
         try {
@@ -202,7 +228,7 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
 
     /**
      * @param doc
-     * @return
+     * @return {@link IResource}
      */
     public IResource createAnnnotationBodyFromUGCDocument(SolrDocument doc) {
         IResource body = null;
@@ -222,22 +248,33 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
     }
 
     /**
-     * @param pi
      * @param uri
-     * @param b
-     * @return
+     * @param pi
+     * @param urlsOnly
+     * @param request
+     * @return {@link IAnnotationCollection}
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
     public IAnnotationCollection getCrowdsourcingAnnotationCollection(URI uri, String pi, boolean urlsOnly, HttpServletRequest request)
-            throws PresentationException, IndexUnreachableException {
+            throws DAOException {
         AnnotationList list = new AnnotationList(uri);
-        getCrowdsourcingAnnotations(pi, urlsOnly, request).values().stream().flatMap(List::stream).forEach(anno -> list.addResource(anno));
+        getCrowdsourcingAnnotations(pi, urlsOnly, request).values().stream().flatMap(List::stream).forEach(list::addResource);
         return list;
     }
 
+    /**
+     * 
+     * @param uri
+     * @param pi
+     * @param page
+     * @param urlsOnly
+     * @param request
+     * @return {@link IAnnotationCollection}
+     * @throws DAOException
+     */
     public IAnnotationCollection getCrowdsourcingAnnotationCollection(URI uri, String pi, Integer page, boolean urlsOnly, HttpServletRequest request)
-            throws PresentationException, IndexUnreachableException {
+            throws DAOException {
         AnnotationList list = new AnnotationList(uri);
         getCrowdsourcingAnnotations(pi, urlsOnly, request).entrySet()
                 .stream()
@@ -245,7 +282,7 @@ public class OpenAnnotationBuilder extends AbstractAnnotationBuilder {
                 .filter(entry -> Objects.equals(page, entry.getKey()))
                 .map(Entry::getValue)
                 .flatMap(List::stream)
-                .forEach(anno -> list.addResource(anno));
+                .forEach(list::addResource);
         return list;
     }
 

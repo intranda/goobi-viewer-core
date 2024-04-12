@@ -29,18 +29,17 @@ import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.cms.CMSMediaItem;
 import io.goobi.viewer.model.cms.SimpleMediaHolder;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
 @Converter
 public class SimpleMediaHolderConverter implements AttributeConverter<SimpleMediaHolder, Long> {
 
     private static final Logger logger = LogManager.getLogger(SimpleMediaHolderConverter.class);
 
-
     @Override
     public Long convertToDatabaseColumn(SimpleMediaHolder media) {
-        if(media != null && media.hasMediaItem()) {
+        if (media != null && media.hasMediaItem()) {
             return media.getMediaItem().getId();
         } else {
             return null;
@@ -49,7 +48,7 @@ public class SimpleMediaHolderConverter implements AttributeConverter<SimpleMedi
 
     @Override
     public SimpleMediaHolder convertToEntityAttribute(Long id) {
-        if(id != null) {
+        if (id != null) {
             try {
                 CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
                 return new SimpleMediaHolder(item);

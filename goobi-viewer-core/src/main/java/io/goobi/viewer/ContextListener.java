@@ -36,16 +36,14 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
-//import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
-import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.user.UserTools;
 
 /**
@@ -64,7 +62,7 @@ public class ContextListener implements ServletContextListener {
     public static final String PRETTY_FACES_CONFIG_PARAM_NAME = "com.ocpsoft.pretty.CONFIG_FILES";
 
     /** Constant <code>prettyConfigFiles="resources/themes/theme-url-mappings.xml"{trunked}</code> */
-    public volatile String prettyConfigFiles =
+    private volatile String prettyConfigFiles =
             "resources/themes/theme-url-mappings.xml, pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml";
 
     //    static {
@@ -79,6 +77,8 @@ public class ContextListener implements ServletContextListener {
         ViewerResourceBundle.init(sce.getServletContext());
         logger.trace("Temp folder: {}", DataManager.getInstance().getConfiguration().getTempFolder());
         try {
+            //Initialize CMSTemplateManager with the exisitng ServletContext
+            //CMSTemplateManager.getInstance(sce.getServletContext());
             // Add a "member" role, if not yet in the database
             if (DataManager.getInstance().getDao().getRole("member") == null) {
                 logger.info("Role 'member' does not exist yet, adding...");
@@ -92,57 +92,47 @@ public class ContextListener implements ServletContextListener {
             UserTools.checkAndCreateAnonymousUser();
             // add general clientapplication (representing all clients)
             DataManager.getInstance().getClientManager().addGeneralClientApplicationToDB();
-        } catch (Throwable e) {
+        } catch (DAOException e) {
             logger.error(e.getMessage(), e);
         }
         //        createResources();
 
         // Scan for all Pretty config files in module JARs
         // TODO This doesn't work if /WEB-INF/lib is mapped to a different folder in tomcat
-        try {
-            String libPath = sce.getServletContext().getRealPath("/WEB-INF/lib");
-            if (libPath != null) {
-                logger.debug("Lib path: {}", libPath);
-                try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(libPath), "*viewer-module-*.jar")) {
-                    for (Path path : stream) {
-                        logger.debug("Found module JAR: {}", path.getFileName().toString());
-                        try (FileInputStream fis = new FileInputStream(path.toFile()); ZipInputStream zip = new ZipInputStream(fis)) {
-                            while (prettyConfigFiles.length() < PRETTY_CONFIG_FILES_STRING_THRESHOLD) {
-                                ZipEntry e = zip.getNextEntry();    //NOSONAR only viewer jars are scanned, which we control, and no data is written besides entry names
-                                if (e == null) {
-                                    break;
-                                }
-                                String[] nameSplit = e.getName().split("/");
-                                if (nameSplit.length > 0) {
-                                    String name = nameSplit[nameSplit.length - 1];
-                                    if (name.startsWith("pretty-config-")) {
-                                        prettyConfigFiles += ", " + name;
-                                    }
+        String libPath = sce.getServletContext().getRealPath("/WEB-INF/lib");
+        if (libPath != null) {
+            logger.debug("Lib path: {}", libPath);
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(libPath), "*viewer-module-*.jar")) {
+                StringBuilder sbPrettyConfigFiles = new StringBuilder(prettyConfigFiles);
+                for (Path path : stream) {
+                    logger.debug("Found module JAR: {}", path.getFileName());
+                    try (FileInputStream fis = new FileInputStream(path.toFile()); ZipInputStream zip = new ZipInputStream(fis)) {
+                        while (prettyConfigFiles.length() < PRETTY_CONFIG_FILES_STRING_THRESHOLD) {
+                            ZipEntry e = zip.getNextEntry(); //NOSONAR only viewer jars are scanned, which we control; only entry names written
+                            if (e == null) {
+                                break;
+                            }
+                            String[] nameSplit = e.getName().split("/");
+                            if (nameSplit.length > 0) {
+                                String name = nameSplit[nameSplit.length - 1];
+                                if (name.startsWith("pretty-config-")) {
+                                    sbPrettyConfigFiles.append(", ").append(name);
                                 }
                             }
                         }
                     }
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                    //                } catch (URISyntaxException e) {
-                    //                    logger.error(e.getMessage(), e);
-                } catch (FileSystemNotFoundException | ProviderNotFoundException e) {
-                    logger.error("Unable to scan theme-jar for pretty config files. Probably an older tomcat");
                 }
-            } else {
-                logger.error("Resource '/WEB-INF/lib' not found.");
+                prettyConfigFiles = sbPrettyConfigFiles.toString();
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+                //                } catch (URISyntaxException e) {
+                //                    logger.error(e.getMessage(), e);
+            } catch (FileSystemNotFoundException | ProviderNotFoundException e) {
+                logger.error("Unable to scan theme-jar for pretty config files. Probably an older tomcat");
             }
-            //        } catch (MalformedURLException e) {
-            //            logger.error(e.getMessage(), e);
-        } finally {
+        } else {
+            logger.error("Resource '/WEB-INF/lib' not found.");
         }
-
-        // Set Pretty config files parameter
-        //        sce.getServletContext().setInitParameter(PRETTY_FACES_CONFIG_PARAM_NAME, prettyConfigFiles);
-        //        logger.debug("Pretty config files: {}", prettyConfigFiles);
-
-        //set contentServerConfig
-        ContentServerConfiguration.getInstance("contentServerConfig.xml");
 
         // Create local message files
         ViewerResourceBundle.createLocalMessageFiles();
@@ -153,8 +143,10 @@ public class ContextListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
         try {
             DataManager.getInstance().getDao().shutdown();
-        } catch (Throwable e) {
-            logger.error(e.getMessage());
+            DataManager.getInstance().getThreadPoolManager().shutdown();
+            logger.info("Successfully stopped DAO");
+        } catch (DAOException e) {
+            logger.error("Error stopping DAO", e);
         }
     }
 }

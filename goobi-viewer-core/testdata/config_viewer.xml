@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+        <configFolder>/opt/digiverso/viewer/config/</configFolder>
+
+        <viewer>
+                <theme mainTheme="reference" discriminatorField="" />
+        </viewer>
+
+<activeMQ enabled="true">
+<user>goobi</user>
+<password>goobi</password>
+</activeMQ>
+
+</config>

@@ -28,18 +28,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
-import org.junit.Assert;
-import org.junit.Test;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
-import io.goobi.viewer.dao.impl.JPAClassLoader;
 
-public class JPAClassLoaderTest extends AbstractTest {
+ class JPAClassLoaderTest extends AbstractTest {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(JPAClassLoaderTest.class);
@@ -49,34 +48,34 @@ public class JPAClassLoaderTest extends AbstractTest {
      * @verifies merge persistence xml files correctly
      */
     @Test
-    public void scanPersistenceXML_shouldMergePersistenceXmlFilesCorrectly() throws Exception {
+    void scanPersistenceXML_shouldMergePersistenceXmlFilesCorrectly() throws Exception {
         // TODO Fails on Jenkins
         File masterFile = new File("src/main/resources/META-INF/persistence.xml");
-        Assert.assertTrue(masterFile.isFile());
+        Assertions.assertTrue(masterFile.isFile());
         URL masterUrl = new URL("file:///" + masterFile.getAbsolutePath());
 
         File file = new File("src/test/resources/modules/persistence.xml");
-        Assert.assertTrue(file.isFile());
+        Assertions.assertTrue(file.isFile());
         URL moduleUrl = new URL("file:///" + file.getAbsolutePath());
 
         Document doc = JPAClassLoader.scanPersistenceXML(masterUrl, Collections.singletonList(moduleUrl));
-        Assert.assertNotNull(doc);
+        Assertions.assertNotNull(doc);
         logger.trace(new XMLOutputter().outputString(doc));
         Element eleRoot = doc.getRootElement();
-        Assert.assertNotNull(eleRoot);
+        Assertions.assertNotNull(eleRoot);
         List<Element> eleListPU = eleRoot.getChildren();
-        Assert.assertEquals(2, eleListPU.size());
+        Assertions.assertEquals(2, eleListPU.size());
 
         {
             Element elePU1 = eleListPU.get(0);
-            Assert.assertFalse( elePU1.getChildren("class", null).isEmpty());
+            Assertions.assertFalse( elePU1.getChildren("class", null).isEmpty());
             Set<String> classes = new HashSet<>();
             for (Element eleClass : elePU1.getChildren("class", null)) {
                 classes.add(eleClass.getText());
                 logger.trace(eleClass.getText());
             }
-            Assert.assertTrue(classes.contains("io.goobi.viewer.model.dummymodule.DummyClass1"));
-            Assert.assertTrue(classes.contains("io.goobi.viewer.model.dummymodule.DummyClass2"));
+            Assertions.assertTrue(classes.contains("io.goobi.viewer.model.dummymodule.DummyClass1"));
+            Assertions.assertTrue(classes.contains("io.goobi.viewer.model.dummymodule.DummyClass2"));
             //            {
             //                String xpathExpr =
             //                        "//persistence/persistence-unit[@name='intranda_viewer_tomcat']/class[text()='io.goobi.viewer.model.dummymodule.DummyClass1']";
@@ -85,7 +84,7 @@ public class JPAClassLoaderTest extends AbstractTest {
             //                 builder.setNamespace(Namespace.NO_NAMESPACE);
             //                XPathExpression<Element> xpath = builder.compileWith(XPathFactory.instance());
             //                List<Element> eleListClasses = xpath.evaluate(doc);
-            //                Assert.assertEquals(1, eleListClasses.size());
+            //                Assertions.assertEquals(1, eleListClasses.size());
             //            }
         }
         {
@@ -95,8 +94,8 @@ public class JPAClassLoaderTest extends AbstractTest {
                 classes.add(eleClass.getText());
                 logger.trace(eleClass.getText());
             }
-            Assert.assertTrue(classes.contains("io.goobi.viewer.model.dummymodule.DummyClass3"));
-            Assert.assertTrue(classes.contains("io.goobi.viewer.model.dummymodule.DummyClass4"));
+            Assertions.assertTrue(classes.contains("io.goobi.viewer.model.dummymodule.DummyClass3"));
+            Assertions.assertTrue(classes.contains("io.goobi.viewer.model.dummymodule.DummyClass4"));
         }
     }
 

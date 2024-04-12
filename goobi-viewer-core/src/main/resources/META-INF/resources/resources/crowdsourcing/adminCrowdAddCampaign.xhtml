@@ -14,7 +14,7 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPageAdmin('adminCrowdsourcingCampaigns')}" />
+				listener="#{navigationHelper.setCurrentPageAdmin( crowdsourcingBean.editMode ? 'adminCrowdsourcingCampaignsEdit':'adminCrowdsourcingCampaignsNew')}" />
 		</f:metadata>
 	</ui:define>
 
@@ -39,6 +39,9 @@
 							msg.admin__crowdsourcing_campaign_new}
 						</h1>
 					</div>
+					
+					<viewerComponent:adminBreadcrumbs />
+					
 					<div class="admin__content-inner-content">
 						<h:form id="createCampaignForm" prependId="true">
 							<div class="row">
@@ -585,17 +588,12 @@
                                                     
                                                     <h:panelGroup id="datePickerGroup" class="admin__campaign-date-picker-group">
                                                         <ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.timePeriodEnabled}">
+                                                        	
                                                         	<div class="form-row mt-3 mb-1">
-	                                                            <!-- TODO: non-primefaces date pickers? -->
 	                                                            <div class="col-4 control-label admin__form-label">
 	                                                                <label for="pickerDateStart">#{msg.admin__crowdsourcing_campaign_duration_from}:</label>
 	                                                            </div>
 	                                                            <div class="col-8 control-label admin__form-label">
-<!-- 	                                                                <p:datePicker id="pickerDateStart" -->
-<!-- 	                                                                    value="#{crowdsourcingBean.selectedCampaign.dateOnlyStart}" -->
-<!-- 	                                                                    pattern="#{navigationHelper.datePattern}"  -->
-<!-- 	                                                                    styleClass="admin__campaign-date-picker" /> -->
-	                                                             
 	                                                             <div class="admin__campaign-date-picker">
 	                                                             	<h:inputText
 	                                                             		id="pickerDateStart" 

@@ -27,11 +27,7 @@
 							<h:panelGroup rendered="#{metadata.group}">
 								<dd>
 									<ui:repeat value="#{metadata.values}" var="val">
-										<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-	                                        <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind">
-	                                            <f:param value="#{val.getParamLabelWithColon(ind)}" />
-	                                            <f:param value="#{val.getComboValueShort(ind)}" />
-	                                        </c:forEach>
+										<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}" escape="false">
 										</h:outputFormat>
 	                                    <br />
 									</ui:repeat>
@@ -42,10 +38,7 @@
 							<h:panelGroup rendered="#{!metadata.group}">
 								<dd>
 									<ui:repeat value="#{metadata.values}" var="val">
-										<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-	                                        <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind">
-	                                            <f:param value="#{val.getComboValueShort(ind)}" />
-	                                        </c:forEach>
+										<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
 										</h:outputFormat>
 										<br />
 									</ui:repeat>
@@ -73,10 +66,7 @@
                                             <h:panelGroup>
                                                 <dd>
                                                     <ui:repeat value="#{metadata.values}" var="val">
-                                                        <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-                                                            <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind">
-                                                                <f:param value="#{val.getComboValueShort(ind)}" />
-                                                            </c:forEach>
+                                                        <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
                                                         </h:outputFormat>
                                                     </ui:repeat>
                                                 </dd>

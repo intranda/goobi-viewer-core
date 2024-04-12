@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.maps;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,6 +46,35 @@ public class GeoMapMarker {
     private boolean useDefault = false;
     private boolean svg = false;
     private boolean shadow = true;
+    private MarkerType type = MarkerType.EXTRA_MARKERS;
+    private String className = "";
+
+    public enum MarkerType {
+        DEFAULT("default"),
+        EXTRA_MARKERS("ExtraMarkers"),
+        DIV_ICON("DivIcon");
+
+        private final String name;
+
+        private MarkerType(String name) {
+            this.name = name;
+        }
+
+        @JsonValue
+        public String getName() {
+            return name;
+        }
+
+        public static MarkerType getTypeByName(String name) {
+            for (MarkerType type : MarkerType.values()) {
+                if (name != null && type.name.equalsIgnoreCase(name)) {
+                    return type;
+                }
+            }
+            return null;
+        }
+
+    }
 
     public GeoMapMarker(String name) {
         this.name = name;
@@ -259,4 +289,19 @@ public class GeoMapMarker {
         return highlightIcon;
     }
 
+    public MarkerType getType() {
+        return type;
+    }
+
+    public void setType(MarkerType type) {
+        this.type = type;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String cssClass) {
+        this.className = cssClass;
+    }
 }

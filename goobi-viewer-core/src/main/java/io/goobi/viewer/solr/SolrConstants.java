@@ -28,8 +28,11 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 /**
  * This class provides constants for Lucene in alphabetical order.
  */
-public class SolrConstants {
+public final class SolrConstants {
 
+    /**
+     * Enum representing values of the Solr field DOCTYPE.
+     */
     public enum DocType {
         ACCESSDENIED,
         DOCSTRCT,
@@ -39,25 +42,18 @@ public class SolrConstants {
         UGC, // user-generated content
         GROUP; // convolute
 
+        /**
+         * 
+         * @param name
+         * @return {@link DocType} matching name
+         * @should return correct type
+         */
         public static DocType getByName(String name) {
             if (name != null) {
-                switch (name) {
-                    case "ACCESSDENIED":
-                        return ACCESSDENIED;
-                    case "DOCSTRCT":
-                        return DOCSTRCT;
-                    case "PAGE":
-                        return PAGE;
-                    case "METADATA":
-                        return METADATA;
-                    case "EVENT":
-                        return EVENT;
-                    case "UGC":
-                        return UGC;
-                    case "GROUP":
-                        return GROUP;
-                    default:
-                        return null;
+                for (DocType type : DocType.values()) {
+                    if (type.name().equals(name)) {
+                        return type;
+                    }
                 }
             }
 
@@ -69,6 +65,9 @@ public class SolrConstants {
         }
     }
 
+    /**
+     * Enum representing values of the Solr field METADATATYPE.
+     */
     public enum MetadataGroupType {
         PERSON,
         CORPORATION,
@@ -81,29 +80,18 @@ public class SolrConstants {
         CITATION,
         OTHER;
 
+        /**
+         * 
+         * @param name
+         * @return {@link MetadataGroupType} matching name
+         */
         public static MetadataGroupType getByName(String name) {
             if (name != null) {
-                switch (name) {
-                    case "PERSON":
-                        return PERSON;
-                    case "CORPORATION":
-                        return CORPORATION;
-                    case "CONFERENCE":
-                        return CONFERENCE;
-                    case "LOCATION":
-                        return LOCATION;
-                    case "SUBJECT":
-                        return SUBJECT;
-                    case "ORIGININFO":
-                        return ORIGININFO;
-                    case "CITATION":
-                        return CITATION;
-                    case "OTHER":
-                        return OTHER;
-                    default:
-                        return null;
+                for (MetadataGroupType type : MetadataGroupType.values()) {
+                    if (type.name().equals(name)) {
+                        return type;
+                    }
                 }
-
             }
 
             return null;
@@ -148,6 +136,8 @@ public class SolrConstants {
     public static final String DOCSTRCT_TOP = "DOCSTRCT_TOP";
     /** Constant <code>DOCTYPE="DOCTYPE"</code> */
     public static final String DOCTYPE = "DOCTYPE";
+    /** Constant <code>DOWNLOAD_URL_EXTERNAL="MD2_DOWNLOAD_URL"</code> */
+    public static final String DOWNLOAD_URL_EXTERNAL = "MD2_DOWNLOAD_URL";
     /** Constant <code>EVENTDATE="EVENTDATE"</code> */
     public static final String EVENTDATE = "EVENTDATE";
     /** Constant <code>EVENTDATESTART="EVENTDATESTART"</code> */
@@ -244,8 +234,8 @@ public class SolrConstants {
     public static final String PI_TOPSTRUCT = "PI_TOPSTRUCT";
     /** Constant <code>PLACEPUBLISH="MD_PLACEPUBLISH"</code> */
     public static final String PLACEPUBLISH = "MD_PLACEPUBLISH";
-    /** Constant <code>PUBLISHER="PUBLISHER"</code> */
-    public static final String PUBLISHER = "PUBLISHER";
+    /** Constant <code>PUBLISHER="MD_PUBLISHER"</code> */
+    public static final String PUBLISHER = "MD_PUBLISHER";
     /** Constant <code>RESOURCE="RESOURCE"</code> */
     public static final String RESOURCE = "RESOURCE";
     /** Constant <code>SOURCEDOCFORMAT="SOURCEDOCFORMAT"</code> */
@@ -284,6 +274,9 @@ public class SolrConstants {
     /** Constant <code>OPEN_ACCESS_VALUE="OPENACCESS"</code> */
     public static final String OPEN_ACCESS_VALUE = "OPENACCESS";
 
+    /** Constant <code>PREFIX_BOOL="BOOL_"</code> */
+    public static final String PREFIX_BOOL = "BOOL_";
+    /** Constant <code>PREFIX_FACET="FACET_"</code> */
     public static final String PREFIX_FACET = "FACET_";
     /** Constant <code>PREFIX_MDNUM="MDNUM_"</code> */
     public static final String PREFIX_MDNUM = "MDNUM_";
@@ -291,6 +284,8 @@ public class SolrConstants {
     public static final String PREFIX_GROUPID = "GROUPID_";
     /** Constant <code>PREFIX_GROUPORDER="GROUPORDER_"</code> */
     public static final String PREFIX_GROUPORDER = "GROUPORDER_";
+    /** Constant <code>PREFIX_SORT="SORT_"</code> */
+    public static final String PREFIX_SORT = "SORT_";
     /** Constant <code>MIDFIX_LANG="_LANG_"</code> */
     public static final String MIDFIX_LANG = "_LANG_";
     /** Constant <code>SUFFIX_UNTOKENIZED="_UNTOKENIZED"</code> */
@@ -299,6 +294,8 @@ public class SolrConstants {
     public static final String SUFFIX_DD = "_DD";
     /** Constant <code>SOURCEDOCFORMAT_METS="METS"</code> */
     public static final String SOURCEDOCFORMAT_METS = "METS";
+    /** Constant <code>SOURCEDOCFORMAT_METS_MARC="METS_MARC"</code> */
+    public static final String SOURCEDOCFORMAT_METS_MARC = "METS_MARC";
     /** Constant <code>SOURCEDOCFORMAT_LIDO="LIDO"</code> */
     public static final String SOURCEDOCFORMAT_LIDO = "LIDO";
     /** Constant <code>SOURCEDOCFORMAT_DENKXWEB="DENKXWEB"</code> */
@@ -348,4 +345,12 @@ public class SolrConstants {
     public static final String SOLR_QUERY_AND = " AND ";
     public static final String SOLR_QUERY_OR = " OR ";
     public static final String SOLR_QUERY_TRUE = ":true";
+    public static final String MD_VALUE = "MD_VALUE";
+
+    /**
+     * Private constructor.
+     */
+    private SolrConstants() {
+
+    }
 }

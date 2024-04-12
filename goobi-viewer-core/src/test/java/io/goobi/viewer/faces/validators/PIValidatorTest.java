@@ -21,24 +21,24 @@
  */
 package io.goobi.viewer.faces.validators;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.faces.validators.PIValidator;
 
-public class PIValidatorTest {
+class PIValidatorTest {
 
     /**
      * @see PIValidator#validatePi(String)
      * @verifies return false if pi contains illegal characters
      */
     @Test
-    public void validatePi_shouldReturnFalseIfPiContainsIllegalCharacters() throws Exception {
-        Assert.assertFalse(PIValidator.validatePi("PPN!"));
-        Assert.assertFalse(PIValidator.validatePi("PPN?"));
-        Assert.assertFalse(PIValidator.validatePi("PPN/"));
-        Assert.assertFalse(PIValidator.validatePi("PPN\\"));
-        Assert.assertFalse(PIValidator.validatePi("PPN:"));
+    void validatePi_shouldReturnFalseIfPiContainsIllegalCharacters() throws Exception {
+        Assertions.assertFalse(PIValidator.validatePi("PPN!"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN?"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN/"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN\\"));
+        Assertions.assertFalse(PIValidator.validatePi("PPN:"));
     }
 
     /**
@@ -46,10 +46,10 @@ public class PIValidatorTest {
      * @verifies return false if pi empty, blank or null
      */
     @Test
-    public void validatePi_shouldReturnFalseIfPiEmptyBlankOrNull() throws Exception {
-        Assert.assertFalse(PIValidator.validatePi(null));
-        Assert.assertFalse(PIValidator.validatePi(""));
-        Assert.assertFalse(PIValidator.validatePi("    "));
+    void validatePi_shouldReturnFalseIfPiEmptyBlankOrNull() throws Exception {
+        Assertions.assertFalse(PIValidator.validatePi(null));
+        Assertions.assertFalse(PIValidator.validatePi(""));
+        Assertions.assertFalse(PIValidator.validatePi("    "));
     }
 
     /**
@@ -57,7 +57,7 @@ public class PIValidatorTest {
      * @verifies return true if pi good
      */
     @Test
-    public void validatePi_shouldReturnTrueIfPiGood() throws Exception {
-        Assert.assertTrue(PIValidator.validatePi("PPN123456789"));
+    void validatePi_shouldReturnTrueIfPiGood() throws Exception {
+        Assertions.assertTrue(PIValidator.validatePi("PPN123456789"));
     }
 }

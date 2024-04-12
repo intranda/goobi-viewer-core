@@ -1,0 +1,250 @@
+/* ==============================================================
+	Global style declarations for Admin Backend
+   ==============================================================*/
+
+/* ADMIN BACKEND STYLING */
+.admin .admin__content-component {
+		display: flex;
+		flex-wrap: wrap;
+		width: 100%;
+		background: #f7f7f7;
+		padding: 0rem;
+		// border-bottom: 1px solid #ddd;
+		border: 1px solid #ddd;
+		padding: 2rem;
+		margin-bottom: 1.5rem;
+		&:hover {
+			.admin__content-component-delete {
+				opacity: 1;
+			}
+		}
+	&-wrapper {}
+	&-heading {
+		font-size: 20px;
+		margin-bottom: 0rem;
+		margin-right: auto;
+	}
+	&-header {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px 0;
+		margin-bottom: 2rem;
+		align-items: center;
+		min-height: 30px;
+	}
+	&-inner {
+		// display: flex;
+		flex-grow: 1;
+	}
+	&-order-wrapper {
+		margin-left: 15px;
+		display: flex;
+	}
+	&-order-inner-wrapper {
+		display: flex;
+		// flex-direction: column;
+		align-items: center;
+		gap: 10px;
+	}
+	&-order-arrow-up,
+	&-order-arrow-down,
+	&-order-number {
+		background: none;
+		border: none;
+		padding: 0;
+		color: @black;
+		&[disabled="disabled"] {
+			opacity: 0.2;
+		}
+	}
+	&-order-arrow-up,
+	&-order-arrow-down {
+		font-size: 18px;
+		display: flex;
+	}
+	&-order-number {
+		font-weight: 700;
+		font-size: 15px;
+		color: #555;
+	}
+	&-order-arrow-up {}
+	&-order-arrow-down {}
+	&-delete-wrapper {
+		margin-top: 5px;
+		width: 100%;
+		display: flex;
+		justify-content: flex-end;
+	}
+	&-delete {
+		background: transparent;
+		padding: 0;
+		border: none;
+		// font-size: 16px;
+		color: @red;
+		opacity: 0;
+		transition: opacity 0.2s ease;
+	}
+	&-options {
+		display: flex;
+		align-items: flex-start;
+		gap: 1rem;
+	}
+	&-option {
+		min-width: 60px;
+		user-select: none;
+		padding: 5px;
+		background: transparent;
+		border: 1px solid #bbb;
+		text-align: center;
+		border-radius: 4px;
+		font-size: 12px;
+		transition: all 0.2s ease;
+		&:hover {
+			background: #eee;
+			border-color: #878787;
+		}
+		cursor: pointer;
+		&-size {
+			width: 60px;
+		}
+		&-lightbox {
+			
+		}
+		&.-active {
+			background: #585858;
+			color: #fff;
+		}
+	}
+	&-content-items-wrapper {
+		flex: 0 0 100%;
+		max-width: 100%;
+	}
+	&-description {
+		margin-bottom: 20px;
+		font-size: 1.2rem;
+		font-style: italic;
+		color: #666;
+	}
+	&-input-group {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 10px;
+		margin-bottom: 10px;
+	}
+	&-input-label {
+		flex: 0 0 200px;
+		word-break: break-word;
+	}
+	&-input-field {
+		position: relative;
+		flex-grow: 1;
+	}
+	&__input-dropdown {
+		position: relative;
+		width: 100%;
+	    height: 34px;
+	    font-size: 1.4rem;
+	    color: @black;
+		border: 1px solid @middlegray;
+	    background-color: @white;
+	}
+
+	// ADD COMPONENT SECTION (BELOW EXISTING CONTENT COMPONENTS)
+	&-add-area {
+		margin-top: 25px;
+		display: grid;
+		grid-template-columns: auto 1fr;
+		align-items: center;
+		gap: 40px;
+	}
+	&-add-area-button {
+		&:hover {
+			border-color: #3a72bf;
+			background-color: #3a72bf;
+		}
+	}
+	&-add-area-label {
+		font-weight: 700;
+		font-size: 16px;
+	}
+	&-add-select-wrapper {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		align-items: center;
+		gap: 40px;
+		.custom-control--select {
+			height: 100%;
+		}
+	}
+	&-overlay-wrapper {
+	}
+	&-overlay-bar {
+		padding: 0 15px;
+		position: fixed;
+		bottom: 0;
+		right: 0;
+		width: calc(~"100% - 270px");
+		height: 70px;
+		background: rgba(27,35,48,1);
+		z-index: 1001;
+		color: @white;
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 15px;
+		#cancelPageEdit {
+			color: #acacac; 
+		}
+	}
+}
+
+.admin .admin__content-item {
+	&-text {
+		display: grid;
+		grid-template-columns: 140px 1fr auto;
+		align-items: center;
+		gap: 40px;
+	}
+}
+
+.admin__cms-create-page-inner {
+	padding: 25px;
+}
+
+// CHANGES TO EXISTING STYLES CREATE PAGE
+.cms-create-page{
+	.admin-cms-media__file {
+		border: none;
+		padding: 0;
+	}
+	.admin-cms-media__file-image {
+		border: none;
+		background-position: center center;
+		border: 1px solid #ced4da;
+	}
+	.admin-cms-media__file-bottom, .admin-cms-media__file-select {
+		display: none;
+	}
+	.admin-cms-media__file-image {
+		width: 300px;
+	}
+	.admin-cms-media__file-top {
+		margin: 0;
+	}
+	.admin-cms-media__file:hover {
+		background: unset;
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

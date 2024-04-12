@@ -1,0 +1,51 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+                xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
+                xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+                template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsHighlights')}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+        <div id="highlights" class="admin__highlights">
+            <h:panelGroup rendered="#{userBean.user.cmsAdmin}">
+                <h:form prependId="false">
+
+                    <div class="admin__title-bar">
+                        <!-- TITLE -->
+                        <h1 class="admin__title">#{msg.admin__highlights__title}</h1>
+                        
+                        <!-- CREATE NEW HIGHLIGHTED OBJECT -->
+                        <!-- TO DO AK: Functionality add new object-->
+                        <ui:fragment rendered="#{userBean.user.cmsAdmin}">
+                            <a href="#{navigationHelper.applicationUrl}admin/cms/highlights/new/" class="btn btn--default admin__title-bar-action">
+                                <span>#{msg.add}</span>
+                            </a>
+                        </ui:fragment>
+                    </div>
+                    
+					<viewerComponent:adminBreadcrumbs />
+
+                    <div class="admin__content-inner-content">
+	                    <div class="admin__info-text">#{msg.admin__highlights__description}</div>
+	                    <h2>#{msg.admin__highlights__current_table_title}</h2>
+	                    <cmsComponent:highlightsTable dataProvider="#{highlightsBean.getCurrentObjectsProvider()}" showPaginator="false"/>
+	                    <h2>#{msg.admin__highlights__all_table_title}</h2>
+						<cmsComponent:highlightsTable dataProvider="#{highlightsBean.getAllObjectsProvider()}"/>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+        </div>
+    </ui:define>
+
+</ui:composition>
+

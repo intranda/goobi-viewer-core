@@ -32,14 +32,14 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.viewer.PageType;
 
 /**
  * Stores the url path of a http request organized by its logical parts so application url, application name, view type and parameter urls can be
  * retrieved independendly. If applicable, the {@link io.goobi.viewer.model.viewer.PageType} of the requested view and an associated
- * {@link io.goobi.viewer.model.cms.CMSPage} are also referenced
+ * {@link io.goobi.viewer.model.cms.pages.CMSPage} are also referenced
  * <p>
  * This information helps calling the correct url in different contexts and is also used to redirect to CMSPages and store a brief view history to
  * allow returning to a previous view The entire url always consists of the properties {@link #applicationUrl} + {@link #pagePath} +
@@ -77,7 +77,7 @@ public class ViewerPath implements Serializable {
      */
     private URI parameterPath;
     /**
-     *  The entire query string of the URL, starting with the character after the '?'. An empty String no query exists
+     * The entire query string of the URL, starting with the character after the '?'. An empty String no query exists
      */
     private String queryString = "";
     /**
@@ -107,7 +107,7 @@ public class ViewerPath implements Serializable {
      * Creates a {@link ViewerPath} based on the given request properties. This should not be called directly. Instead a ViewerPath should be created
      * by calling {@link ViewerPathBuilder#createPath(HttpServletRequest)} or {@link ViewerPathBuilder#createPath(String, String, String)}
      *
-     * @param applicationPath
+     * @param applicationUrl
      * @param applicationName
      * @param pagePath
      * @param parameterPath
@@ -202,7 +202,6 @@ public class ViewerPath implements Serializable {
         this.parameterPath = parameterPath;
     }
 
-
     /**
      * @return the queryString
      */
@@ -236,8 +235,9 @@ public class ViewerPath implements Serializable {
                         .stream()
                         .findFirst()
                         .map(staticPage -> staticPage.getPageName().replaceAll("(^\\/)|(\\/$)", ""))
-                        .map(pageName -> URI.create(pageName));
+                        .map(URI::create);
             } catch (DAOException e) {
+                //
             }
             if (!path.isPresent() && StringUtils.isNotBlank(getCmsPage().getPersistentUrl())) {
                 path = Optional.of(URI.create(getCmsPage().getPersistentUrl().replaceAll("(^\\/)|(\\/$)", "")));
@@ -266,8 +266,7 @@ public class ViewerPath implements Serializable {
      * @return the entire {@link #getPrettifiedPagePath() prettified} url as a path <b>except</b> the application url
      */
     public String getCombinedPrettyfiedUrl() {
-        String url = ("/" + getCombinedPrettyfiedPath().toString()).replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
-        return url;
+        return ("/" + getCombinedPrettyfiedPath().toString()).replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
     }
 
     /**
@@ -289,9 +288,7 @@ public class ViewerPath implements Serializable {
      * @return the entire request url <b>except</b> the application url
      */
     public String getCombinedUrl() {
-
-        String url = ("/" + getCombinedPath().toString()).replace("\\", "/").replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
-        return url;
+        return ("/" + getCombinedPath().toString()).replace("\\", "/").replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
     }
 
     /** {@inheritDoc} */

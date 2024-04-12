@@ -34,15 +34,14 @@ import io.goobi.viewer.controller.DataManager;
 
 /**
  * <p>
- * Adds an "Access-Control-Allow-Origin" header to a REST response with the value configured in
- *  {@link Configuration#getCORSHeaderValue()}
+ * Adds an "Access-Control-Allow-Origin" header to a REST response with the value configured in {@link Configuration#getCORSHeaderValue()}
  * </p>
  */
 @Provider
 @CORSBinding
 public class CORSHeaderFilter implements ContainerResponseFilter {
 
-    private static final Configuration config = DataManager.getInstance().getConfiguration();
+    private static Configuration config = DataManager.getInstance().getConfiguration();
 
     /** {@inheritDoc} */
     @Override

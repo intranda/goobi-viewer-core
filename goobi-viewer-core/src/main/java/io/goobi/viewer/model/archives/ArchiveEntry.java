@@ -28,15 +28,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrException;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.solr.SolrConstants;
+import org.apache.logging.log4j.Logger;
 
 public class ArchiveEntry {
 
@@ -177,17 +170,15 @@ public class ArchiveEntry {
     /**
      *
      * @param ignoreDisplayChildren
-     * @return
+     * @return List<ArchiveEntry>
      */
     public List<ArchiveEntry> getAsFlatList(boolean ignoreDisplayChildren) {
         List<ArchiveEntry> list = new LinkedList<>();
         list.add(this);
-        if (displayChildren || ignoreDisplayChildren) {
-            if (subEntryList != null && !subEntryList.isEmpty()) {
-                for (ArchiveEntry ds : subEntryList) {
-                    list.addAll(ds.getAsFlatList(ignoreDisplayChildren));
-                    // logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchy());
-                }
+        if ((displayChildren || ignoreDisplayChildren) && subEntryList != null && !subEntryList.isEmpty()) {
+            for (ArchiveEntry ds : subEntryList) {
+                list.addAll(ds.getAsFlatList(ignoreDisplayChildren));
+                // logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchy()); //NOSONAR Sometimes needed for debugging
             }
         }
         return list;
@@ -223,6 +214,9 @@ public class ArchiveEntry {
         } else if (!orderNumber.equals(other.orderNumber)) {
             return false;
         }
+        if (label != null && !label.equals(other.getLabel())) {
+            return false;
+        }
         if (parentNode == null && other.parentNode == null) {
             return true;
         }
@@ -239,6 +233,9 @@ public class ArchiveEntry {
             if (!parentNode.getHierarchyLevel().equals(other.parentNode.getHierarchyLevel())) {
                 return false;
             }
+            if (!parentNode.equals(other.parentNode)) {
+                return false;
+            }
         }
 
         return true;
@@ -252,6 +249,7 @@ public class ArchiveEntry {
         result = prime * result + ((orderNumber == null) ? 0 : orderNumber.hashCode());
         result = prime * result + ((parentNode == null) ? 0 : parentNode.getHierarchyLevel().hashCode());
         result = prime * result + ((parentNode == null) ? 0 : parentNode.getOrderNumber().hashCode());
+        result = prime * result + ((label == null) ? 0 : label.hashCode());
         return result;
     }
 
@@ -289,7 +287,7 @@ public class ArchiveEntry {
     }
 
     public void resetFoundList() {
-        // logger.trace("resetFoundList: {}", id);
+        // logger.trace("resetFoundList: {}", id); //NOSONAR Sometimes needed for debugging
         displaySearch = false;
         searchHit = false;
         if (subEntryList != null) {
@@ -342,7 +340,7 @@ public class ArchiveEntry {
      * Expands this entry and sets all sub-entries visible if their immediate parent is expanded.
      */
     public void expand() {
-        // logger.trace("expand: {}", id);
+        // logger.trace("expand: {}", id); //NOSONAR Sometimes needed for debugging
         if (!isHasChildren()) {
             return;
         }
@@ -355,7 +353,7 @@ public class ArchiveEntry {
      * Collapses this entry and hides all sub-entries.
      */
     public void collapse() {
-        // logger.trace("collapse: {}", id);
+        // logger.trace("collapse: {}", id); //NOSONAR Sometimes needed for debugging
         if (!isHasChildren()) {
             return;
         }
@@ -521,6 +519,11 @@ public class ArchiveEntry {
         this.setDisplaySearch(displaySearch, false);
     }
 
+    /**
+     * 
+     * @param displaySearch
+     * @param recursive
+     */
     public void setDisplaySearch(boolean displaySearch, boolean recursive) {
         this.displaySearch = displaySearch;
         if (recursive) {
@@ -565,7 +568,7 @@ public class ArchiveEntry {
      * @return the identityStatementAreaList
      */
     public List<ArchiveMetadataField> getIdentityStatementAreaList() {
-        // logger.trace("getIdentityStatementAreaList ({})", id);
+        // logger.trace("getIdentityStatementAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return identityStatementAreaList;
     }
 
@@ -580,7 +583,7 @@ public class ArchiveEntry {
      * @return the contextAreaList
      */
     public List<ArchiveMetadataField> getContextAreaList() {
-        // logger.trace("getContextAreaList ({})", id);
+        // logger.trace("getContextAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return contextAreaList;
     }
 
@@ -595,7 +598,7 @@ public class ArchiveEntry {
      * @return the contentAndStructureAreaAreaList
      */
     public List<ArchiveMetadataField> getContentAndStructureAreaAreaList() {
-        // logger.trace("getContentAndStructureAreaAreaList ({})", id);
+        // logger.trace("getContentAndStructureAreaAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return contentAndStructureAreaAreaList;
     }
 
@@ -610,7 +613,7 @@ public class ArchiveEntry {
      * @return the accessAndUseAreaList
      */
     public List<ArchiveMetadataField> getAccessAndUseAreaList() {
-        // logger.trace("getAccessAndUseAreaList ({})", id);
+        // logger.trace("getAccessAndUseAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return accessAndUseAreaList;
     }
 
@@ -625,7 +628,7 @@ public class ArchiveEntry {
      * @return the alliedMaterialsAreaList
      */
     public List<ArchiveMetadataField> getAlliedMaterialsAreaList() {
-        // logger.trace("getAlliedMaterialsAreaList ({})", id);
+        // logger.trace("getAlliedMaterialsAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return alliedMaterialsAreaList;
     }
 
@@ -640,7 +643,7 @@ public class ArchiveEntry {
      * @return the notesAreaList
      */
     public List<ArchiveMetadataField> getNotesAreaList() {
-        // logger.trace("getNotesAreaList ({})", id);
+        // logger.trace("getNotesAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return notesAreaList;
     }
 
@@ -655,7 +658,7 @@ public class ArchiveEntry {
      * @return the descriptionControlAreaList
      */
     public List<ArchiveMetadataField> getDescriptionControlAreaList() {
-        // logger.trace("getDescriptionControlAreaList ({})", id);
+        // logger.trace("getDescriptionControlAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return descriptionControlAreaList;
     }
 
@@ -731,10 +734,8 @@ public class ArchiveEntry {
 
     /**
      * @return the associatedRecordPi
-     * @throws IndexUnreachableException
-     * @throws PresentationException
      */
-    public String getAssociatedRecordPi() throws PresentationException, IndexUnreachableException {
+    public String getAssociatedRecordPi() {
         return associatedRecordPi;
     }
 
@@ -745,13 +746,12 @@ public class ArchiveEntry {
         this.associatedRecordPi = associatedRecordPi;
     }
 
-
     /**
      * Get the parent node hierarchy of this node, optionally including the node itself The list is sorted with hightest hierarchy level first, so the
      * node itself will always be the last element, if included
      *
      * @param includeSelf
-     * @return
+     * @return List<ArchiveEntry>
      */
     public List<ArchiveEntry> getAncestors(boolean includeSelf) {
         List<ArchiveEntry> ancestors = new ArrayList<>();
@@ -765,14 +765,12 @@ public class ArchiveEntry {
         }
         Collections.reverse(ancestors);
         return ancestors;
-
     }
 
     @Override
     public String toString() {
         return id;
     }
-
 
     public boolean isContainsImage() {
         return this.containsImage;
@@ -783,9 +781,11 @@ public class ArchiveEntry {
     }
 
     public String getFieldValue(String field) {
-        return getAllAreaLists().stream().filter(entry -> entry.getLabel().equals(field))
+        return getAllAreaLists().stream()
+                .filter(entry -> entry.getLabel().equals(field))
                 .map(ArchiveMetadataField::getValue)
                 .filter(StringUtils::isNotBlank)
-                .findAny().orElse(null);
-  }
+                .findAny()
+                .orElse(null);
+    }
 }

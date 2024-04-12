@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+	<jsfComponent>
+		<library>cms/components/frontend/component</library>
+		<name>trackingOptOut</name>
+	</jsfComponent>
+	<label>cms_component__trackingoptout_label</label>
+	<description>cms_component__trackingoptout_desc</description>
+	<icon>cms/components/frontend/component/icon/trackingoptout.png</icon>
+</component>

@@ -28,7 +28,7 @@ import javax.faces.convert.FacesConverter;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.cms.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
  * <p>
@@ -36,19 +36,17 @@ import io.goobi.viewer.model.cms.CMSPage;
  * </p>
  */
 @FacesConverter("cmsPageConverter")
-public class CmsPageConverter implements Converter {
+public class CmsPageConverter implements Converter<CMSPage> {
 
     /* (non-Javadoc)
      * @see javax.faces.convert.Converter#getAsObject(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.String)
      */
     /** {@inheritDoc} */
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        //		System.out.println("GET AS OBJECT: " + value);
+    public CMSPage getAsObject(FacesContext context, UIComponent component, String value) {
         try {
             Long id = Long.parseLong(value);
-            CMSPage page = DataManager.getInstance().getDao().getCMSPage(id);
-            return page;
+            return DataManager.getInstance().getDao().getCMSPage(id);
         } catch (NullPointerException | NumberFormatException | DAOException e) {
             return null;
         }
@@ -59,14 +57,11 @@ public class CmsPageConverter implements Converter {
      */
     /** {@inheritDoc} */
     @Override
-    public String getAsString(FacesContext context, UIComponent component, Object object) {
-        if (object instanceof CMSPage) {
-            Long id = ((CMSPage) object).getId();
-            //			System.out.println("GET CMSPAGEID AS STRING: " + id);
+    public String getAsString(FacesContext context, UIComponent component, CMSPage object) {
+        if (object != null) {
+            Long id = object.getId();
             return id.toString();
-        } else {
-            return "";
         }
+        return "";
     }
-
 }

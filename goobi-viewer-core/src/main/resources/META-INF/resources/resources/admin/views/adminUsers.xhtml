@@ -26,6 +26,8 @@
                         #{msg.add}
                     </a>
                 </div>
+                
+                <viewerComponent:adminBreadcrumbs />
 
                 <div class="admin__content-inner-content">
                     <div class="admin__table-tools">
@@ -68,7 +70,7 @@
                                     </div>
                                     <div class="admin__table-data" role="gridcell">
                                         <!-- USER NAME -->
-                                        <span class="admin__table-name">#{user.nickName}</span>
+                                        <span class="admin__table-name"><h:outputText value="#{user.nickName}" escape="true" /></span>
                                         <!-- USER EMAIL -->
                                         <a href="mailto:#{user.email}" class="admin__table-email -textlink">#{user.email}</a>
                                         <!-- EDIT -->

@@ -1,51 +1,29 @@
-<ui:composition 
-	xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:pretty="http://ocpsoft.com/prettyfaces/3.3.3"
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
 	template="/resources/themes/#{navigationHelper.theme}/template.html">
-	
-	<ui:param name="cmsPage" value="#{cmsBean.currentPage}" />
-	
-    <ui:define name="metadata">
-	    <f:metadata> 
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage)}" />
-			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />
-			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
-        </f:metadata>
-    </ui:define>
 
-    <ui:define name="content">
-		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
-    	<f:param name="currentPage" value="#{cmsBean.random}" />
-    	<f:view contentType="text/html" encoding="utf-8">
-			<div id="templateRSSFeed" class="tpl-rss #{cmsPage.wrapperElementClass}">
-                <!-- EDIT PAGE -->
-                <ui:fragment rendered="#{cmsBean.mayEdit(cmsPage)}">
-                    <ui:include src="/resources/cms/includes/editPage.xhtml" />                    
-                </ui:fragment>
-                
-				<!-- PAGE UNPUBLISHED -->
-				<h:panelGroup rendered="#{!cmsPage.published}">
-					<div class="alert alert-warning" role="alert">#{msg.cms_pagePreviewNotPublished}</div>
-				</h:panelGroup>
-
-				<h1 >#{cmsPage.title}</h1>
+	<composite:interface>
+		<composite:attribute name="component" required="true" />
+	</composite:interface>
+    
+	<composite:implementation>
 				
-				<div class="tpl-rss__text">
-                    <h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
+				<div id="templateRSSFeed" class="tpl-rss content-component__legacy-full-width">
+                    <h:outputText escape="false" value="#{cc.attrs.component.getContentData('text')}"></h:outputText>
                 </div>
 				
 				<div class="tpl-rss__feed"></div>
 				
 				<script type="text/javascript">
                     $.ajax( {
-                        url: "#{navigationHelper.applicationUrl}api/v1/records/rss/channel.json?max=#{cmsPage.getContentItem('rss').elementsPerPage}&amp;lang=#{navigationHelper.localeString}",
+                        url: "#{navigationHelper.applicationUrl}api/v1/records/rss/channel.json?max=#{cc.attrs.component.getContentItem('rss').content.elementsPerPage}&amp;lang=#{navigationHelper.localeString}",
                         type: "GET",
                         datatype: "JSON"
                     } ).then( function( data ) {
@@ -54,12 +32,5 @@
                         cmsJS.rssFeed.init( rssFeedConfig, data );
                     } );
                 </script>
-			</div>
-		</f:view>
-    </ui:define>
-
-    <!-- SIDEBAR -->
-	<ui:define name="sidebar">
-		<ui:include src="/resources/cms/includes/cms_sidebar.xhtml" />
-    </ui:define>
+	</composite:implementation>
 </ui:composition>

@@ -21,48 +21,23 @@
  */
 package io.goobi.viewer.api.rest.v1.records.media;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_FOOTER;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.FooterResource;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
-import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
-import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
-import io.goobi.viewer.api.rest.filters.FilterTools;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.model.security.IPrivilegeHolder;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
 /**
@@ -77,8 +52,11 @@ public class RecordFilesFooterResource extends FooterResource {
     private static final Logger logger = LogManager.getLogger(RecordFilesFooterResource.class);
 
     /**
+     * @param context
      * @param request
-     * @param directory
+     * @param response
+     * @param urls
+     * @param pi
      * @param filename
      * @throws ContentLibException
      */
@@ -88,9 +66,6 @@ public class RecordFilesFooterResource extends FooterResource {
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Filename of the image") @PathParam("filename") String filename) throws ContentLibException {
         super(request);
-
     }
-
-
 
 }

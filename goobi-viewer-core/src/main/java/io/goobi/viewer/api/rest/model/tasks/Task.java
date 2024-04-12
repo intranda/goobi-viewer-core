@@ -28,8 +28,8 @@ import java.util.function.BiConsumer;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -39,6 +39,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import io.goobi.viewer.api.rest.v1.tasks.TasksResource;
+import io.goobi.viewer.model.job.TaskType;
 
 /**
  * A process triggered by a REST call using POST and may be monitored via the {@link TasksResource}. Each task has a unique id of type long given
@@ -56,7 +57,8 @@ import io.goobi.viewer.api.rest.v1.tasks.TasksResource;
 public class Task {
 
     private static final Logger logger = LogManager.getLogger(Task.class);
-    private static final AtomicLong idCounter = new AtomicLong(0);
+
+    private static final AtomicLong ID_COUNTER = new AtomicLong(0);
 
     public enum Accessibility {
         /**
@@ -77,23 +79,6 @@ public class Task {
         TOKEN;
     }
 
-    public enum TaskType {
-        /** Send emails to all search owners if their searches have changed results */
-        NOTIFY_SEARCH_UPDATE,
-        /** Remove expired born digital content download tickets from the DB */
-        PURGE_EXPIRED_DOWNLOAD_TICKETS,
-        /** Handle asynchronous generation of excel sheets with search results */
-        SEARCH_EXCEL_EXPORT,
-        /** Update the application sitemap */
-        UPDATE_SITEMAP,
-        /** Update data repository names of a record */
-        UPDATE_DATA_REPOSITORY_NAMES,
-        /** Update uploaded processes status. */
-        UPDATE_UPLOAD_JOBS,
-        /** Move daily usage statistics to SOLR */
-        INDEX_USAGE_STATISTICS;
-    }
-
     public enum TaskStatus {
         CREATED,
         STARTED,
@@ -101,30 +86,39 @@ public class Task {
         ERROR
     }
 
-    public final long id;
-    public final TaskType type;
+    private final long id;
+    private final TaskType type;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
-    public final LocalDateTime timeCreated;
+    private final LocalDateTime timeCreated;
     @JsonIgnore
-    public final BiConsumer<HttpServletRequest, Task> work;
+    private final BiConsumer<HttpServletRequest, Task> work;
     private volatile TaskStatus status;
     @JsonIgnore
-    public Optional<String> exception = Optional.empty();
+    private Optional<String> exception = Optional.empty();
     @JsonIgnore
-    public Optional<String> sessionId = Optional.empty();
+    private Optional<String> sessionId = Optional.empty();
     @JsonIgnore
-    public final TaskParameter params;
+    private final TaskParameter params;
 
+    /**
+     * 
+     * @param params
+     * @param work
+     */
     public Task(TaskParameter params, BiConsumer<HttpServletRequest, Task> work) {
-        this.type = params.type;
+        this.type = params.getType();
         this.work = work;
-        this.id = idCounter.incrementAndGet();
+        this.id = ID_COUNTER.incrementAndGet();
         this.timeCreated = LocalDateTime.now();
         this.status = TaskStatus.CREATED;
         this.params = params;
     }
 
+    /**
+     * 
+     * @param request
+     */
     public void doTask(HttpServletRequest request) {
         logger.debug("Started Task '{}'", this);
         this.sessionId = Optional.ofNullable(request).map(r -> r.getSession().getId());
@@ -136,6 +130,10 @@ public class Task {
         logger.debug("Finished Task '{}'", this);
     }
 
+    /**
+     * 
+     * @param error
+     */
     public void setError(String error) {
         this.status = TaskStatus.ERROR;
         this.exception = Optional.ofNullable(error);
@@ -144,7 +142,7 @@ public class Task {
     /**
      * 
      * @param type
-     * @return
+     * @return {@link Accessibility}
      */
     public static Accessibility getAccessibility(TaskType type) {
         switch (type) {
@@ -154,12 +152,83 @@ public class Task {
             case UPDATE_DATA_REPOSITORY_NAMES:
             case UPDATE_UPLOAD_JOBS:
             case INDEX_USAGE_STATISTICS:
+            case PRERENDER_PDF:
                 return Accessibility.TOKEN;
             case SEARCH_EXCEL_EXPORT:
                 return Accessibility.SESSION;
             default:
                 return Accessibility.ADMIN;
         }
+    }
+
+    /**
+     * @return the id
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
+     * @return the type
+     */
+    public TaskType getType() {
+        return type;
+    }
+
+    /**
+     * @return the exception
+     */
+    public Optional<String> getException() {
+        return exception;
+    }
+
+    /**
+     * @param exception the exception to set
+     */
+    public void setException(Optional<String> exception) {
+        this.exception = exception;
+    }
+
+    /**
+     * @return the sessionId
+     */
+    public Optional<String> getSessionId() {
+        return sessionId;
+    }
+
+    /**
+     * @param sessionId the sessionId to set
+     */
+    public void setSessionId(Optional<String> sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    /**
+     * @return the timeCreated
+     */
+    public LocalDateTime getTimeCreated() {
+        return timeCreated;
+    }
+
+    /**
+     * @return the work
+     */
+    public BiConsumer<HttpServletRequest, Task> getWork() {
+        return work;
+    }
+
+    /**
+     * @return the params
+     */
+    public TaskParameter getParams() {
+        return params;
+    }
+
+    /**
+     * @param status the status to set
+     */
+    public void setStatus(TaskStatus status) {
+        this.status = status;
     }
 
     /**

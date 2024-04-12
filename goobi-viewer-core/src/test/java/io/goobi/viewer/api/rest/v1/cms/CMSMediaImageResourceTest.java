@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.api.rest.v1.cms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -33,27 +33,27 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
-import io.goobi.viewer.model.cms.CMSMediaItem;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
 /**
  * @author florian
  *
  */
-public class CMSMediaImageResourceTest extends AbstractRestApiTest {
+class CMSMediaImageResourceTest extends AbstractRestApiTest {
 
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -61,13 +61,13 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     @Test
-    public void testCallImageUrlCapitalSuffix() {
+    void testCallImageUrlCapitalSuffix() {
         String filename = "image4.JPG";
         String url = urls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build();
         try (Response response = target(url)
@@ -76,13 +76,12 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
                 .get()) {
             String entity = response.readEntity(String.class);
             //since no file image4.JPG exists, 404 is returned. But that is ok as long as the method was called (otherwise 405 would be thrown)
-            assertEquals("Should return status 404; answer; " + entity, 404, response.getStatus());
+            assertEquals(404, response.getStatus(), "Should return status 404; answer; " + entity);
         }
     }
 
     @Test
-    public void testCallImageUrlForGif() throws UnsupportedEncodingException {
-
+    void testCallImageUrlForGif() {
         String filename = "lorelai.gif";
         String url = "https://viewer.goobi.io/api/v1/cms/media/files/" + filename;
         ContainerRequestContext context = Mockito.mock(ContainerRequestContext.class);
@@ -95,8 +94,7 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    public void testUrlencoding() throws UnsupportedEncodingException {
-
+    void testUrlencoding() throws UnsupportedEncodingException {
         String filename = "ä (b) c";
         String filenameEnc = URLEncoder.encode(filename, "utf-8");
         CMSMediaItem media = new CMSMediaItem();
@@ -106,7 +104,7 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
         String imageUrl = thumbs.getThumbnailUrl(media, 100, 200);
         //System.out.println(imageUrl);
         assertTrue(imageUrl.startsWith(apiUrl));
-        assertTrue(imageUrl + " should contain " + filenameEnc, imageUrl.contains(filenameEnc));
+        assertTrue(imageUrl.contains(filenameEnc), imageUrl + " should contain " + filenameEnc);
 
         ContainerRequestContext context = Mockito.mock(ContainerRequestContext.class);
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
@@ -115,8 +113,6 @@ public class CMSMediaImageResourceTest extends AbstractRestApiTest {
         CMSMediaImageResource resource = new CMSMediaImageResource(context, request, response, urls, filename);
         String resourceURI = resource.getResourceURI().toString();
         assertTrue(resourceURI.startsWith(apiUrl));
-        assertTrue(resourceURI + " should contain " + filenameEnc, resourceURI.contains(filenameEnc));
-
+        assertTrue(resourceURI.contains(filenameEnc), resourceURI + " should contain " + filenameEnc);
     }
-
 }

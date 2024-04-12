@@ -24,6 +24,8 @@ package io.goobi.viewer.model.cms;
 import java.util.Collections;
 
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.media.CMSMediaHolder;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
 
 public class SimpleMediaHolder implements CMSMediaHolder {
 
@@ -38,7 +40,6 @@ public class SimpleMediaHolder implements CMSMediaHolder {
     public SimpleMediaHolder(String filter) {
         this.filter = filter;
     }
-
 
     public SimpleMediaHolder(CMSMediaItem item) {
         this();
@@ -56,7 +57,6 @@ public class SimpleMediaHolder implements CMSMediaHolder {
         if (mediaItem != null) {
             this.mediaItemWrapper = new CategorizableTranslatedSelectable<>(mediaItem, true,
                     mediaItem.getFinishedLocales().stream().findFirst().orElse(BeanUtils.getLocale()), Collections.emptyList());
-            ;
         } else {
             this.mediaItemWrapper = null;
         }
@@ -69,6 +69,11 @@ public class SimpleMediaHolder implements CMSMediaHolder {
 
     @Override
     public String getMediaFilter() {
+        return filter;
+    }
+
+    @Override
+    public String getMediaTypes() {
         return filter;
     }
 

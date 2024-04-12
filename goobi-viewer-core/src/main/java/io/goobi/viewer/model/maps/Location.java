@@ -70,7 +70,7 @@ public class Location implements Serializable {
      * @param pi
      * @param pageType
      * @param urlBuilder If not null, the URL will be build using the URL builder, otherwise manually
-     * @return
+     * @return {@link URI}
      */
     public static URI getRecordURI(String pi, PageType pageType, IURLBuilder urlBuilder) {
         if (urlBuilder != null) {
@@ -141,9 +141,9 @@ public class Location implements Serializable {
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {
             Location other = (Location) obj;
-            return StringUtils.equals(this.label, other.label) &&
-                    Objects.equals(this.uri, other.uri) &&
-                    Objects.equals(this.area, other.area);
+            return StringUtils.equals(this.label, other.label)
+                    && Objects.equals(this.uri, other.uri)
+                    && Objects.equals(this.area, other.area);
         }
 
         return false;

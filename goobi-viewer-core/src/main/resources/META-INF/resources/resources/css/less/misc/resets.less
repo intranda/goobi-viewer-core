@@ -7,7 +7,11 @@
     overflow-y: hidden;
 } */
 
-.modal-dialog {
+.alert-danger {
+	word-wrap: break-word;
+}
+
+.modal-dialog { 
 	z-index: 2031;
 }
 
@@ -185,11 +189,12 @@ button:focus {
 		a {
 			display: inline-block;
 			padding: 1rem 1.5rem;
-			border: 1px solid @middlegray;
+//			border: 1px solid @middlegray;
 			background-color: @lightgray;
-			border-radius: 0;
-			border-color: @middlegray;
+//			border-radius: 0;
+//			border-color: @middlegray;
 			margin-right: 0.2rem;
+//			border-bottom: none;
 		}
 		span {
 			display: block;
@@ -209,11 +214,15 @@ button:focus {
 			}
 		}
 		&.nav-tabs__sidebar-button {
-			margin-left: 3rem;
+			margin-left: auto;
 			a {
 				margin-right: 0;
 			}
 		}
+	}
+	.active.nav-tabs__sidebar-button {
+		border-bottom: none;
+		margin-bottom: -1px;
 	}
 }
 .tab-content {
@@ -398,8 +407,14 @@ body.swal2-toast-shown .swal2-container.swal2-top-right {
 	}
 }
 .swal2-actions {
-	.btn--default {
-		margin-left: 1rem;
+	gap: 15px;
+	margin-top: 35px;
+	.btn--danger {
+		&:focus, 
+		&:hover,
+		&:active {
+			border: 1px solid #875359;
+		}
 	}
 }
 .swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
@@ -409,8 +424,9 @@ body.swal2-toast-shown .swal2-container.swal2-top-right {
 .swal2-popup.swal2-toast .swal2-title {
 	font-size: 1.3rem;
 	font-family: "Inter", Arial, sans-serif;
+	color: #111;
 }
-
+ 
 .-sweetAlertShowAnimation {
 	animation: swalAnimShow 0.2s ease;
 }
@@ -451,7 +467,14 @@ body.swal2-toast-shown .swal2-container.swal2-top-right {
  }
 }
 
+// Simple light box z-index changes
 
+#viewer .slbOverlay {
+	z-index: 2100;
+}
+#viewer .slbWrapOuter {
+	z-index: 2105;
+}
 
 /* add a focus ring for better accessibility */
 /* set to important, because of styles in bootstrap.custom.css */

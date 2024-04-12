@@ -93,6 +93,43 @@
     }
 }
 
+
+.cms-pages-overview {
+	&__single-row-translation-indicator {
+		flex-shrink: 0;
+		.nav {
+			flex-wrap: wrap;
+		}
+		.nav-tabs {
+			border-bottom: unset;
+		}
+		.nav-tabs li a {
+			display: none;
+		}
+		.admin__translation-indicator-list {
+			display: flex;
+			gap: 8px;
+		}
+		.admin__translation-indicator {
+			margin-bottom: 0;
+			&:first-child {
+				background: @blue !important;
+			}
+			width: 15px;
+			height: 15px;
+			background: @grayBar;
+			&:last-child {
+				margin-right: 0;
+			}
+			&.-already-translated {
+				background: @greenBar;
+			}
+			&.-partly-translated {
+				background: @yellowBar;
+			}
+		}
+	}
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 

@@ -38,8 +38,7 @@ import io.goobi.viewer.model.administration.legal.DisplayScope.PageScope;
 import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
- * Class to persist settings for the disclaimer modal.
- * Only one instance of this class should be persisted in the database
+ * Class to persist settings for the disclaimer modal. Only one instance of this class should be persisted in the database
  *
  * @author florian
  *
@@ -68,7 +67,8 @@ public class Disclaimer {
     private boolean active = false;
 
     /**
-     * The time after which a user must have agreed to the disclaimer. If the browser's local storage contains a different value, the cookie banner must be accepted again
+     * The time after which a user must have agreed to the disclaimer. If the browser's local storage contains a different value, the cookie banner
+     * must be accepted again
      */
     @Column(name = "requires_consent_after", nullable = false)
     private LocalDateTime requiresConsentAfter = LocalDateTime.now();
@@ -76,14 +76,14 @@ public class Disclaimer {
     /**
      * The scope within which accepting the disclaimer modal is valid for any user
      */
-    @Column(name="acceptance_scope", nullable = false)
+    @Column(name = "acceptance_scope", nullable = false)
     @Convert(converter = ConsentScopeConverter.class)
     private ConsentScope acceptanceScope = new ConsentScope();
 
     /**
      * The scope within which accepting the disclaimer modal is valid for any user
      */
-    @Column(name="display_scope", nullable = true)
+    @Column(name = "display_scope", nullable = true)
     @Convert(converter = DisplayScopeConverter.class)
     private DisplayScope displayScope = new DisplayScope(PageScope.RECORD, "");
 
@@ -96,6 +96,7 @@ public class Disclaimer {
 
     /**
      * cloning constructor
+     * 
      * @param orig
      */
     public Disclaimer(Disclaimer orig) {
@@ -107,86 +108,72 @@ public class Disclaimer {
         this.acceptanceScope = new ConsentScope(orig.acceptanceScope.toString());
     }
 
-
     /**
      * database id
+     * 
      * @return the id
      */
     public Long getId() {
         return id;
     }
 
-
-
-
     /**
      * set the database id
+     * 
      * @param id the id to set
      */
     public void setId(Long id) {
         this.id = id;
     }
 
-
-
-
     /**
      * the text to show in the disclaimer
+     * 
      * @return the text
      */
     public TranslatedText getText() {
         return text;
     }
 
-
-
-
     /**
      * set the disclaimer text
+     * 
      * @param text the text to set
      */
     public void setText(TranslatedText text) {
         this.text = text;
     }
 
-
-
-
     /**
      * get if the disclaimer is active
+     * 
      * @return true if the disclaimer is to be shown at all
      */
     public boolean isActive() {
         return active;
     }
 
-
-
-
     /**
      * set the disclaimer to active/inactive state
+     * 
      * @param active the active to set
      */
     public void setActive(boolean active) {
         this.active = active;
     }
 
-
-
-
     /**
      * get the date after which acceptance of the disclaimer must have happened to be valid
+     * 
      * @return a date
      */
     public LocalDateTime getRequiresConsentAfter() {
         return requiresConsentAfter;
     }
 
-
-
-
     /**
      * set the date after which acceptance of the disclaimer must have happened to be valid
+     * 
      * @param requiresConsentAfter the requiresConsentAfter to set
      */
     public void setRequiresConsentAfter(LocalDateTime requiresConsentAfter) {
@@ -203,6 +190,7 @@ public class Disclaimer {
 
     /**
      * get the {@link #acceptanceScope} of the disclaimer
+     * 
      * @return the {@link ConsentScope}
      */
     public ConsentScope getAcceptanceScope() {
@@ -211,7 +199,8 @@ public class Disclaimer {
 
     /**
      * set the {@link #acceptanceScope} of the disclaimer
-     * @param a {@link ConsentScope}
+     * 
+     * @param acceptanceScope a {@link ConsentScope}
      */
     public void setAcceptanceScope(ConsentScope acceptanceScope) {
         this.acceptanceScope = acceptanceScope;

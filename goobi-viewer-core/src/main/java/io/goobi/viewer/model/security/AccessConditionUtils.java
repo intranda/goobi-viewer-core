@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,8 +33,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -75,7 +74,7 @@ import io.goobi.viewer.solr.SolrTools;
  * AccessConditionUtils class.
  * </p>
  */
-public class AccessConditionUtils {
+public final class AccessConditionUtils {
 
     private static final Logger logger = LogManager.getLogger(AccessConditionUtils.class);
 
@@ -136,7 +135,8 @@ public class AccessConditionUtils {
                 return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_AUDIO);
             case "dimensions":
             case "version":
-                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_IMAGES); // TODO is priv checking needed here?
+                // TODO is priv checking needed here?
+                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_IMAGES);
             default: // nothing
                 break;
         }
@@ -166,6 +166,11 @@ public class AccessConditionUtils {
         String simpleFileName = FileTools.getPathFromUrlString(fileName).getFileName().toString();
         String baseFileName = FilenameUtils.getBaseName(simpleFileName);
         sbQuery.append('+').append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier);
+        //if fileName is an absolute http(s) url, assume that the filename is exactly the entire url
+        if (fileName.matches("https?:\\/\\/.*")) {
+            sbQuery.append(" +").append(useFileField).append(":\"").append(fileName).append('"');
+            return sbQuery.toString();
+        }
         // Different media types have the file name in different fields
         String extension = FilenameUtils.getExtension(fileName).toLowerCase();
         switch (extension) {
@@ -205,10 +210,28 @@ public class AccessConditionUtils {
                         .append(simpleFileName)
                         .append("\")");
                 break;
-            case "tif":
-            case "tiff":
-            case "jpg":
-            case "jpeg":
+            case "tif", "tiff":
+                sbQuery.append(" +(")
+                        .append(useFileField)
+                        .append(":\"")
+                        .append(simpleFileName)
+                        .append("\" ")
+                        .append(SolrConstants.FILENAME)
+                        .append("_TIFF:\"")
+                        .append(simpleFileName)
+                        .append("\")");
+                break;
+            case "jpg", "jpeg":
+                sbQuery.append(" +(")
+                        .append(useFileField)
+                        .append(":\"")
+                        .append(simpleFileName)
+                        .append("\" ")
+                        .append(SolrConstants.FILENAME)
+                        .append("_JPEG:\"")
+                        .append(simpleFileName)
+                        .append("\")");
+                break;
             case "png":
             case "jp2":
             case "obj":
@@ -223,7 +246,6 @@ public class AccessConditionUtils {
                 break;
         }
 
-        // logger.trace(sbQuery.toString());
         return sbQuery.toString();
     }
 
@@ -240,7 +262,7 @@ public class AccessConditionUtils {
      */
     static Map<String, AccessPermission> checkAccessPermissionByIdentifierAndFileName(String identifier, String fileName, String privilegeName,
             HttpServletRequest request) throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionByIdentifierAndFileName({}, {}, {})", identifier, fileName, privilegeName);
+        // logger.trace("checkAccessPermissionByIdentifierAndFileName({}, {}, {})", identifier, fileName, privilegeName); //NOSONAR Debugging
         if (StringUtils.isEmpty(identifier)) {
             return Collections.emptyMap();
         }
@@ -255,6 +277,9 @@ public class AccessConditionUtils {
                     .search(query, "*".equals(fileName) ? SolrSearchIndex.MAX_HITS : 1, null,
                             Arrays.asList(SolrConstants.ACCESSCONDITION));
             if (results != null) {
+                if (results.isEmpty()) {
+                    logger.debug("No hits for permission check query: {}", query); //NOSONAR this will help identify index inconsistencies
+                }
                 for (SolrDocument doc : results) {
                     Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
                     if (fieldsAccessConddition != null) {
@@ -338,11 +363,17 @@ public class AccessConditionUtils {
      * @throws RecordNotFoundException
      */
     public static AccessPermission checkAccessPermissionByIdentifierAndLogId(String identifier, String logId, String privilegeName,
-            HttpServletRequest request)
-            throws IndexUnreachableException, DAOException, RecordNotFoundException {
-        // logger.trace("checkAccessPermissionByIdentifierAndLogId({}, {}, {})", identifier, logId, privilegeName);
+            HttpServletRequest request) throws IndexUnreachableException, DAOException, RecordNotFoundException {
+        // logger.trace("checkAccessPermissionByIdentifierAndLogId({}, {}, {})", identifier, logId, privilegeName); //NOSONAR Debugging
         if (StringUtils.isEmpty(identifier)) {
             return AccessPermission.denied();
+        }
+
+        String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilegeName + "_" + identifier + "_" + logId;
+        AccessPermission ret = (AccessPermission) getSessionPermission(attributeName, request);
+        if (ret != null) {
+            // logger.trace("Permission '{}' already in session: {}", attributeName, ret.isGranted());
+            return ret;
         }
 
         String query;
@@ -373,7 +404,12 @@ public class AccessConditionUtils {
                 throw new RecordNotFoundException(identifier);
             }
 
-            return checkAccessPermissionBySolrDoc(results.get(0), query, privilegeName, request);
+            ret = checkAccessPermissionBySolrDoc(results.get(0), query, privilegeName, request);
+
+            // Add permission check outcome to user session
+            addSessionPermission(attributeName, ret, request);
+
+            return ret;
         } catch (PresentationException e) {
             logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             return AccessPermission.denied();
@@ -392,7 +428,7 @@ public class AccessConditionUtils {
      */
     public static AccessPermission checkAccessPermissionBySolrDoc(SolrDocument doc, String originalQuery, String privilegeName,
             HttpServletRequest request) throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionByIdentifierAndLogId({}, {}, {})", identifier, logId, privilegeName);
+        // logger.trace("checkAccessPermissionBySolrDoc({}, {}, {})", identifier, logId, privilegeName); //NOSONAR Debugging
         if (doc == null) {
             return AccessPermission.denied();
         }
@@ -404,7 +440,7 @@ public class AccessConditionUtils {
             if (fieldsAccessConddition != null) {
                 for (Object accessCondition : fieldsAccessConddition) {
                     requiredAccessConditions.add((String) accessCondition);
-                    // logger.trace("{}", accessCondition.toString());
+                    // logger.trace("{}", accessCondition.toString()); //NOSONAR Debugging
                 }
             }
 
@@ -445,19 +481,12 @@ public class AccessConditionUtils {
         logger.trace("checkAccessPermissionByIdentiferForAllLogids({}, {})", identifier, privilegeName);
 
         String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilegeName + "_" + identifier;
-        Map<String, AccessPermission> ret = new HashMap<>();
-        if (request != null && request.getSession() != null) {
-            try {
-                ret = (Map<String, AccessPermission>) request.getSession().getAttribute(attributeName);
-                if (ret != null) {
-                    return ret;
-                }
-                ret = new HashMap<>();
-            } catch (ClassCastException e) {
-                logger.error("Cannot cast session attribute '" + attributeName + "' to Map", e);
-            }
+        Map<String, AccessPermission> ret = (Map<String, AccessPermission>) getSessionPermission(attributeName, request);
+        if (ret != null) {
+            return ret;
         }
 
+        ret = new HashMap<>();
         if (StringUtils.isNotEmpty(identifier)) {
             String query = new StringBuilder().append('+')
                     .append(SolrConstants.PI_TOPSTRUCT)
@@ -491,7 +520,7 @@ public class AccessConditionUtils {
                         if (fieldsAccessConddition != null) {
                             for (Object accessCondition : fieldsAccessConddition) {
                                 requiredAccessConditions.add((String) accessCondition);
-                                // logger.trace("{}", accessCondition.toString());
+                                // logger.trace("{}", accessCondition.toString()); //NOSONAR Debugging
                             }
                         }
 
@@ -509,9 +538,8 @@ public class AccessConditionUtils {
             }
         }
 
-        if (request != null && request.getSession() != null) {
-            request.getSession().setAttribute(attributeName, ret);
-        }
+        // Add permission check outcome to user session
+        addSessionPermission(attributeName, ret, request);
 
         logger.trace("Found access permisstions for {} elements.", ret.size());
         return ret;
@@ -528,50 +556,44 @@ public class AccessConditionUtils {
      */
     public static AccessPermission checkContentFileAccessPermission(String identifier, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
-
-        AccessPermission ret = null;
-        String attributeName = IPrivilegeHolder.PREFIX_PRIV + IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT;
-        if (request != null && request.getSession() != null) {
-            try {
-                ret = (AccessPermission) request.getSession().getAttribute(attributeName);
-                if (ret != null) {
-                    // Permission already saved in session
-                    return ret;
-                }
-            } catch (ClassCastException e) {
-                logger.error("Cannot cast session attribute '" + attributeName + "' to Map", e);
-            }
+        // logger.trace("checkContentFileAccessPermission: {}", identifier); //NOSONAR Debugging
+        String attributeName = IPrivilegeHolder.PREFIX_PRIV + IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT + "_" + identifier;
+        AccessPermission ret = (AccessPermission) getSessionPermission(attributeName, request);
+        if (ret != null) {
+            // logger.trace("Permission for '{}' already in session: {}", attributeName, ret.isGranted()); //NOSONAR Debugging
+            return ret;
         }
 
-        // logger.trace("checkContentFileAccessPermission({})", identifier);
         if (StringUtils.isNotEmpty(identifier)) {
             try {
                 Set<String> requiredAccessConditions = new HashSet<>();
                 String query = "+" + SolrConstants.PI + ":" + identifier;
                 SolrDocumentList results = DataManager.getInstance()
                         .getSearchIndex()
-                        .search(query, 1, null, Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION }));
+                        .search(query, 1, null, Arrays.asList(SolrConstants.ACCESSCONDITION));
                 if (results != null) {
                     for (SolrDocument doc : results) {
                         Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
                         if (fieldsAccessConddition != null) {
                             for (Object accessCondition : fieldsAccessConddition) {
                                 requiredAccessConditions.add((String) accessCondition);
-                                // logger.debug(accessCondition.toString());
+                                // logger.debug(accessCondition.toString()); //NOSONAR Debugging
                             }
                         }
                     }
                 }
 
                 ret = checkAccessPermission(requiredAccessConditions, IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT, query, request);
+                logger.trace("Permission found for '{}': {}", identifier, ret.isGranted());
 
             } catch (PresentationException e) {
                 logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             }
         }
-        if (request != null && request.getSession() != null) {
-            request.getSession().setAttribute(attributeName, ret);
-        }
+
+        // Add permission check outcome to user session
+        addSessionPermission(attributeName, ret, request);
+
         //return only the access status for the relevant files
         return ret;
     }
@@ -588,7 +610,7 @@ public class AccessConditionUtils {
      */
     public static AccessPermission checkAccessPermissionByImageUrn(String imageUrn, String privilegeName, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
-        logger.trace("checkAccessPermissionByImageUrn({}, {}, {}, {})", imageUrn, privilegeName, request.getAttributeNames());
+        logger.trace("checkAccessPermissionByImageUrn({}, {}, {}, {})", imageUrn, privilegeName, request.getAttributeNames()); //NOSONAR Debugging
         if (StringUtils.isEmpty(imageUrn)) {
             return AccessPermission.denied();
         }
@@ -609,7 +631,7 @@ public class AccessConditionUtils {
                 if (fieldsAccessConddition != null) {
                     for (Object accessCondition : fieldsAccessConddition) {
                         requiredAccessConditions.add((String) accessCondition);
-                        // logger.debug((String) accessCondition);
+                        // logger.debug((String) accessCondition); //NOSONAR Debugging
                     }
                 }
             }
@@ -668,7 +690,7 @@ public class AccessConditionUtils {
      */
     public static AccessPermission checkAccessPermissionForImage(HttpServletRequest request, String pi, String contentFileName)
             throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionForImage: {}/{}", pi, contentFileName);
+        // logger.trace("checkAccessPermissionForImage: {}/{}", pi, contentFileName); //NOSONAR Debugging
         return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_IMAGES);
     }
 
@@ -701,7 +723,7 @@ public class AccessConditionUtils {
         if (page == null) {
             throw new IllegalArgumentException("page may not be null");
         }
-        // logger.trace("checkAccessPermissionForPagePdf: {}/{}", page.getPi(), page.getOrder());
+        // logger.trace("checkAccessPermissionForPagePdf: {}/{}", page.getPi(), page.getOrder()); //NOSONAR Debugging
         return checkAccessPermissionByIdentifierAndPageOrder(page, IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF, request);
     }
 
@@ -744,106 +766,49 @@ public class AccessConditionUtils {
     @SuppressWarnings("unchecked")
     public static AccessPermission checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpServletRequest request, String pi,
             String contentFileName, String privilegeType) throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap: {}, {}, {}", pi, contentFileName, privilegeType); // Sonar considers this log msg a security issue, so leave it commented out when not needed
+        // logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap: {}, {}, {}", pi, contentFileName, privilegeType); //NOSONAR Deb
         if (privilegeType == null) {
             throw new IllegalArgumentException("privilegeType may not be null");
         }
-        // logger.debug("sesaccesssion id: " + request.getSession().getId());
+        // logger.debug("session id: " + request.getSession().getId()); //NOSONAR Debugging
         // Session persistent permission check: Servlet-local method.
-        String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilegeType;
-        // logger.trace("Checking session attribute: {}", attributeName);
-        Map<String, AccessPermission> permissions = null;
-        if (request != null) {
-            permissions = (Map<String, AccessPermission>) request.getSession().getAttribute(attributeName);
-        }
+        String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilegeType + "_" + pi + "_" + contentFileName;
+        // logger.trace("Checking session attribute: {}", attributeName); //NOSONAR Debugging
+        Map<String, AccessPermission> permissions = (Map<String, AccessPermission>) getSessionPermission(attributeName, request);
         if (permissions == null) {
             permissions = new HashMap<>();
-            // logger.trace("Session attribute not found, creating new");
+            // logger.trace("Session attribute not found, creating new"); //NOSONAR Debugging
         }
-        // logger.debug("Permissions found, " + permissions.size() + " items.");
+        // logger.debug("Permissions found, " + permissions.size() + " items."); //NOSONAR Debugging
         // new pi -> create an new empty map in the session
         if (request != null && !pi.equals(request.getSession().getAttribute("currentPi"))) {
             request.getSession().setAttribute("currentPi", pi);
             request.getSession().removeAttribute(attributeName);
             permissions = new HashMap<>();
-            // logger.trace("PI has changed, permissions map reset.");
+            // logger.trace("PI has changed, permissions map reset."); //NOSONAR Debugging
         }
         String key = new StringBuilder(pi).append('_').append(contentFileName).toString();
         // pi already checked -> look in the session
-        // logger.debug("permissions key: {}: {}", key, permissions.get(key)); // Sonar considers this log msg a security issue, so leave it commented out when not needed
+        // logger.debug("permissions key: {}: {}", key, permissions.get(key)); //NOSONAR Debugging
 
-        AccessPermission ret = null;
         if (permissions.containsKey(key) && permissions.get(key) != null) {
-            ret = permissions.get(key);
-            //            logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType, access, pi, contentFileName,
-            //                    request.getSession().getId());
-        } else {
-            // TODO check for all images and save to map
-            Map<String, AccessPermission> accessMap = checkAccessPermissionByIdentifierAndFileName(pi, contentFileName, privilegeType, request);
-            for (Entry<String, AccessPermission> entry : accessMap.entrySet()) {
-                String newKey = new StringBuilder(pi).append('_').append(entry.getKey()).toString();
-                AccessPermission pageAccess = entry.getValue();
-                permissions.put(newKey, pageAccess);
-            }
-            ret = permissions.get(key) != null ? permissions.get(key) : AccessPermission.denied();
-            // logger.debug("Access ({}) not yet checked for '{}/{}', access is {}", privilegeType, pi, contentFileName, access); // Sonar considers this log msg a security issue, so leave it commented out when not needed
-            if (request != null) {
-                request.getSession().setAttribute(attributeName, permissions);
-            }
+            return permissions.get(key);
+            // logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType,
+            // ret.isGranted(), pi, contentFileName, request.getSession().getId()); //NOSONAR Debugging
+        }
+        // TODO check for all images and save to map
+        Map<String, AccessPermission> accessMap = checkAccessPermissionByIdentifierAndFileName(pi, contentFileName, privilegeType, request);
+        for (Entry<String, AccessPermission> entry : accessMap.entrySet()) {
+            String newKey = new StringBuilder(pi).append('_').append(entry.getKey()).toString();
+            AccessPermission pageAccess = entry.getValue();
+            permissions.put(newKey, pageAccess);
         }
 
-        return ret;
-    }
+        // Add permission check outcome to user session
+        addSessionPermission(attributeName, permissions, request);
 
-    /**
-     * <p>
-     * checkAccessPermission.
-     * </p>
-     *
-     * @param allLicenseTypes a {@link java.util.List} object.
-     * @param requiredAccessConditions Set of access condition names to satisfy (one suffices).
-     * @param privilegeName The particular privilege to check.
-     * @param user Logged in user.
-     * @param query Solr query describing the resource in question.
-     * @param remoteAddress a {@link java.lang.String} object.
-     * @param client
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @should return true if required access conditions empty
-     * @should return true if required access conditions contain only open access
-     * @should return true if all license types allow privilege by default
-     * @should return false if not all license types allow privilege by default
-     * @should return true if ip range allows access
-     * @should not return true if no ip range matches
-     * @should preserve ticket requirement
-     */
-    public static AccessPermission checkAccessPermission(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
-            String privilegeName, User user, String remoteAddress, Optional<ClientApplication> client, String query)
-            throws IndexUnreachableException, PresentationException, DAOException {
-        Map<String, AccessPermission> result =
-                checkAccessPermissions(allLicenseTypes, requiredAccessConditions, privilegeName, user, remoteAddress, client, query);
-        boolean ticketRequired = false;
-        boolean redirect = false;
-        String redirectUrl = null;
-        for (Entry<String, AccessPermission> entry : result.entrySet()) {
-            // Preserve ticket requirement
-            if (entry.getValue().isTicketRequired()) {
-                ticketRequired = true;
-            }
-            if (entry.getValue().isRedirect()) {
-                redirect = true;
-            }
-            if (StringUtils.isNotEmpty(entry.getValue().getRedirectUrl())) {
-                redirectUrl = entry.getValue().getRedirectUrl();
-            }
-            if (!entry.getValue().isGranted()) {
-                return AccessPermission.denied();
-            }
-        }
-
-        return AccessPermission.granted().setTicketRequired(ticketRequired).setRedirect(redirect).setRedirectUrl(redirectUrl);
+        return permissions.get(key) != null ? permissions.get(key) : AccessPermission.denied();
+        // logger.debug("Access ({}) not yet checked for '{}/{}', access is {}", privilegeType, pi, contentFileName, ret.isGranted()); //NOSONAR Deb
     }
 
     /**
@@ -855,11 +820,10 @@ public class AccessConditionUtils {
      * @param requiredAccessConditions Set of access condition names to satisfy (one suffices).
      * @param privilegeName The particular privilege to check.
      * @param user Logged in user.
-     * @param query Solr query describing the resource in question.
      * @param remoteAddress a {@link java.lang.String} object.
      * @param client
-     * @param files a {@link java.util.List} object.
-     * @return a {@link java.util.Map} object.
+     * @param query Solr query describing the resource in question.
+     * @return Map<String, AccessPermission>
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -869,138 +833,116 @@ public class AccessConditionUtils {
      * @should return false if not all license types allow privilege by default
      * @should return true if ip range allows access
      * @should not return true if no ip range matches
-     * @should capture redirect metadata if on any license type
+     * @should preserve ticket requirement
      */
-    static Map<String, AccessPermission> checkAccessPermissions(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
+    public static AccessPermission checkAccessPermission(List<LicenseType> allLicenseTypes, final Set<String> requiredAccessConditions,
             String privilegeName, User user, String remoteAddress, Optional<ClientApplication> client, String query)
             throws IndexUnreachableException, PresentationException, DAOException {
-        // logger.trace("checkAccessPermission({},{})", requiredAccessConditions, privilegeName);
-
-        Map<String, AccessPermission> accessMap = new HashMap<>();
-        accessMap.put("", AccessPermission.denied());
+        logger.trace("checkAccessPermission({},{})", requiredAccessConditions, privilegeName); //NOSONAR Debugging
 
         // If user is superuser, allow immediately
         if (user != null && user.isSuperuser()) {
-            accessMap.keySet().forEach(key -> accessMap.put(key, AccessPermission.granted()));
-            return accessMap;
+            return AccessPermission.granted();
         }
         // If no access condition given, allow immediately (though this should never be the case)
         if (requiredAccessConditions.isEmpty()) {
             logger.trace("No required access conditions given, access granted.");
-            accessMap.keySet().forEach(key -> accessMap.put(key, AccessPermission.granted()));
-            return accessMap;
+            return AccessPermission.granted();
         }
         // If OPENACCESS is the only condition, allow immediately
         if (isFreeOpenAccess(requiredAccessConditions, allLicenseTypes)) {
-            accessMap.keySet().forEach(key -> accessMap.put(key, AccessPermission.granted()));
-            return accessMap;
+            return AccessPermission.granted();
         }
         // If no license types are configured or no privilege name is given, deny immediately
         if (allLicenseTypes == null || !StringUtils.isNotEmpty(privilegeName)) {
             logger.trace("No license types or no privilege name given.");
-            accessMap.keySet().forEach(key -> accessMap.put(key, AccessPermission.denied()));
-            return accessMap;
+            return AccessPermission.denied();
         }
 
-        Map<String, List<LicenseType>> licenseMap = getRelevantLicenseTypesOnly(allLicenseTypes, requiredAccessConditions, query, accessMap);
+        List<LicenseType> relevantLicenseTypes = getRelevantLicenseTypesOnly(allLicenseTypes, requiredAccessConditions, query);
         // If no relevant license types found (configured), deny all
-        if (licenseMap.isEmpty()) {
+        if (relevantLicenseTypes.isEmpty()) {
             logger.trace("No relevant license types found.");
-            accessMap.keySet().forEach(key -> accessMap.put(key, AccessPermission.denied()));
-            return accessMap;
+            return AccessPermission.denied();
         }
 
-        for (Entry<String, List<LicenseType>> entry : licenseMap.entrySet()) {
-            List<LicenseType> relevantLicenseTypes = entry.getValue();
-            requiredAccessConditions = new HashSet<>(relevantLicenseTypes.size());
-            if (relevantLicenseTypes.isEmpty()) {
-                // No relevant license types for this file, set to false and continue
-                logger.trace("No relevant license types.");
-                accessMap.put(entry.getKey(), AccessPermission.denied());
-                continue;
+        Set<String> useAccessConditions = new HashSet<>(relevantLicenseTypes.size());
+
+        // If all relevant license types allow the requested privilege by default, allow access
+        boolean licenseTypeAllowsPriv = true;
+        boolean redirect = false;
+        String redirectUrl = null;
+        // Check whether *all* relevant license types allow the requested privilege by default. As soon as one doesn't, set to false.
+        for (LicenseType licenseType : relevantLicenseTypes) {
+            useAccessConditions.add(licenseType.getName());
+            if (licenseType.isRedirect()) {
+                redirect = true;
+                redirectUrl = licenseType.getRedirectUrl();
             }
-
-            // If all relevant license types allow the requested privilege by default, allow access
-            boolean licenseTypeAllowsPriv = true;
-            boolean redirect = false;
-            String redirectUrl = null;
-            // Check whether *all* relevant license types allow the requested privilege by default. As soon as one doesn't, set to false.
-            for (LicenseType licenseType : relevantLicenseTypes) {
-                requiredAccessConditions.add(licenseType.getName());
-                if (licenseType.isRedirect()) {
-                    redirect = true;
-                    redirectUrl = licenseType.getRedirectUrl();
-                }
-                if (!licenseType.getPrivileges().contains(privilegeName) && !licenseType.isOpenAccess()
-                        && !licenseType.isRestrictionsExpired(query)) {
-                    // logger.trace("LicenseType '{}' does not allow the action '{}' by default.", licenseType.getName(), privilegeName);
-                    licenseTypeAllowsPriv = false;
-                }
+            if (!licenseType.getPrivileges().contains(privilegeName) && !licenseType.isOpenAccess()
+                    && !licenseType.isRestrictionsExpired(query)) {
+                // logger.trace("LicenseType '{}' doesn't allow the action '{}' by default.", licenseType.getName(), privilegeName); //NOSONAR D
+                licenseTypeAllowsPriv = false;
             }
-            if (licenseTypeAllowsPriv) {
-                // logger.trace("Privilege '{}' is allowed by default in all license types.", privilegeName);
-                accessMap.put(entry.getKey(), AccessPermission.granted().setRedirect(redirect).setRedirectUrl(redirectUrl));
-            } else if (isFreeOpenAccess(requiredAccessConditions, relevantLicenseTypes)) {
-                logger.trace("Privilege '{}' is OpenAccess", privilegeName);
-                accessMap.put(entry.getKey(), AccessPermission.granted().setRedirect(redirect).setRedirectUrl(redirectUrl));
-            } else {
-                // Check IP range
-                if (StringUtils.isNotEmpty(remoteAddress)) {
-                    if (NetTools.isIpAddressLocalhost(remoteAddress)
-                            && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
-                        logger.trace("Access granted to localhost");
-                        accessMap.put(entry.getKey(), AccessPermission.granted());
-                        continue;
-                    }
-                    // Check whether the requested privilege is allowed to this IP range (for all access conditions)
-                    for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
-                        if (ipRange.matchIp(remoteAddress)) {
-                            AccessPermission access =
-                                    ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, relevantLicenseTypes, privilegeName, null);
-                            if (access.isGranted()) {
-                                logger.trace("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
-                                accessMap.put(entry.getKey(), access);
-                            }
-                        }
-                    }
+        }
+        if (licenseTypeAllowsPriv) {
+            // logger.trace("Privilege '{}' is allowed by default in all license types.", privilegeName); //NOSONAR Debugging
+            return AccessPermission.granted().setRedirect(redirect).setRedirectUrl(redirectUrl);
+        } else if (isFreeOpenAccess(useAccessConditions, relevantLicenseTypes)) {
+            logger.trace("Privilege '{}' is OpenAccess", privilegeName);
+            return AccessPermission.granted().setRedirect(redirect).setRedirectUrl(redirectUrl);
+        } else {
+            // Check IP range
+            if (StringUtils.isNotEmpty(remoteAddress)) {
+                if (NetTools.isIpAddressLocalhost(remoteAddress)
+                        && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
+                    logger.trace("Access granted to localhost");
+                    return AccessPermission.granted();
                 }
-
-                // If not within an allowed IP range, check the current user's satisfied access conditions
-                if (user != null) {
-                    AccessPermission access =
-                            user.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null);
-                    if (access.isGranted()) {
-                        accessMap.put(entry.getKey(), access);
-                    }
-                }
-
-                //check clientApplication
-                if (client.map(c -> c.mayLogIn(remoteAddress)).orElse(false)) {
-                    //check if specific client matches access conditions
-                    boolean clientAccessGranted = false;
-                    if (client.isPresent()) {
-                        AccessPermission access = client.get().canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null);
+                // Check whether the requested privilege is allowed to this IP range (for all access conditions)
+                for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
+                    if (ipRange.matchIp(remoteAddress)) {
+                        AccessPermission access =
+                                ipRange.canSatisfyAllAccessConditions(useAccessConditions, relevantLicenseTypes, privilegeName, null);
                         if (access.isGranted()) {
-                            accessMap.put(entry.getKey(), access);
-                            clientAccessGranted = true;
+                            logger.trace("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
+                            return access;
                         }
                     }
-                    if (!clientAccessGranted) {
-                        //check if accesscondition match for all clients
-                        ClientApplication allClients = DataManager.getInstance().getClientManager().getAllClientsFromDatabase();
-                        if (allClients != null) {
-                            AccessPermission access =
-                                    allClients.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null);
-                            if (access.isGranted()) {
-                                accessMap.put(entry.getKey(), access);
-                            }
-                        }
+                }
+            }
+
+            // If not within an allowed IP range, check the current user's satisfied access conditions
+            if (user != null) {
+                AccessPermission access =
+                        user.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
+                if (access.isGranted()) {
+                    return access;
+                }
+            }
+
+            //check clientApplication
+            if (client.map(c -> c.mayLogIn(remoteAddress)).orElse(false)) {
+                //check if specific client matches access conditions
+                if (client.isPresent()) {
+                    AccessPermission access = client.get().canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
+                    if (access.isGranted()) {
+                        return access;
+                    }
+                }
+                //check if accesscondition match for all clients
+                ClientApplication allClients = DataManager.getInstance().getClientManager().getAllClientsFromDatabase();
+                if (allClients != null) {
+                    AccessPermission access =
+                            allClients.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
+                    if (access.isGranted()) {
+                        return access;
                     }
                 }
             }
         }
 
-        return accessMap;
+        return AccessPermission.denied();
     }
 
     /**
@@ -1032,23 +974,23 @@ public class AccessConditionUtils {
      * @param allLicenseTypes
      * @param requiredAccessConditions
      * @param query
-     * @param accessMap
-     * @return
+     * @return Map<String, List<LicenseType>>
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @should remove license types whose names do not match access conditions
      * @should not remove moving wall license types to open access if condition query excludes given pi
      */
-    static Map<String, List<LicenseType>> getRelevantLicenseTypesOnly(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions,
-            String query, Map<String, AccessPermission> accessMap) throws IndexUnreachableException, PresentationException {
+    static List<LicenseType> getRelevantLicenseTypesOnly(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions, String query)
+            throws IndexUnreachableException, PresentationException {
         if (requiredAccessConditions == null || requiredAccessConditions.isEmpty()) {
-            return accessMap.keySet().stream().collect(Collectors.toMap(Function.identity(), key -> Collections.emptyList()));
+            // return accessMap.keySet().stream().collect(Collectors.toMap(Function.identity(), key -> Collections.emptyList()));
+            return Collections.emptyList();
         }
 
-        // logger.trace("getRelevantLicenseTypesOnly: {} | {}", query, requiredAccessConditions);
-        Map<String, List<LicenseType>> ret = new HashMap<>(accessMap.size());
+        // logger.trace("getRelevantLicenseTypesOnly: {} | {}", query, requiredAccessConditions); //NOSONAR Debug
+        List<LicenseType> ret = new ArrayList<>();
         for (LicenseType licenseType : allLicenseTypes) {
-            // logger.trace("{}, moving wall: {}", licenseType.getName(), licenseType.isMovingWall());
+            // logger.trace("{}, moving wall: {}", licenseType.getName(), licenseType.isMovingWall()); //NOSONAR Debug
             if (!requiredAccessConditions.contains(licenseType.getName())) {
                 continue;
             }
@@ -1062,33 +1004,24 @@ public class AccessConditionUtils {
                         .append(SearchHelper.getMovingWallQuery())
                         .append(')');
                 // logger.trace("License relevance query: {}",
-                // StringTools.stripPatternBreakingChars(StringTools.stripPatternBreakingChars(sbQuery.toString())));
+                // StringTools.stripPatternBreakingChars(StringTools.stripPatternBreakingChars(sbQuery.toString()))); //NOSONAR Debug
                 if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
                     // logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to the moving wall condition.",
-                    // licenseType.getName(), StringTools.stripPatternBreakingChars(query));
+                    // licenseType.getName(), StringTools.stripPatternBreakingChars(query)); //NOSONAR Debug
                     if (licenseType.isMovingWall()) {
                         // Moving wall license type allow everything if the condition query doesn't match
-                        //                        logger.trace(
-                        //                                "License type '{}' is a moving wall type and its condition query doesn't match the record query '{}'. All restrictions lifted.",
-                        //                                licenseType.getName(), StringTools.stripPatternBreakingChars(query));
+                        // logger.trace("License type '{}' is a moving wall type and its condition query doesn't match the record query '{}'.
+                        // All restrictions lifted.", licenseType.getName(), StringTools.stripPatternBreakingChars(query)); //NOSONAR Debug
                         licenseType.getRestrictionsExpired().put(query, true);
                     } else {
                         continue;
                     }
                 }
                 // logger.trace("LicenseType '{}' applies to resource described by '{}' due to moving wall restrictions.", licenseType.getName(),
-                // StringTools.stripPatternBreakingChars(query));
+                // StringTools.stripPatternBreakingChars(query)); //NOSONAR Debug
             }
 
-            //no individual file conditions. Write same licenseTypes for all files
-            for (String key : accessMap.keySet()) {
-                List<LicenseType> types = ret.get(key);
-                if (types == null) {
-                    types = new ArrayList<>();
-                    ret.put(key, types);
-                }
-                types.add(licenseType);
-            }
+            ret.add(licenseType);
         }
 
         return ret;
@@ -1097,7 +1030,7 @@ public class AccessConditionUtils {
     /**
      *
      * @param pi
-     * @return
+     * @return Number of allowed downloads for given pi; 100 of no value set
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -1190,14 +1123,14 @@ public class AccessConditionUtils {
      * @param ipAddress
      * @param type
      * @param dao
-     * @return
+     * @return List<License>
      * @throws DAOException
      */
     public static List<License> getApplyingLicenses(Optional<User> user, String ipAddress, LicenseType type, IDAO dao) throws DAOException {
         List<License> licenses = dao.getLicenses(type);
         List<UserGroup> userGroups = user.map(User::getAllUserGroups).orElse(Collections.emptyList());
         List<IpRange> ipRangesApplyingToGivenIp =
-                dao.getAllIpRanges().stream().filter(range -> range.matchIp(ipAddress)).collect(Collectors.toList());
+                dao.getAllIpRanges().stream().filter(range -> range.matchIp(ipAddress)).toList();
 
         List<License> applyingLicenses = licenses.stream()
                 .filter(license -> {
@@ -1205,7 +1138,7 @@ public class AccessConditionUtils {
                             || userGroups.contains(license.getUserGroup())
                             || ipRangesApplyingToGivenIp.stream().anyMatch(r -> r.getSubnetMask().equals(license.getIpRange().getSubnetMask()));
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         return applyingLicenses.stream()
                 .filter(l -> {
@@ -1213,7 +1146,7 @@ public class AccessConditionUtils {
                             .filter(ol -> !ol.equals(l))
                             .noneMatch(ol -> l.getLicenseType().getOverriddenLicenseTypes().contains(ol.getLicenseType()));
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -1233,7 +1166,7 @@ public class AccessConditionUtils {
         return hasTicket != null && hasTicket;
     }
 
-    public static boolean addPermissionToSession(String pi, HttpSession session) {
+    public static boolean addDownloadTicketToSession(String pi, HttpSession session) {
         if (pi == null || session == null) {
             return false;
         }
@@ -1241,5 +1174,68 @@ public class AccessConditionUtils {
         String attributeName = IPrivilegeHolder.PREFIX_TICKET + pi;
         session.setAttribute(attributeName, true);
         return true;
+    }
+
+    /**
+     * 
+     * @param attributeName
+     * @param request
+     * @return Object found in session; null otherwise
+     */
+    public static Object getSessionPermission(String attributeName, HttpServletRequest request) {
+        if (request == null || request.getSession() == null) {
+            return null;
+        }
+
+        return request.getSession().getAttribute(attributeName);
+    }
+
+    /**
+     * 
+     * @param attributeName
+     * @param attributeValue
+     * @param request
+     * @return true if successful; false otherwise
+     */
+    public static boolean addSessionPermission(String attributeName, Object attributeValue, HttpServletRequest request) {
+        // logger.trace("addSessionPermission: {}", attributeName); //NOSONAR Debugging
+        if (request == null || request.getSession() == null) {
+            return false;
+        }
+
+        request.getSession().setAttribute(attributeName, attributeValue);
+        return true;
+    }
+
+    /**
+     * Removes privileges saved in the user session.
+     * 
+     * @param session
+     * @return Number of removed session attributes
+     */
+    public static int clearSessionPermissions(HttpSession session) {
+        if (session == null) {
+            return 0;
+        }
+
+        Enumeration<String> attributeNames = session.getAttributeNames();
+        Set<String> attributesToRemove = new HashSet<>();
+        while (attributeNames.hasMoreElements()) {
+            String attribute = attributeNames.nextElement();
+            if (attribute.startsWith(IPrivilegeHolder.PREFIX_PRIV)) {
+                attributesToRemove.add(attribute);
+            }
+        }
+
+        int ret = 0;
+        if (!attributesToRemove.isEmpty()) {
+            for (String attribute : attributesToRemove) {
+                session.removeAttribute(attribute);
+                ret++;
+                logger.trace("Removed session attribute: {}", attribute);
+            }
+        }
+
+        return ret;
     }
 }

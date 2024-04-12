@@ -23,6 +23,7 @@
 		}
 		&.chronology-slider-label {
 			margin-right: auto;
+			word-break: break-word;
 		}
 		&.chronology-slider-actions {}
 
@@ -68,6 +69,7 @@
 		&.chronology-slider {
 			padding: 0.6rem 0 1rem 0;
 			flex: 0 0 100%;
+			max-width: 100%;
 		}
 	}
 	&__item-input {
@@ -92,33 +94,80 @@
 	}
 }
 
-#chronoSlider {
-	height: 1rem;
-	border: none;
-	border-radius: 5px;
-	border-color: @lightgray;
-	background-image: none;
-	background-color: @lightgray;
-	.ui-slider-range,
-	.ui-slider-handle {
-	    border-radius: 4px;
+.widget-chronology-slider {
+	&__slider {
+		height: 1rem;
+		border: none;
+		border-radius: 5px;
+		border-color: @lightgray;
 		background-image: none;
-        &:focus {
-        	outline: none;
-        }
+		background-color: @lightgray;
+		.ui-slider-range,
+		.ui-slider-handle {
+		    border-radius: 4px;
+			background-image: none;
+	        &:focus {
+	        	outline: none;
+	        }
+		}
+		.ui-slider-range {
+		    border-color: @blue;
+			background-color: @blue;		
+		}
+		.ui-slider-handle {
+			width: 1rem;
+		    height: 1rem;
+		    top: 0;
+		    margin: 0;
+		    border-color: @gray;
+		    background-color: @middlegray;
+		    cursor: pointer;
+		}
 	}
-	.ui-slider-range {
-	    border-color: @blue;
-		background-color: @blue;		
+}
+
+.chronology-slider {
+	.widget-chronology-slider__slider {
+		border: none;
 	}
-	.ui-slider-handle {
-		width: 1rem;
-	    height: 1rem;
-	    top: 0;
-	    margin: 0;
-	    border-color: @gray;
-	    background-color: @middlegray;
-	    cursor: pointer;
+	&__input-wrapper {
+		display: flex;
+		margin-top: 10px;
+		align-items: center;
+		input {
+			width: 40px;
+			font-size: 12px;
+		}
+	}
+	&__input-start,
+	&__input-end {
+		flex-grow: 1;
+		align-self: stretch;
+		padding: 0.3rem;
+		height: unset;
+	}
+	&__input-start {}
+	&__input-end {}
+	&__ok-button {
+		min-width: unset;
+		margin-left: 15px;
+	}
+	&__between-year-symbol {
+		margin: 0 5px;
+	}
+	&__graph {
+		height: 150px;
+		&-line {  
+			color: rgba(200,89,153,1);
+		}
+		&-area {
+			color: rgba(200,89,153,0.3);
+		}
+		&-range {
+			color: @blue;
+			background-color: @blue;
+			opacity: 0.1;
+		}
 	}
 }
 

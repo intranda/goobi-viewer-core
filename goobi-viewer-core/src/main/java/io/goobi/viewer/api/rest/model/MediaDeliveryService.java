@@ -203,10 +203,8 @@ public class MediaDeliveryService {
      * @param sec
      * @throws IOException
      */
-    private void copy(FileChannel input, WritableByteChannel output, Section sec) throws IOException {
-
+    private static void copy(FileChannel input, WritableByteChannel output, Section sec) throws IOException {
         input.transferTo(sec.start, sec.length, output);
-
     }
 
     /**
@@ -216,7 +214,7 @@ public class MediaDeliveryService {
      * @param eTag
      * @param disposition
      */
-    private void initResponse(HttpServletResponse response, String fileName, long lastModified, String eTag, String disposition) {
+    private static void initResponse(HttpServletResponse response, String fileName, long lastModified, String eTag, String disposition) {
         response.reset();
         response.setBufferSize(DEFAULT_BUFFER_SIZE);
         response.setHeader("Content-Disposition", disposition + ";filename=\"" + fileName + "\"");
@@ -228,15 +226,14 @@ public class MediaDeliveryService {
 
     /**
      * @param request
-     * @param response
      * @param length
      * @param lastModified
      * @param eTag
-     * @return
+     * @return List<Section>
      * @throws IOException
      * @throws IllegalRequestException
      */
-    private List<Section> getSections(HttpServletRequest request, long length, long lastModified, String eTag)
+    private static List<Section> getSections(HttpServletRequest request, long length, long lastModified, String eTag)
             throws IllegalRequestException {
         // Prepare some variables. The full Section represents the complete file.
         List<Section> sections = new ArrayList<>();
@@ -292,24 +289,26 @@ public class MediaDeliveryService {
         return sections;
     }
 
+    /**
+     * 
+     * @param range
+     * @return true if range matches pattern; false otherwise
+     */
     protected static boolean matchesRangeHeaderPattern(String range) {
-        
-        if(range.matches("bytes=.+")) {
+        if (range.matches("bytes=.+")) {
             String rangeParts = range.substring(6);
             String[] parts = rangeParts.split(",\\s*");
-            if(parts.length > 0) {
+            if (parts.length > 0) {
                 for (String part : parts) {
-                    if(!part.matches("\\d+-|-\\d+|\\d+-\\d+")) {
+                    if (!part.matches("\\d+-|-\\d+|\\d+-\\d+")) {
                         return false;
                     }
                 }
                 return true;
-            } else {
-                return false;
             }
-        } else {
             return false;
         }
+        return false;
     }
 
     /**
@@ -317,12 +316,12 @@ public class MediaDeliveryService {
      * needs to continue
      *
      * @param request
-     * @param response
      * @param lastModified
      * @param eTag
+     * @return Optional<Integer>
      * @throws IOException
      */
-    private Optional<Integer> getCachingResponse(HttpServletRequest request, long lastModified, String eTag) {
+    private static Optional<Integer> getCachingResponse(HttpServletRequest request, long lastModified, String eTag) {
         // If-None-Match header should contain "*" or ETag. If so, then return 304.
         String ifNoneMatch = request.getHeader("If-None-Match");
         if (ifNoneMatch != null && matches(ifNoneMatch, eTag)) {
@@ -406,10 +405,10 @@ public class MediaDeliveryService {
      * A section within a byte array
      */
     private static class Section {
-        long start;
-        long end;
-        long length;
-        long total;
+        private long start;
+        private long end;
+        private long length;
+        private long total;
 
         /**
          * Construct a byte range.
@@ -441,6 +440,63 @@ public class MediaDeliveryService {
             return this.length == this.total;
         }
 
+        /**
+         * @return the start
+         */
+        public long getStart() {
+            return start;
+        }
+
+        /**
+         * @param start the start to set
+         */
+        public void setStart(long start) {
+            this.start = start;
+        }
+
+        /**
+         * @return the end
+         */
+        public long getEnd() {
+            return end;
+        }
+
+        /**
+         * @param end the end to set
+         */
+        public void setEnd(long end) {
+            this.end = end;
+        }
+
+        /**
+         * @return the length
+         */
+        public long getLength() {
+            return length;
+        }
+
+        /**
+         * @param length the length to set
+         */
+        public void setLength(long length) {
+            this.length = length;
+        }
+
+        /**
+         * @return the total
+         */
+        public long getTotal() {
+            return total;
+        }
+
+        /**
+         * @param total the total to set
+         */
+        public void setTotal(long total) {
+            this.total = total;
+        }
+
+        
     }
 
 }

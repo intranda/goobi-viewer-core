@@ -21,21 +21,20 @@
  */
 package io.goobi.viewer.model.search;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import io.goobi.viewer.model.search.SearchFilter;
-
-public class SearchFilterTest {
+class SearchFilterTest {
 
     /**
      * @see SearchFilter#SearchFilter(String,String)
      * @verifies set attributes correctly
      */
     @Test
-    public void SearchFilter_shouldSetAttributesCorrectly() throws Exception {
-        SearchFilter searchFilter = new SearchFilter("label_value", "field_value");
-        Assert.assertEquals("label_value", searchFilter.getLabel());
-        Assert.assertEquals("field_value", searchFilter.getField());
+    void SearchFilter_shouldSetAttributesCorrectly() throws Exception {
+        SearchFilter searchFilter = new SearchFilter("label_value", "field_value", true);
+        Assertions.assertEquals("label_value", searchFilter.getLabel());
+        Assertions.assertEquals("field_value", searchFilter.getField());
+        Assertions.assertTrue(searchFilter.isDefaultFilter());
     }
 }

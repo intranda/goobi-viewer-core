@@ -32,20 +32,21 @@ var viewerJS = ( function( viewer ) {
 		error : (titleAlert, message) => viewer.notifications.notify(titleAlert, message, "error"),
 		warn : (titleAlert, message) => viewer.notifications.notify(titleAlert, message, "warning"),
 		confirm : (message, confirmText, denyText, titleAlert) => {
-			return viewer.translator.addTranslations(["cancel", "ok"])
+			return viewer.translator.addTranslations(["cancel", "ok", "delete"])
 			.then( () => {
-				confirmText = confirmText ? confirmText : viewerJS.translator.translate("ok");
+				confirmText = confirmText ? confirmText : viewerJS.translator.translate("delete");
 				denyText = denyText ? denyText : viewerJS.translator.translate("cancel");
 				if(typeof(Swal) !== 'undefined') {
 					return Swal.fire({
 						scrollbarPadding: false,
 						title: titleAlert,
 						text: message,
-						icon: 'warning',
+						icon: 'error',
 						showCancelButton: true,
 						confirmButtonText: confirmText,
 	  					cancelButtonText: denyText,
 					    buttonsStyling: false,
+						reverseButtons: true,
 						showClass: {
 							popup: '-sweetAlertShowAnimation'
 						},
@@ -53,7 +54,7 @@ var viewerJS = ( function( viewer ) {
 							popup: '-sweetAlertHideAnimation'
 						},
 	  					customClass: {
-						    confirmButton: 'btn btn--full',
+						    confirmButton: 'btn btn--danger',
 						    cancelButton: 'btn btn--default'
 						  }
 					})
@@ -155,33 +156,35 @@ var viewerJS = ( function( viewer ) {
     }
     
     	
-	function showJsfMessagesAsSweetAlert() {
-		let $messages = $(".messages #messages");
-		//handle error messages
-		$messages.children(".alert.alert-danger").each((index, child) => {
-			//show error message
-			let text = $(child).text();
-			if(text && text.trim().length > 0) {
-				viewerJS.swaltoasts.error(text);
-				//scroll to first validation message
-				let $elementsWithValidationError = $(".-validation-message.-danger");
-				if($elementsWithValidationError.length > 0) {
-					$elementsWithValidationError.get(0).scrollIntoView({block: "center"});
+	function showJsfMessagesAsSweetAlert(e) {
+		if(e == undefined || (e.responseText && e.responseText.includes("<ul id=\"messages\">"))) {	//only apply if messages div has been updated
+			let $messages = $(".messages #messages");
+			//handle error messages
+			$messages.children(".alert.alert-danger").each((index, child) => {
+				//show error message
+				let text = $(child).text();
+				if(text && text.trim().length > 0) {
+					viewerJS.swaltoasts.error(text);
+					//scroll to first validation message
+					let $elementsWithValidationError = $(".-validation-message.-danger");
+					if($elementsWithValidationError.length > 0) {
+						$elementsWithValidationError.get(0).scrollIntoView({block: "center"});
+					}
 				}
-			}
-		});
-		//show success message
-		$messages.children(".alert.alert-success").each((index, child) => {
-			let text = $(child).text();
-			if(text && text.trim().length > 0) {
-				viewerJS.swaltoasts.success(text);
-			}
-		});
+			});
+			//show success message
+			$messages.children(".alert.alert-success").each((index, child) => {
+				let text = $(child).text();
+				if(text && text.trim().length > 0) {
+					viewerJS.swaltoasts.success(text);
+				}
+			});
+		}
 	}
 
 	//post notification on ajax/success
 	viewer.jsfAjax.success.subscribe(e => {
-		showJsfMessagesAsSweetAlert();
+		showJsfMessagesAsSweetAlert(e);
 	});
 	$(document).ready(() => showJsfMessagesAsSweetAlert());
 
@@ -202,7 +205,9 @@ var viewerJS = ( function( viewer ) {
 					viewer.notifications.confirm(undefined, undefined, undefined, e.currentTarget.dataset.confirmationText)
 					.then(() => {
 						//if this event has been dispatched from the code below, the action has been confirmed and may be carried out
-						if(element.originalEvent) {
+						if(element.dataset.confirmationTarget) {
+							document.querySelector(element.dataset.confirmationTarget).click();
+						} else if(element.originalEvent) {
 							//if an original  (jsf) event exists, carry it out
 							element.originalEvent(e);
 						} else {

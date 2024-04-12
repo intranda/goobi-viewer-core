@@ -24,8 +24,6 @@ package io.goobi.viewer.api.rest.v2.collections;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.COLLECTIONS;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.COLLECTIONS_COLLECTION;
 
-import java.net.URISyntaxException;
-
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -35,13 +33,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import de.intranda.api.iiif.presentation.v3.Collection3;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v2.ApiUrls;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.CollectionBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -56,44 +51,34 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 public class CollectionsResource {
 
     private final String solrField;
-    private final HttpServletRequest request;
 
     @Inject
-    ApiUrls urls;
+    private ApiUrls urls;
 
     public CollectionsResource(
-            @Parameter(description="Name of the SOLR field the collection is based on. Typically 'DC'")@PathParam("field")String solrField,
+            @Parameter(description = "Name of the SOLR field the collection is based on. Typically 'DC'") @PathParam("field") String solrField,
             @Context HttpServletRequest request) {
         this.solrField = solrField.toUpperCase();
-        this.request = request;
     }
 
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF Presentation 3.0 collection")
-    @ApiResponse(responseCode="400", description="No collections available for field")
-    public Collection3 getAllCollections()
-            throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
-
-           Collection3 collection = new CollectionBuilder(urls).build(this.solrField);
-
-        return collection;
+    @ApiResponse(responseCode = "400", description = "No collections available for field")
+    public Collection3 getAllCollections() throws IndexUnreachableException {
+        return new CollectionBuilder(urls).build(this.solrField);
     }
 
     @GET
     @javax.ws.rs.Path(COLLECTIONS_COLLECTION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF presentation 3.0 collection")
-    @ApiResponse(responseCode="400", description="Invalid collection name or field")
+    @ApiResponse(responseCode = "400", description = "Invalid collection name or field")
     public Collection3 getCollection(
-            @Parameter(description="Name of the collection. Must be a value of the SOLR field the collection is based on")@PathParam("collection")String collectionName
-            )
-            throws PresentationException, IndexUnreachableException, DAOException, ContentLibException, URISyntaxException, ViewerConfigurationException {
-
-        Collection3 collection = new CollectionBuilder(urls).build(this.solrField, collectionName);
-
-        return collection;
+            @Parameter(
+                    description = "Name of the collection. Must be a value of the SOLR field the collection is based on")
+            @PathParam("collection") String collectionName)
+            throws PresentationException, IndexUnreachableException {
+        return new CollectionBuilder(urls).build(this.solrField, collectionName);
     }
-
-
 }

@@ -45,6 +45,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -84,6 +85,7 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.controller.model.ProviderConfiguration;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -125,13 +127,10 @@ public abstract class AbstractBuilder {
      * Constructor for AbstractBuilder.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param apiUrlManager
      */
-    protected AbstractBuilder(AbstractApiUrlManager apiUrlManager) {
-        if (apiUrlManager == null) {
-            apiUrlManager = DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v2).orElse(null);
-        }
-        this.urls = apiUrlManager;
+    protected AbstractBuilder(final AbstractApiUrlManager apiUrlManager) {
+        this.urls = apiUrlManager != null ? apiUrlManager : DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v2).orElse(null);
         AbstractApiUrlManager contentUrls = DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v2).orElse(this.urls);
         this.thumbs = new ThumbnailHandler(new IIIFUrlHandler(contentUrls),
                 ImageDeliveryBean.getStaticImagesPath(this.urls != null ? this.urls.getApplicationUrl() : "",
@@ -139,12 +138,13 @@ public abstract class AbstractBuilder {
 
         AbstractApiUrlManager v1Urls = DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v1).orElse(null);
         v1Builder = new io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder(v1Urls) {
+            //
         };
     }
 
     /**
-     * @param labelIIIFRenderingPDF
-     * @return
+     * @param key
+     * @return {@link IMetadataValue}
      */
     protected IMetadataValue getLabel(String key) {
         IMetadataValue value = ViewerResourceBundle.getTranslations(key, this.translationLocales, false);
@@ -155,8 +155,8 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * @param iconURI
-     * @return
+     * @param uri
+     * @return {@link URI}
      */
     public URI absolutize(URI uri) {
         if (uri == null) {
@@ -173,6 +173,11 @@ public abstract class AbstractBuilder {
         }
     }
 
+    /**
+     * 
+     * @param uri
+     * @return {@link URI}
+     */
     public URI absolutize(String uri) {
         return absolutize(URI.create(uri));
     }
@@ -283,19 +288,15 @@ public abstract class AbstractBuilder {
                         : (field.contains("/") ? field.substring(field.indexOf("/") + 1) : field);
                 SolrTools.getTranslations(field, ele, this.translationLocales, (s1, s2) -> s1 + "; " + s2)
                         .map(value -> new Metadata(getLabel(label), value))
-                        .ifPresent(md -> {
-                            //                            md.getLabel().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
-                            //                            md.getValue().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
-                            manifest.addMetadata(md);
-                        });
+                        .ifPresent(manifest::addMetadata);
             }
         }
     }
 
     /**
      * @param ele
-     * @param iiifRightsField
-     * @return
+     * @param fieldName
+     * @return Optional<String>
      */
     protected Optional<String> getSolrFieldValue(StructElement ele, String fieldName) {
         if (StringUtils.isNotBlank(fieldName)) {
@@ -305,6 +306,11 @@ public abstract class AbstractBuilder {
         return Optional.empty();
     }
 
+    /**
+     * 
+     * @param ele
+     * @return Optional<URI>
+     */
     protected Optional<URI> getRightsStatement(StructElement ele) {
         return getSolrFieldValue(ele, DataManager.getInstance().getConfiguration().getIIIFRightsField())
                 .map(value -> {
@@ -322,16 +328,36 @@ public abstract class AbstractBuilder {
      *
      * @param field
      * @param displayFields
-     * @return
+     * @return a boolean
      */
-    private static boolean contained(String field, List<String> displayFields) {
+    protected boolean contained(String field, List<String> displayFields) {
+        return displayFields.stream().anyMatch(displayField -> matches(field, displayField));
+    }
 
-        return displayFields.stream().map(displayField -> displayField.replace("*", "")).anyMatch(displayField -> field.startsWith(displayField));
+    /**
+     * 
+     * @param field
+     * @param template
+     * @return a boolean
+     */
+    private static boolean matches(String field, String template) {
+
+        String cleanedTemplate = template.replace("*", "");
+        String cleanedField = field.replaceAll("_LANG_\\w{2,3}", "");
+        if (template.startsWith("*") && template.endsWith("*")) {
+            return cleanedField.contains(cleanedTemplate);
+        } else if (template.startsWith("*")) {
+            return cleanedField.endsWith(cleanedTemplate);
+        } else if (template.endsWith("*")) {
+            return cleanedField.startsWith(cleanedTemplate);
+        } else {
+            return Objects.equals(cleanedTemplate, cleanedField);
+        }
     }
 
     /**
      * @param ele
-     * @return
+     * @return List<String>
      */
     private static List<String> getMetadataFields(StructElement ele) {
         Set<String> fields = ele.getMetadataFields().keySet();
@@ -406,11 +432,13 @@ public abstract class AbstractBuilder {
      * @param baseCollectionName a {@link java.lang.String} object.
      * @return a {@link java.net.URI} object.
      */
-    public URI getCollectionURI(String collectionField, String baseCollectionName) {
+    public URI getCollectionURI(String collectionField, final String baseCollectionName) {
         String urlString;
         if (StringUtils.isNotBlank(baseCollectionName)) {
-            baseCollectionName = StringTools.encodeUrl(baseCollectionName);
-            urlString = this.urls.path(COLLECTIONS, COLLECTIONS_COLLECTION).params(collectionField, baseCollectionName).build();
+            urlString =
+                    this.urls.path(COLLECTIONS, COLLECTIONS_COLLECTION)
+                            .params(collectionField, StringTools.encodeUrl(baseCollectionName))
+                            .build();
         } else {
             urlString = this.urls.path(COLLECTIONS).params(collectionField).build();
         }
@@ -459,8 +487,8 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * Get the page order (1-based) from a canavs URI. That is the number in the last path paramter after '/canvas/' If the URI doesn't match a canvas
-     * URI, null is returned
+     * Get the page order (1-based) from a canavs URI. That is the number in the last path parameter after '/canvas/' If the URI doesn't match a
+     * canvas URI, null is returned
      *
      * @param uri a {@link java.net.URI} object.
      * @return a {@link java.lang.Integer} object.
@@ -499,6 +527,7 @@ public abstract class AbstractBuilder {
      * @param pi a {@link java.lang.String} object.
      * @param pageNo a int.
      * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
+     * @param openAnnotation
      * @return a {@link java.net.URI} object.
      */
     public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type, boolean openAnnotation) {
@@ -510,15 +539,12 @@ public abstract class AbstractBuilder {
             case CROWDSOURCING:
                 url = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_ANNOTATIONS).params(pi, pageNo);
                 break;
-            case ALTO:
-            case FULLTEXT:
             default:
                 url = this.urls.path(RECORDS_PAGES, RECORDS_PAGES_TEXT).params(pi, pageNo);
         }
 
         if (openAnnotation) {
             url = url.query("format", "oa");
-
         }
 
         return URI.create(url.build());
@@ -544,8 +570,6 @@ public abstract class AbstractBuilder {
      * getCommentAnnotationURI.
      * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param pageNo a int.
      * @param id a long.
      * @return a {@link java.net.URI} object.
      */
@@ -591,8 +615,6 @@ public abstract class AbstractBuilder {
      * getAnnotationURI.
      * </p>
      *
-     * @param pi a {@link java.lang.String} object.
-     * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
      * @param id a {@link java.lang.String} object.
      * @return a {@link java.net.URI} object.
      */
@@ -661,8 +683,13 @@ public abstract class AbstractBuilder {
         return URI.create(uri);
     }
 
-    protected Manifest3 createRecordLink(String collectionField, String collectionName, StructElement rec) {
-        URI id = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(collectionField, collectionName).buildURI();
+    /**
+     * 
+     * @param rec
+     * @return {@link Manifest3}
+     */
+    protected Manifest3 createRecordLink(StructElement rec) {
+        URI id = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(rec.getPi()).buildURI();
         Manifest3 manifest = new Manifest3(id);
         try {
             manifest.addThumbnail(getThumbnail(rec.getPi()));
@@ -673,8 +700,13 @@ public abstract class AbstractBuilder {
         return manifest;
     }
 
-    protected Collection3 createAnchorLink(String collectionField, String collectionName, StructElement rec) {
-        URI id = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(collectionField, collectionName).buildURI();
+    /**
+     * 
+     * @param rec
+     * @return {@link Collection3}
+     */
+    protected Collection3 createAnchorLink(StructElement rec) {
+        URI id = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(rec.getPi()).buildURI();
         Collection3 manifest = new Collection3(id, null);
         manifest.addBehavior(ViewingHint.multipart);
         manifest.addThumbnail(getThumbnail(rec));
@@ -699,27 +731,36 @@ public abstract class AbstractBuilder {
 
     /**
      * @param providerConfig
-     * @return
+     * @return {@link IIIFAgent}
      */
     protected IIIFAgent getProvider(ProviderConfiguration providerConfig) {
-        IIIFAgent provider = new IIIFAgent(providerConfig.uri, ViewerResourceBundle.getTranslations(providerConfig.label, false));
+        IIIFAgent provider = new IIIFAgent(providerConfig.getUri(), ViewerResourceBundle.getTranslations(providerConfig.getLabel(), false));
 
-        providerConfig.homepages.forEach(homepageConfig -> {
-            IMetadataValue label = ViewerResourceBundle.getTranslations(homepageConfig.label, false);
-            provider.addHomepage(new LabeledResource(homepageConfig.uri, "Text", Format.TEXT_HTML.getLabel(), label));
+        providerConfig.getHomepages().forEach(homepageConfig -> {
+            IMetadataValue label = ViewerResourceBundle.getTranslations(homepageConfig.getLabel(), false);
+            provider.addHomepage(new LabeledResource(homepageConfig.getUri(), "Text", Format.TEXT_HTML.getLabel(), label));
         });
 
-        providerConfig.logos.forEach(uri -> {
-            provider.addLogo(new ImageResource(uri, ImageFileFormat.getImageFileFormatFromFileExtension(uri.toString()).getMimeType()));
-        });
+        providerConfig.getLogos()
+                .forEach(
+                        uri -> provider
+                                .addLogo(new ImageResource(uri, ImageFileFormat.getImageFileFormatFromFileExtension(uri.toString()).getMimeType())));
 
         return provider;
     }
 
+    /**
+     * 
+     * @param pi
+     * @return {@link ImageResource}
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws ViewerConfigurationException
+     */
     protected ImageResource getThumbnail(String pi) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         ImageResource thumb;
-        AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v2).orElse(null);
-        if (urls != null) {
+        AbstractApiUrlManager um = DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v2).orElse(null);
+        if (um != null) {
             thumb = new ImageResource(urls.path(RECORDS_RECORD, RECORDS_IMAGE).params(pi).build(), thumbWidth, thumbHeight);
         } else {
             thumb = new ImageResource(URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(pi)));
@@ -727,6 +768,11 @@ public abstract class AbstractBuilder {
         return thumb;
     }
 
+    /**
+     * 
+     * @param ele
+     * @return {@link ImageResource}
+     */
     protected ImageResource getThumbnail(StructElement ele) {
         try {
             String thumbUrl = this.thumbs.getThumbnailUrl(ele);
@@ -743,9 +789,26 @@ public abstract class AbstractBuilder {
         }
         return null;
     }
+    
+    protected ImageResource getThumbnail(StructElement ele, int pageNo) {
+        try {
+            String thumbUrl = this.thumbs.getThumbnailUrl(pageNo, ele.getPi());
+            if (StringUtils.isNotBlank(thumbUrl)) {
+                ImageResource thumb = new ImageResource(new URI(thumbUrl));
+                if (IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {
+                    String imageInfoURI = IIIFUrlResolver.getIIIFImageBaseUrl(thumbUrl);
+                    thumb.setService(new ImageInformation3(imageInfoURI));
+                }
+                return thumb;
+            }
+        } catch (URISyntaxException | IndexUnreachableException | PresentationException | DAOException | ViewerConfigurationException e) {
+            logger.warn("Unable to retrieve thumbnail url", e);
+        }
+        return null;
+    }
 
     /**
-     * @param labelIIIFRenderingViewer
+     * @param text
      * @return a simple metadata value with the given text, or null if text is blank
      */
     protected IMetadataValue createLabel(String text) {
@@ -755,11 +818,15 @@ public abstract class AbstractBuilder {
         return new SimpleMetadataValue(text);
     }
 
+    /**
+     * 
+     * @param path
+     * @return File name
+     */
     protected String getFilename(String path) {
         if (StringUtils.isBlank(path)) {
             return null;
         }
         return StringTools.encodeUrl(Paths.get(path).getFileName().toString());
     }
-
 }

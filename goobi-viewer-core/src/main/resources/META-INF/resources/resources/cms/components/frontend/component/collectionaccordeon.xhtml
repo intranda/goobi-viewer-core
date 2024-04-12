@@ -1,0 +1,51 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/template.html">
+
+	<composite:interface>
+		<composite:attribute name="component" required="true" />
+		<composite:attribute name="collectionBaseLevels" required="false" default="0" type="java.lang.Integer"/>
+		<composite:attribute name="displayParents" required="false" default="false" type="java.lang.Boolean"/>
+		<composite:attribute name="ignoreHierarchy" required="false" default="false" type="java.lang.Boolean"/>
+		<composite:attribute name="hierarchyLevelsToInclude" required="false" default="2" type="java.lang.Integer"/>
+	</composite:interface>
+    
+	<composite:implementation> 
+
+    	<ui:fragment rendered="#{cc.attrs.component.hasAccess(userBean.user)}">
+
+			<div id="templateStckedCollection" class="tpl-stacked-collection content-component content-component__stacked-collection
+						-width-100 #{cc.attrs.hideOnScreenSizes}
+						#{cc.attrs.hideOnScreenSizes == 'hideMobile' ? '-hiddenOnMobile' : ''} 
+						#{cc.attrs.hideOnScreenSizes == 'hideDesktop' ? '-hiddenOnDesktop' : ''}
+						#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user) ? '-isPrivate' : ''}">
+						
+				<div class="tpl-stacked-collection__collections">
+					<collectionView 
+						url='#{request.contextPath}/api/v1/collections/#{cc.attrs.component.firstContentItem.content.collectionField}/'
+						restapi = "#{configurationBean.restApiUrl}"
+						baseCollection="#{cc.attrs.component.firstContentItem.content.baseCollection}"
+						grouping="#{cc.attrs.component.firstContentItem.content.groupBy}"
+						language="#{navigationHelper.localeString}"
+						defaultlanguage="#{navigationHelper.defaultLocale.language}"
+						blacklist="#{cc.attrs.component.firstContentItem.content.ignoreCollections}"
+						sorting="#{cc.attrs.component.firstContentItem.content.sorting}"
+						depth="#{cc.attrs.hierarchyLevelsToInclude}"></collectionView>
+					</div>
+									
+					<script type="text/javascript">
+						riot.mount("collectionView");
+	                </script>
+			</div>
+		</ui:fragment>
+
+		
+	</composite:implementation>
+</ui:composition>

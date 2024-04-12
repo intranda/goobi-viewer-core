@@ -26,11 +26,9 @@ import java.lang.annotation.RetentionPolicy;
 
 import javax.ws.rs.NameBinding;
 
-import io.goobi.viewer.api.rest.v1.downloads.DownloadResource;
-
 /**
  * <p>
- *Binding for all requests to {@link DownloadResource}
+ * Binding for all requests to {@link DownloadResource}
  * </p>
  */
 @NameBinding

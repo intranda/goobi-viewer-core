@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
+import javax.el.ELException;
 import javax.faces.FacesException;
 import javax.faces.application.Application;
 import javax.faces.application.Resource;
@@ -37,15 +38,17 @@ import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.cms.CMSSlider;
-import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
 import io.goobi.viewer.model.maps.GeoMap;
 
 /**
@@ -54,16 +57,36 @@ import io.goobi.viewer.model.maps.GeoMap;
  */
 public class DynamicContentBuilder {
 
-    private final static Logger logger = LogManager.getLogger(DynamicContentBuilder.class);
+    private static final Logger logger = LogManager.getLogger(DynamicContentBuilder.class);
 
     private FacesContext context = FacesContext.getCurrentInstance();
     private Application application = context.getApplication();
     private FaceletContext faceletContext = (FaceletContext) context.getAttributes().get(FaceletContext.FACELET_CONTEXT_KEY);
 
-    public DynamicContentBuilder() {
-
+    public UIComponent build(JsfComponent jsfComponent, UIComponent parent, Map<String, Object> attributes) throws PresentationException {
+        try {
+            UIComponent composite = loadCompositeComponent(parent, jsfComponent.getFilename(), jsfComponent.getLibrary());
+            if (composite != null && attributes != null) {
+                for (Entry<String, Object> entry : attributes.entrySet()) {
+                    composite.getAttributes().put(entry.getKey(), entry.getValue());
+                }
+            }
+            return composite;
+        } catch (FaceletException e) {
+            throw new PresentationException(
+                    "error building jsf custom component from file " + jsfComponent.toString() + ".\nCause: " + e.getMessage());
+        } catch (Exception e) {
+            throw new PresentationException("error building jsf custom component from file " + jsfComponent.toString()
+                    + ". Please check if the file exists and is a valid jsf composite component");
+        }
     }
 
+    /**
+     * 
+     * @param content
+     * @param parent
+     * @return {@link UIComponent}
+     */
     public UIComponent build(DynamicContent content, UIComponent parent) {
         UIComponent composite = null;
         switch (content.getType()) {
@@ -84,9 +107,10 @@ public class DynamicContentBuilder {
                                 } else {
                                     composite.getAttributes().put("linkTarget", "_blank");
                                 }
+                                composite.getAttributes().put("popoverOnHover", map.shouldOpenPopoversOnHover());
                             }
                         } else {
-                            logger.error("Cannot build GeoMap content. No map found with id = " + id);
+                            logger.error("Cannot build GeoMap content. No map found with id = {}", id);
                         }
                     } else {
                         logger.error("Cannot build GeoMap content. Need map id as first attribute");
@@ -112,7 +136,7 @@ public class DynamicContentBuilder {
                                 }
                             }
                         } else {
-                            logger.error("Cannot build content. No item found with id = " + sliderId);
+                            logger.error("Cannot build content. No item found with id = {}", sliderId);
                         }
                     } else {
                         logger.error("Cannot build content. Need item id as first attribute");
@@ -128,7 +152,9 @@ public class DynamicContentBuilder {
                         composite.getAttributes().put(attribute, content.getAttributes().get(attribute));
                     }
                 }
-
+                break;
+            default:
+                break;
         }
         if (composite != null) {
             composite.setId(content.getId());
@@ -137,9 +163,10 @@ public class DynamicContentBuilder {
     }
 
     /**
-     * @param string2
-     * @param string
-     * @return
+     * @param parent
+     * @param name
+     * @param library
+     * @return {@link UIComponent}
      */
     private UIComponent loadCompositeComponent(UIComponent parent, String name, String library) {
         Resource componentResource = context.getApplication().getResourceHandler().createResource(name, library);
@@ -147,7 +174,7 @@ public class DynamicContentBuilder {
             return null;
         }
         UIComponent composite = application.createComponent(context, componentResource);
-
+        composite.setId(parent.getId() + "_" + FilenameUtils.getBaseName(name));
         // This basically creates <composite:implementation>.
         UIComponent implementation = application.createComponent(UIPanel.COMPONENT_TYPE);
         implementation.setRendererType("javax.faces.Group");
@@ -158,14 +185,23 @@ public class DynamicContentBuilder {
             faceletContext.includeFacelet(implementation, componentResource.getURL());
         } catch (IOException e) {
             throw new FacesException(e);
+        } catch (ELException e) {
+            logger.error("Error rendering composite", e);
+            return composite;
         } finally {
             parent.popComponentFromEL(context);
         }
         return composite;
     }
 
-    private UIComponent createTag(String name, Map<String, String> attributes) {
-        UIComponent component = new UIComponentBase() {
+    /**
+     * 
+     * @param name
+     * @param attributes
+     * @return {@link UIComponent}
+     */
+    public UIComponent createTag(String name, Map<String, String> attributes) {
+        return new UIComponentBase() {
 
             @Override
             public void encodeBegin(FacesContext context) throws IOException {
@@ -188,13 +224,12 @@ public class DynamicContentBuilder {
                 return null;
             }
         };
-        return component;
     }
 
     /**
      * @param content
-     * @param headGroup
-     * @return
+     * @param parent
+     * @return Optional<UIComponent>
      */
     public Optional<UIComponent> buildHead(DynamicContent content, HtmlPanelGroup parent) {
         UIComponent component = null;
@@ -215,7 +250,7 @@ public class DynamicContentBuilder {
                             parent.getChildren().add(component);
 
                         } else {
-                            logger.error("Cannot build GeoMap content. No map found with id = " + id);
+                            logger.error("Cannot build GeoMap content. No map found with id = {}", id);
                         }
                     } else {
                         logger.error("Cannot build GeoMap content. Need map id as first attribute");
@@ -224,10 +259,20 @@ public class DynamicContentBuilder {
                     logger.error("Error retrieving content from DAO", e);
                 }
                 break;
+            default:
+                break;
         }
+
         return Optional.ofNullable(component);
     }
 
+    /**
+     * 
+     * @param id
+     * @param type
+     * @param attributes
+     * @return {@link DynamicContent}
+     */
     public DynamicContent createContent(String id, DynamicContentType type, Map<String, Object> attributes) {
         DynamicContent content = new DynamicContent(type, getFilenameForType(type));
         content.setId(id);
@@ -235,6 +280,11 @@ public class DynamicContentBuilder {
         return content;
     }
 
+    /**
+     * 
+     * @param type
+     * @return File name
+     */
     public static String getFilenameForType(DynamicContentType type) {
         switch (type) {
             case GEOMAP:

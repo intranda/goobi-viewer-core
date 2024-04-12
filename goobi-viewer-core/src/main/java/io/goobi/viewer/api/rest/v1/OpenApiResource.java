@@ -23,8 +23,8 @@ package io.goobi.viewer.api.rest.v1;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,9 +57,9 @@ import io.swagger.v3.oas.models.servers.Server;
 public class OpenApiResource {
 
     @Context
-    Application application;
+    private Application application;
     @Context
-    ServletConfig servletConfig;
+    private ServletConfig servletConfig;
 
     private OpenAPI openApi;
 
@@ -78,12 +78,12 @@ public class OpenApiResource {
                     .readAllResources(false)
                     .resourcePackages(Stream.of("io.goobi.viewer.api.rest.v1").collect(Collectors.toSet()));
 
-
-            OpenAPI openApi = new JaxrsOpenApiContextBuilder()
+            OpenAPI oApi = new JaxrsOpenApiContextBuilder()
                     .servletConfig(servletConfig)
                     .application(application)
                     .openApiConfiguration(oasConfig)
-                    .buildContext(true).read();
+                    .buildContext(true)
+                    .read();
 
             List<Server> servers = new ArrayList<>();
             for (String url : apiUrls) {
@@ -91,32 +91,32 @@ public class OpenApiResource {
                 server.setUrl(url);
                 servers.add(server);
             }
-            openApi.setServers(servers);
+            oApi.setServers(servers);
 
-            openApi.setInfo(getInfo());
+            oApi.setInfo(getInfo());
 
-            return openApi;
+            return oApi;
         } catch (OpenApiConfigurationException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
 
-    private List<String> getApiUrls() {
+    private static List<String> getApiUrls() {
 
         return Arrays.asList(
                 DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v1).map(AbstractApiUrlManager::getApiUrl).orElse(null),
                 DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v1).map(AbstractApiUrlManager::getApiUrl).orElse(null))
                 .stream()
-                .filter(url -> url != null)
+                .filter(Objects::nonNull)
                 .distinct()
                 .collect(Collectors.toList());
     }
 
     /**
-     * @return
+     * @return {@link Info}
      */
     public Info getInfo() {
-        Info info = new Info()
+        return new Info()
                 .title("Goobi viewer API.")
                 .description("This documentation describes the Goobi viewer API.")
                 .version("v1")
@@ -125,7 +125,6 @@ public class OpenApiResource {
                 .license(new License()
                         .name("GPL2 or later")
                         .url("https://github.com/intranda/goobi-viewer-core/blob/master/LICENSE"));
-        return info;
     }
 
 }

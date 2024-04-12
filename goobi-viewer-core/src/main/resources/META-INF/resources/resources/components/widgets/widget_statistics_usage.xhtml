@@ -15,7 +15,7 @@
 	</composite:interface>
 
 	<composite:implementation>
-		<ui:fragment rendered="#{statisticsBean.usageStatisticsActive}">
+		<c:if test="#{statisticsBean.usageStatisticsActive and userBean.admin}">
 			<c:set scope="request" var="stats"
 				value="#{statisticsBean.getUsageStatisticsForRecord(activeDocumentBean.viewManager.pi)}" />
 
@@ -82,6 +82,6 @@
 					</div>
 				</div>
 			</h:panelGroup>
-		</ui:fragment>
+		</c:if>
 	</composite:implementation>
 </ui:composition>

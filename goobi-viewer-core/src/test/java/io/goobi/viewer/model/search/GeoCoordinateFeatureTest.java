@@ -21,13 +21,13 @@
  */
 package io.goobi.viewer.model.search;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 
@@ -35,10 +35,10 @@ import io.goobi.viewer.AbstractTest;
  * @author florian
  *
  */
-public class GeoCoordinateFeatureTest extends AbstractTest {
+class GeoCoordinateFeatureTest extends AbstractTest {
 
     @Test
-    public void testParseSearchString() {
+    void testParseSearchString() {
         double[][] points = new double[][] { { 1.1, 1.2 }, { 2.1, 2.2 }, { 3.1, 3.2 }, { 4.1, 4.2 }, { 1.1, 1.2 } };
         String referencePointsString = "1.1 1.2, 2.1 2.2, 3.1 3.2, 4.1 4.2, 1.1 1.2";
         String referenceQuery = "IsWithin(POLYGON((" + referencePointsString + ")))";
@@ -49,7 +49,7 @@ public class GeoCoordinateFeatureTest extends AbstractTest {
     }
 
     @Test
-    public void testParsePoints() {
+    void testParsePoints() {
         double[][] referencePoints = new double[][] { { 1.1, 1.2 }, { 2.1, -2.2 }, { 3.1, 3.2 }, { -4.1, 4.2 }, { 1.1, 1.2 } };
         String pointsString = "1.1 1.2, 2.1 -2.2, 3.1 3.2, -4.1 4.2, 1.1 1.2";
         String query = "WKT_COORDS:\"Intersects(POLYGON((" + pointsString + ")))";
@@ -59,7 +59,7 @@ public class GeoCoordinateFeatureTest extends AbstractTest {
     }
 
     @Test
-    public void testParseIllegalPoints() {
+    void testParseIllegalPoints() {
         {
             double[][] referencePoints = new double[][] { { 1.1, 1.2 }, { 0, 0 }, { 3.1, 3.2 }, { 4.1, 4.2 }, { 1.1, 1.2 } };
             String pointsString = "1.1 1.2, 2.1 , 3.1 3.2, 4.1 4.2, 1.1 1.2";
@@ -90,20 +90,20 @@ public class GeoCoordinateFeatureTest extends AbstractTest {
     }
 
     @Test
-    public void testFacetEscaping() throws UnsupportedEncodingException {
+    void testFacetEscaping() throws UnsupportedEncodingException {
         String origFacetString =
                 "WKT_COORDS:\"IsWithin(POLYGON((11.83273903383027 51.94656677497078,11.83273903383027 53.48917317885388,13.855459790711027 53.48917317885388,13.855459790711027 51.94656677497078,11.83273903383027 51.94656677497078)))\"";
         String geoJson =
                 "{\"type\":\"rectangle\",\"vertices\":[[11.83273903383027,51.94656677497078],[11.83273903383027,53.48917317885388],[13.855459790711027,53.48917317885388],[13.855459790711027,51.94656677497078],[11.83273903383027,51.94656677497078]]}";
         GeoFacetItem item = new GeoFacetItem("WKT_COORDS");
         SearchFacets facets = new SearchFacets();
-        facets.getCurrentFacets().add(item);
+        facets.getActiveFacets().add(item);
         facets.setGeoFacetFeature(geoJson);
 
-        String urlFacetString = facets.getCurrentFacetString();
+        String urlFacetString = facets.getActiveFacetString();
         String urlString = URLEncoder.encode(urlFacetString, "utf-8");
 
-        facets.setCurrentFacetString(urlString);
+        facets.setActiveFacetString(urlString);
 
         String filterQueryString = facets.generateFacetFilterQueries(true).get(0);
         String comparisonString =

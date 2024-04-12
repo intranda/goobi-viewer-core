@@ -31,8 +31,6 @@ public class TaskManagerEPUBRequest extends AbstractTaskManagerRequest {
 
     public TaskManagerEPUBRequest() {
         super("VIEWEREPUB");
-        this.targetDir = DataManager.getInstance().getConfiguration().getDownloadFolder("epub");
-
+        this.setTargetDir(DataManager.getInstance().getConfiguration().getDownloadFolder("epub"));
     }
-    
 }

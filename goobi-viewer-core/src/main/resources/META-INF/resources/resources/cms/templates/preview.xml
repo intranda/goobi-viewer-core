@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+	<label>cms_component__preview__label</label>
+	<description>cms_component__preview__desc</description>
+	<icon>cms/components/frontend/component/icon/preview.png</icon>
+	<scope>preview</scope>
+	<content>
+		<item id="title">
+			<label>cms_component__text_label</label>
+			<description>cms_content__text_desc</description>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>text</name>
+			</jsfComponent>
+		</item>
+		<item id="date">
+			<label>date</label>
+			<description>cms_content__date_desc</description>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>text</name>
+			</jsfComponent>
+		</item>
+		<item id="image">
+			<label>cms_component__image__label</label>
+			<description>cms_component__image_desc</description>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>media</name>
+			</jsfComponent>
+		</item>
+		<item id="text">
+			<label>cms_component__htmltext_label</label>
+			<description>cms_component__htmltext_desc</description>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>htmltext</name>
+			</jsfComponent>
+		</item>
+	</content>
+</component>

@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
@@ -47,7 +49,7 @@ public abstract class TranslationGroupItem {
      * @param type
      * @param key
      * @param regex
-     * @return
+     * @return Created {@link TranslationGroupItem}
      * @should create correct class instance by type
      */
     public static TranslationGroupItem create(TranslationGroupType type, String key, boolean regex) {
@@ -82,9 +84,10 @@ public abstract class TranslationGroupItem {
      * Returns the translation status over all existing entries.
      *
      * @return <code>TranslationStatu</code>; FULL if all entries are FULL; NONE if all entries are NONE; PARTIAL otherwise
-     * @throws Exception
+     * @throws PresentationException 
+     * @throws IndexUnreachableException 
      */
-    public TranslationStatus getTranslationStatus() throws Exception {
+    public TranslationStatus getTranslationStatus() throws IndexUnreachableException, PresentationException {
         int full = 0;
         int none = 0;
         for (MessageEntry entry : getEntries()) {
@@ -115,9 +118,11 @@ public abstract class TranslationGroupItem {
      *
      * @param language Requested language
      * @return <code>TranslationStatu</code>; FULL if all entries are FULL; NONE if all entries are NONE; PARTIAL otherwise
+     * @throws PresentationException
+     * @throws IndexUnreachableException
      * @throws Exception
      */
-    public TranslationStatus getTranslationStatusLanguage(String language) throws Exception {
+    public TranslationStatus getTranslationStatusLanguage(String language) throws IndexUnreachableException, PresentationException {
         int full = 0;
         int none = 0;
         for (MessageEntry entry : getEntries()) {
@@ -159,9 +164,11 @@ public abstract class TranslationGroupItem {
 
     /**
      * @return the messageKeys
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      * @throws Exception
      */
-    public List<MessageEntry> getEntries() throws Exception {
+    public List<MessageEntry> getEntries() throws IndexUnreachableException, PresentationException {
         if (entries == null) {
             loadEntries();
         }
@@ -173,7 +180,7 @@ public abstract class TranslationGroupItem {
      * Populates the message key map by first loading the appropriate keys and then calling <code>createMessageKeyStatusMap</code>. Each subclass will
      * have its specific data source, so each subclass must implement this method.
      */
-    protected abstract void loadEntries() throws Exception;
+    protected abstract void loadEntries() throws IndexUnreachableException, PresentationException;
 
     /**
      * Checks the translation status for each of the given keys and populates <code>messageKeys</code> accordingly.

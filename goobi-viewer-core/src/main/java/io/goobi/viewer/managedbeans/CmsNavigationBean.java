@@ -23,30 +23,25 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
 import io.goobi.viewer.model.cms.CMSNavigationManager;
-import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.SelectableNavigationItem;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -64,9 +59,9 @@ public class CmsNavigationBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(CmsNavigationBean.class);
 
     @Inject
-    CmsBean cmsBean;
+    private CmsBean cmsBean;
     @Inject
-    UserBean userBean;
+    private UserBean userBean;
 
     private String menuItemList = null;
     private CMSNavigationItem selectedNavigationItem = null;
@@ -119,7 +114,7 @@ public class CmsNavigationBean implements Serializable {
      * @param itemString a {@link java.lang.String} object.
      */
     public boolean deserializeMenuItems(String itemString) {
-        logger.trace("menu items:\n" + itemString);
+        logger.trace("menu items:\n{}", itemString);
         List<CMSNavigationItem> selectedItems = new ArrayList<>();
         String[] ids = itemString.split("\\&?item=");
         int previousLevel = -1;
@@ -129,8 +124,8 @@ public class CmsNavigationBean implements Serializable {
                 continue;
             }
             int level = Integer.parseInt(id.substring(id.indexOf('?') + 1));
-            id = id.substring(0, id.indexOf('?'));
-            Optional<CMSNavigationItem> oItem = getItemManager().getItem(id);
+            String localId = id.substring(0, id.indexOf('?'));
+            Optional<CMSNavigationItem> oItem = getItemManager().getItem(localId);
             if (oItem.isPresent()) {
                 CMSNavigationItem item = oItem.get();
                 item.setAssociatedTheme(getSelectedTheme());
@@ -237,12 +232,10 @@ public class CmsNavigationBean implements Serializable {
      * </p>
      */
     public void saveNavigationItem() {
-        if (deserializeMenuItems(getMenuItemList())) {
-            if (getNavigationItem().getSortingListId() == null) {
-                getNavigationItem().setAssociatedTheme(getSelectedTheme());
-                getItemManager().addVisibleItem(getNavigationItem());
-                selectedNavigationItem = null;
-            }
+        if (deserializeMenuItems(getMenuItemList()) && getNavigationItem().getSortingListId() == null) {
+            getNavigationItem().setAssociatedTheme(getSelectedTheme());
+            getItemManager().addVisibleItem(getNavigationItem());
+            selectedNavigationItem = null;
         }
     }
 
@@ -303,7 +296,8 @@ public class CmsNavigationBean implements Serializable {
         if (selectableThemes == null) {
             selectableThemes = new ArrayList<>(cmsBean.getAllowedSubthemeDiscriminatorValues(userBean.getUser()));
             // Add main theme to the list of allowed themes if user either has access to all themes or no subthemes exist in the index
-            if ((userBean.getUser() != null && userBean.getUser().hasPrivilegeForAllSubthemeDiscriminatorValues()) || SolrTools.getExistingSubthemes().isEmpty()) {
+            if ((userBean.getUser() != null && userBean.getUser().hasPrivilegeForAllSubthemeDiscriminatorValues())
+                    || SolrTools.getExistingSubthemes().isEmpty()) {
                 selectableThemes.add(0, DataManager.getInstance().getConfiguration().getTheme());
             }
         }
@@ -342,8 +336,5 @@ public class CmsNavigationBean implements Serializable {
     public void addSelectedItemsToMenu() {
         getItemManager().addSelectedItemsToMenu();
     }
-
-
-
 
 }

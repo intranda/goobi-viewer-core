@@ -28,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -77,11 +78,12 @@ import io.goobi.viewer.exceptions.RedirectException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.CMSPage;
 import io.goobi.viewer.model.cms.CMSStaticPage;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
@@ -99,6 +101,8 @@ import io.goobi.viewer.solr.SolrConstants;
 @Named
 @SessionScoped
 public class NavigationHelper implements Serializable {
+
+    private static final int MAX_HTML_ID_LENGTH = 100;
 
     private static final long serialVersionUID = 4171362984701032679L;
 
@@ -135,7 +139,7 @@ public class NavigationHelper implements Serializable {
     private final String theme;
 
     /** Currently selected page from the main navigation bar. */
-    private String currentPage = "index";
+    private String currentPage = HOME_PAGE;
 
     private boolean isCmsPage = false;
 
@@ -244,7 +248,7 @@ public class NavigationHelper implements Serializable {
      * Produce an identifier string for a cms page to use for identifying the page in the navigation bar
      *
      * @param cmsPage
-     * @return
+     * @return {@link String}
      */
     public static String getCMSPageNavigationId(CMSPage cmsPage) {
         try {
@@ -253,10 +257,15 @@ public class NavigationHelper implements Serializable {
                 return staticPage.get().getPageName();
             }
         } catch (DAOException e) {
+            //
         }
         return "cms_" + String.format("%04d", cmsPage.getId());
     }
 
+    /**
+     * 
+     * @param cmsPage
+     */
     public void setCurrentPage(CMSPage cmsPage) {
         setCurrentPage(getCMSPageNavigationId(cmsPage), false, true, true);
     }
@@ -465,7 +474,11 @@ public class NavigationHelper implements Serializable {
      * @param pageName a {@link java.lang.String} object.
      */
     public void setCurrentPageAdmin(String pageName) {
-        breadcrumbBean.resetBreadcrumbs();
+        setCurrentPageAdmin(pageName, Collections.emptyList());
+    }
+
+    public void setCurrentPageAdmin(String pageName, List<List<String>> labels) {
+        breadcrumbBean.resetBreadcrumbs(false);
         resetCurrentDocument();
         if (pageName != null && !pageName.trim().isEmpty()) {
             PageType pageType = PageType.getByName(pageName);
@@ -473,11 +486,42 @@ public class NavigationHelper implements Serializable {
                 this.currentPage = PageType.admin.name();
             } else {
                 this.currentPage = pageType.name();
+                List<LabeledLink> breadcrumbs = createAdminBreadcrumbs(pageType, labels);
+                breadcrumbs.forEach(link -> breadcrumbBean.updateBreadcrumbs(link));
+
             }
         } else {
             this.currentPage = "adminAllUsers";
         }
 
+    }
+
+    protected List<LabeledLink> createAdminBreadcrumbs(PageType pageType, List<List<String>> labels) {
+
+        PageType breadcrumbType = pageType;
+        List<LabeledLink> links = new ArrayList<>();
+        Iterator<List<String>> labelIterator = labels.iterator();
+        while (breadcrumbType != null) {
+            String label;
+            if (labelIterator.hasNext()) {
+                List<String> labelArray = labelIterator.next();
+                String key = labelArray.get(0);
+                String[] params = labelArray.subList(1, labelArray.size()).toArray(new String[labelArray.size() - 1]);
+                label = ViewerResourceBundle.getTranslationWithParameters(key, locale, true, params);
+            } else {
+                label = ViewerResourceBundle.getTranslation(breadcrumbType.getLabel(), locale);
+            }
+            links.add(
+                    new LabeledLink(label,
+                            BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + breadcrumbType.getName(),
+                            0));
+            breadcrumbType = breadcrumbType.getParent();
+        }
+        Collections.reverse(links);
+        for (int i = 0; i < links.size(); i++) {
+            links.get(i).setWeight(i);
+        }
+        return links;
     }
 
     /**
@@ -558,10 +602,9 @@ public class NavigationHelper implements Serializable {
      * Sets the currently selected content view name.
      *
      * @param currentView a {@link java.lang.String} object.
-     * @throws DAOException
      * @should set value correctly
      */
-    public void setCurrentView(String currentView) throws DAOException {
+    public void setCurrentView(String currentView) {
         logger.trace("{}: {}", KEY_CURRENT_VIEW, currentView);
         statusMap.put(KEY_CURRENT_VIEW, currentView);
         setCurrentPage(currentView);
@@ -623,10 +666,10 @@ public class NavigationHelper implements Serializable {
     public List<String> getSupportedLanguages() {
         List<String> ret = new ArrayList<>();
 
-        Iterable<Locale> locales = () -> getSupportedLocales();
+        Iterable<Locale> locales = this::getSupportedLocales;
         StreamSupport.stream(locales.spliterator(), false)
                 //                .peek(language -> logger.trace("Adding sort field: {}", language))
-                .forEach(locale -> ret.add(locale.getLanguage()));
+                .forEach(loc -> ret.add(loc.getLanguage()));
 
         return ret;
     }
@@ -638,7 +681,7 @@ public class NavigationHelper implements Serializable {
      */
     public String getSupportedLanguagesAsJson() {
 
-        Iterable<Locale> locales = () -> getSupportedLocales();
+        Iterable<Locale> locales = this::getSupportedLocales;
         String ret = StreamSupport.stream(locales.spliterator(), false)
                 .map(lang -> "\"" + lang + "\"")
                 .collect(Collectors.joining(","));
@@ -665,9 +708,7 @@ public class NavigationHelper implements Serializable {
                 bb.resetTerms();
                 try {
                     bb.searchTerms();
-                } catch (PresentationException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (IndexUnreachableException e) {
+                } catch (IndexUnreachableException | PresentationException e) {
                     logger.error(e.getMessage(), e);
                 } catch (RedirectException e) {
                     // TODO
@@ -675,12 +716,11 @@ public class NavigationHelper implements Serializable {
             }
         }
 
-        // Also set ActiveDocumentBean.selectedRecordLanguage, if it's configured to match the locale
-        if (DataManager.getInstance().getConfiguration().isUseViewerLocaleAsRecordLanguage()) {
-            ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-            if (adb != null) {
-                adb.setSelectedRecordLanguage(inLocale);
-            }
+        // Also set ActiveDocumentBean.selectedRecordLanguage, so that multilingual metadata
+        // values etc. are displayed in the selected language as well
+        ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+        if (adb != null) {
+            adb.setSelectedRecordLanguage(inLocale);
         }
     }
 
@@ -692,49 +732,55 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getDatePattern() {
+        return getDatePattern(locale);
+    }
+
+    public static String getDatePattern(String language) {
+        return getDatePattern(Locale.forLanguageTag(language));
+    }
+
+    public static String getDatePattern(Locale locale) {
         if (locale == null) {
             return "yyyy-MM-dd";
         }
 
-        switch (locale.getLanguage()) {
-            case "de":
-                return "dd.MM.yyyy";
-            case "en":
-                return "MM/dd/yyyy";
-            case "es":
-                return "dd/MM/yyyy";
-            default:
-                return "yyyy-MM-dd";
-        }
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getStringFormat("date", locale)
+                .orElseGet(() -> {
+                    switch (locale.getLanguage()) {
+                        case "de":
+                            return "dd.MM.yyyy";
+                        case "en":
+                            return "MM/dd/yyyy";
+                        case "es":
+                        case "fr":
+                            return "dd/MM/yyyy";
+                        default:
+                            return "yyyy-MM-dd";
+                    }
+                });
     }
 
     /**
-     * <p>
-     * getDatePatternjQueryDatePicker.
-     * </p>
+     * Get the date/time pattern for the current locale for use with jQuery date picker. Uses the value of {@link #getDatePattern()} and adapts the
+     * month and year patterns in the following way:
+     * <ul>
+     * <li>MM --> mm</li>
+     * <li>yyyy --> yy</li>
+     * </ul>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a date pattern suitable for jquery date picker
      */
     public String getDatePatternjQueryDatePicker() {
-        if (locale == null) {
-            return "yy-mm-dd";
-        }
-
-        switch (locale.getLanguage()) {
-            case "de":
-                return "dd.mm.yy";
-            case "en":
-                return "mm/dd/yy";
-            case "es":
-                return "dd/mm/yy";
-            default:
-                return "yy-mm-dd";
-        }
+        String pattern = getDatePattern();
+        pattern = pattern.replace("MM", "mm").replace("yyyy", "yy");
+        return pattern;
     }
 
     /**
      *
-     * @return
+     * @return Appropriate date/time pattern for the current locale
      */
     public String getDateTimePattern() {
         if (locale == null) {
@@ -759,6 +805,7 @@ public class NavigationHelper implements Serializable {
      * </p>
      */
     public void reload() {
+        //noop
     }
 
     /**
@@ -769,8 +816,7 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getApplicationUrl() {
-        String applicationUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/";
-        return applicationUrl;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/";
     }
 
     /**
@@ -894,15 +940,15 @@ public class NavigationHelper implements Serializable {
      */
     public String getCurrentPrettyUrl() {
         Optional<HttpServletRequest> request = Optional.ofNullable(FacesContext.getCurrentInstance())
-                .map(context -> context.getExternalContext())
+                .map(FacesContext::getExternalContext)
                 .map(ExternalContext::getRequest)
                 .map(o -> (HttpServletRequest) o);
 
         Optional<URL> requestUrl = request
-                .map(r -> PrettyContext.getCurrentInstance(r))
+                .map(PrettyContext::getCurrentInstance)
                 .map(PrettyContext::getRequestURL);
 
-        return request.map(r -> ServletUtils.getServletPathWithHostAsUrlFromRequest(r)).orElse("")
+        return request.map(ServletUtils::getServletPathWithHostAsUrlFromRequest).orElse("")
                 + requestUrl.map(URL::toURL).orElse("");
     }
 
@@ -926,7 +972,6 @@ public class NavigationHelper implements Serializable {
      * @should set value correctly
      */
     public void setMenuPage(String page) {
-        logger.debug("Menu Page ist: " + page);
         statusMap.put(KEY_MENU_PAGE, page);
     }
 
@@ -962,10 +1007,7 @@ public class NavigationHelper implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String getSubThemeDiscriminatorValue() throws IndexUnreachableException {
-
-        String ret = StringUtils.isNotEmpty(statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE)) ? statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE) : "-";
-        //         logger.trace("getSubThemeDiscriminatorValue: {}", ret);
-        return ret;
+        return StringUtils.isNotEmpty(statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE)) ? statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE) : "-";
     }
 
     /**
@@ -1032,6 +1074,8 @@ public class NavigationHelper implements Serializable {
                     logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                 }
             }
+            // Reset access permissions in session (user might not have the same permissions for a different subtheme)
+            logger.trace("{} access premissions removed from user session.", AccessConditionUtils.clearSessionPermissions(BeanUtils.getSession()));
         }
     }
 
@@ -1094,6 +1138,7 @@ public class NavigationHelper implements Serializable {
      * @return the reading mode url
      * @deprecated renamed to fullscreen
      */
+    @Deprecated
     public String getReadingModeUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewFullscreen.getName();
     }
@@ -1300,14 +1345,24 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.lang.String} object.
      */
     public String getSearchUrl(int activeSearchType) {
+        return getSearchUrl(activeSearchType, null);
+    }
+
+    /**
+     * <p>
+     * getSearchUrl.
+     * </p>
+     *
+     * @param activeSearchType a int.
+     * @param cmsPage
+     * @return a {@link java.lang.String} object.
+     */
+    public String getSearchUrl(int activeSearchType, CMSPage cmsPage) {
 
         //If we are on a cms-page, return the cms page url
         try {
-            Optional<ViewerPath> oView = ViewHistory.getCurrentView(BeanUtils.getRequest());
-            if (oView.isPresent() && oView.get().isCmsPage() && oView.get().getCmsPage().hasSearchFunctionality()) {
-                String path =
-                        BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + oView.get().getPagePath().toString().replaceAll("\\+", "/");
-                return path;
+            if (cmsPage != null && cmsPage.hasSearchFunctionality()) {
+                return StringTools.removeTrailingSlashes(cmsPage.getPageUrl());
             }
         } catch (Throwable e) {
             logger.error(e.toString(), e);
@@ -1316,6 +1371,8 @@ public class NavigationHelper implements Serializable {
         switch (activeSearchType) {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
                 return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.advancedSearch.getName();
+            case SearchHelper.SEARCH_TYPE_TERMS:
+                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.term.getName();
             default:
                 return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName();
         }
@@ -1368,25 +1425,26 @@ public class NavigationHelper implements Serializable {
      * Adds a link to the breadcrumbs using the given URL. Can be called from XHTML.
      *
      * @param linkName a {@link java.lang.String} object.
-     * @param linkWeight a int.
      * @param url a {@link java.lang.String} object.
+     * @param linkWeight a int.
      */
-    public void addStaticLinkToBreadcrumb(String linkName, String url, int linkWeight) {
+    public void addStaticLinkToBreadcrumb(String linkName, final String url, int linkWeight) {
         if (linkWeight < 0) {
             return;
         }
-        PageType page = PageType.getByName(url);
+
+        String useUrl = url;
+        PageType page = PageType.getByName(useUrl);
         if (page != null && !page.equals(PageType.other)) {
-            url = getUrl(page);
-        } else {
+            useUrl = getUrl(page);
         }
-        LabeledLink newLink = new LabeledLink(linkName, url, linkWeight);
+        LabeledLink newLink = new LabeledLink(linkName, useUrl, linkWeight);
         breadcrumbBean.updateBreadcrumbs(newLink);
     }
 
     /**
      * @param page
-     * @return
+     * @return Absolute URL for the given page type
      */
     private String getUrl(PageType page) {
         return getApplicationUrl() + page.getName();
@@ -1476,8 +1534,7 @@ public class NavigationHelper implements Serializable {
     }
 
     public String getSessionIPAddress() {
-        String ipAddress = NetTools.getIpAddress(BeanUtils.getRequest());
-        return ipAddress;
+        return NetTools.getIpAddress(BeanUtils.getRequest());
     }
 
     public Optional<String> getSessionId() {
@@ -1543,7 +1600,7 @@ public class NavigationHelper implements Serializable {
      * @should escape quotation marks
      */
     public String getTranslationWithParams(String msgKey, String... params) {
-        String msg = ViewerResourceBundle.getTranslationWithParameters(msgKey, null, params);
+        String msg = ViewerResourceBundle.getTranslationWithParameters(msgKey, null, true, params);
 
         // If msg contains unescaped quotation marks, it may interfere with calls to this method from JavaScript
         return StringEscapeUtils.escapeJava(msg);
@@ -1559,8 +1616,7 @@ public class NavigationHelper implements Serializable {
      * @should escape quotation marks
      */
     public String getTranslationWithParamsUnescaped(String msgKey, String... params) {
-        String msg = ViewerResourceBundle.getTranslationWithParameters(msgKey, null, params);
-        return msg;
+        return ViewerResourceBundle.getTranslationWithParameters(msgKey, null, true, params);
     }
 
     /**
@@ -1609,6 +1665,8 @@ public class NavigationHelper implements Serializable {
             case TAGS_PAGE:
             case SEARCH_TERM_LIST_PAGE:
                 return true;
+            default:
+                break;
         }
 
         return false;
@@ -1660,7 +1718,7 @@ public class NavigationHelper implements Serializable {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String previousUrl = ViewHistory.getPreviousView(request).map(path -> (path.getCombinedUrl())).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
-            previousUrl = "/";//getApplicationUrl();
+            previousUrl = "/";
         }
         return previousUrl;
     }
@@ -1696,7 +1754,7 @@ public class NavigationHelper implements Serializable {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String previousUrl = ViewHistory.getCurrentView(request).map(path -> (path.getCombinedUrl())).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
-            previousUrl = "/";//getApplicationUrl();
+            previousUrl = "/";
         }
         return previousUrl;
     }
@@ -1705,7 +1763,7 @@ public class NavigationHelper implements Serializable {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String previousUrl = ViewHistory.getCurrentView(request).map(ViewerPath::getCombinedPrettyfiedUrl).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
-            previousUrl = "/";//getApplicationUrl();
+            previousUrl = "/";
         } else if (previousUrl.endsWith("/")) {
             previousUrl = previousUrl.substring(0, previousUrl.length() - 1);
         }
@@ -1716,9 +1774,14 @@ public class NavigationHelper implements Serializable {
         return getExitUrl(getCurrentPageType());
     }
 
+    /**
+     * 
+     * @param pageType
+     * @return Appropriate exit URL
+     */
     public String getExitUrl(PageType pageType) {
         String exitView = DataManager.getInstance().getConfiguration().getPageTypeExitView(pageType);
-        if (StringUtils.isNotBlank(exitView) && exitView.startsWith("pretty:")) {
+        if (StringUtils.isNotBlank(exitView) && exitView.startsWith(StringConstants.PREFIX_PRETTY)) {
             return resolvePrettyUrl(exitView);
         } else if (StringUtils.isBlank(exitView) || exitView.equalsIgnoreCase("previousView")) {
             return getPreviousViewUrl();
@@ -1727,20 +1790,26 @@ public class NavigationHelper implements Serializable {
         }
     }
 
-    public String resolvePrettyUrl(String prettyId, Object... parameters) {
-
-        if (parameters == null || parameters.length == 0) {
+    /**
+     * 
+     * @param prettyId
+     * @param parameters
+     * @return Resolved Pretty URL
+     */
+    public String resolvePrettyUrl(String prettyId, final Object... parameters) {
+        Object[] useParams = parameters;
+        if (useParams == null || useParams.length == 0) {
             List<PathParameter> pathParams =
                     PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId).getPatternParser().getPathParameters();
-            parameters = new Object[pathParams.size()];
+            useParams = new Object[pathParams.size()];
             int index = 0;
             for (PathParameter param : pathParams) {
                 Object value = BeanUtils.getManagedBeanValue(param.getExpression().getELExpression());
-                parameters[index++] = (value != null && StringUtils.isNotBlank(value.toString())) ? value : "-";
+                useParams[index++] = (value != null && StringUtils.isNotBlank(value.toString())) ? value : "-";
             }
         }
 
-        URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId).getPatternParser().getMappedURL(parameters);
+        URL mappedUrl = PrettyContext.getCurrentInstance().getConfig().getMappingById(prettyId).getPatternParser().getMappedURL(useParams);
         return mappedUrl.toString();
     }
 
@@ -1869,7 +1938,7 @@ public class NavigationHelper implements Serializable {
      * the resource exists neither in theme nor core. An Exception will be thrown
      *
      * @param path The resource path relative to the first "resources" directory
-     * @return
+     * @return Resource path
      */
     public String getResource(String path) {
         FileResourceManager manager = DataManager.getInstance().getFileResourceManager();
@@ -1881,8 +1950,7 @@ public class NavigationHelper implements Serializable {
                 return ret;
             }
             //            } else if(Files.exists(corePath)) {
-            String ret = manager.getCoreResourceURI(path).toString();
-            return ret;
+            return manager.getCoreResourceURI(path).toString();
             //            } else {
             //                return "";
         }
@@ -1914,30 +1982,35 @@ public class NavigationHelper implements Serializable {
     public void addSearchUrlWithCurrentSortStringToHistory() {
         ViewHistory.getCurrentView(BeanUtils.getRequest())
                 .ifPresent(path -> {
-                    ViewerPath sortStringPath = setupRandomSearchSeed(path);
+                    ViewerPath sortStringPath = setupRandomSearchSeed(path, getLocaleString());
                     if (sortStringPath != path) {
                         ViewHistory.setCurrentView(sortStringPath, BeanUtils.getSession());
                     }
                 });
     }
 
-    private static ViewerPath setupRandomSearchSeed(ViewerPath path) {
-        String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField();
+    /**
+     * 
+     * @param path
+     * @param language
+     * @return {@link ViewerPath}
+     */
+    private static ViewerPath setupRandomSearchSeed(ViewerPath path, String language) {
+        String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField(language);
         if (SolrConstants.SORT_RANDOM.equalsIgnoreCase(defaultSortField)) {
             String parameterPath = path.getParameterPath().toString();
             if (StringUtils.isBlank(parameterPath) || parameterPath.matches("\\/?-\\/-\\/\\d+\\/-\\/-\\/?")) {
                 SearchBean sb = BeanUtils.getSearchBean();
                 if (sb != null) {
                     String pageUrl = PrettyUrlTools.getRelativePageUrl("newSearch5",
+                            sb.getActiveResultGroupName(),
                             sb.getExactSearchString(),
                             sb.getCurrentPage(),
                             sb.getSortString(),
-                            sb.getFacets().getCurrentFacetString());
+                            sb.getFacets().getActiveFacetString());
                     try {
-                        ViewerPath newPath =
-                                ViewerPathBuilder.createPath(path.getApplicationUrl(), path.getApplicationName(), pageUrl, path.getQueryString())
-                                        .orElse(path);
-                        return newPath;
+                        return ViewerPathBuilder.createPath(path.getApplicationUrl(), path.getApplicationName(), pageUrl, path.getQueryString())
+                                .orElse(path);
                     } catch (DAOException e) {
                         logger.error("Error creating search url with current random sort string", e);
                     }
@@ -1947,14 +2020,41 @@ public class NavigationHelper implements Serializable {
         return path;
     }
 
+    /**
+     * Get the current time in milliseconds as string
+     * 
+     * @return the current time in milliseconds as string
+     */
     public String getCurrentTime() {
         return Long.toString(System.currentTimeMillis());
     }
 
+    /**
+     * Get the current date as {@link LocalDate}
+     * 
+     * @return the current date as {@link LocalDate}
+     */
+    public LocalDate getCurrentDate() {
+        return LocalDate.now();
+    }
+
+    /**
+     * Simply returns the given string to redirect to a page via jsf
+     * 
+     * @param page the string to return
+     * @return the passed string 'page'
+     * @deprecated Apparently not used. And should be easily replacable by just entering the 'page' string in the action attribute
+     */
+    @Deprecated(forRemoval = true)
     public String returnTo(String page) {
         return page;
     }
 
+    /**
+     * 
+     * @param keys
+     * @return JSON with translations for the given message keys
+     */
     public String getTranslationsAsJson(List<String> keys) {
         Locale locale = getLocale();
         JSONObject json = new JSONObject();
@@ -1966,7 +2066,10 @@ public class NavigationHelper implements Serializable {
     }
 
     public List<Integer> getRange(long from, long to) {
-        List<Integer> range = IntStream.range((int) from, (int) to + 1).boxed().collect(Collectors.toList());
-        return range;
+        return IntStream.range((int) from, (int) to + 1).boxed().collect(Collectors.toList());
+    }
+
+    public String getAsId(String text) {
+        return StringTools.convertToSingleWord(text, MAX_HTML_ID_LENGTH, "_");
     }
 }

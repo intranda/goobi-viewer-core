@@ -26,21 +26,22 @@
 			</div>
 
 			<div class="col-9 cms-module__option-control admin__form-input">
-
-				<h:message for="#{cc.attrs.clientId}_input" errorClass="-validation-message -danger"></h:message>
-				<div class="-validation-mark">
-					<i class="fa fa-check" aria-hidden="true"></i>
-					<i class="fa fa-exclamation" aria-hidden="true"></i>
-				</div>
-
-				<h:inputTextarea value="#{cc.attrs.value}" id="#{cc.attrs.clientId}_input"
-					label="#{cc.attrs.clientId}_input" styleClass="form-control -validation-input tinyMCE"
-					required="#{cc.attrs.required}" requiredMessage="#{cc.attrs.requiredMessage}">
-					<f:passThroughAttribute name="aria-label" value="#{cc.attrs.label}" />
-				</h:inputTextarea>
-				<ui:fragment rendered="#{not empty cc.attrs.helpText}">
-					<span class="admin__form-help-text">#{cc.attrs.helpText}</span>
-				</ui:fragment>
+				<h:panelGroup id="inputGroup">
+					<h:message for="#{cc.attrs.clientId}_input" errorClass="-validation-message -danger"></h:message>
+					<div class="-validation-mark">
+						<i class="fa fa-check" aria-hidden="true"></i>
+						<i class="fa fa-exclamation" aria-hidden="true"></i>
+					</div>
+					<h:inputTextarea value="#{cc.attrs.value}" id="#{cc.id}_inputFieldTextArea"
+						label="#{cc.attrs.clientId}_input" styleClass="form-control -validation-input tinyMCE"
+						required="#{cc.attrs.required}" requiredMessage="#{cc.attrs.requiredMessage}">
+						<f:passThroughAttribute name="aria-label" value="#{cc.attrs.label}" />
+						<f:ajax event="blur" render="inputGroup" />
+					</h:inputTextarea>
+					<ui:fragment rendered="#{not empty cc.attrs.helpText}">
+						<span class="admin__form-help-text">#{cc.attrs.helpText}</span>
+					</ui:fragment>
+				</h:panelGroup>
 			</div>
 
 			<div class="col-1 admin__form-help-icon">

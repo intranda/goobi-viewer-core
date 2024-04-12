@@ -27,33 +27,44 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.model.viewer.Dataset;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * Utility class for retrieving data folders, data files and source files.
  *
  */
-public class DataFileTools {
+public final class DataFileTools {
 
     private static final Logger logger = LogManager.getLogger(DataFileTools.class);
+
+    /**
+     * Hidden constructor to avoid instantiating the class
+     */
+    private DataFileTools() {
+    }
 
     /**
      * Retrieves the path to viewer home or repositories root, depending on the record. Used to generate a specific task client query parameter.
@@ -73,7 +84,7 @@ public class DataFileTools {
      * by clients.
      *
      * @param dataRepositoryPath Data repository name or absolute path
-     * @return
+     * @return Absolute path of dataRepositoryPath
      * @should return correct path for empty data repository
      * @should return correct path for data repository name
      * @should return correct path for absolute data repository path
@@ -169,9 +180,7 @@ public class DataFileTools {
             repository = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepositoryFolder);
         }
 
-        Path folder = repository.resolve(dataFolderName).resolve(pi);
-
-        return folder;
+        return repository.resolve(dataFolderName).resolve(pi);
     }
 
     /**
@@ -185,19 +194,19 @@ public class DataFileTools {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public static Path getDataFilePath(String pi, String dataFolderName, String altDataFolderName, String fileName)
+    public static Path getDataFilePath(String pi, String dataFolderName, String altDataFolderName, final String fileName)
             throws PresentationException, IndexUnreachableException {
         // Make sure fileName is a pure file name and not a path
-        fileName = sanitizeFileName(fileName);
+       String useFileName = sanitizeFileName(fileName);
 
         java.nio.file.Path dataFolderPath = getDataFolder(pi, dataFolderName);
-        if (StringUtils.isNotBlank(fileName)) {
-            dataFolderPath = dataFolderPath.resolve(fileName);
+        if (StringUtils.isNotBlank(useFileName)) {
+            dataFolderPath = dataFolderPath.resolve(useFileName);
         }
 
         // If selected path doesn't exist in the primary data folder, call again with alternative data folder
         if (StringUtils.isNotBlank(altDataFolderName) && !Files.exists(dataFolderPath)) {
-            return getDataFilePath(pi, altDataFolderName, null, fileName);
+            return getDataFilePath(pi, altDataFolderName, null, useFileName);
         }
 
         return dataFolderPath;
@@ -262,6 +271,7 @@ public class DataFileTools {
      * @param dataRepository a {@link java.lang.String} object.
      * @param format a {@link java.lang.String} object.
      * @should construct METS file path correctly
+     * @should construct METS_MARC file path correctly
      * @should construct LIDO file path correctly
      * @should construct DenkXweb file path correctly
      * @should throw IllegalArgumentException if fileName is null
@@ -277,6 +287,7 @@ public class DataFileTools {
         }
         switch (format) {
             case SolrConstants.SOURCEDOCFORMAT_METS:
+            case SolrConstants.SOURCEDOCFORMAT_METS_MARC:
             case SolrConstants.SOURCEDOCFORMAT_LIDO:
             case SolrConstants.SOURCEDOCFORMAT_DENKXWEB:
             case SolrConstants.SOURCEDOCFORMAT_WORLDVIEWS:
@@ -289,6 +300,7 @@ public class DataFileTools {
         StringBuilder sb = new StringBuilder(getDataRepositoryPath(dataRepository));
         switch (format) {
             case SolrConstants.SOURCEDOCFORMAT_METS:
+            case SolrConstants.SOURCEDOCFORMAT_METS_MARC:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
                 break;
             case SolrConstants.SOURCEDOCFORMAT_LIDO:
@@ -302,6 +314,8 @@ public class DataFileTools {
                 break;
             case SolrConstants.SOURCEDOCFORMAT_WORLDVIEWS:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
+                break;
+            default:
                 break;
         }
         sb.append('/').append(fileName);
@@ -341,6 +355,8 @@ public class DataFileTools {
             case SolrConstants.FILENAME_TEI:
                 dataFolderName = DataManager.getInstance().getConfiguration().getTeiFolder();
                 break;
+            default:
+                break;
         }
 
         return getDataFilePath(pi, dataFolderName, null, fileName).toAbsolutePath().toString();
@@ -363,9 +379,7 @@ public class DataFileTools {
         }
 
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepositoryName(pi);
-        Path filePath = Paths.get(getDataRepositoryPath(dataRepository), relativeFilePath);
-
-        return filePath;
+        return Paths.get(getDataRepositoryPath(dataRepository), relativeFilePath);
     }
 
     /**
@@ -385,10 +399,8 @@ public class DataFileTools {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static String loadFulltext(String altoFilePath, String fulltextFilePath, boolean mergeLineBreakWords,
-            HttpServletRequest request)
-            throws FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        // logger.trace("loadFulltext: {}/{}", altoFilePath, fulltextFilePath);
+    public static String loadFulltext(String altoFilePath, String fulltextFilePath, boolean mergeLineBreakWords, HttpServletRequest request)
+            throws IOException, IndexUnreachableException {
         TextResourceBuilder builder = new TextResourceBuilder();
         if (fulltextFilePath != null) {
             // Plain full-text file
@@ -399,23 +411,7 @@ public class DataFileTools {
                     return fulltext;
                 }
             } catch (ContentNotFoundException e) {
-                //try loading from content api url (same source as image content)
-                try {
-                    String filename = FileTools.getFilenameFromPathString(fulltextFilePath);
-                    String pi = FileTools.getBottomFolderFromPathString(fulltextFilePath);
-                    return DataManager.getInstance()
-                            .getRestApiManager()
-                            .getContentApiManager()
-                            .map(urls -> {
-                                return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PLAINTEXT).params(pi, filename).build();
-                            })
-                            .map(url -> NetTools.callUrlGET(url))
-                            .filter(array -> NetTools.isStatusOk(array[0]))
-                            .map(array -> array[1])
-                            .orElseThrow(() -> new ContentNotFoundException("Resource not found"));
-                } catch (ContentNotFoundException e1) {
-                    // fall through to loading alto
-                }
+                loadFromApiURl(fulltextFilePath);
             } catch (PresentationException e) {
                 logger.error(e.getMessage());
             }
@@ -438,6 +434,23 @@ public class DataFileTools {
         return null;
     }
 
+    public static String loadFromApiURl(String fulltextFilePath) throws FileNotFoundException {
+        //try loading from content api url (same source as image content)
+        try {
+            String filename = FileTools.getFilenameFromPathString(fulltextFilePath);
+            String pi = FileTools.getBottomFolderFromPathString(fulltextFilePath);
+            return DataManager.getInstance().getRestApiManager().getContentApiManager().map(urls -> {
+                return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PLAINTEXT).params(pi, filename).build();
+            })
+                    .map(NetTools::callUrlGET)
+                    .filter(array -> NetTools.isStatusOk(array[0]))
+                    .map(array -> array[1])
+                    .orElseThrow(() -> new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND));
+        } catch (ContentNotFoundException e1) {
+            return "";
+        }
+    }
+
     /**
      *
      * @param altoFilePath
@@ -453,7 +466,6 @@ public class DataFileTools {
         if (altoFilePath == null) {
             return null;
         }
-        // logger.trace("loadAlto: {}", altoFilePath);
 
         String filename = FileTools.getFilenameFromPathString(altoFilePath);
         String pi = FileTools.getBottomFolderFromPathString(altoFilePath);
@@ -465,17 +477,11 @@ public class DataFileTools {
             return new StringPair(DataManager.getInstance()
                     .getRestApiManager()
                     .getContentApiManager()
-                    .map(urls -> {
-                        return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_ALTO).params(pi, filename).build();
-                    })
-                    .map(url -> {
-                        String[] u = NetTools.callUrlGET(url);
-                        // logger.trace(u[1]);
-                        return u;
-                    })
+                    .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_ALTO).params(pi, filename).build())
+                    .map(NetTools::callUrlGET)
                     .filter(array -> NetTools.isStatusOk(array[0]))
                     .map(array -> array[1])
-                    .orElseThrow(() -> new ContentNotFoundException("Resource not found")), null);
+                    .orElseThrow(() -> new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND)), null);
         }
     }
 
@@ -492,8 +498,7 @@ public class DataFileTools {
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static String loadTei(String pi, String language)
-            throws FileNotFoundException, IOException, ViewerConfigurationException {
+    public static String loadTei(String pi, String language) throws FileNotFoundException, IOException {
         logger.trace("loadTei: {}/{}", pi, language);
         if (pi == null) {
             return null;
@@ -506,4 +511,77 @@ public class DataFileTools {
             return null;
         }
     }
+
+    /**
+     * creates a Dataset object, containing all relevant file paths
+     * 
+     * @param pi a {@link java.lang.String} object.
+     * @return a {@link io.goobi.viewer.model.viewer.Dataset} object.
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws RecordNotFoundException
+     * @throws IOException
+     */
+
+    public static Dataset getDataset(String pi) throws PresentationException, IndexUnreachableException, RecordNotFoundException, IOException {
+
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + pi, null);
+        if (doc == null) {
+            throw new RecordNotFoundException(pi);
+        }
+
+        Dataset work = new Dataset();
+        work.setPi(pi);
+
+        long iddoc = Long.parseLong((String) doc.getFieldValue(SolrConstants.IDDOC));
+        StructElement se = new StructElement(iddoc, doc);
+
+        String format = se.getSourceDocFormat();
+        String dataRepository = se.getDataRepository();
+
+        Path repository;
+        if (StringUtils.isBlank(dataRepository)) {
+            repository = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
+        } else if (Paths.get(FileTools.adaptPathForWindows(dataRepository)).isAbsolute()) {
+            repository = Paths.get(dataRepository);
+        } else {
+            repository = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepository);
+        }
+
+        // path to metadata file
+        work.setMetadataFilePath(Paths.get(DataFileTools.getSourceFilePath(pi + ".xml", dataRepository,
+                format != null ? format.toUpperCase() : SolrConstants.SOURCEDOCFORMAT_METS)));
+
+        // path to images
+        work.setMediaFolderPath(repository.resolve(DataManager.getInstance().getConfiguration().getMediaFolder()).resolve(pi));
+
+        // alto folder
+        work.setAltoFolderPath(repository.resolve(DataManager.getInstance().getConfiguration().getAltoFolder()).resolve(pi));
+
+        // pdf folder
+        work.setPdfFolderPath(repository.resolve(DataManager.getInstance().getConfiguration().getPdfFolder()).resolve(pi));
+
+        // collect files
+        if (work.getMediaFolderPath() != null && Files.exists(work.getMediaFolderPath())) {
+            try (Stream<Path> stream = Files.list(work.getMediaFolderPath())) {
+                List<Path> media = stream.sorted().collect(Collectors.toList());
+                work.setMediaFiles(media);
+            }
+        }
+        if (work.getPdfFolderPath() != null && Files.exists(work.getPdfFolderPath())) {
+            try (Stream<Path> stream = Files.list(work.getPdfFolderPath())) {
+                List<Path> pdfs = stream.sorted().collect(Collectors.toList());
+                work.setPdfFiles(pdfs);
+            }
+        }
+        if (work.getAltoFolderPath() != null && Files.exists(work.getAltoFolderPath())) {
+            try (Stream<Path> stream = Files.list(work.getAltoFolderPath())) {
+                List<Path> alto = stream.sorted().collect(Collectors.toList());
+                work.setAltoFiles(alto);
+            }
+        }
+
+        return work;
+    }
+
 }

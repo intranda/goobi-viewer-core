@@ -22,11 +22,14 @@
 package io.goobi.viewer.managedbeans;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -35,8 +38,6 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
@@ -45,13 +46,12 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataElement;
+import io.goobi.viewer.model.metadata.MetadataValue;
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.viewer.EventElement;
-import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * Provides the metadata for the current structure and event elements.
@@ -68,9 +68,8 @@ public class MetadataBean {
 
     /** Metadata blocks for the docstruct hierarchy from the anchor to the current element. */
     private Map<Integer, List<MetadataElement>> metadataElementMap = new HashMap<>();
+    private Locale currentMetadataLocale;
 
-    /** Metadata blocks for all docstructs that are included within a specific page. */
-    private Map<Integer, List<MetadataElement>> allMetadataElementsforPage = new HashMap<>();
     /** List of LIDO events. */
     private List<EventElement> events = new ArrayList<>();
 
@@ -99,11 +98,12 @@ public class MetadataBean {
      * </p>
      *
      * @param index
+     * @param locale
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String loadMetadata(int index) throws IndexUnreachableException, DAOException {
+    public String loadMetadata(int index, Locale locale) throws IndexUnreachableException, DAOException {
         // logger.trace("loadMetadata({})", index);
         if (activeDocumentBean == null) {
             return "viewMetadata";
@@ -115,14 +115,9 @@ public class MetadataBean {
         }
 
         logger.trace("loadMetadata for: {}", currentElement.getLabel());
-        List<MetadataElement> metadataElementList = metadataElementMap.get(index);
-        if (metadataElementList == null) {
-            metadataElementList = new ArrayList<>();
-            metadataElementMap.put(index, metadataElementList);
-        }
-
+        List<MetadataElement> metadataElementList = metadataElementMap.computeIfAbsent(index, k -> new ArrayList<>());
+        metadataElementList.clear(); // Clear hierarchy to avoid duplicates when switching language
         try {
-            Locale locale = BeanUtils.getLocale();
             metadataElementList.add(new MetadataElement().init(currentElement, index, locale)
                     .setSelectedRecordLanguage(activeDocumentBean.getSelectedRecordLanguage()));
 
@@ -167,11 +162,14 @@ public class MetadataBean {
      * @return the metadataElementList
      */
     public List<MetadataElement> getMetadataElementList(int index) {
-        //        logger.trace("getMetadataElementList({})", index);
-        if (metadataElementMap.get(index) == null) {
+        // logger.trace("getMetadataElementList({})", index); //NOSONAR Sometimes needed for debugging
+        Locale locale = BeanUtils.getLocale();
+
+        if (metadataElementMap.get(index) == null || !Objects.equals(locale, this.currentMetadataLocale)) {
             // Only reload if empty, otherwise a c:forEach (used by p:tabView) will cause a reload on every iteration
             try {
-                loadMetadata(index);
+                loadMetadata(index, locale);
+                this.currentMetadataLocale = locale; //store locale used for translations so it can be checked for changes later on
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error("Error loading metadatalist ", e);
                 return Collections.emptyList();
@@ -179,69 +177,6 @@ public class MetadataBean {
 
         }
         return metadataElementMap.get(index);
-    }
-
-    /**
-     * Returns a list of <code>MetadataElement</code>s for all structure elements contained on the given page (as opposed to just the immediate
-     * hierarchy down to the first element that BEGINS on the current page, such as returned by <code>getMetadataElementList</code>.
-     *
-     * @param index Metadata view index
-     * @param order Page number
-     * @return List of <code>MetadataElement</code>s for all structure elements contained on the given page
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @should return metadata elements for all contained docstructs
-     */
-    @Deprecated
-    public List<MetadataElement> getAllMetadataElementsForPage(int index, int order) throws IndexUnreachableException, DAOException {
-        if (allMetadataElementsforPage.get(order) != null) {
-            return allMetadataElementsforPage.get(order);
-        }
-        if (activeDocumentBean == null) {
-            return Collections.emptyList();
-        }
-
-        StructElement topElement = activeDocumentBean.getTopDocument();
-        if (topElement == null) {
-            return Collections.emptyList();
-        }
-
-        String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + topElement.getPi() + " +" + SolrConstants.THUMBPAGENO + ":[1 TO " + order + "]";
-        logger.trace("All metadata elements query: {}", query);
-        SolrDocumentList docs;
-        try {
-            docs = DataManager.getInstance()
-                    .getSearchIndex()
-                    .search(query, SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.LOGID, "asc")), null);
-            if (docs.isEmpty()) {
-                return Collections.emptyList();
-            }
-
-            for (SolrDocument doc : docs) {
-                int thumbPage = (int) doc.getFieldValue(SolrConstants.THUMBPAGENO);
-                int numPages = (int) doc.getFieldValue(SolrConstants.NUMPAGES);
-                if (thumbPage < 1) {
-                    continue;
-                }
-                if (thumbPage == order || thumbPage + numPages - 1 >= order) {
-                    StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
-                    Locale locale = BeanUtils.getLocale();
-                    MetadataElement metadataElement =
-                            new MetadataElement().init(se, index, locale).setSelectedRecordLanguage(activeDocumentBean.getSelectedRecordLanguage());
-                    if (allMetadataElementsforPage.get(order) == null) {
-                        allMetadataElementsforPage.put(order, new ArrayList<>(docs.size()));
-                    }
-                    allMetadataElementsforPage.get(order).add(metadataElement);
-                }
-            }
-
-            return allMetadataElementsforPage.get(order);
-        } catch (PresentationException e) {
-            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
-
-        }
-
-        return Collections.emptyList();
     }
 
     /**
@@ -279,7 +214,7 @@ public class MetadataBean {
         while (!metadataElementList.get(i).isHasSidebarMetadata() && i > 0) {
             i--;
         }
-        // logger.debug("i: " + i);
+
         return metadataElementList.get(i);
     }
 
@@ -352,8 +287,8 @@ public class MetadataBean {
      * @param selectedRecordLanguage a {@link java.lang.String} object.
      */
     public void setSelectedRecordLanguage(String selectedRecordLanguage) {
-        for (int index : metadataElementMap.keySet()) {
-            List<MetadataElement> metadataElementList = metadataElementMap.get(index);
+        for (Entry<Integer, List<MetadataElement>> entry : metadataElementMap.entrySet()) {
+            List<MetadataElement> metadataElementList = entry.getValue();
             if (metadataElementList != null) {
                 metadataElementList.forEach(element -> element.setSelectedRecordLanguage(selectedRecordLanguage));
             }
@@ -415,5 +350,65 @@ public class MetadataBean {
      */
     public void setActiveMetadataView(MetadataView activeMetadataView) {
         this.activeMetadataView = activeMetadataView;
+    }
+
+    /**
+     * 
+     * @param fields
+     * @return Given strings as List<String>
+     */
+    public List<String> getComplexMetadataFieldsToList(String... fields) {
+        if (fields != null) {
+            return Arrays.asList(fields);
+        }
+
+        return List.of("MD_DATESTART", "MD_DATEEND", "MD_TYPE");
+    }
+
+    /**
+     * Returns a list of {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code> where the subfield
+     * value of MD_ORDER matches the given <code>order</code> value.
+     * 
+     * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
+     * @param fieldName Name metadata field
+     * @param language Optional metadata field language
+     * @param subFieldName Child metadata field
+     * @param order Page number
+     * @return Metadata values of subFieldName; empty list if none found
+     */
+    public List<String> getMetadataValuesForPage(int metadataViewIndex, String mainFieldName, String language, String subFieldName, int order) {
+        List<MetadataElement> metadataElements = getMetadataElementList(metadataViewIndex);
+        if (metadataElements != null && !metadataElements.isEmpty()) {
+            Metadata md = metadataElements.get(0).getMetadata(mainFieldName, language);
+            if (md != null && md.isGroup() && !md.isBlank()) {
+                for (MetadataValue val : md.getValues()) {
+                    if (String.valueOf(order).equals(val.getParamValue("MD_ORDER"))) {
+                        return val.getParamValues(subFieldName);
+                    }
+                }
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
+    /**
+     * Returns the first {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code> where the subfield
+     * value of MD_ORDER matches the given <code>order</code> value.
+     * 
+     * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
+     * @param fieldName Name metadata field
+     * @param language Optional metadata field language
+     * @param subFieldName Child metadata field
+     * @param order Page number
+     * @return First value of subFieldName; null if none found
+     */
+    public String getFirstMetadataValueForPage(int metadataViewIndex, String mainFieldName, String language, String subFieldName, int order) {
+        List<String> values = getMetadataValuesForPage(metadataViewIndex, mainFieldName, language, subFieldName, order);
+        if (!values.isEmpty()) {
+            return values.get(0);
+        }
+
+        return null;
     }
 }

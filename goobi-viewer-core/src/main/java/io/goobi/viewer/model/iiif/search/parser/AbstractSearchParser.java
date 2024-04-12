@@ -21,6 +21,12 @@
  */
 package io.goobi.viewer.model.iiif.search.parser;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -92,9 +98,9 @@ public abstract class AbstractSearchParser {
      * @param query a {@link java.lang.String} object.
      * @return a regex matching a single word matching the given query regex (ignoring case)
      */
-    public static String getSingleWordRegex(String query) {
-        query = query.replace("(?i)", ""); //remove any possible ignore case flags
-        return "(?i)(?:^|\\s+|[.:,;!?\\(\\)])(" + query + ")(?=$|\\s+|[.:,;!?\\(\\)])";
+    public static String getSingleWordRegex(final String query) {
+        // remove any possible ignore case flags from query
+        return "(?i)(?:^|\\s+|[.:,;!?\\(\\)])(" + query.replace("(?i)", "") + ")(?=$|\\s+|[.:,;!?\\(\\)])";
     }
 
     /**
@@ -105,9 +111,9 @@ public abstract class AbstractSearchParser {
      * @param query a {@link java.lang.String} object.
      * @return a regex matching any text containing the given query regex as single word
      */
-    public static String getContainedWordRegex(String query) {
-        query = query.replace("(?i)", ""); //remove any possible ignore case flags
-        return "(?i)[\\w\\W]*(?:^|\\s+|[.:,;!?\\(\\)])(" + query + ")(?:$|\\s+|[.:,;!?\\(\\)])[\\w\\W]*";
+    public static String getContainedWordRegex(final String query) {
+        // remove any possible ignore case flags from query
+        return "(?i)[\\w\\W]*(?:^|\\s+|[.:,;!?\\(\\)])(" + query.replace("(?i)", "") + ")(?:$|\\s+|[.:,;!?\\(\\)])[\\w\\W]*";
     }
 
     /**
@@ -118,9 +124,24 @@ public abstract class AbstractSearchParser {
      * @return a regex matching any word or sequence of words of the given query with '*' matching any number of word characters and ignoring case
      * @param query a {@link java.lang.String} object.
      */
-    public static String getQueryRegex(String query) {
-        query = query.replace("(?i)", ""); //remove any possible ignore case flags
-        String queryRegex = query.replace("*", "[\\w\\d-]*").replaceAll("\\s+", "\\\\s*|\\\\s*");
+    public static String getQueryRegex(final String query) {
+        String useQuery = query.replace("(?i)", ""); //remove any possible ignore case flags
+
+        Matcher literalPartsMatcher = Pattern.compile("[^\\s*]+").matcher(useQuery);
+        List<MatchGroup> matchGroups = new ArrayList<>();
+        while (literalPartsMatcher.find()) {
+            int start = literalPartsMatcher.start();
+            int end = literalPartsMatcher.end();
+            String s = Pattern.quote(literalPartsMatcher.group());
+            matchGroups.add(new MatchGroup(start, end, s));
+        }
+        Collections.reverse(matchGroups);
+        String queryRegex = useQuery;
+        for (MatchGroup matchGroup : matchGroups) {
+            queryRegex = queryRegex.substring(0, matchGroup.getStart()) + matchGroup.getText() + queryRegex.substring(matchGroup.getEnd());
+        }
+        queryRegex = queryRegex.replace("*", "[\\w\\d-]*").replaceAll("\\s+", "\\\\s*|\\\\s*");
+
         return "(?i)" + "(?:[.:,;!?\\(\\)]?)((?:" + queryRegex + ")+)(?:[.:,;!?\\(\\)]?)";
     }
 
@@ -131,10 +152,9 @@ public abstract class AbstractSearchParser {
      * @param query a {@link java.lang.String} object.
      * @return the regular expression {@code (?i){query}[\w\d-]*}
      */
-    public static String getAutoSuggestRegex(String query) {
-        query = query.replace("(?i)", ""); //remove any possible ignore case flags
-        String queryRegex = query + "[\\w\\d-]*";
+    public static String getAutoSuggestRegex(final String query) {
+        // remove any possible ignore case flags from query
+        String queryRegex = query.replace("(?i)", "") + "[\\w\\d-]*";
         return "(?i)" + queryRegex;
     }
-
 }

@@ -21,27 +21,126 @@
  */
 package io.goobi.viewer.model.search;
 
+import java.util.Collections;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class SearchQueryGroupTest extends AbstractSolrEnabledTest {
-    
+class SearchQueryGroupTest extends AbstractSolrEnabledTest {
+
     /**
-    * @see SearchQueryGroup#init(List)
-    * @verifies create and preselect visible fields
-    */
+     * @see SearchQueryGroup#init(List)
+     * @verifies create and preselect visible fields
+     */
     @Test
-    public void init_shouldCreateAndPreselectVisibleFields() throws Exception {
-        SearchQueryGroup group = new SearchQueryGroup(null, DataManager.getInstance().getConfiguration().getAdvancedSearchFields());
-        Assert.assertEquals(3, group.getQueryItems().size());
-        Assert.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
-        Assert.assertEquals(SolrConstants.DC, group.getQueryItems().get(1).getField());
-        Assert.assertEquals("MD_TITLE", group.getQueryItems().get(2).getField());
+    void init_shouldCreateAndPreselectVisibleFields() throws Exception {
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
+        Assertions.assertEquals(3, group.getQueryItems().size());
+        Assertions.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
+        Assertions.assertEquals(SolrConstants.DC, group.getQueryItems().get(1).getField());
+        Assertions.assertEquals("MD_TITLE", group.getQueryItems().get(2).getField());
+    }
+
+    /**
+     * @see SearchQueryGroup#init(List)
+     * @verifies only create allfields item if fieldConfigs null
+     */
+    @Test
+    void init_shouldOnlyCreateAllfieldsItemIfFieldConfigsNull() throws Exception {
+        SearchQueryGroup group = new SearchQueryGroup(null, null);
+        Assertions.assertEquals(1, group.getQueryItems().size());
+        Assertions.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
+    }
+
+    /**
+     * @see SearchQueryGroup#injectItems(List)
+     * @verifies replace existing items with given
+     */
+    @Test
+    void injectItems_shouldReplaceExistingItemsWithGiven() throws Exception {
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
+        Assertions.assertEquals(3, group.getQueryItems().size());
+
+        SearchQueryItem item = new SearchQueryItem();
+        item.setValue("foobar");
+        group.injectItems(Collections.singletonList(item));
+        Assertions.assertEquals(1, group.getQueryItems().size());
+        Assertions.assertEquals("foobar", group.getQueryItems().get(0).getValue());
+    }
+
+    /**
+     * @see SearchQueryGroup#isBlank()
+     * @verifies return true if all items without value
+     */
+    @Test
+    void isBlank_shouldReturnTrueIfAllItemsWithoutValue() throws Exception {
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
+        Assertions.assertTrue(group.isBlank());
+    }
+
+    /**
+     * @see SearchQueryGroup#isBlank()
+     * @verifies return false if at least one item has value
+     */
+    @Test
+    void isBlank_shouldReturnFalseIfAtLeastOneItemHasValue() throws Exception {
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
+        Assertions.assertEquals(3, group.getQueryItems().size());
+        group.getQueryItems().get(0).setValue("foobar");
+        Assertions.assertFalse(group.isBlank());
+    }
+
+    /**
+     * @see SearchQueryGroup#getAvailableOperators()
+     * @verifies return all enum values
+     */
+    @Test
+    void getAvailableOperators_shouldReturnAllEnumValues() throws Exception {
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
+        List<SearchQueryGroupOperator> operators = group.getAvailableOperators();
+        Assertions.assertTrue(operators.contains(SearchQueryGroupOperator.AND));
+        Assertions.assertTrue(operators.contains(SearchQueryGroupOperator.OR));
+    }
+
+    /**
+     * @see SearchQueryGroup#addNewQueryItem()
+     * @verifies add item correctly
+     */
+    @Test
+    void addNewQueryItem_shouldAddItemCorrectly() throws Exception {
+        SearchQueryGroup group = new SearchQueryGroup(null, null);
+        Assertions.assertEquals(1, group.getQueryItems().size());
+        Assertions.assertTrue(group.addNewQueryItem());
+        Assertions.assertEquals(2, group.getQueryItems().size());
+    }
+
+    /**
+     * @see SearchQueryGroup#removeQueryItem(SearchQueryItem)
+     * @verifies remove item correctly
+     */
+    @Test
+    void removeQueryItem_shouldRemoveItemCorrectly() throws Exception {
+        SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
+        Assertions.assertEquals(3, group.getQueryItems().size());
+        Assertions.assertTrue(group.removeQueryItem(group.getQueryItems().get(0)));
+        Assertions.assertEquals(2, group.getQueryItems().size());
+    }
+
+    /**
+     * @see SearchQueryGroup#removeQueryItem(SearchQueryItem)
+     * @verifies not remove last remaining item
+     */
+    @Test
+    void removeQueryItem_shouldNotRemoveLastRemainingItem() throws Exception {
+        SearchQueryGroup group = new SearchQueryGroup(null, null);
+        Assertions.assertEquals(1, group.getQueryItems().size());
+        Assertions.assertFalse(group.removeQueryItem(group.getQueryItems().get(0)));
+        Assertions.assertEquals(1, group.getQueryItems().size());
     }
 }

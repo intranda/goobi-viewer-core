@@ -1,0 +1,56 @@
+/* ==============================================================
+   Highlighted object
+   style declarations for frontend component highlighted object
+   ==============================================================*/
+/* BLOCK */
+
+.highlighted-object {
+	&__link {
+		display: inline-flex;
+		position: relative;
+		padding: 0;
+	} 
+	&__figure { 
+		margin: 0;
+	}
+	&__image {
+		max-width: 100%;
+		transition: opacity 0.2s ease; 
+		&:hover {
+			opacity: 0.8;
+		}
+	}
+	&__image-title {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		width: 100%; 
+		background: rgba(0, 0, 0, 0.7;);
+		font-size: 18px;
+		font-weight: 700;
+		color: white;
+		padding: 10px 15px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: -webkit-box;
+		-webkit-line-clamp: 4;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+	}
+	&__no-image-link {
+		font-size: 24px;
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

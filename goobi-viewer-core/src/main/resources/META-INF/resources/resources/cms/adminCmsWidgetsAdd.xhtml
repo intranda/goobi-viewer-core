@@ -15,7 +15,7 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPageAdmin('adminCmsSidebarWidgets')}" />
+				listener="#{navigationHelper.setCurrentPageAdmin( (customWidgetEditBean.widget == null or (empty customWidgetEditBean.widget.id)) ? 'adminCmsWidgetsAdd':'adminCmsWidgetsEdit')}" />
 		</f:metadata>
 	</ui:define>
 
@@ -34,6 +34,8 @@
 						</c:otherwise>
 					</c:choose>
 				</div>
+				
+				<viewerComponent:adminBreadcrumbs />
 
 				<h:form prependId="false" class="-h100">
 

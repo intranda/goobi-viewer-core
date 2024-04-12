@@ -22,7 +22,7 @@ const jsLibsDir = 'src/main/resources/META-INF/resources/resources/javascript/li
 const cssLibsDir = 'src/main/resources/META-INF/resources/resources/css/libs/'
 
 const depsPathsJS = [
-  
+
   { // Bootstrap
     expand: true,
     cwd: nodeModules,
@@ -149,6 +149,17 @@ const depsPathsJS = [
     dest:`${jsLibsDir}leaflet/draw/`
   },
 
+  { // SIMPLE-LIGHTBOX
+    expand: true,
+    cwd: nodeModules,
+    src:  [
+      'simple-lightbox/dist/simpleLightbox.min.js', 
+      'simple-lightbox/LICENSE'
+    ],
+    flatten: true,
+    dest:`${jsLibsDir}simpleLightbox/`
+  },
+
   { // MAPBOX GL
     expand: true,
     cwd: nodeModules,
@@ -254,6 +265,39 @@ const depsPathsJS = [
     dest: `${jsLibsDir}swiper/`
   },
   
+  { // CHARTJS
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'chart.js/dist/chart.umd.js*', 
+      'chart.js/LICENSE.md'
+    ],
+    flatten: true,
+    dest: `${jsLibsDir}chartjs/`
+  },
+  
+  { // LUXON (date and time module for chartjs)
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'luxon/build/global/luxon.js*', 
+      'luxon/LICENSE.md'
+    ],
+    flatten: true,
+    dest: `${jsLibsDir}chartjs/luxon`
+  },
+  
+  { // LUXON-CHARTJS-INTEGRATION
+    expand: true,
+    cwd: nodeModules,
+    src: [
+      'chartjs-adapter-luxon/dist/chartjs-adapter-luxon.umd.min.js', 
+      'chartjs-adapter-luxon/LICENSE.md'
+    ],
+    flatten: true,
+    dest: `${jsLibsDir}chartjs/chartjs-adapter-luxon`
+  },
+  
   /*
   { // ThreeJS
     expand: true,
@@ -309,7 +353,7 @@ const depsPathsJS = [
 ];
 
   /////////////////////
- /////// CCS /////////
+ /////// CSS /////////
 /////////////////////
 
 
@@ -393,6 +437,14 @@ const depsPathsCSS = [
     src: 'leaflet.markercluster/dist/MarkerCluster.css', 
     flatten: true,
     dest:`${cssLibsDir}leaflet/markercluster`
+  },
+
+  { // Simple Lightbox
+    expand: true,
+    cwd: nodeModules,
+    src: 'simple-lightbox/dist/simpleLightbox.min.css',
+    flatten: true,
+    dest:`${cssLibsDir}simpleLightbox/`
   },
 
   { // MAPBOX GL

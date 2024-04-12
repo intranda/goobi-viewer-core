@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
@@ -40,16 +41,17 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
@@ -77,7 +79,7 @@ import io.goobi.viewer.solr.SolrTools;
  * TocMaker class.
  * </p>
  */
-public class TocMaker {
+public final class TocMaker {
 
     private static final Logger logger = LogManager.getLogger(TocMaker.class);
 
@@ -90,6 +92,11 @@ public class TocMaker {
     private static final int ANCHOR_THUMBNAIL_WIDTH = 50;
 
     private static Pattern patternVolumeLabel = Pattern.compile(StringTools.REGEX_BRACES);
+
+    /** Private constructor. */
+    private TocMaker() {
+        //
+    }
 
     /**
      * Returns a list of fields to be used as the field filter for Solr queries. The list constists of statically defined fields in REQUIRED_FIELDS
@@ -147,10 +154,9 @@ public class TocMaker {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static LinkedHashMap<String, List<TOCElement>> generateToc(TOC toc, StructElement structElement, boolean addAllSiblings, String mimeType,
-            int tocCurrentPage, int hitsPerPage) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    public static Map<String, List<TOCElement>> generateToc(TOC toc, StructElement structElement, boolean addAllSiblings, String mimeType,
+            int tocCurrentPage, int hitsPerPage) throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("generateToc");
         if (structElement == null) {
             throw new IllegalArgumentException("structElement may not me null");
@@ -161,9 +167,9 @@ public class TocMaker {
 
         logger.trace("generateToc: {}", structElement.getPi());
         LinkedHashMap<String, List<TOCElement>> ret = new LinkedHashMap<>();
-        ret.put(TOC.DEFAULT_GROUP, new ArrayList<TOCElement>());
+        ret.put(StringConstants.DEFAULT_NAME, new ArrayList<>());
 
-        // TODO Remove the check for METS once format-agnostic way of generating PDFs has been implemented
+        // TODO Allow METS_MARC once PDF generation from MARCXML supported
         boolean sourceFormatPdfAllowed = SolrConstants.SOURCEDOCFORMAT_METS.equals(structElement.getSourceDocFormat());
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
@@ -187,13 +193,12 @@ public class TocMaker {
                 label.setValue(structElement.getPi());
             }
             String footerId = getFooterId(doc, DataManager.getInstance().getConfiguration().getWatermarkIdField());
-            //                String docstruct = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
             String docstruct = "_GROUPS";
-            ret.get(TOC.DEFAULT_GROUP)
+            ret.get(StringConstants.DEFAULT_NAME)
                     .add(new TOCElement(label, null, null, String.valueOf(structElement.getLuceneId()), null, level, structElement.getPi(), null,
                             false, true, false, mimeType, docstruct, footerId));
-            ++level;
-            buildGroupToc(ret.get(TOC.DEFAULT_GROUP), DataManager.getInstance().getConfiguration().getRecordGroupIdentifierFields(),
+            // ++level;
+            buildGroupToc(ret.get(StringConstants.DEFAULT_NAME), DataManager.getInstance().getConfiguration().getRecordGroupIdentifierFields(),
                     structElement.getPi(), sourceFormatPdfAllowed, mimeType);
         } else if (structElement.isAnchor()) {
             // MultiVolume
@@ -202,10 +207,10 @@ public class TocMaker {
             toc.setCurrentPage(tocCurrentPage);
         } else {
             // Stand-alone or volume
-            ret.put(TOC.DEFAULT_GROUP, buildToc(doc, structElement, addAllSiblings, mimeType, sourceFormatPdfAllowed));
+            ret.put(StringConstants.DEFAULT_NAME, buildToc(doc, structElement, addAllSiblings, mimeType, sourceFormatPdfAllowed));
         }
 
-        logger.trace("generateToc end: {} groups, {} elements in DEFAULT", ret.size(), ret.get(TOC.DEFAULT_GROUP).size());
+        logger.trace("generateToc end: {} groups, {} elements in DEFAULT", ret.size(), ret.get(StringConstants.DEFAULT_NAME).size());
         return ret;
     }
 
@@ -217,6 +222,7 @@ public class TocMaker {
      * @param addAllSiblings
      * @param mimeType
      * @param sourceFormatPdfAllowed
+     * @return List<TOCElement>
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
@@ -234,7 +240,8 @@ public class TocMaker {
         //                    // If this record belongs to groups, start with the groups
         //                    for (String groupIdField : structElement.getGroupMemberships().keySet()) {
         //                        logger.debug("adding toc element: " + groupIdField);
-        //                        ret.add(new TocElementFlat(structElement.getGroupMemberships().get(groupIdField), null, null, String.valueOf(structElement
+        //                        ret.add(new TocElementFlat(structElement.getGroupMemberships().get(groupIdField),
+        //                        null, null, String.valueOf(structElement
         //                                .getLuceneId()), false, null, level, structElement.getGroupMemberships().get(groupIdField), null, null,
         //                                sourceFormatPdfAllowed, true));
         //
@@ -260,7 +267,7 @@ public class TocMaker {
             }
             while (currentDoc != null && currentDoc.getFieldValues(ancestorField) != null) {
                 StringBuilder sbQuery = new StringBuilder(queryField).append(':').append(currentDoc.getFieldValues(ancestorField).iterator().next());
-                logger.trace("Ancestor query: {}", sbQuery.toString());
+                logger.trace("Ancestor query: {}", sbQuery);
                 // Get parent doc
                 currentDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(sbQuery.toString(), null);
                 if (currentDoc != null) {
@@ -303,7 +310,7 @@ public class TocMaker {
      * A group is a series, etc.
      *
      * @param ret
-     * @param groupIdField
+     * @param groupIdFields
      * @param groupIdValue
      * @param sourceFormatPdfAllowed
      * @param mimeType
@@ -313,8 +320,7 @@ public class TocMaker {
      * @throws DAOException
      */
     private static void buildGroupToc(List<TOCElement> ret, List<String> groupIdFields, String groupIdValue, boolean sourceFormatPdfAllowed,
-            String mimeType)
-            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
+            String mimeType) throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("addMembersToGroup: {}", groupIdValue);
         if (ret == null) {
             throw new IllegalArgumentException("ret may not be null");
@@ -343,7 +349,7 @@ public class TocMaker {
             returnFields.add(groupSortField); // add each sorting field to return list
         }
         sbQuery.append(')');
-        logger.trace("Group TOC query: {}", sbQuery.toString());
+        logger.trace("Group TOC query: {}", sbQuery);
 
         SolrDocumentList groupMemberDocs = DataManager.getInstance()
                 .getSearchIndex()
@@ -386,7 +392,7 @@ public class TocMaker {
                 StructElement struct = new StructElement(Long.valueOf(volumeIddoc), doc);
                 thumbnailUrl = thumbs.getThumbnailUrl(struct, ANCHOR_THUMBNAIL_WIDTH, ANCHOR_THUMBNAIL_HEIGHT);
             }
-            label.mapEach(value -> StringEscapeUtils.unescapeHtml4(value));
+            label.mapEach(StringEscapeUtils::unescapeHtml4);
             boolean accessPermissionPdf;
             try {
                 accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
@@ -406,7 +412,7 @@ public class TocMaker {
      * @param groupMemberDocs
      * @param groupIdFields
      * @param groupIdValue
-     * @return
+     * @return Map<Integer, SolrDocument>
      * @should create correctly sorted map
      */
     static Map<Integer, SolrDocument> createOrderedGroupDocMap(List<SolrDocument> groupMemberDocs, List<String> groupIdFields,
@@ -455,13 +461,13 @@ public class TocMaker {
      * @param mimeType
      * @param tocCurrentPage
      * @param hitsPerPage
+     * @return Number of hits
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
-     * @throws ViewerConfigurationException
      */
-    private static int buildAnchorToc(Map<String, List<TOCElement>> ret, SolrDocument anchorDoc, boolean sourceFormatPdfAllowed, String mimeType,
-            int tocCurrentPage, int hitsPerPage) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    private static int buildAnchorToc(Map<String, List<TOCElement>> ret, SolrDocument anchorDoc, boolean sourceFormatPdfAllowed,
+            final String mimeType, int tocCurrentPage, final int hitsPerPage) throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("buildAnchorToc");
         String iddoc = (String) anchorDoc.getFieldValue(SolrConstants.IDDOC);
         String anchorDocstructType = (String) anchorDoc.getFieldValue(SolrConstants.DOCSTRCT);
@@ -471,16 +477,16 @@ public class TocMaker {
         if (tocCurrentPage < 1) {
             throw new IllegalArgumentException("page must be >=1");
         }
-        //        List<String> anchorFieldList = getSolrFieldsToFetchForAnchor(anchorDocstructType);
 
         String query = new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(iddoc).toString();
         int hits = (int) DataManager.getInstance().getSearchIndex().getHitCount(query);
         int offset = 0;
-        if (hitsPerPage <= 0) {
-            hitsPerPage = SolrSearchIndex.MAX_HITS;
+        int useHitsPerPage = hitsPerPage;
+        if (useHitsPerPage <= 0) {
+            useHitsPerPage = SolrSearchIndex.MAX_HITS;
         } else {
             // Using paginator
-            offset = hitsPerPage * (tocCurrentPage - 1);
+            offset = useHitsPerPage * (tocCurrentPage - 1);
             if (offset > hits) {
                 offset = hits;
             }
@@ -496,7 +502,7 @@ public class TocMaker {
         }
         QueryResponse queryResponse = DataManager.getInstance()
                 .getSearchIndex()
-                .search(query, offset, hitsPerPage,
+                .search(query, offset, useHitsPerPage,
                         DataManager.getInstance().getConfiguration().getTocVolumeSortFieldsForTemplate(anchorDocstructType), null, volumeFieldList);
         if (queryResponse != null) {
             HttpServletRequest request = BeanUtils.getRequest();
@@ -514,7 +520,7 @@ public class TocMaker {
                     continue;
                 }
                 // Determine the TOC group for this volume based on the grouping field, if configured
-                String groupName = TOC.DEFAULT_GROUP;
+                String groupName = StringConstants.DEFAULT_NAME;
                 if (tocGroupField != null) {
                     String groupValue = String.valueOf(volumeDoc.getFieldValue(tocGroupField));
                     if (StringUtils.isNotEmpty(groupValue)) {
@@ -573,15 +579,16 @@ public class TocMaker {
         }
 
         // Add first volume's mime type to anchor
-        if (!ret.isEmpty() && StringUtils.isEmpty(mimeType)) {
+        String useMimeType = mimeType;
+        if (!ret.isEmpty() && StringUtils.isEmpty(useMimeType)) {
             for (String key : ret.keySet()) {
                 for (TOCElement tocElement : ret.get(key)) {
                     if (tocElement.getRecordMimeType() != null) {
-                        mimeType = tocElement.getRecordMimeType();
-                        logger.trace("mime type found: {}", mimeType);
+                        useMimeType = tocElement.getRecordMimeType();
+                        logger.trace("mime type found: {}", useMimeType);
                         break;
                     }
-                    if (StringUtils.isNotEmpty(mimeType)) {
+                    if (StringUtils.isNotEmpty(useMimeType)) {
                         break;
                     }
                 }
@@ -590,9 +597,9 @@ public class TocMaker {
         // Add anchor document
         IMetadataValue label = buildLabel(anchorDoc, (String) anchorDoc.getFirstValue(SolrConstants.DOCSTRCT));
         String footerId = getFooterId(anchorDoc, DataManager.getInstance().getConfiguration().getWatermarkIdField());
-        ret.get(TOC.DEFAULT_GROUP)
+        ret.get(StringConstants.DEFAULT_NAME)
                 .add(0, new TOCElement(label, null, null, String.valueOf(iddoc), logId, 0, topStructPiLocal, null, sourceFormatPdfAllowed, true,
-                        false, mimeType, anchorDocstructType, footerId));
+                        false, useMimeType, anchorDocstructType, footerId));
 
         return hits;
     }
@@ -645,7 +652,7 @@ public class TocMaker {
                     .append(iddoc)
                     .append(')')
                     .toString();
-            // logger.trace("Child doc query: {}", query);
+            // logger.trace("Child doc query: {}", query); //NOSONAR Debug
             // TODO determine child docstruct type before fetching the child docs to determine the required fields
             SolrDocumentList docs = DataManager.getInstance()
                     .getSearchIndex()
@@ -657,11 +664,7 @@ public class TocMaker {
                 for (SolrDocument childDoc : docs) {
                     String iddocParent = (String) childDoc.getFieldValue(SolrConstants.IDDOC_PARENT);
                     if (iddocParent != null) {
-                        List<SolrDocument> children = childrenMap.get(iddocParent);
-                        if (children == null) {
-                            children = new ArrayList<>();
-                            childrenMap.put(iddocParent, children);
-                        }
+                        List<SolrDocument> children = childrenMap.computeIfAbsent(iddocParent, k -> new ArrayList<>());
                         children.add(childDoc);
                     } else {
                         logger.warn("Document {} has no {}", childDoc.getFieldValue(SolrConstants.IDDOC), SolrConstants.IDDOC_PARENT);
@@ -682,7 +685,7 @@ public class TocMaker {
                 queryValue = pi;
             }
             // logger.trace("sort {} by {}", SolrSearchIndex.getSingleFieldStringValue(doc, LuceneConstants.DOCSTRCT), DataManager.getInstance()
-            //                    .getConfiguration().getTocVolumeSortFieldsForTemplate(SolrSearchIndex.getSingleFieldStringValue(doc, LuceneConstants.DOCSTRCT)));
+            // .getConfiguration().getTocVolumeSortFieldsForTemplate(SolrSearchIndex.getSingleFieldStringValue(doc, LuceneConstants.DOCSTRCT)));
             // TODO determine child docstruct type before fetching the child docs to determine the required fields
             SolrDocumentList childDocs = DataManager.getInstance()
                     .getSearchIndex()
@@ -712,7 +715,7 @@ public class TocMaker {
      * @param doc
      * @param level
      * @param addChildren
-     * @param sourceFormatPdfAllowed
+     * @param pdfPermissionMap
      * @param mimeType
      * @param footerId
      * @throws PresentationException
@@ -750,11 +753,11 @@ public class TocMaker {
         tocElement.getMetadata().put("MD_TITLE", (String) doc.getFirstValue("MD_TITLE"));
         if (!ret.contains(tocElement)) {
             ret.add(tocElement);
-            // logger.trace("TOC element added: {}/{}: '{}'; IDDOC:{}", ret.size() - 1, level, label, iddoc);
+            // logger.trace("TOC element added: {}/{}: '{}'; IDDOC:{}", ret.size() - 1, level, label, iddoc); //NOSONAR Debug
 
             // Child elements
             if (addChildren && childrenMap != null && childrenMap.get(iddoc) != null && !childrenMap.get(iddoc).isEmpty()) {
-                // logger.trace("Adding {} children for {}", childrenMap.get(iddoc).size(), iddoc);
+                // logger.trace("Adding {} children for {}", childrenMap.get(iddoc).size(), iddoc); //NOSONAR Debug
                 for (SolrDocument childDoc : childrenMap.get(iddoc)) {
                     addTocElementsRecusively(ret, childrenMap, childDoc, level + 1, true, pdfPermissionMap, mimeType, footerId);
                 }
@@ -791,7 +794,7 @@ public class TocMaker {
         throw new IllegalArgumentException("Unable to parse string result from " + object);
     }
 
-    static public IMetadataValue buildTocElementLabel(SolrDocument doc) {
+    public static IMetadataValue buildTocElementLabel(SolrDocument doc) {
         String template = Optional.ofNullable(doc.getFieldValue(SolrConstants.DOCSTRCT)).orElse("").toString();
         return buildLabel(doc, template);
     }
@@ -801,11 +804,12 @@ public class TocMaker {
      *
      * @param doc
      * @param template
+     * @return {@link IMetadataValue} containing constructed label
      * @should build configured label correctly
      * @should fill remaining parameters correctly if docstruct fallback used
      */
     static IMetadataValue buildLabel(SolrDocument doc, String template) {
-        // logger.trace("buildLabel: {}", template);
+        // logger.trace("buildLabel: {}", template); //NOSONAR Debug
         List<Metadata> labelConfigList = DataManager.getInstance().getConfiguration().getTocLabelConfiguration(template);
         IMetadataValue label = new MultiLanguageMetadataValue();
 
@@ -824,7 +828,7 @@ public class TocMaker {
         // Configurable label layout
         Metadata labelConfig = labelConfigList.get(0);
         for (MetadataParameter param : labelConfig.getParams()) {
-            // logger.trace("param key: {}", param.getKey());
+            // logger.trace("param key: {}", param.getKey()); //NOSONAR Debug
             IMetadataValue value;
             switch (param.getType()) {
                 case TRANSLATEDFIELD:
@@ -847,7 +851,7 @@ public class TocMaker {
                 default:
                     value = new SimpleMetadataValue();
                     value.setValue(SolrTools.getSingleFieldStringValue(doc, param.getKey()));
-                    // logger.trace("value: {}:{}", param.getKey(), value.getValue());
+                    // logger.trace("value: {}:{}", param.getKey(), value.getValue()); //NOSONAR Debug
                     break;
             }
 
@@ -860,7 +864,7 @@ public class TocMaker {
             }
 
             String placeholder = new StringBuilder("{").append(param.getKey()).append("}").toString();
-            // logger.trace("placeholder: {}", placeholder);
+            // logger.trace("placeholder: {}", placeholder); //NOSONAR Debug
             if (!value.isEmpty() && StringUtils.isNotEmpty(param.getPrefix())) {
                 String prefix = ViewerResourceBundle.getTranslation(param.getPrefix(), null);
                 value.addPrefix(prefix);
@@ -879,8 +883,8 @@ public class TocMaker {
                         .replace(placeholder, value.getValue(language).orElse(value.getValue().orElse("")));
                 languageLabelMap.put(language, langValue);
             }
-            for (String language : languageLabelMap.keySet()) {
-                label.setValue(languageLabelMap.get(language), language);
+            for (Entry<String, String> entry : languageLabelMap.entrySet()) {
+                label.setValue(entry.getValue(), entry.getKey());
             }
         }
 
@@ -914,14 +918,15 @@ public class TocMaker {
             String langValue = entry.getValue().isEmpty() ? null : entry.getValue().get(0);
             value.setValue(langValue, language);
         });
+
         return value;
     }
 
     /**
-     *
+     * TODO Unused
+     * 
      * @param labelConfig
-     * @param pattern
-     * @return
+     * @return List<String>
      * @should parse all field names correctly
      */
     static List<String> parseVolumeLabelConfig(String labelConfig) {
@@ -931,9 +936,8 @@ public class TocMaker {
 
         List<String> ret = new ArrayList<>();
         Matcher m = patternVolumeLabel.matcher(labelConfig);
-        List<String> labelFields = new ArrayList<>();
         while (m.find()) {
-            labelFields.add(labelConfig.substring(m.start() + 1, m.end() - 1));
+            ret.add(labelConfig.substring(m.start() + 1, m.end() - 1));
         }
 
         return ret;
@@ -943,8 +947,8 @@ public class TocMaker {
      * Returns the first value of the given field in the given doc.
      *
      * @param doc
-     * @param field
-     * @return
+     * @param fields
+     * @return Footer id
      */
     static String getFooterId(SolrDocument doc, List<String> fields) {
         String ret = null;
@@ -964,10 +968,9 @@ public class TocMaker {
      * Returns the first value of the given field in the given struct element
      *
      * @param doc
-     * @param field
-     * @return
+     * @param fields
+     * @return Footer id
      */
-
     static String getFooterId(StructElement doc, List<String> fields) {
         String ret = null;
         for (String field : fields) {

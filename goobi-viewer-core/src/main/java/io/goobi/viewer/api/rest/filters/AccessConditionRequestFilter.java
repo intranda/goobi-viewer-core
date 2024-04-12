@@ -87,8 +87,8 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
             String logid = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_LOGID);
             String filename = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
 
-            if (StringUtils.isBlank(filename) ||
-                    (!BeanUtils.getImageDeliveryBean().isExternalUrl(filename)
+            if (StringUtils.isBlank(filename)
+                    || (!BeanUtils.getImageDeliveryBean().isExternalUrl(filename)
                             && !BeanUtils.getImageDeliveryBean().isPublicUrl(filename)
                             && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(filename))) {
                 filterForAccessConditions(servletRequest, pi, logid, filename);
@@ -96,8 +96,6 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
             }
         } catch (ServiceNotAllowedException e) {
             servletRequest.setAttribute(ImageResource.REQUEST_ATTRIBUTE_ERROR, e);
-            //            Response response = Response.status(Status.FORBIDDEN).type(responseMediaType).entity(new ErrorMessage(Status.FORBIDDEN, e, false)).build();
-            //            request.abortWith(response);
         } catch (ViewerConfigurationException e) {
             Response response = Response.status(Status.INTERNAL_SERVER_ERROR)
                     .type(responseMediaType)
@@ -108,20 +106,22 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * @param requestPath
-     * @param pathSegments
+     * @param request
+     * @param pi
+     * @param logid
+     * @param inContentFileName
      * @throws ServiceNotAllowedException
      * @throws IndexUnreachableException
      */
-    private static void filterForAccessConditions(HttpServletRequest request, String pi, String logid, String contentFileName)
+    private static void filterForAccessConditions(HttpServletRequest request, String pi, String logid, final String inContentFileName)
             throws ServiceNotAllowedException {
-        // logger.trace("filterForAccessConditions: {}", servletRequest.getSession().getId());
-        contentFileName = StringTools.decodeUrl(contentFileName);
+        // logger.trace("filterForAccessConditions: {}", request.getSession().getId()); //NOSONAR Sometimes needed for debugging
+        String contentFileName = StringTools.decodeUrl(inContentFileName);
         boolean access = false;
         try {
             if (FilterTools.isThumbnail(request)) {
                 access = AccessConditionUtils.checkAccessPermissionForThumbnail(request, pi, contentFileName).isGranted();
-                //                                logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access);
+                // logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access); //NOSONAR Sometimes needed for debugging
             } else {
                 String[] privileges = getRequiredPrivileges(request);
                 if (privileges.length == 0) {
@@ -155,7 +155,7 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
      * Read attribute {@link #REQUIRED_PRIVILEGE} from request and return it as String array. If the attribute doesn't exist, return an empty array
      *
      * @param request
-     * @return
+     * @return Required privileges as {@link String}[]
      */
     public static String[] getRequiredPrivileges(HttpServletRequest request) {
         Object privileges = request.getAttribute(REQUIRED_PRIVILEGE);

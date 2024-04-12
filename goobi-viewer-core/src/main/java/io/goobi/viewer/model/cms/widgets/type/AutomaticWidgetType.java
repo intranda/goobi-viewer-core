@@ -21,9 +21,12 @@
  */
 package io.goobi.viewer.model.cms.widgets.type;
 
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
+
 /**
- * All types of sidebar widgets which are generated automatically if certain conditions are met, usually if certain CMS content exists
- * Currently (22-01) only CMS-Geomaps provide automatic widgets
+ * All types of sidebar widgets which are generated automatically if certain conditions are met, usually if certain CMS content exists Currently
+ * (22-01) only CMS-Geomaps provide automatic widgets
  *
  * @author florian
  *
@@ -33,14 +36,21 @@ public enum AutomaticWidgetType implements WidgetContentType {
     /**
      * Widget displaying a geomap created in CMS
      */
-    WIDGET_CMSGEOMAP("widgetGeoMap", "widget_geoMap.xhtml");
+    WIDGET_CMSGEOMAP("widgetGeoMap", "fa fa-map-o", "widget_geoMap.xhtml");
 
     private final String label;
     private final String filename;
+    private final String iconClass;
 
-    private AutomaticWidgetType(String label, String filename) {
+    private AutomaticWidgetType(String label, String iconClass, String filename) {
         this.label = label;
         this.filename = filename;
+        this.iconClass = iconClass;
+    }
+
+    @Override
+    public String getIconClass() {
+        return this.iconClass;
     }
 
     public String getLabel() {
@@ -57,5 +67,14 @@ public enum AutomaticWidgetType implements WidgetContentType {
         return name();
     }
 
+    @Override
+    public boolean isAllowedForPage(CMSPage page) {
+        return true;
+    }
+
+    @Override
+    public boolean isAllowedForPage(CMSPageTemplate template) {
+        return true;
+    }
 
 }

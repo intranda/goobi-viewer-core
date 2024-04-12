@@ -33,15 +33,16 @@ public class RequestTypeSummary {
     private final LocalDate startDate;
     @JsonIgnore
     private final LocalDate endDate;
-    
+
     public RequestTypeSummary(long totalRequests, long uniqueRequests) {
         this(totalRequests, uniqueRequests, LocalDate.of(3000, 1, 1), LocalDate.ofEpochDay(0));
     }
-    
+
     /**
      * @param totalRequests
      * @param uniqueRequests
-     * @param localDate 
+     * @param startDate
+     * @param endDate
      */
     public RequestTypeSummary(long totalRequests, long uniqueRequests, LocalDate startDate, LocalDate endDate) {
         super();
@@ -50,12 +51,14 @@ public class RequestTypeSummary {
         this.startDate = startDate;
         this.endDate = endDate;
     }
+
     /**
      * @return the totalRequests
      */
     public long getTotalRequests() {
         return totalRequests;
     }
+
     /**
      * @return the uniqueRequests
      */
@@ -66,11 +69,11 @@ public class RequestTypeSummary {
     public LocalDate getStartDate() {
         return startDate;
     }
-    
+
     public LocalDate getEndDate() {
         return endDate;
     }
-    
+
     @JsonIgnore
     public boolean isEmtpy() {
         return totalRequests == 0;

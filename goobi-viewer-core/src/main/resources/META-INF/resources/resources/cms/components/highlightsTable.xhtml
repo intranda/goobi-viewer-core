@@ -1,0 +1,158 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:t="http://myfaces.apache.org/tomahawk"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+
+    <composite:interface>
+        <composite:attribute name="dataProvider" required="true" />
+        <composite:attribute name="showPaginator" required="false" default="true" />
+    </composite:interface>
+
+    <composite:implementation>
+        <div class="admin__table_container">
+	                        <ui:fragment rendered="#{cc.attrs.showPaginator}">
+		                        <div class="admin__table-tools">
+		                            <!-- PAGINATOR -->
+		                            <div class="admin__table-paginator">
+		                                <viewerComponent:dataTablePaginator tableValues="#{cc.attrs.dataProvider}" paginatorId="dataTablePaginator_#{cc.clientId}" />
+		                            </div>
+		                            <!-- FILTER -->
+		                            <!-- TO DO AK: Functionality search in columns/filter -->
+		                            <div class="admin__table-filter">
+		                                <viewerComponent:dataTableColumnFilter key="admin__highlights__search"
+		                                filter="#{cc.attrs.dataProvider.getFilter('name', 'recordIdentifier')}"/>
+		                            </div>
+		                        </div>
+	                        </ui:fragment>
+
+
+	                        <!-- HIGHLIGHTED OBJECTS TABLE -->
+	                        <div id="tableWrapper_#{cc.clientId}" class="admin__table-content" role="grid" aria-label="#{msg.admin__highlights__title}: #{msg.aria_label__table__actions}">
+	                            
+	                            <!-- TITLE ROW -->
+	                            <div class="row no-gutters admin__table-title" role="row">
+	
+	                                <!-- PAGE COL -->
+	                                <div class="col-6 d-flex" role="columnheader">
+	                                	#{msg.admin__highlights__table_header}
+	                                </div>
+	                                <div class="col-3 d-flex align-items-center justify-content-center" role="columnheader">
+	                                	#{msg.admin__highlights__table_from}
+	                                </div> 
+	                                <div class="col-3 d-flex align-items-center justify-content-center" role="columnheader">
+	                                	#{msg.admin__highlights__table_until}
+	                                </div>
+<!-- 	                                <div class="col-2 d-flex justify-content-center" role="columnheader"> -->
+<!-- 	                                	#{msg.admin__highlights__table_active} -->
+<!-- 	                                </div> -->
+	
+	                            </div>
+	
+	
+	                            <!-- INDIVIDUAL ROWS -->
+	                            <ui:repeat var="object" value="#{cc.attrs.dataProvider.paginatorList}">
+	                                <div class="row no-gutters admin__table-entry #{object.data.enabled ? '' : '-unpublished'}" role="row">
+	                                    
+	                                    <div class="col-6 d-flex" role="presentation">
+	                                       	<div class="admin__record-notes-table-img align-self-center">
+	                                           		<img alt="#{object.data.recordIdentifier}" title="#{object.data.recordIdentifier}"
+	                                           			src="#{object.getImageURI(160, 160)}" />
+	                                        </div>
+	
+	                                        <div class="admin__table-data" role="gridcell">
+	                                        	<ui:fragment>
+	                                            	<div class="admin__table-name">#{object.data.name.textOrDefault}</div>
+	                                            </ui:fragment>
+	                                            <div>
+	                                            
+	                                                <!-- EDIT -->
+	                                                <a href="#{navigationHelper.applicationUrl}admin/cms/highlights/edit/#{object.data.id}/"
+	                                                class="admin__table-action-link"
+	                                                aria-label="#{msg.edit}: #{object.data.name.textOrDefault}">#{msg.edit}</a>
+	
+	                                                <!-- PREVIEW -->
+	                                                	<a
+	                                                    class="admin__table-action-link" target="_blank" href="#{highlightsBean.getUrl(object)}"
+	                                                    aria-label="#{msg.title__preview}: #{object.data.name.textOrDefault}">#{msg.show}</a>
+	
+		                                           <!-- DELETE -->
+		                                           <button
+		                                               class="admin__table-action-link -redlink"
+		                                               title="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__highlights__delete_confirmation, object.data.name.textOrDefault)}"
+		                                               data-require-confirmation="true"
+		                                               data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__highlights__delete_confirmation, object.data.name.textOrDefault)}"
+		                                               jsf:action="#{highlightsBean.deleteObject(object)}"
+		                                               aria-label="#{msg.delete}" >
+		                                               #{msg.delete}
+		                                           </button>
+	                                                
+	                                            </div>
+	                                        </div>
+	                                    </div>
+	                                    
+	                                    <!-- SCHEDULE FROM -->
+	                                    <div class="col-3 d-flex align-items-center justify-content-center" role="gridcell">
+		                                    <span>
+			                                    <ui:fragment rendered="#{not empty object.data.dateStart}">
+			                                        <h:outputText converter="localDateConverter" data-format="#{navigationHelper.datePattern}" value="#{object.data.dateStart}"></h:outputText>
+			                                    </ui:fragment>
+			                                    <ui:fragment rendered="#{empty object.data.dateStart}">
+			                                    -
+			                                    </ui:fragment>
+		                                    </span>
+	                                  	</div>
+	                                  	
+	                                    <!-- SCHEDULE UNTIL -->
+	                                    <div class="col-3 d-flex align-items-center justify-content-center" role="gridcell">
+	                                    	<span>
+			                                    <ui:fragment rendered="#{not empty object.data.dateEnd}">
+			                                        <h:outputText converter="localDateConverter" data-format="#{navigationHelper.datePattern}" value="#{object.data.dateEnd}"></h:outputText>
+			                                    </ui:fragment>
+			                                    <ui:fragment rendered="#{empty object.data.dateEnd}">
+			                                    -
+			                                    </ui:fragment>
+		                                    </span>
+	                                    
+	                                  	</div>
+	
+										<!-- IS ACTIVE? -->
+<!-- 	                                    <div class="col-2 d-flex justify-content-center" role="gridcell"> -->
+<!-- 	                                        <ui:fragment rendered="#{object.data.enabled}"> -->
+<!-- 	                                        	<span class="sr-only">#{msg.yes}</span><i class="fa fa-check" aria-hidden="true"></i> -->
+<!-- 	                                        </ui:fragment> -->
+<!-- 	                                        <ui:fragment rendered="#{!object.data.enabled}"> -->
+<!-- 	                                        	<span class="sr-only">#{msg.no}</span> -->
+<!-- 	                                        </ui:fragment> -->
+<!-- 	                                  </div> -->
+	                                </div>
+	                            </ui:repeat>
+	                        </div>
+                        </div>
+                        <script type="text/javascript">
+				            $( document ).ready( function() {
+				
+				                var dataTableConfig = {
+				                    dataTablePaginator: "#dataTablePaginator_#{cc.clientId}",
+				                    txtField1: "#txtMoveTo1",
+				                    txtField2: "#txtMoveTo2",
+				                    totalCount: "#totalCount",
+				                    reloadBtn: 'input[id*="cmdMoveTo"]',
+				                };
+				
+				                viewerJS.dataTable.init( dataTableConfig );
+				            } );
+				
+				            // Create no entries found message
+							if($('#tableWrapper_#{cc.clientId} .admin__table-entry').length == 0) {
+								$('#tableWrapper_#{cc.clientId}.admin__table-content').append('<br/><p >#{msg.hitsZero}</p>');
+							}    
+			
+					</script>
+    </composite:implementation>
+</ui:composition>

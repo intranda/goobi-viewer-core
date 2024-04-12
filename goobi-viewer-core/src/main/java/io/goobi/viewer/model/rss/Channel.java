@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -41,14 +40,14 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Channel {
 
-    String title;
-    String link;
-    String description;
-    String language;
-    String copyright;
-    Date pubDate;
+    private String title;
+    private String link;
+    private String description;
+    private String language;
+    private String copyright;
+    private Date pubDate;
 
-    List<RssItem> items = new ArrayList<>();
+    private List<RssItem> items = new ArrayList<>();
 
     /**
      * <p>

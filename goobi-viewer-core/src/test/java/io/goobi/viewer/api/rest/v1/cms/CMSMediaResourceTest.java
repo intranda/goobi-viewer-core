@@ -21,46 +21,47 @@
  */
 package io.goobi.viewer.api.rest.v1.cms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.commons.collections4.Equator;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
-import io.goobi.viewer.api.rest.model.MediaItem;
-import io.goobi.viewer.api.rest.v1.cms.CMSMediaResource.MediaList;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.CMSCategory;
-import io.goobi.viewer.model.cms.CMSMediaItem;
-import io.goobi.viewer.model.cms.CMSMediaItemMetadata;
+import io.goobi.viewer.model.cms.media.CMSMediaItem;
+import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
+import io.goobi.viewer.model.cms.media.MediaItem;
+import io.goobi.viewer.model.cms.media.MediaList;
 
 /**
  * @author florian
  *
  */
-public class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
+class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
 
     List<CMSMediaItem> items = new ArrayList<CMSMediaItem>();
-    CMSMediaResource resource = new CMSMediaResource();
+    CMSMediaResource resource;
     CMSCategory category = new CMSCategory("unitTest");
     int numItems = 10;
 
     /**
      * @throws java.lang.Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
         DataManager.getInstance().getDao().addCategory(category);
+        resource = new CMSMediaResource(DataManager.getInstance().getDao());
 
         for (long i = 1; i <= numItems; i++) {
             CMSMediaItem item = new CMSMediaItem();
@@ -87,7 +88,7 @@ public class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
     /**
      * @throws java.lang.Exception
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         items.forEach(item -> {
             try {
@@ -101,15 +102,15 @@ public class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testGetAllItems() throws DAOException {
+    void testGetAllItems() throws DAOException {
         MediaList list = resource.getAllMedia(null, null, null, false);
-        assertTrue("Expect to get more than " + numItems + " items, but only got " + list.getMediaItems().size(),
-                numItems < list.getMediaItems().size());
+        assertTrue(numItems < list.getMediaItems().size(),
+                "Expect to get more than " + numItems + " items, but only got " + list.getMediaItems().size());
 
     }
 
     @Test
-    public void testGetItemsByCategory() throws DAOException {
+    void testGetItemsByCategory() throws DAOException {
         MediaList list = resource.getAllMedia("unitTest", null, null, false);
         assertEquals(numItems, list.getMediaItems().size());
         assertEquals("1", getLabel(list, 0));
@@ -118,37 +119,81 @@ public class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    public void testGetItemsRandom() throws DAOException {
-        MediaList list = resource.getAllMedia("unitTest", null, null, true);
-        assertEquals(numItems, list.getMediaItems().size());
-        assertFalse("order not random",
-                "1".equals(getLabel(list, 0))
-                        && "2".equals(getLabel(list, 1))
-                        && "3".equals(getLabel(list, 2)));
+    void testGetItemsRandom() throws DAOException {
+
+        List<MediaList> resultsOrdered = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            MediaList list = resource.getAllMedia("unitTest", null, null, false);
+            if (resultsOrdered.isEmpty() || isEquals(list, resultsOrdered.get(0), new ListEquator())) {
+                resultsOrdered.add(list);
+            }
+        }
+        assertEquals(20, resultsOrdered.size());
+
+        List<MediaList> resultsRandom = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            MediaList list = resource.getAllMedia("unitTest", null, null, true);
+            if (resultsRandom.isEmpty() || isEquals(list, resultsRandom.get(0), new ListEquator())) {
+                resultsRandom.add(list);
+            }
+        }
+        assertEquals(1, resultsRandom.size());
     }
 
+    /**
+     * 
+     * @param list1
+     * @param list2
+     * @param equator
+     * @return boolean
+     */
+    private static boolean isEquals(MediaList list1, MediaList list2, ListEquator equator) {
+        if (list1.getMediaItems().size() == list2.getMediaItems().size()) {
+            for (int i = 0; i < list1.getMediaItems().size(); i++) {
+                boolean same = getLabel(list1, i).equals(getLabel(list2, i));
+                if (!same) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private class ListEquator implements Equator<MediaItem> {
+
+        @Override
+        public boolean equate(MediaItem o1, MediaItem o2) {
+            return o1.getLabel().getValue("en").equals(o2.getLabel().getValue("en"));
+        }
+
+        @Override
+        public int hash(MediaItem o) {
+            return o.getId().hashCode();
+        }
+
+    }
 
     @Test
-    public void testGetItemsLimitCount() throws DAOException {
+    void testGetItemsLimitCount() throws DAOException {
         MediaList list = resource.getAllMedia("unitTest", 5, null, false);
         assertEquals(5, list.getMediaItems().size());
     }
 
     @Test
-    public void testGet2PriorityItems() throws DAOException {
+    void testGet2PriorityItems() throws DAOException {
         MediaList list = resource.getAllMedia("unitTest", 2, 2, false);
         assertEquals(2, list.getMediaItems().stream().filter(MediaItem::isImportant).count());
 
     }
 
     @Test
-    public void testGet1PriorityItem() throws DAOException {
+    void testGet1PriorityItem() throws DAOException {
         MediaList list = resource.getAllMedia("unitTest", 2, 1, false);
         assertEquals(1, list.getMediaItems().stream().filter(MediaItem::isImportant).count());
     }
 
     @Test
-    public void testDisplayOrder() throws DAOException {
+    void testDisplayOrder() throws DAOException {
         CMSMediaItem item1 = DataManager.getInstance().getDao().getCMSMediaItemByFilename("3.jpg");
         CMSMediaItem item2 = DataManager.getInstance().getDao().getCMSMediaItemByFilename("7.jpg");
         item1.setDisplayOrder(2);
@@ -168,9 +213,7 @@ public class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
      * @param index
      * @return
      */
-    private String getLabel(MediaList list, int index) {
+    private static String getLabel(MediaList list, int index) {
         return list.getMediaItems().get(index).getLabel().getValue("en").orElse("");
     }
-
-
 }

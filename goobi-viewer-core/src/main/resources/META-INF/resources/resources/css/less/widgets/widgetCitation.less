@@ -1,0 +1,45 @@
+/* ==============================================================
+   Widget Citation
+   style declarations for widget_citation.xhtml
+   ==============================================================*/
+
+#widgetCitation {}
+.widget-citation {
+	&__topbar {}
+	&__license-text {
+		margin-bottom: 15px;
+		a {
+			display: inline !important;
+		}
+	}
+	&__subtitle {
+	} 
+	&__page-downloads {
+		a, form, button {
+
+		}
+		.badge {
+			&:hover,  
+			&:active,
+			&:focus {
+			}
+		}
+	}
+	&__work-downloads {
+		a {}
+		.badge {}
+	}
+	&__work-download-ris {}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

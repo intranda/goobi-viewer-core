@@ -1,4 +1,5 @@
 /*
+
  * The Alphanum Algorithm is an improved sorting algorithm for strings
  * containing numbers.  Instead of sorting numbers in ASCII order like
  * a standard sort, this algorithm sorts numbers in numeric order.
@@ -50,31 +51,46 @@ public class AlphanumCollatorComparator implements Comparator<String> {
         this.collator = collator;
     }
 
-    private final static boolean isDigit(char ch) {
+    /**
+     * 
+     * @param ch Char to check
+     * @return true if ch is a digit; false otherwise
+     */
+    private static final boolean isDigit(char ch) {
         return ch >= 48 && ch <= 57;
     }
 
-    /** Length of string is passed in for improved efficiency (only need to calculate it once) **/
-    private final static String getChunk(String s, int slength, int marker) {
+    /**
+     * Length of string is passed in for improved efficiency (only need to calculate it once)
+     * 
+     * @param s
+     * @param slength
+     * @param marker
+     * @return {@link String}
+     */
+    private static final String getChunk(String s, int slength, final int marker) {
         StringBuilder chunk = new StringBuilder();
         char c = s.charAt(marker);
         chunk.append(c);
-        marker++;
+        int m = marker;
+        m++;
         if (isDigit(c)) {
-            while (marker < slength) {
-                c = s.charAt(marker);
-                if (!isDigit(c))
+            while (m < slength) {
+                c = s.charAt(m);
+                if (!isDigit(c)) {
                     break;
+                }
                 chunk.append(c);
-                marker++;
+                m++;
             }
         } else {
-            while (marker < slength) {
-                c = s.charAt(marker);
-                if (isDigit(c))
+            while (m < slength) {
+                c = s.charAt(m);
+                if (isDigit(c)) {
                     break;
+                }
                 chunk.append(c);
-                marker++;
+                m++;
             }
         }
         return chunk.toString();
@@ -119,8 +135,9 @@ public class AlphanumCollatorComparator implements Comparator<String> {
                 }
             }
 
-            if (result != 0)
+            if (result != 0) {
                 return result;
+            }
         }
 
         return s1Length - s2Length;

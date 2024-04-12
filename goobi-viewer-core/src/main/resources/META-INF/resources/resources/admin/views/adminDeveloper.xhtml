@@ -1,0 +1,253 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
+	xmlns:formComponent="http://xmlns.jcp.org/jsf/composite/components/forms"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentPageAdmin('adminDeveloper')}" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="content">
+
+		<!-- TITLE -->
+		<div class="admin__title-bar">
+
+			<h1 class="admin__title">#{msg.admin__developer__title}</h1>
+
+		</div>
+		<viewerComponent:adminBreadcrumbs />
+
+		<div class="admin__info-text -padding-left">
+			#{msg.admin__developer__general_info_text}</div>
+
+
+
+		<!-- DOUBLE CHECK ADMIN ACCESS -->
+		<ui:fragment rendered="#{userBean.admin}">
+			<div class="admin__content-wrapper">
+				<div class="admin__content-main -refreshHCsticky">
+					<div id="adminDeveloper" class="admin__content-inner-content">
+
+						<!-- DOWNLOAD FILES -->
+						<h2>#{msg.admin__developer__download_files}</h2>
+						<div class="admin__default-block">
+							<h:form>
+
+								<div class="admin__developer-download-wrapper">
+									<h:outputText layout="block"
+										styleClass="admin__developer-download-info-text"
+										escape="false" value="#{msg.admin__developer__files_info}" />
+
+
+									<button
+										jsf:action="#{adminDeveloperBean.downloadDeveloperArchive()}"
+										class="btn btn--full admin__developer-download-button">
+										<i class="fa fa-download" aria-hidden="true"></i> <span>#{msg.downloadButton}</span>
+									</button>
+									<!-- START: zip archive progress monitor -->
+									<span class="admin__developer_download_archive__loader"
+										id="downloadZipLoader"> <progress
+											id="downloadProgressBar" value="0" max="1" /> <img
+										src="#{request.contextPath}/resources/images/ajax_preloader.gif"
+										class="img-fluid" alt="Download developer archive loader" />
+									</span>
+									<script>
+										function updateProgress(message,
+												channel, event) {
+											const json = JSON.parse(message);
+											if (json.status == "processing") {
+												$("#downloadZipLoader").show();
+												$("#downloadProgressBar").val(
+														json.progress);
+											} else if (json.status == "error") {
+												viewerJS.swaltoasts
+														.error(json.message);
+												$("#downloadZipLoader").hide();
+											} else if (json.status == "finished") {
+												viewerJS.swaltoasts
+														.success("Download finished");
+												$("#downloadZipLoader").hide();
+											}
+										}
+									</script>
+									<o:socket channel="downloadContext" onmessage="updateProgress" />
+									<!-- END: zip archive progress monitor -->
+								</div>
+
+								<div class="admin__developer-sql-info-text">
+									#{msg.admin__developer__unzip_file}:</div>
+								<div class="admin__developer-code-block">
+
+									<!-- UNZIP FILE LINUX CODE -->
+									<div class="admin__developer-copy-to-clipboard"
+										title="#{msg.copy_to_clipboard}"
+										data-copy-done-msg="#{msg.copied_to_clipboard}"
+										data-copy-value="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__developer__unzip_file_code, navigationHelper.theme)}">
+										<i class="fa fa-clipboard" aria-hidden="true"></i>
+									</div>
+									<code data-target="sqlCode"><h:outputFormat value="#{msg.admin__developer__unzip_file_code}" escape="false"> <f:param value="#{navigationHelper.theme}" /></h:outputFormat></code>
+
+								</div>
+							</h:form>
+						</div>
+
+						<!-- CREATE DATABASE -->
+						<h2>#{msg.admin__developer__create_database_heading}</h2>
+						<div class="admin__default-block">
+							<div class="admin__developer-sql-info-text">
+								<h:outputFormat
+									value="#{msg.admin__developer__create_database_text}:"
+									escape="false">
+									<f:param value="#{navigationHelper.theme}" />
+								</h:outputFormat>
+							</div>
+							<div class="admin__developer-code-block">
+
+								<div class="admin__developer-copy-to-clipboard"
+									title="#{msg.copy_to_clipboard}"
+									data-copy-done-msg="#{msg.copied_to_clipboard}"
+									data-copy-value="#{navigationHelper.getTranslationWithParamsUnescaped(msg.admin__developer__sql_commands, navigationHelper.theme)}">
+									<i class="fa fa-clipboard" aria-hidden="true"></i>
+								</div>
+								<code data-target="code"><h:outputFormat value="#{msg.admin__developer__sql_commands}" escape="false"><f:param value="#{navigationHelper.theme}" /></h:outputFormat></code>
+
+							</div>
+						</div>
+
+						<!-- PLACE MSG AND CONFIG FILES LOCALLY -->
+						<h2>#{msg.admin__developer__local_messages_config_heading}</h2>
+						<div class="admin__default-block">
+							<div class="admin__developer-sql-info-text">
+								#{msg.admin__developer__local_messages_config_text}:</div>
+
+							<div class="admin__developer-code-block">
+
+								<div class="admin__developer-copy-to-clipboard"
+									title="#{msg.copy_to_clipboard}"
+									data-copy-done-msg="#{msg.copied_to_clipboard}"
+									data-copy-value="#{msg.admin__developer__local_messages_config_code}">
+									<i class="fa fa-clipboard" aria-hidden="true"></i>
+								</div>
+								<code data-target="code"><h:outputFormat value="#{msg.admin__developer__local_messages_config_code}" escape="false"> <f:param value="#{navigationHelper.theme}" /></h:outputFormat></code>
+
+							</div>
+
+						</div>
+
+						<!-- SETTINGS AND GENERAL INFO -->
+						<h2>#{msg.admin__developer__settings_info_heading}</h2>
+						<div class="admin__default-block">
+							<div class="admin__developer-sql-info-text">
+								<h:outputFormat
+									value="#{msg.admin__developer__settings_info_text}"
+									escape="false" />
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<div class="admin__content-side -sticky">
+					<!-- THEME PULL STATUS AND ACTIONS BOX -->
+					<h:form>
+						<h:panelGroup id="updateThemeGroup">
+							<div class="admin__developer-autopull-wrapper">
+								<div class="admin__developer-autopull-status-wrapper">
+									<!-- AUTOPULL STATUS CAN BE ON, OFF OR ERROR -->
+									<div class="admin__developer-autopull-status-text">
+										#{msg.admin__developer__pull_theme} #{adminDeveloperBean.autopullError ? '(failed)' : ''}
+									</div>
+									<div
+										class="admin__developer-autopull-status-icon #{adminDeveloperBean.autopullError ? '-isError' : ''} #{adminDeveloperBean.autopullActive ? '-isActive' : '-isOff'}"></div>
+								</div>
+								<div class="admin__developer-autopull-version-info">
+									<c:set scope="request" var="versionInfo"
+										value="#{adminDeveloperBean.lastVersionInfo}" />
+									<div class="admin__developer-autopull-build-date"><span class="admin__developer-autopull-version-info-label">#{msg.admin__developer__pull_theme_execute_date}: </span><span>#{versionInfo.buildDate}</span></div>
+									<div class="admin__developer-autopull-git-revision"><span class="admin__developer-autopull-version-info-label">#{msg.admin__developer__pull_theme_revision}: </span><span>#{versionInfo.gitRevision}</span></div>
+									<div class="admin__developer-autopull-release-version"><span class="admin__developer-autopull-version-info-label">#{msg.admin__developer__pull_theme_branch}: </span><span>#{versionInfo.releaseVersion}</span></div>
+									<div class="admin__developer-autopull-commit-message"><span class="admin__developer-autopull-version-info-label">#{msg.admin__developer__pull_theme_message}: </span><span>#{versionInfo.commitMessage}</span></div>
+ 
+ 									<div class="admin__developer-autopull-status-button-wrapper">
+										<o:commandScript name="updateTheme" render="updateThemeGroup"></o:commandScript>
+										<h:commandButton styleClass="btn btn--default mt-3"
+											action="#{adminDeveloperBean.triggerPullTheme}" 
+											value="#{msg.admin__developer__pull_theme_button}">
+											<f:ajax render="@form"></f:ajax>
+										</h:commandButton>
+									</div>
+
+									<!-- START: zip archive progress monitor -->
+									<span class="admin__developer_download_archive__loader"
+										id="pullThemeLoader">
+										<img
+										src="#{request.contextPath}/resources/images/ajax_preloader.gif"
+										class="img-fluid" alt="Download developer archive loader" />
+									</span>
+									<script>
+										function updatePullThemeProgress(
+												message, channel, event) {
+											const json = JSON.parse(message);
+											console.log("received message ",
+													json);
+											if (json.status == "processing") {
+												$("#pullThemeLoader").show();
+												$("#pullThemeProgressBar").val(
+														json.progress);
+											} else if (json.status == "error") {
+												viewerJS.swaltoasts.error(json.message);
+												$("#pullThemeLoader").hide();
+												updateTheme();
+											} else if (json.status == "finished") {
+												viewerJS.swaltoasts.success("Pulling theme finished\n"+json.message);
+												$("#pullThemeLoader").hide();
+												updateTheme();
+											}
+										}
+									</script>
+									<o:socket channel="pullThemeContext"
+										onmessage="updatePullThemeProgress" />
+									<!-- END: zip archive progress monitor -->
+
+								</div>
+
+							</div>
+						</h:panelGroup>
+					</h:form>
+				</div>
+
+			</div>
+
+		</ui:fragment>
+
+
+
+
+
+		<script>
+			// CLEAN CODE FOR COPY TO CLIPBOARD - REMOVE BR ELEMENTS
+			//<![CDATA[
+
+			$('[data-copy-value]').each(function(i, obj) {
+				var originalCode = $(this).data('copy-value');
+				var cleanCode = originalCode.replace(/<br ?\/?>/g, "\n");
+				$(this).data('copy-value', cleanCode);
+				//console.log(cleanCode);
+			});
+
+			//]]>
+		</script>
+
+	</ui:define>
+</ui:composition>

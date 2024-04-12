@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.model.toc;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,22 +30,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.controller.StringConstants;
 
-public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
+class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
@@ -55,12 +56,12 @@ public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies calculate number correctly
      */
     @Test
-    public void getNumPages_shouldCalculateNumberCorrectly() throws Exception {
+    void getNumPages_shouldCalculateNumberCorrectly() throws Exception {
         TOC toc = new TOC();
         toc.setTotalTocSize(70);
-        Assert.assertEquals(7, toc.getNumPages());
+        Assertions.assertEquals(7, toc.getNumPages());
         toc.setTotalTocSize(77);
-        Assert.assertEquals(8, toc.getNumPages());
+        Assertions.assertEquals(8, toc.getNumPages());
     }
 
     /**
@@ -68,25 +69,25 @@ public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct label
      */
     @Test
-    public void getLabel_shouldReturnCorrectLabel() throws Exception {
+    void getLabel_shouldReturnCorrectLabel() throws Exception {
         TOC toc = new TOC();
         toc.setTocElementMap(new HashMap<>());
-        toc.getTocElementMap().put(TOC.DEFAULT_GROUP, new ArrayList<>(3));
+        toc.getTocElementMap().put(StringConstants.DEFAULT_NAME, new ArrayList<>(3));
         toc.getTocElementMap()
-                .get(TOC.DEFAULT_GROUP)
+                .get(StringConstants.DEFAULT_NAME)
                 .add(new TOCElement(new SimpleMetadataValue("one"), "0", null, "1", "LOG_0000", 0, "PPN_anchor", null, false, true, false, null,
                         "periodical", null));
         toc.getTocElementMap()
-                .get(TOC.DEFAULT_GROUP)
+                .get(StringConstants.DEFAULT_NAME)
                 .add(new TOCElement(new SimpleMetadataValue("two"), "1", null, "2", "LOG_0001", 1, "PPN_volume", null, false, false, true, null,
                         "periodical_volume", null));
         toc.getTocElementMap()
-                .get(TOC.DEFAULT_GROUP)
+                .get(StringConstants.DEFAULT_NAME)
                 .add(new TOCElement(new SimpleMetadataValue("three"), "1", null, "3", "LOG_0002", 2, "PPN_volume", null, false, false, true, null,
                         "article", null));
 
-        Assert.assertEquals("one", toc.getLabel("PPN_anchor"));
-        Assert.assertEquals("two", toc.getLabel("PPN_volume"));
+        Assertions.assertEquals("one", toc.getLabel("PPN_anchor"));
+        Assertions.assertEquals("two", toc.getLabel("PPN_volume"));
     }
 
     /**
@@ -94,10 +95,10 @@ public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies set value to 1 if given value too low
      */
     @Test
-    public void setCurrentPage_shouldSetValueTo1IfGivenValueTooLow() throws Exception {
+    void setCurrentPage_shouldSetValueTo1IfGivenValueTooLow() throws Exception {
         TOC toc = new TOC();
         toc.setCurrentPage(0);
-        Assert.assertEquals(1, toc.getCurrentPage());
+        Assertions.assertEquals(1, toc.getCurrentPage());
     }
 
     /**
@@ -105,20 +106,20 @@ public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies set value to last page number if given value too high
      */
     @Test
-    public void setCurrentPage_shouldSetValueToLastPageNumberIfGivenValueTooHigh() throws Exception {
+    void setCurrentPage_shouldSetValueToLastPageNumberIfGivenValueTooHigh() throws Exception {
         TOC toc = new TOC();
         toc.setTotalTocSize(70);
-        Assert.assertEquals(7, toc.getNumPages());
+        Assertions.assertEquals(7, toc.getNumPages());
         // Valid value
         toc.setCurrentPage(4);
-        Assert.assertEquals(4, toc.getCurrentPage());
+        Assertions.assertEquals(4, toc.getCurrentPage());
         // Invalid value
         toc.setCurrentPage(40);
-        Assert.assertEquals(7, toc.getCurrentPage());
+        Assertions.assertEquals(7, toc.getCurrentPage());
     }
 
     @Test
-    public void expandToCurrentStruct() {
+    void expandToCurrentStruct() {
         TOC toc = new TOC();
         Map<String, List<TOCElement>> tocElementMap = new HashMap<>();
         TOCElement top = new TOCElement(null, "1", null, "1", "LOG_0001", 0, null, null, false, false, false, null, null, null);
@@ -128,11 +129,11 @@ public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
         TOCElement otherGrandchild = new TOCElement(null, "2", null, "5", "LOG_0005", 2, null, null, false, false, false, null, null, null);
 
         List<TOCElement> list = Arrays.asList(top, child, grandchild, otherChild, otherGrandchild);
-        tocElementMap.put(TOC.DEFAULT_GROUP, list);
+        tocElementMap.put(StringConstants.DEFAULT_NAME, list);
 
         toc.setTocElementMap(tocElementMap);
 
-        toc.buildTree(TOC.DEFAULT_GROUP, 1, 5, 0, null);
+        toc.buildTree(StringConstants.DEFAULT_NAME, 1, 5, 0, null);
         assertTrue(top.isVisible());
         assertTrue(top.isExpanded());
         assertTrue(child.isVisible());
@@ -142,7 +143,7 @@ public class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
         assertFalse(otherChild.isExpanded());
         assertFalse(otherGrandchild.isVisible());
 
-        toc.buildTree(TOC.DEFAULT_GROUP, 1, 5, 0, Long.parseLong(grandchild.getIddoc()));
+        toc.buildTree(StringConstants.DEFAULT_NAME, 1, 5, 0, Long.parseLong(grandchild.getIddoc()));
         assertTrue(top.isVisible());
         assertTrue(top.isExpanded());
         assertTrue(child.isVisible());

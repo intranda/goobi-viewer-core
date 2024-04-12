@@ -88,6 +88,7 @@ public class ContentBean implements Serializable {
      */
     @PostConstruct
     public void init() {
+        //
     }
 
     /**
@@ -103,19 +104,19 @@ public class ContentBean implements Serializable {
      * Getter for the field <code>userGeneratedContentsForDisplay</code>.
      * </p>
      *
-     * @return User-generated contents for the given page
-     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param pi Record identifier
+     * @return User-generated contents for the given record identifier
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws DAOException
      */
     public List<DisplayUserGeneratedContent> getUserGeneratedContentsForDisplay(String pi)
             throws PresentationException, IndexUnreachableException, DAOException {
-        // logger.trace("getUserGeneratedContentsForDisplay");
+        // logger.trace("getUserGeneratedContentsForDisplay"); //NOSONAR Sometimes needed for debugging
         if (pi != null && (userGeneratedContentsForDisplay == null || !pi.equals(this.pi))) {
             loadUserGeneratedContentsForDisplay(pi, BeanUtils.getRequest());
         }
-        if (userGeneratedContentsForDisplay != null && userGeneratedContentsForDisplay.size() > 0) {
+        if (userGeneratedContentsForDisplay != null && !userGeneratedContentsForDisplay.isEmpty()) {
             return userGeneratedContentsForDisplay;
         }
 
@@ -124,19 +125,18 @@ public class ContentBean implements Serializable {
 
     /**
      * @param page
-     * @return
+     * @return User-generated contents for the given page element
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
      */
     public List<DisplayUserGeneratedContent> getUserGeneratedContentsOfPageForDisplay(PhysicalElement page)
             throws PresentationException, IndexUnreachableException, DAOException {
-        if(page != null) {
-            List<DisplayUserGeneratedContent> content = getUserGeneratedContentsForDisplay(page.getPi()).stream().filter(ugc -> ugc.isOnThisPage(page)).collect(Collectors.toList());
-            return content;
-        } else {
-            return Collections.emptyList();
+        if (page != null) {
+            return getUserGeneratedContentsForDisplay(page.getPi()).stream().filter(ugc -> ugc.isOnThisPage(page)).collect(Collectors.toList());
         }
+
+        return Collections.emptyList();
     }
 
     /**
@@ -161,11 +161,11 @@ public class ContentBean implements Serializable {
         userGeneratedContentsForDisplay = new ArrayList<>();
 
         List<CrowdsourcingAnnotation> allAnnotationsForRecord = DataManager.getInstance().getDao().getAnnotationsForWork(pi);
-        
+
         List<DisplayUserGeneratedContent> allContent = allAnnotationsForRecord.stream()
                 .filter(a -> a.getPublicationStatus().equals(PublicationStatus.PUBLISHED))
                 .filter(a -> StringUtils.isNotBlank(a.getBody()))
-                .map(a -> new DisplayUserGeneratedContent(a))
+                .map(DisplayUserGeneratedContent::new)
                 .collect(Collectors.toList());
 
         for (DisplayUserGeneratedContent ugcContent : allContent) {
@@ -173,17 +173,21 @@ public class ContentBean implements Serializable {
             if (ugcContent.isEmpty()) {
                 continue;
             }
-            boolean accessible = true;
-            accessible = isAccessible(ugcContent, request);
-            if(!accessible) {
-                continue;
+            boolean accessible = isAccessible(ugcContent, request);
+            if (accessible) {
+                userGeneratedContentsForDisplay.add(ugcContent);
             }
-            userGeneratedContentsForDisplay.add(ugcContent);
         }
         logger.trace("Loaded {} user generated contents for pi {}", userGeneratedContentsForDisplay.size(), this.pi);
     }
 
-    public static boolean isAccessible(DisplayUserGeneratedContent content, HttpServletRequest request){
+    /**
+     * 
+     * @param content
+     * @param request
+     * @return true if request has access rights to content; false otherwise
+     */
+    public static boolean isAccessible(DisplayUserGeneratedContent content, HttpServletRequest request) {
         if (content.getAccessCondition() != null) {
             logger.trace("UGC access condition: {}", content.getAccessCondition());
             String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + content.getPi() + " +" + SolrConstants.DOCTYPE + ":" + DocType.UGC.name();
@@ -256,7 +260,7 @@ public class ContentBean implements Serializable {
 
     /**
      * @param persistentIdentifier
-     * @return
+     * @return true if record with given identifier has any geo-location type annotations; false otherwise
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException

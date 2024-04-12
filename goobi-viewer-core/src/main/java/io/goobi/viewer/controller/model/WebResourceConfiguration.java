@@ -37,22 +37,46 @@ import io.goobi.viewer.exceptions.PresentationException;
  */
 public class WebResourceConfiguration {
 
-    public final URI uri;
-    public final String label;
+    private final URI uri;
+    private final String label;
 
-
+    /**
+     * 
+     * @param uri
+     * @param label
+     * @throws PresentationException
+     */
     public WebResourceConfiguration(String uri, String label) throws PresentationException {
-        if(uri == null) {
+        if (uri == null) {
             throw new PresentationException("URI must be provided");
         }
         this.uri = URI.create(uri);
-        if(StringUtils.isBlank(label)) {
+        if (StringUtils.isBlank(label)) {
             throw new PresentationException("Label must be provided");
         }
         this.label = label;
     }
 
+    /**
+     * 
+     * @param config
+     * @throws PresentationException
+     */
     public WebResourceConfiguration(HierarchicalConfiguration<ImmutableNode> config) throws PresentationException {
         this(config.getString("url", null), config.getString("label", null));
+    }
+
+    /**
+     * @return the uri
+     */
+    public URI getUri() {
+        return uri;
+    }
+
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return label;
     }
 }

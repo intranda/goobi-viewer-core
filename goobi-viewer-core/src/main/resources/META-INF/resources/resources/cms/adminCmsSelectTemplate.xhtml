@@ -1,73 +1,202 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
-    
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets" 
-    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
-    
-    <ui:define name="metadata">
-        <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsCreatePage')}" />
-            <f:event type="preRenderView" listener="#{cmsBean.loadTemplates()}" />
-        </f:metadata>
-    </ui:define>
-    
-    <ui:define name="content">
-        <h:panelGroup id="cmsSelectTemplateAccessControl" rendered="#{userBean.user.cmsAdmin}">
-            <div id="cmsSelectTemplate" class="cms-select-template">
-                    <h1 class="admin__content-inner-title">#{msg.cms_createPage}</h1>
-                    
-                    <div class="admin__content-inner-content">
-                            <h:form id="cmsSelectTemplateForm" prependId="false">
-                            	<div id="cmsSelectTemplateWrapper" class="cms-select-template__wrapper admin__entry-list">
-                                <ui:repeat value="#{cmsBean.getAllowedTemplates(userBean.user)}" var="template">
-                                    <div class="admin__boxed-entry row no-gutters -std-bottom-pad -w100">
-                                        <!-- TEMPLATE -->
-                                        <div class="col-9 d-flex align-items-center">
-	                                        <!-- ICON -->
-	                                        <div class="admin__table-img">
-	                                            <img title="#{msg.label__cms_template_id}: #{template.id}" alt="#{template.name}"
-	                                                src="#{cmsBean.getIconUrlByTemplateId(template.id)}" class="img-fluid" />
-	                                        </div>
-	                                        <!-- DESCRIPTION -->
-	                                        <div class="admin__table-data">
-	                                            <h2>#{msg[template.name]}</h2>
-	                                            <div>#{msg[template.description]}</div>
-	                                        </div>
-	                                    </div>
-                                        <div class="col-3">
-                                            <!-- ACTION -->
-                                            <div class="cms-select-template__action">
-                                                <h:commandLink action="pretty:adminCmsNewPage" value="#{msg.cms_createPageWithTemplate}"
-                                                    styleClass="btn #{template.themeTemplate ? 'btn--full' : 'btn--default'}">
-                                                    <f:setPropertyActionListener value="#{cmsBean.createNewPage(template)}"
-                                                        target="#{cmsBean.selectedPage}" />
-                                                    <f:setPropertyActionListener value="#{false}" target="#{cmsBean.editMode}" />
-                                                </h:commandLink>
-                                            </div>
-                                            <!-- THEME TEMPLATE MARKER -->
-                                            <ui:fragment rendered="#{template.themeTemplate}">
-                                                <div class="cms-select-template__theme-template-marker">#{msg.cms_themeTemplate}</div>
-                                            </ui:fragment>
-                                        </div>
-                                     </div>
-                                </ui:repeat>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
-                                <!-- TODO INLINE CSS -->
-                                <ui:fragment rendered="#{userBean.user.superuser}">
-                                    <div class="row no-gutters justify-content-end admin__final-actions w-100" style="margin-top: 2rem;">
-                                        <a href="#{navigationHelper.applicationUrl}admin/cms/pages/templates/manage/"
-                                            class="-bluelink">#{msg.admin__cms_templates_manage_label}</a>
-                                    </div>
-                                </ui:fragment>
-                        		</div>
-                            </h:form>
-                    </div>
-            </div>
-        </h:panelGroup>
-    </ui:define>
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentPageAdmin('adminCmsSelectTemplate')}" />
+			<f:event type="preRenderView" listener="#{cmsBean.loadTemplates()}" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:panelGroup id="cmsSelectTemplateAccessControl"
+			rendered="#{userBean.user.cmsAdmin}">
+			<div id="cmsSelectTemplate" class="cms-select-template">
+
+
+					<h:form id="cmsSelectTemplateForm" prependId="false">
+					
+								<div class="admin__title-bar">
+									<h1 class="admin__title">#{msg.admin__cms__select_template}</h1>
+								</div>
+					
+								<viewerComponent:adminBreadcrumbs />
+
+						<div class="admin__content-inner-content">
+
+							<div class="cms-create-page__choose-template-wrapper">
+								<ui:fragment
+									rendered="#{userBean.user.hasPriviledgeForAllTemplates()}">
+
+									<div class="cms-create-page__choose-template-box">
+										<div class="cms-create-page__choose-template-box-start">
+											<img
+												src="#{request.contextPath}/resources/images/backend/empty_template.jpg"
+												class="img-responsive" alt="Choose empty template" />
+										</div>
+
+										<div class="cms-create-page__choose-template-box-end">
+											<h2>#{msg.cms__create_empty_page_title}</h2>
+											<p>#{msg.cms__create_empty_page_desc}</p>
+											<h:commandLink action="pretty:adminCmsNewPage"
+												value="#{msg.cms__create_empty_page_button}"
+												styleClass="btn btn--full">
+											</h:commandLink>
+										</div>
+									</div>
+
+									<div class="cms-create-page__choose-template-box">
+										<div class="cms-create-page__choose-template-box-start">
+											<img
+												src="#{request.contextPath}/resources/images/backend/template_selection.jpg"
+												class="img-responsive" alt="Choose empty template" />
+										</div>
+
+										<div class="cms-create-page__choose-template-box-end">
+											<h2>#{msg.cms__create_template_based_page_title}</h2>
+											<p>#{msg.cms__create_template_based_page_desc}</p>
+											<button data-trigger="showTemplateSelection" type="button"
+												class="btn btn--default">
+												#{msg.cms__create_template_based_page_button}</button>
+										</div>
+									</div>
+
+
+									<div class="cms-create-page__choose-template-box">
+
+										<div class="cms-create-page__choose-template-box-start">
+											<img
+												src="#{request.contextPath}/resources/images/backend/predefined_template.jpg"
+												class="img-responsive" alt="Choose prefined template" />
+										</div>
+
+										<div class="cms-create-page__choose-template-box-end">
+											<h2>#{msg.cms__create_new_template_title}</h2>
+											<p>#{msg.cms__create_new_template_desc}</p>
+
+											<h:commandLink action="pretty:adminCmsNewPageTemplate"
+												value="#{msg.cms__create_page_template_button}"
+												styleClass="btn btn--default">
+											</h:commandLink>
+										</div>
+									</div>
+								</ui:fragment>
+
+							</div>
+
+
+						<div class="cms-select-template__wrapper">
+
+							<h2 class="cms-select-template__wrapper mt-3">Available templates</h2>
+
+							
+
+							<div class="cms-select-template__filters">
+								<button type="button"
+									onclick="setTemplateFilter('.admin__entry-list-grid .admin__boxed-entry', this)"
+									class="admin__content-component-option -active">#{msg.cms__template_selection_option__all}
+								</button>
+								<button type="button"
+									onclick="setTemplateFilter('.admin__entry-list-grid .-published:not(.-legacy-template)', this)"
+									class="admin__content-component-option">#{msg.cms__template_selection_option__published}
+								</button>
+								<button type="button"
+									onclick="setTemplateFilter('.admin__entry-list-grid .admin__boxed-entry:not(.-published)', this)"
+									class="admin__content-component-option">#{msg.cms__template_selection_option__not_published}
+								</button>
+								<button type="button"
+									onclick="setTemplateFilter('.admin__entry-list-grid .-legacy-template', this)"
+									class="admin__content-component-option">#{msg.cms__template_selection_option__legacy}
+								</button>
+
+								<script>
+								// SHOW TEMPLATE SELECTION LIST ON BUTTON CLICK
+								$('[data-trigger="showTemplateSelection"]').on('click', function() {
+									$('.cms-select-template__wrapper').addClass('-fadeIn');
+								});
+
+								
+									function hideAll() {
+										$('.admin__entry-list-grid .admin__boxed-entry').hide();
+										if ($('.cms-select-template__single').length != 0) {
+											$('.cms-select-template__wrapper').show();
+										}
+									}
+									function setTemplateFilter(selector, source) {
+										// console.log("show Templates with ",selector, source);
+										$(source).parent().children().removeClass("-active");
+										$(source).addClass("-active");
+										hideAll();
+										$(selector).show();
+									}
+								</script>
+							</div>
+
+							<div id="cmsSelectTemplateWrapper" data-target="cmsSelectTemplateList"
+								class="cms-select-template__wrapper admin__entry-list-grid -w25">
+								<ui:repeat value="#{cmsBean.getAllowedTemplates(userBean.user)}"
+									var="template">
+									<div
+										class="admin__boxed-entry -std-bottom-pad cms-select-template__single #{template.legacyTemplate ? '-legacy-template':''} #{template.published ? '-published':''}">
+										<!-- TEMPLATE -->
+										<div class="d-flex flex-column h-100">
+											<div>
+												<!-- TITLE -->
+												<h2>#{msg[template.title]}</h2>
+											</div>
+											
+											<div class="mb-3">
+												<!-- DESCRIPTION -->
+												<h:outputFormat value="#{template.description}" escape="false"></h:outputFormat>
+											</div>
+											
+											<div class="mt-auto">
+												<!-- ACTION -->
+												<div class="d-flex cms-select-template__action">
+												<div class="admin__boxed-entry-actions">
+													<ui:fragment
+														rendered="#{user.hasPriviledgeForAllTemplates()}">
+														<a class="admin__boxed-entry-actions-edit cms-select-template__action-edit" href="edit/#{template.id}/" >#{msg.cms__edit_template__action}</a>
+													</ui:fragment>
+													<ui:fragment
+														rendered="#{user.hasPriviledgeForAllTemplates()}">
+<!-- 														<h:commandButton value="#{msg.delete}" class="admin__boxed-entry-actions-delete -redlink cms-select-template__action-delete" action="#{cmsPageTemplateEditBean.deleteTemplate(template)}"> -->
+<!-- 														<f:ajax execute="@form" render="@form" /> -->
+<!-- 														</h:commandButton> -->
+														
+														<button class="admin__boxed-entry-actions-delete -redlink"
+															data-require-confirmation="true"
+															data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms__template_selection_delete_confirm, template.title)}"
+															jsf:action="#{cmsPageTemplateEditBean.deleteTemplate(template)}"
+															aria-label="#{msg.delete}: #{template.title}">
+															#{msg.delete}</button>
+														
+														
+													</ui:fragment>		
+												</div>
+													
+													<a href="../new/?templateId=#{template.id}"
+														class="ml-2 btn ml-auto btn--default btn  #{template.published ? '':'disabled'}">#{msg.cms_createPageWithTemplate}</a>
+												</div>
+											</div>
+
+										</div>
+
+									</div>
+								</ui:repeat>
+							</div>
+						</div>
+						</div>
+					</h:form>
+			</div>
+		</h:panelGroup>
+	</ui:define>
 
 </ui:composition>

@@ -21,18 +21,24 @@
  */
 package io.goobi.viewer.model.cms.widgets;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.content.CMSContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 import io.goobi.viewer.model.translations.TranslatedText;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 /**
- * A subtype of {@link CustomSidebarWidget} to display a list of possible values of a given SOLR field and link to a search listing of items with a specific value
+ * A subtype of {@link CustomSidebarWidget} to display a list of possible values of a given SOLR field and link to a search listing of items with a
+ * specific value
  *
  * @author florian
  *
@@ -40,6 +46,8 @@ import io.goobi.viewer.model.translations.TranslatedText;
 @Entity
 @DiscriminatorValue("FacetFieldSidebarWidget")
 public class FacetFieldSidebarWidget extends CustomSidebarWidget {
+
+    private static final long serialVersionUID = 265864701646294713L;
 
     @Column(name = "facet_field", nullable = true, columnDefinition = "TINYTEXT")
     private String facetField = "";
@@ -69,28 +77,63 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
 
     /**
      * Contains the SOLR field holding the values to list
+     * 
      * @return the facetField
      */
     public String getFacetField() {
         return facetField;
     }
+
     /**
      * Set the SOLR field for which to list values
+     * 
      * @param facetField the facetField to set
      */
     public void setFacetField(String facetField) {
         this.facetField = facetField;
     }
+
     /**
-     * An additional SOLR query. If this is not empty, only values of the {@link #getFacetField()}
-     * are listed that are contained in documents meeting this query. This is also true for the linked result lists
+     * An additional SOLR query. If this is not empty, only values of the {@link #getFacetField()} are listed that are contained in documents meeting
+     * this query. This is also true for the linked result lists
+     * 
      * @return the filterQuery
      */
     public String getFilterQuery() {
         return filterQuery;
     }
+
+    public String getCombinedFilterQuery(CMSPage page) {
+        if (page != null && page.hasSearchFunctionality()) {
+            Optional<CMSContent> searchContent = page.getComponents()
+                    .stream()
+                    .flatMap(c -> c.getContentItems().stream())
+                    .map(c -> c.getContent())
+                    .filter(content -> content instanceof CMSSearchContent || content instanceof CMSRecordListContent)
+                    .findAny();
+            String searchPrefix = searchContent.map(content -> {
+                if (content instanceof CMSSearchContent) {
+                    return ((CMSSearchContent) content).getSearchPrefix();
+                } else {
+                    return ((CMSRecordListContent) content).getSolrQuery();
+                }
+            })
+                    .orElse("");
+            if (StringUtils.isNoneBlank(searchPrefix, this.filterQuery)) {
+                return String.format("+(%s) +(%s)", searchPrefix, this.filterQuery);
+            } else if (StringUtils.isNotBlank(searchPrefix)) {
+                return searchPrefix;
+            } else {
+                return filterQuery;
+            }
+        } else {
+            return filterQuery;
+        }
+    }
+
     /**
      * Set the value of {@link #getFilterQuery()}
+     * 
      * @param filterQuery the filterQuery to set
      */
     public void setFilterQuery(String filterQuery) {
@@ -112,6 +155,7 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
 
     /**
      * Set the number of field values displayed in the widget
+     * 
      * @param numEntries
      */
     public void setNumEntries(int numEntries) {

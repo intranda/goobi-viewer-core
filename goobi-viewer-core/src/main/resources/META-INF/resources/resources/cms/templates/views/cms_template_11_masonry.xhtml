@@ -4,46 +4,28 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
 	template="/resources/themes/#{navigationHelper.theme}/template.html"
 	xmlns:pretty="http://ocpsoft.com/prettyfaces/3.3.3">
 
-	<ui:param name="cmsPage" value="#{cmsBean.currentPage}" />
+	<composite:interface>
+		<composite:attribute name="component" required="true" />
+		<composite:attribute name="text" required="false"
+			default="#{cc.attrs.component.getContentItem('text')}" />
+		<composite:attribute name="grid" required="false"
+			default="#{cc.attrs.component.getContentItem('grid')}" />
+	</composite:interface>
 
-	<ui:define name="metadata">
-		<f:metadata>
-			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage)}" />
-			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />
-			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
-			<f:viewAction onPostback="true" action="#{cmsDynamicContentBean.setCmsPage(cmsBean.currentPage)}" />
-		</f:metadata>
-	</ui:define>
 
-    <ui:define name="topbar">
-		<h:panelGroup binding="#{cmsDynamicContentBean.topBarContent}"></h:panelGroup>
-	</ui:define>
-
-    <ui:define name="content">
-		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
-        <f:param name="currentPage" value="#{cmsBean.random}" />
-        <f:view contentType="text/html" encoding="utf-8">
-            <div id="templateMasonry" class="tpl-masonry #{cmsPage.wrapperElementClass}">
-                <!-- EDIT PAGE -->
-                <ui:fragment rendered="#{cmsBean.mayEdit(cmsPage)}">
-                    <ui:include src="/resources/cms/includes/editPage.xhtml" />
-                </ui:fragment>
-
-                <!-- PAGE UNPUBLISHED -->
-                <h:panelGroup rendered="#{!cmsPage.published}">
-                    <div class="alert alert-warning" role="alert">#{msg.cms_pagePreviewNotPublished}</div>
-                </h:panelGroup>
-
-                <h1>#{cmsPage.title}</h1>
+    <composite:implementation>
+    
+            <div id="templateMasonry" class="tpl-masonry content-component__legacy-full-width">
 
                 <div class="tpl-masonry__text">
-                    <h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
+                    <h:outputText escape="false" value="#{cc.attrs.text.content.text.textOrDefault}"></h:outputText>
                 </div>
 
                 <!-- LOADER -->
@@ -61,7 +43,7 @@
                 <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/masonry/masonry.min.js"></script>
                 <script type="text/javascript">
                 	$.ajax( {
-						url : "#{cmsPage.getTileGridUrl('grid')}",
+						url : "#{cc.attrs.grid.content.tileGridUrl}",
 						type : "GET",
 						datatype : "JSON"
 					}).then( function( data ) {
@@ -73,12 +55,6 @@
 						cmsJS.masonry.init( masonryConfig, data);
 					});
 				</script>
-            </div>
-        </f:view>
-    </ui:define>
-
-    <!-- SIDEBAR -->
-	<ui:define name="sidebar">
-		<ui:include src="/resources/cms/includes/cms_sidebar.xhtml" />
-    </ui:define>
+			</div>
+     </composite:implementation>
 </ui:composition>

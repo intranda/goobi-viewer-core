@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,6 @@ public class MultiSelectDropdown extends UINamingContainer {
         valueMap
     }
 
-
     public MultiSelectDropdown() {
         super();
     }
@@ -55,13 +55,12 @@ public class MultiSelectDropdown extends UINamingContainer {
     @Override
     public void encodeBegin(FacesContext context) throws IOException {
         super.encodeBegin(context);
-        List<Object> values = (List<Object>)getValueExpression("value").getValue(context.getELContext());
-        List<Object> options = (List<Object>)getValueExpression("items").getValue(context.getELContext());
+        List<Object> values = (List<Object>) getValueExpression("value").getValue(context.getELContext());
+        List<Object> options = (List<Object>) getValueExpression("items").getValue(context.getELContext());
         Map<Object, Boolean> valueMap = options.stream().collect(Collectors.toMap(Function.identity(), o -> values.contains(getValue(o))));
         this.setValueMap(valueMap);
+        super.encodeBegin(context);
     }
-
-
 
     public Map<Object, Boolean> getValueMap() {
         return (Map<Object, Boolean>) getStateHelper().eval(PropertyKeys.valueMap, Collections.emptyMap());
@@ -69,7 +68,8 @@ public class MultiSelectDropdown extends UINamingContainer {
 
     public void setValueMap(Map<Object, Boolean> values) {
         getStateHelper().put(PropertyKeys.valueMap, values);
-        getValueExpression("value").setValue(getFacesContext().getELContext(), values.entrySet().stream().filter(e -> e.getValue()).collect(Collectors.toList()));
+        getValueExpression("value").setValue(getFacesContext().getELContext(),
+                values.entrySet().stream().filter(Entry::getValue).collect(Collectors.toList()));
     }
 
     public String getLabel(Object item) {
@@ -79,6 +79,5 @@ public class MultiSelectDropdown extends UINamingContainer {
     public Object getValue(Object item) {
         return item;
     }
-
 
 }

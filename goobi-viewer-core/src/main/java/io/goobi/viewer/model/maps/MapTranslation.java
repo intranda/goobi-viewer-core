@@ -26,6 +26,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import java.io.Serializable;
+
 import io.goobi.viewer.model.translations.Translation;
 
 /**
@@ -34,7 +36,9 @@ import io.goobi.viewer.model.translations.Translation;
  */
 @Entity
 @Table(name = "cms_geomap_translation")
-public class MapTranslation extends Translation {
+public class MapTranslation extends Translation implements Serializable {
+
+    private static final long serialVersionUID = 764535999827518666L;
 
     /** Reference to the owning Object. */
     @ManyToOne
@@ -53,6 +57,7 @@ public class MapTranslation extends Translation {
      *
      * @param language
      * @param tag
+     * @param owner
      */
     public MapTranslation(String language, String tag, GeoMap owner) {
         super();
@@ -60,7 +65,6 @@ public class MapTranslation extends Translation {
         this.tag = tag;
         this.owner = owner;
     }
-
 
     /**
      * @param t
@@ -83,6 +87,5 @@ public class MapTranslation extends Translation {
     public void setOwner(GeoMap owner) {
         this.owner = owner;
     }
-
 
 }

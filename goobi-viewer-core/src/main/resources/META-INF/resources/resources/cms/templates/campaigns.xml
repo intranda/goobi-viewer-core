@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+	<jsfComponent>
+		<library>cms/components/frontend/component</library>
+		<name>campaigns</name>
+	</jsfComponent>
+	<label>cms_component__campaigns__label</label>
+	<description>cms_component__campaigns__desc</description>
+	<icon>cms/components/frontend/component/icon/campaigns.png</icon>
+</component>

@@ -45,7 +45,7 @@ import io.goobi.viewer.servlets.utils.ServletUtils;
  *
  * @author Florian Alpers
  */
-public class ViewHistory {
+public final class ViewHistory {
 
     private static Logger logger = LogManager.getLogger(ViewHistory.class);
 
@@ -54,13 +54,16 @@ public class ViewHistory {
 
     private static final PageType[] IGNORED_VIEWS = new PageType[] {};
 
+    private ViewHistory() {
+    }
+
     /**
      * Saves the current view information to the session map. Also saves the previous view information to the session map if it represents a different
      * view than the current view
      *
      * @param request a {@link javax.servlet.ServletRequest} object.
      */
-    public synchronized static void setCurrentView(final ServletRequest request) {
+    public static synchronized void setCurrentView(final ServletRequest request) {
 
         try {
             if (request != null) {
@@ -82,11 +85,10 @@ public class ViewHistory {
                         setCurrentView(oCurrentPath.get(), session);
                     } else {
                         //some other url
-                        return;
                     }
                 }
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             //catch all throwables to avoid constant redirects to error
             logger.error("Error saving page url", e);
         }
@@ -119,7 +121,7 @@ public class ViewHistory {
      * Returns true if the path matches one of the ignored views
      *
      * @param path The path to check
-     * @return
+     * @return true if path contains an ignored view type; false otherwise
      */
     private static boolean isIgnoredView(URI path) {
         for (PageType pageType : IGNORED_VIEWS) {
@@ -137,7 +139,7 @@ public class ViewHistory {
      *         stored yet
      * @param request a {@link javax.servlet.ServletRequest} object.
      */
-    public synchronized static Optional<ViewerPath> getCurrentView(ServletRequest request) {
+    public static synchronized Optional<ViewerPath> getCurrentView(ServletRequest request) {
         if (request != null) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpSession session = httpRequest.getSession();
@@ -159,7 +161,7 @@ public class ViewHistory {
      *         been stored yet
      * @param request a {@link javax.servlet.ServletRequest} object.
      */
-    public synchronized static Optional<ViewerPath> getPreviousView(ServletRequest request) {
+    public static synchronized Optional<ViewerPath> getPreviousView(ServletRequest request) {
         if (request != null) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpSession session = httpRequest.getSession();
@@ -180,7 +182,7 @@ public class ViewHistory {
      * @param url The url to redirect to
      * @throws java.io.IOException if any.
      */
-    public synchronized static void redirectToUrl(String url) throws IOException {
+    public static synchronized void redirectToUrl(String url) throws IOException {
 
         FacesContext.getCurrentInstance().getExternalContext().getFlash().setRedirect(true);
         FacesContext.getCurrentInstance().getExternalContext().redirect(url);

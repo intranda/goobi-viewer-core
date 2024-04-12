@@ -21,6 +21,9 @@
  */
 package io.goobi.viewer.model.cms.widgets.type;
 
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
+
 /**
  * Types of sidebar widgets that contain individual configuration and must be created by a user
  *
@@ -32,28 +35,35 @@ public enum CustomWidgetType implements WidgetContentType {
     /**
      * Displays an RSS feed. Number and sorting of feed item may be configured, as well as a search query to filter the feed items
      */
-    WIDGET_RSSFEED("cms__add_widget__select_rss_title", "cms__add_widget__select_rss_desc", "widget_rssFeed.xhtml"),
+    WIDGET_RSSFEED("cms__add_widget__select_rss_title", "cms__add_widget__select_rss_desc", "fa fa-rss", "widget_rssFeed.xhtml"),
     /**
      * Display facets for a search field of type 'FACET_'. A filter query for facet results may be configured, as well as the order of facets
      */
-    WIDGET_FIELDFACETS("cms__add_widget__field_content__title", "cms__add_widget__field_content__desc", "widget_fieldFacets.xhtml"),
+    WIDGET_FIELDFACETS("cms__add_widget__field_content__title", "cms__add_widget__field_content__desc", "fa fa-list-ul", "widget_fieldFacets.xhtml"),
     /**
      * Displays links to CMS pages. The linked pages can be selected when creating the widget
      */
-    WIDGET_CMSPAGES("cms__add_widget__select_pages_title", "cms__add_widget__select_pages_desc", "widget_cmsPageLinks.xhtml"),
+    WIDGET_CMSPAGES("cms__add_widget__select_pages_title", "cms__add_widget__select_pages_desc", "fa fa-clone", "widget_cmsPageLinks.xhtml"),
     /**
      * Display an html text
      */
-    WIDGET_HTML("cms__add_widget__select_html_title", "cms__add_widget__select_html_desc", "widget_custom.xhtml");
+    WIDGET_HTML("cms__add_widget__select_html_title", "cms__add_widget__select_html_desc", "fa fa-code", "widget_custom.xhtml");
 
     private final String label;
     private final String description;
+    private final String iconClass;
     private final String filename;
 
-    private CustomWidgetType(String label, String description, String filename) {
+    private CustomWidgetType(String label, String description, String iconClass, String filename) {
         this.label = label;
         this.description = description;
+        this.iconClass = iconClass;
         this.filename = filename;
+    }
+
+    @Override
+    public String getIconClass() {
+        return iconClass;
     }
 
     public String getLabel() {
@@ -62,7 +72,8 @@ public enum CustomWidgetType implements WidgetContentType {
 
     /**
      * A message key for a description of ths widget type
-     * @return
+     * 
+     * @return the description
      */
     public String getDescription() {
         return description;
@@ -76,5 +87,15 @@ public enum CustomWidgetType implements WidgetContentType {
     @Override
     public String getName() {
         return name();
+    }
+
+    @Override
+    public boolean isAllowedForPage(CMSPage page) {
+        return true;
+    }
+
+    @Override
+    public boolean isAllowedForPage(CMSPageTemplate template) {
+        return true;
     }
 }

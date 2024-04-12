@@ -1,0 +1,40 @@
+
+<!-- Deprecated -->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+	<div id="externalResourceDownload"></div>
+	<script>
+		riot.mount("#externalResourceDownload", "external-resource-download", {
+			urls : #{activeDocumentBean.externalResourceUrls.stream().map(s -> "\"".concat(s.concat("\""))).toList()},
+			contextPath : "#{request.contextPath}",
+			pi : "#{activeDocumentBean.viewManager.pi}",
+			msg : {
+		    		  downloadButton: "#{msg.downloadButton}",
+		    		  cancel: "#{msg.cancel}",
+		    		  action__external_files__download_in_queue: "#{msg.action__external_files__download_in_queue}",
+		    		  label__born_digital__filename: "#{msg.label__born_digital__filename}",
+		    		  label__born_digital__filedescription: "#{msg.label__born_digital__filedescription}",
+		    		  label__born_digital__filesize: "#{msg.label__born_digital__filesize}",
+		    		  label__born_digital__fileformat: "#{msg.label__born_digital__fileformat}",
+		    		  action__born_digital__download: "#{msg.action__born_digital__download}",
+		    		  label__born_digital__downloading: "#{msg.label__born_digital__downloading}",
+		    		  "application/pdf": "#{msg['application/pdf']}",
+		    		  "application/epub+zip": "#{msg['application/epub+zip']}",
+		    		  "image/tiff": "#{msg['image/tiff']}",
+		    		  "image/jpeg": "#{msg['image/jpeg']}",
+		    		  "image/png": "#{msg['image/png']}",
+		      }
+		});
+	</script>
+
+</ui:composition>

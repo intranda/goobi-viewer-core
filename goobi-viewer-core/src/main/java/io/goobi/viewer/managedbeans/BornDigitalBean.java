@@ -82,8 +82,7 @@ public class BornDigitalBean implements Serializable {
     /**
      * Checks the given download ticket password for validity for the current record and persists valid permission in the agent session.
      * 
-     * @param password Ticket password to check
-     * @return
+     * @return empty string
      * @throws DAOException
      * @throws IndexUnreachableException
      */
@@ -115,7 +114,7 @@ public class BornDigitalBean implements Serializable {
                 return "";
             }
             if (ticket != null && ticket.isActive() && ticket.getPi().equals(pi) && ticket.checkPassword(downloadTicketPassword)
-                    && AccessConditionUtils.addPermissionToSession(pi, BeanUtils.getSession())) {
+                    && AccessConditionUtils.addDownloadTicketToSession(pi, BeanUtils.getSession())) {
                 logger.trace("Born digital download permission for {} added to user session.", pi);
                 DataManager.getInstance().getSecurityManager().resetFailedLoginAttemptForIpAddress(ipAddress);
                 Messages.info("");
@@ -133,7 +132,7 @@ public class BornDigitalBean implements Serializable {
 
     /**
      * 
-     * @return
+     * @return empty string
      * @throws DAOException
      * @throws IndexUnreachableException
      */
@@ -150,7 +149,6 @@ public class BornDigitalBean implements Serializable {
 
         // Check whether the security question has been answered correct, if configured
         if (!captchaBean.checkAnswer()) {
-            captchaBean.reset();
             Messages.error("user__security_question_wrong");
             return "";
         }
@@ -168,7 +166,6 @@ public class BornDigitalBean implements Serializable {
         if (DataManager.getInstance().getDao().addDownloadTicket(ticket)) {
             downloadTicketEmail = null;
             downloadTicketRequestMessage = null;
-            captchaBean.reset();
 
             // Notify the requesting party of a successful request via e-mail
             sendEmailNotification(Collections.singletonList(ticket.getEmail()),

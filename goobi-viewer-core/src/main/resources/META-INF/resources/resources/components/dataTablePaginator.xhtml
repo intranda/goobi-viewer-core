@@ -12,11 +12,12 @@
     <composite:interface>
         <composite:attribute name="tableValues" required="true" />
         <composite:attribute name="onevent" required="false" default="''" />
+        <composite:attribute name="paginatorId" required="false" default="dataTablePaginator"/>
     </composite:interface>
 
     <!-- component content -->
     <composite:implementation>
-        <nav id="dataTablePaginator" class="data-table-paginator clearfix">
+        <nav id="#{cc.attrs.paginatorId}" class="data-table-paginator clearfix">
             <ul>
                 <li>
                   <button

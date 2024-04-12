@@ -37,8 +37,11 @@ var adminJS = ( function() {
             console.log( 'adminJS.init' );
             console.log( '##############################' );
         }
-        //Initialize sticky elements for admin pages
+        // Initialize sticky elements for admin pages
         viewerJS.stickyElements.init({initAdmin:true});
+
+		// Initialize copy to clipboard scripts for admin pages
+		viewerJS.clipboard.init();
     };
 
     return admin;
@@ -48,7 +51,7 @@ var adminJS = ( function() {
 
 $( document ).ready(function() {
 
-// toggle help text for admin forms
+	// toggle help text for admin forms
 	$("body").on("click", '[data-toggle="helptext"]', function() {
 		$(this).closest('.form-group').children('.admin__form-input, .admin__license-functions-help').find('.admin__form-help-text').toggleClass('in');
 		$(this).parents().siblings('.admin__form-help-text').toggleClass('in');

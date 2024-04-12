@@ -1,68 +1,45 @@
-<ui:composition 
-	xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:pretty="http://ocpsoft.com/prettyfaces/3.3.3"
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
 	template="/resources/themes/#{navigationHelper.theme}/template.html">
-	
-	<ui:param name="cmsPage" value="#{cmsBean.currentPage}" />
-	
-    <ui:define name="metadata">
-	    <f:metadata> 
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage)}" />
-			<f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />
-			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
-        </f:metadata>
-    </ui:define>
 
-    <ui:define name="content">
-		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
-    	<f:param name="currentPage" value="#{cmsBean.random}" />
-    	<f:view contentType="text/html" encoding="utf-8">
-			<div id="templateStckedCollection" class="tpl-stacked-collection #{cmsPage.wrapperElementClass}">
-                <!-- EDIT PAGE -->
-                <ui:fragment rendered="#{cmsBean.mayEdit(cmsPage)}">
-                    <ui:include src="/resources/cms/includes/editPage.xhtml" />                    
-                </ui:fragment>
-                
-				<!-- PAGE UNPUBLISHED -->
-				<h:panelGroup rendered="#{!cmsPage.published}">
-					<div class="alert alert-warning" role="alert">#{msg.cms_pagePreviewNotPublished}</div>
-				</h:panelGroup>
+	<composite:interface>
+		<composite:attribute name="component" required="true" />
+		<composite:attribute name="textItem" required="false" default="#{cc.attrs.component.getContentItem('text')}"/> 
+		<composite:attribute name="collectionItem" required="false" default="#{cc.attrs.component.getContentItem('collection')}"/> 
+	</composite:interface>
 
-				<h1 >#{cmsPage.title}</h1>
+
+	<composite:implementation>
+
+			<div id="templateStckedCollection" class="tpl-stacked-collection content-component__legacy-full-width">
+				
 				<div class="tpl-stacked-collection__text">
-                    <h:outputText escape="false" value="#{cmsPage.getContent('text')}"></h:outputText>
+                    <h:outputText escape="false" value="#{cc.attrs.component.getContentData('text')}"></h:outputText>
                 </div>
 
 				<div class="tpl-stacked-collection__collections">
 					<collectionView 
-					url='#{request.contextPath}/api/v1/collections/#{cmsPage.getContentItem("collection").collectionField}/'
+					url='#{request.contextPath}/api/v1/collections/#{cc.attrs.collectionItem.content.collectionField}/'
 					restapi = "#{configurationBean.restApiUrl}"
-					baseCollection="#{cmsPage.getContentItem('collection').baseCollection}"
-					grouping="#{cmsPage.getContentItem('collection').groupBy}"
+					baseCollection="#{cc.attrs.collectionItem.content.baseCollection}"
+					grouping="#{cc.attrs.collectionItem.content.groupBy}"
 					language="#{navigationHelper.localeString}"
 					defaultlanguage="#{navigationHelper.defaultLocale.language}"
-					blacklist="#{cmsPage.getContentItem('collection').ignoreCollections}"
-					sorting="#{cmsPage.getContentItem('collection').sorting}"
-					depth="2"
-					></collectionView>
+					blacklist="#{cc.attrs.collectionItem.content.ignoreCollections}"
+					sorting="#{cc.attrs.collectionItem.content.sorting}"
+					depth="2"></collectionView>
 				</div>
 								
 				<script type="text/javascript">
 				riot.mount("collectionView");
                 </script>
 			</div>
-		</f:view>
-    </ui:define>
-
-    <!-- SIDEBAR -->
-	<ui:define name="sidebar">
-		<ui:include src="/resources/cms/includes/cms_sidebar.xhtml" />
-    </ui:define>
+	</composite:implementation>
 </ui:composition>

@@ -24,6 +24,7 @@ package io.goobi.viewer.api.rest.v1;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -31,7 +32,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.intranda.monitoring.timer.TimingStatistics;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
 import io.goobi.viewer.controller.DataManager;
 
@@ -40,16 +40,16 @@ import io.goobi.viewer.controller.DataManager;
  *
  */
 @Path("/")
+@RequestScoped
 public class ApplicationResource {
 
     @Inject
-    ApiUrls urls;
+    private ApiUrls urls;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public ApiInfo getApiInfo() {
-        ApiInfo info = new ApiInfo("Goobi viewer REST API", "v1", urls.getApiUrl() + "/openapi.json");
-        return info;
+        return new ApiInfo("Goobi viewer REST API", "v1", urls.getApiUrl() + "/openapi.json");
     }
 
     @GET

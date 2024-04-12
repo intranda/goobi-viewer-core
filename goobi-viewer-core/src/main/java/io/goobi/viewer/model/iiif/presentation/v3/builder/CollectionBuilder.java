@@ -43,7 +43,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.cms.CMSCollection;
+import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
@@ -65,13 +65,23 @@ public class CollectionBuilder extends AbstractBuilder {
     public static final String[] CONTAINED_WORKS_QUERY_FIELDS =
             { SolrConstants.PI, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT,
                     SolrConstants.IDDOC };
-    public final static String RSS_FEED_LABEL = "Rss feed";
-    public final static String RSS_FEED_FORMAT = "Rss feed";
+    public static final String RSS_FEED_LABEL = "Rss feed";
+    public static final String RSS_FEED_FORMAT = "Rss feed";
 
+    /**
+     * 
+     * @param apiUrlManager
+     */
     public CollectionBuilder(AbstractApiUrlManager apiUrlManager) {
         super(apiUrlManager);
     }
 
+    /**
+     * 
+     * @param collectionField
+     * @return {@link Collection3}
+     * @throws IndexUnreachableException
+     */
     public Collection3 build(String collectionField) throws IndexUnreachableException {
 
         URI baseId = urls.path(COLLECTIONS).params(collectionField).buildURI();
@@ -89,6 +99,14 @@ public class CollectionBuilder extends AbstractBuilder {
 
     }
 
+    /**
+     * 
+     * @param collectionField
+     * @param collectionName
+     * @return {@link Collection3}
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
     public Collection3 build(String collectionField, String collectionName) throws IndexUnreachableException, PresentationException {
 
         Collection3 baseCollection = createCollection(collectionField, collectionName);
@@ -101,12 +119,12 @@ public class CollectionBuilder extends AbstractBuilder {
         }
 
         List<StructElement> records = dataRetriever.getContainedRecords(collectionField, collectionName);
-        for (StructElement record : records) {
-            if (record.isAnchor()) {
-                Collection3 manifest = createAnchorLink(collectionField, collectionName, record);
+        for (StructElement rec : records) {
+            if (rec.isAnchor()) {
+                Collection3 manifest = createAnchorLink(rec);
                 baseCollection.addItem(manifest);
             } else {
-                Manifest3 manifest = createRecordLink(collectionField, collectionName, record);
+                Manifest3 manifest = createRecordLink(rec);
                 baseCollection.addItem(manifest);
             }
         }
@@ -115,6 +133,12 @@ public class CollectionBuilder extends AbstractBuilder {
 
     }
 
+    /**
+     * 
+     * @param collectionField
+     * @param collectionName
+     * @return {@link Collection3}
+     */
     private Collection3 createCollection(String collectionField, String collectionName) {
         URI id = urls.path(COLLECTIONS, COLLECTIONS_COLLECTION).params(collectionField, collectionName).buildURI();
         Collection3 collection = new Collection3(id, collectionName);
@@ -122,13 +146,13 @@ public class CollectionBuilder extends AbstractBuilder {
         try {
             cmsCollection = DataManager.getInstance().getDao().getCMSCollection(collectionField, collectionName);
         } catch (DAOException e) {
-            logger.error("Error getting CMS collections data from DAO for " + collectionName, e);
+            logger.error("Error getting CMS collections data from DAO for {}", collectionName, e);
         }
         if (cmsCollection != null) {
             collection.setLabel(cmsCollection.getTranslationsForName());
             collection.setDescription(cmsCollection.getTranslationsForDescription());
 
-            ImageResource thumb = createThumbnail(collectionField, collectionName, cmsCollection);
+            ImageResource thumb = createThumbnail(collectionName, cmsCollection);
             if (thumb != null) {
                 collection.addThumbnail(thumb);
             }
@@ -136,14 +160,18 @@ public class CollectionBuilder extends AbstractBuilder {
         } else {
             collection.setLabel(ViewerResourceBundle.getTranslations(collectionName, false));
             ImageResource thumb = new ImageResource(null);
-            if (thumb != null) {
-                collection.addThumbnail(thumb);
-            }
+            collection.addThumbnail(thumb);
         }
         return collection;
     }
 
-    private ImageResource createThumbnail(String collectionField, String collectionName, CMSCollection cmsCollection) {
+    /**
+     * 
+     * @param collectionName
+     * @param cmsCollection
+     * @return {@link ImageResource}
+     */
+    private ImageResource createThumbnail(String collectionName, CMSCollection cmsCollection) {
         ImageResource thumb;
         if (cmsCollection.hasMediaItem()) {
 
@@ -160,7 +188,7 @@ public class CollectionBuilder extends AbstractBuilder {
             try {
                 thumb = getThumbnail(pi);
             } catch (IndexUnreachableException | PresentationException | ViewerConfigurationException e) {
-                logger.error("Error creating thumbnail for record " + collectionName, e);
+                logger.error("Error creating thumbnail for record {}", collectionName, e);
                 thumb = new ImageResource(null);
             }
         } else {

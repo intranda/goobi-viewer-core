@@ -26,27 +26,27 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 
-public class MetadataToolsTest extends AbstractSolrEnabledTest {
+class MetadataToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @see MetadataTools#applyReplaceRules(String,Map)
      * @verifies apply rules correctly
      */
     @Test
-    public void applyReplaceRules_shouldApplyRulesCorrectly() throws Exception {
+    void applyReplaceRules_shouldApplyRulesCorrectly() throws Exception {
         List<MetadataReplaceRule> replaceRules = new ArrayList<>(3);
         replaceRules.add(new MetadataReplaceRule('<', "", MetadataReplaceRuleType.CHAR));
         replaceRules.add(new MetadataReplaceRule(">", "s", MetadataReplaceRuleType.STRING));
         replaceRules.add(new MetadataReplaceRule("[ ]*100[ ]*", "", MetadataReplaceRuleType.REGEX));
-        Assert.assertEquals("vase", MetadataTools.applyReplaceRules(" 100 v<a>e", replaceRules, null));
+        Assertions.assertEquals("vase", MetadataTools.applyReplaceRules(" 100 v<a>e", replaceRules, null));
     }
 
     /**
@@ -54,16 +54,16 @@ public class MetadataToolsTest extends AbstractSolrEnabledTest {
      * @verifies apply conditional rules correctly
      */
     @Test
-    public void applyReplaceRules_shouldApplyConditionalRulesCorrectly() throws Exception {
+    void applyReplaceRules_shouldApplyConditionalRulesCorrectly() throws Exception {
         List<MetadataReplaceRule> replaceRules = Collections.singletonList(
                 new MetadataReplaceRule("remove me", "", SolrConstants.PI_TOPSTRUCT + ":PPN517154005", MetadataReplaceRuleType.STRING));
-        Assert.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN517154005", replaceRules.get(0).getConditions());
+        Assertions.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN517154005", replaceRules.get(0).getConditions());
         // Condition match
-        Assert.assertEquals(" please", MetadataTools.applyReplaceRules("remove me please", replaceRules, "PPN517154005"));
+        Assertions.assertEquals(" please", MetadataTools.applyReplaceRules("remove me please", replaceRules, "PPN517154005"));
         // No condition match
-        Assert.assertEquals("remove me please", MetadataTools.applyReplaceRules("remove me please", replaceRules, "PPN123"));
+        Assertions.assertEquals("remove me please", MetadataTools.applyReplaceRules("remove me please", replaceRules, "PPN123"));
         // Ignore conditions if no PI was given
-        Assert.assertEquals(" please", MetadataTools.applyReplaceRules("remove me please", replaceRules, null));
+        Assertions.assertEquals(" please", MetadataTools.applyReplaceRules("remove me please", replaceRules, null));
     }
 
     /**
@@ -71,12 +71,12 @@ public class MetadataToolsTest extends AbstractSolrEnabledTest {
      * @verifies map values correctly
      */
     @Test
-    public void findMetadataGroupType_shouldMapValuesCorrectly() throws Exception {
-        Assert.assertEquals(MetadataGroupType.CORPORATION.name(), MetadataTools.findMetadataGroupType("kiz"));
-        Assert.assertEquals(MetadataGroupType.PERSON.name(), MetadataTools.findMetadataGroupType("piz"));
-        Assert.assertEquals(MetadataGroupType.SUBJECT.name(), MetadataTools.findMetadataGroupType("saa"));
-        Assert.assertEquals(MetadataGroupType.CONFERENCE.name(), MetadataTools.findMetadataGroupType("viz"));
-        Assert.assertEquals(MetadataGroupType.RECORD.name(), MetadataTools.findMetadataGroupType("wiz"));
+    void findMetadataGroupType_shouldMapValuesCorrectly() throws Exception {
+        Assertions.assertEquals(MetadataGroupType.CORPORATION.name(), MetadataTools.findMetadataGroupType("kiz"));
+        Assertions.assertEquals(MetadataGroupType.PERSON.name(), MetadataTools.findMetadataGroupType("piz"));
+        Assertions.assertEquals(MetadataGroupType.SUBJECT.name(), MetadataTools.findMetadataGroupType("saa"));
+        Assertions.assertEquals(MetadataGroupType.CONFERENCE.name(), MetadataTools.findMetadataGroupType("viz"));
+        Assertions.assertEquals(MetadataGroupType.RECORD.name(), MetadataTools.findMetadataGroupType("wiz"));
     }
 
     /**
@@ -84,7 +84,7 @@ public class MetadataToolsTest extends AbstractSolrEnabledTest {
      * @verifies return original value if language not found
      */
     @Test
-    public void convertLanguageToIso2_shouldReturnOriginalValueIfLanguageNotFound() throws Exception {
-        Assert.assertEquals("###", MetadataTools.convertLanguageToIso2("###"));
+    void convertLanguageToIso2_shouldReturnOriginalValueIfLanguageNotFound() throws Exception {
+        Assertions.assertEquals("###", MetadataTools.convertLanguageToIso2("###"));
     }
 }

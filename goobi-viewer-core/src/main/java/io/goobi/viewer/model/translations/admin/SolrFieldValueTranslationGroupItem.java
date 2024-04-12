@@ -35,6 +35,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
@@ -59,6 +60,7 @@ public class SolrFieldValueTranslationGroupItem extends TranslationGroupItem {
      */
     @Override
     protected void loadEntries() throws PresentationException, IndexUnreachableException {
+        // logger.trace("loadEntries");
         QueryResponse qr = DataManager.getInstance()
                 .getSearchIndex()
                 .searchFacetsAndStatistics("*:*", null, Collections.singletonList(key), 1, false);
@@ -85,7 +87,9 @@ public class SolrFieldValueTranslationGroupItem extends TranslationGroupItem {
                     }
                 } else {
                     // Regular values
-                    keys.add(count.getName());
+                    if (!StringTools.checkValueEmptyOrInverted(count.getName())) {
+                        keys.add(count.getName());
+                    }
                 }
             }
         }

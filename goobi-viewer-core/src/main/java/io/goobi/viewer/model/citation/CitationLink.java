@@ -21,21 +21,13 @@
  */
 package io.goobi.viewer.model.citation;
 
-import java.util.Collections;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.ViewManager;
-import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrConstants.DocType;
-import io.goobi.viewer.solr.SolrTools;
 
 /**
  *
@@ -49,7 +41,7 @@ public class CitationLink {
         /**
          *
          * @param name
-         * @return
+         * @return {@link CitationLinkType}; null if no matching type found
          */
         protected static CitationLinkType getByName(String name) {
             if (name == null) {
@@ -75,7 +67,7 @@ public class CitationLink {
         /**
          *
          * @param name
-         * @return
+         * @return {@link CitationLinkLevel}; null if no matching level found
          */
         public static CitationLinkLevel getByName(String name) {
             if (name == null) {
@@ -107,6 +99,7 @@ public class CitationLink {
      * @param type
      * @param level
      * @param label
+     * 
      */
     public CitationLink(String type, String level, String label) {
         this.type = CitationLinkType.getByName(type);
@@ -121,8 +114,9 @@ public class CitationLink {
     }
 
     /**
-     *
-     * @return
+     * 
+     * @param viewManager
+     * @return Appropriate URL
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
@@ -132,7 +126,7 @@ public class CitationLink {
      * @should construct external url correctly
      */
     public String getUrl(ViewManager viewManager) throws PresentationException, IndexUnreachableException, DAOException {
-        // logger.trace("getUrl: {}/{}", level, field);
+        // logger.trace("getUrl: {}/{}", level, field); //NOSONAR Debug
         if (viewManager == null) {
             return null;
         }
@@ -145,10 +139,12 @@ public class CitationLink {
                     return viewManager.getCiteLinkDocstruct();
                 case IMAGE:
                     return viewManager.getCiteLinkPage();
+                default:
+                    break;
             }
         }
 
-        return getValue(viewManager);
+        return getValue();
     }
 
     /**
@@ -180,58 +176,18 @@ public class CitationLink {
     }
 
     /**
+     * 
      * @return the value
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @should return correct value for record type
-     * @should return correct value for docstruct type
-     * @should return correct value for image type
-     * @should fall back to topstruct value correctly
      */
-    public String getValue(ViewManager viewManager) throws IndexUnreachableException, PresentationException {
-        if (!CitationLinkType.URL.equals(type) || viewManager == null) {
-            return null;
-        }
-
-        if (StringUtils.isEmpty(this.value)) {
-            // logger.trace("Loading value: {}/{}", level, field);
-            String query = null;
-            switch (level) {
-                case RECORD:
-                    query = SolrConstants.PI + ":" + viewManager.getPi();
-                    break;
-                case DOCSTRUCT:
-                    query = "+" + SolrConstants.IDDOC + ":" + viewManager.getCurrentStructElement().getLuceneId();
-                    break;
-                case IMAGE:
-                    query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + viewManager.getPi() + " +" + SolrConstants.ORDER + ":"
-                            + viewManager.getCurrentImageOrder() + " +" + SolrConstants.DOCTYPE
-                            + ":" + DocType.PAGE.name();
-                    break;
-            }
-
-            SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(field));
-            if (doc == null) {
-                return null;
-            }
-
-            if (doc.get(field) != null) {
-                this.value = SolrTools.getAsString(doc.get(field));
-            } else if (topstructValueFallback && !CitationLinkLevel.RECORD.equals(level)) {
-                query = SolrConstants.PI + ":" + viewManager.getPi();
-                doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(field));
-                if (doc != null && doc.get(field) != null) {
-                    this.value = SolrTools.getAsString(doc.get(field));
-                }
-            }
-
-            if (StringUtils.isNotEmpty(pattern) && this.value != null) {
-                this.value = pattern.replace("{value}", this.value)
-                        .replace("{page}", String.valueOf(viewManager.getCurrentImageOrder()));
-            }
-        }
-
+    public String getValue() {
         return this.value;
+    }
+
+    /**
+     * @param value the value to set
+     */
+    public void setValue(String value) {
+        this.value = value;
     }
 
     /**

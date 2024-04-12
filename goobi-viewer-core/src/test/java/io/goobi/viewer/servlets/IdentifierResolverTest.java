@@ -29,90 +29,86 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.HttpException;
-import com.meterware.httpunit.HttpInternalErrorException;
-import com.meterware.httpunit.HttpNotFoundException;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
-import com.meterware.servletunit.ServletRunner;
-import com.meterware.servletunit.ServletUnitClient;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.TestUtils;
-import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.ConfigurationTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
-public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
-
-    private static final String RESOLVER_NAME = "identifierResolver";
-
-    private ServletRunner sr;
+class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
-
-        sr = new ServletRunner();
-        sr.registerServlet(RESOLVER_NAME, IdentifierResolver.class.getName());
     }
 
     /**
      * @see IdentifierResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 400 if record identifier missing
      */
-    @Test(expected = HttpException.class)
-    public void doGet_shouldReturn400IfRecordIdentifierMissing() throws Exception {
-        ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
-        WebResponse response = sc.getResponse(request);
+    @Test
+    void doGet_shouldReturn400IfRecordIdentifierMissing() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        IdentifierResolver resolver = new IdentifierResolver();
+        resolver.doGet(request, response);
+        Assertions.assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
     }
 
     /**
      * @see IdentifierResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 404 if record not found
      */
-    @Test(expected = HttpNotFoundException.class)
-    public void doGet_shouldReturn404IfRecordNotFound() throws Exception {
-        ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
+    @Test
+    void doGet_shouldReturn404IfRecordNotFound() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
         request.setParameter("urn", "NOTFOUND");
-        WebResponse response = sc.getResponse(request);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        IdentifierResolver resolver = new IdentifierResolver();
+        resolver.doGet(request, response);
+        Assertions.assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
     }
 
     /**
      * @see IdentifierResolver#doGet(HttpServletRequest,HttpServletResponse)
-     * @verifies return 500 if record field name bad
+     * @verifies return 400 if record field name bad
      */
-    @Test(expected = HttpInternalErrorException.class)
-    public void doGet_shouldReturn500IfRecordFieldNameBad() throws Exception {
-        ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
+    @Test
+    void doGet_shouldReturn400IfRecordFieldNameBad() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
         request.setParameter("field", "NOSUCHFIELD");
         request.setParameter("identifier", "PPN123");
-        WebResponse response = sc.getResponse(request);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        IdentifierResolver resolver = new IdentifierResolver();
+        resolver.doGet(request, response);
+        Assertions.assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals("Undefined field name: NOSUCHFIELD", response.getErrorMessage());
     }
 
     /**
      * @see IdentifierResolver#doGet(HttpServletRequest,HttpServletResponse)
-     * @verifies return 500 if record field value bad
+     * @verifies return 400 if record field value bad
      */
-    @Test(expected = HttpException.class)
-    public void doGet_shouldReturn500IfRecordFieldValueBad() throws Exception {
-        ServletUnitClient sc = sr.newClient();
-        WebRequest request = new GetMethodWebRequest(ConfigurationTest.APPLICATION_ROOT_URL + RESOLVER_NAME);
+    @Test
+    void doGet_shouldReturn400IfRecordFieldValueBad() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
         request.setParameter("field", SolrConstants.PI);
         request.setParameter("identifier", "a:b");
-        WebResponse response = sc.getResponse(request);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        IdentifierResolver resolver = new IdentifierResolver();
+        resolver.doGet(request, response);
+        Assertions.assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+        Assertions.assertEquals("Illegal identifier: a:b", response.getErrorMessage());
     }
 
     /**
@@ -120,11 +116,11 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct url correctly
      */
     @Test
-    public void constructUrl_shouldConstructUrlCorrectly() throws Exception {
+    void constructUrl_shouldConstructUrlCorrectly() throws Exception {
         String pi = PI_KLEIUNIV;
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + pi, 0, 1, null, null, null);
-        Assert.assertEquals(1, qr.getResults().size());
-        Assert.assertEquals("/object/" + pi + "/1/LOG_0000/", IdentifierResolver.constructUrl(qr.getResults().get(0), false));
+        Assertions.assertEquals(1, qr.getResults().size());
+        Assertions.assertEquals("/object/" + pi + "/", IdentifierResolver.constructUrl(qr.getResults().get(0), false));
     }
 
     /**
@@ -132,11 +128,11 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct anchor url correctly
      */
     @Test
-    public void constructUrl_shouldConstructAnchorUrlCorrectly() throws Exception {
+    void constructUrl_shouldConstructAnchorUrlCorrectly() throws Exception {
         String pi = "306653648";
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + pi, 0, 1, null, null, null);
-        Assert.assertEquals(1, qr.getResults().size());
-        Assert.assertEquals("/toc/" + pi + "/1/LOG_0000/", IdentifierResolver.constructUrl(qr.getResults().get(0), false));
+        Assertions.assertEquals(1, qr.getResults().size());
+        Assertions.assertEquals("/toc/" + pi + "/", IdentifierResolver.constructUrl(qr.getResults().get(0), false));
     }
 
     /**
@@ -144,12 +140,12 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct group url correctly
      */
     @Test
-    public void constructUrl_shouldConstructGroupUrlCorrectly() throws Exception {
+    void constructUrl_shouldConstructGroupUrlCorrectly() throws Exception {
         String pi = "PPN_GROUP";
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.DOCTYPE, DocType.GROUP.toString());
         doc.setField(SolrConstants.PI_TOPSTRUCT, pi);
-        Assert.assertEquals("/toc/" + pi + "/1/-/", IdentifierResolver.constructUrl(doc, false));
+        Assertions.assertEquals("/toc/" + pi + "/", IdentifierResolver.constructUrl(doc, false));
     }
 
     /**
@@ -157,12 +153,12 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct page url correctly
      */
     @Test
-    public void constructUrl_shouldConstructPageUrlCorrectly() throws Exception {
+    void constructUrl_shouldConstructPageUrlCorrectly() throws Exception {
         String urn = "urn\\:nbn\\:at\\:at-akw\\:g-86493";
         String pi = "AC11442160";
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.IMAGEURN + ":" + urn, 0, 1, null, null, null);
-        Assert.assertEquals(1, qr.getResults().size());
-        Assert.assertEquals("/object/" + pi + "/2/LOG_0002/", IdentifierResolver.constructUrl(qr.getResults().get(0), true));
+        Assertions.assertEquals(1, qr.getResults().size());
+        Assertions.assertEquals("/object/" + pi + "/2/LOG_0002/", IdentifierResolver.constructUrl(qr.getResults().get(0), true));
     }
 
     /**
@@ -170,12 +166,13 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct preferred view url correctly
      */
     @Test
-    public void constructUrl_shouldConstructPreferredViewUrlCorrectly() throws Exception {
+    void constructUrl_shouldConstructPreferredViewUrlCorrectly() throws Exception {
         String pi = "123";
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.DOCSTRCT, "Catalogue");
         doc.setField(SolrConstants.PI_TOPSTRUCT, "123");
-        Assert.assertEquals("/toc/" + pi + "/1/-/", IdentifierResolver.constructUrl(doc, false));
+        doc.setField(SolrConstants.ISWORK, true);
+        Assertions.assertEquals("/toc/" + pi + "/", IdentifierResolver.constructUrl(doc, false));
     }
 
     /**
@@ -183,13 +180,14 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct application mime type url correctly
      */
     @Test
-    public void constructUrl_shouldConstructApplicationMimeTypeUrlCorrectly() throws Exception {
+    void constructUrl_shouldConstructApplicationMimeTypeUrlCorrectly() throws Exception {
         String pi = "123";
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.DOCSTRCT, "Monograph");
         doc.setField(SolrConstants.PI_TOPSTRUCT, "123");
+        doc.setField(SolrConstants.ISWORK, true);
         doc.setField(SolrConstants.MIMETYPE, "application");
-        Assert.assertEquals("/metadata/" + pi + "/1/-/", IdentifierResolver.constructUrl(doc, false));
+        Assertions.assertEquals("/metadata/" + pi + "/", IdentifierResolver.constructUrl(doc, false));
     }
 
     /**
@@ -197,7 +195,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies parse fields and values correctly
      */
     @Test
-    public void parseFieldValueParameters_shouldParseFieldsAndValuesCorrectly() throws Exception {
+    void parseFieldValueParameters_shouldParseFieldsAndValuesCorrectly() throws Exception {
         Map<Integer, String> moreFields = new HashMap<>();
         Map<Integer, String> moreValues = new HashMap<>();
         Map<String, String[]> parameterMap = new HashMap<>(6);
@@ -206,11 +204,11 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         parameterMap.put("value2", new String[] { "val2" });
         parameterMap.put("value3", new String[] { "val3" });
         IdentifierResolver.parseFieldValueParameters(parameterMap, moreFields, moreValues);
-        Assert.assertEquals(2, moreFields.size());
-        Assert.assertEquals("FIELD2", moreFields.get(2));
-        Assert.assertEquals("FIELD3", moreFields.get(3));
-        Assert.assertEquals(2, moreValues.size());
-        Assert.assertEquals("val2", moreValues.get(2));
-        Assert.assertEquals("val3", moreValues.get(3));
+        Assertions.assertEquals(2, moreFields.size());
+        Assertions.assertEquals("FIELD2", moreFields.get(2));
+        Assertions.assertEquals("FIELD3", moreFields.get(3));
+        Assertions.assertEquals(2, moreValues.size());
+        Assertions.assertEquals("val2", moreValues.get(2));
+        Assertions.assertEquals("val3", moreValues.get(3));
     }
 }
