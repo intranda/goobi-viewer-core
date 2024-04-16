@@ -1504,21 +1504,6 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * Return the values of the given metadata field within the given document as a single concatenated string
-     * @param field
-     * @param document
-     * @return
-     */
-    public String getSingleMetadataValue(String field, StructElement document) {
-        List<String> values = Optional.ofNullable(document)
-                .map(StructElement::getMetadataFields)
-                .map(fields -> fields.get(field))
-                .orElse(Collections.emptyList());
-        
-        return values.stream().collect(Collectors.joining());
-    }
-    
-    /**
      * <p>
      * setChildrenVisible.
      * </p>
