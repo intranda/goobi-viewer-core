@@ -1039,6 +1039,12 @@
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsCollectionsBean.currentTab.refresh(cmsCollectionsBean.solrField)}</action>
     </url-mapping>
+    <url-mapping id="adminCmsCollectionList">
+        <pattern value="/admin/cms/collections/#{cmsCollectionsBean.solrField}/" />
+        <view-id value="/resources/cms/adminCmsCollections.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsCollectionsBean.currentTab.refresh(cmsCollectionsBean.solrField)}</action>
+    </url-mapping>
 	<url-mapping id="adminClients">
         <pattern value="/admin/clients/" />
         <view-id value="/resources/admin/views/adminClients.xhtml" />
