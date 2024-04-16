@@ -17,10 +17,10 @@
             <div id="widgetSearchInCurrentItem" class="widget widget-search-in-current-item">
                 <h:form id="searchInCurrentItemForm" styleClass="form-inline" prependId="false">
                     <div class="form-group">
-                        <label for="searchInCurrentItemInput" id="searchInLabel" class="sr-only">#{msg.searchIn}</label>
+                        <label for="searchInCurrentItemInput" id="searchInLabel" class="sr-only">#{msg.translate('searchInCurrentItem', activeDocumentBean.topDocument.label)}</label>
                         <div class="input-group">
                             <h:inputText value="#{searchBean.advancedSearchQueryGroup.queryItems[1].value}" id="searchInCurrentItemInput" styleClass="form-control">
-                                <f:passThroughAttribute name="placeholder" value="#{msg.searchIn}: #{msg[activeDocumentBean.topDocument.label]}" />
+                                <f:passThroughAttribute name="placeholder" value="#{msg.translate('searchInCurrentItem', activeDocumentBean.topDocument.label)}" />
                                 <f:passThroughAttribute name="aria-labelledby" value="searchInLabel"/>
                             </h:inputText>
                             <div class="input-group-addon">
