@@ -27,23 +27,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
@@ -275,17 +273,6 @@ public abstract class AbstractPageLoader implements IPageLoader {
         }
         if (doc.getFieldValue(SolrConstants.HEIGHT) != null) {
             pe.setHeight((Integer) doc.getFieldValue(SolrConstants.HEIGHT));
-        }
-        if (pe.getMimeType() != null && pe.getMimeType().startsWith("image") && !pe.hasIndividualSize()) {
-            try {
-                Optional.ofNullable(BeanUtils.getImageDeliveryBean().getImages().getImageInformation(pe))
-                        .ifPresent(info -> {
-                            pe.setHeight(info.getHeight());
-                            pe.setWidth(info.getWidth());
-                        });
-            } catch (Exception e) {
-                logger.warn("Error reading image size of {}: {}", pe.getFirstFileName(), e.toString());
-            }
         }
 
         // Full-text filename
