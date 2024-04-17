@@ -4982,6 +4982,14 @@ public class Configuration extends AbstractConfiguration {
         return getLocalList("webapi.iiif.license", new ArrayList<>());
     }
 
+    public boolean useExternalManifestUrls() {
+        return getLocalBoolean("webapi.iiif.externalManifests[@enabled]", false);
+    }
+
+    public String getExternalManifestSolrField() {
+        return getLocalString("webapi.iiif.externalManifests.solrField", "");
+    }
+
     /**
      * <p>
      * getIIIFMetadataFields.
