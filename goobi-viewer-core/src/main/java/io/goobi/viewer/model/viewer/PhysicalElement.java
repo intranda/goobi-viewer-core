@@ -62,7 +62,6 @@ import io.goobi.viewer.controller.FileSizeCalculator;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.controller.imaging.PdfHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -321,9 +320,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                     fileName = determineFileName(filePath);
                 }
                 String localFilename = fileName;
-
-                PdfHandler pdfHandler = BeanUtils.getImageDeliveryBean().getPdf();
-                return pdfHandler.getPdfUrl(pi, localFilename);
+                return getMediaUrl(localFilename);
+            //                PdfHandler pdfHandler = BeanUtils.getImageDeliveryBean().getPdf();
+            //                return pdfHandler.getPdfUrl(pi, localFilename);
             case SANDBOXED_HTML:
                 return getSandboxedUrl();
             default:

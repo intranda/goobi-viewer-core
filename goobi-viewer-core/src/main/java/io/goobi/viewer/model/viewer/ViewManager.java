@@ -103,11 +103,13 @@ import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.citation.CitationTools;
+import io.goobi.viewer.model.files.external.ExternalFilesDownloader;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.metadata.ComplexMetadata;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataValue;
+import io.goobi.viewer.model.metadata.VariableReplacer;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
@@ -190,6 +192,7 @@ public class ViewManager implements Serializable {
     private List<CopyrightIndicatorStatus> copyrightIndicatorStatuses = null;
     private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
     private Map<CitationLinkLevel, List<CitationLink>> citationLinks = new HashMap<>();
+    private List<String> externalResourceUrls = null;
 
     /**
      * <p>
@@ -1157,6 +1160,10 @@ public class ViewManager implements Serializable {
      */
     public boolean isBornDigital() throws IndexUnreachableException, DAOException {
         return isHasPages() && isFilesOnly();
+    }
+
+    public boolean isHasExternalResources() {
+        return Optional.ofNullable(getExternalResourceUrls()).map(list -> !list.isEmpty()).orElse(false);
     }
 
     /**
@@ -4125,5 +4132,21 @@ public class ViewManager implements Serializable {
                 .map(filename -> this.getPageLoader().findPageForFilename(filename))
                 .filter(p -> p != null)
                 .collect(Collectors.toList());
+    }
+
+    public List<String> getExternalResourceUrls() {
+        if (this.externalResourceUrls == null) {
+            this.externalResourceUrls = loadExternalResourceUrls();
+        }
+        return this.externalResourceUrls;
+    }
+
+    private List<String> loadExternalResourceUrls() {
+        List<String> urlTemplates = DataManager.getInstance().getConfiguration().getExternalResourceUrlTemplates();
+        VariableReplacer vr = new VariableReplacer(getTopStructElement());
+        return urlTemplates.stream()
+                .flatMap(templ -> vr.replace(templ).stream())
+                .filter(url -> ExternalFilesDownloader.resourceExists(url))
+                .toList();
     }
 }

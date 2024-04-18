@@ -54,7 +54,7 @@
 	    </div>
 	    
         <!-- BORN DIGITAL MATERIALS -->
-        <h:panelGroup rendered="#{activeDocumentBean.viewManager.bornDigital}">
+        <h:panelGroup rendered="#{activeDocumentBean.viewManager.bornDigital || activeDocumentBean.viewManager.hasExternalResources}">
             <viewerComponent:bornDigital />
             <viewerComponent:modalDownloadTicket />
             <div class="clearfix"></div>

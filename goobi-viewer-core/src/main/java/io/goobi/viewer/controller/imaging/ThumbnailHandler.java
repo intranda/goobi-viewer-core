@@ -865,6 +865,7 @@ public class ThumbnailHandler {
                 case "application":
                     switch (mimeType) {
                         case "application/pdf":
+                        case "application/epub+zip":
                             ret = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
                             break;
                         case "application/object":
