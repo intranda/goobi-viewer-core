@@ -875,6 +875,7 @@ public class ThumbnailHandler {
                             break;
                     }
                     break;
+                case "":
                 case "unknown": //no mimetype
                     ret = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
                     break;
