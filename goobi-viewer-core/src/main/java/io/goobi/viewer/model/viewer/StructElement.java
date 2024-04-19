@@ -579,12 +579,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getImageUrl(int width, int height) throws ViewerConfigurationException {
-        String filename = getMetadataValue(SolrConstants.THUMBNAIL);
-        if (filename != null) {
-            return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(this, width, height);
-        }
-
-        return null;
+        return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(this, width, height);
     }
 
     /**
