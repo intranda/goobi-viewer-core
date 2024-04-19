@@ -112,6 +112,7 @@ import io.goobi.viewer.model.metadata.MetadataValue;
 import io.goobi.viewer.model.metadata.VariableReplacer;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus.Status;
@@ -2276,6 +2277,17 @@ public class ViewManager implements Serializable {
         }
 
         return accessPermissionPdf;
+    }
+
+    public boolean isAccessPermissionExternalResources() throws IndexUnreachableException, DAOException, RecordNotFoundException {
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            AccessPermission access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null,
+                    IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES, request);
+            return access.isGranted();
+        }
+        logger.trace("FacesContext not found");
+        return false;
     }
 
     /**

@@ -126,9 +126,10 @@
 
         <widgetComponent:widget_formatsLinks />
 
-        <ui:fragment rendered="#{activeDocumentBean.viewManager.bornDigital || activeDocumentBean.viewManager.hasExternalResources}">
+         <ui:fragment rendered="#{activeDocumentBean.viewManager.bornDigital or activeDocumentBean.viewManager.hasExternalResources}">
         	<widgetComponent:widget_citation />
-
+		</ui:fragment>
+         <ui:fragment rendered="#{activeDocumentBean.viewManager.bornDigital}">
         	<widgetComponent:widget_downloads />
 		</ui:fragment>
 <!--         <widgetComponent:widget_relatedGroups /> -->

@@ -13,12 +13,12 @@
             <h2 ><h:outputText value="#{msg.bornDigital_fileList}" /></h2>
             
             <!-- ACCESS DENIED -->
-            <ui:fragment rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital}">
+            <ui:fragment rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital and !activeDocumentBean.viewManager.accessPermissionExternalResources}">
                 <div class="born-digital__no-access-box"><p><h:outputText value="#{msg.bornDigital_accessConditionText}" escape="false" /></p></div>
             </ui:fragment>
 
             <!-- ACCESS GRANTED -->
-            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital}">
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital or activeDocumentBean.viewManager.accessPermissionExternalResources}">
                 <div class="born-digital__box">
                 
                 <ui:fragment rendered="#{activeDocumentBean.viewManager.bornDigital}">
