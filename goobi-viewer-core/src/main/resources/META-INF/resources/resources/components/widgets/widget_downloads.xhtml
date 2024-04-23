@@ -281,6 +281,122 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+					<!-- PAGE RANGE DOWNLOADS -->
+					<ui:fragment
+						rendered="#{!activeDocumentBean.viewManager.bornDigital}">
+
+						<div
+							class="widget-downloads__page-range-downloads widget__badge-container">
+
+							<ui:fragment
+								rendered="#{navigationHelper.currentView == 'fulltext'
+												and (activeDocumentBean.viewManager.currentPage.altoAvailable
+												or activeDocumentBean.viewManager.currentPage.teiAvailable
+												or activeDocumentBean.viewManager.currentPage.displayFulltext)
+												or navigationHelper.currentView == 'object'
+												and (!activeDocumentBean.viewManager.bornDigital)}">
+
+								<!-- TITLE PAGE RANGE -->
+								<h3 id="titlePageRange"
+									class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget__downloads__page_range}</h3>
+
+								<!-- PDF (PAGE RANGE) -->
+								<ui:fragment
+									rendered="#{navigationHelper.currentView == 'object' and
+                                                     activeDocumentBean.viewManager.externalDownloadUrl == null and 
+                                                     activeDocumentBean.viewManager.currentPage.accessPermissionPdf}">
+									
+									<button href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
+										id="pdfPageRangeButton"
+										class="badge badge-dark widget-downloads__page-download-pdf-range widget-downloads__page-range-pdf-button"
+										title="#{msg.label__pdf_download_page_range}"
+										data-toggle="tooltip" data-placement="top"
+										data-trigger="hover" target="_blank" rel="nofollow noopener"
+										data-target="showPageRangeDownload"
+										aria-label="#{msg.image}: #{msg.label__pdf_download}"> <i
+										class="fa fa-file-pdf-o" aria-hidden="true"></i>
+										#{msg.label__pdf_download}
+									</button>
+									
+									
+									<div class="widget-downloads__page-range-downloads-box" data-target="pageRangeDownload">
+									
+										<div class="widget-downloads__page-range-downloads-inner">
+
+										<div class="widget-downloads__page-range-downloads-inputs-wrapper">
+											<div class="widget-downloads__page-range-downloads-inputs-wrapper-inner">
+												<!-- FROM -->
+												<div class="download-pdf-parts__select-from">
+													<div class="custom-control custom-control--select">
+								                        <h:selectOneMenu
+								                            id="selectPageFrom"
+								                            value="#{activeDocumentBean.viewManager.firstPdfPage}">
+								                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
+								                        </h:selectOneMenu>
+													</div>
+												</div>
+												<div class="download-pdf-parts__select-to">
+													<div class="custom-control custom-control--select">
+								                        <h:selectOneMenu
+								                            id="selectPageTo"
+								                            value="#{activeDocumentBean.viewManager.lastPdfPage}">
+								                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
+								                        </h:selectOneMenu>
+													</div>
+												</div>
+											</div>
+										</div>
+	
+										<a href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
+											id="pdfPageRangeLink"
+											class="badge badge-dark widget-downloads__page-download-pdf-range widget-downloads__page-range-pdf-link"
+											title="#{msg.label__pdf_download_page_range}"
+											data-toggle="tooltip" data-placement="top"
+											data-trigger="hover" target="_blank" rel="nofollow noopener"
+											aria-label="#{msg.image}: #{msg.label__pdf_download}"> <i
+											class="fa fa-file-pdf-o" aria-hidden="true"></i>
+											#{msg.downloadButton}
+										</a>
+
+
+
+										</div>
+									</div>
+									
+								</ui:fragment>
+
+							</ui:fragment>
+
+						</div>
+					</ui:fragment>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 					<!-- PAGE -->
 					<ui:fragment
 						rendered="#{!activeDocumentBean.viewManager.bornDigital 
@@ -523,6 +639,18 @@
 
 				</div>
 			</div>
+
+			<!--  Handling page range download buttons and inputs -->
+			<script>
+				$( '[data-target="showPageRangeDownload"]' ).on( "click", function() {
+					$(this).hide();
+					$( '[data-target="pageRangeDownload"]' ).show();
+					$( '[data-target="pageRangeDownload"]' ).addClass('-active');
+					$( '.widget-downloads__page-range-downloads-inputs-wrapper' ).slideDown('fast');
+					
+				});
+			</script>
+
 
 			<!-- Set up download modal for work and struct PDF -->
 			<script>
