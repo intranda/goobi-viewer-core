@@ -12,8 +12,8 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('bookmarks', false, true)}" />
-			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.admin__user_profile, request.contextPath.concat('/user/'), userBean.loggedIn ? 1 : -1)}" />			
-			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.bookmarkList_bookmarkLists,navigationHelper.applicationUrl.concat(userBean.loggedIn ? 'user/bookmarks' : 'bookmarks'),userBean.loggedIn ? 2 :  1)}" />
+			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('admin__user_profile', request.contextPath.concat('/user/'), userBean.loggedIn ? 1 : -1)}" />			
+			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('bookmarkList_bookmarkLists',navigationHelper.applicationUrl.concat(userBean.loggedIn ? 'user/bookmarks' : 'bookmarks'),userBean.loggedIn ? 2 :  1)}" />
 			<f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(bookmarkBean.currentBookmarkList.name, userBean.loggedIn ? 3 : 2)}" />
 		</f:metadata>
 	</ui:define>

@@ -183,6 +183,7 @@ public class ExternalFilesDownloader {
                     return new ZipUnpacker().extractZip(targetFolder, zis);
                 }
             default://assume normal file
+                prepareNewFolder(destination.getParent());
                 try (ProgressInputStream monitored = new ProgressInputStream(input, size, Optional.of(this.progressMonitor))) {
                     return writeFile(destination, monitored);
                 }

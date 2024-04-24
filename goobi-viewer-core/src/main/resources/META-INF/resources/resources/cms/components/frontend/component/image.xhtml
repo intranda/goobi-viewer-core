@@ -53,7 +53,7 @@
 				<!-- VIDEO FILE -->
 	            <ui:fragment rendered="#{cmsMediaBean.isVideo(cc.attrs.image)}">
 					<div class="content-component__video">
-						<video autoplay="autoplay" controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cc.attrs.image.name}">
+						<video controls="controls" class="video-file-element" poster="#{request.contextPath}#{navigationHelper.getResource('images/icons/video_placeholder.png')}" title="#{cc.attrs.image.name}">
 							<source src="#{cc.attrs.cmsContent.url}"/>
 						</video>
 					</div>

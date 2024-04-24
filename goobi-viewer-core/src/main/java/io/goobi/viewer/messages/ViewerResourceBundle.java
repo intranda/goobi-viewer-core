@@ -321,6 +321,10 @@ public class ViewerResourceBundle extends ResourceBundle {
         return ret;
     }
 
+    public String translate(String key, String... params) {
+        return getTranslationWithParameters(key, getLocale(), false, params);
+    }
+
     /**
      *
      * @param msg

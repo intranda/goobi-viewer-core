@@ -12,7 +12,7 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('searchlist', false, true)}" />
-<!--             <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.searchList,1)}" /> -->
+<!--             <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('searchList',1)}" /> -->
             <f:event type="preRenderView" listener="#{searchBean.resetCurrentHitIndex}" />
 <!--             <f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbsForSearchHits}" /> -->
         </f:metadata>

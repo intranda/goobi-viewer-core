@@ -24,10 +24,11 @@ package io.goobi.viewer.api.rest.v1.records;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_CMDI;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_MEDIA;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_SOURCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -44,8 +45,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
@@ -72,6 +71,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.swagger.v3.oas.annotations.Operation;
@@ -164,6 +164,46 @@ public class RecordFileResource {
         }
 
         boolean access = AccessConditionUtils.checkContentFileAccessPermission(pi, servletRequest).isGranted();
+        if (!access) {
+            throw new ServiceNotAllowedException("Access to source file " + filename + " not allowed");
+        }
+
+        try {
+            String contentType = Files.probeContentType(path);
+            logger.trace("content type: {}", contentType);
+            if (StringUtils.isNotBlank(contentType)) {
+                servletResponse.setContentType(contentType);
+            }
+            servletResponse.setHeader("Content-Disposition", new StringBuilder("attachment;filename=").append(filename).toString());
+            servletResponse.setHeader("Content-Length", String.valueOf(Files.size(path)));
+        } catch (IOException e) {
+            logger.error("Failed to probe file content type");
+        }
+
+        return out -> {
+            try (InputStream in = Files.newInputStream(path)) {
+                IOUtils.copy(in, out);
+            }
+        };
+    }
+
+    @GET
+    @javax.ws.rs.Path(RECORDS_FILES_MEDIA)
+    @Operation(tags = { "records" }, summary = "Get media files of record")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public StreamingOutput getMediaFile(
+            @Parameter(description = "Media file name") @PathParam("filename") String filename)
+            throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
+        if (!filename.equals(StringTools.stripJS(filename))) {
+            throw new ServiceNotAllowedException("Script detected in input");
+        }
+        Path path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getMediaFolder(), null, filename);
+        if (!Files.isRegularFile(path)) {
+            throw new ContentNotFoundException("Media file " + filename + " not found");
+        }
+
+        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, filename,
+                IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES).isGranted();
         if (!access) {
             throw new ServiceNotAllowedException("Access to source file " + filename + " not allowed");
         }
