@@ -59,6 +59,12 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     private String clientId;
     /** OAuth client secret. */
     private String clientSecret;
+    /** Token endpoint URI. */
+    private String tokenEndpoint = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL;
+    /** OpenID servlet URI. Not to be confused with <code>HttpAuthenticationProvider.redirectUrl</code> */
+    private String redirectionEndpoint = url + "/token";
+    /** Scope. */
+    private String scope = "openid email";
 
     private String oAuthState = null;
     private String oAuthAccessToken = null;
@@ -110,6 +116,60 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return clientSecret;
     }
 
+    /**
+     * @return the tokenEndpoint
+     */
+    public String getTokenEndpoint() {
+        return tokenEndpoint;
+    }
+
+    /**
+     * @param tokenEndpoint the tokenEndpoint to set
+     * @return this
+     */
+    public OpenIdProvider setTokenEndpoint(String tokenEndpoint) {
+        if (tokenEndpoint != null) {
+            this.tokenEndpoint = tokenEndpoint;
+        }
+        return this;
+    }
+
+    /**
+     * @return the redirectionEndpoint
+     */
+    public String getRedirectionEndpoint() {
+        return redirectionEndpoint;
+    }
+
+    /**
+     * @param redirectionEndpoint the redirectionEndpoint to set
+     * @return this
+     */
+    public OpenIdProvider setRedirectionEndpoint(String redirectionEndpoint) {
+        if (redirectionEndpoint != null) {
+            this.redirectionEndpoint = redirectionEndpoint;
+        }
+        return this;
+    }
+
+    /**
+     * @return the scope
+     */
+    public String getScope() {
+        return scope;
+    }
+
+    /**
+     * @param scope the scope to set
+     * @return this
+     */
+    public OpenIdProvider setScope(String scope) {
+        if (scope != null) {
+            this.scope = scope;
+        }
+        return this;
+    }
+
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#login(java.lang.String, java.lang.String)
      */
@@ -145,9 +205,9 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                     request = OAuthClientRequest.authorizationLocation(getUrl())
                             .setResponseType(ResponseType.CODE.name().toLowerCase())
                             .setClientId(getClientId())
-                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
+                            .setRedirectURI(redirectionEndpoint)
                             .setState(oAuthState)
-                            .setScope("email")
+                            .setScope(scope)
                             .buildQueryMessage();
                     break;
             }

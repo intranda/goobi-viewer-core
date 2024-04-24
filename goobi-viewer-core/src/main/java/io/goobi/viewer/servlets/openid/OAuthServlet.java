@@ -207,11 +207,11 @@ public class OAuthServlet extends HttpServlet {
                 break;
             default:
                 // Other providers
-                oAuthTokenRequest = OAuthClientRequest.tokenLocation(provider.getUrl() + "/access_token")
+                oAuthTokenRequest = OAuthClientRequest.tokenLocation(provider.getTokenEndpoint())
                         .setGrantType(GrantType.AUTHORIZATION_CODE)
                         .setClientId(provider.getClientId())
                         .setClientSecret(provider.getClientSecret())
-                        .setRedirectURI(ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/" + URL)
+                        .setRedirectURI(provider.getRedirectionEndpoint())
                         .setCode(oar.getCode())
                         .buildBodyMessage();
                 OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
