@@ -297,7 +297,7 @@ var viewerJS = ( function( viewer ) {
 			/* The manually determine when an item should show and hide a tool tip. */
 			$('[data-toggle="tooltip"]')
 			  // .attr("tabindex", 0)
-				.tooltip({ trigger: "manual" })
+			.tooltip({ trigger: "manual" })
 
 			.mouseenter(event => {
 				$('[data-toggle="tooltip"]').tooltip("hide");
