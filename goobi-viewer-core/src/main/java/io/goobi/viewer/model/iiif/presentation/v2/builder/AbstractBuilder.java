@@ -662,21 +662,22 @@ public abstract class AbstractBuilder {
      */
     public URI getManifestURI(String pi) {
 
+        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).build();
+        return getExternalManifestURI(pi).orElse(URI.create(urlString));
+    }
+
+    public Optional<URI> getExternalManifestURI(String pi) {
         if (this.config.useExternalManifestUrls()) {
             try {
                 Optional<URI> externalURI = readURIFromSolr(pi);
-                if (externalURI.isPresent()) {
-                    return externalURI.get();
-                }
+                return externalURI;
             } catch (PresentationException | IndexUnreachableException e) {
                 logger.warn("Error reading manifest url from for PI {}", pi);
             } catch (URISyntaxException e) {
                 logger.warn("Error reading external manifest uri from record {}: {}", pi, e.toString());
             }
         }
-
-        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).build();
-        return URI.create(urlString);
+        return Optional.empty();
     }
 
     private Optional<URI> readURIFromSolr(String pi) throws URISyntaxException, PresentationException, IndexUnreachableException {

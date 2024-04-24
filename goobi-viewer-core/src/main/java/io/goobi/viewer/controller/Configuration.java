@@ -4990,6 +4990,10 @@ public class Configuration extends AbstractConfiguration {
         return getLocalString("webapi.iiif.externalManifests.solrField", "");
     }
 
+    public String getExternalManifestSolrUrlTemplate() {
+        return getLocalString("webapi.iiif.externalManifests.url", "");
+    }
+
     /**
      * <p>
      * getIIIFMetadataFields.
