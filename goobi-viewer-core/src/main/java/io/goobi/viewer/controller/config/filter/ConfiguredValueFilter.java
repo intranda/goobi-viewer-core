@@ -21,13 +21,12 @@
  */
 package io.goobi.viewer.controller.config.filter;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.ImmutableNode;
+import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.model.variables.VariableReplacer;
 
@@ -35,22 +34,17 @@ import io.goobi.viewer.model.variables.VariableReplacer;
  * A configurable filter allowing passage to document entities (record, docStruct, page) which satisfy certain conditions The filter itself may
  * contain condition filters which determine if the filter should be applied to an entity
  */
-public class EntityFilter {
+public class ConfiguredValueFilter extends AbstractFilterConfiguration {
 
     /**
-     * Whether the filter should block or pass entities meeting its condition
-     */
-    private final FilterAction action;
-    /**
-     * The value to test. Shoud make use of {@link VariableReplacer} expressions
+     * The value to test. Shoud make use of {@link VariableReplacer} expressions. This may be left empty, in which case the filter
+     * 
      */
     private final String value;
     /**
      * A regex to test the value against. This may make use of {@link VariableReplacer} expressions
      */
     private final String matchRegex;
-
-    private final List<EntityFilter> filterConditions;
 
     /**
      * internal constructor
@@ -59,11 +53,10 @@ public class EntityFilter {
      * @param value the value to test
      * @param matchRegex a regex which must match the value parameter for the filter to match
      */
-    private EntityFilter(FilterAction action, String value, String matchRegex) {
-        this.action = action;
+    private ConfiguredValueFilter(FilterAction action, String value, String matchRegex) {
+        super(action);
         this.value = value;
         this.matchRegex = matchRegex;
-        this.filterConditions = new ArrayList<>();
     }
 
     /**
@@ -71,10 +64,10 @@ public class EntityFilter {
      * 
      * @param value the value to test
      * @param matchRegex a regex which must match the value parameter for the filter to match
-     * @return a new {@link EntityFilter}
+     * @return a new {@link ConfiguredValueFilter}
      */
-    public static EntityFilter getShowFilter(String value, String matchRegex) {
-        return new EntityFilter(FilterAction.SHOW, value, matchRegex);
+    public static ConfiguredValueFilter getShowFilter(String value, String matchRegex) {
+        return new ConfiguredValueFilter(FilterAction.SHOW, value, matchRegex);
     }
 
     /**
@@ -82,30 +75,28 @@ public class EntityFilter {
      * 
      * @param value the value to test
      * @param match a regex which must match the value parameter for the filter to match
-     * @return a new {@link EntityFilter}
+     * @return a new {@link ConfiguredValueFilter}
      */
-    public static EntityFilter getHideFilter(String value, String matchRegex) {
-        return new EntityFilter(FilterAction.SHOW, value, matchRegex);
+    public static ConfiguredValueFilter getHideFilter(String value, String matchRegex) {
+        return new ConfiguredValueFilter(FilterAction.HIDE, value, matchRegex);
     }
 
     /**
      * Create a new filter from a configuration block
      * 
      * @param config an xml configuration
-     * @return a new {@link EntityFilter}
+     * @return a new {@link ConfiguredValueFilter}
      * @throws ConfigurationException if the config is invalid
      */
-    public static EntityFilter fromConfiguration(HierarchicalConfiguration<ImmutableNode> config) throws ConfigurationException {
-        String action = config.getString("action", "SHOW");
-        String value = config.getString("value");
-        String match = config.getString("regex", "");
-        EntityFilter filter = FilterAction.getAction(action)
-                .map(fa -> new EntityFilter(fa, value, match))
+    public static ConfiguredValueFilter fromConfiguration(HierarchicalConfiguration<ImmutableNode> config) throws ConfigurationException {
+        String action = config.getString("[@action]", FilterAction.SHOW.name());
+        String value = config.getString("[@value]");
+        String match = config.getString("[@regex]", "");
+        ConfiguredValueFilter filter = FilterAction.getAction(action)
+                .map(fa -> new ConfiguredValueFilter(fa, value, match))
                 .orElseThrow(() -> new ConfigurationException("Not a valid filter action: " + action));
 
-        for (HierarchicalConfiguration<ImmutableNode> condition : config.configurationsAt("conditions.filter", false)) {
-            filter.addCondition(fromConfiguration(condition));
-        }
+        filter.addConditionFilters(config);
         return filter;
     }
 
@@ -118,11 +109,22 @@ public class EntityFilter {
      * @return whether conditions apply and the object represented by the variable replacer passes the filter
      */
     public boolean passes(VariableReplacer vr) {
+        if (StringUtils.isBlank(this.value)) {
+            throw new IllegalStateException("This filter has no ");
+        }
         if (this.applies(vr)) {
             return this.test(vr);
         } else {
             return true;
         }
+    }
+
+    /**
+     * alias for {@link #passes(VariableReplacer)}. The given value is ignored
+     */
+    @Override
+    public boolean passes(String value, VariableReplacer vr) {
+        return this.passes(vr);
     }
 
     /**
@@ -140,7 +142,8 @@ public class EntityFilter {
      * Test the match condition on a variable replacer
      * 
      * @param vr a variable replacer containing values to test
-     * @return whether the {@link EntityFilter#value} matches the {@link #matchRegex} if both are filled with values from the variable replacer
+     * @return whether the {@link ConfiguredValueFilter#value} matches the {@link #matchRegex} if both are filled with values from the variable
+     *         replacer
      */
     private boolean matches(VariableReplacer vr) {
         List<String> filledValues = vr.replace(this.value);
@@ -156,38 +159,12 @@ public class EntityFilter {
         return false;
     }
 
-    /**
-     * Test whether all conditions of this filter apply, if any
-     * 
-     * @param vr a variable replacer representing the object to test
-     * @return true if the {@link #filterConditions} all pass. If they don't the filter should not be applied
-     */
-    public boolean applies(VariableReplacer vr) {
-        return this.filterConditions.stream().allMatch(condition -> condition.passes(vr));
-    }
-
-    public void addCondition(EntityFilter condition) {
-        this.filterConditions.add(condition);
-    }
-
-    public FilterAction getAction() {
-        return action;
-    }
-
     public String getMatchRegex() {
         return matchRegex;
     }
 
     public String getValue() {
         return value;
-    }
-
-    public List<EntityFilter> getFilterConditions() {
-        return Collections.unmodifiableList(filterConditions);
-    }
-
-    public boolean passesOnMatch() {
-        return FilterAction.SHOW == this.action;
     }
 
 }
