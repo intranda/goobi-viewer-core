@@ -51,52 +51,52 @@ class CMSPageTest extends AbstractDatabaseEnabledTest {
     CMSTemplateManager templateManager;
     CMSPageContentManager contentManager;
     IDAO dao;
-    
+
     @BeforeEach
-    public void setUp() throws Exception { 
+    public void setUp() throws Exception {
         super.setUp();
         dao = DataManager.getInstance().getDao();
         templateManager = new CMSTemplateManager(componentTemplatesPath.toString(), null);
         contentManager = templateManager.getContentManager();// new CMSPageContentManager(componentTemplatesPath);
     }
-    
+
     @Test
     void testPersistPage() throws DAOException {
-                
+
         CMSPage page = new CMSPage();
         page.getTitleTranslations().setValue("Titel", Locale.ENGLISH);
         assertEquals("Titel", page.getTitle(Locale.ENGLISH));
-        
+
         assertTrue(dao.addCMSPage(page));
-        
+
         CMSPage loaded = dao.getCMSPage(page.getId());
-        
+
         assertEquals("Titel", loaded.getTitle(Locale.ENGLISH));
-        
+
         CMSPage cloned = new CMSPage(loaded);
-        
+
         assertEquals("Titel", cloned.getTitle(Locale.ENGLISH));
     }
-    
+
     @Test
     void testPersistPageWithContent() throws DAOException {
-                
+
         CMSPage page = new CMSPage();
         page.getTitleTranslations().setValue("Titel", Locale.ENGLISH);
-        
+
         CMSComponent textComponent = contentManager.getComponent("text").orElse(null);
         assertNotNull(textComponent);
         PersistentCMSComponent textComponentInPage = page.addComponent(textComponent);
         CMSShortTextContent textContent = (CMSShortTextContent) textComponentInPage.getContentItems().get(0);
         textContent.getText().setText("Entered Text", Locale.ENGLISH);
-        
+
         assertTrue(dao.addCMSPage(page));
         assertTrue(page.removeComponent(page.getAsCMSComponent(textComponentInPage)));
-        
+
         CMSPage loaded = dao.getCMSPage(page.getId());
         CMSPage cloned = new CMSPage(loaded);
-        
-        CMSShortTextContent clonedTextContent = (CMSShortTextContent)cloned.getPersistentComponents().get(0).getContentItems().get(0);
+
+        CMSShortTextContent clonedTextContent = (CMSShortTextContent) cloned.getPersistentComponents().get(0).getContentItems().get(0);
         assertEquals("Entered Text", clonedTextContent.getText().getText(Locale.ENGLISH));
     }
 
@@ -110,27 +110,25 @@ class CMSPageTest extends AbstractDatabaseEnabledTest {
         page.getTitleTranslations().setValue("Title", Locale.ENGLISH);
         page.addCategory(new CMSCategory("foo"));
         page.addCategory(new CMSCategory("bar"));
-        
+
         CMSComponent textComponent = contentManager.getComponent("text").orElse(null);
         assertNotNull(textComponent);
         PersistentCMSComponent textComponentInPage = page.addComponent(textComponent);
         CMSShortTextContent textContent = (CMSShortTextContent) textComponentInPage.getContentItems().get(0);
         textContent.getText().setText("Entered Text", Locale.ENGLISH);
-        
-        
+
         Document doc = page.exportAsXml();
         assertNotNull(doc);
         assertEquals("cmsPage", doc.getRootElement().getName());
         assertEquals("Title", doc.getRootElement().getChildText("title"));
-        
-        
+
         assertNotNull(doc.getRootElement().getChildText("categories"));
         List<Element> eleListCategory = doc.getRootElement().getChild("categories").getChildren("category");
         assertNotNull(eleListCategory);
         assertEquals(2, eleListCategory.size());
         assertEquals("foo", eleListCategory.get(0).getText());
         assertEquals("bar", eleListCategory.get(1).getText());
-        
+
         List<Element> eleListText = doc.getRootElement().getChildren("text");
         assertNotNull(eleListText);
         assertEquals(1, eleListText.size());

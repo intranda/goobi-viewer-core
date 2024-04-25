@@ -109,7 +109,6 @@ import io.goobi.viewer.model.metadata.ComplexMetadata;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataValue;
-import io.goobi.viewer.model.metadata.VariableReplacer;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessPermission;
@@ -122,6 +121,7 @@ import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
+import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.SelectPageItem;
@@ -1163,7 +1163,7 @@ public class ViewManager implements Serializable {
         return isHasPages() && isFilesOnly();
     }
 
-    public boolean isHasExternalResources() {
+    public boolean isHasExternalResources() throws IndexUnreachableException {
         return Optional.ofNullable(getExternalResourceUrls()).map(list -> !list.isEmpty()).orElse(false);
     }
 
@@ -4146,19 +4146,23 @@ public class ViewManager implements Serializable {
                 .collect(Collectors.toList());
     }
 
-    public List<String> getExternalResourceUrls() {
+    public List<String> getExternalResourceUrls() throws IndexUnreachableException {
         if (this.externalResourceUrls == null) {
             this.externalResourceUrls = loadExternalResourceUrls();
         }
         return this.externalResourceUrls;
     }
 
-    private List<String> loadExternalResourceUrls() {
+    private List<String> loadExternalResourceUrls() throws IndexUnreachableException {
         List<String> urlTemplates = DataManager.getInstance().getConfiguration().getExternalResourceUrlTemplates();
-        VariableReplacer vr = new VariableReplacer(getTopStructElement());
+        VariableReplacer vr = new VariableReplacer(this);
         return urlTemplates.stream()
                 .flatMap(templ -> vr.replace(templ).stream())
                 .filter(url -> ExternalFilesDownloader.resourceExists(url))
                 .toList();
+    }
+
+    public StructElement getAnchorStructElement() {
+        return anchorStructElement;
     }
 }

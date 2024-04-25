@@ -57,7 +57,6 @@ import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.controller.shell.ShellCommand;
-import io.goobi.viewer.controller.variablereplacer.VariableReplacer;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.MessageQueueException;
@@ -66,6 +65,7 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.mq.PullThemeHandler;
 import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.quartz.TaskTriggerStatus;
+import io.goobi.viewer.model.variables.VariableReplacer;
 
 @Named
 @ApplicationScoped
@@ -146,7 +146,10 @@ public class AdminDeveloperBean implements Serializable {
     }
 
     private static Path createZipFile(String createDeveloperPackageScriptPath) throws IOException, InterruptedException {
-        String commandString = new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(createDeveloperPackageScriptPath);
+        String commandString = new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(createDeveloperPackageScriptPath)
+                .stream()
+                .findFirst()
+                .orElse("");
         ShellCommand command = new ShellCommand(commandString.split("\\s+"));
         int ret = command.exec(CREATE_DEVELOPER_PACKAGE_TIMEOUT);
         String out = command.getOutput().trim();
