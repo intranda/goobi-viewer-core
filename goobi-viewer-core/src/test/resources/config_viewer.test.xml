@@ -950,7 +950,12 @@
 		<sidebarWidgetAdditionalFiles enabled="true">
 			<!-- hideFileRegex: If a regular expression is defined, files matching 
 				it are hidden from the widget display. The download is still possible. -->
-			<hideFileRegex>(wug_.*|AK_.*)</hideFileRegex>
+	    	<filter action="hide" regex="(wug_.*|AK_.*)"/>
+	    	<filter action="show" regex="{struct.MD_SHELFMARK}">
+	    		<conditions>
+	    			<filter action="show" regex="archive\.100uaghgw\.020volksliedarchiv.*" value="{record.DC}"/>
+	    		</conditions>
+	    	</filter>
 		</sidebarWidgetAdditionalFiles>
 	
 	    <!-- @enabled: If true, the sidebar term browsing widget it displayed. Default is true. -->

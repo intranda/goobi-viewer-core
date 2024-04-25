@@ -81,6 +81,7 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
 import io.goobi.viewer.exceptions.ArchiveException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -2934,14 +2935,15 @@ public class ViewManager implements Serializable {
      */
     private List<String> listDownloadableContent() throws PresentationException, IndexUnreachableException, DAOException, IOException {
         List<String> downloadFilenames = Collections.emptyList();
+        VariableReplacer vr = new VariableReplacer(this);
         Path sourceFileDir = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
         if (Files.exists(sourceFileDir) && AccessConditionUtils.checkContentFileAccessPermission(pi,
                 (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).isGranted()) {
-            String hideDownloadFilesRegex = DataManager.getInstance().getConfiguration().getHideDownloadFileRegex();
+            List<IFilterConfiguration> displayFilters = DataManager.getInstance().getConfiguration().getAdditionalFilesDisplayFilters();
             try (Stream<Path> files = Files.list(sourceFileDir)) {
                 Stream<String> filenames = files.map(path -> path.getFileName().toString());
-                if (StringUtils.isNotEmpty(hideDownloadFilesRegex)) {
-                    filenames = filenames.filter(filename -> !filename.matches(hideDownloadFilesRegex));
+                if (!displayFilters.isEmpty()) {
+                    filenames = filenames.filter(filename -> displayFilters.stream().allMatch(filter -> filter.passes(filename, vr)));
                 }
                 downloadFilenames = filenames.collect(Collectors.toList());
             }
