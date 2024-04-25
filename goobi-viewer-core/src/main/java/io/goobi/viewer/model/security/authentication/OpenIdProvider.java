@@ -322,7 +322,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                     user.setActive(true);
                     user.setEmail(email);
                     if (sub != null) {
-                        user.getOpenIdAccounts().add(sub);
+                        user.getOpenIdAccounts().add(comboSub);
                     }
                     logger.debug("Created new user.");
                 }
