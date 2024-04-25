@@ -214,8 +214,7 @@ public class OAuthServlet extends HttpServlet {
                         .setRedirectURI(provider.getRedirectionEndpoint())
                         .setCode(oar.getCode())
                         .buildBodyMessage();
-                OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
-                oAuthClient.accessToken(oAuthTokenRequest);
+                return doDefault(provider, oAuthTokenRequest, request, response);
         }
 
         return false;
@@ -292,6 +291,47 @@ public class OAuthServlet extends HttpServlet {
             }
         } catch (OAuthSystemException | OAuthProblemException e) {
             logger.error(e.getMessage(), e);
+            return false;
+        }
+
+        return false;
+    }
+
+    /**
+     * 
+     * @param provider
+     * @param oAuthTokenRequest
+     * @param request
+     * @param response
+     * @return true if authentication successful; false otherwise
+     * @throws OAuthSystemException
+     * @throws OAuthProblemException
+     */
+    static boolean doDefault(OpenIdProvider provider, OAuthClientRequest oAuthTokenRequest, HttpServletRequest request,
+            HttpServletResponse response) {
+        OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
+        try {
+            OAuthAccessTokenResponse oAuthTokenResponse = oAuthClient.accessToken(oAuthTokenRequest);
+            if (oAuthTokenResponse != null) {
+                logger.trace("OPENID - oAuthTokenResponse class: {}", oAuthTokenResponse.getClass());
+                TokenValidator tv = new TokenValidator();
+                tv.validate(oAuthTokenResponse);
+                provider.setoAuthAccessToken(oAuthTokenResponse.getAccessToken());
+                logger.trace("OPENID - token response body:\n{}", oAuthTokenResponse.getBody());
+                String idTokenEncoded = (oAuthTokenResponse.getParam("id_token"));
+                String[] idTokenEncodedSplit = idTokenEncoded.split("[.]");
+                if (idTokenEncodedSplit.length != 3) {
+                    logger.error("Wrong number of segments in id_token. Expected 3, found {}", idTokenEncodedSplit.length);
+                    return false;
+                }
+                String payload = new String(new Base64(true).decode(idTokenEncodedSplit[1]), StandardCharsets.UTF_8);
+                JSONTokener tokener = new JSONTokener(payload);
+                JSONObject jsonPayload = new JSONObject(tokener);
+                redirected = provider.completeLogin(jsonPayload, request, response);
+                return true;
+            }
+        } catch (OAuthSystemException | OAuthProblemException e) {
+            logger.error("OPENID - Error {}", e.getMessage(), e);
             return false;
         }
 
