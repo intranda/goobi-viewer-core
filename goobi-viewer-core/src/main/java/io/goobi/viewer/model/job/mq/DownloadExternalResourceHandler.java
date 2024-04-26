@@ -111,8 +111,8 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
             }
 
         } catch (PresentationException | IndexUnreachableException | IOException | URISyntaxException e) {
-            logger.error("Error downloading resouce: Cannot locate url {}", url);
-            storeError("Error downloading resouce: Cannot locate url " + url, url, messageId);
+            logger.error("Error downloading resouce from url {}: {}", url, e.toString());
+            storeError("Error downloading resouce from url " + url + ": " + e.toString(), url, messageId);
             return MessageStatus.ERROR;
         } catch (MessageQueueException e) {
             //error in #triggerDeletion

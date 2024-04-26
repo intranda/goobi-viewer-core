@@ -31,7 +31,13 @@ import org.json.JSONObject;
 
 import io.goobi.viewer.websockets.DownloadTaskEndpoint.SocketMessage;
 
-public class JsonObjectSignatureBuilder {
+public final class JsonObjectSignatureBuilder {
+
+    /**
+     * Hidden constructor. This class should not be instantiated
+     */
+    private JsonObjectSignatureBuilder() {
+    }
 
     public static String getPropertiesAsJSON(Class<?> clazz) {
         Map<String, String> properties = listProperties(clazz);

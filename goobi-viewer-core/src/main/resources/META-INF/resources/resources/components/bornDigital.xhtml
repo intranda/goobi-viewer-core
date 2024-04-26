@@ -13,13 +13,15 @@
             <h2 ><h:outputText value="#{msg.bornDigital_fileList}" /></h2>
             
             <!-- ACCESS DENIED -->
-            <ui:fragment rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital}">
+            <ui:fragment rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital and !activeDocumentBean.viewManager.accessPermissionExternalResources}">
                 <div class="born-digital__no-access-box"><p><h:outputText value="#{msg.bornDigital_accessConditionText}" escape="false" /></p></div>
             </ui:fragment>
 
             <!-- ACCESS GRANTED -->
-            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital}">
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital or activeDocumentBean.viewManager.accessPermissionExternalResources}">
                 <div class="born-digital__box">
+                
+                <ui:fragment rendered="#{activeDocumentBean.viewManager.bornDigital}">
                     <div class="born-digital__head-wrapper">
                 		<div class="born-digital__head">
                 			<span>#{msg.label__born_digital__filename}</span>
@@ -74,8 +76,9 @@
 		                    </div>
 	                    </ui:repeat>
                     </div>
+                    </ui:fragment>
                     
-					<ui:fragment rendered="#{not empty activeDocumentBean.externalResourceUrls}">
+					<ui:fragment rendered="#{activeDocumentBean.viewManager.hasExternalResources}">
 						<div class="download-external-resource__wrapper">
 							<div class="download-external-resource__heading">#{msg.bornDigital_external_resources}</div>
 				            <ui:include src="/resources/includes/metadata/externalResourceDownload.xhtml"></ui:include>

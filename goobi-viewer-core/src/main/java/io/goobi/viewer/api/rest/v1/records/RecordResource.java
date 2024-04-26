@@ -50,6 +50,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -294,6 +295,17 @@ public class RecordResource {
             DAOException {
         IIIFPresentation2ResourceBuilder b = new IIIFPresentation2ResourceBuilder(urls, servletRequest);
         BuildMode buildMode = getBuildeMode(mode);
+        if (BuildMode.IIIF == buildMode) {
+            try {
+                Optional<URI> forwardURI = b.getManifestBuilder().getExternalManifestURI(pi);
+                if (forwardURI.isPresent()) {
+                    servletResponse.sendRedirect(forwardURI.get().toString());
+                    return null;
+                }
+            } catch (IOException e) {
+                logger.error("Error forwarding manifest url", e);
+            }
+        }
         return b.getManifest(pi, Collections.emptyList(), buildMode);
     }
 

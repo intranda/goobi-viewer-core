@@ -67,7 +67,7 @@
         	global: {
         		divId: "imageMap",
         		bottomMargin: () => #{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)},
-        		adaptContainerHeight: #{activeDocumentBean.viewManager.currentPage.adaptImageViewHeight},
+        		adaptContainerHeight: true,
         		persistZoom: #{configurationBean.rememberImageZoom},
         		persistRotation: #{configurationBean.rememberImageRotation},
         		persistenceId: "#{activeDocumentBean.topDocumentIddoc}" + "_" + "#{navigationHelper.currentPage}",
@@ -223,6 +223,15 @@
 			
 			if(viewImage.config.global.navigator.show) {				
 	       	 	viewImage.observables.viewerOpen.subscribe(() => {
+	       	 		let size = viewImage.getImageInfo().map(source => [source.tileSource.width, source.tileSource.height])[0];
+	       	 		let adaptionThresholds = #{activeDocumentBean.viewManager.currentPage.imageHeightRationThresholds};
+	       	 		//console.log("adapt image height ", size, adaptionThresholds);
+	       	 		if(size && size.length > 0 && adaptionThresholds && adaptionThresholds.length > 1) {
+		       	 		let sizeRatio = size[1]/size[0]; // height/width
+		       	 		if(sizeRatio < adaptionThresholds[0] || sizeRatio > adaptionThresholds[1]) {
+			       	 		viewImage.config.global.adaptContainerHeight = false;		       	 			
+		       	 		}
+	       	 		}
 	       	 		viewImage.viewer.navigator.element.style.marginBottom = (configViewer.global.bottomMargin()-5) + "px";
 	       	 	});
 			}
