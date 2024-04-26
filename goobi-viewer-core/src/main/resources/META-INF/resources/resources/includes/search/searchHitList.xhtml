@@ -238,13 +238,19 @@
 
     <script type="text/javascript">
 
+    	var cmsPageId = '#{cmsPage.id}';
+    
+		if (cmsPageId != '') {
+	    	var cmsSearchCustomView = true;
+	        var cmsSearchViewlistStyleID = 'cmsSearchView-#{cmsPage.id}';
+		};
+
         $( document ).ready( function() {
             var searchSortingDropdownConfig = {};
             var searchListConfig = {
         		listStyle: "#{listStyle}",
         		maxChildHitsToRenderOnStart: #{configurationBean.searchChildHitsInitialLoadLimit},
             };
-            
              viewerJS.searchList.init( searchListConfig ); 
         } );
                         
@@ -252,5 +258,5 @@
             var stackedThumbnailsConfig = {};
             viewerJS.stackedThumbnails.init( stackedThumbnailsConfig );
         } );    
-    </script>
+    </script> 
 </ui:composition>
