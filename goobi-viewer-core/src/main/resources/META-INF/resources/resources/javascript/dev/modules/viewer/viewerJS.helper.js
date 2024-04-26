@@ -285,15 +285,56 @@ var viewerJS = ( function( viewer ) {
         	    console.log( 'EXECUTE: viewerJS.helper.initBsFeatures' );
             }
         	
-        	// (re)-enable BS tooltips
-        	$( '.tooltip' ).remove();
-	    	$( '[data-toggle="tooltip"]' ).tooltip('dispose');
-            $( '[data-toggle="tooltip"]' ).tooltip( {
-                trigger : 'hover'
-            } );
+//        	// (re)-enable BS tooltips
+//        	$( '.tooltip' ).remove();
+//	    	$( '[data-toggle="tooltip"]' ).tooltip('dispose');
+//            $( '[data-toggle="tooltip"]' ).tooltip( {
+//                trigger : 'hover'
+//            } );
+            
+            // (re)-enable BS tooltips
+            
+			/* The manually determine when an item should show and hide a tool tip. */
+			$('[data-toggle="tooltip"]')
+			  // .attr("tabindex", 0)
+			.tooltip({ trigger: "manual" })
+
+			.mouseenter(event => {
+				$('[data-toggle="tooltip"]').tooltip("hide");
+				$(event.currentTarget).tooltip("show");
+				$(".tooltip").on("mouseleave", function() {
+					$(event.currentTarget).tooltip("hide");
+				});
+			})
+			
+			.mouseleave(event => {
+				setTimeout(() => {
+					if (!$(".tooltip:hover").length) $(event.currentTarget).tooltip("hide");
+				}, 100);
+			})
+			
+			// show tooltips on (keyboard) focus
+			.focus(event => {
+				$(event.currentTarget).tooltip("show");
+			})
+			.blur(event => {
+				$(event.currentTarget).tooltip("hide");
+			});
+			
+			
+			/* Listen for the "escape key" so tool tips can easily be hidden */
+			$("body").keydown(event => {
+			  if (event.keyCode === 27) {
+			    $('[data-toggle="tooltip"]').tooltip("hide");
+			  }
+			});
+            
+            
             if ( window.matchMedia( '(max-width: 768px)' ).matches ) {
             	$( '[data-toggle="tooltip"]' ).tooltip( 'dispose' );
             }
+            
+            
 
             // enable bootstrap popovers
             $( '[data-toggle="popover"]' ).popover( {

@@ -166,13 +166,18 @@ public class GeoMapBean implements Serializable, IPolyglott {
         } else {
             Messages.error("notify__save_map__error");
         }
-        updateGeoMapUpdateTask();
+        try {
+            GeoMapUpdateHandler.updateMapInCache(currentMap);
+        } catch (PresentationException e) {
+            logger.error("Error updateing geomap cache: ", e);
+        }
         this.loadedMaps = null;
         if (redirect) {
             PrettyUrlTools.redirectToUrl(PrettyUrlTools.getAbsolutePageUrl("adminCmsGeoMapEdit", this.currentMap.getId()));
         }
     }
 
+    @Deprecated(forRemoval = true)
     private void updateGeoMapUpdateTask() {
         Object o = BeanUtils.getServletContext().getAttribute(QuartzListener.QUARTZ_LISTENER_CONTEXT_ATTRIBUTE);
         if (o instanceof QuartzListener) {

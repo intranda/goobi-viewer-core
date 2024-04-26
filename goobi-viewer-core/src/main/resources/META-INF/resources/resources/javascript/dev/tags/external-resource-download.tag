@@ -8,7 +8,9 @@
 		</div>
 		<div class="download-external-resource__inner-wrapper {isFinished(url) ? '' : '-active'}">
 			<span class="download-external-resource__label">{url}</span>
-			<button class="download-external-resource__order download-external-resource__button btn btn--full {isRequested(url)|isError(url)|isFinished(url) ? '' : '-active'}" onclick="{startDownloadTask}">{msg.downloadButton}</button>
+			<div class="download-external-resource__button-wrapper">
+				<button class="download-external-resource__order download-external-resource__button btn btn--full {isRequested(url)|isError(url)|isFinished(url) ? '' : '-active'}" onclick="{startDownloadTask}">{msg.downloadButton}</button>
+			</div>
 			<div class="download-external-resource__waiting_animation {isWaiting(url) ? '-active' : ''}">
 				<img src="{preloader}" class="img-responsive"
 					alt="{msg.action__external_files__download_in_queue}"

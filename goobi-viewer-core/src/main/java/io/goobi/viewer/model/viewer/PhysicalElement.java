@@ -62,7 +62,6 @@ import io.goobi.viewer.controller.FileSizeCalculator;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.controller.imaging.PdfHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -118,6 +117,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /** Physical ID from the METS file. */
     private final String physId;
     private final String filePath;
+    private String filePathTiff;
+    private String filePathJpeg;
     private String fileName;
     private String fileIdRoot;
     private long fileSize = 0;
@@ -319,9 +320,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                     fileName = determineFileName(filePath);
                 }
                 String localFilename = fileName;
-
-                PdfHandler pdfHandler = BeanUtils.getImageDeliveryBean().getPdf();
-                return pdfHandler.getPdfUrl(pi, localFilename);
+                return getMediaUrl(localFilename);
+            //                PdfHandler pdfHandler = BeanUtils.getImageDeliveryBean().getPdf();
+            //                return pdfHandler.getPdfUrl(pi, localFilename);
             case SANDBOXED_HTML:
                 return getSandboxedUrl();
             default:
@@ -442,6 +443,26 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * 
+     * @return filePath if mime type is image; alternative file path otherwise
+     * @should return filePath if mime type image
+     * @should return tiff if available
+     * @should return jpeg if availabel
+     */
+    public String getImageFilepath() {
+        if (!BaseMimeType.IMAGE.name().equals(getBaseMimeType())) {
+            if (filePathTiff != null) {
+                return filePathTiff;
+            }
+            if (filePathJpeg != null) {
+                return filePathJpeg;
+            }
+        }
+
+        return getFilepath();
+    }
+
+    /**
      * <p>
      * getFilepath.
      * </p>
@@ -450,6 +471,38 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public String getFilepath() {
         return filePath;
+    }
+
+    /**
+     * @return the filePathTiff
+     */
+    public String getFilePathTiff() {
+        return filePathTiff;
+    }
+
+    /**
+     * @param filePathTiff the filePathTiff to set
+     * @return this
+     */
+    public PhysicalElement setFilePathTiff(String filePathTiff) {
+        this.filePathTiff = filePathTiff;
+        return this;
+    }
+
+    /**
+     * @return the filePathJpeg
+     */
+    public String getFilePathJpeg() {
+        return filePathJpeg;
+    }
+
+    /**
+     * @param filePathJpeg the filePathJpeg to set
+     * @return this
+     */
+    public PhysicalElement setFilePathJpeg(String filePathJpeg) {
+        this.filePathJpeg = filePathJpeg;
+        return this;
     }
 
     /**
@@ -1745,28 +1798,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return DataManager.getInstance().getConfiguration().isPagePdfEnabled() && isAccessPermissionPdf();
     }
 
-    /**
-     * <p>
-     * isAdaptImageViewHeight.
-     * </p>
-     *
-     * @return false if {@link Configuration#isLimitImageHeight} returns true and the image side ratio (width/height) is below the lower or above the
-     *         upper threshold Otherwise return true
-     */
-    public boolean isAdaptImageViewHeight() {
-        float ratio = getImageWidth() / (float) getImageHeight();
-        //if dimensions cannot be determined (usually widht, height == 0), then return true
-        if (Float.isNaN(ratio) || Float.isInfinite(ratio)) {
-            return true;
-        }
+    public List<Float> getImageHeightRationThresholds() {
         float lowerThreshold = DataManager.getInstance().getConfiguration().getLimitImageHeightLowerRatioThreshold();
         float upperThreshold = DataManager.getInstance().getConfiguration().getLimitImageHeightUpperRatioThreshold();
-
-        if (DataManager.getInstance().getConfiguration().isLimitImageHeight()) {
-            return ratio > lowerThreshold && ratio < upperThreshold;
-        }
-
-        return true;
+        return List.of(lowerThreshold, upperThreshold);
     }
 
     /**

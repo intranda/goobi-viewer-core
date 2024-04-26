@@ -117,13 +117,14 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD = "/resources/{taskId}/{path: .+}";
     public static final String RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD_PATH = "/resources/{taskId}/{path}";
 
-
     public static final String RECORDS_FILES_SOURCE = "/source/{filename}";
+    public static final String RECORDS_FILES_MEDIA = "/media/{filename}";
     public static final String RECORDS_FILES_AUDIO = "/audio/{mimetype}/{filename}";
     public static final String RECORDS_FILES_VIDEO = "/video/{mimetype}/{filename}";
 
     public static final String RECORDS_FILES_IMAGE = "/records/{pi}/files/images/{filename}";
     public static final String RECORDS_FILES_IMAGE_PDF = "/full.pdf";
+    public static final String RECORDS_FILES_IMAGE_EPUB = "/full.epub";
     public static final String RECORDS_FILES_IMAGE_INFO = "/info.json";
     public static final String RECORDS_FILES_IMAGE_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
 

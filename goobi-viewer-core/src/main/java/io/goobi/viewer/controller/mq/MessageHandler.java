@@ -26,7 +26,8 @@ public interface MessageHandler<V> {
     /**
      * call this method to execute the ticket
      * 
-     * @param ticket
+     * @param ticket The ticket to handle
+     * @param queueManager reference to to manage the queue
      * @return V
      */
 

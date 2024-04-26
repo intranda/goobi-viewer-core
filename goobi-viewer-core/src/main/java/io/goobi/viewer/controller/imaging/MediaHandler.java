@@ -70,7 +70,7 @@ public class MediaHandler {
             } else if (type.equalsIgnoreCase("video")) {
                 return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_VIDEO).params(pi, format, filename).build();
             } else {
-                throw new IllegalRequestException("Unknown media type " + type);
+                return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_MEDIA).params(pi, filename).build();
             }
         }
 

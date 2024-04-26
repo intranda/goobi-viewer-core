@@ -13,7 +13,7 @@
 
 	<composite:implementation>
 		<ui:fragment
-			rendered="#{configurationBean.displaySidebarWidgetUsage and !activeDocumentBean.group and (!activeDocumentBean.viewManager.bornDigital || activeDocumentBean.viewManager.displayContentDownloadMenu)}">
+			rendered="#{configurationBean.displaySidebarWidgetUsage and !activeDocumentBean.group and ((activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.bornDigital) || activeDocumentBean.viewManager.displayContentDownloadMenu)}">
 			<div id="widgetDownloads" class="widget widget-downloads">
 
 				<div class="widget-downloads__topbar">
@@ -259,7 +259,7 @@
                             <ui:fragment
                                 rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly and navigationHelper.currentView != 'fulltext'}">                     
                                     <a
-                                        href="#{request.contextPath}/mirador/?pi=#{activeDocumentBean.persistentIdentifier}&amp;page=1" 
+                                        href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifManifest}&amp;page=1" 
                                         id="mirador" 
                                         class="badge badge-dark widget-usage__work-link-mirador-viewer" 
                                         title="#{msg.action__view_in_mirador__tooltip}"
@@ -498,7 +498,6 @@
 							</div>
 						</div>
 					</ui:fragment>
-					
 					
 				<!-- INTEGRATED WIDGET ADDITIONAL FILES -->
 		    	<ui:fragment rendered="#{activeDocumentBean.viewManager.displayContentDownloadMenu}">

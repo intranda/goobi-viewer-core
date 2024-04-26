@@ -748,13 +748,13 @@ public class ThumbnailHandler {
                 thumbnailUrl = page.getFilepath();
                 break;
             case "video", "text":
-                thumbnailUrl = page.getFilepath();
+                thumbnailUrl = page.getImageFilepath();
                 if (StringUtils.isEmpty(thumbnailUrl)) {
                     thumbnailUrl = getThumbnailPath(VIDEO_THUMB).toString();
                 }
                 break;
             case "audio":
-                thumbnailUrl = page.getFilepath();
+                thumbnailUrl = page.getImageFilepath();
                 if (StringUtils.isEmpty(thumbnailUrl)) {
                     thumbnailUrl = getThumbnailPath(AUDIO_THUMB).toString();
                 }
@@ -865,6 +865,7 @@ public class ThumbnailHandler {
                 case "application":
                     switch (mimeType) {
                         case "application/pdf":
+                        case "application/epub+zip":
                             ret = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
                             break;
                         case "application/object":
@@ -873,6 +874,10 @@ public class ThumbnailHandler {
                         default:
                             break;
                     }
+                    break;
+                case "":
+                case "unknown": //no mimetype
+                    ret = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
                     break;
                 case "object":
                     ret = getThumbnailPath(OBJECT_3D_THUMB).toString();

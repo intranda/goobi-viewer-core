@@ -128,6 +128,7 @@ public final class AccessConditionUtils {
             case "ocrdump":
                 return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
             case "pdf":
+            case "epub":
                 return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
             case "video":
                 return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_VIDEO);
@@ -238,6 +239,7 @@ public final class AccessConditionUtils {
             case "gltf":
             case "glb":
             case "pdf":
+            case "epub":
                 sbQuery.append(" +").append(useFileField).append(":\"").append(simpleFileName).append('"');
                 break;
             default:

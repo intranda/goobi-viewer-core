@@ -21,25 +21,18 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Set;
-
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.apache.logging.log4j.Logger;
-import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ContextMocker;
 
 class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -78,12 +71,11 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    void isAdaptImageViewHeight_test() {
+    void getImageHeightRationThresholds_test() {
         PhysicalElement page =
                 new PhysicalElement("PHYS_0001", "00000001.tif", 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
-        Assertions.assertEquals(0, page.getImageWidth());
-        Assertions.assertEquals(0, page.getImageHeight());
-        Assertions.assertTrue(page.isAdaptImageViewHeight());
+        Assertions.assertEquals(0.2f, page.getImageHeightRationThresholds().get(0));
+        Assertions.assertEquals(2f, page.getImageHeightRationThresholds().get(1));
     }
 
     /**
@@ -133,7 +125,8 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(BaseMimeType.VIDEO.getName(), new PhysicalElementBuilder().setMimeType("video/webm").build().getBaseMimeType());
         Assertions.assertEquals(BaseMimeType.APPLICATION.getName(),
                 new PhysicalElementBuilder().setMimeType("application/pdf").build().getBaseMimeType());
-        Assertions.assertEquals(BaseMimeType.SANDBOXED_HTML.getName(), new PhysicalElementBuilder().setMimeType("text/html").build().getBaseMimeType());
+        Assertions.assertEquals(BaseMimeType.SANDBOXED_HTML.getName(),
+                new PhysicalElementBuilder().setMimeType("text/html").build().getBaseMimeType());
         Assertions.assertEquals(BaseMimeType.MODEL.getName(), new PhysicalElementBuilder().setMimeType("model/gltf+json").build().getBaseMimeType());
         Assertions.assertEquals(BaseMimeType.MODEL.getName(), new PhysicalElementBuilder().setMimeType("model/object").build().getBaseMimeType());
     }
@@ -147,4 +140,32 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(BaseMimeType.IMAGE.getName(), new PhysicalElementBuilder().setMimeType("foo/bar").build().getBaseMimeType());
     }
 
+    /**
+     * @see PhysicalElement#getImageFilepath()
+     * @verifies return filePath if mime type image
+     */
+    @Test
+    void getImageFilepath_shouldReturnImageIfBaseMimeTypeNotFound() throws Exception {
+        Assertions.assertEquals("001.tif", new PhysicalElementBuilder().setMimeType("image/tiff").setFilePath("001.tif").build().getImageFilepath());
+    }
+
+    /**
+     * @see PhysicalElement#getImageFilepath()
+     * @verifies return tiff if available
+     */
+    @Test
+    void getImageFilepath_shouldReturnTiffIfAvailable() throws Exception {
+        Assertions.assertEquals("001.tif",
+                new PhysicalElementBuilder().setMimeType("audio/mpeg").setFilePath("001.mp3").build().setFilePathTiff("001.tif").getImageFilepath());
+    }
+
+    /**
+     * @see PhysicalElement#getImageFilepath()
+     * @verifies return jpeg if available
+     */
+    @Test
+    void getImageFilepath_shouldReturnJpegIfAvailable() throws Exception {
+        Assertions.assertEquals("001.jpg",
+                new PhysicalElementBuilder().setMimeType("video/mpeg").setFilePath("001.mp4").build().setFilePathTiff("001.jpg").getImageFilepath());
+    }
 }

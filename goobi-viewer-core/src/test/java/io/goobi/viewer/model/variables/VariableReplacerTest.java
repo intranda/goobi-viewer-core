@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.metadata;
+package io.goobi.viewer.model.variables;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,6 +30,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.model.viewer.StructElement;
 
 class VariableReplacerTest {
@@ -40,12 +41,32 @@ class VariableReplacerTest {
             "EMOTION", List.of("pleasure", "honor", "disappointment"),
             "MD_PRONOUN", List.of("you", "her", "them"));
 
+    private static final String PULL_THEME = "{config-folder-path}/script_theme-pull.sh {theme-path}";
+    private static final String CREATE_DEVELOPER_PACKAGE = "{config-folder-path}/script_create_package.sh viewer {base-path} /var/www {solr-url}";
+
+    @Test
+    void test_replaceConfig() {
+        Configuration config = new Configuration("config_viewer_developer.xml");
+        VariableReplacer vr = new VariableReplacer(config);
+
+        String pullTheme = vr.replace(PULL_THEME).get(0);
+        assertEquals(
+                "/opt/digiverso/viewer/config/script_theme-pull.sh "
+                        + "/opt/digiverso/goobi-viewer-theme-test/goobi-viewer-theme-test/WebContent/resources/themes/",
+                pullTheme);
+
+        String createDeveloperPackage = vr.replace(CREATE_DEVELOPER_PACKAGE).get(0);
+        assertEquals(
+                "/opt/digiverso/viewer/config/script_create_package.sh viewer /opt/digiverso/viewer /var/www http://localhost:8983/solr/collection2",
+                createDeveloperPackage);
+
+    }
+
     @Test
     void test() {
         StructElement struct = Mockito.mock(StructElement.class);
-        Mockito.when(struct.getMetadataValues(Mockito.anyString())).thenAnswer(arg -> {
-            String s = arg.getArgument(0, String.class);
-            return METADATA_MAP.get(s);
+        Mockito.when(struct.getMetadataFields()).thenAnswer(arg -> {
+            return METADATA_MAP;
         });
         VariableReplacer replacer = new VariableReplacer(struct);
         List<String> phrases = replacer.replace(phraseTemplate);

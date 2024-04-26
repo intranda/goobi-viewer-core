@@ -83,7 +83,6 @@ import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
-import io.goobi.viewer.model.files.external.ExternalFilesDownloader;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.job.download.EPUBDownloadJob;
@@ -95,7 +94,6 @@ import io.goobi.viewer.model.maps.RecordGeoMap;
 import io.goobi.viewer.model.metadata.ComplexMetadataContainer;
 import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.model.metadata.RelationshipMetadataContainer;
-import io.goobi.viewer.model.metadata.VariableReplacer;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
@@ -195,8 +193,6 @@ public class ActiveDocumentBean implements Serializable {
     /* Next docstruct URL cache. TODO Implement differently once other views beside full-screen are used. */
     private Map<String, String> nextDocstructUrlCache = new HashMap<>();
 
-    private List<String> externalResourceUrls = null;
-
     /**
      * Empty constructor.
      */
@@ -270,7 +266,6 @@ public class ActiveDocumentBean implements Serializable {
             prevDocstructUrlCache.clear();
             nextDocstructUrlCache.clear();
             lastReceivedIdentifier = null;
-            externalResourceUrls = null;
 
             // Any cleanup modules need to do when a record is unloaded
             for (IModule module : DataManager.getInstance().getModules()) {
@@ -2722,22 +2717,6 @@ public class ActiveDocumentBean implements Serializable {
 
     public List<String> getGeomapFilters() {
         return List.of("MD_METADATATYPE", "MD_GENRE").stream().map(s -> "'" + s + "'").collect(Collectors.toList());
-    }
-
-    public List<String> getExternalResourceUrls() {
-        if (this.externalResourceUrls == null) {
-            this.externalResourceUrls = loadExternalResourceUrls();
-        }
-        return this.externalResourceUrls;
-    }
-
-    private List<String> loadExternalResourceUrls() {
-        List<String> urlTemplates = DataManager.getInstance().getConfiguration().getExternalResourceUrlTemplates();
-        VariableReplacer vr = new VariableReplacer(getTopDocument());
-        return urlTemplates.stream()
-                .flatMap(templ -> vr.replace(templ).stream())
-                .filter(url -> ExternalFilesDownloader.resourceExists(url))
-                .toList();
     }
 
 }
