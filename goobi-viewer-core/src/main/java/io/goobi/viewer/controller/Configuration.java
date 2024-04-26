@@ -170,9 +170,7 @@ public class Configuration extends AbstractConfiguration {
 
                         @Override
                         public void onEvent(Event event) {
-                            if (builder.getReloadingController().checkForReloading(null)) {
-                                //
-                            }
+                            builder.getReloadingController().checkForReloading(null);
                         }
                     });
         } else {
@@ -200,9 +198,7 @@ public class Configuration extends AbstractConfiguration {
 
                         @Override
                         public void onEvent(Event event) {
-                            if (builderLocal.getReloadingController().checkForReloading(null)) {
-                                //
-                            }
+                            builderLocal.getReloadingController().checkForReloading(null);
                         }
                     });
         }
@@ -3912,18 +3908,14 @@ public class Configuration extends AbstractConfiguration {
 
             if (pageType != null) {
                 List<Object> views = subConfig.getList("useFor.view");
-                if (views.isEmpty() || views.contains(pageType.name()) || views.contains(pageType.getName())) {
-                    //match
-                } else {
+                if (!views.isEmpty() && !views.contains(pageType.name()) && !views.contains(pageType.getName())) {
                     continue;
                 }
             }
 
             if (imageType != null && imageType.getFormat() != null) {
                 List<Object> mimeTypes = subConfig.getList("useFor.mimeType");
-                if (mimeTypes.isEmpty() || mimeTypes.contains(imageType.getFormat().getMimeType())) {
-                    //match
-                } else {
+                if (!mimeTypes.isEmpty() && !mimeTypes.contains(imageType.getFormat().getMimeType())) {
                     continue;
                 }
             }

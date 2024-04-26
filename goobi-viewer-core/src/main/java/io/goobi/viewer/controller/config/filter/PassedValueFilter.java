@@ -33,7 +33,7 @@ import io.goobi.viewer.model.variables.VariableReplacer;
  * A configurable filter allowing passage to document entities (record, docStruct, page) which satisfy certain conditions The filter itself may
  * contain condition filters which determine if the filter should be applied to an entity
  */
-public class PassedValueFilter extends AbstractFilterConfiguration {
+public final class PassedValueFilter extends AbstractFilterConfiguration {
 
     /**
      * A regex to test the value against. This may make use of {@link VariableReplacer} expressions
@@ -44,7 +44,6 @@ public class PassedValueFilter extends AbstractFilterConfiguration {
      * internal constructor
      * 
      * @param action whether to pass or block matching entities
-     * @param value the value to test
      * @param matchRegex a regex which must match the value parameter for the filter to match
      */
     private PassedValueFilter(FilterAction action, String matchRegex) {
@@ -55,7 +54,6 @@ public class PassedValueFilter extends AbstractFilterConfiguration {
     /**
      * get a filter which passes all matches
      * 
-     * @param value the value to test
      * @param matchRegex a regex which must match the value parameter for the filter to match
      * @return a new {@link PassedValueFilter}
      */
@@ -66,7 +64,6 @@ public class PassedValueFilter extends AbstractFilterConfiguration {
     /**
      * get a filter which blocks all matches
      * 
-     * @param value the value to test
      * @param match a regex which must match the value parameter for the filter to match
      * @return a new {@link PassedValueFilter}
      */
@@ -97,6 +94,7 @@ public class PassedValueFilter extends AbstractFilterConfiguration {
      * returns true if action is {@link FilterAction#SHOW} and {@link #matches(VariableReplacer)} returns true, or if action is
      * {@link FilterAction#HIDE} and {@link #matches(VariableReplacer)} returns false. In all other cases, it returns false
      * 
+     * @param value the value to test. May contain {@link VariableReplacer} expressions
      * @param vr a variable replacer containing values to test
      * @return whether conditions apply and the object represented by the variable replacer passes the filter
      */
@@ -111,6 +109,7 @@ public class PassedValueFilter extends AbstractFilterConfiguration {
     /**
      * Similar to {@link #matches(VariableReplacer)}, but if {@link #action} is {@link FilterAction#HIDE} the return value is negated
      * 
+     * @param value the value to test. May contain {@link VariableReplacer} expressions
      * @param vr a variable replacer containing values to test
      * @return whether the object represented by the variable replacer passes the filter, ignoring conditions
      */
@@ -122,6 +121,7 @@ public class PassedValueFilter extends AbstractFilterConfiguration {
     /**
      * Test the match condition on a variable replacer
      * 
+     * @param value the value to test. May contain {@link VariableReplacer} expressions
      * @param vr a variable replacer containing values to test
      * @return whether the {@link PassedValueFilter#value} matches the {@link #matchRegex} if both are filled with values from the variable replacer
      */
@@ -139,6 +139,9 @@ public class PassedValueFilter extends AbstractFilterConfiguration {
         return false;
     }
 
+    /**
+     * Get get {@link #matchRegex}
+     */
     public String getMatchRegex() {
         return matchRegex;
     }

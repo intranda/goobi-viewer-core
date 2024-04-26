@@ -26,8 +26,8 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * How the filter condition of a {@link ConfiguredValueFilter} is applied. {@link #SHOW} means the filter passes objects meeting its condition, {@link #HIDE}
- * means it blocks objects meeting its condition
+ * How the filter condition of a {@link ConfiguredValueFilter} is applied. {@link #SHOW} means the filter passes objects meeting its condition,
+ * {@link #HIDE} means it blocks objects meeting its condition
  */
 public enum FilterAction {
     /**

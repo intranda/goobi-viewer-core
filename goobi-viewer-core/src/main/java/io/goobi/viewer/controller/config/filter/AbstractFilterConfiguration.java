@@ -63,7 +63,6 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
      * Create a new filter from a configuration block
      * 
      * @param config an xml configuration
-     * @return a new {@link AbstractFilterConfiguration}
      * @throws ConfigurationException if the config is invalid
      */
     public void addConditionFilters(HierarchicalConfiguration<ImmutableNode> config) throws ConfigurationException {
@@ -83,20 +82,34 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
         return this.filterConditions.stream().allMatch(condition -> condition.passes("", vr));
     }
 
+    /**
+     * Add a conditional filter. The main filter is only applied if all conditional filters pass
+     * 
+     * @param condition
+     */
     public void addCondition(AbstractFilterConfiguration condition) {
         if (condition != this && !condition.getFilterConditions().contains(this)) {
             this.filterConditions.add(condition);
         }
     }
 
+    /**
+     * Get the {@link FilterAction}
+     */
     public FilterAction getAction() {
         return action;
     }
 
+    /**
+     * Get all {@link #filterConditions}
+     */
     public List<AbstractFilterConfiguration> getFilterConditions() {
         return Collections.unmodifiableList(filterConditions);
     }
 
+    /**
+     * return true if {@link #action} is {@link FilterAction#SHOW}
+     */
     public boolean passesOnMatch() {
         return FilterAction.SHOW == this.action;
     }

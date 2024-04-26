@@ -34,7 +34,7 @@ import io.goobi.viewer.model.variables.VariableReplacer;
  * A configurable filter allowing passage to document entities (record, docStruct, page) which satisfy certain conditions The filter itself may
  * contain condition filters which determine if the filter should be applied to an entity
  */
-public class ConfiguredValueFilter extends AbstractFilterConfiguration {
+public final class ConfiguredValueFilter extends AbstractFilterConfiguration {
 
     /**
      * The value to test. Shoud make use of {@link VariableReplacer} expressions. This may be left empty, in which case the filter
@@ -74,7 +74,7 @@ public class ConfiguredValueFilter extends AbstractFilterConfiguration {
      * get a filter which blocks all matches
      * 
      * @param value the value to test
-     * @param match a regex which must match the value parameter for the filter to match
+     * @param matchRegex a regex which must match the value parameter for the filter to match
      * @return a new {@link ConfiguredValueFilter}
      */
     public static ConfiguredValueFilter getHideFilter(String value, String matchRegex) {
