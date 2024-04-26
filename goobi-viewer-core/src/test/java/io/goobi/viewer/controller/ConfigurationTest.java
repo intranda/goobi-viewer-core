@@ -1194,7 +1194,7 @@ class ConfigurationTest extends AbstractTest {
         List<IFilterConfiguration> filters = DataManager.getInstance().getConfiguration().getAdditionalFilesDisplayFilters();
         assertEquals(2, filters.size());
         assertEquals("(wug_.*|AK_.*)", filters.get(0).getMatchRegex());
-        assertEquals(2, filters.get(1).getFilterConditions().size());
+        assertEquals(1, filters.get(1).getFilterConditions().size());
     }
 
     /**
