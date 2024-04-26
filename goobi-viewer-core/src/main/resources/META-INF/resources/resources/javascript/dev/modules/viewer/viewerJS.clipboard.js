@@ -42,9 +42,40 @@ var viewerJS = (function(viewer) {
 				var tooltipValueSelector = selector;
 			}
 
-
 			// ACTIVATE TOOLTIP ONLY IF DATA COPY VALUE SELECTORS AVAILABLE
-			$(tooltipValueSelector).tooltip();
+			$(tooltipValueSelector)
+				  // .attr("tabindex", 0)
+				.tooltip({ trigger: "manual" })
+	
+				.mouseenter(event => {
+					$('[data-toggle="tooltip"]').tooltip("hide");
+					$(event.currentTarget).tooltip("show");
+					$(".tooltip").on("mouseleave", function() {
+						$(event.currentTarget).tooltip("hide");
+					});
+				})
+				
+				.mouseleave(event => {
+					setTimeout(() => {
+						if (!$(".tooltip:hover").length) $(event.currentTarget).tooltip("hide");
+					}, 100);
+				})
+				
+				// show tooltips on (keyboard) focus
+				.focus(event => {
+					$(event.currentTarget).tooltip("show");
+				})
+				.blur(event => {
+					$(event.currentTarget).tooltip("hide");
+				});
+				
+				
+				/* Listen for the "escape key" so tool tips can easily be hidden */
+				$("body").keydown(event => {
+				  if (event.keyCode === 27) {
+				    $(tooltipValueSelector).tooltip("hide");
+				  }
+				});
 
 			// COPY BUTTON VAR
 			var copyClipboardButton = $(tooltipValueSelector);
