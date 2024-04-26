@@ -37,8 +37,8 @@ import io.goobi.viewer.exceptions.ArchiveSizeExceededException;
 
 public class ZipUnpacker {
 
-    private static final long DEFAULT_MAX_ARCHIVE_SIZE = 10_000_000_000l; //10GB
-    private static final long DEFAULT_MAX_ENTRY_SIZE = 10_000_000_000l; //10GB
+    private static final long DEFAULT_MAX_ARCHIVE_SIZE = 10_000_000_000L; //10GB
+    private static final long DEFAULT_MAX_ENTRY_SIZE = 10_000_000_000L; //10GB
     private static final double COMPRESSION_RATION_THRESHOLD = 100;
 
     private static final Logger logger = LogManager.getLogger(ZipUnpacker.class);
@@ -94,11 +94,10 @@ public class ZipUnpacker {
             while ((nBytes = in.read(buffer)) > 0) {
                 out.write(buffer, 0, nBytes);
                 currentEntrySize += nBytes;
-                currentArchiveSize += nBytes;
                 double compressionRatio = currentEntrySize / (double) (entryCompressedSize == 0 ? 1 : entryCompressedSize);
                 if (currentEntrySize > maxEntrySize) {
                     throw new ArchiveSizeExceededException("Maximum allowed size {} for zip entry exceeded", maxEntrySize);
-                } else if (currentArchiveSize > maxArchiveSize) {
+                } else if ((currentArchiveSize + currentEntrySize) > maxArchiveSize) {
                     throw new ArchiveSizeExceededException("Maximum allowed size {} for extraced zip archive exceeded", maxArchiveSize);
                 } else if (compressionRatio > COMPRESSION_RATION_THRESHOLD) {
                     throw new ArchiveSizeExceededException("Maximum allowed compression ratio {} for zip entry exceeded", maxEntrySize);

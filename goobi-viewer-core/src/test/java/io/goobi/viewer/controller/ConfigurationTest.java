@@ -44,6 +44,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.TestUtils;
+import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
 import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.citation.CitationLink;
@@ -1188,10 +1189,12 @@ class ConfigurationTest extends AbstractTest {
         assertEquals(true, DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetAdditionalFiles());
     }
 
-
     @Test
     void getHideDownloadFileRegex_returnConfiguredValue() throws Exception {
-        assertEquals("(wug_.*|AK_.*)", DataManager.getInstance().getConfiguration().getHideDownloadFileRegex());
+        List<IFilterConfiguration> filters = DataManager.getInstance().getConfiguration().getAdditionalFilesDisplayFilters();
+        assertEquals(2, filters.size());
+        assertEquals("(wug_.*|AK_.*)", filters.get(0).getMatchRegex());
+        assertEquals(1, filters.get(1).getFilterConditions().size());
     }
 
     /**
@@ -1806,7 +1809,7 @@ class ConfigurationTest extends AbstractTest {
     void getRangeFacetFields_shouldReturnAllValues() throws Exception {
         assertEquals(1, DataManager.getInstance().getConfiguration().getRangeFacetFields().size());
     }
-    
+
     /**
      * @see Configuration#getRangeFacetFieldMinValue()
      * @verifies return correct value
@@ -1815,7 +1818,7 @@ class ConfigurationTest extends AbstractTest {
     void getRangeFacetFieldMinValue_shouldReturnCorrectValue() throws Exception {
         assertEquals(-1000, DataManager.getInstance().getConfiguration().getRangeFacetFieldMinValue(SolrConstants.YEAR));
     }
-    
+
     /**
      * @see Configuration#getRangeFacetFieldMinValue()
      * @verifies return INT_MIN if no value configured
@@ -1824,7 +1827,7 @@ class ConfigurationTest extends AbstractTest {
     void getRangeFacetFieldMinValue_shouldReturnINT_MINIfNoValueConfigured() throws Exception {
         assertEquals(Integer.MIN_VALUE, DataManager.getInstance().getConfiguration().getRangeFacetFieldMinValue("MD_NOSUCHFIELD"));
     }
-    
+
     /**
      * @see Configuration#getRangeFacetFieldMaxValue()
      * @verifies return correct value
@@ -1833,7 +1836,7 @@ class ConfigurationTest extends AbstractTest {
     void getRangeFacetFieldMaxValue_shouldReturnCorrectValue() throws Exception {
         assertEquals(2050, DataManager.getInstance().getConfiguration().getRangeFacetFieldMaxValue(SolrConstants.YEAR));
     }
-    
+
     /**
      * @see Configuration#getRangeFacetFieldMaxValue()
      * @verifies return INT_MAX if no value configured

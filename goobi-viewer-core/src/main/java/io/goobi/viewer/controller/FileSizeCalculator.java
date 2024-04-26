@@ -26,7 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 
-public class FileSizeCalculator {
+public final class FileSizeCalculator {
 
     private FileSizeCalculator() {
     }
@@ -35,7 +35,7 @@ public class FileSizeCalculator {
         if (Files.exists(path) && Files.isRegularFile(path)) {
             return Files.size(path);
         } else {
-            return 0l;
+            return 0L;
         }
     }
 

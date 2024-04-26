@@ -39,11 +39,11 @@ import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.controller.shell.ShellCommand;
-import io.goobi.viewer.controller.variablereplacer.VariableReplacer;
 import io.goobi.viewer.managedbeans.AdminDeveloperBean;
 import io.goobi.viewer.managedbeans.AdminDeveloperBean.VersionInfo;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.job.TaskType;
+import io.goobi.viewer.model.variables.VariableReplacer;
 
 public class PullThemeHandler implements MessageHandler<MessageStatus> {
 
@@ -126,7 +126,8 @@ public class PullThemeHandler implements MessageHandler<MessageStatus> {
     private String pullThemeRepository() throws IOException, InterruptedException {
 
         String scriptTemplate = DataManager.getInstance().getConfiguration().getThemePullScriptPath();
-        String commandString = new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(scriptTemplate);
+        String commandString =
+                new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(scriptTemplate).stream().findFirst().orElse("");
         ShellCommand command = new ShellCommand(commandString.split("\\s+"));
         int ret = command.exec();
         String output = command.getOutput();
