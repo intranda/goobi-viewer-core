@@ -521,30 +521,33 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getAuthenticationProviders_shouldReturnAllProperlyConfiguredElements() throws Exception {
         List<IAuthenticationProvider> providers = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
-        assertEquals(5, providers.size());
+        assertEquals(6, providers.size());
 
-        //google openid
-        assertEquals("Google", providers.get(0).getName());
-        assertEquals("openid", providers.get(0).getType().toLowerCase());
-        assertEquals("https://accounts.google.com/o/oauth2/auth", ((OpenIdProvider) providers.get(0)).getUrl());
-        assertEquals("id_google", ((OpenIdProvider) providers.get(0)).getClientId());
-        assertEquals("secret_google", ((OpenIdProvider) providers.get(0)).getClientSecret());
-        assertEquals("google.png", ((OpenIdProvider) providers.get(0)).getImage());
-        assertEquals("Google", ((OpenIdProvider) providers.get(0)).getLabel());
+        // OpenID Connect
+        assertEquals("Custom OIDC", providers.get(2).getName());
+        assertEquals("openid", providers.get(2).getType().toLowerCase());
+        assertEquals("https://example.com/oauth/auth", ((OpenIdProvider) providers.get(2)).getUrl());
+        assertEquals("https://example.com/oauth/token", ((OpenIdProvider) providers.get(2)).getTokenEndpoint());
+        assertEquals("https://example.com/viewer/oauth", ((OpenIdProvider) providers.get(2)).getRedirectionEndpoint());
+        assertEquals("email", ((OpenIdProvider) providers.get(2)).getScope());
+        assertEquals("my_id", ((OpenIdProvider) providers.get(2)).getClientId());
+        assertEquals("my_secret", ((OpenIdProvider) providers.get(2)).getClientSecret());
+        assertEquals("custom.png", ((OpenIdProvider) providers.get(2)).getImage());
+        assertEquals("Custom OIDC", ((OpenIdProvider) providers.get(2)).getLabel());
 
-        //vuFind
-        assertEquals("VuFind", providers.get(2).getName());
-        assertEquals("userpassword", providers.get(2).getType().toLowerCase());
-        assertEquals(7000l, ((HttpAuthenticationProvider) providers.get(2)).getTimeoutMillis());
-        assertEquals("VuFind-label", ((HttpAuthenticationProvider) providers.get(2)).getLabel());
+        // vuFind
+        assertEquals("VuFind", providers.get(3).getName());
+        assertEquals("userpassword", providers.get(3).getType().toLowerCase());
+        assertEquals(7000l, ((HttpAuthenticationProvider) providers.get(3)).getTimeoutMillis());
+        assertEquals("VuFind-label", ((HttpAuthenticationProvider) providers.get(3)).getLabel());
 
         // bibliotheca
-        assertEquals("Bibliotheca", providers.get(3).getName());
-        assertEquals("userpassword", providers.get(3).getType().toLowerCase());
+        assertEquals("Bibliotheca", providers.get(4).getName());
+        assertEquals("userpassword", providers.get(4).getType().toLowerCase());
 
         //local
-        assertEquals("Goobi viewer", providers.get(4).getName());
-        assertEquals("local", providers.get(4).getType().toLowerCase());
+        assertEquals("Goobi viewer", providers.get(5).getName());
+        assertEquals("local", providers.get(5).getType().toLowerCase());
     }
 
     /**
@@ -554,8 +557,8 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getAuthenticationProviders_shouldLoadUserGroupNamesCorrectly() throws Exception {
         List<IAuthenticationProvider> providers = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
-        assertEquals(5, providers.size());
-        List<String> groups = providers.get(2).getAddUserToGroups();
+        assertEquals(6, providers.size());
+        List<String> groups = providers.get(3).getAddUserToGroups();
         assertEquals(2, groups.size());
     }
 

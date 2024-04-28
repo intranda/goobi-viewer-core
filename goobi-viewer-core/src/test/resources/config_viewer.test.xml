@@ -125,6 +125,9 @@
                 clientSecret="secret_google" image="google.png" />
             <provider type="openId" name="Facebook" endpoint="https://www.facebook.com/dialog/oauth" clientId="id_facebook"
                 clientSecret="secret_facebook" image="facebook.png" />
+            <provider type="openId" name="Custom OIDC" endpoint="https://example.com/oauth/auth"
+                tokenEndpoint="https://example.com/oauth/token" redirectionEndpoint="https://example.com/viewer/oauth"
+                scope="email" clientId="my_id" clientSecret="my_secret" image="custom.png" />
             <provider enabled="false" type="openId" name="incomplete" endpoint="https://graph.facebook.com/oauth"
                 clientId="" image="facebook.png" />
             <provider type="userPassword" name="VuFind" label="VuFind-label" endpoint="https://vuFind.example/Api/User/Auth" image="vufind.png" timeout="7000">

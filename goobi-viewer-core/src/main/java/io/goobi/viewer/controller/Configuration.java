@@ -2355,6 +2355,9 @@ public class Configuration extends AbstractConfiguration {
             String name = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@name]");
             String type = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@type]", "");
             String endpoint = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@endpoint]", null);
+            String tokenEndpoint = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tokenEndpoint]", null);
+            String redirectionEndpoint = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@redirectionEndpoint]", null);
+            String scope = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@scope]", null);
             String image = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@image]", null);
             boolean enabled = myConfigToUse.getBoolean(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@enabled]", true);
             String clientId = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@clientId]", null);
@@ -2370,7 +2373,11 @@ public class Configuration extends AbstractConfiguration {
                         providers.add(new HttpHeaderProvider(name, label, endpoint, image, timeoutMillis, parameterType, parameterName));
                         break;
                     case "openid":
-                        providers.add(new OpenIdProvider(name, label, endpoint, image, timeoutMillis, clientId, clientSecret));
+                        providers.add(
+                                new OpenIdProvider(name, label, endpoint, image, timeoutMillis, clientId, clientSecret)
+                                        .setTokenEndpoint(tokenEndpoint)
+                                        .setRedirectionEndpoint(redirectionEndpoint)
+                                        .setScope(scope));
                         break;
                     case "userpassword":
                         switch (name.toLowerCase()) {

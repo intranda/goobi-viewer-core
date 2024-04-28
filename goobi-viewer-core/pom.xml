@@ -87,8 +87,8 @@
         <!-- other libraries -->
         <angus-mail.version>2.0.3</angus-mail.version>
 		<citationstyles.version>24.3</citationstyles.version>
-		<citeproc-java.version>3.0.0</citeproc-java.version>
-		<commons-codec.version>1.16.1</commons-codec.version>
+		<citeproc-java.version>3.1.0</citeproc-java.version>
+		<commons-codec.version>1.17.0</commons-codec.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<commons-configuration2.version>2.10.1</commons-configuration2.version>
 		<commons-io.version>2.16.1</commons-io.version>
@@ -136,7 +136,7 @@
 		<prettyfaces.version>3.5.2.Final</prettyfaces.version>
 		<rome.version>2.1.0</rome.version>
 		<log4j.version>2.23.1</log4j.version>
-		<solr.version>9.5.0</solr.version>
+		<solr.version>9.6.0</solr.version>
 		<swagger.version>2.2.21</swagger.version>
 		<tomcat.version>9.0.58</tomcat.version>
 		<weld-servlet-shaded.version>3.1.9.Final</weld-servlet-shaded.version>
@@ -973,7 +973,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.3.0</version>
+				<version>3.4.0</version>
 				<configuration>
 					<archive>
 						<addMavenDescriptor>false</addMavenDescriptor>
