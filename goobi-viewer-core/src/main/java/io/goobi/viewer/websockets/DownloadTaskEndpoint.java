@@ -76,8 +76,8 @@ public class DownloadTaskEndpoint {
 
     private static final Logger logger = LogManager.getLogger(DownloadTaskEndpoint.class);
 
-    MessageQueueManager queueManager;
-    PersistentStorageBean storageBean;
+    private MessageQueueManager queueManager;
+    private PersistentStorageBean storageBean;
 
     private HttpSession httpSession;
     private Session session;
@@ -105,6 +105,7 @@ public class DownloadTaskEndpoint {
                     sendUpdate(message);
                     break;
                 case LISTFILES:
+                default:
                     try { //NOSONAR
                         listDownloadedFiles(message, getDownloadedFiles(message.pi, message.url));
                     } catch (PresentationException | IndexUnreachableException e) {
@@ -112,7 +113,6 @@ public class DownloadTaskEndpoint {
                         logger.error(errorMessage);
                         sendError(message, errorMessage);
                     }
-                    break;
             }
         } catch (IOException e) {
             logger.error("Error interpreting download task message {}", messageString);
@@ -370,15 +370,56 @@ public class DownloadTaskEndpoint {
             this.size = size;
         }
 
-        public String url; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
-        public String path; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
-        public String description; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
-        public String size; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
-        public String mimeType; //NOSONAR - this is a pure data exchange class and doesn't need getters and setters
+        private String url;
+        private String path;
+        private String description;
+        private String size;
+        private String mimeType;
 
         public Map<String, String> getJsonSignature() {
             return JsonObjectSignatureBuilder.listProperties(getClass());
         }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public String getSize() {
+            return size;
+        }
+
+        public void setSize(String size) {
+            this.size = size;
+        }
+
+        public String getMimeType() {
+            return mimeType;
+        }
+
+        public void setMimeType(String mimeType) {
+            this.mimeType = mimeType;
+        }
+
     }
 
     public static class SocketMessage {

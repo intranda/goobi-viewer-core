@@ -13,7 +13,7 @@
 
 	<composite:implementation>
 		<ui:fragment
-			rendered="#{configurationBean.displaySidebarWidgetUsage and !activeDocumentBean.group and (!activeDocumentBean.viewManager.bornDigital || activeDocumentBean.viewManager.displayContentDownloadMenu)}">
+			rendered="#{configurationBean.displaySidebarWidgetUsage and !activeDocumentBean.group and ((activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.bornDigital) || activeDocumentBean.viewManager.displayContentDownloadMenu)}">
 			<div id="widgetDownloads" class="widget widget-downloads">
 
 				<div class="widget-downloads__topbar">
@@ -138,6 +138,76 @@
 								</ui:fragment>
 							</ui:fragment>
 
+                        <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionDownloadMetadata}">           
+                        
+	                            <!-- METS -->
+	                            <ui:fragment
+	                                rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS' or activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS_MARC'}">
+	                                <a 
+	                                    href="#{activeDocumentBean.viewManager.metsResolverUrl}"
+	                                    id="lidomets" 
+	                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
+	                                    title="#{msg.metadata_dl_mets}"
+	                                    data-toggle="tooltip"
+	                                    data-placement="top"
+	                                    data-trigger="hover"
+	                                    target="_blank" rel="nofollow noopener"
+	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadMetsButtonLabel}"> 
+	                                    #{msg.downloadMetsButtonLabel}
+	                                </a>
+	                            <ui:fragment rendered="#{activeDocumentBean.viewManager.anchorMetsResolverUrl != null}">
+	                                <a 
+	                                    href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
+	                                    id="metsanchor" 
+	                                    class="badge badge-dark widget-format-links__work-download-mets-anchor" 
+	                                    title="#{msg.metadata_dl_metsAnchor}"
+	                                    data-toggle="tooltip"
+	                                    data-placement="top"
+	                                    data-trigger="hover"
+	                                    target="_blank" rel="nofollow noopener"
+	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadAnchorMetsButtonLabel}"> 
+	                                    #{msg.downloadAnchorMetsButtonLabel}
+	                                </a>
+	                            </ui:fragment>
+	                            </ui:fragment>
+	                            
+	                            <!-- LIDO -->
+	                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'LIDO'}">
+	                                <a 
+	                                    href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
+	                                    id="lidomets" 
+	                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
+	                                    title="#{msg.metadata_dl_lido}"
+	                                    data-toggle="tooltip"
+	                                    data-placement="top"
+	                                    data-trigger="hover"
+	                                    target="_blank" rel="nofollow noopener"
+	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadLidoButtonLabel}"> 
+	                                    #{msg.downloadLidoButtonLabel}
+	                                </a>
+	                            </ui:fragment>
+	                            
+	                            <!-- DUBLINCORE -->
+	                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'DUBLINCORE'}">
+	                                <a 
+	                                    href="#{activeDocumentBean.viewManager.dublinCoreResolverUrl}"
+	                                    id="dublincorexml"
+	                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
+	                                    title="#{msg.metadata_dl_dublincore}"
+	                                    data-toggle="tooltip"
+	                                    data-placement="top"
+	                                    data-trigger="hover"
+	                                    target="_blank" rel="nofollow noopener"
+	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadDublinCoreButtonLabel}"> 
+	                                    #{msg.downloadDublinCoreButtonLabel}
+	                                </a>
+	                            </ui:fragment>
+	                            
+	                            
+                            </ui:fragment>
+
+
 							<!-- PDF (WORK) -->
 							<ui:fragment
 								rendered="#{navigationHelper.currentView == 'object' and 
@@ -259,7 +329,7 @@
                             <ui:fragment
                                 rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly and navigationHelper.currentView != 'fulltext'}">                     
                                     <a
-                                        href="#{request.contextPath}/mirador/?pi=#{activeDocumentBean.persistentIdentifier}&amp;page=1" 
+                                        href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifManifest}&amp;page=1" 
                                         id="mirador" 
                                         class="badge badge-dark widget-usage__work-link-mirador-viewer" 
                                         title="#{msg.action__view_in_mirador__tooltip}"
@@ -498,7 +568,6 @@
 							</div>
 						</div>
 					</ui:fragment>
-					
 					
 				<!-- INTEGRATED WIDGET ADDITIONAL FILES -->
 		    	<ui:fragment rendered="#{activeDocumentBean.viewManager.displayContentDownloadMenu}">

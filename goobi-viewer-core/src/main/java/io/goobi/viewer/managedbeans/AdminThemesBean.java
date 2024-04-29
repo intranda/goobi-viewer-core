@@ -216,6 +216,7 @@ public class AdminThemesBean implements Serializable {
     }
 
     public String getStyleSheet() throws DAOException {
+        logger.trace("getStyleSheet");
         String styleSheet = Optional.ofNullable(getCurrentTheme()).map(t -> t.getStyleSheet()).orElse("");
         if (StringUtils.isNotBlank(styleSheet)) {
             return "<style>" + styleSheet + "</style>";

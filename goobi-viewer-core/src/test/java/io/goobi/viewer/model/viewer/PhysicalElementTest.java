@@ -71,12 +71,11 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    void isAdaptImageViewHeight_test() {
+    void getImageHeightRationThresholds_test() {
         PhysicalElement page =
                 new PhysicalElement("PHYS_0001", "00000001.tif", 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
-        Assertions.assertEquals(0, page.getImageWidth());
-        Assertions.assertEquals(0, page.getImageHeight());
-        Assertions.assertTrue(page.isAdaptImageViewHeight());
+        Assertions.assertEquals(0.2f, page.getImageHeightRationThresholds().get(0));
+        Assertions.assertEquals(2f, page.getImageHeightRationThresholds().get(1));
     }
 
     /**

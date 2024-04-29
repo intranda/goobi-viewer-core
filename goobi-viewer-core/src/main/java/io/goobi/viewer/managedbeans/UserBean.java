@@ -378,6 +378,7 @@ public class UserBean implements Serializable {
                     setUser(u);
                     if (request != null && request.getSession(false) != null) {
                         request.getSession(false).setAttribute("user", u);
+                        logger.trace("Added user to HTTP session ID {}: {}", request.getSession(false).getId(), u.getId());
                     }
 
                     // Start timer

@@ -28,7 +28,7 @@
         	<h2 class="-sr-only">#{msg.searchHitNavigation}:</h2>
             <div class="search-list__nav-helper-wrapper">
             	<ui:fragment rendered="#{displayHitsPerPage}">
-                    <div class="search-list__nav-helper-item">
+                    <div class="search-list__nav-helper-item search-list__nav-helper-item-hits-per-page">
                         <div class="search-list__nav-helper-label">
                             <label for="hitsPerPageSelect" id="searchListSortingLabel">#{msg.search__hits_per_page}:</label>
                         </div>
@@ -50,7 +50,7 @@
                  </ui:fragment>
 
 				<ui:fragment rendered="#{showSorting}">
-                    <div class="search-list__nav-helper-item" >
+                    <div class="search-list__nav-helper-item search-list__nav-helper-item-sorting">
                         <div class="search-list__nav-helper-label">
                             <label for="sortSelect">#{msg.sortBy}:</label>
                         </div>
@@ -254,13 +254,19 @@
 
     <script type="text/javascript">
 
+    	var cmsPageId = '#{cmsPage.id}';
+    
+		if (cmsPageId != '') {
+	    	var cmsSearchCustomView = true;
+	        var cmsSearchViewlistStyleID = 'cmsSearchView-#{cmsPage.id}';
+		};
+
         $( document ).ready( function() {
             var searchSortingDropdownConfig = {};
             var searchListConfig = {
         		listStyle: "#{listStyle}",
         		maxChildHitsToRenderOnStart: #{configurationBean.searchChildHitsInitialLoadLimit},
             };
-            
              viewerJS.searchList.init( searchListConfig ); 
         } );
                         
@@ -268,5 +274,5 @@
             var stackedThumbnailsConfig = {};
             viewerJS.stackedThumbnails.init( stackedThumbnailsConfig );
         } );    
-    </script>
+    </script> 
 </ui:composition>
