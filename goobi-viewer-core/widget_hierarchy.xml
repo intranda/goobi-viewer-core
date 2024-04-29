@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<downloads  config="sidebarwidgetUsage" record="!group">
+	<introduction/>
+	<record minPages="1" mimeType="!application">
+		<alto view="fulltext" access="fulltext" filesExist="alto" />
+		<tei view="fulltext" access="fulltext" filesExist="tei|alto|txt"/>
+		<txt view="fulltext" access="fulltext" filesExist="alto|txt"
+		<pdf view="object" access="pdf" externalDownload="false" mimeType="image" minPages="1">
+			<prerendered filesExist="pdf"/>
+			<full/>
+		</pdf>
+		<epub access="epub" filesExist="alto|txt"/> 
+		<toc config="docHierarchyPdfEnabled"/>
+		<manifest view="!fulltext" access="manifest" minPages="1" mimeType="!application"/>
+		<mirador view="!fulltext" minPages="1" record="!anchor" mimeType="!application" />
+	</record>
+	<page minPages="1" mimeType="!application">
+		<pdf view="object" access="pdf" externalDownload="false" mimeType="image"/>
+		<image view="object" access="downloadImage" mimeType="!application"/>
+		<alto view="fulltext" access="fulltext" fileExists="alto" />
+		<tei view="fulltext" access="fulltext" fileExists="tei|alto|txt"/>
+		<txt view="fulltext" access="fulltext" fileExists="alto|txt"/>
+		<manifest view="!fulltext" access="manifest" minPages="1" mimeType="!application"/>
+		<mirador view="!fulltext" minPages="1" record="!anchor" mimeType="!application" />
+		<imagefragment view="object" access="image" mimeType="image"/>
+	</page>
+	<additionalFiles config="additionalFiles" access="contentFile" filesExist="downloadableContent"/>
+</downloads>
+<formats config="sidebarwidgetUsage" record="!group">
+	<meta access="downloadMetadata"/>
+	<manifest access="manifest" minPages="1" mimeType="!application"/>
+	<!-- should be merged with pdf since it is an alternative to pdf download -->
+	<externalDownload externalDownload="true"/>
+	<opac/>
+	<dfgviewer minPages="1" mimeType="!application" record="!anchor"/>
+	<mirador minPages="1" mimeType="!application" record="!anchor"/>
+</formats>
+<citations config="sidebarwidgetUsage" record="!group">
+	<introduction/>
+	<record>
+		<usageCitationsRecord config="usageCitations"/>
+		<ris/>
+	</record>
+	<page>
+		<usageCitationsPage config="usageCitations" pageMode="!double"/>
+		<citeRecommentations config="usageCitationRecommendations" />
+	</page>
+</citations>
