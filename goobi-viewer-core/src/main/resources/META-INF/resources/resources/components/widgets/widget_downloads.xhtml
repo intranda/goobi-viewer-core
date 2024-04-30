@@ -308,14 +308,14 @@
 												and (!activeDocumentBean.viewManager.bornDigital)}">
 
 								<!-- TITLE PAGE RANGE -->
-								<h3 id="titlePageRange"
-									class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget__downloads__page_range}</h3>
 
 								<!-- PDF (PAGE RANGE) -->
 								<ui:fragment
-									rendered="#{navigationHelper.currentView == 'object' and
+									rendered="#{configurationBean.pdfPageRangeEnabled and navigationHelper.currentView == 'object' and
                                                      activeDocumentBean.viewManager.externalDownloadUrl == null and 
                                                      activeDocumentBean.viewManager.currentPage.accessPermissionPdf}">
+								<h3 id="titlePageRange"
+									class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget__downloads__page_range}</h3>
 									
 									<button href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
 										id="pdfPageRangeButton"
