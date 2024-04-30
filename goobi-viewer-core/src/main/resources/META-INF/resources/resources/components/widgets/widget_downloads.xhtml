@@ -333,41 +333,42 @@
 									<div class="widget-downloads__page-range-downloads-box" data-target="pageRangeDownload">
 									
 										<div class="widget-downloads__page-range-downloads-inner">
-
-										<div class="widget-downloads__page-range-downloads-inputs-wrapper">
-											<div class="widget-downloads__page-range-downloads-inputs-wrapper-inner">
-												<!-- FROM -->
-												<div class="download-pdf-parts__select-from">
-													<div class="custom-control custom-control--select">
-								                        <h:selectOneMenu
-								                            id="selectPageFrom"
-								                            value="#{activeDocumentBean.viewManager.firstPdfPage}">
-								                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
-								                        </h:selectOneMenu>
+										<h:form id="pdfPageRangeDownloadForm">
+											<div class="widget-downloads__page-range-downloads-inputs-wrapper">
+												<div class="widget-downloads__page-range-downloads-inputs-wrapper-inner">
+													<!-- FROM -->
+													<div class="download-pdf-parts__select-from">
+														<div class="custom-control custom-control--select">
+									                        <h:selectOneMenu
+									                            id="selectPageFrom"
+									                            value="#{activeDocumentBean.viewManager.firstPdfPage}">
+									                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
+									                        </h:selectOneMenu>
+														</div>
 													</div>
-												</div>
-												<div class="download-pdf-parts__select-to">
-													<div class="custom-control custom-control--select">
-								                        <h:selectOneMenu
-								                            id="selectPageTo"
-								                            value="#{activeDocumentBean.viewManager.lastPdfPage}">
-								                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
-								                        </h:selectOneMenu>
+													<div class="download-pdf-parts__select-to">
+														<div class="custom-control custom-control--select">
+									                        <h:selectOneMenu
+									                            id="selectPageTo"
+									                            value="#{activeDocumentBean.viewManager.lastPdfPage}">
+									                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
+									                        </h:selectOneMenu>
+														</div>
 													</div>
 												</div>
 											</div>
-										</div>
-	
-										<a href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
-											id="pdfPageRangeLink"
-											class="badge badge-dark widget-downloads__page-download-pdf-range widget-downloads__page-range-pdf-link"
-											title="#{msg.label__pdf_download_page_range}"
-											data-toggle="tooltip" data-placement="top"
-											data-trigger="hover" target="_blank" rel="nofollow noopener"
-											aria-label="#{msg.image}: #{msg.label__pdf_download}"> <i
-											class="fa fa-file-pdf-o" aria-hidden="true"></i>
-											#{msg.downloadButton}
-										</a>
+		
+											<a jsf:action="#{activeDocumentBean.viewManager.generatePageRangePdf()}"
+												id="pdfPageRangeLink"
+												class="badge badge-dark widget-downloads__page-download-pdf-range widget-downloads__page-range-pdf-link"
+												title="#{msg.label__pdf_download_page_range}"
+												data-toggle="tooltip" data-placement="top"
+												data-trigger="hover" target="_blank" rel="nofollow noopener"
+												aria-label="#{msg.image}: #{msg.label__pdf_download}"> <i
+												class="fa fa-file-pdf-o" aria-hidden="true"></i>
+												#{msg.downloadButton}
+											</a>
+										</h:form>
 
 
 
