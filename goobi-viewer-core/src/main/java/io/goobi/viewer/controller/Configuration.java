@@ -1069,6 +1069,11 @@ public class Configuration extends AbstractConfiguration {
         return getLocalBoolean("sidebar.sidebarWidgetUsage.page.downloadOptions[@enabled]", true);
     }
 
+    public boolean isDisplaySidebarWidgetUsagePdfPageRange() {
+        return getLocalBoolean("sidebar.sidebarWidgetUsage.pdfPageRange[@enabled]", false);
+
+    }
+
     /**
      * Returns the list of structure elements allowed to be shown in calendar view
      *
@@ -6058,4 +6063,5 @@ public class Configuration extends AbstractConfiguration {
         return getLocalString("developer.scripts.createDeveloperPackage",
                 "{config-folder-path}/script_create_package.sh -d viewer -f {base-path} -w /var/www/  -s {solr-url}");
     }
+
 }

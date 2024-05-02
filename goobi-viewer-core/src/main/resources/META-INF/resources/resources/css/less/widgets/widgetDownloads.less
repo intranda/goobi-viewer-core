@@ -56,7 +56,46 @@
 	&__additional-files-list {
 		padding: 0;
 	}
-
+	
+	// PAGE RANGE STYLES
+	&__page-range-downloads {}
+	&__page-range-downloads-box {
+		width: 100%;
+//		display: none;
+//		&.-active {
+//			display: block;
+//			.widget-downloads__page-range-pdf-button {
+//				display: none;
+//			}
+//			.widget-downloads__page-range-pdf-link {
+//				display: flex;
+//				opacity: 1;
+//			}
+//		}
+	}
+	&__page-range-downloads-inputs-wrapper {
+		// display: none;
+	} 
+	&__page-range-downloads-inputs-wrapper-inner {
+		display: flex;
+		gap: 15px;
+		margin-bottom: 10px;
+	}
+	&__page-range-pdf-link {
+		// display: none;
+		// opacity: 0;
+		transition: 0.25s ease all;
+		justify-content: center;
+	}
+	&__page-range-downloads-select-from {
+		flex-grow: 1;
+	}
+	&__page-range-downloads-select-to {
+		flex-grow: 1;
+	}
+	&__page-range-pdf-link {
+		width: 100%;
+	}
 }
 
 // OVERRIDE

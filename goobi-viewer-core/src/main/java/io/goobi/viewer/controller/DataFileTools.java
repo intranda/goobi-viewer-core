@@ -114,6 +114,30 @@ public final class DataFileTools {
     }
 
     /**
+     * Constructs the pdf folder path for the given pi, either directly in viewer-home or within a data repository
+     *
+     * @param pi The work PI. This is both the actual name of the folder and the identifier used to look up data repository in solr
+     * @return A Path to the pdf folder for the given PI
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public static Path getPdfFolder(String pi) throws PresentationException, IndexUnreachableException {
+        return getDataFolder(pi, DataManager.getInstance().getConfiguration().getPdfFolder());
+    }
+
+    /**
+     * Constructs the alto folder path for the given pi, either directly in viewer-home or within a data repository
+     *
+     * @param pi The work PI. This is both the actual name of the folder and the identifier used to look up data repository in solr
+     * @return A Path to the alto folder for the given PI
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public static Path getAltoFolder(String pi) throws PresentationException, IndexUnreachableException {
+        return getDataFolder(pi, DataManager.getInstance().getConfiguration().getAltoFolder());
+    }
+
+    /**
      * Returns a map of Paths for each data folder name passed as an argument.
      *
      * @param pi The record identifier. This is both the actual name of the folder and the identifier used to look up data repository in Solr
@@ -197,7 +221,7 @@ public final class DataFileTools {
     public static Path getDataFilePath(String pi, String dataFolderName, String altDataFolderName, final String fileName)
             throws PresentationException, IndexUnreachableException {
         // Make sure fileName is a pure file name and not a path
-       String useFileName = sanitizeFileName(fileName);
+        String useFileName = sanitizeFileName(fileName);
 
         java.nio.file.Path dataFolderPath = getDataFolder(pi, dataFolderName);
         if (StringUtils.isNotBlank(useFileName)) {
