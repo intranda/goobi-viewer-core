@@ -33,6 +33,9 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TEI_LANG;
 import java.awt.Dimension;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -48,6 +51,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -65,11 +69,16 @@ import org.apache.solr.common.SolrDocument;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.jdom2.JDOMException;
 import org.json.JSONObject;
+import org.omnifaces.util.Faces;
 
 import de.undercouch.citeproc.CSL;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetPdfAction;
+import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
+import de.unigoettingen.sub.commons.contentlib.servlet.model.SinglePdfRequest;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
@@ -3543,7 +3552,9 @@ public class ViewManager implements Serializable {
      * @param firstPdfPage the firstPdfPage to set
      */
     public void setFirstPdfPage(String firstPdfPage) {
-        this.firstPdfPage = Integer.valueOf(firstPdfPage);
+        if (StringUtils.isNotBlank(firstPdfPage) && firstPdfPage.matches(StringConstants.POSITIVE_INTEGER)) {
+            this.firstPdfPage = Integer.valueOf(firstPdfPage);
+        }
     }
 
     /**
@@ -3566,9 +3577,38 @@ public class ViewManager implements Serializable {
      */
     public void setLastPdfPage(String lastPdfPage) {
         logger.trace("setLastPdfPage: {}", lastPdfPage);
-        if (lastPdfPage != null) {
+        if (lastPdfPage != null && lastPdfPage.matches(StringConstants.POSITIVE_INTEGER)) {
             this.lastPdfPage = Integer.valueOf(lastPdfPage);
         }
+    }
+
+    public void generatePageRangePdf() {
+        logger.debug("Generating pdf of {} from pages {} to {}", this.pi, this.firstPdfPage, this.lastPdfPage);
+        String filename = String.format("%s_%s_%s.pdf", this.pi, this.firstPdfPage, this.lastPdfPage);
+        try (PipedInputStream in = new PipedInputStream(); OutputStream out = new PipedOutputStream(in)) {
+            String firstPageName =
+                    Optional.ofNullable(this.firstPdfPage).flatMap(i -> this.getPage(i)).map(PhysicalElement::getFileName).orElse(null);
+            String lastPageName =
+                    Optional.ofNullable(this.lastPdfPage).flatMap(i -> this.getPage(i)).map(PhysicalElement::getFileName).orElse(null);
+
+            SinglePdfRequest request = new SinglePdfRequest(Map.of(
+                    "imageSource", DataFileTools.getMediaFolder(this.pi).toAbsolutePath().toString(),
+                    "pdfSource", DataFileTools.getPdfFolder(this.pi).toAbsolutePath().toString(),
+                    "altoSource", DataFileTools.getAltoFolder(this.pi).toAbsolutePath().toString(),
+                    "first", firstPageName,
+                    "last", lastPageName));
+            Executors.newFixedThreadPool(1).submit(() -> {
+                try {
+                    new GetPdfAction().writePdf(request, ContentServerConfiguration.getInstance(), out);
+                } catch (URISyntaxException | ContentLibException | IOException e) {
+                    logger.error("Error creating page range pdf", e);
+                }
+            });
+            Faces.sendFile(in, filename, true);
+        } catch (PresentationException | IOException | URISyntaxException | IndexUnreachableException e) {
+            logger.error("Error creating page range pdf", e);
+        }
+
     }
 
     /**
