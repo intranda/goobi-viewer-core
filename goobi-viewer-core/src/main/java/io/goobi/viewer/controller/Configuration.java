@@ -4985,6 +4985,10 @@ public class Configuration extends AbstractConfiguration {
         return getLocalBoolean("viewer.doublePageNavigation[@enabled]", false);
     }
 
+    public boolean isDoublePageNavigationDefault() {
+        return isDoublePageNavigationEnabled() && getLocalBoolean("viewer.doublePageNavigation[@default]", false);
+    }
+
     /**
      * <p>
      * getRestrictedImageUrls.
