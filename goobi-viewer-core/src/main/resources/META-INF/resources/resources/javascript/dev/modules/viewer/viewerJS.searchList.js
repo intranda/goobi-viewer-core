@@ -68,9 +68,7 @@ var viewerJS = ( function( viewer ) {
             $.extend( true, _defaults, config );
             
             // init bs tooltips
-            $( '[data-toggle="tooltip"]' ).tooltip( {
-                trigger : 'hover'
-            } );
+			viewerJS.helper.initBsFeatures;
             
             // focus save search modal input on show
             $( _defaults.saveSearchModalSelector ).on( 'shown.bs.modal', function() {

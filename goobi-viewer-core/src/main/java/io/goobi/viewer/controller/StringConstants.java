@@ -55,13 +55,19 @@ public final class StringConstants {
     public static final String MSG_ERR_PASSWORD_INCORRECT = "errPasswordIncorrect";
     public static final String MSG_ERR_SEND_EMAIL = "errSendEmail";
     public static final String MSG_TRANSKRIBUS_RECORDIGESTERROR = "transkribus_recordInjestError";
-    
+
     public static final String PLACEHOLDER_SPACE = "_SPACE_";
 
     public static final String PREFIX_PRETTY = "pretty:";
     public static final String PRETTY_NEWSEARCH5 = "pretty:newSearch5";
     public static final String PRETTY_SEARCHADVANCED5 = "pretty:searchAdvanced5";
     public static final String PRETTY_SEARCHTERM5 = "pretty:searchTerm5";
+
+    /**
+     * Matches any number between 0 and 999_999_999, all of which lie in the positive integer range. Matching this regex ensures that a number is not
+     * negative and can be cast to an integer
+     */
+    public static final String POSITIVE_INTEGER = "^[0-9]{0,9}$";
 
     private StringConstants() {
 

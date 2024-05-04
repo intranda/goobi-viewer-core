@@ -60,9 +60,9 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /** OAuth client secret. */
     private String clientSecret;
     /** Token endpoint URI. */
-    private String tokenEndpoint = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL;
+    private String tokenEndpoint = url + "/token";
     /** OpenID servlet URI. Not to be confused with <code>HttpAuthenticationProvider.redirectUrl</code> */
-    private String redirectionEndpoint = url + "/token";
+    private String redirectionEndpoint = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL;
     /** Scope. */
     private String scope = "openid email";
 
@@ -313,7 +313,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                     user = DataManager.getInstance().getDao().getUserByEmail(email);
                     if (user != null && sub != null) {
                         user.getOpenIdAccounts().add(comboSub);
-                        logger.info("Updated user {} - added OAuth sub '{}'.", user.getId(), comboSub);
+                        logger.debug("Updated user {} - added OAuth sub '{}'.", user.getId(), comboSub);
                     }
                 }
                 // If still not found, create a new user
