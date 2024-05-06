@@ -277,7 +277,7 @@ var viewerJS = ( function( viewer ) {
             } );
         },        
         /**
-         * @description Method to initialize Bootstrap features.
+         * @description Method to initialize Bootstrap features (tooltips).
          * @method initBsFeatures
          */
         initBsFeatures: function() {
@@ -295,19 +295,16 @@ var viewerJS = ( function( viewer ) {
             // (re)-enable BS tooltips
             
 			/* The manually determine when an item should show and hide a tool tip. */
-			$('[data-toggle="tooltip"]')
-			  // .attr("tabindex", 0)
-			.tooltip({ trigger: "manual" })
-
-			.mouseenter(event => {
+			$('[data-toggle="tooltip"]').tooltip({ trigger: "manual" })
+			.on( "mouseenter.tooltip", event => {
 				$('[data-toggle="tooltip"]').tooltip("hide");
 				$(event.currentTarget).tooltip("show");
 				$(".tooltip").on("mouseleave", function() {
 					$(event.currentTarget).tooltip("hide");
-				});
-			})
+				})
 			
-			.mouseleave(event => {
+			})
+			.on('mouseleave.tooltip', event => {
 				setTimeout(() => {
 					if (!$(".tooltip:hover").length) $(event.currentTarget).tooltip("hide");
 				}, 100);
@@ -320,8 +317,7 @@ var viewerJS = ( function( viewer ) {
 			.blur(event => {
 				$(event.currentTarget).tooltip("hide");
 			});
-			
-			
+
 			/* Listen for the "escape key" so tool tips can easily be hidden */
 			$("body").keydown(event => {
 			  if (event.keyCode === 27) {

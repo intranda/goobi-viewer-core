@@ -573,7 +573,8 @@
 														<div class="custom-control custom-control--select">
 									                        <h:selectOneMenu
 									                            id="selectPageFrom"
-									                            value="#{activeDocumentBean.viewManager.firstPdfPage}">
+									                            value="#{activeDocumentBean.viewManager.firstPdfPage}"
+									                            pt:data-toggle="tooltip" pt:title="#{msg.widget__downloads__page_range_tooltip_first_page}">
 									                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
 									                        </h:selectOneMenu>
 														</div>
@@ -582,7 +583,8 @@
 														<div class="custom-control custom-control--select">
 									                        <h:selectOneMenu
 									                            id="selectPageTo"
-									                            value="#{activeDocumentBean.viewManager.lastPdfPage}">
+									                            value="#{activeDocumentBean.viewManager.lastPdfPage}"
+									                            pt:data-toggle="tooltip" pt:title="#{msg.widget__downloads__page_range_tooltip_last_page}">
 									                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
 									                        </h:selectOneMenu>
 														</div>
@@ -594,7 +596,7 @@
 												id="pdfPageRangeLink"
 												class="badge badge-dark widget-downloads__page-download-pdf-range widget-downloads__page-range-pdf-link"
 												title="#{msg.label__pdf_download_page_range}"
-												data-toggle="tooltip" data-placement="top"
+												data-toggle="tooltip" data-placement="bottom"
 												data-trigger="hover" rel="nofollow noopener"
 												aria-label="#{msg.image}: #{msg.label__pdf_download}"> <i
 												class="fa fa-file-pdf-o" aria-hidden="true"></i>
