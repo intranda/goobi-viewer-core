@@ -223,4 +223,13 @@ public class AdminThemesBean implements Serializable {
 
         return "";
     }
+
+    public String getJavascript() throws DAOException {
+        String js = Optional.ofNullable(getCurrentTheme()).map(t -> t.getJavascript()).orElse("");
+        if (StringUtils.isNotBlank(js)) {
+            return "<script>" + js + "</script>";
+        }
+
+        return "";
+    }
 }
