@@ -298,6 +298,7 @@ var viewerJS = ( function( viewer ) {
                     _searchListShowThumbs = !_searchListShowThumbs;
                     this.showSearchListThumbs(_searchListShowThumbs);
                     sessionStorage.setItem( 'searchListShowThumbs', _searchListShowThumbs );
+                    $thumbToggle.tooltip('show');
                 });
             }
         },
@@ -315,7 +316,7 @@ var viewerJS = ( function( viewer ) {
                 $(".search-list__subhit-thumbnail").show();
                 $('[data-toggle="tooltip"]').tooltip('dispose');
                 viewerJS.helper.initBsFeatures();
-                $thumbToggle.tooltip('show');
+
              } else {
                 $thumbToggle
                 .removeClass("-active")
@@ -326,7 +327,6 @@ var viewerJS = ( function( viewer ) {
                 $(".search-list__subhit-thumbnail").hide();
                 $('[data-toggle="tooltip"]').tooltip('dispose');
                 viewerJS.helper.initBsFeatures();
-                $thumbToggle.tooltip('show');
              }
 		},
         initSubHits: function() {
