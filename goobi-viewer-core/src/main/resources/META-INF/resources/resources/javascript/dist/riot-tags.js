@@ -4096,7 +4096,7 @@ riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" rio
 });
 
 
-riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.styleName}__container"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}"></div></div><div if="{this.showPaginator}" ref="paginator" class="swiper-pagination slider-{this.styleName}__dots"></div></div>', '', '', function(opts) {
+riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}__container"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}"></div></div><div if="{this.showPaginator}" ref="paginator" class="swiper-pagination slider-{this.styleName}__dots"></div></div>', '', '', function(opts) {
 
 
 	this.showPaginator = true;
@@ -4146,9 +4146,14 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
     	if(this.slides && this.slides.length > 0) {
     		if(this.slider) {
     			this.slider.destroy();
+
     		}
 			this.initSlideTags(this.slides);
     		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
+    		window.viewerJS.slider.sliders.push(this.swiper);
+
+    		console.log(this.swiper);
+
     	}
 
     	if (this.style.onUpdate) {
@@ -4258,6 +4263,7 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
 
     this.getLayout = function() {
     	let layout = this.style.layout ? this.style.layout : 'default';
+    	console.log('layout:' + this.style.layout);
     	return layout;
     }.bind(this)
 

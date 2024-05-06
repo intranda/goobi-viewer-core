@@ -2,7 +2,7 @@
 
 <slider>
 
-<div ref="container" class="swiper-container slider-{this.styleName}__container">
+<div ref="container" class="swiper slider-{this.styleName}__container">
 	<div class="swiper-wrapper slider-{this.styleName}__wrapper">
 		<div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}">
 		</div>
@@ -63,9 +63,15 @@
     	if(this.slides && this.slides.length > 0) {
     		if(this.slider) {
     			this.slider.destroy();
+    			
     		}
 			this.initSlideTags(this.slides);
     		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
+    		window.viewerJS.slider.sliders.push(this.swiper);
+    		
+    		console.log(this.swiper);
+    		// console.log(this.refs.container);
+    		
     	}
     	
     	if (this.style.onUpdate) {
@@ -178,6 +184,7 @@
     
     getLayout() {
     	let layout = this.style.layout ? this.style.layout : 'default';
+    	console.log('layout:' + this.style.layout); 
     	return layout;
     }
     
