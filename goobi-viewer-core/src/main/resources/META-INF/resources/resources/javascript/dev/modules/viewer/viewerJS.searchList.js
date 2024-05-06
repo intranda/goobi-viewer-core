@@ -210,7 +210,7 @@ var viewerJS = ( function( viewer ) {
             // get/set list style from local storage
             
             if(!_defaults.listStyle) {
-				console.log('session bla' + sessionStorage.getItem( 'searchListStyle' ));
+				
 	            if ( sessionStorage.getItem( 'searchListStyle' ) == undefined ) {
 	                sessionStorage.setItem( 'searchListStyle', 'default' );
 	                if(_debug) {
