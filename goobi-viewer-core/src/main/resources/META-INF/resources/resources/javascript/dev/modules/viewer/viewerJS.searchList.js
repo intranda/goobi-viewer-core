@@ -210,7 +210,7 @@ var viewerJS = ( function( viewer ) {
             // get/set list style from local storage
             
             if(!_defaults.listStyle) {
-				console.log('session bla' + sessionStorage.getItem( 'searchListStyle' ));
+				
 	            if ( sessionStorage.getItem( 'searchListStyle' ) == undefined ) {
 	                sessionStorage.setItem( 'searchListStyle', 'default' );
 	                if(_debug) {
@@ -298,6 +298,7 @@ var viewerJS = ( function( viewer ) {
                     _searchListShowThumbs = !_searchListShowThumbs;
                     this.showSearchListThumbs(_searchListShowThumbs);
                     sessionStorage.setItem( 'searchListShowThumbs', _searchListShowThumbs );
+                    $thumbToggle.tooltip('show');
                 });
             }
         },
@@ -309,16 +310,23 @@ var viewerJS = ( function( viewer ) {
             	$thumbToggle
                 .addClass("-active")
                 .attr("title", activeTitle)
-                .tooltip('_fixTitle')
-                .attr('aria-checked', true);
+                .attr('aria-checked', true)
+				.off('mouseleave.tooltip')
+				.off('mouseenter.tooltip');
                 $(".search-list__subhit-thumbnail").show();
+                $('[data-toggle="tooltip"]').tooltip('dispose');
+                viewerJS.helper.initBsFeatures();
+
              } else {
                 $thumbToggle
                 .removeClass("-active")
                 .attr("title", inactiveTitle)
-                .tooltip('_fixTitle')
-                .attr('aria-checked', false);
+                .attr('aria-checked', false)
+				.off('mouseleave.tooltip')
+				.off('mouseenter.tooltip');
                 $(".search-list__subhit-thumbnail").hide();
+                $('[data-toggle="tooltip"]').tooltip('dispose');
+                viewerJS.helper.initBsFeatures();
              }
 		},
         initSubHits: function() {
