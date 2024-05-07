@@ -409,38 +409,8 @@
 					let mode = element.dataset["codemirror"];
 					console.log("Found code mirror text ", element, mode);
 					// INIT EDITOR MAIN
-					CodeMirror.fromTextArea(element, {
-							lineNumbers: true,
-							mode: mode,
-							theme: "default",
-							autofocus: false,
-							indentUnit: 2,
-							tabSize: 2,
-							styleActiveLine: true,
-							indentWithTabs: true,
-							extraKeys: {
-								"F11": function(cm) {
-									cm.setOption("fullScreen", !cm.getOption("fullScreen"));
-								},
-								"Esc": function(cm) {
-									if (cm.getOption("fullScreen")) {
-										cm.setOption("fullScreen", false);
-									}
-								},
-								"Ctrl-D": function(cm) {
-									cm.setOption("theme", cm.getOption("theme") == "default" ? "dracula" : "default");
-								},
-								"Ctrl-S": (cm) => {
-									// if ( _debug ) {
-										console.log('manually saved with key combo');
-									// }
-									if (this.isReadOnly() == false) {
-										document.querySelector('[data-cm="save"]').click();
-									}
-								},
-								"Ctrl-E": "findPersistent",
-							}
-					}); 
+					let cmInstance = adminJS.codemirror(element, mode);
+					console.log("initialized code mirror ", cmInstance);
 				});
 				
 			});
