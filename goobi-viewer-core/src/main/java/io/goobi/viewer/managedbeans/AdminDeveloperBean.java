@@ -57,7 +57,6 @@ import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.controller.shell.ShellCommand;
-import io.goobi.viewer.controller.variablereplacer.VariableReplacer;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.MessageQueueException;
@@ -66,6 +65,7 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.mq.PullThemeHandler;
 import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.quartz.TaskTriggerStatus;
+import io.goobi.viewer.model.variables.VariableReplacer;
 
 @Named
 @ApplicationScoped
@@ -146,7 +146,10 @@ public class AdminDeveloperBean implements Serializable {
     }
 
     private static Path createZipFile(String createDeveloperPackageScriptPath) throws IOException, InterruptedException {
-        String commandString = new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(createDeveloperPackageScriptPath);
+        String commandString = new VariableReplacer(DataManager.getInstance().getConfiguration()).replace(createDeveloperPackageScriptPath)
+                .stream()
+                .findFirst()
+                .orElse("");
         ShellCommand command = new ShellCommand(commandString.split("\\s+"));
         int ret = command.exec(CREATE_DEVELOPER_PACKAGE_TIMEOUT);
         String out = command.getOutput().trim();
@@ -310,7 +313,7 @@ public class AdminDeveloperBean implements Serializable {
         if (Files.exists(path)) {
             return VersionInfo.getFromManifest(Files.readString(path));
         }
-        return new VersionInfo("goobi-viewer-theme-" + this.viewerThemeName, "unknown", "unknown", "unknown");
+        return new VersionInfo("goobi-viewer-theme-" + this.viewerThemeName, "unknown", "unknown", "unknown", "unknown");
     }
 
     public static class VersionInfo {
@@ -318,12 +321,14 @@ public class AdminDeveloperBean implements Serializable {
         private final String buildDate;
         private final String gitRevision;
         private final String releaseVersion;
+        private final String commitMessage;
 
-        public VersionInfo(String applicationName, String buildDate, String gitRevision, String releaseVersion) {
+        public VersionInfo(String applicationName, String buildDate, String gitRevision, String releaseVersion, String commitMessage) {
             this.applicationName = applicationName;
             this.buildDate = buildDate;
             this.gitRevision = gitRevision;
             this.releaseVersion = releaseVersion;
+            this.commitMessage = commitMessage;
         }
 
         public static VersionInfo getFromManifest(String manifest) {
@@ -331,7 +336,7 @@ public class AdminDeveloperBean implements Serializable {
                     getInfo("ApplicationName", manifest),
                     getInfo("Implementation-Build-Date", manifest),
                     getInfo("Implementation-Version", manifest),
-                    getInfo("version", manifest));
+                    getInfo("version", manifest), "unknown");
         }
 
         private static String getInfo(String label, String infoText) {
@@ -358,6 +363,10 @@ public class AdminDeveloperBean implements Serializable {
 
         public String getReleaseVersion() {
             return releaseVersion;
+        }
+
+        public String getCommitMessage() {
+            return commitMessage;
         }
 
     }

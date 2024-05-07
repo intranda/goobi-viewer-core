@@ -86,17 +86,17 @@
                     </h:panelGroup>
 
                 <!-- ACTIVE ITEM -->
-                <li class="numeric-paginator__active" aria-current="page">
+                <li data-page="#{cc.attrs.itemActive}" class="numeric-paginator__active" aria-current="page">
                 	<span>#{cc.attrs.itemActive}</span>
                 </li>
 
                    <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem)}">
-                       <li>
+                       <li class="numeric-paginator__entry" data-page="#{cc.attrs.itemActive + 1}">
                            <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.itemActive + 1}">#{cc.attrs.itemActive + 1}</a>
                        </li>
 
                        <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem - 1)}">
-                           <li>
+                           <li class="numeric-paginator__entry" data-page="#{cc.attrs.itemActive + 2}">
                                <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 2}/#{cc.attrs.urlSuffix}" aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.itemActive + 2}">#{cc.attrs.itemActive + 2}</a>
                            </li>
                        </h:panelGroup>
@@ -110,13 +110,13 @@
 
                 <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem - 2)}">
                     <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem - 2) and cc.attrs.itemActive != (cc.attrs.lastItem - 3)}">
-                        <li>
+                        <li class="numeric-paginator__entry" data-page="#{cc.attrs.lastItem - 1}">
                             <a href="#{cc.attrs.urlPrefix}#{(cc.attrs.lastItem - 1)}/#{cc.attrs.urlSuffix}">#{cc.attrs.lastItem - 1}</a>
                         </li>
                     </h:panelGroup>
 
                     <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.lastItem - 1)}">
-                        <li class="navigate_last">
+                        <li class="navigate_last numeric-paginator__entry numeric-paginator__last-entry" data-page="#{cc.attrs.lastItem}" >
                             <a href="#{cc.attrs.urlPrefix}#{cc.attrs.lastItem}/#{cc.attrs.urlSuffix}">#{cc.attrs.lastItem}</a>
                         </li>
                     </h:panelGroup>

@@ -193,61 +193,67 @@
     
                       
                     </div>
-                    
+                     
                     <!-- LINKS -->
-                    <div class="widget-format-links__work-downloads widget__badge-container"> 
-                    	<h3 id="titleFormats" class="widget-format-links__subtitle widget__badge-container-heading">#{msg.links}</h3>
-                    
-                        <!-- OPAC -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.opacUrl != null}">
-                            <a href="#{activeDocumentBean.viewManager.opacUrl}"
-                                id="opac"
-                                class="badge badge-dark widget-format-links__work-link-opac" 
-                                title="#{msg.opacLink}"
-                                data-toggle="tooltip"
-                                data-placement="top"
-                                data-trigger="hover"
-                                target="_blank" rel="nofollow noopener"
-                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.opacLink}">
-                                #{msg.opacLink} 
-                            </a>
-                        </ui:fragment>
-                        
-                        <!-- DFG Viewer -->
-                        <ui:fragment rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages
-                            and activeDocumentBean.viewManager.linkForDFGViewer != null and !activeDocumentBean.viewManager.bornDigital}">
-                           <a 
-                                href="#{activeDocumentBean.viewManager.linkForDFGViewer}"
-                                id="dfgViewer" 
-                                class="badge badge-dark widget-format-links__work-link-dfg-viewer" 
-                                title="#{msg.dfgViewerLink}"
-                                data-toggle="tooltip"
-                                data-placement="top"
-                                data-trigger="hover"
-                                target="_blank" rel="nofollow noopener"
-                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.dfgViewerLink}"> 
-                               #{msg.dfgViewerLink}
-                            </a>
-                        </ui:fragment>
-                        
-                        <!-- MIRADOR -->
-                        <ui:fragment
-                            rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">                     
-                                <a
-                                    href="#{request.contextPath}/mirador/?pi=#{activeDocumentBean.persistentIdentifier}&amp;page=1" 
-                                    id="mirador" 
-                                    class="badge badge-dark widget-format-links__work-link-mirador-viewer" 
-                                    title="#{msg.action__view_in_mirador__tooltip}"
-                                    data-toggle="tooltip"
-                                    data-placement="top"
-                                    data-trigger="hover"
-                                    target="_blank" rel="nofollow noopener"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.action__view_in_mirador}"> 
-                                    #{msg.action__view_in_mirador}
-                                </a> 
-                        </ui:fragment>
-                        
-                    </div>
+                   	<!-- ONLY RENDER IF OPAC, DFG OR MIRADOR AVAILABLE -->
+                   	<ui:fragment rendered="#{(activeDocumentBean.viewManager.opacUrl != null) or (!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages
+	                            and activeDocumentBean.viewManager.linkForDFGViewer != null and !activeDocumentBean.viewManager.bornDigital) or (!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly)}">
+	                    <div class="widget-format-links__work-downloads widget__badge-container"> 
+	
+	                    		<h3 id="titleLinks" class="widget-format-links__subtitle widget__badge-container-heading">#{msg.links}</h3>
+	
+	                    	
+	                        <!-- OPAC -->
+	                        <ui:fragment rendered="#{activeDocumentBean.viewManager.opacUrl != null}">
+	                            <a href="#{activeDocumentBean.viewManager.opacUrl}"
+	                                id="opac"
+	                                class="badge badge-dark widget-format-links__work-link-opac" 
+	                                title="#{msg.opacLink}"
+	                                data-toggle="tooltip"
+	                                data-placement="top"
+	                                data-trigger="hover"
+	                                target="_blank" rel="nofollow noopener"
+	                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.opacLink}">
+	                                #{msg.opacLink} 
+	                            </a>
+	                        </ui:fragment>
+	                        
+	                        <!-- DFG Viewer -->
+	                        <ui:fragment rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages
+	                            and activeDocumentBean.viewManager.linkForDFGViewer != null and !activeDocumentBean.viewManager.bornDigital}">
+	                           <a 
+	                                href="#{activeDocumentBean.viewManager.linkForDFGViewer}"
+	                                id="dfgViewer" 
+	                                class="badge badge-dark widget-format-links__work-link-dfg-viewer" 
+	                                title="#{msg.dfgViewerLink}"
+	                                data-toggle="tooltip"
+	                                data-placement="top"
+	                                data-trigger="hover"
+	                                target="_blank" rel="nofollow noopener"
+	                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.dfgViewerLink}"> 
+	                               #{msg.dfgViewerLink}
+	                            </a>
+	                        </ui:fragment>
+	                        
+	                        <!-- MIRADOR -->
+	                        <ui:fragment
+	                            rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">                     
+	                                <a
+	                                    href="#{request.contextPath}/mirador/?pi=#{activeDocumentBean.persistentIdentifier}&amp;page=1" 
+	                                    id="mirador" 
+	                                    class="badge badge-dark widget-format-links__work-link-mirador-viewer" 
+	                                    title="#{msg.action__view_in_mirador__tooltip}"
+	                                    data-toggle="tooltip"
+	                                    data-placement="top"
+	                                    data-trigger="hover"
+	                                    target="_blank" rel="nofollow noopener"
+	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.action__view_in_mirador}"> 
+	                                    #{msg.action__view_in_mirador}
+	                                </a> 
+	                        </ui:fragment>
+	                        
+	                    </div>
+                    </ui:fragment>
 
                 </div>
             </div>

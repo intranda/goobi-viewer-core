@@ -33,6 +33,9 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_TEI_LANG;
 import java.awt.Dimension;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -48,6 +51,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -65,11 +69,16 @@ import org.apache.solr.common.SolrDocument;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.jdom2.JDOMException;
 import org.json.JSONObject;
+import org.omnifaces.util.Faces;
 
 import de.undercouch.citeproc.CSL;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetPdfAction;
+import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
+import de.unigoettingen.sub.commons.contentlib.servlet.model.SinglePdfRequest;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
@@ -81,6 +90,7 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
 import io.goobi.viewer.exceptions.ArchiveException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -103,6 +113,7 @@ import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.citation.CitationTools;
+import io.goobi.viewer.model.files.external.ExternalFilesDownloader;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.metadata.ComplexMetadata;
 import io.goobi.viewer.model.metadata.Metadata;
@@ -110,6 +121,7 @@ import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataValue;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus.Status;
@@ -119,6 +131,7 @@ import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
+import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.SelectPageItem;
@@ -175,7 +188,7 @@ public class ViewManager implements Serializable {
     private String contextObject = null;
     private List<String> versionHistory = null;
     private PageOrientation firstPageOrientation = PageOrientation.RIGHT;
-    private boolean doublePageMode = false;
+    private boolean doublePageMode;
     private int firstPdfPage;
     private int lastPdfPage;
     private CalendarView calendarView;
@@ -190,6 +203,7 @@ public class ViewManager implements Serializable {
     private List<CopyrightIndicatorStatus> copyrightIndicatorStatuses = null;
     private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
     private Map<CitationLinkLevel, List<CitationLink>> citationLinks = new HashMap<>();
+    private List<String> externalResourceUrls = null;
 
     /**
      * <p>
@@ -214,6 +228,7 @@ public class ViewManager implements Serializable {
         this.pageLoader = pageLoader;
         this.currentStructElementIddoc = currentDocumentIddoc;
         this.logId = logId;
+        this.doublePageMode = DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault();
         if (topStructElementIddoc == currentDocumentIddoc) {
             currentStructElement = topDocument;
         } else {
@@ -1157,6 +1172,10 @@ public class ViewManager implements Serializable {
      */
     public boolean isBornDigital() throws IndexUnreachableException, DAOException {
         return isHasPages() && isFilesOnly();
+    }
+
+    public boolean isHasExternalResources() throws IndexUnreachableException {
+        return Optional.ofNullable(getExternalResourceUrls()).map(list -> !list.isEmpty()).orElse(false);
     }
 
     /**
@@ -2271,6 +2290,17 @@ public class ViewManager implements Serializable {
         return accessPermissionPdf;
     }
 
+    public boolean isAccessPermissionExternalResources() throws IndexUnreachableException, DAOException, RecordNotFoundException {
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            AccessPermission access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null,
+                    IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES, request);
+            return access.isGranted();
+        }
+        logger.trace("FacesContext not found");
+        return false;
+    }
+
     /**
      *
      * @param privilege Privilege name to check
@@ -2915,14 +2945,15 @@ public class ViewManager implements Serializable {
      */
     private List<String> listDownloadableContent() throws PresentationException, IndexUnreachableException, DAOException, IOException {
         List<String> downloadFilenames = Collections.emptyList();
+        VariableReplacer vr = new VariableReplacer(this);
         Path sourceFileDir = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
         if (Files.exists(sourceFileDir) && AccessConditionUtils.checkContentFileAccessPermission(pi,
                 (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).isGranted()) {
-            String hideDownloadFilesRegex = DataManager.getInstance().getConfiguration().getHideDownloadFileRegex();
+            List<IFilterConfiguration> displayFilters = DataManager.getInstance().getConfiguration().getAdditionalFilesDisplayFilters();
             try (Stream<Path> files = Files.list(sourceFileDir)) {
                 Stream<String> filenames = files.map(path -> path.getFileName().toString());
-                if (StringUtils.isNotEmpty(hideDownloadFilesRegex)) {
-                    filenames = filenames.filter(filename -> !filename.matches(hideDownloadFilesRegex));
+                if (!displayFilters.isEmpty()) {
+                    filenames = filenames.filter(filename -> displayFilters.stream().allMatch(filter -> filter.passes(filename, vr)));
                 }
                 downloadFilenames = filenames.collect(Collectors.toList());
             }
@@ -3522,7 +3553,9 @@ public class ViewManager implements Serializable {
      * @param firstPdfPage the firstPdfPage to set
      */
     public void setFirstPdfPage(String firstPdfPage) {
-        this.firstPdfPage = Integer.valueOf(firstPdfPage);
+        if (StringUtils.isNotBlank(firstPdfPage) && firstPdfPage.matches(StringConstants.POSITIVE_INTEGER)) {
+            this.firstPdfPage = Integer.valueOf(firstPdfPage);
+        }
     }
 
     /**
@@ -3545,9 +3578,38 @@ public class ViewManager implements Serializable {
      */
     public void setLastPdfPage(String lastPdfPage) {
         logger.trace("setLastPdfPage: {}", lastPdfPage);
-        if (lastPdfPage != null) {
+        if (lastPdfPage != null && lastPdfPage.matches(StringConstants.POSITIVE_INTEGER)) {
             this.lastPdfPage = Integer.valueOf(lastPdfPage);
         }
+    }
+
+    public void generatePageRangePdf() {
+        logger.debug("Generating pdf of {} from pages {} to {}", this.pi, this.firstPdfPage, this.lastPdfPage);
+        String filename = String.format("%s_%s_%s.pdf", this.pi, this.firstPdfPage, this.lastPdfPage);
+        try (PipedInputStream in = new PipedInputStream(); OutputStream out = new PipedOutputStream(in)) {
+            String firstPageName =
+                    Optional.ofNullable(this.firstPdfPage).flatMap(i -> this.getPage(i)).map(PhysicalElement::getFileName).orElse(null);
+            String lastPageName =
+                    Optional.ofNullable(this.lastPdfPage).flatMap(i -> this.getPage(i)).map(PhysicalElement::getFileName).orElse(null);
+
+            SinglePdfRequest request = new SinglePdfRequest(Map.of(
+                    "imageSource", DataFileTools.getMediaFolder(this.pi).toAbsolutePath().toString(),
+                    "pdfSource", DataFileTools.getPdfFolder(this.pi).toAbsolutePath().toString(),
+                    "altoSource", DataFileTools.getAltoFolder(this.pi).toAbsolutePath().toString(),
+                    "first", firstPageName,
+                    "last", lastPageName));
+            Executors.newFixedThreadPool(1).submit(() -> {
+                try {
+                    new GetPdfAction().writePdf(request, ContentServerConfiguration.getInstance(), out);
+                } catch (URISyntaxException | ContentLibException | IOException e) {
+                    logger.error("Error creating page range pdf", e);
+                }
+            });
+            Faces.sendFile(in, filename, true);
+        } catch (PresentationException | IOException | URISyntaxException | IndexUnreachableException e) {
+            logger.error("Error creating page range pdf", e);
+        }
+
     }
 
     /**
@@ -4125,5 +4187,25 @@ public class ViewManager implements Serializable {
                 .map(filename -> this.getPageLoader().findPageForFilename(filename))
                 .filter(p -> p != null)
                 .collect(Collectors.toList());
+    }
+
+    public List<String> getExternalResourceUrls() throws IndexUnreachableException {
+        if (this.externalResourceUrls == null) {
+            this.externalResourceUrls = loadExternalResourceUrls();
+        }
+        return this.externalResourceUrls;
+    }
+
+    private List<String> loadExternalResourceUrls() throws IndexUnreachableException {
+        List<String> urlTemplates = DataManager.getInstance().getConfiguration().getExternalResourceUrlTemplates();
+        VariableReplacer vr = new VariableReplacer(this);
+        return urlTemplates.stream()
+                .flatMap(templ -> vr.replace(templ).stream())
+                .filter(url -> ExternalFilesDownloader.resourceExists(url))
+                .toList();
+    }
+
+    public StructElement getAnchorStructElement() {
+        return anchorStructElement;
     }
 }

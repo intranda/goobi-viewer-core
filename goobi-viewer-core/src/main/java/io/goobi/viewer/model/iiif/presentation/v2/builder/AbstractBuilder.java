@@ -21,7 +21,26 @@
  */
 package io.goobi.viewer.model.iiif.presentation.v2.builder;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_COMMENT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.COLLECTIONS_COLLECTION;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYER;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_AUTOCOMPLETE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_SEARCH;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_COMMENTS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_MANIFEST;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_TEXT;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RANGE;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -42,9 +61,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
 import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
@@ -59,6 +78,7 @@ import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -96,9 +116,11 @@ public abstract class AbstractBuilder {
 
     protected final AbstractApiUrlManager urls;
 
+    protected final Configuration config;
+
     private final Map<LinkingProperty.LinkingType, List<LinkingProperty>> linkingProperties = new HashMap<>();
 
-    private final List<Locale> translationLocales = DataManager.getInstance().getConfiguration().getIIIFTranslationLocales();
+    private final List<Locale> translationLocales;
 
     /**
      * <p>
@@ -108,13 +130,27 @@ public abstract class AbstractBuilder {
      * @param apiUrlManager
      */
     protected AbstractBuilder(final AbstractApiUrlManager apiUrlManager) {
+        this(apiUrlManager, DataManager.getInstance().getConfiguration());
+    }
+
+    /**
+     * <p>
+     * Constructor for AbstractBuilder.
+     * </p>
+     *
+     * @param apiUrlManager
+     * @param config
+     */
+    protected AbstractBuilder(final AbstractApiUrlManager apiUrlManager, Configuration config) {
         AbstractApiUrlManager useApiUrlManager = apiUrlManager;
         if (useApiUrlManager == null) {
-            String apiUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl();
+            String apiUrl = config.getIIIFApiUrl();
             apiUrl = apiUrl.replace("/rest", "/api/v1");
             useApiUrlManager = new ApiUrls(apiUrl);
         }
+        this.translationLocales = config.getIIIFTranslationLocales();
         this.urls = useApiUrlManager;
+        this.config = config;
         this.initLinkingProperties();
     }
 
@@ -122,20 +158,20 @@ public abstract class AbstractBuilder {
      * Read config for rendering linking properties and add configured properties to linkingProperties map
      */
     private void initLinkingProperties() {
-        if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF()) {
-            IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF());
+        if (this.config.isVisibleIIIFRenderingPDF()) {
+            IMetadataValue label = getLabel(this.config.getLabelIIIFRenderingPDF());
             addRendering(LinkingTarget.PDF, label);
         }
-        if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer()) {
-            IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingViewer());
+        if (this.config.isVisibleIIIFRenderingViewer()) {
+            IMetadataValue label = getLabel(this.config.getLabelIIIFRenderingViewer());
             addRendering(LinkingTarget.VIEWER, label);
         }
-        if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext()) {
-            IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPlaintext());
+        if (this.config.isVisibleIIIFRenderingPlaintext()) {
+            IMetadataValue label = getLabel(this.config.getLabelIIIFRenderingPlaintext());
             addRendering(LinkingTarget.PLAINTEXT, label);
         }
-        if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto()) {
-            IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingAlto());
+        if (this.config.isVisibleIIIFRenderingAlto()) {
+            IMetadataValue label = getLabel(this.config.getLabelIIIFRenderingAlto());
             addRendering(LinkingTarget.ALTO, label);
         }
     }
@@ -275,13 +311,13 @@ public abstract class AbstractBuilder {
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      */
     public void addMetadata(AbstractPresentationModelElement2 manifest, StructElement ele) {
-        List<String> displayFields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
-        List<String> eventFields = DataManager.getInstance().getConfiguration().getIIIFEventFields();
+        List<String> displayFields = this.config.getIIIFMetadataFields();
+        List<String> eventFields = this.config.getIIIFEventFields();
         displayFields.addAll(eventFields);
 
         for (String field : getMetadataFields(ele)) {
             if (contained(field, displayFields) && !field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED) && !field.matches(".*_LANG_\\w{2,3}")) {
-                String configuredLabel = DataManager.getInstance().getConfiguration().getIIIFMetadataLabel(field);
+                String configuredLabel = this.config.getIIIFMetadataLabel(field);
                 String label = StringUtils.isNotBlank(configuredLabel) ? configuredLabel
                         : (field.contains("/") ? field.substring(field.indexOf("/") + 1) : field);
                 SolrTools.getTranslations(field, ele, this.translationLocales, (s1, s2) -> s1 + "; " + s2)
@@ -474,7 +510,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.util.Map} object.
      */
     protected Map<String, List<String>> getEventFields() {
-        List<String> eventStrings = DataManager.getInstance().getConfiguration().getIIIFEventFields();
+        List<String> eventStrings = this.config.getIIIFEventFields();
         Map<String, List<String>> events = new HashMap<>();
         for (String string : eventStrings) {
             String event;
@@ -524,15 +560,15 @@ public abstract class AbstractBuilder {
      * @return a {@link java.util.List} object.
      */
     public List<String> getSolrFieldList() {
-        Set<String> fields = new HashSet<>(DataManager.getInstance().getConfiguration().getIIIFMetadataFields());
+        Set<String> fields = new HashSet<>(this.config.getIIIFMetadataFields());
         fields.addAll(Arrays.asList(REQUIRED_SOLR_FIELDS));
-        String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
+        String navDateField = this.config.getIIIFNavDateField();
         if (StringUtils.isNotBlank(navDateField)) {
             fields.add(navDateField);
         }
-        fields.addAll(DataManager.getInstance().getConfiguration().getIIIFMetadataFields());
-        fields.addAll(DataManager.getInstance().getConfiguration().getIIIFDescriptionFields());
-        fields.addAll(DataManager.getInstance().getConfiguration().getIIIFLabelFields());
+        fields.addAll(this.config.getIIIFMetadataFields());
+        fields.addAll(this.config.getIIIFDescriptionFields());
+        fields.addAll(this.config.getIIIFLabelFields());
         return new ArrayList<>(fields);
     }
 
@@ -560,7 +596,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.util.Optional} object.
      */
     protected Optional<IMetadataValue> getDescription(StructElement ele) {
-        List<String> fields = DataManager.getInstance().getConfiguration().getIIIFDescriptionFields();
+        List<String> fields = this.config.getIIIFDescriptionFields();
         for (String field : fields) {
             Optional<IMetadataValue> optional = SolrTools.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2).map(md -> {
                 md.removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
@@ -582,7 +618,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.util.Optional} object.
      */
     protected Optional<IMetadataValue> getLabel(StructElement ele) {
-        List<String> fields = DataManager.getInstance().getConfiguration().getIIIFLabelFields();
+        List<String> fields = this.config.getIIIFLabelFields();
         for (String field : fields) {
             Optional<IMetadataValue> optional = SolrTools.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2).map(md -> {
                 md.removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
@@ -625,8 +661,39 @@ public abstract class AbstractBuilder {
      * @return a {@link java.net.URI} object.
      */
     public URI getManifestURI(String pi) {
+
         String urlString = this.urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).build();
-        return URI.create(urlString);
+        return getExternalManifestURI(pi).orElse(URI.create(urlString));
+    }
+
+    public Optional<URI> getExternalManifestURI(String pi) {
+        if (this.config.useExternalManifestUrls()) {
+            try {
+                Optional<URI> externalURI = readURIFromSolr(pi);
+                return externalURI;
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.warn("Error reading manifest url from for PI {}", pi);
+            } catch (URISyntaxException e) {
+                logger.warn("Error reading external manifest uri from record {}: {}", pi, e.toString());
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<URI> readURIFromSolr(String pi) throws URISyntaxException, PresentationException, IndexUnreachableException {
+        String solrField = this.config.getExternalManifestSolrField();
+        if (StringUtils.isNotBlank(solrField)) {
+            SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(String.format("PI:%s", pi), List.of(solrField));
+            if (doc != null && doc.containsKey(solrField)) {
+                String uriString = SolrTools.getMetadataValues(doc, solrField).stream().findAny().orElse("");
+                if (StringUtils.isNotBlank(uriString)) {
+                    return Optional.of(new URI(uriString));
+                }
+            }
+            return Optional.empty();
+        } else {
+            throw new PresentationException("No solr field configured containing external manifest urls");
+        }
     }
 
     /**

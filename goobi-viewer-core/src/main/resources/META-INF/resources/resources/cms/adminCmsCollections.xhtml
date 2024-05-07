@@ -67,7 +67,7 @@
 															<div class="collection__structure text-center">
 																<button
 																	class="btn btn--link"
-																	jsf:action="#{browseBean.dcCollection.toggleChildren(browseDcElement)}">
+																	jsf:action="#{browseBean.getCollection(cmsCollectionsBean.solrField).toggleChildren(browseDcElement)}">
 																	<f:passThroughAttribute name="aria-label" value="#{msg.aria_label__show_details}" />
 																	<h:panelGroup
 																		rendered="#{browseDcElement.hasSubelements and !browseDcElement.showSubElements}">

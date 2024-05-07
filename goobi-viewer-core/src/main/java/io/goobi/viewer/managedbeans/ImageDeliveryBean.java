@@ -35,8 +35,8 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -173,11 +173,11 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     private static Optional<PhysicalElement> getCurrentPageIfExists() {
-        return Optional.ofNullable(BeanUtils.getActiveDocumentBean()).map(adb -> adb.getViewManager()).map(vm -> vm.getCurrentPage());
+        return Optional.ofNullable(BeanUtils.getActiveDocumentBean()).map(ActiveDocumentBean::getViewManager).map(vm -> vm.getCurrentPage());
     }
 
     private static Optional<StructElement> getTopDocumentIfExists() {
-        return Optional.ofNullable(BeanUtils.getActiveDocumentBean()).map(bean -> bean.getTopDocument());
+        return Optional.ofNullable(BeanUtils.getActiveDocumentBean()).map(ActiveDocumentBean::getTopDocument);
     }
 
     private static Optional<StructElement> getCurrentDocumentIfExists() {
@@ -338,7 +338,7 @@ public class ImageDeliveryBean implements Serializable {
             }
         }).orElse("");
     }
-    
+
     /**
      * Retrieves the #{@link io.goobi.viewer.controller.imaging.IIIFUrlHandler}, creates it if it doesn't exist yet
      *

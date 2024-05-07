@@ -19,20 +19,31 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.controller.variablereplacer;
+package io.goobi.viewer.controller.config.filter;
 
-public final class ReplacerVariables {
+import java.util.Optional;
 
-    public static final String THEME_PATH = "theme-path";
-    public static final String BASE_PATH = "base-path";
-    public static final String SOLR_URL = "solr-url";
-    public static final String REST_API_URL = "rest-api-url";
+import org.apache.commons.lang3.StringUtils;
 
-    public static final String CONFIG_FOLDER_PATH = "config-folder-path";
-
+/**
+ * How the filter condition of a {@link ConfiguredValueFilter} is applied. {@link #SHOW} means the filter passes objects meeting its condition,
+ * {@link #HIDE} means it blocks objects meeting its condition
+ */
+public enum FilterAction {
     /**
-     * should not be instantiated
+     * Block objects meeting a filter's condition
      */
-    private ReplacerVariables() {
-    };
+    HIDE,
+    /**
+     * Pass objects meeting a filter's condition
+     */
+    SHOW;
+
+    public static Optional<FilterAction> getAction(String value) {
+        if (StringUtils.isNotBlank(value)) {
+            return Optional.ofNullable(valueOf(value.toUpperCase()));
+        } else {
+            return Optional.empty();
+        }
+    }
 }

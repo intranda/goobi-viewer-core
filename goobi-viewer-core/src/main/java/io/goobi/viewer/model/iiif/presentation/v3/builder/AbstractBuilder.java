@@ -55,9 +55,9 @@ import java.util.stream.Collectors;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
 import de.intranda.api.annotation.wa.ImageResource;
 import de.intranda.api.iiif.IIIFUrlResolver;
@@ -80,6 +80,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
@@ -122,6 +123,8 @@ public abstract class AbstractBuilder {
     protected final int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
     protected final int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
 
+    protected final Configuration config;
+
     /**
      * <p>
      * Constructor for AbstractBuilder.
@@ -130,11 +133,12 @@ public abstract class AbstractBuilder {
      * @param apiUrlManager
      */
     protected AbstractBuilder(final AbstractApiUrlManager apiUrlManager) {
+        this.config = DataManager.getInstance().getConfiguration();
         this.urls = apiUrlManager != null ? apiUrlManager : DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v2).orElse(null);
         AbstractApiUrlManager contentUrls = DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v2).orElse(this.urls);
         this.thumbs = new ThumbnailHandler(new IIIFUrlHandler(contentUrls),
                 ImageDeliveryBean.getStaticImagesPath(this.urls != null ? this.urls.getApplicationUrl() : "",
-                        DataManager.getInstance().getConfiguration().getTheme()));
+                        this.config.getTheme()));
 
         AbstractApiUrlManager v1Urls = DataManager.getInstance().getRestApiManager().getDataApiManager(Version.v1).orElse(null);
         v1Builder = new io.goobi.viewer.model.iiif.presentation.v2.builder.AbstractBuilder(v1Urls) {
@@ -277,13 +281,13 @@ public abstract class AbstractBuilder {
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      */
     public void addMetadata(AbstractPresentationModelElement3 manifest, StructElement ele) {
-        List<String> displayFields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
-        List<String> eventFields = DataManager.getInstance().getConfiguration().getIIIFEventFields();
+        List<String> displayFields = this.config.getIIIFMetadataFields();
+        List<String> eventFields = this.config.getIIIFEventFields();
         displayFields.addAll(eventFields);
 
         for (String field : getMetadataFields(ele)) {
             if (contained(field, displayFields) && !field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED) && !field.matches(".*_LANG_\\w{2,3}")) {
-                String configuredLabel = DataManager.getInstance().getConfiguration().getIIIFMetadataLabel(field);
+                String configuredLabel = this.config.getIIIFMetadataLabel(field);
                 String label = StringUtils.isNotBlank(configuredLabel) ? configuredLabel
                         : (field.contains("/") ? field.substring(field.indexOf("/") + 1) : field);
                 SolrTools.getTranslations(field, ele, this.translationLocales, (s1, s2) -> s1 + "; " + s2)
@@ -312,7 +316,7 @@ public abstract class AbstractBuilder {
      * @return Optional<URI>
      */
     protected Optional<URI> getRightsStatement(StructElement ele) {
-        return getSolrFieldValue(ele, DataManager.getInstance().getConfiguration().getIIIFRightsField())
+        return getSolrFieldValue(ele, this.config.getIIIFRightsField())
                 .map(value -> {
                     try {
                         return new URI(value);
@@ -388,7 +392,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.util.Optional} object.
      */
     protected Optional<IMetadataValue> getDescription(StructElement ele) {
-        List<String> fields = DataManager.getInstance().getConfiguration().getIIIFDescriptionFields();
+        List<String> fields = this.config.getIIIFDescriptionFields();
         for (String field : fields) {
             Optional<IMetadataValue> optional = SolrTools.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2).map(md -> {
                 md.removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
@@ -410,7 +414,7 @@ public abstract class AbstractBuilder {
      * @return a {@link java.util.Optional} object.
      */
     protected Optional<IMetadataValue> getLabel(StructElement ele) {
-        List<String> fields = DataManager.getInstance().getConfiguration().getIIIFLabelFields();
+        List<String> fields = this.config.getIIIFLabelFields();
         for (String field : fields) {
             Optional<IMetadataValue> optional = SolrTools.getTranslations(field, ele, (s1, s2) -> s1 + "; " + s2).map(md -> {
                 md.removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
@@ -442,19 +446,6 @@ public abstract class AbstractBuilder {
         } else {
             urlString = this.urls.path(COLLECTIONS).params(collectionField).build();
         }
-        return URI.create(urlString);
-    }
-
-    /**
-     * <p>
-     * getManifestURI.
-     * </p>
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @return a {@link java.net.URI} object.
-     */
-    public URI getManifestURI(String pi) {
-        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).build();
         return URI.create(urlString);
     }
 
@@ -717,8 +708,8 @@ public abstract class AbstractBuilder {
     protected Metadata getRequiredStatement() {
         Metadata requiredStatement = null;
 
-        String label = DataManager.getInstance().getConfiguration().getIIIFRequiredLabel();
-        String value = DataManager.getInstance().getConfiguration().getIIIFRequiredValue();
+        String label = this.config.getIIIFRequiredLabel();
+        String value = this.config.getIIIFRequiredValue();
         if (StringUtils.isNoneBlank(label, value)) {
             IMetadataValue attributionLabel = ViewerResourceBundle.getTranslations(label, false);
             IMetadataValue attributionValue = ViewerResourceBundle.getTranslations(value, false);
@@ -789,7 +780,7 @@ public abstract class AbstractBuilder {
         }
         return null;
     }
-    
+
     protected ImageResource getThumbnail(StructElement ele, int pageNo) {
         try {
             String thumbUrl = this.thumbs.getThumbnailUrl(pageNo, ele.getPi());
@@ -829,4 +820,49 @@ public abstract class AbstractBuilder {
         }
         return StringTools.encodeUrl(Paths.get(path).getFileName().toString());
     }
+
+    /**
+     * <p>
+     * getManifestURI.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @return a {@link java.net.URI} object.
+     */
+    public URI getManifestURI(String pi) {
+
+        String urlString = this.urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(pi).build();
+        return getExternalManifestURI(pi).orElse(URI.create(urlString));
+    }
+
+    public Optional<URI> getExternalManifestURI(String pi) {
+        if (this.config.useExternalManifestUrls()) {
+            try {
+                Optional<URI> externalURI = readURIFromSolr(pi);
+                return externalURI;
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.warn("Error reading manifest url from for PI {}", pi);
+            } catch (URISyntaxException e) {
+                logger.warn("Error reading external manifest uri from record {}: {}", pi, e.toString());
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<URI> readURIFromSolr(String pi) throws URISyntaxException, PresentationException, IndexUnreachableException {
+        String solrField = this.config.getExternalManifestSolrField();
+        if (StringUtils.isNotBlank(solrField)) {
+            SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(String.format("PI:%s", pi), List.of(solrField));
+            if (doc != null && doc.containsKey(solrField)) {
+                String uriString = SolrTools.getMetadataValues(doc, solrField).stream().findAny().orElse("");
+                if (StringUtils.isNotBlank(uriString)) {
+                    return Optional.of(new URI(uriString));
+                }
+            }
+            return Optional.empty();
+        } else {
+            throw new PresentationException("No solr field configured containing external manifest urls");
+        }
+    }
+
 }

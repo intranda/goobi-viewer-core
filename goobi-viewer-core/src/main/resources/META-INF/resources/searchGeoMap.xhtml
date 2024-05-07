@@ -11,7 +11,7 @@
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('searchGeoMap', false, true)}" />
-            <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.title__search_geomap,1)}" />
+            <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('title__search_geomap',1)}" />
             <f:event type="preRenderView" listener="#{searchBean.resetSearchParameters}" />
         </f:metadata>
     </ui:define>

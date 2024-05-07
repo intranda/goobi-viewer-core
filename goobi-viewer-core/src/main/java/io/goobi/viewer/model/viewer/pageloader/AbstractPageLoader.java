@@ -27,23 +27,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
@@ -67,10 +65,11 @@ public abstract class AbstractPageLoader implements IPageLoader {
     /** All fields to be fetched when loading page documents. Any new required fields must be added to this array. */
     protected static final String[] FIELDS = { SolrConstants.PI_TOPSTRUCT, SolrConstants.PHYSID, SolrConstants.ORDER, SolrConstants.ORDERLABEL,
             SolrConstants.IDDOC_OWNER, SolrConstants.MIMETYPE, SolrConstants.FILEIDROOT, SolrConstants.FILENAME, SolrConstants.FILENAME_ALTO,
-            SolrConstants.FILENAME_FULLTEXT, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.FILENAME_MPEG, SolrConstants.FILENAME_MPEG3,
-            SolrConstants.FILENAME_MP4, SolrConstants.FILENAME_OGG, SolrConstants.FILENAME_WEBM, SolrConstants.FULLTEXTAVAILABLE,
-            SolrConstants.DATAREPOSITORY, SolrConstants.IMAGEURN, SolrConstants.WIDTH, SolrConstants.HEIGHT, SolrConstants.ACCESSCONDITION,
-            SolrConstants.MDNUM_FILESIZE, SolrConstants.BOOL_IMAGEAVAILABLE, SolrConstants.BOOL_DOUBLE_IMAGE };
+            SolrConstants.FILENAME_FULLTEXT, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.FILENAME + "_JPEG", SolrConstants.FILENAME_MPEG,
+            SolrConstants.FILENAME_MPEG3, SolrConstants.FILENAME_MP4, SolrConstants.FILENAME_OGG, SolrConstants.FILENAME + "_TIFF",
+            SolrConstants.FILENAME_WEBM, SolrConstants.FULLTEXTAVAILABLE, SolrConstants.DATAREPOSITORY, SolrConstants.IMAGEURN, SolrConstants.WIDTH,
+            SolrConstants.HEIGHT, SolrConstants.ACCESSCONDITION, SolrConstants.MDNUM_FILESIZE, SolrConstants.BOOL_IMAGEAVAILABLE,
+            SolrConstants.BOOL_DOUBLE_IMAGE };
 
     /**
      * Creates and returns the appropriate loader instance for the given <code>StructElement</code>. Only creates loaders that load pages.
@@ -103,7 +102,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
             // Page loader that skips loading any pages for speed (e.g. TOC creation via REST)
             return new EmptyPageLoader(topStructElement);
         }
-        
+
         return create(topStructElement, Collections.emptyList());
     }
 
@@ -275,22 +274,15 @@ public abstract class AbstractPageLoader implements IPageLoader {
         if (doc.getFieldValue(SolrConstants.HEIGHT) != null) {
             pe.setHeight((Integer) doc.getFieldValue(SolrConstants.HEIGHT));
         }
-        if (pe.getMimeType() != null && pe.getMimeType().startsWith("image") && !pe.hasIndividualSize()) {
-            try {
-                Optional.ofNullable(BeanUtils.getImageDeliveryBean().getImages().getImageInformation(pe))
-                        .ifPresent(info -> {
-                            pe.setHeight(info.getHeight());
-                            pe.setWidth(info.getWidth());
-                        });
-            } catch (Exception e) {
-                logger.warn("Error reading image size of {}: {}", pe.getFirstFileName(), e.toString());
-            }
-        }
 
         // Full-text filename
         pe.setFulltextFileName((String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT));
         // ALTO filename
         pe.setAltoFileName((String) doc.getFirstValue(SolrConstants.FILENAME_ALTO));
+        // TIFF filename
+        pe.setFilePathTiff((String) doc.getFirstValue(SolrConstants.FILENAME + "_TIFF"));
+        // JPEG filename
+        pe.setFilePathJpeg((String) doc.getFirstValue(SolrConstants.FILENAME + "_JPEG"));
 
         // Access conditions
         if (doc.getFieldValues(SolrConstants.ACCESSCONDITION) != null) {

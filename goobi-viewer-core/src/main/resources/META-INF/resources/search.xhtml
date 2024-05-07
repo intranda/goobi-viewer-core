@@ -16,7 +16,7 @@
             <!-- JSF 2.2 passthrough parameter (needed to use HTML <input> elements with bean backing) -->
             <f:viewParam name="searchStandardFilter" value="#{searchBean.currentSearchFilterString}" />
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('search', false, true)}" />
-            <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(msg.search,1)}" />
+            <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('search',1)}" />
             <f:event type="preRenderView" listener="#{searchBean.resetSearchParameters}" />
         </f:metadata>
     </ui:define>

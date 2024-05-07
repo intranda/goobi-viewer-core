@@ -174,16 +174,19 @@
 								<div class="admin__developer-autopull-version-info">
 									<c:set scope="request" var="versionInfo"
 										value="#{adminDeveloperBean.lastVersionInfo}" />
-									<div class="admin__developer-autopull-build-date">#{versionInfo.buildDate}</div>
-									<div class="admin__developer-autopull-git-revision">#{versionInfo.gitRevision}</div>
-									<div class="admin__developer-autopull-release-version">#{versionInfo.releaseVersion}</div>
-
-									<o:commandScript name="updateTheme" render="updateThemeGroup"></o:commandScript>
-									<h:commandButton styleClass="btn btn--default mt-3"
-										action="#{adminDeveloperBean.triggerPullTheme}"
-										value="#{msg.admin__developer__pull_theme}">
-										<f:ajax render="@form"></f:ajax>
-									</h:commandButton>
+									<div class="admin__developer-autopull-build-date"><span class="admin__developer-autopull-version-info-label">#{msg.admin__developer__pull_theme_execute_date}: </span><span>#{versionInfo.buildDate}</span></div>
+									<div class="admin__developer-autopull-git-revision"><span class="admin__developer-autopull-version-info-label">#{msg.admin__developer__pull_theme_revision}: </span><span>#{versionInfo.gitRevision}</span></div>
+									<div class="admin__developer-autopull-release-version"><span class="admin__developer-autopull-version-info-label">#{msg.admin__developer__pull_theme_branch}: </span><span>#{versionInfo.releaseVersion}</span></div>
+									<div class="admin__developer-autopull-commit-message"><span class="admin__developer-autopull-version-info-label">#{msg.admin__developer__pull_theme_message}: </span><span>#{versionInfo.commitMessage}</span></div>
+ 
+ 									<div class="admin__developer-autopull-status-button-wrapper">
+										<o:commandScript name="updateTheme" render="updateThemeGroup"></o:commandScript>
+										<h:commandButton styleClass="btn btn--default mt-3"
+											action="#{adminDeveloperBean.triggerPullTheme}" 
+											value="#{msg.admin__developer__pull_theme_button}">
+											<f:ajax render="@form"></f:ajax>
+										</h:commandButton>
+									</div>
 
 									<!-- START: zip archive progress monitor -->
 									<span class="admin__developer_download_archive__loader"

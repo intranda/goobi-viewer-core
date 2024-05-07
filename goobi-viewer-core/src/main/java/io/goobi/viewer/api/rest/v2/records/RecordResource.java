@@ -28,8 +28,10 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_COMMENTS_PAGE;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_MANIFEST;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_RECORD;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +39,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -98,6 +99,15 @@ public class RecordResource {
     public IPresentationModelElement getManifest()
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
             DAOException, IllegalPathSyntaxException, ContentLibException {
+        try {
+            Optional<URI> forwardURI = new ManifestBuilder(urls).getExternalManifestURI(pi);
+            if (forwardURI.isPresent()) {
+                servletResponse.sendRedirect(forwardURI.get().toString());
+                return null;
+            }
+        } catch (IOException e) {
+            logger.error("Error forwarding manifest url", e);
+        }
         return new ManifestBuilder(urls).build(pi, servletRequest);
     }
 
