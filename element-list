@@ -41,12 +41,12 @@ io.goobi.viewer.api.rest.v2.media
 io.goobi.viewer.api.rest.v2.records
 io.goobi.viewer.api.rest.v2.records.media
 io.goobi.viewer.controller
+io.goobi.viewer.controller.config.filter
 io.goobi.viewer.controller.files
 io.goobi.viewer.controller.imaging
 io.goobi.viewer.controller.model
 io.goobi.viewer.controller.mq
 io.goobi.viewer.controller.shell
-io.goobi.viewer.controller.variablereplacer
 io.goobi.viewer.dao
 io.goobi.viewer.dao.converter
 io.goobi.viewer.dao.impl
@@ -128,6 +128,7 @@ io.goobi.viewer.model.translations
 io.goobi.viewer.model.translations.admin
 io.goobi.viewer.model.translations.language
 io.goobi.viewer.model.urlresolution
+io.goobi.viewer.model.variables
 io.goobi.viewer.model.viewer
 io.goobi.viewer.model.viewer.collections
 io.goobi.viewer.model.viewer.object
