@@ -51,8 +51,8 @@ public class EMailSender {
     private final String smtpServer;
     private final String smtpUser;
     private final String smtpPassword;
-    private String smtpSenderAddress;
-    private String smtpSenderName;
+    private final String smtpSenderAddress;
+    private final String smtpSenderName;
     private final String smtpSecurity;
     private final Integer smtpPort;
 
@@ -266,31 +266,4 @@ public class EMailSender {
         return ret;
     }
 
-    /**
-     * @return the smtpSenderAddress
-     */
-    public String getSmtpSenderAddress() {
-        return smtpSenderAddress;
-    }
-
-    /**
-     * @param smtpSenderAddress the smtpSenderAddress to set
-     */
-    public void setSmtpSenderAddress(String smtpSenderAddress) {
-        this.smtpSenderAddress = smtpSenderAddress;
-    }
-
-    /**
-     * @return the smtpSenderName
-     */
-    public String getSmtpSenderName() {
-        return smtpSenderName;
-    }
-
-    /**
-     * @param smtpSenderName the smtpSenderName to set
-     */
-    public void setSmtpSenderName(String smtpSenderName) {
-        this.smtpSenderName = smtpSenderName;
-    }
 }

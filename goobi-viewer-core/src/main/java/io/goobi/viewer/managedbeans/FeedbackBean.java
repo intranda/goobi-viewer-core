@@ -152,10 +152,6 @@ public class FeedbackBean implements Serializable {
         //set current url to feedback
         setFeedbackUrl(setCurrentUrl);
 
-        // Set sender name and address to enable quick reply
-        emailSender.setSmtpSenderName(feedback.getName());
-        emailSender.setSmtpSenderAddress(feedback.getSenderAddress());
-
         try {
             if (emailSender.postMail(Collections.singletonList(feedback.getRecipientAddress()), null, null,
                     feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
