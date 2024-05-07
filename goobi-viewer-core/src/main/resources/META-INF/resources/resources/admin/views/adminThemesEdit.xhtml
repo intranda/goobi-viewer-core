@@ -3,9 +3,9 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
-
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
@@ -222,10 +222,10 @@
 
                 <div class="form-group form-row">
                   <div class="col-2 control-label">
-                    <label for="ipRangeDescription">#{msg.admin__themes__css__label}:</label>
+                    <label for="quickCSSInput">#{msg.admin__themes__css__label}:</label>
                   </div>
                   <div class="col-9 admin__form-input">
-                    <h:inputTextarea rows="10" value="#{theme.styleSheet}" id="ipRangeDescription" styleClass="form-control" />
+                    <h:inputTextarea pt:data-codemirror="css" rows="10" value="#{theme.styleSheet}" id="quickCSSInput" styleClass="form-control" />
                     <span class="admin__form-help-text">#{msg.admin__themes__css__help}</span>
                   </div>
                   <div class="col-1 admin__form-help-icon">
@@ -252,7 +252,7 @@
                     <label for="quickJSInput">#{msg.admin__themes__javascript__label}:</label>
                   </div>
                   <div class="col-9 admin__form-input">
-                    <h:inputTextarea rows="10" value="#{theme.javascript}" id="quickJSInput" styleClass="form-control" />
+                    <h:inputTextarea pt:data-codemirror="javascript" rows="10" value="#{theme.javascript}" id="quickJSInput" styleClass="form-control" />
                     <span class="admin__form-help-text">#{msg.admin__themes__javascript__help}</span>
                   </div>
                   <div class="col-1 admin__form-help-icon">
@@ -399,6 +399,52 @@
 	        </h:panelGroup>
 
       </div> <!-- End WRAPPER -->
+      
+      <!-- VARIABLES IF READ OR WRITABLE -->
+		<script>			
+																							
+			$( document ).ready(function() {
+				
+				document.querySelectorAll('[data-codemirror]').forEach(element => {
+					let mode = element.dataset["codemirror"];
+					console.log("Found code mirror text ", element, mode);
+					// INIT EDITOR MAIN
+					CodeMirror.fromTextArea(element, {
+							lineNumbers: true,
+							mode: mode,
+							theme: "default",
+							autofocus: false,
+							indentUnit: 2,
+							tabSize: 2,
+							styleActiveLine: true,
+							indentWithTabs: true,
+							extraKeys: {
+								"F11": function(cm) {
+									cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+								},
+								"Esc": function(cm) {
+									if (cm.getOption("fullScreen")) {
+										cm.setOption("fullScreen", false);
+									}
+								},
+								"Ctrl-D": function(cm) {
+									cm.setOption("theme", cm.getOption("theme") == "default" ? "dracula" : "default");
+								},
+								"Ctrl-S": (cm) => {
+									// if ( _debug ) {
+										console.log('manually saved with key combo');
+									// }
+									if (this.isReadOnly() == false) {
+										document.querySelector('[data-cm="save"]').click();
+									}
+								},
+								"Ctrl-E": "findPersistent",
+							}
+					}); 
+				});
+				
+			});
+		</script>
 
     </ui:define>
 

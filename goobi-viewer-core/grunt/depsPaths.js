@@ -64,6 +64,10 @@ const depsPathsJS = [
 	  'codemirror/addon/selection/active-line.js',
 	  // XML SYNTAX FILE 
 	  'codemirror/mode/xml/xml.js',
+	  // JS SYNTAX FILE 
+	  'codemirror/mode/javascript/javascript.js',
+	  // CSS SYNTAX FILE 
+	  'codemirror/mode/css/css.js',
 	  // PROPERTIES SYNTAX FILE 
 	  'codemirror/mode/properties/properties.js',
 	  // LICENSE FILE 
