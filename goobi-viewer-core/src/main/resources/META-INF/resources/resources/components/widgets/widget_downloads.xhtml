@@ -539,7 +539,7 @@
 
 					<!-- PAGE RANGE DOWNLOADS -->
 					<ui:fragment
-						rendered="#{!activeDocumentBean.viewManager.bornDigital}">
+						rendered="#{!activeDocumentBean.viewManager.bornDigital and configurationBean.pdfPageRangeEnabled}">
 
 						<div
 							class="widget-downloads__page-range-downloads widget__badge-container">
