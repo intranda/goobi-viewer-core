@@ -16,23 +16,21 @@
     </composite:interface>
 
     <composite:implementation>
-            <h:panelGroup
-                rendered="#{searchBean.facets.allAvailableFacets.entrySet().toArray() != null}">
-                <div id="searchListFacetsWrapper" class="widget-search-facets #{cc.attrs.widget.cssClass}">
-                    <h:form id="searchListFacetsForm" prependId="false">
-                        <!-- FACETS -->
-                        <c:forEach var="field" items="#{searchBean.facets.allAvailableFacets.entrySet().toArray()}" varStatus="status">
-                            <h:panelGroup id="collectionFacetsPanelGroup_#{status.index}"
-                                rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and (searchBean.facets.isFacetListSizeSufficient(field.key) or fn:length(searchBean.facets.getActiveFacetsForField(field.key)) > 0)}">
-                                <div class="widget widget-search-facets__collection">
+        <h:panelGroup rendered="#{searchBean.facets.allAvailableFacets.entrySet().toArray() != null}">
+            <div id="searchListFacetsWrapper" class="widget-search-facets #{cc.attrs.widget.cssClass}">
+                <h:form id="searchListFacetsForm" prependId="false">
+                    <!-- FACETS -->
+                    <c:forEach var="field" items="#{searchBean.facets.allAvailableFacets.entrySet().toArray()}" varStatus="status">
+                        <h:panelGroup id="collectionFacetsPanelGroup_#{status.index}"
+                            rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and (searchBean.facets.isFacetListSizeSufficient(field.key) or fn:length(searchBean.facets.getActiveFacetsForField(field.key)) > 0)}">
+                            <div class="widget widget-search-facets__collection">
 
                                 <div class="widget-search-facets__topbar">
                                     <h2><span>#{msg[field.key.concat('_DD')]}</span></h2>
-
                                 </div>
 
-                                    <!-- FILTER FACETS -->
-                                    <ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(field.key)}">
+                                <!-- FILTER FACETS -->
+                                <ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(field.key)}">
                                     <div class="widget-search-facets__filter">
                                         <input
                                           type="text"
@@ -49,27 +47,29 @@
                                         	<i class="fa fa-search" aria-hidden="true"></i>
                                         </button>
                                     </div>
-                                    </ui:fragment>
+                                </ui:fragment>
 
-                                    <ul>
-                                        <!-- ACTIVE FACETS -->
-                                        <c:forEach items="#{searchBean.facets.getActiveFacetsForField(field.key)}" var="facet">
-                                            <li class="active">
-                                                <h:commandLink action="#{searchBean.removeFacetAction(facet.link)}" title="#{msg.removeFacet}">
-                                                    <div class="row">
-                                                        <div class="col-11">#{facet.translatedLabel}</div>
-                                                        <div class="col-1">
-                                                            <i class="fa fa-times" aria-hidden="true"></i>
-                                                        </div>
+                                <ul>
+
+                                    <!-- ACTIVE FACETS -->
+                                    <c:forEach items="#{searchBean.facets.getActiveFacetsForField(field.key)}" var="facet">
+                                        <li class="active">
+                                            <h:commandLink action="#{searchBean.removeFacetAction(facet.link)}" title="#{msg.removeFacet}">
+                                                <div class="row">
+                                                    <div class="col-11">#{facet.translatedLabel}</div>
+                                                    <div class="col-1">
+                                                        <i class="fa fa-times" aria-hidden="true"></i>
                                                     </div>
-                                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                                    <f:passThroughAttribute name="data-placement" value="top" />
-                                                    <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
-                                                </h:commandLink>
-                                            </li>
-                                        </c:forEach>
+                                                </div>
+                                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                                                <f:passThroughAttribute name="data-placement" value="top" />
+                                                <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
+                                            </h:commandLink>
+                                        </li>
+                                    </c:forEach>
+                                    
+                                    <!-- AVAILABLE FACETS -->
 
-                                        <!-- AVAILABLE FACETS -->
                                         <ui:repeat value="#{searchBean.facets.getLimitedFacetListForField(field.key)}" var="facet">
                                             <li>
                                                 <h:outputLink
@@ -79,44 +79,46 @@
                                                 </h:outputLink>
                                             </li>
                                         </ui:repeat>
-                                    </ul>
-
-                                    <!-- EXPAND/COLLAPSE FACET -->
-                                    <ui:fragment rendered="#{searchBean.facets.isDisplayFacetExpandLink(field.key)}">
-                                        <div class="widget-search-facets__collapse">
-                                            <button
-												class="btn btn--clean"
-                                                jsf:action="#{searchBean.facets.expandFacet(field.key)}"
-												title="#{msg.slideDown}">
-                                                <i class="fa fa-chevron-down" aria-hidden="true"></i>
-                                                <f:passThroughAttribute name="data-collapse-link" value="collapse-link-#{status.index}" />
-                                                <f:ajax render="collectionFacetsPanelGroup_#{status.index}" />
-                                            </button>
-                                        </div>
+                              
                                     </ui:fragment>
-                                    <ui:fragment rendered="#{searchBean.facets.isDisplayFacetCollapseLink(field.key)}">
-                                        <div class="widget-search-facets__collapse">
-                                            <button
-												class="btn btn--clean"
-                                                jsf:action="#{searchBean.facets.collapseFacet(field.key)}" title="#{msg.slideUp}">
-                                                <i class="fa fa-chevron-up" aria-hidden="true"></i>
-                                                <f:passThroughAttribute name="data-collapse-link" value="collapse-link-#{status.index}" />
-                                                <f:ajax render="collectionFacetsPanelGroup_#{status.index}" />
-                                            </button>
-                                        </div>
-                                    </ui:fragment>
-                                </div>
-                            </h:panelGroup>
-                        </c:forEach>
-                    </h:form>
-                </div>
-            </h:panelGroup>
+                                    
+                                </ul>
 
-            <h:panelGroup
-                rendered="#{searchBean.facets.allAvailableFacets.entrySet().toArray() == null}">
-                <div id="widgetSearchHelp" class="widget-searchhelp">
-                    <viewerComponent:searchHelpText />
-                </div>
-            </h:panelGroup>
+                                <!-- EXPAND/COLLAPSE FACET -->
+                                <ui:fragment rendered="#{searchBean.facets.isDisplayFacetExpandLink(field.key)}">
+                                    <div class="widget-search-facets__collapse">
+                                        <button class="btn btn--clean"
+                                            jsf:action="#{searchBean.facets.expandFacet(field.key)}"
+                                            title="#{msg.slideDown}">
+                                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                            <f:passThroughAttribute name="data-collapse-link" value="collapse-link-#{status.index}" />
+                                            <f:ajax render="collectionFacetsPanelGroup_#{status.index}" />
+                                        </button>
+                                    </div>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{searchBean.facets.isDisplayFacetCollapseLink(field.key)}">
+                                    <div class="widget-search-facets__collapse">
+                                        <button class="btn btn--clean"
+                                            jsf:action="#{searchBean.facets.collapseFacet(field.key)}" title="#{msg.slideUp}">
+                                            <i class="fa fa-chevron-up" aria-hidden="true"></i>
+                                            <f:passThroughAttribute name="data-collapse-link" value="collapse-link-#{status.index}" />
+                                                <f:ajax render="collectionFacetsPanelGroup_#{status.index}" />
+                                        </button>
+                                    </div>
+                                </ui:fragment>
+                                
+                            </div>
+                        </h:panelGroup>
+                    </c:forEach>
+                </h:form>
+            </div>
+        </h:panelGroup>
+
+        <h:panelGroup
+            rendered="#{searchBean.facets.allAvailableFacets.entrySet().toArray() == null}">
+            <div id="widgetSearchHelp" class="widget-searchhelp">
+                <viewerComponent:searchHelpText />
+            </div>
+        </h:panelGroup>
     </composite:implementation>
 </ui:composition>

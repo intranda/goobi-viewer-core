@@ -354,9 +354,15 @@ public class SearchFacets implements Serializable {
             return Collections.emptyList();
         }
 
-        // Remove currently used facets
+        // Remove currently used facets (unless boolean type)
         if (excludeSelected) {
-            facetItems.removeAll(activeFacets);
+            List<String> boolFields = DataManager.getInstance().getConfiguration().getBooleanFacetFields();
+            for (IFacetItem activeFacet : activeFacets) {
+                if (!boolFields.contains(activeFacet.getField())) {
+                    facetItems.remove(activeFacet);
+                }
+            }
+            // facetItems.removeAll(activeFacets);
         }
 
         // Trim to initial number

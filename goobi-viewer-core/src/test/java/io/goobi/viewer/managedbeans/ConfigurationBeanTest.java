@@ -114,4 +114,14 @@ class ConfigurationBeanTest extends AbstractTest {
     void getSearchResultGroupNames_shouldReturnAllValues() throws Exception {
         Assertions.assertEquals(3, bean.getSearchResultGroupNames().size());
     }
+
+    /**
+     * @see ConfigurationBean#isSidebarFulltextLinkVisible()
+     * @verifies return correct value
+     */
+    @Test
+    void isFacetFieldTypeBoolean_shouldReturnCorrectValue() throws Exception {
+        Assertions.assertTrue(bean.isFacetFieldTypeBoolean("BOOL_HASIMAGES"));
+        Assertions.assertFalse(bean.isFacetFieldTypeBoolean("MD_CREATOR"));
+    }
 }

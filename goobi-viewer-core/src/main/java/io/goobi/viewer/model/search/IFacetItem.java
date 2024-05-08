@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.search;
 
+import io.goobi.viewer.model.search.FacetItem.FacetType;
+
 /**
  * @author florian
  *
@@ -41,6 +43,11 @@ public interface IFacetItem {
      * @see io.goobi.viewer.model.search.IFacetItem#getUrlEscapedLink()
      */
     String getUrlEscapedLink();
+    
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#getType()
+     */
+    FacetType getType();
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.IFacetItem#getField()

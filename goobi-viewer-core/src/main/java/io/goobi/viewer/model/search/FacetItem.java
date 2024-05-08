@@ -64,6 +64,7 @@ public class FacetItem implements Serializable, IFacetItem {
     private static final Comparator<IFacetItem> ALPHABETIC_COMPARATOR = new FacetItem.AlphabeticComparator();
     private static final Comparator<IFacetItem> COUNT_COMPARATOR = new FacetItem.CountComparator();
 
+    private FacetType type = FacetType.STANDARD;
     private String field;
     private String value;
     private String value2;
@@ -113,6 +114,10 @@ public class FacetItem implements Serializable, IFacetItem {
                 ? ViewerResourceBundle.getTranslation(this.label, BeanUtils.getLocale()) : this.label;
     }
 
+    /**
+     * 
+     * @param count
+     */
     public FacetItem(Count count) {
         this(count.getFacetField().getName(), count.getFacetField().getName() + ":" + count.getName(), count.getName(), count.getCount(), false);
     }
@@ -522,6 +527,21 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
+     * @return the type
+     */
+    @Override
+    public FacetType getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(FacetType type) {
+        this.type = type;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>field</code>.
      * </p>
@@ -814,5 +834,13 @@ public class FacetItem implements Serializable, IFacetItem {
             col.setStrength(Collator.PRIMARY);
             return col.compare(label1, label2);
         }
+    }
+
+    public enum FacetType {
+        STANDARD,
+        BOOLEAN,
+        GEO,
+        HIERARCHICAL,
+        RANGE;
     }
 }
