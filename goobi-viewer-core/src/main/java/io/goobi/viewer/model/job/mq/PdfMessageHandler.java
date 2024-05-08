@@ -25,18 +25,25 @@ package io.goobi.viewer.model.job.mq;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.inject.Inject;
+
+import org.apache.commons.compress.utils.FileNameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.goobi.presentation.contentServlet.controller.GetMetsPdfAction;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
+import de.unigoettingen.sub.commons.contentlib.servlet.model.MetsPdfRequest;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -48,6 +55,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.managedbeans.PersistentStorageBean;
 import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
@@ -58,8 +66,12 @@ import jakarta.mail.MessagingException;
 
 public class PdfMessageHandler implements MessageHandler<MessageStatus> {
 
+    private static final int DELAY_IF_PDF_IS_BEING_CREATED_MILLIS = 300_000;
     private static final int MAX_RETRIES = 2;
     private static final Logger logger = LogManager.getLogger(PdfMessageHandler.class);
+
+    @Inject
+    PersistentStorageBean storageBean;
 
     @Override
     public MessageStatus call(ViewerMessage message, MessageQueueManager queueManager) {
@@ -68,6 +80,7 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
 
         String logId = message.getProperties().get("logId");
 
+        boolean usPdfSource = Boolean.parseBoolean(message.getProperties().getOrDefault("usePdfSource", "false"));
         DownloadJob downloadJob = null;
         try {
             File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(PDFDownloadJob.LOCAL_TYPE));
@@ -83,13 +96,25 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
 
             Path pdfFile = DownloadJobTools.getDownloadFileStatic(downloadJob.getIdentifier(), downloadJob.getType(), downloadJob.getFileExtension())
                     .toPath();
+
+            //if file is currently being created, wait 5 min and try again
+            if (isLocked(pdfFile)) {
+                message.setDelay(DELAY_IF_PDF_IS_BEING_CREATED_MILLIS);
+                message.setRetryCount(message.getRetryCount() - 1);
+                return MessageStatus.ERROR;
+            }
+
+            //if job is in error state of file doesn't exist, update job status
             if (JobStatus.ERROR == downloadJob.getStatus() || (JobStatus.READY == downloadJob.getStatus() && !Files.exists(pdfFile))) {
                 downloadJob.setStatus(JobStatus.WAITING);
                 DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
             }
-            createPdf(work, Optional.ofNullable(logId).filter(StringUtils::isNotBlank).filter(div -> !"-".equals(div)), pdfFile);
-            // inform user and update DownloadJob
 
+            //if the file does not exist, create it
+            if (!Files.exists(pdfFile)) {
+                createPdf(work, Optional.ofNullable(logId).filter(StringUtils::isNotBlank).filter(div -> !"-".equals(div)), pdfFile,
+                        message.getMessageId(), usPdfSource);
+            }
             downloadJob.setStatus(JobStatus.READY);
             try {
                 downloadJob.notifyObservers(JobStatus.READY, "");
@@ -97,10 +122,12 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
                 logger.error("Error notifying observers: {}", e.toString());
             }
             DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
-        } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException | ContentLibException | DAOException e) {
+        } catch (PresentationException | IndexUnreachableException | RecordNotFoundException | IOException | ContentLibException | DAOException
+                | URISyntaxException e) {
             if (downloadJob != null && message.getRetryCount() > MAX_RETRIES) {
                 downloadJob.setStatus(JobStatus.ERROR);
                 downloadJob.setMessage("Error creating PDF. Please contact support if the problem persists");
+                message.getProperties().put("message", "Error creating PDF: " + e.toString());
                 try {
                     DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
                 } catch (DAOException e1) {
@@ -113,24 +140,58 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
         return MessageStatus.FINISH;
     }
 
-    private static void createPdf(Dataset work, Optional<String> divId, Path pdfFile) throws IOException, ContentLibException {
+    private static void createPdf(Dataset work, Optional<String> divId, Path pdfFile, String taskId, boolean usePdfSource)
+            throws IOException, ContentLibException, URISyntaxException {
+        createLock(pdfFile);
         try (FileOutputStream fos = new FileOutputStream(pdfFile.toFile())) {
-            Map<String, String> params = new HashMap<>();
-            params.put("metsFile", work.getMetadataFilePath().toString());
-            params.put("imageSource", work.getMediaFolderPath().getParent().toUri().toString());
-            divId.ifPresent(id -> params.put("divID", id));
-
-            if (work.getPdfFolderPath() != null) {
-                params.put("pdfSource", work.getPdfFolderPath().getParent().toUri().toString());
-            }
-            if (work.getAltoFolderPath() != null) {
-                params.put("altoSource", work.getAltoFolderPath().getParent().toUri().toString());
-            }
-            params.put("metsFileGroup", "PRESENTATION");
-            params.put("goobiMetsFile", "false");
+            MetsPdfRequest request = createPdfRequest(work, divId, usePdfSource);
             GetMetsPdfAction action = new GetMetsPdfAction();
-            action.writePdf(params, fos);
+            action.writePdf(request, ContentServerConfiguration.getInstance(), fos, p -> {
+            });
+        } catch (IOException | ContentLibException | URISyntaxException e) {
+            Files.deleteIfExists(pdfFile);
+            throw e;
+        } finally {
+            releaseLock(pdfFile);
         }
+    }
+
+    public static boolean createLock(Path pdfFile) throws IOException {
+        try {
+            Path lockFile = pdfFile.getParent().resolve(FileNameUtils.getBaseName(pdfFile) + ".creating.lock");
+            Files.createFile(lockFile);
+            return true;
+        } catch (FileAlreadyExistsException e) {
+            return false;
+        }
+    }
+
+    public static boolean releaseLock(Path pdfFile) throws IOException {
+        Path lockFile = pdfFile.getParent().resolve(FileNameUtils.getBaseName(pdfFile) + ".creating.lock");
+        return Files.deleteIfExists(lockFile);
+    }
+
+    public static boolean isLocked(Path pdfFile) throws IOException {
+        Path lockFile = pdfFile.getParent().resolve(FileNameUtils.getBaseName(pdfFile) + ".creating.lock");
+        return Files.exists(lockFile);
+    }
+
+    public static MetsPdfRequest createPdfRequest(Dataset work, Optional<String> divId, boolean usePdfSource) throws URISyntaxException {
+        Map<String, String> params = new HashMap<>();
+        params.put("metsFile", work.getMetadataFilePath().toString());
+        params.put("imageSource", work.getMediaFolderPath().getParent().toUri().toString());
+        divId.ifPresent(id -> params.put("divID", id));
+
+        if (usePdfSource && work.getPdfFolderPath() != null) {
+            params.put("pdfSource", work.getPdfFolderPath().getParent().toUri().toString());
+        }
+        if (work.getAltoFolderPath() != null) {
+            params.put("altoSource", work.getAltoFolderPath().getParent().toUri().toString());
+        }
+        params.put("metsFileGroup", "PRESENTATION");
+        params.put("goobiMetsFile", "false");
+        MetsPdfRequest request = new MetsPdfRequest(params);
+        return request;
     }
 
     @Override

@@ -1201,12 +1201,12 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isGeneratePdfInTaskManager()
+     * @see Configuration#isGeneratePdfInMessageQueue()
      * @verifies return correct value
      */
     @Test
     void isGeneratePdfInTaskManager_shouldReturnCorrectValue() throws Exception {
-        assertTrue(DataManager.getInstance().getConfiguration().isGeneratePdfInTaskManager());
+        assertTrue(DataManager.getInstance().getConfiguration().isGeneratePdfInMessageQueue());
     }
 
     /**

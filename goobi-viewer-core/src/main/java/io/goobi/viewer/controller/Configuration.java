@@ -3408,8 +3408,8 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isGeneratePdfInTaskManager() {
-        return getLocalBoolean("pdf.externalPdfGeneration", false);
+    public boolean isGeneratePdfInMessageQueue() {
+        return getLocalBoolean("pdf.generateInMessageQueue", getLocalBoolean("pdf.externalPdfGeneration", false));
     }
 
     /**
