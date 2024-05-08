@@ -154,10 +154,11 @@ public class FeedbackBean implements Serializable {
 
         try {
             if (emailSender.postMail(Collections.singletonList(feedback.getRecipientAddress()), null, null,
-                    feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
+                    Collections.singletonList(feedback.getSenderAddress()), feedback.getEmailSubject("feedbackEmailSubject"),
+                    feedback.getEmailBody("feedbackEmailBody"))) {
                 // Send confirmation to sender
                 if (StringUtils.isNotEmpty(feedback.getSenderAddress())
-                        && !emailSender.postMail(Collections.singletonList(feedback.getSenderAddress()), null, null,
+                        && !emailSender.postMail(Collections.singletonList(feedback.getSenderAddress()), null, null, null,
                                 feedback.getEmailSubject("feedbackEmailSubjectSender"), feedback.getEmailBody("feedbackEmailBody"))) {
                     logger.warn("Could not send feedback confirmation to sender.");
                 }
