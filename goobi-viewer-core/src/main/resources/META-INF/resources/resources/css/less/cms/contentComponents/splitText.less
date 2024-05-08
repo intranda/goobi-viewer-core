@@ -1,0 +1,34 @@
+/* ==============================================================
+	Styling for content component frontend split text
+   ==============================================================*/
+
+.content-component__split-text {
+	&-heading {
+		
+	}
+	&-content {
+		column-count: 2;
+		column-gap: 40px;
+		p:last-child {
+			margin-bottom: 0;
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+	.content-component__split-text {
+		&-content {
+			column-count: 1;
+		}
+	}
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}
