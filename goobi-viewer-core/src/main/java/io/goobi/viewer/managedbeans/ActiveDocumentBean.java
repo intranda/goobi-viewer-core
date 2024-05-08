@@ -2096,7 +2096,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return true if download of the given type is enabled for the given page type; false otherwise
      */
     private static boolean isEnabled(String downloadType, String pageTypeName) {
-        if (downloadType.equals(EPUBDownloadJob.LOCAL_TYPE) && !DataManager.getInstance().getConfiguration().isGeneratePdfInTaskManager()) {
+        if (downloadType.equals(EPUBDownloadJob.LOCAL_TYPE) && !DataManager.getInstance().getConfiguration().isGeneratePdfInMessageQueue()) {
             return false;
         }
         PageType pageType = PageType.getByName(pageTypeName);
