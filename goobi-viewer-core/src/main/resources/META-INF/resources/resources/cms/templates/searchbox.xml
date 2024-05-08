@@ -9,7 +9,7 @@
 
 	<content>
 		<item id="heading">
-			<label>cms_component__search_box__heading</label>
+			<label>heading</label>
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
 			<jsfComponent>
 				<library>cms/components/backend/content</library>
