@@ -211,7 +211,7 @@
 		</c:if>
 	</c:forEach>
 
-	<!-- SHOW AVAILABLE BIBS AND SCRIPTS IN CONSOLE -->
+	<!-- SHOW AVAILABLE LIBS AND SCRIPTS IN CONSOLE -->
 	<!-- an easy way to log library names to the console, just pass `showCSS` to the excludeCSS variable in a template file -->
 	<c:if test="#{excludeJS.contains('showJS')}">
 		<c:forEach var="path" items="#{jsPaths}">
@@ -220,13 +220,7 @@
 						.log('%c#{path[0]}',
 								'background: #3365a9; color: #fff; padding: 2px 6px; border-radius: 2px;')
 			</script>
-		</c:forEach>
-	</c:if>
-
-	<!-- QUICK JS IN VIEWER BACKEND - ADDS <script> NODE -->
-	<c:if
-		test="#{templateName != 'templateAdmin' and templateName != 'templateBlank'}">
-		<h:outputText escape="false" value="#{adminThemesBean.javascript}" />
+		</c:forEach> 
 	</c:if>
 
 </ui:composition>
