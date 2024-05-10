@@ -23,11 +23,15 @@
                     <c:forEach var="field" items="#{searchBean.facets.allAvailableFacets.entrySet().toArray()}" varStatus="status">
                         <h:panelGroup id="collectionFacetsPanelGroup_#{status.index}"
                             rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and (searchBean.facets.isFacetListSizeSufficient(field.key) or fn:length(searchBean.facets.getActiveFacetsForField(field.key)) > 0)}">
+                            
+                            
+                            
                             <div class="widget widget-search-facets__collection">
 
                                 <div class="widget-search-facets__topbar">
                                     <h2><span>#{msg[field.key.concat('_DD')]}</span></h2>
                                 </div>
+                                
 
                                 <!-- FILTER FACETS -->
                                 <ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(field.key)}">
@@ -49,10 +53,29 @@
                                     </div>
                                 </ui:fragment>
 
+
+                                <!-- BOOLEAN WRAPPER/DIFFERENT TYPE OF FACET SELECTION AND STYLING -->
+                                <div class="widget__body">
+	                                <div class="widget-search-facets__boolean">
+	                                    <button type="button"
+	                                          class="btn widget-search-facets__boolean-button -active"
+	                                          data-toggle="filter-input"
+	                                          aria-label="#{msg[field.key.concat('_DD')]} #{msg.yes}">#{msg.yes}
+	                                    </button>
+	                                    <button 
+	                                          type="button"
+	                                          class="btn widget-search-facets__boolean-button"
+	                                          data-toggle="filter-input"
+	                                          aria-label="#{msg.filter} #{msg[field.key.concat('_DD')]}: #{msg.no}">#{msg.no}
+	                                    </button>
+	                                </div>
+                                </div>
+
                                 <ul>
 
                                     <!-- ACTIVE FACETS -->
                                     <c:forEach items="#{searchBean.facets.getActiveFacetsForField(field.key)}" var="facet">
+                                        
                                         <li class="active">
                                             <h:commandLink action="#{searchBean.removeFacetAction(facet.link)}" title="#{msg.removeFacet}">
                                                 <div class="row">
@@ -66,6 +89,7 @@
                                                 <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
                                             </h:commandLink>
                                         </li>
+                                        
                                     </c:forEach>
                                     
                                     <!-- AVAILABLE FACETS -->
@@ -80,7 +104,7 @@
                                             </li>
                                         </ui:repeat>
                               
-                                    </ui:fragment>
+								
                                     
                                 </ul>
 
