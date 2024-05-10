@@ -17,7 +17,6 @@
 
 	<composite:implementation>
 
-
 		<ui:fragment rendered="#{cc.attrs.component.hasAccess(userBean.user)}">
 
 			<!-- CONTENT ITEM WITH SELECTED OPTIONS -->
@@ -36,20 +35,13 @@
                 <!-- STATIC GRID -->
                 <div class="tpl-static-grid__grid">
                 	<ui:repeat var="mediaItem" value="#{cc.attrs.component.getContent('grid').mediaItems}">
-	                		<div class="grid-tile">
+	                		<a aria-label="#{msg.a11y__open_link_to}: #{mediaItem.label.getValueOrFallback(navigationHelper.locale)}" href="#{empty mediaItem.link ? '#' : mediaItem.link }" class="grid-tile">
 	                			<div class="grid-tile__title">
-	                				<h3>
-	                					<a href="#{empty mediaItem.link ? '#' : mediaItem.link }" title="#{mediaItem.label.getValueOrFallback(navigationHelper.locale)}">
-	                						#{mediaItem.label.getValueOrFallback(navigationHelper.locale)}
-	                					</a>
-	                				</h3>
-<!-- 	                				<div>#{mediaItem.description.getValueOrFallback(navigationHelper.locale)}</div> -->
+	                				<span class="grid-tile__text">#{mediaItem.label.getValueOrFallback(navigationHelper.locale)}</span>
 	                			</div>
 	                			<div class="grid-tile__image" style="background-image: url('#{mediaItem.image.id}')" title="#{mediaItem.altText}">
-	                				<a href="#{empty mediaItem.link ? '#' : mediaItem.link }">
-                					</a>
 	                			</div>
-	                		</div>
+	                		</a>
 					</ui:repeat>
                 </div>
 
