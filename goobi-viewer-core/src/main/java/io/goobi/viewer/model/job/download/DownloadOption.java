@@ -25,7 +25,6 @@ import java.awt.Dimension;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jboss.weld.exceptions.IllegalArgumentException;
 
 import io.goobi.viewer.controller.DataManager;
 
