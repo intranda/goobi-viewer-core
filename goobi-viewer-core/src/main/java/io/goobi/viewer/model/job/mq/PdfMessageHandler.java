@@ -35,7 +35,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.apache.commons.compress.utils.FileNameUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -158,7 +158,7 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
 
     public static boolean createLock(Path pdfFile) throws IOException {
         try {
-            Path lockFile = pdfFile.getParent().resolve(FileNameUtils.getBaseName(pdfFile) + ".creating.lock");
+            Path lockFile = pdfFile.getParent().resolve(FilenameUtils.getBaseName(pdfFile.getFileName().toString()) + ".creating.lock");
             Files.createFile(lockFile);
             return true;
         } catch (FileAlreadyExistsException e) {
@@ -167,12 +167,12 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
     }
 
     public static boolean releaseLock(Path pdfFile) throws IOException {
-        Path lockFile = pdfFile.getParent().resolve(FileNameUtils.getBaseName(pdfFile) + ".creating.lock");
+        Path lockFile = pdfFile.getParent().resolve(FilenameUtils.getBaseName(pdfFile.getFileName().toString()) + ".creating.lock");
         return Files.deleteIfExists(lockFile);
     }
 
     public static boolean isLocked(Path pdfFile) throws IOException {
-        Path lockFile = pdfFile.getParent().resolve(FileNameUtils.getBaseName(pdfFile) + ".creating.lock");
+        Path lockFile = pdfFile.getParent().resolve(FilenameUtils.getBaseName(pdfFile.getFileName().toString()) + ".creating.lock");
         return Files.exists(lockFile);
     }
 
