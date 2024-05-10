@@ -34,7 +34,6 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.omnifaces.util.Faces;
 
 import io.goobi.viewer.controller.DataManager;
