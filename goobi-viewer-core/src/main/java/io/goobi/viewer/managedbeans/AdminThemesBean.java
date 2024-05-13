@@ -58,11 +58,34 @@ public class AdminThemesBean implements Serializable {
     private final String mainThemeName;
     private final List<String> subThemeNames;
     private List<ThemeConfiguration> configuredThemes;
+    private String currentSubThemeName = null;
 
     public AdminThemesBean() {
         mainThemeName = DataManager.getInstance().getConfiguration().getTheme();
         subThemeNames = getExistingSubThemes();
         configuredThemes = getConfiguredThemes();
+    }
+
+    public String loadSubThemeName() {
+        try {
+            if (BeanUtils.getNavigationHelper().isCmsPage()) {
+                return BeanUtils.getCmsBean().getCurrentPage().getSubThemeDiscriminatorValue();
+            } else {
+                return Optional.ofNullable(BeanUtils.getNavigationHelper().getSubThemeDiscriminatorValue())
+                        .map(v -> v.replaceAll("^-$", ""))
+                        .orElse("");
+            }
+        } catch (IndexUnreachableException e) {
+            logger.error("Error loading sub theme", e);
+            return "";
+        }
+    }
+
+    public String getCurrentSubThemeName() {
+        if (currentSubThemeName == null) {
+            currentSubThemeName = loadSubThemeName();
+        }
+        return currentSubThemeName;
     }
 
     private List<ThemeConfiguration> getConfiguredThemes() {
@@ -215,21 +238,33 @@ public class AdminThemesBean implements Serializable {
         return Optional.ofNullable(getCurrentTheme()).map(ThemeConfiguration::getLabel).orElse(defaultLabel);
     }
 
-    public String getStyleSheet() throws DAOException {
-        String styleSheet = Optional.ofNullable(getCurrentTheme()).map(t -> t.getStyleSheet()).orElse("");
-        if (StringUtils.isNotBlank(styleSheet)) {
-            return "<style>" + styleSheet + "</style>";
-        }
-
-        return "";
+    public boolean stylesheetExists(String themeName) {
+        return getConfiguredThemes().stream()
+                .filter(theme -> theme.getName().equals(themeName))
+                .map(ThemeConfiguration::getStyleSheet)
+                .anyMatch(StringUtils::isNotBlank);
     }
 
-    public String getJavascript() throws DAOException {
-        String js = Optional.ofNullable(getCurrentTheme()).map(t -> t.getJavascript()).orElse("");
-        if (StringUtils.isNotBlank(js)) {
-            return "<script>" + js + "</script>";
-        }
+    public boolean javascriptExists(String themeName) {
+        return getConfiguredThemes().stream()
+                .filter(theme -> theme.getName().equals(themeName))
+                .map(ThemeConfiguration::getJavascript)
+                .anyMatch(StringUtils::isNotBlank);
+    }
 
-        return "";
+    public String getStylesheet(String themeName) throws DAOException {
+        return getConfiguredThemes().stream()
+                .filter(theme -> theme.getName().equals(themeName))
+                .map(ThemeConfiguration::getStyleSheet)
+                .findAny()
+                .orElse("");
+    }
+
+    public String getJavascript(String themeName) throws DAOException {
+        return getConfiguredThemes().stream()
+                .filter(theme -> theme.getName().equals(themeName))
+                .map(ThemeConfiguration::getJavascript)
+                .findAny()
+                .orElse("");
     }
 }
