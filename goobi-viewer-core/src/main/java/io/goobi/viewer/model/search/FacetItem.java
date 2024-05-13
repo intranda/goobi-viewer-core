@@ -771,6 +771,11 @@ public class FacetItem implements Serializable, IFacetItem {
     public boolean isHierarchial() {
         return hierarchial;
     }
+    
+    @Override
+    public boolean isBooleanType() {
+        return DataManager.getInstance().getConfiguration().getBooleanFacetFields().contains(field);
+    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.IFacetItem#toString()

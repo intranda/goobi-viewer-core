@@ -192,7 +192,6 @@ public class GeoFacetItem implements IFacetItem {
             return ret;
         }
     }
-    
 
     @Override
     public FacetType getType() {
@@ -338,6 +337,11 @@ public class GeoFacetItem implements IFacetItem {
      */
     @Override
     public boolean isHierarchial() {
+        return false;
+    }
+
+    @Override
+    public boolean isBooleanType() {
         return false;
     }
 }

@@ -2906,7 +2906,7 @@ public class Configuration extends AbstractConfiguration {
 
         return ret;
     }
-    
+
     /**
      * <p>
      * getBooleanFacetFields.

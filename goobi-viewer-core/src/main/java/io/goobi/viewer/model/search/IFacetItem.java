@@ -138,5 +138,9 @@ public interface IFacetItem {
      * @see io.goobi.viewer.model.search.IFacetItem#isHierarchial()
      */
     boolean isHierarchial();
-
+    
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.IFacetItem#isBoolean()
+     */
+    boolean isBooleanType();
 }

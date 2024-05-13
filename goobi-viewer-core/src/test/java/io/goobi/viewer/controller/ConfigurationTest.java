@@ -1980,6 +1980,7 @@ class ConfigurationTest extends AbstractTest {
     void isFacetFieldDisplayValueFilter_shouldReturnCorrectValue() throws Exception {
         assertFalse(DataManager.getInstance().getConfiguration().isFacetFieldDisplayValueFilter("MD_PLACEPUBLISH"));
         assertTrue(DataManager.getInstance().getConfiguration().isFacetFieldDisplayValueFilter("MD_CREATOR"));
+        assertFalse(DataManager.getInstance().getConfiguration().isFacetFieldDisplayValueFilter("BOOL_HASIMAGES"));
     }
 
     /**

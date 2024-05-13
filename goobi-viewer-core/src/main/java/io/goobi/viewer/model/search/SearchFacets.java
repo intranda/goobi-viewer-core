@@ -260,6 +260,16 @@ public class SearchFacets implements Serializable {
 
         return ret;
     }
+    
+    /**
+     * 
+     * @param link
+     * @return true if given link is part of the active facet string; false otherwise
+     */
+    public boolean isFacetStringCurrentlyUsed(String link) {
+        return isFacetCurrentlyUsed(new FacetItem(link, false));
+    }
+
 
     /**
      * Checks whether the given facet is currently in use.
@@ -356,13 +366,7 @@ public class SearchFacets implements Serializable {
 
         // Remove currently used facets (unless boolean type)
         if (excludeSelected) {
-            List<String> boolFields = DataManager.getInstance().getConfiguration().getBooleanFacetFields();
-            for (IFacetItem activeFacet : activeFacets) {
-                if (!boolFields.contains(activeFacet.getField())) {
-                    facetItems.remove(activeFacet);
-                }
-            }
-            // facetItems.removeAll(activeFacets);
+            facetItems.removeAll(activeFacets);
         }
 
         // Trim to initial number
@@ -470,16 +474,16 @@ public class SearchFacets implements Serializable {
      * @should return hyphen if currentFacets empty
      */
     public String getActiveFacetString() {
-        String ret = generateFacetPrefix(new ArrayList<>(activeFacets), true);
+        String ret = generateFacetPrefix(new ArrayList<>(activeFacets), null, true);
         if (StringUtils.isEmpty(ret)) {
             ret = "-";
         }
-        try {
-            return URLEncoder.encode(ret, SearchBean.URL_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            return ret;
+            try {
+                return URLEncoder.encode(ret, SearchBean.URL_ENCODING);
+            } catch (UnsupportedEncodingException e) {
+                return ret;
+            }
         }
-    }
 
     /**
      * Receives an SSV string of facet fields and values (FIELD1:value1;FIELD2:value2;FIELD3:value3) and generates new Elements for currentFacets.
@@ -853,7 +857,16 @@ public class SearchFacets implements Serializable {
      *
      */
     public String getActiveFacetStringPrefix() {
-        return getActiveFacetStringPrefix(true);
+        return getActiveFacetStringPrefix(null, true);
+    }
+
+    /**
+     * 
+     * @param omitField Field name to not include in the string
+     * @returna {@link java.lang.String} object.
+     */
+    public String getActiveFacetStringPrefix(String omitField) {
+        return getActiveFacetStringPrefix(Collections.singletonList(omitField), true);
     }
 
     /**
@@ -862,33 +875,37 @@ public class SearchFacets implements Serializable {
      * @param urlEncode
      * @return URL part for currently selected facets; empty string if empty
      */
-    public String getActiveFacetStringPrefix(boolean urlEncode) {
+    public String getActiveFacetStringPrefix(List<String> omitFields, boolean urlEncode) {
         // logger.trace("getActiveFacetStringPrefix"); //NOSONAR Debug
         if (urlEncode) {
             try {
-                return URLEncoder.encode(generateFacetPrefix(new ArrayList<>(activeFacets), true), SearchBean.URL_ENCODING);
+                return URLEncoder.encode(generateFacetPrefix(new ArrayList<>(activeFacets), omitFields, true), SearchBean.URL_ENCODING);
             } catch (UnsupportedEncodingException e) {
                 logger.error(e.getMessage());
             }
         }
 
-        return generateFacetPrefix(activeFacets, true);
+        return generateFacetPrefix(activeFacets, omitFields, true);
     }
 
     /**
      * Generates an SSV string of facet fields and values from the elements in the given List<FacetString> (empty string if empty).
      *
      * @param facetItems
+     * @param omitFields Field names to omit from the facet string
      * @param escapeSlashes If true, slashes and backslashes are replaced with URL-compatible replacement strings
      * @return Generated prefix
      * @should encode slashed and backslashes
      */
-    static String generateFacetPrefix(List<IFacetItem> facetItems, boolean escapeSlashes) {
+    static String generateFacetPrefix(List<IFacetItem> facetItems, List<String> omitFields, boolean escapeSlashes) {
         if (facetItems == null) {
             throw new IllegalArgumentException("facetItems may not be null");
         }
         StringBuilder sb = new StringBuilder();
         for (IFacetItem facetItem : facetItems) {
+            if (omitFields != null && omitFields.contains(facetItem.getField())) {
+                continue;
+            }
             if (escapeSlashes) {
                 sb.append(BeanUtils.escapeCriticalUrlChracters(facetItem.getLink()));
             } else {
@@ -913,7 +930,7 @@ public class SearchFacets implements Serializable {
      */
     public String removeFacetAction(final String facetQuery, final String ret) {
         logger.trace("removeFacetAction: {}", facetQuery);
-        String currentFacetString = generateFacetPrefix(new ArrayList<>(activeFacets), false);
+        String currentFacetString = generateFacetPrefix(new ArrayList<>(activeFacets), null, false);
         if (currentFacetString.contains(facetQuery)) {
             currentFacetString = currentFacetString.replaceAll("(" + Pattern.quote(facetQuery) + ")(?=;|(?=/))", "").replace(";;;;", ";;");
             setActiveFacetString(currentFacetString);
@@ -1008,7 +1025,7 @@ public class SearchFacets implements Serializable {
      * @should return all facet items in correct order
      */
     public Map<String, List<IFacetItem>> getAllAvailableFacets() {
-        return getAvailableFacets(Arrays.asList("", "hierarchical"));
+        return getAvailableFacets(Arrays.asList("", "boolean", "hierarchical"));
     }
 
     /**
