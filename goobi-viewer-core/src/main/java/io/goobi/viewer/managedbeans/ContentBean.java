@@ -36,8 +36,8 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.annotation.ITypedResource;
 import io.goobi.viewer.controller.DataManager;
@@ -167,6 +167,14 @@ public class ContentBean implements Serializable {
                 .filter(a -> StringUtils.isNotBlank(a.getBody()))
                 .map(DisplayUserGeneratedContent::new)
                 .collect(Collectors.toList());
+
+        List<DisplayUserGeneratedContent> moduleContent = DataManager.getInstance()
+                .getSearchIndex()
+                .getDisplayUserGeneratedContentsForRecord(pi)
+                .stream()
+                .filter(ugc -> ugc.isCrowdsourcingModuleContent())
+                .toList();
+        allContent.addAll(moduleContent);
 
         for (DisplayUserGeneratedContent ugcContent : allContent) {
             // Do not add empty comments
