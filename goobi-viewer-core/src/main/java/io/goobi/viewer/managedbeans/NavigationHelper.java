@@ -633,7 +633,7 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.util.Locale} object.
      */
     public Locale getLocale() {
-        logger.trace("getLocale: {}", locale);
+        // logger.trace("getLocale: {}", locale);
         return locale;
     }
 

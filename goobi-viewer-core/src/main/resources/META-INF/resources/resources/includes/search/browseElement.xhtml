@@ -69,13 +69,6 @@
                         <h:outputText value="#{msg['doctype_'.concat(browseElement.docType)]}" />
                     </div>
                 </h:panelGroup>
-                
-                <!-- TODO proper placement -->
-                <ui:fragment rendered="#{childHit.altUrl != null}">
-                    <a href="#{request.contextPath}/#{childHit.altUrl}">
-                        ARCHIVE TREE
-                    </a>
-                </ui:fragment>
 
 				<ui:include src="/resources/includes/search/browseElementMetadata.xhtml">
                     <ui:param name="browseElement" value="#{browseElement}"></ui:param>

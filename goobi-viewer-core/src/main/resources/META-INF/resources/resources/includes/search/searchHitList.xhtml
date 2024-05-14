@@ -108,6 +108,13 @@
                                     <ui:param name="browseElement" value="#{hit.browseElement}"></ui:param>
                         	       <ui:param name="showBookmarkIcon" value="#{configurationBean.bookmarksEnabled}"></ui:param>
                                 </ui:include>
+                                
+                                <!-- Related archive entry -->
+                                <ui:fragment rendered="#{hit.altUrl != null}">
+                                    <a href="#{request.contextPath}/#{hit.altUrl}" title="#{hit.altLabel}">
+                                        #{msg.archive__open_in_archive_view} <i class="fa fa-archive"></i>
+                                    </a>
+                                </ui:fragment>
                             </header>
 
                             <!-- CONTENT -->
@@ -179,10 +186,11 @@
                            						</ui:fragment>
                             				</div>
                             				<div>
+                            				    <!-- Related record for archive entry -->
                                                 <!-- TODO proper placement -->
                                                 <ui:fragment rendered="#{childHit.altUrl != null}">
-                                                    <a href="#{request.contextPath}/#{childHit.altUrl}">
-                                                        #{childHit.altLabel}
+                                                    <a href="#{request.contextPath}/#{childHit.altUrl}" title="#{childHit.altLabel}">
+                                                        #{msg.archive__open_record} <i class="fa fa-picture-o"></i>
                                                     </a>
                                                 </ui:fragment>
                                             </div>

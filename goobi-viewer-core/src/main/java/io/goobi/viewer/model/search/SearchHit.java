@@ -435,11 +435,11 @@ public class SearchHit implements Comparable<SearchHit> {
                             ownerHits.put(iddoc, childHit);
                             ownerDocs.put(iddoc, childDoc);
                             hitsPopulated++;
-                            // Check and add link to record, if exists
+                            
+                            // Check and add link to related record, if exists
                             String entryId = SolrTools.getSingleFieldStringValue(childDoc, SolrConstants.EAD_NODE_ID);
                             if (StringUtils.isNotEmpty(entryId)) {
                                 childHit.url = "archives/" + SolrEADParser.DATABASE_NAME + "/" + pi + "/?selected=" + entryId + "#selected";
-                                // Related record link 
                                 SolrDocument relatedRecordDoc =
                                         DataManager.getInstance()
                                                 .getSearchIndex()
@@ -456,7 +456,6 @@ public class SearchHit implements Comparable<SearchHit> {
                                     }
                                     logger.trace("altUrl: {}", childHit.getAltUrl());
                                 }
-
                             }
                         }
                         break;
