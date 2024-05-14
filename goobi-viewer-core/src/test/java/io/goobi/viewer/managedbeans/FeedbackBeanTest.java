@@ -74,7 +74,7 @@ class FeedbackBeanTest {
         captchaBean.resetSecurityQuestion();
 
         EMailSender emailSender = Mockito.mock(EMailSender.class);
-        Mockito.when(emailSender.postMail(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(true);
+        Mockito.when(emailSender.postMail(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(true);
 
         bean = new FeedbackBean();
         bean.setNavigationHelper(navigationHelper);
@@ -105,7 +105,8 @@ class FeedbackBeanTest {
         ArgumentCaptor<String> subjectCaptor = ArgumentCaptor.forClass(String.class);
 
         Mockito.verify(bean.getEmailSender(), Mockito.times(2))
-                .postMail(recipientCaptor.capture(), Mockito.isNull(), Mockito.isNull(), subjectCaptor.capture(), Mockito.contains(body));
+                .postMail(recipientCaptor.capture(), Mockito.isNull(), Mockito.isNull(), Mockito.any(), subjectCaptor.capture(),
+                        Mockito.contains(body));
         int indexMailRecipient = recipientCaptor.getAllValues().indexOf(Arrays.asList(RECIPIENT_ADDRESS));
         int indexMailSender = recipientCaptor.getAllValues().indexOf(Arrays.asList(SENDER_ADDRESS));
         int indexSubjectRecipient = subjectCaptor.getAllValues().indexOf(subject);
@@ -136,7 +137,8 @@ class FeedbackBeanTest {
         ArgumentCaptor<String> subjectCaptor = ArgumentCaptor.forClass(String.class);
 
         Mockito.verify(bean.getEmailSender(), Mockito.times(2))
-                .postMail(recipientCaptor.capture(), Mockito.isNull(), Mockito.isNull(), subjectCaptor.capture(), Mockito.contains(body));
+                .postMail(recipientCaptor.capture(), Mockito.isNull(), Mockito.isNull(), Mockito.any(), subjectCaptor.capture(),
+                        Mockito.contains(body));
         int indexMailRecipient = recipientCaptor.getAllValues().indexOf(Arrays.asList(RECIPIENT_ADDRESS));
         int indexMailSender = recipientCaptor.getAllValues().indexOf(Arrays.asList(SENDER_ADDRESS));
         int indexSubjectRecipient = subjectCaptor.getAllValues().indexOf(subject);
@@ -157,7 +159,8 @@ class FeedbackBeanTest {
         bean.getCaptchaBean().setSecurityAnswer("B");
 
         bean.submitFeedbackAction(true);
-        Mockito.verify(bean.getEmailSender(), Mockito.times(0)).postMail(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(bean.getEmailSender(), Mockito.times(0))
+                .postMail(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 
     }
 
@@ -171,7 +174,8 @@ class FeedbackBeanTest {
         bean.getCaptchaBean().setSecurityAnswer("A");
 
         bean.submitFeedbackAction(true);
-        Mockito.verify(bean.getEmailSender(), Mockito.times(0)).postMail(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(bean.getEmailSender(), Mockito.times(0))
+                .postMail(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 
     }
 

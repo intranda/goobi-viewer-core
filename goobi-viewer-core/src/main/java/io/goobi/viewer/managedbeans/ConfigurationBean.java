@@ -933,7 +933,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isTocEpubEnabled() {
-        return DataManager.getInstance().getConfiguration().isTocEpubEnabled() && isGeneratePdfInTaskManager();
+        return DataManager.getInstance().getConfiguration().isTocEpubEnabled() && isGeneratePdfInMessageQueue();
     }
 
     /**
@@ -943,8 +943,8 @@ public class ConfigurationBean implements Serializable {
      *
      * @return a boolean.
      */
-    public boolean isGeneratePdfInTaskManager() {
-        return DataManager.getInstance().getConfiguration().isGeneratePdfInTaskManager();
+    public boolean isGeneratePdfInMessageQueue() {
+        return DataManager.getInstance().getConfiguration().isGeneratePdfInMessageQueue();
     }
 
     /**
@@ -1591,5 +1591,9 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isFacetFieldDisplayValueFilter(String facetField) {
         return DataManager.getInstance().getConfiguration().isFacetFieldDisplayValueFilter(facetField);
+    }
+
+    public boolean isPdfPageRangeEnabled() {
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsagePdfPageRange();
     }
 }

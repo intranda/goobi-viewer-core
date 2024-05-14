@@ -452,7 +452,7 @@ public class MetadataBean {
             Metadata md = metadataElements.get(0).getMetadata(mainFieldName, language);
             if (md != null && !md.isBlank()) {
                 if (StringUtils.isNotBlank(subFieldName)) {
-                    md.getValues().stream().map(pv -> pv.getParamValues(subFieldName)).collect(Collectors.toList());
+                    return md.getValues().stream().map(pv -> pv.getParamValues(subFieldName)).flatMap(List::stream).collect(Collectors.toList());
                 }
                 return md.getValues().stream().map(pv -> pv.getCombinedValue()).collect(Collectors.toList());
             }

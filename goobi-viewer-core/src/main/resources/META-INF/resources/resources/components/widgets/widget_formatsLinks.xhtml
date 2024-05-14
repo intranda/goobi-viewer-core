@@ -258,36 +258,6 @@
                 </div>
             </div>
 
-            <!-- Set up download modal for work and struct PDF -->
-            <script>
-            	var downloadModalConfig = {
-                    downloadBtn: $( ".download-modal-widget" ),
-                    path: "#{navigationHelper.applicationUrl}",
-                    iiifPath: "#{configurationBean.iiifApiUrl}",
-                    userEmail: $( "#userEmail" ).val(),
-                    useReCaptcha: #{configurationBean.useReCaptcha},
-                    reCaptchaSiteKey: "#{configurationBean.reCaptchaSiteKey}",
-                    messages: {
-                        downloadInfo: {
-                            text: "#{msg.downloadInfoText}",
-                            title: "#{msg.downloadInfoTitle}",
-                            part: "#{msg.downloadInfoPart}",
-                            fileSize: "#{msg.downloadInfoFileSize}"
-                        },
-                        reCaptchaText: "#{msg.downloadReCaptchaText}",
-                        rcInvalid: "#{msg.downloadRcInvalid}",
-                        rcValid: "#{msg.downloadRcValid}",
-                        eMailText: "#{msg.downloadEMailText}",
-                        eMailTextLoggedIn: "#{msg.downloadEMailTextLoggedIn}",
-                        eMail: "#{msg.downloadEmail}",
-                        closeBtn: "#{msg.downloadCloseModal}",
-                        saveBtn: "#{msg.downloadGenerateFile}",
-                    }
-                };
-
-                viewerJS.downloadModal.init( downloadModalConfig );
-                viewerJS.clipboard.init();
-            </script>
         </ui:fragment>
     </composite:implementation>
 </ui:composition>

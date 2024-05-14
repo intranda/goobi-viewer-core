@@ -26,8 +26,6 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.jboss.weld.exceptions.IllegalArgumentException;
-
 import de.undercouch.citeproc.CSL;
 
 public class CitationProcessorWrapper implements Serializable {

@@ -832,7 +832,7 @@ public class JPADAO implements IDAO {
     @Override
     public BookmarkList getBookmarkListByShareKey(String shareKey) throws DAOException {
         if (StringUtils.isEmpty(shareKey)) {
-            throw new org.jboss.weld.exceptions.IllegalArgumentException("shareKey may not be null or empty");
+            throw new IllegalArgumentException("shareKey may not be null or empty");
 
         }
         preQuery();

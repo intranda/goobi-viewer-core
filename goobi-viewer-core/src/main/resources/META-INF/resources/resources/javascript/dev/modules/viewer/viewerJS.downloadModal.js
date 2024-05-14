@@ -27,7 +27,7 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     // default variables
-    var _debug = false;
+    var _debug = true;
     var _defaults = {
         dataType: null,
         dataTitle: null,
@@ -133,7 +133,7 @@ var viewerJS = ( function( viewer ) {
             _loadingOverlay.addClass( 'dl-modal__overlay' );
             $( 'body' ).append( _loadingOverlay );
             
-            _defaults.downloadBtn.on( 'click', function() {
+            $(_defaults.downloadBtn).on( 'click', function(e) {
                 // show loading overlay
                 $( '.dl-modal__overlay' ).fadeIn( 'fast' );
                 

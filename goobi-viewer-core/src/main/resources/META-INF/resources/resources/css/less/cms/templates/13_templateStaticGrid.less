@@ -10,10 +10,10 @@
     &__text {
     	margin-bottom: 30px;
     }
-    &__grid {
+    &__grid { 
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr 1fr;
-		gap: 50px;
+		gap: 30px;
 	}
 }
 .grid-tile {
@@ -21,16 +21,14 @@
 	padding-top: 0;
 	border: 1px solid @middlegray;
 	background-color: @white;
+	&:hover {
+		text-decoration: none;
+	}
 	&__title {
 		height: 50px;
 		padding: 5px;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		h3 {
-			margin: 0;
-			font-size: @fontNormal;
-			line-height: 21px;
-		}
 	}
 	&__image {
 		height: 150px;
@@ -38,10 +36,12 @@
 		background-repeat: no-repeat;
 		background-position: center center;
 		background-size: cover;
-		a {
-			display: block;
-			height: 150px;
-		}
+	}
+	&__text {
+		margin: 0;
+		font-size: @fontNormal;
+		line-height: 21px;
+		font-weight: 600;
 	}
 }
 
