@@ -173,7 +173,7 @@ public class ContentBean implements Serializable {
                 .getDisplayUserGeneratedContentsForRecord(pi)
                 .stream()
                 .filter(ugc -> ugc.isCrowdsourcingModuleContent())
-                .toList();
+                .collect(Collectors.toList());
         allContent.addAll(moduleContent);
 
         for (DisplayUserGeneratedContent ugcContent : allContent) {
