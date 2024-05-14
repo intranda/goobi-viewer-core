@@ -27,6 +27,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import io.goobi.viewer.dao.converter.SimpleMediaHolderConverter;
+import io.goobi.viewer.dao.converter.ThemeLinkConverter;
+import io.goobi.viewer.model.cms.SimpleMediaHolder;
+import io.goobi.viewer.model.viewer.themes.ThemeLink.InternalService;
+import io.goobi.viewer.model.viewer.themes.ThemeLink.SocialMediaService;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -34,12 +39,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import io.goobi.viewer.dao.converter.SimpleMediaHolderConverter;
-import io.goobi.viewer.dao.converter.ThemeLinkConverter;
-import io.goobi.viewer.model.cms.SimpleMediaHolder;
-import io.goobi.viewer.model.viewer.themes.ThemeLink.InternalService;
-import io.goobi.viewer.model.viewer.themes.ThemeLink.SocialMediaService;
 
 /**
  * @author florian
@@ -68,6 +67,8 @@ public class ThemeConfiguration {
     private SimpleMediaHolder icon;
     @Column(name = "stylesheet", nullable = true, columnDefinition = "LONGTEXT")
     private String styleSheet;
+    @Column(name = "javascript", nullable = true, columnDefinition = "LONGTEXT")
+    private String javascript;
     @Column(name = "social_media_link", nullable = true, columnDefinition = "TEXT")
     @Convert(converter = ThemeLinkConverter.class)
     private List<ThemeLink> socialMediaUrls = new ArrayList<>();
@@ -108,6 +109,7 @@ public class ThemeConfiguration {
         this.fullscreenLogo = new SimpleMediaHolder(orig.fullscreenLogo.getMediaItem(), orig.fullscreenLogo.getMediaFilter());
         this.icon = new SimpleMediaHolder(orig.icon.getMediaItem(), orig.icon.getMediaFilter());
         this.styleSheet = orig.styleSheet;
+        this.javascript = orig.javascript;
         this.socialMediaUrls = orig.socialMediaUrls.stream().map(l -> new ThemeLink(l.getService(), l.getLinkUrl())).collect(Collectors.toList());
         this.footerLinks = orig.footerLinks.stream().map(l -> new ThemeLink(l.getService(), l.getLinkUrl())).collect(Collectors.toList());
     }
@@ -222,4 +224,11 @@ public class ThemeConfiguration {
         return icon;
     }
 
+    public String getJavascript() {
+        return javascript;
+    }
+
+    public void setJavascript(String javascript) {
+        this.javascript = javascript;
+    }
 }
