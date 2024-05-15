@@ -1,15 +1,14 @@
-<ui:composition
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:jsf="http://xmlns.jcp.org/jsf">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:jsf="http://xmlns.jcp.org/jsf">
 
-    <!-- ===============================
+	<!-- ===============================
         BASE LIBRARIES + CORE MODULES
     ================================ -->
-    <!--
+	<!--
         `jsPaths` contains one array for each javascript library,
         each array contains
         - an identifier that allows excluding libraries from viewer theme template files
@@ -22,7 +21,8 @@
         ]
     -->
 
-    <c:set var="jsPaths" value="#{[
+	<c:set var="jsPaths"
+		value="#{[
 
       ['jquery',
         [],
@@ -149,32 +149,34 @@
         ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
         'resources/javascript/libs/codemirror/xml.js'
       ],
-      
+      ['codemirrorJS',
+        ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
+        'resources/javascript/libs/codemirror/javascript.js'
+      ],
+      ['codemirrorCSS',
+        ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
+        'resources/javascript/libs/codemirror/css.js'
+      ],
       ['codemirrorSearch',
         ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
         'resources/javascript/libs/codemirror/search.js'
       ],
-      
       ['codemirrorSearchCursor',
         ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
         'resources/javascript/libs/codemirror/searchcursor.js'
       ],
-      
       ['codemirrorMatchHighlighter',
         ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
         'resources/javascript/libs/codemirror/match-highlighter.js'
-      ],
-      
+      ], 
       ['codemirrorDialog',
         ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
         'resources/javascript/libs/codemirror/dialog.js'
       ],
-      
       ['codemirrorJumpToLine',
         ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
         'resources/javascript/libs/codemirror/jump-to-line.js'
       ],
-      
       ['codemirrorActiveLine',
         ['template', 'templateArchives', 'templateBlank', 'templateCrowdsourcing', 'templateFullscreen', 'templateMirador'],
         'resources/javascript/libs/codemirror/active-line.js'
@@ -198,24 +200,28 @@
 
     ]}" />
 
-    <!-- INCLUDE FILES IF CONDITIONS ARE MET -->
-    <c:forEach var="path" items="#{jsPaths}">
-      <!-- include file, if it is not explicitly excluded -->
-      <!-- (either above, or in the excludeJS variable, which can be set in template files) -->
-      <c:if test="#{!path[1].contains(templateName) and !excludeJS.contains(path[0])}">
-        <script type="text/javascript" src="#{request.contextPath}/#{path[2]}?${navigationHelper.buildVersion}&amp;#{cacheBuster}"></script>
-      </c:if>
-    </c:forEach>
+	<!-- INCLUDE FILES IF CONDITIONS ARE MET -->
+	<c:forEach var="path" items="#{jsPaths}">
+		<!-- include file, if it is not explicitly excluded -->
+		<!-- (either above, or in the excludeJS variable, which can be set in template files) -->
+		<c:if
+			test="#{!path[1].contains(templateName) and !excludeJS.contains(path[0])}">
+			<script type="text/javascript"
+				src="#{request.contextPath}/#{path[2]}?${navigationHelper.buildVersion}&amp;#{cacheBuster}"></script>
+		</c:if>
+	</c:forEach>
 
-    <!-- SHOW AVAILABLE BIBS AND SCRIPTS IN CONSOLE -->
-    <!-- an easy way to log library names to the console, just pass `showCSS` to the excludeCSS variable in a template file -->
-    <c:if test="#{excludeJS.contains('showJS')}">
-      <c:forEach var="path" items="#{jsPaths}">
-        <script>
-          console.log('%c#{path[0]}', 'background: #3365a9; color: #fff; padding: 2px 6px; border-radius: 2px;')
-        </script>
-      </c:forEach>
-    </c:if>
+	<!-- SHOW AVAILABLE LIBS AND SCRIPTS IN CONSOLE -->
+	<!-- an easy way to log library names to the console, just pass `showCSS` to the excludeCSS variable in a template file -->
+	<c:if test="#{excludeJS.contains('showJS')}">
+		<c:forEach var="path" items="#{jsPaths}">
+			<script>
+				console
+						.log('%c#{path[0]}',
+								'background: #3365a9; color: #fff; padding: 2px 6px; border-radius: 2px;')
+			</script>
+		</c:forEach> 
+	</c:if>
 
 </ui:composition>
 

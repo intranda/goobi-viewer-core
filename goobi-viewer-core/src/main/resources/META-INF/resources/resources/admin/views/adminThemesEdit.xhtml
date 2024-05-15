@@ -3,9 +3,9 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
-
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
@@ -222,11 +222,38 @@
 
                 <div class="form-group form-row">
                   <div class="col-2 control-label">
-                    <label for="ipRangeDescription">#{msg.admin__themes__css__label}:</label>
+                    <label for="quickCSSInput">#{msg.admin__themes__css__label}:</label>
                   </div>
                   <div class="col-9 admin__form-input">
-                    <h:inputTextarea rows="10" value="#{theme.styleSheet}" id="ipRangeDescription" styleClass="form-control" />
+                    <h:inputTextarea pt:data-codemirror="css" rows="10" value="#{theme.styleSheet}" id="quickCSSInput" styleClass="form-control" />
                     <span class="admin__form-help-text">#{msg.admin__themes__css__help}</span>
+                  </div>
+                  <div class="col-1 admin__form-help-icon">
+                    <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
+                      <i class="fa fa-question-circle" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </div>
+              </div> <!-- End admin__default-block => CSS -->
+
+              <!-- JAVASCRIPT -->
+              <!-- TITLE -->
+              <div class="row">
+                <h2 id="quickJS" class="col-12">#{msg.admin__themes__javascript__title}</h2>
+              </div>
+
+              <div class="admin__default-block">
+
+                <!-- INFO -->
+				<div class="admin__info-text">#{msg.admin__themes__javascript__info}</div>
+
+                <div class="form-group form-row">
+                  <div class="col-2 control-label"> 
+                    <label for="quickJSInput">#{msg.admin__themes__javascript__label}:</label>
+                  </div> 
+                  <div class="col-9 admin__form-input">
+                    <h:inputTextarea pt:data-codemirror="javascript" rows="10" value="#{theme.javascript}" id="quickJSInput" styleClass="form-control" />
+                    <span class="admin__form-help-text">#{msg.admin__themes__javascript__help}</span> 
                   </div>
                   <div class="col-1 admin__form-help-icon">
                     <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="inline help icon">
@@ -372,6 +399,22 @@
 	        </h:panelGroup>
 
       </div> <!-- End WRAPPER -->
+      
+      <!-- VARIABLES IF READ OR WRITABLE -->
+		<script>			
+																							
+			$( document ).ready(function() {
+				
+				document.querySelectorAll('[data-codemirror]').forEach(element => {
+					let mode = element.dataset["codemirror"];
+					console.log("Found code mirror text ", element, mode);
+					// INIT EDITOR MAIN
+					let cmInstance = adminJS.codemirror(element, mode);
+					console.log("initialized code mirror ", cmInstance);
+				});
+				
+			});
+		</script>
 
     </ui:define>
 
