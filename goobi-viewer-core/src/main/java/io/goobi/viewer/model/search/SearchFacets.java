@@ -260,7 +260,7 @@ public class SearchFacets implements Serializable {
 
         return ret;
     }
-    
+
     /**
      * 
      * @param link
@@ -269,7 +269,6 @@ public class SearchFacets implements Serializable {
     public boolean isFacetStringCurrentlyUsed(String link) {
         return isFacetCurrentlyUsed(new FacetItem(link, false));
     }
-
 
     /**
      * Checks whether the given facet is currently in use.
@@ -379,6 +378,29 @@ public class SearchFacets implements Serializable {
     }
 
     /**
+     * 
+     * @param field
+     * @param value
+     * @return Specific facet item for the given field and value; null if none found
+     */
+    public IFacetItem getFacet(String field, String value) {
+        if (field == null || value == null) {
+            return null;
+        }
+
+        List<IFacetItem> facetItems = availableFacets.get(field);
+        if (facetItems != null) {
+            for (IFacetItem item : facetItems) {
+                if (value.equals(item.getValue())) {
+                    return item;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Checks whether there are still selectable values across all available facet fields.
      * 
      * @return true if any available facet field has at least one unselected value; false otherwise
@@ -478,12 +500,12 @@ public class SearchFacets implements Serializable {
         if (StringUtils.isEmpty(ret)) {
             ret = "-";
         }
-            try {
-                return URLEncoder.encode(ret, SearchBean.URL_ENCODING);
-            } catch (UnsupportedEncodingException e) {
-                return ret;
-            }
+        try {
+            return URLEncoder.encode(ret, SearchBean.URL_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            return ret;
         }
+    }
 
     /**
      * Receives an SSV string of facet fields and values (FIELD1:value1;FIELD2:value2;FIELD3:value3) and generates new Elements for currentFacets.

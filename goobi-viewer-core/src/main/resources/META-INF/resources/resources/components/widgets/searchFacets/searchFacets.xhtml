@@ -24,8 +24,6 @@
                         <h:panelGroup id="collectionFacetsPanelGroup_#{status.index}"
                             rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and (searchBean.facets.isFacetListSizeSufficient(field.key) or fn:length(searchBean.facets.getActiveFacetsForField(field.key)) > 0)}">
                             
-                            
-                            
                             <div class="widget widget-search-facets__collection">
 
                                 <div class="widget-search-facets__topbar">
@@ -37,7 +35,6 @@
 										<div class="widget-search-facets__boolean">
 											<ui:fragment
 												rendered="#{searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':true'))}">
-
 
 												<h:commandLink
 													action="#{searchBean.removeFacetAction(field.key.concat(':true'))}"
@@ -51,18 +48,13 @@
 														value="#{msg[field.key.concat('_DD')]} #{msg.yes}" />
 												</h:commandLink>
 
-
 											</ui:fragment>
 											<ui:fragment
 												rendered="#{!searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':true'))}">
 												<h:outputLink
 													styleClass="btn widget-search-facets__boolean-button"
+													title="#{msg.yes} (#{searchBean.facets.getFacet(field.key,'true').count})"
 													value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:true/">
-													<!--                                                     <button -->
-													<!--                                                         class="btn widget-search-facets__boolean-button" -->
-													<!--                                                         data-toggle="filter-input" -->
-													<!--                                                         aria-label="#{msg.filter} #{msg[field.key.concat('_DD')]}: #{msg.yes}">#{msg.yes} -->
-													<!--                                                     </button> -->
                                                     #{msg.yes}
                                                     <f:passThroughAttribute
 														name="aria-label"
@@ -90,12 +82,8 @@
 												rendered="#{!searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':false'))}">
 												<h:outputLink
 													styleClass="btn widget-search-facets__boolean-button"
+													title="#{msg.no} (#{searchBean.facets.getFacet(field.key,'false').count})"
 													value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:false/">
-													<!--                                                     <button -->
-													<!--                                                         class="btn widget-search-facets__boolean-button" -->
-													<!--                                                         data-toggle="filter-input" -->
-													<!--                                                         aria-label="#{msg.filter} #{msg[field.key.concat('_DD')]}: #{msg.no}">#{msg.no} -->
-													<!--                                                     </button> -->
                                                     #{msg.no}
                                                     <f:passThroughAttribute
 														name="aria-label"
