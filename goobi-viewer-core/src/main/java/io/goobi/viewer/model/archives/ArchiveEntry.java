@@ -37,6 +37,8 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 
 public class ArchiveEntry {
 
@@ -78,6 +80,10 @@ public class ArchiveEntry {
     private SolrDocument doc;
 
     private boolean metadataLoaded = false;
+
+    private boolean childrenFound = false;
+
+    private boolean childrenLoaded = false;
 
     /* 1. metadata for Identity Statement Area */
     //    Reference code(s)
@@ -172,6 +178,8 @@ public class ArchiveEntry {
         this.displayChildren = orig.displayChildren;
         this.displaySearch = orig.displaySearch;
         this.doc = orig.doc;
+        this.childrenFound = orig.childrenFound;
+        this.childrenLoaded = orig.childrenLoaded;
     }
 
     public void addSubEntry(ArchiveEntry other) {
@@ -209,7 +217,7 @@ public class ArchiveEntry {
     }
 
     public boolean isHasChildren() {
-        return !subEntryList.isEmpty();
+        return isChildrenFound() || !subEntryList.isEmpty();
     }
 
     public void updateHierarchy() {
@@ -299,9 +307,19 @@ public class ArchiveEntry {
      * Expands this entry and sets all sub-entries visible if their immediate parent is expanded.
      */
     public void expand() {
-        // logger.trace("expand: {}", id); //NOSONAR Sometimes needed for debugging
+        // logger.trace("expand: {}", label); //NOSONAR Sometimes needed for debugging
         if (!isHasChildren()) {
             return;
+        }
+
+        if (!isChildrenLoaded()) {
+            logger.trace("Loading children for entry: {}", label);
+            try {
+                ((SolrEADParser) DataManager.getInstance().getArchiveManager().getEadParser()).loadChildren(this,
+                        SolrEADParser.getChildDocMapForIddoc(SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC)), false);
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.error(e.getMessage());
+            }
         }
 
         setExpanded(true);
@@ -792,7 +810,7 @@ public class ArchiveEntry {
      * @return the hasChild
      */
     public boolean isHasChild() {
-        return !subEntryList.isEmpty();
+        return isHasChildren();
     }
 
     /**
@@ -839,10 +857,45 @@ public class ArchiveEntry {
     }
 
     /**
+     * @return the doc
+     */
+    public SolrDocument getDoc() {
+        return doc;
+    }
+
+    /**
      * @return the metadataLoaded
      */
     public boolean isMetadataLoaded() {
         return metadataLoaded;
+    }
+
+    /**
+     * @return the childrenFound
+     */
+    public boolean isChildrenFound() {
+        return childrenFound;
+    }
+
+    /**
+     * @param childrenFound the childrenFound to set
+     */
+    public void setChildrenFound(boolean childrenFound) {
+        this.childrenFound = childrenFound;
+    }
+
+    /**
+     * @return the childrenLoaded
+     */
+    public boolean isChildrenLoaded() {
+        return childrenLoaded;
+    }
+
+    /**
+     * @param childrenLoaded the childrenLoaded to set
+     */
+    public void setChildrenLoaded(boolean childrenLoaded) {
+        this.childrenLoaded = childrenLoaded;
     }
 
     public String getFieldValue(String field) {

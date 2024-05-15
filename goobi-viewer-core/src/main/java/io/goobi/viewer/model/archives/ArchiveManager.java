@@ -547,4 +547,11 @@ public class ArchiveManager implements Serializable {
                 || this.databaseState == DatabaseState.ERROR_INVALID_FORMAT
                 || this.databaseState == DatabaseState.ERROR_NOT_REACHABLE;
     }
+
+    /**
+     * @return the eadParser
+     */
+    public ArchiveParser getEadParser() {
+        return eadParser;
+    }
 }
