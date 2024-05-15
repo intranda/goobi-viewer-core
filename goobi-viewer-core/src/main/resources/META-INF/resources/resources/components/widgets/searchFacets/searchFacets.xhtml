@@ -34,53 +34,76 @@
                                 
                                 <ui:fragment rendered="#{configurationBean.isFacetFieldTypeBoolean(field.key)}">
                                     <div class="widget__body">
-                                        <div class="widget-search-facets__boolean">
-                                            <ui:fragment rendered="#{searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':true'))}">
-                                                    <button
-                                                        class="btn widget-search-facets__boolean-button -active"
-                                                        data-toggle="filter-input"
-                                                        aria-label="#{msg[field.key.concat('_DD')]} #{msg.yes}"
-                                                        jsf:action="#{searchBean.removeFacetAction(field.key.concat(':true'))}">#{msg.yes}
-                                                    </button>
-                                            </ui:fragment>
-                                            <ui:fragment rendered="#{!searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':true'))}">
-                                                <h:outputLink
-                                                    value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:true/">
-<!--                                                     <button -->
-<!--                                                         class="btn widget-search-facets__boolean-button" -->
-<!--                                                         data-toggle="filter-input" -->
-<!--                                                         aria-label="#{msg.filter} #{msg[field.key.concat('_DD')]}: #{msg.yes}">#{msg.yes} -->
-<!--                                                     </button> -->
+										<div class="widget-search-facets__boolean">
+											<ui:fragment
+												rendered="#{searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':true'))}">
+
+
+												<h:commandLink
+													action="#{searchBean.removeFacetAction(field.key.concat(':true'))}"
+													styleClass="btn widget-search-facets__boolean-button -active"
+													title="#{msg.removeFacet}">
+                                            	#{msg.yes}
+                                                <f:passThroughAttribute
+														name="data-toggle" value="tooltip" />
+													<f:passThroughAttribute name="data-placement" value="top" />
+													<f:passThroughAttribute name="aria-label"
+														value="#{msg[field.key.concat('_DD')]} #{msg.yes}" />
+												</h:commandLink>
+
+
+											</ui:fragment>
+											<ui:fragment
+												rendered="#{!searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':true'))}">
+												<h:outputLink
+													styleClass="btn widget-search-facets__boolean-button"
+													value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:true/">
+													<!--                                                     <button -->
+													<!--                                                         class="btn widget-search-facets__boolean-button" -->
+													<!--                                                         data-toggle="filter-input" -->
+													<!--                                                         aria-label="#{msg.filter} #{msg[field.key.concat('_DD')]}: #{msg.yes}">#{msg.yes} -->
+													<!--                                                     </button> -->
                                                     #{msg.yes}
-                                                    <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{msg.yes}" />
-                                                </h:outputLink>
-                                            </ui:fragment>
-                                        </div>
-                                    </div>
-                                    <div class="widget__body">
-                                        <div class="widget-search-facets__boolean">
-                                            <ui:fragment rendered="#{searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':false'))}">
-                                                    <button
-                                                        class="btn widget-search-facets__boolean-button -active"
-                                                        data-toggle="filter-input"
-                                                        aria-label="#{msg[field.key.concat('_DD')]} #{msg.no}"
-                                                        jsf:action="#{searchBean.removeFacetAction(field.key.concat(':false'))}">#{msg.no}
-                                                    </button>
-                                            </ui:fragment>
-                                            <ui:fragment rendered="#{!searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':false'))}">
-                                                <h:outputLink
-                                                    value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:false/">
-<!--                                                     <button -->
-<!--                                                         class="btn widget-search-facets__boolean-button" -->
-<!--                                                         data-toggle="filter-input" -->
-<!--                                                         aria-label="#{msg.filter} #{msg[field.key.concat('_DD')]}: #{msg.no}">#{msg.no} -->
-<!--                                                     </button> -->
+                                                    <f:passThroughAttribute
+														name="aria-label"
+														value="#{msg[field.key.concat('_DD')]}: #{msg.yes}" />
+												</h:outputLink>
+											</ui:fragment>
+
+											<ui:fragment
+												rendered="#{searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':false'))}">
+
+												<h:commandLink
+													action="#{searchBean.removeFacetAction(field.key.concat(':false'))}"
+													styleClass="btn widget-search-facets__boolean-button -active"
+													title="#{msg.removeFacet}">
+                                            	#{msg.no}
+                                                <f:passThroughAttribute
+														name="data-toggle" value="tooltip" />
+													<f:passThroughAttribute name="data-placement" value="top" />
+													<f:passThroughAttribute name="aria-label"
+														value="#{msg[field.key.concat('_DD')]} #{msg.no}" />
+												</h:commandLink>
+
+											</ui:fragment>
+											<ui:fragment
+												rendered="#{!searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':false'))}">
+												<h:outputLink
+													styleClass="btn widget-search-facets__boolean-button"
+													value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:false/">
+													<!--                                                     <button -->
+													<!--                                                         class="btn widget-search-facets__boolean-button" -->
+													<!--                                                         data-toggle="filter-input" -->
+													<!--                                                         aria-label="#{msg.filter} #{msg[field.key.concat('_DD')]}: #{msg.no}">#{msg.no} -->
+													<!--                                                     </button> -->
                                                     #{msg.no}
-                                                    <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{msg.no}" />
-                                                </h:outputLink>
-                                            </ui:fragment>
-                                        </div>
-                                    </div>
+                                                    <f:passThroughAttribute
+														name="aria-label"
+														value="#{msg[field.key.concat('_DD')]}: #{msg.no}" />
+												</h:outputLink>
+											</ui:fragment>
+										</div>
+									</div>
                                 </ui:fragment>
                                  
                                 <ui:fragment rendered="#{!configurationBean.isFacetFieldTypeBoolean(field.key)}">
