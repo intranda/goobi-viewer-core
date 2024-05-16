@@ -32,7 +32,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.client.ClientProtocolException;
@@ -43,7 +42,6 @@ import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.JDOMException;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.ArchiveConfigurationException;
 import io.goobi.viewer.exceptions.ArchiveConnectionException;
 import io.goobi.viewer.exceptions.ArchiveParseException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -432,10 +430,6 @@ public class ArchiveManager implements Serializable {
             } catch (JDOMException e) {
                 this.databaseState = DatabaseState.ERROR_INVALID_FORMAT;
                 throw new ArchiveParseException("Error reading database {} from {}", resource.getCombinedName(), eadParser.getUrl(), e);
-            } catch (ConfigurationException e) {
-                this.databaseState = DatabaseState.ERROR_INVALID_CONFIGURATION;
-                throw new ArchiveConfigurationException("Error loading database configuration for archive {}: {}", resource.getCombinedName(),
-                        e.getMessage());
             }
         }
     }
@@ -468,7 +462,6 @@ public class ArchiveManager implements Serializable {
      * @param eadParser
      * @param archive
      * @return {@link ArchiveTree}
-     * @throws ConfigurationException
      * @throws IllegalStateException
      * @throws IOException
      * @throws HTTPException
@@ -477,7 +470,7 @@ public class ArchiveManager implements Serializable {
      * @throws IndexUnreachableException
      */
     ArchiveTree loadDatabase(ArchiveParser eadParser, ArchiveResource archive)
-            throws ConfigurationException, IllegalStateException, IOException, HTTPException, JDOMException, PresentationException,
+            throws IllegalStateException, IOException, HTTPException, JDOMException, PresentationException,
             IndexUnreachableException {
         ArchiveEntry rootElement = eadParser.loadDatabase(archive);
         if (rootElement != null) {

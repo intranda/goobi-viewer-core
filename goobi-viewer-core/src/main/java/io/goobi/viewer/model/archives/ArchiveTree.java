@@ -76,6 +76,7 @@ public class ArchiveTree implements Serializable {
     }
 
     public void generate(ArchiveEntry root) {
+        logger.trace("generate: {}", root);
         if (root == null) {
             throw new IllegalArgumentException("root may not be null");
         }
@@ -96,6 +97,7 @@ public class ArchiveTree implements Serializable {
      */
     public List<ArchiveEntry> getViewForGroup(String group) {
         if (entryMap != null) {
+            logger.trace("Tree size: {}", entryMap.get(group).size());
             return entryMap.get(group);
         }
 

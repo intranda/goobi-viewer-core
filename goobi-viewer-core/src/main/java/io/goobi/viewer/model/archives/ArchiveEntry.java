@@ -205,12 +205,13 @@ public class ArchiveEntry {
      * @return List<ArchiveEntry>
      */
     public List<ArchiveEntry> getAsFlatList(boolean ignoreDisplayChildren) {
+        logger.trace("getAsFlatList");
         List<ArchiveEntry> list = new LinkedList<>();
         list.add(this);
         if ((displayChildren || ignoreDisplayChildren) && subEntryList != null && !subEntryList.isEmpty()) {
             for (ArchiveEntry ds : subEntryList) {
                 list.addAll(ds.getAsFlatList(ignoreDisplayChildren));
-                // logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchy()); //NOSONAR Sometimes needed for debugging
+                 logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchyLevel()); //NOSONAR Sometimes needed for debugging
             }
         }
         return list;
@@ -416,6 +417,20 @@ public class ArchiveEntry {
             default:
                 break;
         }
+    }
+    
+    /**
+     * 
+     * @return Root node
+     */
+    public ArchiveEntry getRootNode() {
+        ArchiveEntry parent = null;
+        while(getParentNode() != null) {
+            parent = getParentNode();
+        }
+        
+        logger.trace("found parent: {}", parent);
+        return parent;
     }
 
     /**
