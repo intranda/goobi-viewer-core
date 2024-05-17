@@ -1118,6 +1118,29 @@ public final class AccessConditionUtils {
     }
 
     /**
+     * 
+     * @param doc
+     * @param privilegeName
+     * @return true if granted; false otherwise
+     */
+    public static boolean isPrivilegeGrantedForDoc(SolrDocument doc, String privilegeName, HttpServletRequest request) {
+        // Check whether user may see full-text, before adding them to count
+        String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
+        Collection<Object> accessConditions = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
+        if (!(accessConditions.size() == 1 && accessConditions.contains(SolrConstants.OPEN_ACCESS_VALUE))) {
+            try {
+                boolean ret = checkAccessPermissionByIdentifierAndLogId(pi, null, privilegeName, request).isGranted();
+                logger.trace("{} access checked for {} and is: {}", privilegeName, pi, ret);
+                return ret;
+            } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * List all licenses ("rights") that the given user and ipAddress is entitled to, either because they are directly given to the user, a group the
      * user belongs to or to the given ipAddress, whether or not the given user exists
      * 
