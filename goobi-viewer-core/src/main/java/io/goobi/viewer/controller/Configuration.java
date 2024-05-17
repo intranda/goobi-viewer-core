@@ -2909,6 +2909,26 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
+     * getBooleanFacetFields.
+     * </p>
+     *
+     * @return a {@link java.util.List} object.
+     * @should return all values
+     */
+    public List<String> getBooleanFacetFields() {
+        List<String> ret = new ArrayList<>();
+        for (String field : getAllFacetFields()) {
+            String type = getFacetFieldType(field);
+            if (type != null && type.equalsIgnoreCase("boolean")) {
+                ret.add(field);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * <p>
      * getHierarchicalFacetFields.
      * </p>
      *

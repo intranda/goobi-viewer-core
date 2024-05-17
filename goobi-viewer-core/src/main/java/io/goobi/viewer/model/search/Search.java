@@ -672,7 +672,8 @@ public class Search implements Serializable {
         List<String> unfilteredFacetFields = new ArrayList<>();
         // Collect facet fields with alwaysApplyToUnfilteredHits=true
         for (String field : DataManager.getInstance().getConfiguration().getAllFacetFields()) {
-            if (DataManager.getInstance().getConfiguration().isAlwaysApplyFacetFieldToUnfilteredHits(field)) {
+            if (DataManager.getInstance().getConfiguration().isAlwaysApplyFacetFieldToUnfilteredHits(field)
+                    || DataManager.getInstance().getConfiguration().getBooleanFacetFields().contains(field)) {
                 unfilteredFacetFields.add(SearchHelper.facetifyField(field));
             }
         }
