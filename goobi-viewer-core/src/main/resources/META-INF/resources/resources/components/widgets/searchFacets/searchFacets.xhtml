@@ -36,63 +36,84 @@
 											<ui:fragment
 												rendered="#{searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':true'))}">
 
-												<h:commandLink
-													action="#{searchBean.removeFacetAction(field.key.concat(':true'))}"
-													styleClass="btn widget-search-facets__boolean-button -active"
-													title="#{msg.removeFacet}">
-                                            	#{msg.yes}
-                                                <f:passThroughAttribute
-														name="data-toggle" value="tooltip" />
-													<f:passThroughAttribute name="data-placement" value="top" />
-													<f:passThroughAttribute name="aria-label"
-														value="#{msg.removeFacet}: #{msg[field.key.concat('_DD')]} #{msg.yes}" />
-												</h:commandLink>
-
+												<div class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
+													<h:commandLink
+														action="#{searchBean.removeFacetAction(field.key.concat(':true'))}"
+														styleClass="btn widget-search-facets__boolean-button -active"
+														title="#{msg.removeFacet}">
+	                                            	#{msg.yes}
+	                                            	<f:passThroughAttribute name="data-triggerjs" value="clickedFacet" />
+	                                                <f:passThroughAttribute
+															name="data-toggle" value="tooltip" />
+														<f:passThroughAttribute name="data-placement" value="top" />
+														<f:passThroughAttribute name="aria-label"
+															value="#{msg.removeFacet}: #{msg[field.key.concat('_DD')]} #{msg.yes}" />
+													</h:commandLink>
+													<div class="small-button-loader__icon -top-right" data-target="buttonLoader"></div>
+												</div>
+												
 											</ui:fragment>
 											<ui:fragment
 												rendered="#{!searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':true'))}">
-												<h:outputLink
-													styleClass="btn widget-search-facets__boolean-button"
-													title="#{msg.yes} (#{searchBean.facets.getFacet(field.key,'true').count})"
-													value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:true/">
-                                                    #{msg.yes}
-                                                    <f:passThroughAttribute
-														name="aria-label"
-														value="#{msg[field.key.concat('_DD')]}: #{msg.yes}" />
-												</h:outputLink>
+												<div class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
+													<h:outputLink
+														styleClass="btn widget-search-facets__boolean-button"
+														title="#{msg.yes} (#{searchBean.facets.getFacet(field.key,'true').count})"
+														value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:true/">
+	                                                    #{msg.yes}
+	                                                    <f:passThroughAttribute name="data-triggerjs" value="clickedFacet" />
+	                                                    <f:passThroughAttribute
+															name="aria-label"
+															value="#{msg[field.key.concat('_DD')]}: #{msg.yes}" />
+													</h:outputLink>
+													<div class="small-button-loader__icon -top-right" data-target="buttonLoader"></div>
+												</div>
 											</ui:fragment>
 
 											<ui:fragment
 												rendered="#{searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':false'))}">
-
-												<h:commandLink
-													action="#{searchBean.removeFacetAction(field.key.concat(':false'))}"
-													styleClass="btn widget-search-facets__boolean-button -active"
-													title="#{msg.removeFacet}">
-                                            	#{msg.no}
-                                                <f:passThroughAttribute
-														name="data-toggle" value="tooltip" />
-													<f:passThroughAttribute name="data-placement" value="top" />
-													<f:passThroughAttribute name="aria-label"
-														value="#{msg.removeFacet}: #{msg[field.key.concat('_DD')]} #{msg.no}" />
-												</h:commandLink>
-
+												<div class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
+													<h:commandLink
+														action="#{searchBean.removeFacetAction(field.key.concat(':false'))}"
+														styleClass="btn widget-search-facets__boolean-button -active"
+														title="#{msg.removeFacet}">
+	                                            	#{msg.no}
+	                                            	<f:passThroughAttribute name="data-triggerjs" value="clickedFacet" />
+	                                                <f:passThroughAttribute
+															name="data-toggle" value="tooltip" />
+														<f:passThroughAttribute name="data-placement" value="top" />
+														<f:passThroughAttribute name="aria-label"
+															value="#{msg.removeFacet}: #{msg[field.key.concat('_DD')]} #{msg.no}" />
+													</h:commandLink>
+														<div class="small-button-loader__icon -top-right" data-target="buttonLoader"></div>
+												</div>
 											</ui:fragment>
 											<ui:fragment
 												rendered="#{!searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':false'))}">
-												<h:outputLink
-													styleClass="btn widget-search-facets__boolean-button"
-													title="#{msg.no} (#{searchBean.facets.getFacet(field.key,'false').count})"
-													value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:false/">
-                                                    #{msg.no}
-                                                    <f:passThroughAttribute
-														name="aria-label"
-														value="#{msg[field.key.concat('_DD')]}: #{msg.no}" />
-												</h:outputLink>
+												<div class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
+													<h:outputLink
+														styleClass="btn widget-search-facets__boolean-button"
+														title="#{msg.no} (#{searchBean.facets.getFacet(field.key,'false').count})"
+														value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:false/">
+	                                                    #{msg.no}
+	                                                    <f:passThroughAttribute name="data-triggerjs" value="clickedFacet" />
+	                                                    <f:passThroughAttribute
+															name="aria-label"
+															value="#{msg[field.key.concat('_DD')]}: #{msg.no}" />
+													</h:outputLink>
+													<div class="small-button-loader__icon -top-right" data-target="buttonLoader"></div>
+												</div>
 											</ui:fragment>
 										</div>
 									</div>
                                 </ui:fragment>
+                                
+                                <script>
+									// SHOW LOADER AFTER TRIGGERING BOOLEAN BUTTON/FACET TO INDICATE ACTIVITY
+									$('[data-triggerjs="clickedFacet"]').click(function(event) {
+										$(this).next('[data-target="buttonLoader"]').fadeIn('fast');
+									});
+								</script>
                                  
                                 <ui:fragment rendered="#{!configurationBean.isFacetFieldTypeBoolean(field.key)}">
 
