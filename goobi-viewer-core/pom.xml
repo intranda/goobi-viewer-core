@@ -60,9 +60,9 @@
 		<skipTests>true</skipTests>
 		<skipDependencyCheck>true</skipDependencyCheck>
 		<failOnSnapshot>false</failOnSnapshot>
-        <maven.compiler.release>17</maven.compiler.release>
+		<maven.compiler.release>17</maven.compiler.release>
 
-        <!-- Sonar -->
+		<!-- Sonar -->
 		<sonar.projectKey>intranda_goobi-viewer-core</sonar.projectKey>
 		<sonar.organization>intranda</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -84,8 +84,8 @@
 		<iiif-api-model.version>2.6.3</iiif-api-model.version>
 		<normdataimporter.version>1.10.9</normdataimporter.version>
 
-        <!-- other libraries -->
-        <angus-mail.version>2.0.3</angus-mail.version>
+		<!-- other libraries -->
+		<angus-mail.version>2.0.3</angus-mail.version>
 		<citationstyles.version>24.3</citationstyles.version>
 		<citeproc-java.version>3.1.0</citeproc-java.version>
 		<commons-codec.version>1.17.0</commons-codec.version>
@@ -117,6 +117,7 @@
 		<javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
 		<!-- This dependency is declared as ignoredUnusedDeclaredDependency, too -->
 		<javax.jstl.version>1.2</javax.jstl.version>
+		<jaxen.version>2.0.0</jaxen.version>
 		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
 		<jaxb-runtime.version>2.3.9</jaxb-runtime.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
@@ -359,12 +360,12 @@
 			<groupId>jakarta.mail</groupId>
 			<artifactId>jakarta.mail-api</artifactId>
 			<version>${jakarta.mail-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.angus</groupId>
-            <artifactId>jakarta.mail</artifactId>
-            <version>${angus-mail.version}</version>
-        </dependency>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.angus</groupId>
+			<artifactId>jakarta.mail</artifactId>
+			<version>${angus-mail.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
@@ -499,6 +500,11 @@
 			<version>${javax.jstl.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>jaxen</groupId>
+			<artifactId>jaxen</artifactId>
+			<version>${jaxen.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
 			<artifactId>jaxb-runtime</artifactId>
 			<version>${jaxb-runtime.version}</version>
@@ -508,7 +514,7 @@
 			<artifactId>junit-jupiter</artifactId>
 			<version>${junit.version}</version>
 			<scope>test</scope>
-        </dependency>
+		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
@@ -648,24 +654,24 @@
 			<groupId>org.apache.solr</groupId>
 			<artifactId>solr-solrj</artifactId>
 			<version>${solr.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.solr</groupId>
-            <artifactId>solr-solrj-streaming</artifactId>
-            <version>${solr.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-solrj-streaming</artifactId>
+			<version>${solr.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
 			<version>${spring.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
 			<version>${spring.version}</version>
-            <scope>test</scope>
-        </dependency>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.jboss.weld.servlet</groupId>
 			<artifactId>weld-servlet-shaded</artifactId>
@@ -857,18 +863,20 @@
 						</goals>
 						<configuration>
 							<failOnWarning>true</failOnWarning>
-                            <ignoredUsedUndeclaredDependencies>
-                                <!-- FALSE POSITIVE, SWITCHES WITH -jakarta PACKAGE IF DECLARED OTHER WAY ROUND -->
-                                <ignoredUnusedDeclaredDependency>io.swagger.core.v3:swagger-annotations-jakarta</ignoredUnusedDeclaredDependency>
+							<ignoredUsedUndeclaredDependencies>
+								<!-- FALSE POSITIVE, SWITCHES WITH -jakarta PACKAGE IF DECLARED OTHER WAY ROUND -->
+								<ignoredUnusedDeclaredDependency>io.swagger.core.v3:swagger-annotations-jakarta</ignoredUnusedDeclaredDependency>
 							</ignoredUsedUndeclaredDependencies>
 
-                            <ignoredUnusedDeclaredDependencies>
-                                <!-- FALSE POSITIVE, SWITCHES WITH -jakarta PACKAGE IF DECLARED OTHER WAY ROUND -->
-                                <ignoredUnusedDeclaredDependency>io.swagger.core.v3:swagger-annotations</ignoredUnusedDeclaredDependency>
-
+							<ignoredUnusedDeclaredDependencies>
+								<!-- FALSE POSITIVE, SWITCHES WITH -jakarta PACKAGE IF DECLARED OTHER WAY ROUND -->
+								<ignoredUnusedDeclaredDependency>io.swagger.core.v3:swagger-annotations</ignoredUnusedDeclaredDependency>
 
 								<!-- JSTL is used within JSF for example c:forEach -->
 								<ignoredUnusedDeclaredDependency>javax.servlet:jstl</ignoredUnusedDeclaredDependency>
+
+								<!-- Jaxen ist used during runtime from jdom2.XPathExpression -->
+								<ignoredUnusedDeclaredDependency>jaxen:jaxen</ignoredUnusedDeclaredDependency>
 
 								<!-- The jersey-container-servlet dependency is used for startup during runtime Unit tests run without it though -->
 								<ignoredUnusedDeclaredDependency>org.glassfish.jersey.containers:jersey-container-servlet</ignoredUnusedDeclaredDependency>
@@ -907,16 +915,16 @@
 									SLF4J: Defaulting to no-operation (NOP) logger implementation
 									SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
 								-->
-                                <ignoredUnusedDeclaredDependency>org.slf4j:slf4j-nop</ignoredUnusedDeclaredDependency>
+								<ignoredUnusedDeclaredDependency>org.slf4j:slf4j-nop</ignoredUnusedDeclaredDependency>
 
-                                <!-- angus-mail is the implementation of the jakarta.mail specification and used for sending emails -->
-                                <ignoredUnusedDeclaredDependency>org.eclipse.angus:jakarta.mail</ignoredUnusedDeclaredDependency>
+								<!-- angus-mail is the implementation of the jakarta.mail specification and used for sending emails -->
+								<ignoredUnusedDeclaredDependency>org.eclipse.angus:jakarta.mail</ignoredUnusedDeclaredDependency>
 
-                                <!-- spring-web: MediaType class needed for some unit test -->
-                                <ignoredUnusedDeclaredDependency>org.springframework:spring-web</ignoredUnusedDeclaredDependency>
-                                
-                                <!-- junit-jupiter is used to run the tests, otherwise it will fail in maven -->
-                                <ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter</ignoredUnusedDeclaredDependency>
+								<!-- spring-web: MediaType class needed for some unit test -->
+								<ignoredUnusedDeclaredDependency>org.springframework:spring-web</ignoredUnusedDeclaredDependency>
+								
+								<!-- junit-jupiter is used to run the tests, otherwise it will fail in maven -->
+								<ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter</ignoredUnusedDeclaredDependency>
 
 								<!-- activemq libs -->
 									<!-- KahaDB is the used file based persistence database and declared in the config file  -->
@@ -966,7 +974,7 @@
 						<exclude>**/Abstract*.java</exclude>
 					</excludes>
 					<systemPropertyVariables>
-					    <java.util.logging.config.file>src/test/resources/log4j2.test.xml</java.util.logging.config.file>
+						<java.util.logging.config.file>src/test/resources/log4j2.test.xml</java.util.logging.config.file>
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>
@@ -1087,8 +1095,8 @@
 				<version>9.2.0</version>
 				<configuration>
 					<!--failBuildOnCVSS>5.0</failBuildOnCVSS-->
-                    <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
-                    <knownExploitedEnabled>false</knownExploitedEnabled>
+					<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+					<knownExploitedEnabled>false</knownExploitedEnabled>
 					<skipProvidedScope>true</skipProvidedScope>
 					<skipTestScope>true</skipTestScope>
 					<format>ALL</format>
