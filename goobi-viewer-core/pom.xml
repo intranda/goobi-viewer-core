@@ -1084,17 +1084,18 @@
 			<plugin>
 				<groupId>org.owasp</groupId>
 				<artifactId>dependency-check-maven</artifactId>
-				<version>8.4.2</version>
+				<version>9.2.0</version>
 				<configuration>
 					<!--failBuildOnCVSS>5.0</failBuildOnCVSS-->
-					<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                    <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                    <knownExploitedEnabled>false</knownExploitedEnabled>
 					<skipProvidedScope>true</skipProvidedScope>
 					<skipTestScope>true</skipTestScope>
+					<format>ALL</format>
 					<skip>${skipDependencyCheck}</skip>
 					<suppressionFiles>
 						<suppressionFile>file://${basedir}/dependency-suppression.xml</suppressionFile>
 					</suppressionFiles>
-					<format>ALL</format>
 				</configuration>
 				<executions>
 					<execution>
