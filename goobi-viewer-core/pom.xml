@@ -922,7 +922,7 @@
 
 								<!-- spring-web: MediaType class needed for some unit test -->
 								<ignoredUnusedDeclaredDependency>org.springframework:spring-web</ignoredUnusedDeclaredDependency>
-								
+
 								<!-- junit-jupiter is used to run the tests, otherwise it will fail in maven -->
 								<ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter</ignoredUnusedDeclaredDependency>
 
@@ -942,9 +942,9 @@
 									<ignoredUnusedDeclaredDependency>org.springframework:spring-context</ignoredUnusedDeclaredDependency>
 									<ignoredUnusedDeclaredDependency>org.springframework:spring-core</ignoredUnusedDeclaredDependency>
 									<ignoredUnusedDeclaredDependency>org.springframework:spring-expression</ignoredUnusedDeclaredDependency>
-									
+
 							</ignoredUnusedDeclaredDependencies>
-							
+
 							<ignoredNonTestScopedDependencies>
 								<!-- jersey-container-servlet-core is falsely declared as unused blocking maven install (windows developer system only) -->
 								<ignoredNonTestScopedDependency>org.glassfish.jersey.containers:jersey-container-servlet-core</ignoredNonTestScopedDependency>
