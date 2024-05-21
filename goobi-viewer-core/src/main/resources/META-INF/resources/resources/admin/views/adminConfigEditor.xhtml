@@ -44,12 +44,12 @@
 
 
 							<!-- CURRENT FILE NAME -->
-							<div class="admin__config-editor-current-file-wrapper">
-								<h:form id="configEditorActualFile">
-									<h2>#{msg.admin__config_editor__actual_file}:
-										#{adminConfigEditorBean.currentFileName}</h2>
-								</h:form>
-							</div>
+							<h:panelGroup id="configEditorActualFile" layout="block" class="admin__config-editor-current-file-wrapper">
+								<h2>#{msg.admin__config_editor__actual_file}: #{adminConfigEditorBean.currentFileName}
+									<ui:fragment rendered="#{adminConfigEditorBean.currentFileRecord.writable == false}">
+									<i class="fa fa-exclamation-circle" aria-hidden="true" data-toggle="tooltip" title="#{msg.admin__config_editor__not_writable}"></i></ui:fragment>
+								</h2>
+							</h:panelGroup>
 						<div>
 
 					</div>
@@ -143,37 +143,71 @@
 
 											<div
 												class="admin__config-editor-file-selection-single-entry #{adminConfigEditorBean.fileInEditionNumber == status.index ? '-selectedFile' : ''} #{record.readable  ? '-isReadable' : '-isNotReadable'}">
+												<div class="status-test #{!record.writable and record.readable ? '-yellow' : ''}">
+
+												
+												</div>
+												
 												<div
 													class="admin__config-editor-file-selection-single-entry-button-wrapper">
 
-													<h:commandButton value="#{record.fileName}"
-														styleClass="admin__config-editor-file-selection-single-entry-button"
-														action="#{adminConfigEditorBean.editFile(record.writable)}"
-														name="#{record.number}" disabled="#{!record.readable}"
-														onclick="viewerJS.showLoader();">
-														<f:ajax execute="@this"
-															render="editor-form file-form backup-form configEditorActualFile"
-															immediate="true" />
-													</h:commandButton>
+<!-- 													<h:commandButton value="#{record.fileName}" -->
+<!-- 														styleClass="admin__config-editor-file-selection-single-entry-button" -->
+<!-- 														action="#{adminConfigEditorBean.editFile(record.writable)}" -->
+<!-- 														name="#{record.number}" disabled="#{!record.readable}" -->
+<!-- 														onclick="viewerJS.showLoader();"> -->
+<!-- 														<f:ajax execute="@this" -->
+<!-- 															render="editor-form file-form backup-form configEditorActualFile" -->
+<!-- 															immediate="true" /> -->
+<!-- 													</h:commandButton> -->
 
-
-													<!-- 												<h:panelGroup styleClass="admin__config-editor-file-selection-single-entry-button-wrapper-info-wrapper" layout="block" rendered="#{!record.writable or !record.readable}"> -->
-
-
-
-
-
-
-
-													<ui:fragment rendered="#{!record.writable and record.readable}">
-														<div
-															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
-															title="#{msg.admin__config_editor__not_writable}"
-															data-toggle="tooltip" data-placement="top"
-															data-trigger="hover">
-															<i class="fa fa-eye" aria-hidden="true"></i>
+														<button onclick="viewerJS.showLoader();"
+															jsf:action="#{adminConfigEditorBean.editFile(record.writable)}"
+															class="admin__config-editor-file-selection-single-entry-button">
+															<span class="admin__config-editor-file-selection-single-entry-button-text">#{record.fileName}</span>
+<!-- 																<ui:fragment rendered="#{!record.writable and record.readable and !adminConfigEditorBean.isFileLocked(record)}"> -->
+<!-- 																	<span -->
+<!-- 																		class="admin__config-editor-file-selection-single-entry-button-info" -->
+<!-- 																		title="#{msg.admin__config_editor__not_writable}" -->
+<!-- 																		data-toggle="tooltip" data-placement="top" -->
+<!-- 																		data-trigger="hover"> -->
+<!-- 																		<i class="fa fa-exclamation-circle" aria-hidden="true"></i> -->
+<!-- 																	</span> -->
+<!-- 																</ui:fragment> -->
+<!-- 																<ui:fragment rendered="#{!record.writable and record.readable and adminConfigEditorBean.isFileLocked(record)}"> -->
+<!-- 																	<span -->
+<!-- 																		class="admin__config-editor-file-selection-single-entry-button-info" -->
+<!-- 																		title="#{msg.admin__config_editor__not_writable} + #{msg.admin__config_editor__locked}" -->
+<!-- 																		data-toggle="tooltip" data-placement="top" -->
+<!-- 																		data-trigger="hover"> -->
+<!-- 																		<i class="fa fa-exclamation-circle" aria-hidden="true"></i> -->
+<!-- 																	</span> -->
+<!-- 																</ui:fragment> -->
+																
+															<f:ajax execute="@this"
+																render="editor-form file-form backup-form configEditorActualFile"
+																immediate="true" />
+														</button>
+														<div class="admin__config-editor-file-selection-single-entry-actions-wrapper">
+															<div class="admin__config-editor-file-selection-single-entry-action-upload">
+																<label for="file" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="upload"><i class="fa fa-upload" ></i></label>
+																<input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" />
+															</div>
+															
+															<div class="admin__config-editor-file-selection-single-entry-action-download">
+																<a href="#" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="" data-original-title="Herunterladen"><i class="fa fa-download"></i>
+																</a>
+															</div>
 														</div>
-													</ui:fragment>
+														<!-- 												<h:panelGroup styleClass="admin__config-editor-file-selection-single-entry-button-wrapper-info-wrapper" layout="block" rendered="#{!record.writable or !record.readable}"> -->
+
+
+
+
+
+
+
+
 													<ui:fragment
 														rendered="#{adminConfigEditorBean.isFileLocked(record)}">
 														<div
