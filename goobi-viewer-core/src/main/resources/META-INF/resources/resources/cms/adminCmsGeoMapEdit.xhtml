@@ -60,7 +60,7 @@
 
 					<h:form id="geoMapEditForm" prependId="false">
 						<h2>#{msg.cms__geomaps__metadata__title}</h2>
-						<h:panelGroup id="metadataPanel">
+						<h:panelGroup layout="block" id="metadataPanel">
 						
 						<div class="admin__language-tabs">
 							<viewerComponent:localeSelector object="#{geoMapBean}" render="metadataPanel" />
@@ -94,7 +94,7 @@
 								<!--                         	<ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status"> -->
 								<div id="nameLanguage-#{geoMapBean.selectedLanguage}">
 
-									<div class="admin__content-inner-content">
+
 										<!-- TITLE -->
 										<div class="form-group form-row">
 											<div class="col-2 control-label admin__form-label">
@@ -142,7 +142,7 @@
 											</div>
 
 										</div>
-									</div>
+
 								</div>
 							</div>
 						</h:panelGroup>
