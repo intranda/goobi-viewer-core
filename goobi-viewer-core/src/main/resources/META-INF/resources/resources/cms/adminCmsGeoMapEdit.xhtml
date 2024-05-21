@@ -154,6 +154,7 @@
 
 						<h:panelGroup id="featureSetsPanel">
 							<div class="admin__default-block">
+							<p class="admin__boxed-entry-description">#{msg.cms__geomaps__featuresets_desc}</p>
 								<ui:repeat var="featureSet"
 									value="#{geoMapBean.currentMap.featureSets}" varStatus="status">
 									<div class="admin__language-tabs">
@@ -338,7 +339,7 @@
 									
 										<ui:param name="featureSetType" value="#{MANUAL}" />
 										
-										<div class="admin__content-component-add-area-label">#{msg.cms__geomap__add_featureset}</div>
+										<div class="admin__content-component-add-area-label">#{msg.cms__geomap__add_featureset}:</div>
 										<div class="input_form__option_marker in"></div>
 										
 										
