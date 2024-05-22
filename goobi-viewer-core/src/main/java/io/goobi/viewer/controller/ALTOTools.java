@@ -61,8 +61,9 @@ import de.intranda.digiverso.ocr.alto.utils.HyphenationLinker;
 import io.goobi.viewer.api.rest.model.ner.ElementReference;
 import io.goobi.viewer.api.rest.model.ner.NERTag;
 import io.goobi.viewer.api.rest.model.ner.NERTag.Type;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.api.rest.model.ner.TagCount;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.FuzzySearchTerm;
 
 /**
@@ -298,13 +299,14 @@ public final class ALTOTools {
                                         // every tagged word)
                                         if (request != null) {
                                             String contextPath = request.getContextPath();
-                                            strings.append("<span data-remotecontent=\"");
-                                            strings.append(contextPath);
-                                            strings.append("/api?action=normdata&amp;url=");
-                                            strings.append(neUriMap.get(tagref));
-                                            strings.append("&amp;lang=de\" class=\"ner-trigger\" title=\"");
-                                            strings.append(neLabelMap.get(tagref));
-                                            strings.append("\" tabindex=\"-1\"><span class=\"ner-popover-pointer\"></span>");
+                                            strings.append("<span data-remotecontent=\"")
+//                                                    .append(contextPath)
+                                                    .append(DataManager.getInstance().getConfiguration().getRestApiUrl())
+                                                    .append("authority/?id=")
+                                                    .append(neUriMap.get(tagref))
+                                                    .append("&amp;lang=de\" class=\"ner-trigger\" title=\"")
+                                                    .append(neLabelMap.get(tagref))
+                                                    .append("\" tabindex=\"-1\"><span class=\"ner-popover-pointer\"></span>");
                                         }
                                         switch (neTypeMap.get(tagref)) {
                                             case "person":
