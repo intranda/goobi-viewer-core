@@ -61,6 +61,7 @@ import de.intranda.digiverso.ocr.alto.utils.HyphenationLinker;
 import io.goobi.viewer.api.rest.model.ner.ElementReference;
 import io.goobi.viewer.api.rest.model.ner.NERTag;
 import io.goobi.viewer.api.rest.model.ner.NERTag.Type;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.api.rest.model.ner.TagCount;
 import io.goobi.viewer.model.search.FuzzySearchTerm;
 
@@ -105,7 +106,7 @@ public final class ALTOTools {
      */
     public static String getFulltext(Path path, String encoding) throws IOException {
         String altoString = FileTools.getStringFromFile(path.toFile(), encoding);
-        return getFulltext(altoString, encoding, false, null);
+        return getFulltext(altoString, encoding, false, BeanUtils.getRequest());
     }
 
     /**
