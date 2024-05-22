@@ -35,6 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.search.FacetItem.FacetType;
 
 /**
  * @author florian
@@ -192,6 +193,11 @@ public class GeoFacetItem implements IFacetItem {
         }
     }
 
+    @Override
+    public FacetType getType() {
+        return FacetType.GEO;
+    }
+
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.search.IFacetItem#getField()
      */
@@ -331,6 +337,11 @@ public class GeoFacetItem implements IFacetItem {
      */
     @Override
     public boolean isHierarchial() {
+        return false;
+    }
+
+    @Override
+    public boolean isBooleanType() {
         return false;
     }
 }

@@ -1592,6 +1592,16 @@ public class ConfigurationBean implements Serializable {
     public boolean isFacetFieldDisplayValueFilter(String facetField) {
         return DataManager.getInstance().getConfiguration().isFacetFieldDisplayValueFilter(facetField);
     }
+    
+    /**
+    *
+    * @param facetField
+    * @return Configured value
+    * @should return correct value
+    */
+   public boolean isFacetFieldTypeBoolean(String facetField) {
+       return DataManager.getInstance().getConfiguration().getBooleanFacetFields().contains(facetField);
+   }
 
     public boolean isPdfPageRangeEnabled() {
         return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsagePdfPageRange();

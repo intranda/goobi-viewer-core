@@ -391,17 +391,37 @@ public final class SearchHelper {
             String pi = (String) doc.getFieldValue(SolrConstants.PI);
             String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
             if (pi != null && childDocsMap != null) {
+
                 SolrDocumentList childDocs = childDocsMap.getOrDefault(pi, new SolrDocumentList());
                 logger.trace("{} child hits found for {}", childDocs.size(), pi);
                 childDocs = filterChildDocs(childDocs, iddoc, searchTerms, factory);
                 hit.setChildDocs(childDocs);
+
+                // Check whether user may see full-text, before adding them to count
+                boolean fulltextAccessGranted = true;
+                if (Boolean.TRUE.equals(SolrTools.getAsBoolean(doc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE)))) {
+                    fulltextAccessGranted =
+                            AccessConditionUtils.isPrivilegeGrantedForDoc(doc, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, BeanUtils.getRequest());
+                    logger.trace("Full-text access checked for {} and is: {}", pi, fulltextAccessGranted);
+                }
+
                 for (SolrDocument childDoc : childDocs) {
                     // if this is a metadata/docStruct hit directly in the top document, don't add to hit count
                     // It will simply be added to the metadata list of the main hit
                     HitType hitType = getHitType(childDoc);
-                    if (hitType != HitType.METADATA) {
-                        int hitTypeCount = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
-                        hit.getHitTypeCounts().put(hitType, hitTypeCount + 1);
+                    switch (hitType) {
+                        case METADATA:
+                            break;
+                        case PAGE:
+                            if (fulltextAccessGranted) {
+                                int hitTypeCount = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
+                                hit.getHitTypeCounts().put(hitType, hitTypeCount + 1);
+                            }
+                            break;
+                        default:
+                            int hitTypeCount = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
+                            hit.getHitTypeCounts().put(hitType, hitTypeCount + 1);
+                            break;
                     }
                 }
             }
@@ -1125,7 +1145,7 @@ public final class SearchHelper {
         if (user != null && user.isSuperuser()) {
             return "";
         }
-        
+
         // No restrictions for localhost, if so configured
         if (NetTools.isIpAddressLocalhost(ipAddress) && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
             return "";

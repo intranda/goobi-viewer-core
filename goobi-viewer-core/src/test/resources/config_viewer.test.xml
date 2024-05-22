@@ -447,6 +447,7 @@
 			<field initialElementNumber="16" priorityValues="val1;val2;val3" displayValueFilter="false">MD_PLACEPUBLISH</field>
 			<field type="geo" predicate="ISWITHIN" displayResultsOnMap="false">WKT_COORDS</field>
             <field groupToLength="1" alwaysApplyToUnfilteredHits="true" skipInWidget="true">MD_PERSON</field>
+            <field type="boolean">BOOL_HASIMAGES</field>
 			<!-- initialElementNumber: sets the initial number of facet elements 
 				to be displayed (any field including DC). Default is 20. -->
 			<initialElementNumber>23</initialElementNumber>
