@@ -292,8 +292,12 @@ public final class ALTOTools {
                             if (tagref != null && neTypeMap.get(tagref) != null) {
                                 // NE tag found
                                 if (!usedTags.contains(tagref)) {
+                                    // Tag ID
+                                    strings.append("<span data-entity-id=\"")
+                                            .append(tagref)
+                                            .append('"');
                                     // Tag type
-                                    strings.append("<span data-entity-type=\"")
+                                    strings.append(" data-entity-type=\"")
                                             .append(neTypeMap.get(tagref).toLowerCase())
                                             .append('"');
                                     if (neUriMap.get(tagref) != null) {
@@ -313,10 +317,11 @@ public final class ALTOTools {
                                                 .append(identifier)
                                                 .append("%22/1/-/-/-/\"");
                                     }
+                                    strings.append('>')
+                                            .append(neLabelMap.get(tagref))
+                                            .append("</span> ");
+                                    usedTags.add(tagref);
                                 }
-                                strings.append('>').append(neLabelMap.get(tagref))
-                                        .append("</span>");
-                                usedTags.add(tagref);
                             } else {
                                 // No NE tag
                                 if (subsContent != null) {
