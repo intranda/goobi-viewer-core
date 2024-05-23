@@ -64,7 +64,10 @@ import io.goobi.viewer.api.rest.model.ner.NERTag.Type;
 import io.goobi.viewer.api.rest.model.ner.TagCount;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.FuzzySearchTerm;
+import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.viewer.PageType;
 
 /**
  * <p>
@@ -287,58 +290,33 @@ public final class ALTOTools {
                                 }
                             }
                             if (tagref != null && neTypeMap.get(tagref) != null) {
-                                // NE tag
+                                // NE tag found
                                 if (!usedTags.contains(tagref)) {
-                                    String type = neTypeMap.get(tagref);
-                                    strings.append("<span class=\"ner-");
-                                    strings.append(type.toLowerCase());
-                                    strings.append("\">");
+                                    // Tag type
+                                    strings.append("<span data-entity-type=\"")
+                                            .append(neTypeMap.get(tagref).toLowerCase())
+                                            .append('"');
                                     if (neUriMap.get(tagref) != null) {
-                                        // with URI (skip if tag is already used so
-                                        // that the tag link is not rendered for
-                                        // every tagged word)
-                                        if (request != null) {
-                                            String contextPath = request.getContextPath();
-                                            strings.append("<span data-remotecontent=\"")
-//                                                    .append(contextPath)
-                                                    .append(DataManager.getInstance().getConfiguration().getRestApiUrl())
-                                                    .append("authority/?id=")
-                                                    .append(neUriMap.get(tagref))
-                                                    .append("&amp;lang=de\" class=\"ner-trigger\" title=\"")
-                                                    .append(neLabelMap.get(tagref))
-                                                    .append("\" tabindex=\"-1\"><span class=\"ner-popover-pointer\"></span>");
-                                        }
-                                        switch (neTypeMap.get(tagref)) {
-                                            case "person":
-                                                strings.append("<i class=\"fa fa-user\" aria-hidden=\"true\"></i>");
-                                                break;
-                                            case "location":
-                                                strings.append("<i class=\"fa fa-map-marker\" aria-hidden=\"true\"></i>");
-                                                break;
-                                            case "institution":
-                                                strings.append("<i class=\"fa fa-home\" aria-hidden=\"true\"></i>");
-                                                break;
-                                            default:
-                                                strings.append("<i></i>");
-                                                break;
-                                        }
-
-                                        // Use the tag's label instead of individual
-                                        // strings so that there's only one link per
-                                        // tag
-                                        strings.append(neLabelMap.get(tagref));
-                                        strings.append("</span>");
-                                    } else {
-                                        // w/o URI
-
-                                        // Use the tag's label instead of individual
-                                        // strings so that there's only one link per
-                                        // tag
-                                        strings.append(neLabelMap.get(tagref));
+                                        // Authority data URI
+                                        strings.append(" data-entity-authority-data-uri=\"")
+                                                .append(DataManager.getInstance().getConfiguration().getRestApiUrl())
+                                                .append("authority/resolver?id=")
+                                                .append(neUriMap.get(tagref))
+                                                .append("&amp;lang=de\"");
+                                        // Authority data search URL
+                                        String identifier = neUriMap.get(tagref).replaceAll("^https?:\\/\\/d-nb.info\\/gnd\\/([\\d-]+)\\/?$", "$1");
+                                        strings.append(" data-entity-authority-data-search=\"")
+                                                .append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+                                                .append('/')
+                                                .append(PageType.search.getName())
+                                                .append("/-/NORM_IDENTIFIER:%22")
+                                                .append(identifier)
+                                                .append("%22/1/-/-/-/\"");
                                     }
-                                    strings.append(" </span>");
-                                    usedTags.add(tagref);
                                 }
+                                strings.append('>').append(neLabelMap.get(tagref))
+                                        .append("</span>");
+                                usedTags.add(tagref);
                             } else {
                                 // No NE tag
                                 if (subsContent != null) {
