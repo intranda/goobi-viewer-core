@@ -744,22 +744,22 @@ public class ThumbnailHandler {
 
         String thumbnailUrl = null;
         switch (page.getBaseMimeType()) {
-            case "image":
+            case IMAGE:
                 thumbnailUrl = page.getFilepath();
                 break;
-            case "video", "text":
+            case VIDEO, SANDBOXED_HTML:
                 thumbnailUrl = page.getImageFilepath();
                 if (StringUtils.isEmpty(thumbnailUrl)) {
                     thumbnailUrl = getThumbnailPath(VIDEO_THUMB).toString();
                 }
                 break;
-            case "audio":
+            case AUDIO:
                 thumbnailUrl = page.getImageFilepath();
                 if (StringUtils.isEmpty(thumbnailUrl)) {
                     thumbnailUrl = getThumbnailPath(AUDIO_THUMB).toString();
                 }
                 break;
-            case "application":
+            case APPLICATION:
                 switch (page.getMimeType()) {
                     case "application/pdf":
                         thumbnailUrl = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
@@ -771,7 +771,7 @@ public class ThumbnailHandler {
                         break;
                 }
                 break;
-            case "model":
+            case MODEL:
                 thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
                 break;
             default:

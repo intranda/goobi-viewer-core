@@ -452,7 +452,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.when(page.getFirstFileName()).thenReturn(pageFilename);
         Mockito.when(page.getFilepath()).thenReturn(pi + "/" + pageFilename);
         Mockito.when(page.getMimeType()).thenReturn("image/tiff");
-        Mockito.when(page.getBaseMimeType()).thenReturn("image");
+        Mockito.when(page.getBaseMimeType()).thenReturn(BaseMimeType.IMAGE);
 
         IPageLoader pageLoader = Mockito.mock(EagerPageLoader.class);
         Mockito.when(pageLoader.getPage(Mockito.anyInt())).thenReturn(page);

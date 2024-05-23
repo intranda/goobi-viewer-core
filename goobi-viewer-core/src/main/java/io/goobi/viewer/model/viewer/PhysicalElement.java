@@ -450,7 +450,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @should return jpeg if availabel
      */
     public String getImageFilepath() {
-        if (!BaseMimeType.IMAGE.name().equals(getBaseMimeType())) {
+        if (!BaseMimeType.IMAGE.equals(getBaseMimeType())) {
             if (filePathTiff != null) {
                 return filePathTiff;
             }
@@ -613,12 +613,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @should return correct base mime type
      * @should return image if base mime type not found
      */
-    public String getBaseMimeType() {
+    public BaseMimeType getBaseMimeType() {
         BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
         if (BaseMimeType.UNKNOWN.equals(baseMimeType)) {
-            return BaseMimeType.IMAGE.getName();
+            return BaseMimeType.IMAGE;
         }
-        return baseMimeType.getName();
+        return baseMimeType;
     }
 
     /**
@@ -1218,7 +1218,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         String url;
         try {
-            url = BeanUtils.getImageDeliveryBean().getMedia().getMediaUrl(getBaseMimeType(), format, pi, getFileNameForFormat(format));
+            url = BeanUtils.getImageDeliveryBean().getMedia().getMediaUrl(getBaseMimeType().getName(), format, pi, getFileNameForFormat(format));
         } catch (IllegalRequestException e) {
             throw new IllegalStateException("media type must be either audio or video, but is " + getBaseMimeType());
         }
