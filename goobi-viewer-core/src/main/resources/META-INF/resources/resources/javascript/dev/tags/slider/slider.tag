@@ -17,15 +17,26 @@
 
     this.on( 'mount', function() {
 		this.style = this.opts.styles.get(this.opts.style);
-//    	console.log(this.style);
-//     	console.log("mounting 'slider.tag' ", this.opts, this.style);
+    	console.log(this.style);
+     	console.log("mounting 'slider.tag' ", this.opts, this.style);
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
     	// console.log("init slider with '" + this.opts.style + "''", this.style);
 		this.timeout = this.style.timeout ? this.style.timeout : 100000;
 		this.maxSlides = this.style.maxSlides ? this.style.maxSlides : 1000;
 		this.linkTarget = this.opts.linktarget ? this.opts.linktarget : "_self";
-    	
+		
+		
+
+		firstSlideMessage = this.opts.firstslidemessage;
+		
+		console.log('executed on mount');
+		console.log(firstSlideMessage);
+
+
+
+		
+		
     	let pSource;
     	if(this.opts.sourceelement) {
     		let sourceElement = document.getElementById(this.opts.sourceelement);
@@ -100,6 +111,7 @@
    				image: this.getImage(slide),
    				label: this.translate(slide.label),
    				description: this.translate(slide.description),
+   				alttext: this.translate(slide.altText),
     		});
     	});
     }
@@ -180,7 +192,13 @@
     	} else {
     		this.showPaginator = false;
     	}
-    }
+	  	swiperConfig.a11y = {
+	  		prevSlideMessage: this.opts.firstslidemessage,
+			nextSlideMessage: this.opts.lastslidemessage,
+	  		lastSlideMessage: this.opts.firstslidemessage,
+			firstSlideMessage: this.opts.lastslidemessage,
+		}
+	}
     
     getLayout() {
     	let layout = this.style.layout ? this.style.layout : 'default';

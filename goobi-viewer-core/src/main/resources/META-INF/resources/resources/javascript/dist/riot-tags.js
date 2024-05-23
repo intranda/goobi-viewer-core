@@ -4090,6 +4090,11 @@ riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__
 			this.refs.description.innerHTML = this.opts.description
 		});
 });
+riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><img class="swiper-image slider-{this.opts.stylename}__image" riot-src="url({this.opts.image})" alt="{this.opts.alttext}"></a>', '', '', function(opts) {
+		this.on("mount", () => {
+			this.refs.description.innerHTML = this.opts.description
+		});
+});
 riot.tag2('slide_indexslider', '<a class="slider-{this.opts.stylename}__link-wrapper" href="{this.opts.link}"><div class="swiper-heading slider-mnha__header">{this.opts.label}</div><img class="slider-{this.opts.stylename}__image" loading="lazy" riot-src="{this.opts.image}"><div class="swiper-lazy-preloader"></div></a>', '', '', function(opts) {
 });
 riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><a class="slider-{this.opts.stylename}__info-link" href="{this.opts.link}"><div class="slider-{this.opts.stylename}__info-symbol"><svg width="6" height="13" viewbox="0 0 6 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.664 1.21C4.664 2.134 4.092 2.728 3.168 2.728C2.354 2.728 1.936 2.134 1.936 1.474C1.936 0.506 2.706 0 3.454 0C4.136 0 4.664 0.506 4.664 1.21ZM5.258 11.528C4.664 12.1 3.586 12.584 2.42 12.716C1.386 12.496 0.748 11.792 0.748 10.78C0.748 10.362 0.836 9.658 1.1 8.58C1.276 7.81 1.452 6.534 1.452 5.852C1.452 5.588 1.43 5.302 1.408 5.236C1.144 5.17 0.726 5.104 0.198 5.104L0 4.488C0.572 4.07 1.716 3.718 2.398 3.718C3.542 3.718 4.202 4.312 4.202 5.566C4.202 6.248 4.026 7.194 3.828 8.118C3.542 9.328 3.432 10.12 3.432 10.472C3.432 10.802 3.454 11.022 3.542 11.154C3.96 11.066 4.4 10.868 4.928 10.56L5.258 11.528Z" fill="white"></path></svg></div><div class="slider-single-story__info-phrase">{this.opts.label}</div></a>', '', '', function(opts) {
@@ -4103,13 +4108,19 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
 
     this.on( 'mount', function() {
 		this.style = this.opts.styles.get(this.opts.style);
-
+    	console.log(this.style);
+     	console.log("mounting 'slider.tag' ", this.opts, this.style);
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
 
 		this.timeout = this.style.timeout ? this.style.timeout : 100000;
 		this.maxSlides = this.style.maxSlides ? this.style.maxSlides : 1000;
 		this.linkTarget = this.opts.linktarget ? this.opts.linktarget : "_self";
+
+		firstSlideMessage = this.opts.firstslidemessage;
+
+		console.log('executed on mount');
+		console.log(firstSlideMessage);
 
     	let pSource;
     	if(this.opts.sourceelement) {
@@ -4179,6 +4190,7 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
    				image: this.getImage(slide),
    				label: this.translate(slide.label),
    				description: this.translate(slide.description),
+   				alttext: this.translate(slide.altText),
     		});
     	});
     }.bind(this)
@@ -4259,7 +4271,13 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
     	} else {
     		this.showPaginator = false;
     	}
-    }.bind(this)
+	  	swiperConfig.a11y = {
+	  		prevSlideMessage: this.opts.firstslidemessage,
+			nextSlideMessage: this.opts.lastslidemessage,
+	  		lastSlideMessage: this.opts.firstslidemessage,
+			firstSlideMessage: this.opts.lastslidemessage,
+		}
+	}.bind(this)
 
     this.getLayout = function() {
     	let layout = this.style.layout ? this.style.layout : 'default';
