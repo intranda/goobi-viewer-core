@@ -81,6 +81,65 @@
                 </ui:fragment>
             </div>
         </ui:fragment>
+        
+        
+        <!-- HIDDEN POPOVER ELEMENT FOR EVERY ENTITY TERM -->
+        <script>
+        $( document ).ready(function() {
 
-    </div>
+
+        $('[data-entity-type]').each(function() {
+        	
+        	var thisEntityElement = $(this);
+        	// console.log(thisEntityElement);
+        	var searchLink = $(this).data("entity-authority-data-search");
+         	console.log(searchLink);
+        	var authorityDataUri = $(this).data("entity-authority-data-uri");
+         	console.log(authorityDataUri);
+         	
+         	
+			var popOverActionsElement = `<div class="hidden entity-popover-element">
+      			<!-- POPOVER HEADING -->
+	  			<div class="popover-heading">Actions for this term</div>
+	  			
+	  			<!-- POPOVER BODY -->
+	  			<div class="popover-body"> 
+	  				<div class="d-flex flex-column">
+	  					<button type="button">
+	  						<i class="fa fa-list-ul" aria-hidden="true"></i> Normdata
+	  					</button>
+	  					<a href="\${searchLink}"><i class="fa fa-search" aria-hidden="true">${searchLink}</i>
+	  						Trigger Search</a>
+	  				</div>
+	  			</div>
+	  		</div>`
+         	
+
+			$(this).append(popOverActionsElement);
+			
+			// console.log($(thisEntityElement).find(".popover-body").html());
+			
+			var thisEntityBody = $(thisEntityElement).find(".popover-body").html();
+			var thisEntityTitle = $(thisEntityElement).find(".popover-heading").html();
+			
+			$(this).popover({
+			        html : true,
+			      sanitize: false,
+			        content: function() {
+			       		var content = thisEntityBody;
+			        	return content;
+			        },
+			        title: function() {
+			            var title = thisEntityTitle;
+			            return title;
+			        },
+			    });
+			
+        });
+
+        });	
+        </script>
+
+
+	</div>
 </ui:composition>
