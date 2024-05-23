@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+	<jsfComponent>
+		<library>cms/components/frontend/component</library>
+		<name>searchbox</name>
+	</jsfComponent>
+	<label>cms_component__search_box__label</label>
+	<description>cms_component__search_box__desc</description>
+
+	<content>
+		<item id="heading">
+			<label>heading</label>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>text</name>
+			</jsfComponent>
+		</item>
+	</content>
+
+	<attribute name="hideOnScreenSizes" type="toggle">
+		<value label="Hide on desktop">hideDesktop</value>
+		<value label="Hide on mobile">hideMobile</value>
+	</attribute>
+	
+</component>

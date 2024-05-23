@@ -54,8 +54,8 @@
     "pixl-xml": "~1.0.13",
     "riot": "~3.12.0",
     "simple-lightbox": "~2.1.0",
-    "swagger-ui-dist": "~4.18.1",
-    "sweetalert2": "~11.10.8",
+    "swagger-ui-dist": "~5.17.0",
+    "sweetalert2": "~11.11.0",
     "swiper": "~6.8.4",
     "three": "~0.132.2",
     "tinymce": "~5.10.0"

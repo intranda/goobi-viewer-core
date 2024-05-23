@@ -611,14 +611,13 @@
 		<action onPostback="false">#{activeDocumentBean.setLogid('')}</action>
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
-    <!--
+    <!-- Needed for search hit navigation when in thumbnail view -->
 	<url-mapping id="thumbs4">
 		<pattern value="/thumbs/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewThumbs.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.setLogid('')}</action>
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
-    -->
 
 	<!-- TOC -->
     <url-mapping id="toc1">

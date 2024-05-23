@@ -66,7 +66,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
-import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.jdom2.JDOMException;
 import org.json.JSONObject;
 import org.omnifaces.util.Faces;
@@ -188,7 +187,7 @@ public class ViewManager implements Serializable {
     private String contextObject = null;
     private List<String> versionHistory = null;
     private PageOrientation firstPageOrientation = PageOrientation.RIGHT;
-    private boolean doublePageMode = false;
+    private boolean doublePageMode;
     private int firstPdfPage;
     private int lastPdfPage;
     private CalendarView calendarView;
@@ -228,6 +227,7 @@ public class ViewManager implements Serializable {
         this.pageLoader = pageLoader;
         this.currentStructElementIddoc = currentDocumentIddoc;
         this.logId = logId;
+        this.doublePageMode = DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault();
         if (topStructElementIddoc == currentDocumentIddoc) {
             currentStructElement = topDocument;
         } else {

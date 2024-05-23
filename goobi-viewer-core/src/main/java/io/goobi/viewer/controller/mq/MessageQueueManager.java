@@ -39,6 +39,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
@@ -73,6 +74,7 @@ import org.apache.activemq.broker.BrokerFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.jmx.QueueViewMBean;
 import org.apache.activemq.command.ActiveMQTextMessage;
+import org.apache.activemq.memory.buffer.MessageQueue;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -436,6 +438,30 @@ public class MessageQueueManager {
             logger.error(e);
         }
         return fastQueueContent;
+    }
+
+    public int countMessagesBefore(String queueName, String messageType, String messageId) {
+        int count = 0;
+        try (QueueConnection connection = startConnection();
+                QueueSession queueSession = connection.createQueueSession(false, Session.CLIENT_ACKNOWLEDGE);
+                QueueBrowser browser = queueSession.createBrowser(queueSession.createQueue(queueName));) {
+
+            Enumeration<?> messagesInQueue = browser.getEnumeration();
+            while (messagesInQueue.hasMoreElements()) {
+                ActiveMQTextMessage queueMessage = (ActiveMQTextMessage) messagesInQueue.nextElement();
+                String type = queueMessage.getStringProperty("JMSType");
+                String id = queueMessage.getJMSMessageID();
+                if (Objects.equals(type, messageType)) {
+                    count++;
+                }
+                if (Objects.equals(messageId, id)) {
+                    break;
+                }
+            }
+        } catch (JMSException e) {
+            logger.error(e);
+        }
+        return count;
     }
 
     public ActiveMQConnection startConnection() throws JMSException {

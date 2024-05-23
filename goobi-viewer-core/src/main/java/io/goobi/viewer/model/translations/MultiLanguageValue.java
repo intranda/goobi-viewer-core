@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.jboss.weld.exceptions.IllegalArgumentException;
-
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component>
+	<jsfComponent>
+		<library>cms/components/frontend/component</library>
+		<name>splittext</name>
+	</jsfComponent>
+	<label>cms_component__split_text__label</label>
+	<description>cms_component__split_text__desc</description>
+	
+	<content>
+		<item id="heading">
+			<label>heading</label>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>text</name>
+			</jsfComponent>
+		</item>
+
+		<item id="text">
+			<label>cms_component__split_text__content</label>
+			<className>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</className>
+			<jsfComponent>
+				<library>cms/components/backend/content</library>
+				<name>htmltext</name>
+			</jsfComponent>
+		</item>
+	</content>
+
+
+	<attribute name="hideOnScreenSizes" type="toggle">
+		<value label="Hide on desktop">hideDesktop</value>
+		<value label="Hide on mobile">hideMobile</value>
+	</attribute>
+
+</component>

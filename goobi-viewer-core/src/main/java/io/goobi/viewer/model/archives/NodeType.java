@@ -23,7 +23,6 @@ package io.goobi.viewer.model.archives;
 
 import java.util.stream.Stream;
 
-import org.jboss.weld.exceptions.IllegalArgumentException;
 
 /**
  * @author florian

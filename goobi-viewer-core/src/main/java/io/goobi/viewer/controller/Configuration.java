@@ -2909,6 +2909,26 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
+     * getBooleanFacetFields.
+     * </p>
+     *
+     * @return a {@link java.util.List} object.
+     * @should return all values
+     */
+    public List<String> getBooleanFacetFields() {
+        List<String> ret = new ArrayList<>();
+        for (String field : getAllFacetFields()) {
+            String type = getFacetFieldType(field);
+            if (type != null && type.equalsIgnoreCase("boolean")) {
+                ret.add(field);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * <p>
      * getHierarchicalFacetFields.
      * </p>
      *
@@ -3408,8 +3428,8 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isGeneratePdfInTaskManager() {
-        return getLocalBoolean("pdf.externalPdfGeneration", false);
+    public boolean isGeneratePdfInMessageQueue() {
+        return getLocalBoolean("pdf.generateInMessageQueue", getLocalBoolean("pdf.externalPdfGeneration", false));
     }
 
     /**
@@ -4985,6 +5005,10 @@ public class Configuration extends AbstractConfiguration {
         return getLocalBoolean("viewer.doublePageNavigation[@enabled]", false);
     }
 
+    public boolean isDoublePageNavigationDefault() {
+        return isDoublePageNavigationEnabled() && getLocalBoolean("viewer.doublePageNavigation[@default]", false);
+    }
+
     /**
      * <p>
      * getRestrictedImageUrls.
@@ -5005,11 +5029,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     public String getExternalManifestSolrField() {
-        return getLocalString("webapi.iiif.externalManifests.solrField", "");
-    }
-
-    public String getExternalManifestSolrUrlTemplate() {
-        return getLocalString("webapi.iiif.externalManifests.url", "");
+        return getLocalString("webapi.iiif.externalManifests[@field]", "");
     }
 
     /**
