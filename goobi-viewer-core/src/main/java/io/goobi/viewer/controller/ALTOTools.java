@@ -293,7 +293,7 @@ public final class ALTOTools {
                                 // NE tag found
                                 if (!usedTags.contains(tagref)) {
                                     // Tag ID
-                                    strings.append("<span data-entity-id=\"")
+                                    strings.append("<button class=\"view-fulltext__entity-action-button\" type=\"button\" data-entity-id=\"")
                                             .append(tagref)
                                             .append('"');
                                     // Tag type
@@ -319,7 +319,7 @@ public final class ALTOTools {
                                     }
                                     strings.append('>')
                                             .append(neLabelMap.get(tagref))
-                                            .append("</span> ");
+                                            .append("</button> ");
                                     usedTags.add(tagref);
                                 }
                             } else {

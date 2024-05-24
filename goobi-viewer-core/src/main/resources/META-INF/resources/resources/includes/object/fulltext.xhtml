@@ -13,7 +13,8 @@
     <!-- VIEW TEXT -->
     <div id="fulltext-box" class="view-fulltext__box">
                 
-        <ui:fragment rendered="#{activeDocumentBean.viewManager.getFulltextMimeType(navigationHelper.localeString) == 'text/plain'}">        
+        <ui:fragment rendered="#{activeDocumentBean.viewManager.getFulltextMimeType(navigationHelper.localeString) == 'text/plain'}">  
+              
 	        <pre>
 	        	<!-- Single page mode -->
 	        	<ui:fragment rendered="#{!activeDocumentBean.viewManager.doublePageMode}">
@@ -45,7 +46,7 @@
         
         <ui:fragment rendered="#{activeDocumentBean.viewManager.getFulltextMimeType(navigationHelper.localeString) != 'text/plain'}">        
 	        <div class="view-fulltext__content">
-	        
+
 	            <!-- TEI files -->
                 <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextFromTEI}"> 
                     <h:outputText escape="false" value="#{textBean.getTeiText(activeDocumentBean.viewManager.topStructElement, activeDocumentBean.selectedRecordLanguage)}" /> 
@@ -87,15 +88,15 @@
         <script>
         $( document ).ready(function() {
 
+        // ITERATE THROUGH THE ENTITIES AND ENABLE BUTTON FUNCTIONALITY
+        $('[data-entity-type]').each(function(normdataConfig) {
 
-        $('[data-entity-type]').each(function() {
-        	
         	var thisEntityElement = $(this);
         	// console.log(thisEntityElement);
         	var searchLink = $(this).data("entity-authority-data-search");
-         	console.log(searchLink);
+         	// console.log(searchLink);
         	var authorityDataUri = $(this).data("entity-authority-data-uri");
-         	console.log(authorityDataUri);
+         	// console.log(authorityDataUri);
          	
          	
 			var popOverActionsElement = `<div class="hidden entity-popover-element">
@@ -105,29 +106,39 @@
 	  			<!-- POPOVER BODY -->
 	  			<div class="popover-body"> 
 	  				<div class="d-flex flex-column">
-	  					<button type="button">
-	  						<i class="fa fa-list-ul" aria-hidden="true"></i> Normdata
+	  					<!-- BUTTON TO TRIGGER AUTHORITY DATA POPOVER -->
+	  					<button class="view-fulltext__popover-button" type="button" data-remotecontent="\${authorityDataUri}">
+	  						<i class="fa fa-list-ul" aria-hidden="true"></i><span>Authority data</span>
 	  					</button>
-	  					<a href="\${searchLink}"><i class="fa fa-search" aria-hidden="true">${searchLink}</i>
-	  						Trigger Search</a>
-	  				</div>
+	  					<!-- LINK TO TRIGGER TERM SEARCH -->
+	  					<a class="view-fulltext__popover-button" href="\${searchLink}"><i class="fa fa-search" aria-hidden="true">${searchLink}</i><span>Trigger Search</span></a>
+	  					</div>
 	  			</div>
 	  		</div>`
          	
-
-			$(this).append(popOverActionsElement);
+	  		// INSERT HIDDEN POPOVER CONTENT AFTER ENTITY TERM
+			$(this).after(popOverActionsElement);
+	  		
+	  		// CREATE EMPTY/PLACEHOLDER HTML ELEMENT FOR EACH ENTITY TERM TO ATTACH THE POPOVER TO THIS ELEMENT
+	  		$(this).after('<span data-placeholder="forPopover"></span>');
 			
-			// console.log($(thisEntityElement).find(".popover-body").html());
+	  		// VAR/SELECTORS FOR THE CONTENT, TITLE AND THE PLACEHOLDER ELEMENT
+			var thisEntityBody = $(thisEntityElement).next().next().find('.popover-body').html();
+			var thisEntityTitle = $(thisEntityElement).next().next().find('.popover-heading').html();
+			var thisEntityAfterElement = $(thisEntityElement).next('[data-placeholder="forPopover"]'); 
 			
-			var thisEntityBody = $(thisEntityElement).find(".popover-body").html();
-			var thisEntityTitle = $(thisEntityElement).find(".popover-heading").html();
-			
+			// EVENT ON EVERY ENTITY TERM: POPOVER WITH INSERTED TITLE AND CONTENT
 			$(this).popover({
 			        html : true,
 			      sanitize: false,
-			        content: function() {
+			      boundary: 'window',
+			      placement: 'top',
+			      trigger: 'click',
+			      container: thisEntityAfterElement,
+			      content: function() {
 			       		var content = thisEntityBody;
 			        	return content;
+
 			        },
 			        title: function() {
 			            var title = thisEntityTitle;
@@ -135,9 +146,37 @@
 			        },
 			    });
 			
+			// AFTER CREATING POPOVER EXECUTE AUTHORITY DATA SCRIPT (viewerJS.normdata.init)
+			$(this).on('shown.bs.popover', function () {
+				$('[data-entity-type]').not(this).popover('hide');
+
+		        // AUTHORITY DATA CONFIG
+		           var normdataConfig = {
+		               path: "#{request.contextPath}",
+		               lang: {
+		                   popoverTitle: "#{msg.normdataPopverTitle}",
+		                   popoverClose: "#{msg.normdataPopoverClose}",
+		                   showNormdata: "#{msg.normdataExpand}"
+		               },
+		               linkSelector: "[data-remotecontent]",
+		               elemWrapper: $( "#view_fulltext_wrapp" ),
+		           };
+		        
+		       		viewerJS.normdata.init( normdataConfig );
+				
+			// CLOSE POPOVERS WHEN CLICKED OUTSIDE OF THE POPOVERS
+       		$('html').on('click', function(e) {
+       		  if (typeof $(e.target).data('original-title') == 'undefined' &amp;&amp; !$(e.target).parents().is('.popover')) {
+       		    $('[data-original-title]').popover('hide');
+       		  }
+       		});
+				
+			})
+
         });
 
-        });	
+        });
+
         </script>
 
 

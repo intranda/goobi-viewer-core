@@ -31,6 +31,54 @@
 			max-width: 100%;
 		}
 	}
+	&__popover-button {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		color: #222;
+		vertical-align: baseline;
+		background: transparent;
+		padding: 0;
+		border: none;
+		&:hover {
+			color: #222;
+			text-decoration: none;
+		}
+	}
+	&__entity-action-button {
+		background: transparent;
+		display: inline;
+		padding: 0;
+		border: none;
+	}
+}
+
+// ENTITY COLORING
+[data-entity-type="person"] {
+	color: #0174df;
+	&:hover,
+	&:focus,
+	&:active {
+		color: #0174df;
+	}
+}
+
+[data-entity-type="location"] {
+	color: #ff8000;
+	&:hover,
+	&:focus,
+	&:active {
+		color: #ff8000;
+	}
+}
+
+[data-entity-type="corporation"] {
+	color: #298a08;
+	&:hover,
+	&:focus,
+	&:active {
+		color: #298a08;
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
