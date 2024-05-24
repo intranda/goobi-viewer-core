@@ -191,7 +191,7 @@ public class VariableReplacer {
         Map<String, List<String>> temp = new HashMap<>();
         if (page != null) {
             temp.put(MIME_TYPE, List.of(page.getMimeType()));
-            temp.put(BASE_MIME_TYPE, List.of(page.getBaseMimeType()));
+            temp.put(BASE_MIME_TYPE, List.of(page.getBaseMimeType().name()));
             temp.put(ORDER, List.of(Integer.toString(page.getOrder())));
             temp.put(ORDER_LABEL, List.of(page.getOrderLabel()));
             temp.put(FILENAME, List.of(page.getFileName()));
