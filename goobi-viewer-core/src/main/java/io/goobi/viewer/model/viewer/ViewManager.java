@@ -2613,18 +2613,7 @@ public class ViewManager implements Serializable {
             return true;
         }
         if (pagesWithFulltext == null) {
-            pagesWithFulltext = DataManager.getInstance()
-                    .getSearchIndex()
-                    .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
-                            .append(':')
-                            .append(pi)
-                            .append(" +")
-                            .append(SolrConstants.DOCTYPE)
-                            .append(":PAGE")
-                            .append(" +")
-                            .append(SolrConstants.FULLTEXTAVAILABLE)
-                            .append(":true")
-                            .toString());
+            pagesWithFulltext = getPageCountWithFulltext();
         }
         double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
         // logger.trace("{}% of pages have full-text", percentage);
@@ -2633,6 +2622,21 @@ public class ViewManager implements Serializable {
         }
 
         return false;
+    }
+
+    public long getPageCountWithFulltext() throws IndexUnreachableException, PresentationException {
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                        .append(':')
+                        .append(pi)
+                        .append(" +")
+                        .append(SolrConstants.DOCTYPE)
+                        .append(":PAGE")
+                        .append(" +")
+                        .append(SolrConstants.FULLTEXTAVAILABLE)
+                        .append(":true")
+                        .toString());
     }
 
     /**
@@ -2777,23 +2781,27 @@ public class ViewManager implements Serializable {
         }
         if (pagesWithAlto == null) {
 
-            pagesWithAlto = DataManager.getInstance()
-                    .getSearchIndex()
-                    .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
-                            .append(':')
-                            .append(pi)
-                            .append(" +")
-                            .append(SolrConstants.DOCTYPE)
-                            .append(":PAGE")
-                            .append(" +")
-                            .append(SolrConstants.FILENAME_ALTO)
-                            .append(":*")
-                            .toString());
+            pagesWithAlto = getPageCountWithAlto();
             logger.trace("{} of pages have full-text", pagesWithAlto);
         }
         int threshold = 1; // TODO ???
 
         return pagesWithAlto >= threshold;
+    }
+
+    public Long getPageCountWithAlto() throws IndexUnreachableException, PresentationException {
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                        .append(':')
+                        .append(pi)
+                        .append(" +")
+                        .append(SolrConstants.DOCTYPE)
+                        .append(":PAGE")
+                        .append(" +")
+                        .append(SolrConstants.FILENAME_ALTO)
+                        .append(":*")
+                        .toString());
     }
 
     /**
