@@ -25,26 +25,26 @@
  			-->
             <div class="fullscreen__view-image-inner">
                 <!-- VIEW IMAGE -->
-                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'image'}">
+                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image'}">
                     <ui:include src="/resources/includes/object/image.xhtml" />
                 </ui:fragment>
 
                 <!-- VIEW VIDEO -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'video'}">
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'video'}">
                     <ui:insert name="viewVideo">
                         <ui:include src="/resources/includes/object/video.xhtml" />
                     </ui:insert>
                 </h:panelGroup>
 
                 <!-- VIEW AUDIO -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'audio'}">
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'audio'}">
                     <ui:insert name="viewAudio">
                         <ui:include src="/resources/includes/object/audio.xhtml" />
                     </ui:insert>
                 </h:panelGroup>
 
                 <!-- VIEW 3D OBJECT -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'object'}">
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'object'}">
                     <ui:insert name="viewObject3d">
                         <ui:include src="/resources/includes/object/object3d.xhtml" />
                     </ui:insert>
@@ -307,7 +307,7 @@
                     </ui:fragment>
 
                     <!-- SHARE IMAGE AREA -->
-                    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'image' and !activeDocumentBean.viewManager.doublePageMode}">
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image' and !activeDocumentBean.viewManager.doublePageMode}">
                         <div id="panel-8" class="fullscreen__view-sidebar-accordeon-panel share-image-area">
                             <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                                 <span>#{msg.action__share_image_region}</span>
