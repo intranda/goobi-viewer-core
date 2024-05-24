@@ -125,6 +125,9 @@
                 clientSecret="secret_google" image="google.png" />
             <provider type="openId" name="Facebook" endpoint="https://www.facebook.com/dialog/oauth" clientId="id_facebook"
                 clientSecret="secret_facebook" image="facebook.png" />
+            <provider type="openId" name="Custom OIDC" endpoint="https://example.com/oauth/auth"
+                tokenEndpoint="https://example.com/oauth/token" redirectionEndpoint="https://example.com/viewer/oauth"
+                scope="email" clientId="my_id" clientSecret="my_secret" image="custom.png" />
             <provider enabled="false" type="openId" name="incomplete" endpoint="https://graph.facebook.com/oauth"
                 clientId="" image="facebook.png" />
             <provider type="userPassword" name="VuFind" label="VuFind-label" endpoint="https://vuFind.example/Api/User/Auth" image="vufind.png" timeout="7000">
@@ -444,6 +447,7 @@
 			<field initialElementNumber="16" priorityValues="val1;val2;val3" displayValueFilter="false">MD_PLACEPUBLISH</field>
 			<field type="geo" predicate="ISWITHIN" displayResultsOnMap="false">WKT_COORDS</field>
             <field groupToLength="1" alwaysApplyToUnfilteredHits="true" skipInWidget="true">MD_PERSON</field>
+            <field type="boolean">BOOL_HASIMAGES</field>
 			<!-- initialElementNumber: sets the initial number of facet elements 
 				to be displayed (any field including DC). Default is 20. -->
 			<initialElementNumber>23</initialElementNumber>
@@ -950,7 +954,12 @@
 		<sidebarWidgetAdditionalFiles enabled="true">
 			<!-- hideFileRegex: If a regular expression is defined, files matching 
 				it are hidden from the widget display. The download is still possible. -->
-			<hideFileRegex>(wug_.*|AK_.*)</hideFileRegex>
+	    	<filter action="hide" regex="(wug_.*|AK_.*)"/>
+	    	<filter action="show" regex="{struct.MD_SHELFMARK}">
+	    		<conditions>
+	    			<filter action="show" regex="archive\.100uaghgw\.020volksliedarchiv.*" value="{record.DC}"/>
+	    		</conditions>
+	    	</filter>
 		</sidebarWidgetAdditionalFiles>
 	
 	    <!-- @enabled: If true, the sidebar term browsing widget it displayed. Default is true. -->

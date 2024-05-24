@@ -170,9 +170,9 @@
                             <ui:fragment
                                 rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">                     
                                     <a
-                                        href="#{request.contextPath}/mirador/?pi=#{activeDocumentBean.persistentIdentifier}&amp;page=1" 
+                                        href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifManifest}&amp;page=1" 
                                         id="mirador" 
-                                        class="badge badge-dark widget-usage__work-link-mirador-viewer" 
+                                        class="badge badge-dark widget-usage__work-link-mirador-viewer"
                                         title="#{msg.action__view_in_mirador__tooltip}"
 										data-toggle="tooltip"
 										data-placement="top"
@@ -274,7 +274,7 @@
                                                  !activeDocumentBean.viewManager.filesOnly and 
                                                  activeDocumentBean.viewManager.hasPages and 
                                                  activeDocumentBean.accessPermissionPdf}">
-                            <ui:fragment rendered="#{!configurationBean.generatePdfInTaskManager}">
+                            <ui:fragment rendered="#{!configurationBean.generatePdfInMessageQueue}">
                             	<c:set scope="request" var="hasPrerenderedPagePdfs" value="#{activeDocumentBean.viewManager.hasPrerenderedPagePdfs()}"/>
                             	<ui:fragment rendered="#{hasPrerenderedPagePdfs}">
                             		<a 
@@ -317,7 +317,7 @@
                                     #{msg.label__pdf_download}</a>
                             	</ui:fragment>
                             </ui:fragment>
-                            <ui:fragment rendered="#{configurationBean.generatePdfInTaskManager}">
+                            <ui:fragment rendered="#{configurationBean.generatePdfInMessageQueue}">
                                 <a 
                                     href="#" 
                                     id="pdfWork" 

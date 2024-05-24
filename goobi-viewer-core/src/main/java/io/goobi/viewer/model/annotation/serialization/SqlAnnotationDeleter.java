@@ -23,8 +23,6 @@ package io.goobi.viewer.model.annotation.serialization;
 
 import java.io.IOException;
 
-import org.jboss.weld.exceptions.IllegalArgumentException;
-
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;

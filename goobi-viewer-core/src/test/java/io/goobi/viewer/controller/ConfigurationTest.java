@@ -44,6 +44,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.TestUtils;
+import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
 import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.citation.CitationLink;
@@ -520,30 +521,33 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getAuthenticationProviders_shouldReturnAllProperlyConfiguredElements() throws Exception {
         List<IAuthenticationProvider> providers = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
-        assertEquals(5, providers.size());
+        assertEquals(6, providers.size());
 
-        //google openid
-        assertEquals("Google", providers.get(0).getName());
-        assertEquals("openid", providers.get(0).getType().toLowerCase());
-        assertEquals("https://accounts.google.com/o/oauth2/auth", ((OpenIdProvider) providers.get(0)).getUrl());
-        assertEquals("id_google", ((OpenIdProvider) providers.get(0)).getClientId());
-        assertEquals("secret_google", ((OpenIdProvider) providers.get(0)).getClientSecret());
-        assertEquals("google.png", ((OpenIdProvider) providers.get(0)).getImage());
-        assertEquals("Google", ((OpenIdProvider) providers.get(0)).getLabel());
+        // OpenID Connect
+        assertEquals("Custom OIDC", providers.get(2).getName());
+        assertEquals("openid", providers.get(2).getType().toLowerCase());
+        assertEquals("https://example.com/oauth/auth", ((OpenIdProvider) providers.get(2)).getUrl());
+        assertEquals("https://example.com/oauth/token", ((OpenIdProvider) providers.get(2)).getTokenEndpoint());
+        assertEquals("https://example.com/viewer/oauth", ((OpenIdProvider) providers.get(2)).getRedirectionEndpoint());
+        assertEquals("email", ((OpenIdProvider) providers.get(2)).getScope());
+        assertEquals("my_id", ((OpenIdProvider) providers.get(2)).getClientId());
+        assertEquals("my_secret", ((OpenIdProvider) providers.get(2)).getClientSecret());
+        assertEquals("custom.png", ((OpenIdProvider) providers.get(2)).getImage());
+        assertEquals("Custom OIDC", ((OpenIdProvider) providers.get(2)).getLabel());
 
-        //vuFind
-        assertEquals("VuFind", providers.get(2).getName());
-        assertEquals("userpassword", providers.get(2).getType().toLowerCase());
-        assertEquals(7000l, ((HttpAuthenticationProvider) providers.get(2)).getTimeoutMillis());
-        assertEquals("VuFind-label", ((HttpAuthenticationProvider) providers.get(2)).getLabel());
+        // vuFind
+        assertEquals("VuFind", providers.get(3).getName());
+        assertEquals("userpassword", providers.get(3).getType().toLowerCase());
+        assertEquals(7000l, ((HttpAuthenticationProvider) providers.get(3)).getTimeoutMillis());
+        assertEquals("VuFind-label", ((HttpAuthenticationProvider) providers.get(3)).getLabel());
 
         // bibliotheca
-        assertEquals("Bibliotheca", providers.get(3).getName());
-        assertEquals("userpassword", providers.get(3).getType().toLowerCase());
+        assertEquals("Bibliotheca", providers.get(4).getName());
+        assertEquals("userpassword", providers.get(4).getType().toLowerCase());
 
         //local
-        assertEquals("Goobi viewer", providers.get(4).getName());
-        assertEquals("local", providers.get(4).getType().toLowerCase());
+        assertEquals("Goobi viewer", providers.get(5).getName());
+        assertEquals("local", providers.get(5).getType().toLowerCase());
     }
 
     /**
@@ -553,8 +557,8 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getAuthenticationProviders_shouldLoadUserGroupNamesCorrectly() throws Exception {
         List<IAuthenticationProvider> providers = DataManager.getInstance().getConfiguration().getAuthenticationProviders();
-        assertEquals(5, providers.size());
-        List<String> groups = providers.get(2).getAddUserToGroups();
+        assertEquals(6, providers.size());
+        List<String> groups = providers.get(3).getAddUserToGroups();
         assertEquals(2, groups.size());
     }
 
@@ -1188,19 +1192,21 @@ class ConfigurationTest extends AbstractTest {
         assertEquals(true, DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetAdditionalFiles());
     }
 
-
     @Test
     void getHideDownloadFileRegex_returnConfiguredValue() throws Exception {
-        assertEquals("(wug_.*|AK_.*)", DataManager.getInstance().getConfiguration().getHideDownloadFileRegex());
+        List<IFilterConfiguration> filters = DataManager.getInstance().getConfiguration().getAdditionalFilesDisplayFilters();
+        assertEquals(2, filters.size());
+        assertEquals("(wug_.*|AK_.*)", filters.get(0).getMatchRegex());
+        assertEquals(1, filters.get(1).getFilterConditions().size());
     }
 
     /**
-     * @see Configuration#isGeneratePdfInTaskManager()
+     * @see Configuration#isGeneratePdfInMessageQueue()
      * @verifies return correct value
      */
     @Test
     void isGeneratePdfInTaskManager_shouldReturnCorrectValue() throws Exception {
-        assertTrue(DataManager.getInstance().getConfiguration().isGeneratePdfInTaskManager());
+        assertTrue(DataManager.getInstance().getConfiguration().isGeneratePdfInMessageQueue());
     }
 
     /**
@@ -1780,13 +1786,23 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getAllFacetFields_shouldReturnCorrectOrder() throws Exception {
         List<String> result = DataManager.getInstance().getConfiguration().getAllFacetFields();
-        assertEquals(6, result.size());
+        assertEquals(7, result.size());
         assertEquals("DC", result.get(0));
         assertEquals("YEAR", result.get(1));
         assertEquals("MD_CREATOR", result.get(2));
         assertEquals("MD_PLACEPUBLISH", result.get(3));
         assertEquals("WKT_COORDS", result.get(4));
         assertEquals("MD_PERSON", result.get(5));
+        assertEquals("BOOL_HASIMAGES", result.get(6));
+    }
+    
+    /**
+     * @see Configuration#getBooleanFacetFields()
+     * @verifies return all values
+     */
+    @Test
+    void getBooleanFacetFields_shouldReturnAllValues() throws Exception {
+        assertEquals(1, DataManager.getInstance().getConfiguration().getBooleanFacetFields().size());
     }
 
     /**
@@ -1806,7 +1822,7 @@ class ConfigurationTest extends AbstractTest {
     void getRangeFacetFields_shouldReturnAllValues() throws Exception {
         assertEquals(1, DataManager.getInstance().getConfiguration().getRangeFacetFields().size());
     }
-    
+
     /**
      * @see Configuration#getRangeFacetFieldMinValue()
      * @verifies return correct value
@@ -1815,7 +1831,7 @@ class ConfigurationTest extends AbstractTest {
     void getRangeFacetFieldMinValue_shouldReturnCorrectValue() throws Exception {
         assertEquals(-1000, DataManager.getInstance().getConfiguration().getRangeFacetFieldMinValue(SolrConstants.YEAR));
     }
-    
+
     /**
      * @see Configuration#getRangeFacetFieldMinValue()
      * @verifies return INT_MIN if no value configured
@@ -1824,7 +1840,7 @@ class ConfigurationTest extends AbstractTest {
     void getRangeFacetFieldMinValue_shouldReturnINT_MINIfNoValueConfigured() throws Exception {
         assertEquals(Integer.MIN_VALUE, DataManager.getInstance().getConfiguration().getRangeFacetFieldMinValue("MD_NOSUCHFIELD"));
     }
-    
+
     /**
      * @see Configuration#getRangeFacetFieldMaxValue()
      * @verifies return correct value
@@ -1833,7 +1849,7 @@ class ConfigurationTest extends AbstractTest {
     void getRangeFacetFieldMaxValue_shouldReturnCorrectValue() throws Exception {
         assertEquals(2050, DataManager.getInstance().getConfiguration().getRangeFacetFieldMaxValue(SolrConstants.YEAR));
     }
-    
+
     /**
      * @see Configuration#getRangeFacetFieldMaxValue()
      * @verifies return INT_MAX if no value configured

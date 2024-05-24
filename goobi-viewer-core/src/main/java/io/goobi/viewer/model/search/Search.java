@@ -48,7 +48,6 @@ import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.jboss.weld.exceptions.IllegalArgumentException;
 
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
@@ -673,7 +672,8 @@ public class Search implements Serializable {
         List<String> unfilteredFacetFields = new ArrayList<>();
         // Collect facet fields with alwaysApplyToUnfilteredHits=true
         for (String field : DataManager.getInstance().getConfiguration().getAllFacetFields()) {
-            if (DataManager.getInstance().getConfiguration().isAlwaysApplyFacetFieldToUnfilteredHits(field)) {
+            if (DataManager.getInstance().getConfiguration().isAlwaysApplyFacetFieldToUnfilteredHits(field)
+                    || DataManager.getInstance().getConfiguration().getBooleanFacetFields().contains(field)) {
                 unfilteredFacetFields.add(SearchHelper.facetifyField(field));
             }
         }

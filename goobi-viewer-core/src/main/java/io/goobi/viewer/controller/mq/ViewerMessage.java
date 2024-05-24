@@ -51,7 +51,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "mq_messages")
@@ -99,7 +98,7 @@ public class ViewerMessage {
     private LocalDateTime lastUpdateTime = LocalDateTime.now();
 
     @Column(name = "delay_millis")
-    private long delay = 0l;
+    private long delay = 0L;
 
     public ViewerMessage() {
 

@@ -133,7 +133,7 @@ var viewerJS = ( function( viewer ) {
             _loadingOverlay.addClass( 'dl-modal__overlay' );
             $( 'body' ).append( _loadingOverlay );
             
-            _defaults.downloadBtn.on( 'click', function() {
+            $(_defaults.downloadBtn).on( 'click', function(e) {
                 // show loading overlay
                 $( '.dl-modal__overlay' ).fadeIn( 'fast' );
                 

@@ -270,14 +270,14 @@
 																	<!-- PDF DOWNLOAD -->
 																	<h:panelGroup rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and 
 																	                          tocElement.pageNo != null and tocElement.accessPermissionPdf}">
-																		<h:panelGroup rendered="#{!configurationBean.generatePdfInTaskManager}">
+																		<h:panelGroup rendered="#{!configurationBean.generatePdfInMessageQueue}">
 																			<li>
 																				<a href="#{tocElement.contentServerPdfUrl}" title="#{msg.label__pdf_download}">
 																					<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
 																				</a>
 																			</li>
 																		</h:panelGroup>
-																		<h:panelGroup rendered="#{configurationBean.generatePdfInTaskManager}">
+																		<h:panelGroup rendered="#{configurationBean.generatePdfInMessageQueue}">
 																			<li>
 																				<a
 																					href="#"
@@ -337,14 +337,14 @@
 																<!-- PDF DOWNLOAD -->
 																<h:panelGroup rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and 
 																                          tocElement.pageNo != null and tocElement.accessPermissionPdf}">
-																	<h:panelGroup rendered="#{!configurationBean.generatePdfInTaskManager}">
+																	<h:panelGroup rendered="#{!configurationBean.generatePdfInMessageQueue}">
 																		<li>
 																			<a href="#{tocElement.contentServerPdfUrl}" title="#{msg.label__pdf_download}">
 																				<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
 																			</a>
 																		</li>
 																	</h:panelGroup>
-																	<h:panelGroup rendered="#{configurationBean.generatePdfInTaskManager}">
+																	<h:panelGroup rendered="#{configurationBean.generatePdfInMessageQueue}">
 																		<li>
 																			<a
 																				href="#"

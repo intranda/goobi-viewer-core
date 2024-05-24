@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -61,6 +62,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
+import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
 import io.goobi.viewer.controller.model.FeatureSetConfiguration;
 import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
@@ -168,9 +170,7 @@ public class Configuration extends AbstractConfiguration {
 
                         @Override
                         public void onEvent(Event event) {
-                            if (builder.getReloadingController().checkForReloading(null)) {
-                                //
-                            }
+                            builder.getReloadingController().checkForReloading(null);
                         }
                     });
         } else {
@@ -198,9 +198,7 @@ public class Configuration extends AbstractConfiguration {
 
                         @Override
                         public void onEvent(Event event) {
-                            if (builderLocal.getReloadingController().checkForReloading(null)) {
-                                //
-                            }
+                            builderLocal.getReloadingController().checkForReloading(null);
                         }
                     });
         }
@@ -936,8 +934,20 @@ public class Configuration extends AbstractConfiguration {
      *
      * @return a regex or an empty string if no downloads should be hidden
      */
-    public String getHideDownloadFileRegex() {
-        return getLocalString("sidebar.sidebarWidgetAdditionalFiles.hideFileRegex", "");
+    public List<IFilterConfiguration> getAdditionalFilesDisplayFilters() {
+        return this.getLocalConfigurationsAt("sidebar.sidebarWidgetAdditionalFiles.filter")
+                .stream()
+                .map(conf -> {
+                    try {
+                        return IFilterConfiguration.fromConfiguration(conf);
+                    } catch (ConfigurationException e) {
+                        logger.error("Error reading configuration for additionalFilesDisplayFilters ", e);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        //        return getLocalString("sidebar.sidebarWidgetAdditionalFiles.hideFileRegex", "");
     }
 
     /**
@@ -1057,6 +1067,11 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isDisplayWidgetUsageDownloadOptions() {
         return getLocalBoolean("sidebar.sidebarWidgetUsage.page.downloadOptions[@enabled]", true);
+    }
+
+    public boolean isDisplaySidebarWidgetUsagePdfPageRange() {
+        return getLocalBoolean("sidebar.sidebarWidgetUsage.pdfPageRange[@enabled]", false);
+
     }
 
     /**
@@ -2345,6 +2360,9 @@ public class Configuration extends AbstractConfiguration {
             String name = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@name]");
             String type = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@type]", "");
             String endpoint = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@endpoint]", null);
+            String tokenEndpoint = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tokenEndpoint]", null);
+            String redirectionEndpoint = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@redirectionEndpoint]", null);
+            String scope = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@scope]", null);
             String image = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@image]", null);
             boolean enabled = myConfigToUse.getBoolean(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@enabled]", true);
             String clientId = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@clientId]", null);
@@ -2360,7 +2378,11 @@ public class Configuration extends AbstractConfiguration {
                         providers.add(new HttpHeaderProvider(name, label, endpoint, image, timeoutMillis, parameterType, parameterName));
                         break;
                     case "openid":
-                        providers.add(new OpenIdProvider(name, label, endpoint, image, timeoutMillis, clientId, clientSecret));
+                        providers.add(
+                                new OpenIdProvider(name, label, endpoint, image, timeoutMillis, clientId, clientSecret)
+                                        .setTokenEndpoint(tokenEndpoint)
+                                        .setRedirectionEndpoint(redirectionEndpoint)
+                                        .setScope(scope));
                         break;
                     case "userpassword":
                         switch (name.toLowerCase()) {
@@ -2887,6 +2909,26 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
+     * getBooleanFacetFields.
+     * </p>
+     *
+     * @return a {@link java.util.List} object.
+     * @should return all values
+     */
+    public List<String> getBooleanFacetFields() {
+        List<String> ret = new ArrayList<>();
+        for (String field : getAllFacetFields()) {
+            String type = getFacetFieldType(field);
+            if (type != null && type.equalsIgnoreCase("boolean")) {
+                ret.add(field);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * <p>
      * getHierarchicalFacetFields.
      * </p>
      *
@@ -3386,8 +3428,8 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isGeneratePdfInTaskManager() {
-        return getLocalBoolean("pdf.externalPdfGeneration", false);
+    public boolean isGeneratePdfInMessageQueue() {
+        return getLocalBoolean("pdf.generateInMessageQueue", getLocalBoolean("pdf.externalPdfGeneration", false));
     }
 
     /**
@@ -3898,18 +3940,14 @@ public class Configuration extends AbstractConfiguration {
 
             if (pageType != null) {
                 List<Object> views = subConfig.getList("useFor.view");
-                if (views.isEmpty() || views.contains(pageType.name()) || views.contains(pageType.getName())) {
-                    //match
-                } else {
+                if (!views.isEmpty() && !views.contains(pageType.name()) && !views.contains(pageType.getName())) {
                     continue;
                 }
             }
 
             if (imageType != null && imageType.getFormat() != null) {
                 List<Object> mimeTypes = subConfig.getList("useFor.mimeType");
-                if (mimeTypes.isEmpty() || mimeTypes.contains(imageType.getFormat().getMimeType())) {
-                    //match
-                } else {
+                if (!mimeTypes.isEmpty() && !mimeTypes.contains(imageType.getFormat().getMimeType())) {
                     continue;
                 }
             }
@@ -4967,6 +5005,10 @@ public class Configuration extends AbstractConfiguration {
         return getLocalBoolean("viewer.doublePageNavigation[@enabled]", false);
     }
 
+    public boolean isDoublePageNavigationDefault() {
+        return isDoublePageNavigationEnabled() && getLocalBoolean("viewer.doublePageNavigation[@default]", false);
+    }
+
     /**
      * <p>
      * getRestrictedImageUrls.
@@ -4980,6 +5022,14 @@ public class Configuration extends AbstractConfiguration {
 
     public List<String> getIIIFLicenses() {
         return getLocalList("webapi.iiif.license", new ArrayList<>());
+    }
+
+    public boolean useExternalManifestUrls() {
+        return getLocalBoolean("webapi.iiif.externalManifests[@enabled]", false);
+    }
+
+    public String getExternalManifestSolrField() {
+        return getLocalString("webapi.iiif.externalManifests[@field]", "");
     }
 
     /**
@@ -6033,4 +6083,5 @@ public class Configuration extends AbstractConfiguration {
         return getLocalString("developer.scripts.createDeveloperPackage",
                 "{config-folder-path}/script_create_package.sh -d viewer -f {base-path} -w /var/www/  -s {solr-url}");
     }
+
 }

@@ -27,10 +27,12 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,10 +42,10 @@ import org.apache.logging.log4j.Logger;
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
+import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.DownloadException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.EPUBDownloadJob;
 import io.goobi.viewer.model.job.download.PDFDownloadJob;
@@ -63,8 +65,12 @@ public class DownloadBean implements Serializable {
 
     private static long ttl = 1209600000;
 
+    @Inject
+    private transient MessageQueueManager messageBroker;
+
     private String downloadIdentifier;
-    private DownloadJob downloadJob;
+    //    private DownloadJob downloadJob;
+    private ViewerMessage message;
 
     /**
      * <p>
@@ -75,7 +81,6 @@ public class DownloadBean implements Serializable {
         synchronized (this) {
             logger.debug("reset (thread {})", Thread.currentThread().getId());
             downloadIdentifier = null;
-            downloadJob = null;
         }
     }
 
@@ -100,13 +105,29 @@ public class DownloadBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DownloadException if any.
      */
     public String openDownloadAction() throws DAOException, DownloadException {
-        downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(downloadIdentifier);
-        //        downloadJob.updateStatus();
-        if (downloadJob == null) {
+        message = DataManager.getInstance().getDao().getViewerMessageByMessageID(downloadIdentifier);
+        if (message == null) {
+            message = messageBroker.getMessageById(downloadIdentifier).orElse(null);
+        }
+        if (message != null) {
+            return message.getMessageId();
+        } else {
             logger.error("Download job with the ID {} not found.", downloadIdentifier);
             throw new DownloadException("downloadErrorNotFound");
         }
-        return "";
+    }
+
+    public int getQueuePosition() {
+        if (message != null) {
+            return this.messageBroker.countMessagesBefore(MessageQueueManager.getQueueForMessageType(message.getTaskName()), message.getTaskName(),
+                    message.getMessageId());
+        } else {
+            return 0;
+        }
+    }
+
+    public ViewerMessage getMessage() {
+        return message;
     }
 
     /**
@@ -118,6 +139,8 @@ public class DownloadBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DownloadException if any.
      */
     public void downloadFileAction() throws IOException, DownloadException {
+        PDFDownloadJob downloadJob =
+                new PDFDownloadJob(this.message.getProperties().get("pi"), this.message.getProperties().get("logId"), LocalDateTime.now(), 0l);
         if (downloadJob != null) {
             Path file = downloadJob.getFile();
             if (file == null) {
@@ -197,28 +220,6 @@ public class DownloadBean implements Serializable {
      */
     public void setDownloadIdentifier(String downloadIdentifier) {
         this.downloadIdentifier = downloadIdentifier;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>downloadJob</code>.
-     * </p>
-     *
-     * @return the downloadJob
-     */
-    public DownloadJob getDownloadJob() {
-        return downloadJob;
-    }
-
-    /**
-     * <p>
-     * Setter for the field <code>downloadJob</code>.
-     * </p>
-     *
-     * @param downloadJob the downloadJob to set
-     */
-    public void setDownloadJob(DownloadJob downloadJob) {
-        this.downloadJob = downloadJob;
     }
 
 }

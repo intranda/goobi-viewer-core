@@ -146,7 +146,7 @@
 
             <script type="text/javascript">
             	var downloadModalConfig = {
-                	downloadBtn: $( ".download-modal" ),
+                	downloadBtn: ".download-modal",
                     path: "#{navigationHelper.applicationUrl}",
                     iiifPath: "#{configurationBean.iiifApiUrl}",
                     userEmail: $( "#userEmail" ).val(),
@@ -169,8 +169,7 @@
                         saveBtn: "#{msg.downloadGenerateFile}",
                     }
                 };
-
-                viewerJS.downloadModal.init( downloadModalConfig );
+				$(document).ready(() => viewerJS.downloadModal.init( downloadModalConfig ));
 
                 // viewerJS.clipboard.init( '[data-copy]' );
             </script>

@@ -120,6 +120,8 @@ public class DisplayUserGeneratedContent {
 
     private String accessCondition;
 
+    private boolean crowdsourcingModuleContent;
+
     /**
      * Default constructor (needed for persistence).
      */
@@ -138,6 +140,7 @@ public class DisplayUserGeneratedContent {
         this.extendendLabel = createExtendedLabelFromBody(this.type, this.annotationBody);
         this.page = a.getTargetPageOrder();
         this.pi = a.getTargetPI();
+        this.crowdsourcingModuleContent = false;
         try {
             this.updatedBy = a.getCreator();
         } catch (DAOException e) {
@@ -625,6 +628,7 @@ public class DisplayUserGeneratedContent {
         ret.setDisplayCoordinates((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
         ret.setPi((String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT));
         ret.setAccessCondition(SolrTools.getSingleFieldStringValue(doc, SolrConstants.ACCESSCONDITION));
+        ret.setCrowdsourcingModuleContent(!doc.containsKey(SolrConstants.MD_ANNOTATION_ID));
         if (body != null) {
             ret.setAnnotationBody(body);
         }
@@ -881,6 +885,14 @@ public class DisplayUserGeneratedContent {
             pageUrl = pageUrl + getPage() + "/#ugc=" + getId();
         }
         return pageUrl;
+    }
+
+    public boolean isCrowdsourcingModuleContent() {
+        return crowdsourcingModuleContent;
+    }
+
+    public void setCrowdsourcingModuleContent(boolean crowdsourcingModuleContent) {
+        this.crowdsourcingModuleContent = crowdsourcingModuleContent;
     }
 
 }

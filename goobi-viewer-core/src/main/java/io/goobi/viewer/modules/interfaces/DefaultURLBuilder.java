@@ -136,8 +136,12 @@ public class DefaultURLBuilder implements IURLBuilder {
                 .append(pi)
                 .append('/');
         if (!topStruct || imageNo > 1) {
-            sb.append(imageNo)
-                    .append('/');
+            if (DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault()) {
+                sb.append(imageNo).append("-").append(imageNo).append("/");
+            } else {
+                sb.append(imageNo)
+                        .append('/');
+            }
         }
         if (!topStruct) {
             sb.append(StringUtils.isNotEmpty(logId) ? logId : '-')

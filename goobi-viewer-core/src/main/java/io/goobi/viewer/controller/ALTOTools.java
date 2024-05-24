@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.UnsupportedCharsetException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -155,7 +156,7 @@ public final class ALTOTools {
             }
         } catch (UnsupportedEncodingException e) {
             logger.error("{}: {}", e.getMessage(), charset);
-        } catch (Exception e) {
+        } catch (JDOMException | IOException e) {
             logger.error(e.getMessage(), e);
         }
 
@@ -388,7 +389,7 @@ public final class ALTOTools {
                 }
                 parser.next();
             }
-        } catch (Exception e) {
+        } catch (UnsupportedCharsetException e) {
             // Wrong charset can result in an exception being thrown by the underlying parser implementation
             logger.warn(e.getMessage());
         } finally {

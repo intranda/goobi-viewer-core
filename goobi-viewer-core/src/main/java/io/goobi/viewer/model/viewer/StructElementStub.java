@@ -417,6 +417,10 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * @return a {@link java.lang.String} object.
      */
     public String getUrl() {
+        PageType pageType = PageType.determinePageType(docStructType, null, anchor || isGroup(), isHasImages(), false);
+        if (pageType != null) {
+            return getUrl(pageType);
+        }
         if (anchor) {
             return getUrl(PageType.viewToc);
         }
@@ -458,9 +462,9 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * @return a {@link java.lang.String} object.
      */
     public String getUrl(final PageType pageType) {
-        // Only viewToc and viewMetadata are allowed for anchors
         PageType usePageType = pageType;
-        if (anchor && usePageType != PageType.viewMetadata) {
+        // Only viewToc, viewMetadata and viewCalendar are allowed for anchors
+        if (anchor && usePageType != PageType.viewMetadata && usePageType != PageType.viewCalendar) {
             usePageType = PageType.viewToc;
         }
 

@@ -154,7 +154,7 @@ public class ActiveDocumentBean implements Serializable {
     /** URL parameter 'action'. */
     private String action = "";
     /** URL parameter 'imageToShow'. */
-    private String imageToShow = "1";
+    private String imageToShow = DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault() ? "1-1" : "1";
     /** URL parameter 'logid'. */
     private String logid = "";
     /** URL parameter 'tocCurrentPage'. */
@@ -581,7 +581,8 @@ public class ActiveDocumentBean implements Serializable {
      *         expected
      */
     private boolean isDoublePageUrl() {
-        return StringUtils.isNotBlank(imageToShow) && imageToShow.matches(DOUBLE_PAGE_PATTERN);
+        return (StringUtils.isBlank(imageToShow) && DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault())
+                || (StringUtils.isNotBlank(imageToShow) && imageToShow.matches(DOUBLE_PAGE_PATTERN));
     }
 
     /**
@@ -796,6 +797,9 @@ public class ActiveDocumentBean implements Serializable {
                 } else {
                     logger.trace("{}  not found, using {}", SolrConstants.THUMBPAGENO, image);
                 }
+            }
+            if (DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault()) {
+                image = String.format("%s-%s", image, image);
             }
             setImageToShow(image);
         }
@@ -2092,7 +2096,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return true if download of the given type is enabled for the given page type; false otherwise
      */
     private static boolean isEnabled(String downloadType, String pageTypeName) {
-        if (downloadType.equals(EPUBDownloadJob.LOCAL_TYPE) && !DataManager.getInstance().getConfiguration().isGeneratePdfInTaskManager()) {
+        if (downloadType.equals(EPUBDownloadJob.LOCAL_TYPE) && !DataManager.getInstance().getConfiguration().isGeneratePdfInMessageQueue()) {
             return false;
         }
         PageType pageType = PageType.getByName(pageTypeName);

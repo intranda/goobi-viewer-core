@@ -70,11 +70,7 @@ class AuthenticationEndpointTest extends AbstractRestApiTest {
     @Test
     void headerParameterLogin_shouldReturnStatus403IfNoMatchingProviderFound() throws Exception {
         String url = urls.path(ApiUrls.AUTH, ApiUrls.AUTH_HEADER).build();
-        DataManager.getInstance().getConfiguration().overrideValue("user.authenticationProviders.provider(5)[@enabled]", "true");
-        assertEquals(6, DataManager.getInstance()
-                .getConfiguration()
-                .getAuthenticationProviders()
-                .size());
+        DataManager.getInstance().getConfiguration().overrideValue("user.authenticationProviders.provider(6)[@enabled]", "true");
         try (Response response = target(url)
                 .request()
                 .get()) {

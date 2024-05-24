@@ -30,6 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -386,6 +387,8 @@ public class MetadataBean {
                         return val.getParamValues(subFieldName);
                     }
                 }
+            } else if (md != null && !md.isBlank()) {
+                return md.getValues().stream().map(pv -> pv.getCombinedValue()).collect(Collectors.toList());
             }
         }
 
@@ -410,5 +413,51 @@ public class MetadataBean {
         }
 
         return null;
+    }
+
+    /**
+     * Returns the first {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code> where the subfield
+     * value of MD_ORDER matches the given <code>order</code> value.
+     * 
+     * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
+     * @param fieldName Name metadata field
+     * @param language Optional metadata field language
+     * @param subFieldName Child metadata field
+     * @param order Page number
+     * @return First value of subFieldName; null if none found
+     */
+    public String getFirstMetadataValue(int metadataViewIndex, String mainFieldName, String language, String subFieldName) {
+        List<String> values = getMetadataValues(metadataViewIndex, mainFieldName, language, subFieldName);
+        if (!values.isEmpty()) {
+            return values.get(0);
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns a list of {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code> where the subfield
+     * value of MD_ORDER matches the given <code>order</code> value.
+     * 
+     * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
+     * @param fieldName Name metadata field
+     * @param language Optional metadata field language
+     * @param subFieldName Child metadata field
+     * @param order Page number
+     * @return Metadata values of subFieldName; empty list if none found
+     */
+    public List<String> getMetadataValues(int metadataViewIndex, String mainFieldName, String subFieldName, String language) {
+        List<MetadataElement> metadataElements = getMetadataElementList(metadataViewIndex);
+        if (metadataElements != null && !metadataElements.isEmpty()) {
+            Metadata md = metadataElements.get(0).getMetadata(mainFieldName, language);
+            if (md != null && !md.isBlank()) {
+                if (StringUtils.isNotBlank(subFieldName)) {
+                    return md.getValues().stream().map(pv -> pv.getParamValues(subFieldName)).flatMap(List::stream).collect(Collectors.toList());
+                }
+                return md.getValues().stream().map(pv -> pv.getCombinedValue()).collect(Collectors.toList());
+            }
+        }
+
+        return Collections.emptyList();
     }
 }
