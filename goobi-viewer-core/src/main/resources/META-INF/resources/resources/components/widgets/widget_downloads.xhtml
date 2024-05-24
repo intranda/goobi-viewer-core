@@ -10,10 +10,17 @@
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
 
 	<composite:interface />
-
+   
 	<composite:implementation>
-		<ui:fragment
-			rendered="#{configurationBean.displaySidebarWidgetUsage and !activeDocumentBean.group and ((activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.bornDigital) || activeDocumentBean.viewManager.displayContentDownloadMenu)}">
+	<ui:param name="childCount" value="#{cc.getFacets().get('javax.faces.component.COMPOSITE_FACET_NAME').children.stream().filter(c -> c.isRendered()).filter(c -> c.attributes['styleClass'].contains('widget-element')).count()}"/>
+		<div class="test">child count = #{childCount}</div>
+		
+		<ui:fragment rendered="#{sidebarBean.checkVisibility('{`fileTypes`:[`IMAGE`],`baseMimeType`:`image`, `accessCondition`:`PRIV_DOWNLOAD_PDF`, `pageTypes`:[`viewObject`,`viewFullscreen`], `hasPages`:true}')}">
+		<div>test</div>
+		</ui:fragment>
+		
+		<ui:fragment class="widget-element"
+			rendered="#{configurationBean.displaySidebarWidgetUsage and !activeDocumentBean.group}">
 			<div id="widgetDownloads" class="widget widget-downloads">
 
 				<div class="widget-downloads__topbar">
