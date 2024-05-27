@@ -26,8 +26,8 @@
 		this.maxSlides = this.style.maxSlides ? this.style.maxSlides : 1000;
 		this.linkTarget = this.opts.linktarget ? this.opts.linktarget : "_self";
 		
-		
 
+		
 		firstSlideMessage = this.opts.firstslidemessage;
 		
 		console.log('executed on mount');
@@ -79,7 +79,7 @@
 			this.initSlideTags(this.slides);
     		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
     		window.viewerJS.slider.sliders.push(this.swiper);
-    		
+    		 
     		console.log(this.swiper);
     		// console.log(this.refs.container);
     		
@@ -193,10 +193,11 @@
     		this.showPaginator = false;
     	}
 	  	swiperConfig.a11y = {
-	  		prevSlideMessage: this.opts.firstslidemessage,
-			nextSlideMessage: this.opts.lastslidemessage,
+	  		prevSlideMessage: this.opts.prevslideMessage,
+			nextSlideMessage: this.opts.nextslideMessage,
 	  		lastSlideMessage: this.opts.firstslidemessage,
 			firstSlideMessage: this.opts.lastslidemessage,
+			paginationBulletMessage: this.opts.paginationbulletmessage + ' \{\{index\}\}',
 		}
 	}
     

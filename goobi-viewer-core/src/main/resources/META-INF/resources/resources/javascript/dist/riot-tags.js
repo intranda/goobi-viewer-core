@@ -4272,10 +4272,11 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
     		this.showPaginator = false;
     	}
 	  	swiperConfig.a11y = {
-	  		prevSlideMessage: this.opts.firstslidemessage,
-			nextSlideMessage: this.opts.lastslidemessage,
+	  		prevSlideMessage: this.opts.prevslideMessage,
+			nextSlideMessage: this.opts.nextslideMessage,
 	  		lastSlideMessage: this.opts.firstslidemessage,
 			firstSlideMessage: this.opts.lastslidemessage,
+			paginationBulletMessage: this.opts.paginationbulletmessage + ' \{\{index\}\}',
 		}
 	}.bind(this)
 
