@@ -497,24 +497,20 @@ public class Metadata implements Serializable {
                         // Use the last part of NORM_URI_* field name as the normdata type
                         if (param.getKey() != null) {
                             if (param.getKey().startsWith("NORM_URI_")) {
-                                logger.trace("11");
                                 // Determine norm data set type from the URI field name
                                 normDataType = param.getKey().replace("NORM_URI_", "");
                             } else if (param.getKey().equals("NORM_URI")) {
                                 if (options != null && options.get(FIELD_NORM_TYPE) != null) {
                                     // Try local NORM_TYPE value, if given
-                                    logger.trace("22");
                                     normDataType = MetadataTools.findMetadataGroupType(options.get(FIELD_NORM_TYPE));
                                 } else {
                                     // Fetch authority data record and determine norm data set type from gndspec field 075$b
                                     Record authorityRecord = MetadataTools.getAuthorityDataRecord(value);
-                                    logger.trace("33: " + value);
                                     if (authorityRecord != null && !authorityRecord.getNormDataList().isEmpty()) {
                                         for (NormData normData : authorityRecord.getNormDataList()) {
                                             if (FIELD_NORM_TYPE.equals(normData.getKey())) {
                                                 String normVal = normData.getValues().get(0).getText();
                                                 normDataType = MetadataTools.findMetadataGroupType(normVal);
-                                                logger.trace(normDataType);
                                                 break;
                                             }
                                         }
