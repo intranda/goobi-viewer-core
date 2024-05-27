@@ -86,99 +86,28 @@
         
         <!-- HIDDEN POPOVER ELEMENT FOR EVERY ENTITY TERM -->
         <script>
-        $( document ).ready(function() {
+			$( document ).ready(function() {
 
-        // ITERATE THROUGH THE ENTITIES AND ENABLE BUTTON FUNCTIONALITY
-        $('[data-entity-type]').each(function(normdataConfig) {
-
-        	var thisEntityElement = $(this);
-        	// console.log(thisEntityElement);
-        	var searchLink = $(this).data("entity-authority-data-search");
-         	// console.log(searchLink);
-        	var authorityDataUri = $(this).data("entity-authority-data-uri");
-         	// console.log(authorityDataUri);
-         	
-         	
-			var popOverActionsElement = `<div class="hidden entity-popover-element">
-      			<!-- POPOVER HEADING -->
-	  			<div class="popover-heading">Actions for this term</div>
-	  			
-	  			<!-- POPOVER BODY -->
-	  			<div class="popover-body"> 
-	  				<div class="d-flex flex-column">
-	  					<!-- BUTTON TO TRIGGER AUTHORITY DATA POPOVER -->
-	  					<button class="view-fulltext__popover-button" type="button" data-remotecontent="\${authorityDataUri}">
-	  						<i class="fa fa-list-ul" aria-hidden="true"></i><span>Authority data</span>
-	  					</button>
-	  					<!-- LINK TO TRIGGER TERM SEARCH -->
-	  					<a class="view-fulltext__popover-button" href="\${searchLink}"><i class="fa fa-search" aria-hidden="true">${searchLink}</i><span>Trigger Search</span></a>
-	  					</div>
-	  			</div>
-	  		</div>`
-         	
-	  		// INSERT HIDDEN POPOVER CONTENT AFTER ENTITY TERM
-			$(this).after(popOverActionsElement);
-	  		
-	  		// CREATE EMPTY/PLACEHOLDER HTML ELEMENT FOR EACH ENTITY TERM TO ATTACH THE POPOVER TO THIS ELEMENT
-	  		$(this).after('<span data-placeholder="forPopover"></span>');
-			
-	  		// VAR/SELECTORS FOR THE CONTENT, TITLE AND THE PLACEHOLDER ELEMENT
-			var thisEntityBody = $(thisEntityElement).next().next().find('.popover-body').html();
-			var thisEntityTitle = $(thisEntityElement).next().next().find('.popover-heading').html();
-			var thisEntityAfterElement = $(thisEntityElement).next('[data-placeholder="forPopover"]'); 
-			
-			// EVENT ON EVERY ENTITY TERM: POPOVER WITH INSERTED TITLE AND CONTENT
-			$(this).popover({
-			        html : true,
-			      sanitize: false,
-			      boundary: 'window',
-			      placement: 'top',
-			      trigger: 'click',
-			      container: thisEntityAfterElement,
-			      content: function() {
-			       		var content = thisEntityBody;
-			        	return content;
-
-			        },
-			        title: function() {
-			            var title = thisEntityTitle;
-			            return title;
-			        },
-			    });
-			
-			// AFTER CREATING POPOVER EXECUTE AUTHORITY DATA SCRIPT (viewerJS.normdata.init)
-			$(this).on('shown.bs.popover', function () {
-				$('[data-entity-type]').not(this).popover('hide');
-
-		        // AUTHORITY DATA CONFIG
-		           var normdataConfig = {
-		               path: "#{request.contextPath}",
-		               lang: {
-		                   popoverTitle: "#{msg.normdataPopverTitle}",
-		                   popoverClose: "#{msg.normdataPopoverClose}",
-		                   showNormdata: "#{msg.normdataExpand}"
-		               },
-		               linkSelector: "[data-remotecontent]",
-		               elemWrapper: $( "#view_fulltext_wrapp" ),
-		           };
-		        
-		       		viewerJS.normdata.init( normdataConfig );
-				
-			// CLOSE POPOVERS WHEN CLICKED OUTSIDE OF THE POPOVERS
-       		$('html').on('click', function(e) {
-       		  if (typeof $(e.target).data('original-title') == 'undefined' &amp;&amp; !$(e.target).parents().is('.popover')) {
-       		    $('[data-original-title]').popover('hide');
-       		  }
-       		});
-				
-			})
-
-        });
-
-        });
-
+		      	var fulltextActionsConfig = {
+		              	msg: {
+		              		fulltextPopoverActionsTermMsg: "#{msg.fulltext__ner_actions_term}",
+		              		fulltextPopoverAuthorityDataMsg: "#{msg.fulltext__ner_authority_data}",
+		              		fulltextPopoverTriggerSearchMsg: "#{msg.fulltext__ner_trigger_search}",
+		              	},
+		              	normdataConfig: {
+							path: "#{request.contextPath}",
+							lang: {
+								popoverTitle: "#{msg.normdataPopoverTitle}",
+								popoverClose: "#{msg.normdataPopoverClose}",
+								showNormdata: "#{msg.normdataExpand}"
+							},
+							linkSelector: "[data-remotecontent]",
+							elemWrapper: $("#view_fulltext_wrapp"),
+		              	},
+		              };
+		  		viewerJS.fulltextActions.init(fulltextActionsConfig);
+			});
         </script>
-
 
 	</div>
 </ui:composition>

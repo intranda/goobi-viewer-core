@@ -12,6 +12,23 @@
         list-style: none;
     }
     .facetting-content {
+		#overview {
+		        .page-tag {
+		            &.empty {}
+		            &.PERSON {
+		                color: @personColor;
+		            }
+		            &.LOCATION { 
+		                color: @locationColor;
+		            }
+		            &.CORPORATION {
+		                color: @institutionColor;
+		            }
+		            &.INSTITUTION {
+		                color: @institutionColor;
+		            }
+		        }
+        }
         .nav-tabs {
             li {
                 a {
@@ -87,7 +104,7 @@
                     color: @locationColor;
                 }
                 &.active[data-type="corporation"] {
-                    color: @corporationColor;
+                    color: @institutionColor;
                 }
             }
             &.reset-filter {
@@ -133,14 +150,17 @@
                 background-color: @tagHoverColor;                
             }
             &.empty {}
-            &.person {
+            &.PERSON {
                 color: @personColor;
             }
-            &.location {
+            &.LOCATION { 
                 color: @locationColor;
             }
-            &.corporation {
-                color: @corporationColor;
+            &.CORPORATION {
+                color: @institutionColor;
+            }
+            &.INSTITUTION {
+                color: @institutionColor;
             }
         }
     }
@@ -182,16 +202,19 @@
                             background-color: @tagHoverColor;
                         }
                         &.empty {}
-                        &.person {
+                        &.PERSON {
                             color: @personColor;
                         }
-                        &.location {
+                        &.LOCATION { 
                             color: @locationColor;
                         }
-                        &.corporation {
-                            color: @corporationColor;
+                        &.CORPORATION {
+                            color: @institutionColor;
                         }
-                    }
+                        &.INSTITUTION {
+                            color: @institutionColor;
+                        }
+                    } 
                 }
             }
         }
@@ -341,14 +364,17 @@
         &.empty {
             display: none;
         }
-        &.person {
+        &.PERSON {
             color: @personColor;
         }
-        &.location {
+        &.LOCATION {
             color: @locationColor;
         }
-        &.corporation {
-            color: @corporationColor;
+        &.CORPORATION {
+            color: @institutionColor;
+        }
+        &.INSTITUTION {
+            color: @institutionColor;
         }
     }
 }

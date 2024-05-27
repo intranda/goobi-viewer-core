@@ -62,7 +62,7 @@ var viewerJS = ( function( viewer ) {
          * var normdataConfig = {
          *     path: '#{request.contextPath}',
          *     lang: {
-         *         popoverTitle: '#{msg.normdataPopverTitle}',
+         *         popoverTitle: '#{msg.normdataPopoverTitle}',
          *         popoverClose: '#{msg.normdataPopoverClose}'
          *     },
          *     elemWrapper: $( '#metadataElementWrapper' )
@@ -97,6 +97,8 @@ var viewerJS = ( function( viewer ) {
                 
                 _renderPopoverAction( _$this, _defaults.id );
                 event.preventDefault();
+                
+                        $('.normdata-popover-close').focus();
                 
             } );
         },
@@ -192,7 +194,7 @@ var viewerJS = ( function( viewer ) {
         html += '<div id="normdataPopover-' + id + '" class="normdata-popover">';
         html += '<div class="normdata-popover-title">';
         html += '<h3>' + _defaults.lang.popoverTitle + '</h3>';
-        html += '<button type="button" class="normdata-popover-close"><i class="fa fa-times" title="' + _defaults.lang.popoverClose + '" aria-hidden="true"></i></button>';
+        html += '<button type="button" class="normdata-popover-close" aria-label="' + _defaults.lang.popoverClose + '"><i class="fa fa-times"aria-hidden="true"></i></button>';
         html += '</div>';
         html += '<div class="normdata-popover-content">';
         html += '<dl class="dl-horizontal">';
@@ -381,6 +383,7 @@ var viewerJS = ( function( viewer ) {
                 icon.show();
             }
         } ).responseText;
+        
         
         return jQuery.parseJSON( data );
     }
