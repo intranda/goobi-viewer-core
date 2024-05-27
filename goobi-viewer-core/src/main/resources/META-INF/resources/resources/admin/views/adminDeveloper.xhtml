@@ -23,13 +23,13 @@
 
 		<!-- TITLE -->
 		<div class="admin__title-bar">
-
 			<h1 class="admin__title">#{msg.admin__developer__title}</h1>
-
 		</div>
+
 		<viewerComponent:adminBreadcrumbs />
 
-		<div class="admin__info-text -padding-left">
+        <div class="admin__content-inner-content">
+		<div class="admin__info-text">
 			#{msg.admin__developer__general_info_text}</div>
 
 
@@ -38,7 +38,7 @@
 		<ui:fragment rendered="#{userBean.admin}">
 			<div class="admin__content-wrapper">
 				<div class="admin__content-main -refreshHCsticky">
-					<div id="adminDeveloper" class="admin__content-inner-content">
+					<div id="adminDeveloper">
 
 						<!-- DOWNLOAD FILES -->
 						<h2>#{msg.admin__developer__download_files}</h2>
@@ -230,6 +230,7 @@
 			</div>
 
 		</ui:fragment>
+        </div>
 
 
 
