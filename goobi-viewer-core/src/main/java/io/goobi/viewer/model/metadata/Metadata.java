@@ -385,8 +385,7 @@ public class Metadata implements Serializable {
     }
 
     public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, RelationshipMetadataContainer relatedMetadata, String paramLabel,
-            String url, Map<String, String> options,
-            String groupType, Locale locale) {
+            String url, Map<String, String> options, String groupType, Locale locale) {
         // logger.trace("setParamValue: {}", label); //NOSONAR Debug
         if (inValues == null || inValues.isEmpty()) {
             return;
@@ -498,20 +497,24 @@ public class Metadata implements Serializable {
                         // Use the last part of NORM_URI_* field name as the normdata type
                         if (param.getKey() != null) {
                             if (param.getKey().startsWith("NORM_URI_")) {
+                                logger.trace("11");
                                 // Determine norm data set type from the URI field name
                                 normDataType = param.getKey().replace("NORM_URI_", "");
                             } else if (param.getKey().equals("NORM_URI")) {
                                 if (options != null && options.get(FIELD_NORM_TYPE) != null) {
                                     // Try local NORM_TYPE value, if given
+                                    logger.trace("22");
                                     normDataType = MetadataTools.findMetadataGroupType(options.get(FIELD_NORM_TYPE));
                                 } else {
-                                    // Fetch MARCXML record and determine norm data set type from gndspec field 075$b
-                                    Record marcRecord = MetadataTools.getAuthorityDataRecord(url);
-                                    if (marcRecord != null && !marcRecord.getNormDataList().isEmpty()) {
-                                        for (NormData normData : marcRecord.getNormDataList()) {
+                                    // Fetch authority data record and determine norm data set type from gndspec field 075$b
+                                    Record authorityRecord = MetadataTools.getAuthorityDataRecord(value);
+                                    logger.trace("33: " + value);
+                                    if (authorityRecord != null && !authorityRecord.getNormDataList().isEmpty()) {
+                                        for (NormData normData : authorityRecord.getNormDataList()) {
                                             if (FIELD_NORM_TYPE.equals(normData.getKey())) {
                                                 String normVal = normData.getValues().get(0).getText();
                                                 normDataType = MetadataTools.findMetadataGroupType(normVal);
+                                                logger.trace(normDataType);
                                                 break;
                                             }
                                         }
@@ -923,17 +926,16 @@ public class Metadata implements Serializable {
                 Map<String, List<String>> groupFieldMap = new HashMap<>();
                 // Collect values for all fields in this metadata doc
                 for (String fieldName : doc.getFieldNames()) {
-                    List<String> values = groupFieldMap.get(fieldName);
-                    if (values == null) {
-                        values = new ArrayList<>();
-                        groupFieldMap.put(fieldName, values);
+                    List<String> vals = groupFieldMap.get(fieldName);
+                    if (vals == null) {
+                        vals = new ArrayList<>();
+                        groupFieldMap.put(fieldName, vals);
                     }
                     // logger.trace(fieldName + ":" + doc.getFieldValue(fieldName).toString()); //NOSONAR Debug
-                    if (doc.getFieldValue(fieldName) instanceof String) {
-                        String value = (String) doc.getFieldValue(fieldName);
-                        values.add(value);
+                    if (doc.getFieldValue(fieldName) instanceof String value) {
+                        vals.add(value);
                     } else if (doc.getFieldValue(fieldName) instanceof Collection) {
-                        values.addAll(SolrTools.getMetadataValues(doc, fieldName));
+                        vals.addAll(SolrTools.getMetadataValues(doc, fieldName));
                     }
                     // Collect IDDOC value for use as owner IDDOC for child metadata
                     if (fieldName.equals(SolrConstants.IDDOC)) {
