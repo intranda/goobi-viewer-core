@@ -149,7 +149,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /** Max number of search hits to be displayed on one page. */
     private int hitsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPageDefaultValue();
-
+    /** Variable is set to true if the use manually changes the value. Used so that the default CMS setting doesn't override the value. */
     private boolean hitsPerPageSetterCalled = false;
     /**
      * Currently selected search type (regular, advanced, timeline, ...). This property is not private so it can be altered in unit tests (the setter
@@ -886,7 +886,7 @@ public class SearchBean implements SearchInterface, Serializable {
             hitsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPageDefaultValue();
             logger.trace("hitsPerPage reset to {}", hitsPerPage);
         }
-        setHitsPerPageSetterCalled(false);
+        // setHitsPerPageSetterCalled(false);
 
         if (searchSortingOption != null && StringUtils.isEmpty(searchSortingOption.getSortString())) {
             setSortString(DataManager.getInstance().getConfiguration().getDefaultSortField(BeanUtils.getLocale().getLanguage()));
@@ -2671,6 +2671,16 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
+     * Like setHitsPerPage() but doesn't trigger the boolean.
+     * 
+     * @param hitsPerPage the hitsPerPage to set
+     */
+    public void setHitsPerPageNoTrigger(int hitsPerPage) {
+        // logger.trace("setHitsPerPageNoTrigger: {}", hitsPerPage); //NOSONAR Debug
+        this.hitsPerPage = hitsPerPage;
+    }
+
+    /**
      * @return the hitsPerPageSetterCalled
      */
     public boolean isHitsPerPageSetterCalled() {
@@ -2681,6 +2691,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param hitsPerPageSetterCalled the hitsPerPageSetterCalled to set
      */
     public void setHitsPerPageSetterCalled(boolean hitsPerPageSetterCalled) {
+        // logger.trace("setHitsPerPageSetterCalled: {}", hitsPerPageSetterCalled); //NOSONAR Debug
         this.hitsPerPageSetterCalled = hitsPerPageSetterCalled;
     }
 
