@@ -14,6 +14,7 @@
 
 	//initially show paginator so it can be referenced when amending style config (see this.amendStyle())
 	this.showPaginator = true;
+	
 
     this.on( 'mount', function() {
 		this.style = this.opts.styles.get(this.opts.style);
@@ -97,6 +98,8 @@
     	this.update();
     }
     
+    let imagealtmsgkey = this.opts.imagealtmsgkey;
+    
     /**
     * Mount riot tag for all <slide> elements using a riot tag named "slide_[style.layout]"
     */
@@ -112,6 +115,7 @@
    				label: this.translate(slide.label),
    				description: this.translate(slide.description),
    				alttext: this.translate(slide.altText),
+   				altimagemsgkey: this.translate(imagealtmsgkey),
     		});
     	});
     }

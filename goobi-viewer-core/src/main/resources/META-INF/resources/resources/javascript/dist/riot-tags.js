@@ -4179,6 +4179,8 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
     	this.update();
     }.bind(this)
 
+    let imagealtmsgkey = this.opts.imagealtmsgkey;
+
     this.initSlideTags = function(slides) {
     	slides.forEach( (slide, index) => {
     		let tagElement = this.refs["slide_" + index];
@@ -4191,6 +4193,7 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
    				label: this.translate(slide.label),
    				description: this.translate(slide.description),
    				alttext: this.translate(slide.altText),
+   				altimagemsgkey: this.translate(imagealtmsgkey),
     		});
     	});
     }.bind(this)
