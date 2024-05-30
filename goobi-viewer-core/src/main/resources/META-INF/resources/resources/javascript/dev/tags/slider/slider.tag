@@ -80,6 +80,7 @@
 			this.initSlideTags(this.slides);
     		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
     		window.viewerJS.slider.sliders.push(this.swiper);
+
     		 
     		console.log(this.swiper);
     		// console.log(this.refs.container);

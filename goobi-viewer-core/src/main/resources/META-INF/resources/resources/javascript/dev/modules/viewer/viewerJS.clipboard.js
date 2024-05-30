@@ -135,6 +135,9 @@ var viewerJS = (function(viewer) {
 					})
 
 				}, 2000);
+				
+				$(this).focus();
+				console.log('test');
 
 			});
 
