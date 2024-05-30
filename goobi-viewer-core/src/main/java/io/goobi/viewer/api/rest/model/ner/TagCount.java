@@ -42,6 +42,7 @@ public class TagCount implements Comparable<TagCount> {
 
     private String value;
     private NERTag.Type type;
+    private String identifier;
     private List<ElementReference> references = new ArrayList<>();
 
     /**
@@ -115,6 +116,20 @@ public class TagCount implements Comparable<TagCount> {
      */
     public void setType(NERTag.Type type) {
         this.type = type;
+    }
+
+    /**
+     * @return the identifier
+     */
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    /**
+     * @param identifier the identifier to set
+     */
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     /**

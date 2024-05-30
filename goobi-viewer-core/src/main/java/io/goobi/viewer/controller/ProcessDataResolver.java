@@ -445,7 +445,7 @@ public class ProcessDataResolver {
             try {
                 StringPair alto = loadAlto(altoFilePath);
                 if (alto != null) {
-                    return ALTOTools.getFulltext(alto.getOne(), alto.getTwo(), mergeLineBreakWords, request);
+                    return ALTOTools.getFulltext(alto.getOne(), alto.getTwo(), mergeLineBreakWords);
                 }
             } catch (ContentNotFoundException e) {
                 throw new FileNotFoundException(e.getMessage());

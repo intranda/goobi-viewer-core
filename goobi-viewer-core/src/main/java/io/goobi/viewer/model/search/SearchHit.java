@@ -50,8 +50,12 @@ import org.jsoup.Jsoup;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import io.goobi.viewer.api.rest.model.ner.TagCount;
+import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.TEITools;
@@ -117,6 +121,8 @@ public class SearchHit implements Comparable<SearchHit> {
     @JsonIgnore
     private SearchHitFactory factory;
     private boolean containsSearchTerms = true;
+    /** If this hit was found via an authority data identifier, use said identifier to highlight the corresponding word via the named entity tag. */
+    private String authorityDataIdentifier = null;
 
     /**
      * Package-private constructor. Clients should use SearchHitFactory to create SearchHit instances.
@@ -154,6 +160,13 @@ public class SearchHit implements Comparable<SearchHit> {
             this.url = null;
         }
         this.factory = factory;
+        // If NORM_IDENTIFIER is among the terms
+        if (searchTerms != null && searchTerms.containsKey(NormDataImporter.FIELD_IDENTIFIER)) {
+            Set<String> identifiers = searchTerms.get(NormDataImporter.FIELD_IDENTIFIER);
+            if (identifiers != null && !identifiers.isEmpty()) {
+                authorityDataIdentifier = identifiers.iterator().next();
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -394,7 +407,7 @@ public class SearchHit implements Comparable<SearchHit> {
                 switch (docType) {
                     case PAGE: //NOSONAR, no break on purpose to run through all cases
                         try {
-                            fulltext = getFulltext(request, pi, childDoc);
+                            fulltext = getFulltext(request, pi, authorityDataIdentifier, childDoc);
                         } catch (AccessDeniedException e) {
                             acccessDeniedType = true;
                         } catch (PresentationException | FileNotFoundException e) {
@@ -485,13 +498,14 @@ public class SearchHit implements Comparable<SearchHit> {
      * 
      * @param request
      * @param pi
+     * @param authorityIdentifier
      * @param childDoc
      * @return Full-text for this search hit
      * @throws FileNotFoundException If the fulltext resource is not found or not accessible
      * @throws AccessDeniedException If the request is missing access rights to the fulltext resource
      * @throws PresentationException I an internal error occurs when trying to retrieve access rights or the fulltext resource
      */
-    public String getFulltext(HttpServletRequest request, String pi, SolrDocument childDoc)
+    public String getFulltext(HttpServletRequest request, String pi, String authorityIdentifier, SolrDocument childDoc)
             throws FileNotFoundException, PresentationException, AccessDeniedException {
         String fulltext = null;
         String altoFilename = (String) childDoc.getFirstValue(SolrConstants.FILENAME_ALTO);
@@ -500,14 +514,40 @@ public class SearchHit implements Comparable<SearchHit> {
             if (StringUtils.isNotBlank(plaintextFilename)) {
                 boolean access = AccessConditionUtils.checkAccess(request, "text", pi, plaintextFilename, false).isGranted();
                 if (access) {
-                    fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false, request);
+                    fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false);
                 } else {
                     throw new AccessDeniedException("Access denied to resource " + pi + " / " + plaintextFilename);
                 }
             } else if (StringUtils.isNotBlank(altoFilename)) {
                 boolean access = AccessConditionUtils.checkAccess(request, "text", pi, altoFilename, false).isGranted();
                 if (access) {
-                    fulltext = DataFileTools.loadFulltext(altoFilename, null, false, request);
+                    if (StringUtils.isNotEmpty(authorityIdentifier)) {
+                        // If authority identifier is used, load NE tags and match word with identifier
+                        try {
+                            StringPair alto = DataFileTools.loadAlto(altoFilename);
+                            fulltext = ALTOTools.getFulltext(alto.getOne(), alto.getTwo(), true);
+                            List<TagCount> tags = ALTOTools.getNERTags(alto.getOne(), alto.getTwo(), null);
+                            // logger.trace("found {} entity tags", tags.size());
+                            String highlightWord = null;
+                            for (TagCount tag : tags) {
+                                if (tag.getIdentifier() != null) {
+                                    //logger.trace("tag identifier: {}", tag.getIdentifier());
+                                }
+                                if (authorityIdentifier.equals(tag.getIdentifier())) {
+                                    highlightWord = tag.getValue();
+                                    break;
+                                }
+                            }
+                            if (StringUtils.isNotEmpty(highlightWord)) {
+                                searchTerms.put(SolrConstants.FULLTEXT, Collections.singleton(highlightWord));
+                            }
+                        } catch (ContentNotFoundException | PresentationException e) {
+                            logger.error(e.getMessage());
+                        }
+                    } else {
+                        // Just load the full-text
+                        fulltext = DataFileTools.loadFulltext(altoFilename, null, false);
+                    }
                 } else {
                     throw new AccessDeniedException("Access denied to resource " + pi + " / " + altoFilename);
                 }

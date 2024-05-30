@@ -167,7 +167,7 @@ class ALTOToolsTest extends AbstractTest {
         Assertions.assertTrue(file.isFile());
         String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
         Assertions.assertNotNull(alto);
-        String text = ALTOTools.alto2Txt(alto, StringTools.DEFAULT_ENCODING, false, null);
+        String text = ALTOTools.alto2Txt(alto, StringTools.DEFAULT_ENCODING, false);
         Assertions.assertNotNull(text);
         Assertions.assertTrue(text.length() > 100);
     }
@@ -182,7 +182,7 @@ class ALTOToolsTest extends AbstractTest {
         Assertions.assertTrue(file.isFile());
         String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
         Assertions.assertNotNull(alto);
-        String text = ALTOTools.alto2Txt(alto, StringTools.DEFAULT_ENCODING, true, null);
+        String text = ALTOTools.alto2Txt(alto, StringTools.DEFAULT_ENCODING, true);
         Assertions.assertNotNull(text);
         Assertions.assertTrue(text.contains("Wappen"));
     }

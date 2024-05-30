@@ -114,8 +114,8 @@ public class SearchHitFactory {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should add export fields correctly
      */
-    public SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, String fulltext,
-            HitType overrideType) throws PresentationException, IndexUnreachableException {
+    public SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, String fulltext, HitType overrideType)
+            throws PresentationException, IndexUnreachableException {
 
         List<String> fulltextFragments =
                 (fulltext == null || searchTerms == null) ? null

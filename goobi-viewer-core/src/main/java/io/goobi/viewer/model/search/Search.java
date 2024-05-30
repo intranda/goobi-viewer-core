@@ -596,7 +596,7 @@ public class Search implements Serializable {
                     searchTerms, null, metadataListType, BeanUtils.getLocale(), keepSolrDoc, proximitySearchDistance);
         } else if (SearchAggregationType.NO_AGGREGATION.equals(aggregationType)) {
             foundHits = SearchHelper.searchWithFulltext(finalQuery, from, useHitsPerPage, useSortFields, null, allFilterQueries, params,
-                    searchTerms, null, BeanUtils.getLocale(), BeanUtils.getRequest(), keepSolrDoc, proximitySearchDistance);
+                    searchTerms, null, BeanUtils.getLocale(), keepSolrDoc, proximitySearchDistance);
         }
 
         resultGroup.getHits().addAll(foundHits);
