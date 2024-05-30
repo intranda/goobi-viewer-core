@@ -1609,8 +1609,8 @@ public final class SearchHelper {
      * @should replace placeholders with html tags
      */
     public static String replaceHighlightingPlaceholders(String phrase) {
-        return phrase.replace(PLACEHOLDER_HIGHLIGHTING_START, "<span class=\"search-list--highlight\">")
-                .replace(PLACEHOLDER_HIGHLIGHTING_END, "</span>");
+        return phrase.replace(PLACEHOLDER_HIGHLIGHTING_START, "<mark class=\"search-list--highlight\">")
+                .replace(PLACEHOLDER_HIGHLIGHTING_END, "</mark>");
     }
 
     /**

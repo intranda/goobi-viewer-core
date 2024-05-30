@@ -4108,8 +4108,7 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
 
     this.on( 'mount', function() {
 		this.style = this.opts.styles.get(this.opts.style);
-    	console.log(this.style);
-     	console.log("mounting 'slider.tag' ", this.opts, this.style);
+
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
 
@@ -4118,9 +4117,6 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
 		this.linkTarget = this.opts.linktarget ? this.opts.linktarget : "_self";
 
 		firstSlideMessage = this.opts.firstslidemessage;
-
-		console.log('executed on mount');
-		console.log(firstSlideMessage);
 
     	let pSource;
     	if(this.opts.sourceelement) {
@@ -4285,7 +4281,7 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
 
     this.getLayout = function() {
     	let layout = this.style.layout ? this.style.layout : 'default';
-    	console.log('layout:' + this.style.layout);
+
     	return layout;
     }.bind(this)
 
