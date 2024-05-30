@@ -4101,13 +4101,15 @@ riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" rio
 });
 
 
-riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}__container"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}"></div></div><div if="{this.showPaginator}" ref="paginator" class="swiper-pagination slider-{this.styleName}__dots"></div></div>', '', '', function(opts) {
+riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}__container slider-{this.sliderInstance}"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}"></div></div><div if="{this.showPaginator}" ref="paginator" class="swiper-pagination swiper-pagination-wrapper slider-paginator-wrapper-{this.styleName} slider-pagination-{this.sliderInstance}"></div></div>', '', '', function(opts) {
 
 
 	this.showPaginator = true;
 
     this.on( 'mount', function() {
-		this.style = this.opts.styles.get(this.opts.style);
+    	this.sliderInstance = this.opts.sliderinstanceid;
+
+		this.style = $.extend(true, {}, this.opts.styles.get(this.opts.style));
 
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
@@ -4265,8 +4267,10 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
     this.amendStyle = function(styleConfig) {
     	let swiperConfig = styleConfig.swiperConfig;
     	if(swiperConfig.pagination && !swiperConfig.pagination.el)  {
-    		swiperConfig.pagination.el = this.refs.paginator;
+    		swiperConfig.pagination.el = '.slider-pagination-' + this.sliderInstance;
+
     		this.showPaginator = true;
+
     	} else {
     		this.showPaginator = false;
     	}
