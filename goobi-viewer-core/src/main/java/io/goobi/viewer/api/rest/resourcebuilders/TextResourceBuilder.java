@@ -180,7 +180,7 @@ public class TextResourceBuilder {
      */
     public StringPair getAltoDocument(String pi, String fileName) throws PresentationException,
             IndexUnreachableException, ContentNotFoundException {
-        // logger.trace("getAltoDocument: {}/{}", pi, fileName);
+        // logger.trace("getAltoDocument: {}/{}", pi, fileName); //NOSONAR Debug
         java.nio.file.Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder(),
                 DataManager.getInstance().getConfiguration().getAltoFolder(), fileName);
 
@@ -188,9 +188,9 @@ public class TextResourceBuilder {
             throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
         }
 
+        // logger.trace(file.toAbsolutePath().toString()); //NOSONAR Debug
         try {
             String charset = FileTools.getCharset(file);
-            // logger.trace(file.toAbsolutePath().toString());
             String alto = FileTools.getStringFromFile(file.toFile(), charset != null ? charset : StringTools.DEFAULT_ENCODING);
             return new StringPair(alto, charset);
         } catch (FileNotFoundException e) {

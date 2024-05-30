@@ -2785,6 +2785,7 @@ public final class SearchHelper {
         logger.trace("fields: {}", fields);
         logger.trace("searchTerms: {}", searchTerms);
         boolean moreThanOne = false;
+        fields.add("NORM_IDENTIFIER");
         for (final String field : fields) {
             // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc
             switch (field) {
