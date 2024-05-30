@@ -78,7 +78,7 @@
     		window.viewerJS.slider.sliders.push(this.swiper);
 
     		 
-    		console.log(this.swiper);
+    		// console.log(this.swiper);
     		// console.log(this.refs.container);
     		
     	}

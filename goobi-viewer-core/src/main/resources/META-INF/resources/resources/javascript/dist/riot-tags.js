@@ -4161,8 +4161,6 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
     		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
     		window.viewerJS.slider.sliders.push(this.swiper);
 
-    		console.log(this.swiper);
-
     	}
 
     	if (this.style.onUpdate) {
