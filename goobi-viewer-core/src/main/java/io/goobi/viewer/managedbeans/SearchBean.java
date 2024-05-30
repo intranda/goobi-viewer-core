@@ -913,10 +913,18 @@ public class SearchBean implements SearchInterface, Serializable {
 
         // Add search hit aggregation parameters, if enabled
         if (!searchTerms.isEmpty()) {
-            List<String> additionalExpandQueryfields = Collections.emptyList();
+            List<String> additionalExpandQueryfields = new ArrayList<>();
             // Add MONTHDAY to the list of expand query fields
             if (searchStringInternal.startsWith(SolrConstants.MONTHDAY)) {
-                additionalExpandQueryfields = Collections.singletonList(SolrConstants.MONTHDAY);
+                additionalExpandQueryfields.add(SolrConstants.MONTHDAY);
+            }
+            // If no user input available, add terms fields to additional expand query fields
+            if (StringUtils.isEmpty(searchString)) {
+                for (String key : searchTerms.keySet()) {
+                    if (!SearchHelper.TITLE_TERMS.equals(key)) {
+                        additionalExpandQueryfields.add(key);
+                    }
+                }
             }
             String expandQuery = activeSearchType == 1
                     ? SearchHelper.generateAdvancedExpandQuery(advancedSearchQueryGroup, fuzzySearchEnabled)
