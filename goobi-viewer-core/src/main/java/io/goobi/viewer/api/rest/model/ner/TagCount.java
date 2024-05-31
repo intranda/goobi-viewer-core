@@ -180,7 +180,14 @@ public class TagCount implements Comparable<TagCount> {
     public boolean equals(Object obj) {
         if (getValue() != null && getType() != null && obj != null && obj.getClass().equals(this.getClass())) {
             TagCount other = (TagCount) obj;
-            return getValue().equals(other.getValue()) && getType().equals(other.getType());
+            if (this.getIdentifier() == null && other.getIdentifier() != null) {
+                return false;
+            }
+            if (this.getIdentifier() != null && other.getIdentifier() == null) {
+                return false;
+            }
+            return getValue().equals(other.getValue()) && getType().equals(other.getType())
+                    && ((getIdentifier() == null && other.getIdentifier() == null) || getIdentifier().equals(other.getIdentifier()));
         }
         return false;
     }
@@ -208,5 +215,4 @@ public class TagCount implements Comparable<TagCount> {
         }
 
     }
-
 }
