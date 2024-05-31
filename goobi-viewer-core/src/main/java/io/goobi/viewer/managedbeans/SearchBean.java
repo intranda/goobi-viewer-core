@@ -2682,6 +2682,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * Like setHitsPerPage() but doesn't trigger the boolean.
      * 
      * @param hitsPerPage the hitsPerPage to set
+     * @should not change hitsPerPageSetterCalled value
      */
     public void setHitsPerPageNoTrigger(int hitsPerPage) {
         // logger.trace("setHitsPerPageNoTrigger: {}", hitsPerPage); //NOSONAR Debug

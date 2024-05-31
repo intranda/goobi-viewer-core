@@ -129,6 +129,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @param searchTerms
      * @param locale
      * @param factory
+     * @should set authorityDataIdentifier correctly
      */
     SearchHit(HitType type, BrowseElement browseElement, SolrDocument doc, Map<String, Set<String>> searchTerms, Locale locale,
             SearchHitFactory factory) {
@@ -300,9 +301,9 @@ public class SearchHit implements Comparable<SearchHit> {
             }
             logger.trace("Added {} CMS page child hits", count);
             return count;
-        } else {
-            return 0;
         }
+
+        return 0;
     }
 
     /**
@@ -986,4 +987,12 @@ public class SearchHit implements Comparable<SearchHit> {
         return false;
     }
 
+    /**
+     * Getter for unit tests.
+     * 
+     * @return the authorityDataIdentifier
+     */
+    String getAuthorityDataIdentifier() {
+        return authorityDataIdentifier;
+    }
 }

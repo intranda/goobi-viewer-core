@@ -35,6 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.dao.impl.JPADAO;
 
 class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -69,6 +70,48 @@ class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(hash, DownloadJob.generateDownloadJobId(crit1, crit2));
         Assertions.assertEquals(hash, DownloadJob.generateDownloadJobId(crit1, crit2));
         Assertions.assertEquals(hash, DownloadJob.generateDownloadJobId(crit1, crit2));
+    }
+
+    /**
+     * @see JPADAO#generateDownloadJobId(long)
+     * @verifies throw IllegalArgumentException if type or pi or downloadIdentifier null
+     */
+    @Test
+    void generateDownloadJobId_shouldThrowIllegalArgumentExceptionIfTypeOrPiOrDownloadIdentifierNull() throws Exception {
+        Exception e = Assertions.assertThrows(IllegalArgumentException.class,
+                () -> DownloadJob.checkDownload(null, null, "PPN123", null, "foo", 5));
+        assertEquals("type may not be null", e.getMessage());
+
+        e = Assertions.assertThrows(IllegalArgumentException.class,
+                () -> DownloadJob.checkDownload(PDFDownloadJob.LOCAL_TYPE, null, null, null, "foo", 5));
+        assertEquals("pi may not be null", e.getMessage());
+
+        e = Assertions.assertThrows(IllegalArgumentException.class,
+                () -> DownloadJob.checkDownload(PDFDownloadJob.LOCAL_TYPE, null, "PPN123", null, null, 5));
+        assertEquals("downloadIdentifier may not be null", e.getMessage());
+    }
+
+    /**
+     * @see JPADAO#generateDownloadJobId(long)
+     * @verifies throw IllegalArgumentException if downloadIdentifier mismatches pattern
+     */
+    @Test
+    void generateDownloadJobId_shouldThrowIllegalArgumentExceptionIfDownloadIdentifierMismatchesPattern() throws Exception {
+        Exception e = Assertions.assertThrows(IllegalArgumentException.class,
+                () -> DownloadJob.checkDownload(PDFDownloadJob.LOCAL_TYPE, null, "PPN123", null, "foo", 5));
+        assertEquals("wrong downloadIdentifier", e.getMessage());
+    }
+
+    /**
+     * @see JPADAO#generateDownloadJobId(long)
+     * @verifies throw IllegalArgumentException if type unknown
+     */
+    @Test
+    void generateDownloadJobId_shouldThrowIllegalArgumentExceptionIfTypeUnknown() throws Exception {
+        Exception e = Assertions.assertThrows(IllegalArgumentException.class,
+                () -> DownloadJob.checkDownload("OTHER", null, "PPN123", null,
+                        "b252906130dc48aa1410e349826e81192d3dbfe68c163dec5c474d17b3d8b0eb", 5));
+        assertEquals("Unknown type: OTHER", e.getMessage());
     }
 
     @Test

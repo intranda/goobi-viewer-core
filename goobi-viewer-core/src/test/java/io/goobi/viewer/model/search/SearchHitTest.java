@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -50,6 +51,21 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
+    }
+    
+    /**
+     * @see SearchHit#SearchHit(HitType,BrowseElement,SolrDocument,Map,Locale,SearchHitFactory)
+     * @verifies set authorityDataIdentifier correctly
+     */
+    @Test
+    void SearchHit_shouldSetAuthorityDataIdentifierCorrectly() throws Exception {
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(NormDataImporter.FIELD_IDENTIFIER, Collections.singleton( "1234567-8"));
+        SolrDocument doc = new SolrDocument();
+        doc.addField(SolrConstants.IDDOC, "1");
+        SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
+        Assertions.assertNotNull(hit);
+        Assertions.assertEquals("1234567-8", hit.getAuthorityDataIdentifier());
     }
 
     /**

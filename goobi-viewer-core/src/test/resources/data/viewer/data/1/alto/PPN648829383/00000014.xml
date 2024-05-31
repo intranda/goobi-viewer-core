@@ -43,16 +43,16 @@
   </Description>
   
   <Tags>
-    <NamedEntityTag ID="Tag0" LABEL="Österreich," TYPE="location"></NamedEntityTag>
+    <NamedEntityTag ID="Tag0" LABEL="Österreich," TYPE="location" URI="http://d-nb.info/gnd/4043271-3"></NamedEntityTag>
     <NamedEntityTag ID="Tag1" LABEL="Düppeler Schanzen" TYPE="location"></NamedEntityTag>
-    <NamedEntityTag ID="Tag2" LABEL="Preußen" TYPE="location"></NamedEntityTag>
+    <NamedEntityTag ID="Tag2" LABEL="Preußen" TYPE="location" URI="http://d-nb.info/gnd/4047194-9"></NamedEntityTag>
     <NamedEntityTag ID="Tag3" LABEL="Österreich" TYPE="location"></NamedEntityTag>
-    <NamedEntityTag ID="Tag4" LABEL="Schleswig-Holstein" TYPE="location"></NamedEntityTag>
+    <NamedEntityTag ID="Tag4" LABEL="Schleswig-Holstein" TYPE="location" URI="http://d-nb.info/gnd/4052692-6"></NamedEntityTag>
     <NamedEntityTag ID="Tag5" LABEL="Preußen" TYPE="location"></NamedEntityTag>
     <NamedEntityTag ID="Tag6" LABEL="Österreich" TYPE="location"></NamedEntityTag>
     <NamedEntityTag ID="Tag7" LABEL="Preußen" TYPE="location"></NamedEntityTag>
-    <NamedEntityTag ID="Tag8" LABEL="Norddeutschland" TYPE="location"></NamedEntityTag>
-    <NamedEntityTag ID="Tag9" LABEL="Süddeutschland" TYPE="location"></NamedEntityTag>
+    <NamedEntityTag ID="Tag8" LABEL="Norddeutschland" TYPE="location" URI="http://d-nb.info/gnd/4075454-6"></NamedEntityTag>
+    <NamedEntityTag ID="Tag9" LABEL="Süddeutschland" TYPE="location" URI="http://d-nb.info/gnd/4078022-3"></NamedEntityTag>
     <NamedEntityTag ID="Tag10" LABEL="Preußen" TYPE="location"></NamedEntityTag>
     <NamedEntityTag ID="Tag11" LABEL="Preußen" TYPE="location"></NamedEntityTag>
     <NamedEntityTag ID="Tag12" LABEL="Böhmen" TYPE="location"></NamedEntityTag>
@@ -67,7 +67,7 @@
     <NamedEntityTag ID="Tag21" LABEL="Bismarck," TYPE="person"></NamedEntityTag>
     <NamedEntityTag ID="Tag22" LABEL="Preußen" TYPE="location"></NamedEntityTag>
     <NamedEntityTag ID="Tag23" LABEL="Schleswig-Holstein," TYPE="location"></NamedEntityTag>
-    <NamedEntityTag ID="Tag24" LABEL="Hannover" TYPE="location"></NamedEntityTag>
+    <NamedEntityTag ID="Tag24" LABEL="Hannover" TYPE="location" URI="http://d-nb.info/gnd/4023349-2"></NamedEntityTag>
     <NamedEntityTag ID="Tag25" LABEL="Hessen- Nassau." TYPE="location"></NamedEntityTag>
     <NamedEntityTag ID="Tag26" LABEL="Main" TYPE="location"></NamedEntityTag>
     <NamedEntityTag ID="Tag27" LABEL="„Norddeutschen Bund,&quot;" TYPE="institution"></NamedEntityTag>
@@ -75,7 +75,7 @@
     <NamedEntityTag ID="Tag29" LABEL="Preußen" TYPE="location"></NamedEntityTag>
     <NamedEntityTag ID="Tag30" LABEL="Preußen" TYPE="location"></NamedEntityTag>
     <NamedEntityTag ID="Tag31" LABEL="Napoleon" TYPE="person"></NamedEntityTag>
-    <NamedEntityTag ID="Tag32" LABEL="Leopold von Hohenzollern," TYPE="person"></NamedEntityTag>
+    <NamedEntityTag ID="Tag32" LABEL="Leopold von Hohenzollern," TYPE="person" URI="http://d-nb.info/gnd/124308260"></NamedEntityTag>
     <NamedEntityTag ID="Tag33" LABEL="Wilhelm," TYPE="person"></NamedEntityTag>
     <NamedEntityTag ID="Tag34" LABEL="Leopold" TYPE="person"></NamedEntityTag>
     <NamedEntityTag ID="Tag35" LABEL="Napoleons" TYPE="person"></NamedEntityTag>
