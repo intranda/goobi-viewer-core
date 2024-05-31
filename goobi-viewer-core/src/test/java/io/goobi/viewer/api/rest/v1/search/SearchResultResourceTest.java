@@ -34,9 +34,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractDatabaseEnabledTest;
 
-class SearchResultResourceTest extends AbstractTest {
+class SearchResultResourceTest extends AbstractDatabaseEnabledTest {
 
     private HttpServletRequest servletRequest;
     private HttpServletResponse servletResponse;
