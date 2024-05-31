@@ -45,5 +45,9 @@ class EMailSenderTest extends AbstractTest {
                 sender.createSession(false, false));
         Assertions.assertNotNull(msg);
         Assertions.assertEquals(3, msg.getAllRecipients().length);
+        String[] replyTo = msg.getHeader("reply-to");
+        Assertions.assertNotNull(replyTo);
+        Assertions.assertEquals(1, replyTo.length);
+        Assertions.assertEquals("reply-to@example.com", replyTo[0]);
     }
 }
