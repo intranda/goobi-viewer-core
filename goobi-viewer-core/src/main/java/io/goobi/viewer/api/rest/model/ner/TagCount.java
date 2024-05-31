@@ -187,7 +187,7 @@ public class TagCount implements Comparable<TagCount> {
                 return false;
             }
             return getValue().equals(other.getValue()) && getType().equals(other.getType())
-                    && (getIdentifier() != null && other.getIdentifier() != null && getIdentifier().equals(other.getIdentifier()));
+                    && ((getIdentifier() == null && other.getIdentifier() == null) || getIdentifier().equals(other.getIdentifier()));
         }
         return false;
     }
