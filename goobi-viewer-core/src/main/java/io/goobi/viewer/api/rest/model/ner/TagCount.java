@@ -42,6 +42,7 @@ public class TagCount implements Comparable<TagCount> {
 
     private String value;
     private NERTag.Type type;
+    private String identifier;
     private List<ElementReference> references = new ArrayList<>();
 
     /**
@@ -118,6 +119,20 @@ public class TagCount implements Comparable<TagCount> {
     }
 
     /**
+     * @return the identifier
+     */
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    /**
+     * @param identifier the identifier to set
+     */
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    /**
      * <p>
      * Getter for the field <code>references</code>.
      * </p>
@@ -165,7 +180,14 @@ public class TagCount implements Comparable<TagCount> {
     public boolean equals(Object obj) {
         if (getValue() != null && getType() != null && obj != null && obj.getClass().equals(this.getClass())) {
             TagCount other = (TagCount) obj;
-            return getValue().equals(other.getValue()) && getType().equals(other.getType());
+            if (this.getIdentifier() == null && other.getIdentifier() != null) {
+                return false;
+            }
+            if (this.getIdentifier() != null && other.getIdentifier() == null) {
+                return false;
+            }
+            return getValue().equals(other.getValue()) && getType().equals(other.getType())
+                    && ((getIdentifier() == null && other.getIdentifier() == null) || getIdentifier().equals(other.getIdentifier()));
         }
         return false;
     }
@@ -193,5 +215,4 @@ public class TagCount implements Comparable<TagCount> {
         }
 
     }
-
 }

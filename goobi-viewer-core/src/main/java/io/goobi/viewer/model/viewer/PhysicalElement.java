@@ -939,7 +939,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
         if (StringUtils.isNotEmpty(altoText)) {
             wordCoordsFormat = CoordsFormat.ALTO;
-            String text = ALTOTools.getFulltext(altoText, altoCharset, false, null);
+            String text = ALTOTools.getFulltext(altoText, altoCharset, false);
             if (StringUtils.isNotEmpty(text)) {
                 String cleanText = StringTools.stripJS(text);
                 if (cleanText.length() < text.length()) {
@@ -1016,7 +1016,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         logger.trace("Loading full-text for page {}", fulltextFileName);
         try {
-            return DataFileTools.loadFulltext(null, fulltextFileName, false, BeanUtils.getRequest());
+            return DataFileTools.loadFulltext(null, fulltextFileName, false);
         } catch (FileNotFoundException e) {
             logger.error(e.getMessage());
             return "";

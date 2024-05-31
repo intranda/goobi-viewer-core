@@ -214,7 +214,6 @@ public final class SearchHelper {
      * @param searchTerms a {@link java.util.Map} object.
      * @param exportFields a {@link java.util.List} object.
      * @param locale a {@link java.util.Locale} object.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param proximitySearchDistance
      * @return List of <code>StructElement</code>s containing the search hits.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -224,10 +223,10 @@ public final class SearchHelper {
      */
     public static List<SearchHit> searchWithFulltext(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
             List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
-            HttpServletRequest request, int proximitySearchDistance)
+            int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        return searchWithFulltext(query, first, rows, sortFields, resultFields, filterQueries, params, searchTerms, exportFields, locale, request,
-                false, proximitySearchDistance);
+        return searchWithFulltext(query, first, rows, sortFields, resultFields, filterQueries, params, searchTerms, exportFields, locale, false,
+                proximitySearchDistance);
     }
 
     /**
@@ -243,7 +242,6 @@ public final class SearchHelper {
      * @param searchTerms a {@link java.util.Map} object.
      * @param exportFields a {@link java.util.List} object.
      * @param locale a {@link java.util.Locale} object.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param keepSolrDoc
      * @param proximitySearchDistance
      * @return List of <code>StructElement</code>s containing the search hits.
@@ -253,8 +251,7 @@ public final class SearchHelper {
      */
     public static List<SearchHit> searchWithFulltext(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
             List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
-            HttpServletRequest request, boolean keepSolrDoc, int proximitySearchDistance)
-            throws PresentationException, IndexUnreachableException, DAOException {
+            boolean keepSolrDoc, int proximitySearchDistance) throws PresentationException, IndexUnreachableException, DAOException {
         Map<String, SolrDocument> ownerDocs = new HashMap<>();
         QueryResponse resp =
                 DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries, params);
@@ -293,14 +290,14 @@ public final class SearchHelper {
                     if (StringUtils.isNotBlank(plaintextFilename)) {
                         boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, plaintextFilename, false).isGranted();
                         if (access) {
-                            fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false, request);
+                            fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false);
                         } else {
                             fulltext = ViewerResourceBundle.getTranslation("fulltextAccessDenied", null);
                         }
                     } else if (StringUtils.isNotBlank(altoFilename)) {
                         boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, altoFilename, false).isGranted();
                         if (access) {
-                            fulltext = DataFileTools.loadFulltext(altoFilename, null, false, request);
+                            fulltext = DataFileTools.loadFulltext(altoFilename, null, false);
                         } else {
                             fulltext = ViewerResourceBundle.getTranslation("fulltextAccessDenied", null);
                         }
@@ -384,8 +381,9 @@ public final class SearchHelper {
                 hit.setSolrDoc(doc);
             }
             ret.add(hit);
-            hit.addCMSPageChildren();
-            hit.addFulltextChild(doc, locale != null ? locale.getLanguage() : null);
+            int populatedChildHits = hit.addCMSPageChildren();
+            populatedChildHits += hit.addFulltextChild(doc, locale != null ? locale.getLanguage() : null);
+            hit.setHitsPreloaded(populatedChildHits);
             // logger.trace("Added search hit {}", hit.getBrowseElement().getLabel());
             // Collect Solr docs of child hits
             String pi = (String) doc.getFieldValue(SolrConstants.PI);

@@ -154,10 +154,10 @@ public class EMailSender {
      * @return Created {@link Message}
      * @throws UnsupportedEncodingException
      * @throws MessagingException
+     * @should create message correctly
      */
-    private Message createMessage(List<String> recipients, List<String> cc, List<String> bcc, List<String> replyTo, String subject, String body,
-            Session session)
-            throws UnsupportedEncodingException, MessagingException {
+    Message createMessage(List<String> recipients, List<String> cc, List<String> bcc, List<String> replyTo, String subject, String body,
+            Session session) throws UnsupportedEncodingException, MessagingException {
         Message msg = new MimeMessage(session);
         InternetAddress addressFrom = new InternetAddress(smtpSenderAddress, smtpSenderName);
         msg.setFrom(addressFrom);
@@ -196,7 +196,7 @@ public class EMailSender {
         return msg;
     }
 
-    private Session createSession(boolean debug, boolean auth) {
+     Session createSession(boolean debug, boolean auth) {
         Properties props = createProperties(auth);
         Session session;
         if (auth) {
@@ -258,6 +258,7 @@ public class EMailSender {
      * @param recipients
      * @return {@link InternetAddress}[]
      * @throws AddressException
+     * @should parse addresses correctly
      */
     static InternetAddress[] prepareRecipients(List<String> recipients) throws AddressException {
         if (recipients == null) {

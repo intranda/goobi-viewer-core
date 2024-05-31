@@ -1105,7 +1105,7 @@ public class SolrSearchIndex {
                 if (!added.contains(n)) {
                     list.add(n);
                     added.add(n);
-                    logger.trace("added sort field: {}", n);
+                    // logger.trace("added sort field: {}", n);
                 }
             }
         }

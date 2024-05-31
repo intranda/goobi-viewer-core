@@ -36,15 +36,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.utils.AltoCoords;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.model.viewer.PhysicalElement;
 
 class ALTOToolsTest extends AbstractTest {
 
@@ -168,7 +167,7 @@ class ALTOToolsTest extends AbstractTest {
         Assertions.assertTrue(file.isFile());
         String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
         Assertions.assertNotNull(alto);
-        String text = ALTOTools.alto2Txt(alto, StringTools.DEFAULT_ENCODING, false, null);
+        String text = ALTOTools.alto2Txt(alto, StringTools.DEFAULT_ENCODING, false);
         Assertions.assertNotNull(text);
         Assertions.assertTrue(text.length() > 100);
     }
@@ -183,7 +182,7 @@ class ALTOToolsTest extends AbstractTest {
         Assertions.assertTrue(file.isFile());
         String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
         Assertions.assertNotNull(alto);
-        String text = ALTOTools.alto2Txt(alto, StringTools.DEFAULT_ENCODING, true, null);
+        String text = ALTOTools.alto2Txt(alto, StringTools.DEFAULT_ENCODING, true);
         Assertions.assertNotNull(text);
         Assertions.assertTrue(text.contains("Wappen"));
     }
