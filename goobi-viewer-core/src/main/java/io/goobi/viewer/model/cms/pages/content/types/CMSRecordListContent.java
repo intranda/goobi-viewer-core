@@ -275,7 +275,11 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
             //            facets.resetActiveFacets();
             facets.resetAvailableFacets();
             s.setPage(getCurrentListPage());
-            searchBean.setHitsPerPage(this.getElementsPerPage());
+            // Only set hits per page to configured value if not manually changed by user
+            if (!searchBean.isHitsPerPageSetterCalled()) {
+                logger.trace("boldly setting hits per page to {}", this.getElementsPerPage());
+                searchBean.setHitsPerPageNoTrigger(this.elementsPerPage);
+            }
             searchBean.setLastUsedSearchPage();
             // When searching for sub-elements, make sure the main query is not empty so that it's not replaced with a standard "top level only" query
             if (includeStructureElements) {
@@ -287,7 +291,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
             s.execute(facets, null, searchBean.getHitsPerPage(), locale, true,
                     this.isIncludeStructureElements() ? SearchAggregationType.NO_AGGREGATION : SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
             searchBean.setCurrentSearch(s);
-            searchBean.setHitsPerPageSetterCalled(false);
+            // searchBean.setHitsPerPageSetterCalled(false);
             return null;
         } catch (PresentationException | IndexUnreachableException | DAOException | ViewerConfigurationException e) {
             throw new PresentationException("Error initializing search hit list on page load", e);
