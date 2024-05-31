@@ -391,7 +391,7 @@ public abstract class DownloadJob implements Serializable {
      * @throws java.io.UnsupportedEncodingException if any.
      * @throws javax.mail.MessagingException if any.
      */
-    public boolean notifyObservers(JobStatus status, String message) throws UnsupportedEncodingException, MessagingException {
+    public boolean notifyObservers(JobStatus status, String messageId, String message) throws UnsupportedEncodingException, MessagingException {
         if (observers == null || observers.isEmpty()) {
             return false;
         }
@@ -403,7 +403,7 @@ public abstract class DownloadJob implements Serializable {
                 body = ViewerResourceBundle.getTranslation("downloadReadyBody", null);
                 if (body != null) {
                     body = body.replace("{0}", pi);
-                    body = body.replace("{1}", DataManager.getInstance().getConfiguration().getDownloadUrl() + identifier + "/");
+                    body = body.replace("{1}", DataManager.getInstance().getConfiguration().getDownloadUrl() + messageId + "/");
                     body = body.replace("{4}", getType().toUpperCase());
                     LocalDateTime exirationDate = lastRequested;
                     exirationDate = exirationDate.plus(ttl, ChronoUnit.MILLIS);

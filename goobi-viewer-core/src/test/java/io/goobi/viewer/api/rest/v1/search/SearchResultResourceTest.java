@@ -42,7 +42,8 @@ class SearchResultResourceTest extends AbstractDatabaseEnabledTest {
     private HttpServletResponse servletResponse;
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws Exception {
+        super.setUp();
         this.servletRequest = Mockito.mock(HttpServletRequest.class);
         this.servletResponse = Mockito.mock(HttpServletResponse.class);
     }
