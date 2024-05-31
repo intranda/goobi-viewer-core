@@ -120,10 +120,10 @@ public class DynamicContentBuilder {
                 }
                 break;
             case SLIDER:
-                Long sliderId = (Long) content.getAttributes().get("sliderId");
+                String sliderId = (String) content.getAttributes().get("sliderId");
                 try {
                     if (sliderId != null) {
-                        CMSSlider slider = DataManager.getInstance().getDao().getSlider(sliderId);
+                        CMSSlider slider = DataManager.getInstance().getDao().getSlider(Long.parseLong(sliderId));
                         if (slider != null) {
                             composite = loadCompositeComponent(parent, content.getComponentFilename(), "components");
                             if (composite != null) {

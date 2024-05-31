@@ -142,6 +142,7 @@ var viewerJS = ( function( viewer ) {
 			}],
      	]),
      	init: function() {
+     		if(_debug)console.log("loading slider ", this);
      		riot.mount("slider", {language: currentLang, styles: this});
      		
      		//Remount all sliders after each ajax call which responst contains a slider tag
