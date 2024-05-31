@@ -157,8 +157,8 @@ public abstract class DownloadJob implements Serializable {
      * </p>
      *
      * @param criteria a {@link java.lang.String} object.
-     * @should generate same id from same criteria
      * @return a {@link java.lang.String} object.
+     * @should generate same id from same criteria
      */
     public static String generateDownloadJobId(String... criteria) {
         StringBuilder sbCriteria = new StringBuilder(criteria.length * 10);
@@ -186,10 +186,12 @@ public abstract class DownloadJob implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should throw IllegalArgumentException if type or pi or downloadIdentifier null
+     * @should throw IllegalArgumentException if downloadIdentifier mismatches pattern
+     * @should throw IllegalArgumentException if type unknown
      */
     public static synchronized DownloadJob checkDownload(String type, final String email, String pi, String logId, String downloadIdentifier,
-            long ttl)
-            throws DAOException, PresentationException, IndexUnreachableException {
+            long ttl) throws DAOException, PresentationException, IndexUnreachableException {
         if (type == null) {
             throw new IllegalArgumentException("type may not be null");
         }
@@ -221,7 +223,7 @@ public abstract class DownloadJob implements Serializable {
                         downloadJob = new EPUBDownloadJob(pi, logId, LocalDateTime.now(), ttl);
                         break;
                     default:
-                        throw new IllegalArgumentException("Uknown type: " + type);
+                        throw new IllegalArgumentException("Unknown type: " + type);
                 }
             } else {
                 // Update latest request timestamp of an existing job

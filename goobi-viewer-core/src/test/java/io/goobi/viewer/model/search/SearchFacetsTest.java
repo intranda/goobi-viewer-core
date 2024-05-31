@@ -569,6 +569,28 @@ class SearchFacetsTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SearchFacets#isUnselectedValuesAvailable()
+     * @verifies return null if field or value null
+     */
+    @Test
+    void getFacet_shouldReturnNullIfFieldOrValueNull() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        Assertions.assertNull(facets.getFacet(null, "bar"));
+        Assertions.assertNull(facets.getFacet("FOO", null));
+    }
+
+    /**
+     * @see SearchFacets#isUnselectedValuesAvailable()
+     * @verifies return correct facet item
+     */
+    @Test
+    void getFacet_shouldReturnCorrectFacetItem() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        facets.getAvailableFacets().put("FOO", Collections.singletonList(new FacetItem("FOO:bar", false)));
+        Assertions.assertNotNull(facets.getFacet("FOO", "bar"));
+    }
+
+    /**
+     * @see SearchFacets#isUnselectedValuesAvailable()
      * @verifies return true if a facet field has selectable values
      */
     @Test
