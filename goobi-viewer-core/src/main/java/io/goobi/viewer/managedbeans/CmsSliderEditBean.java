@@ -253,7 +253,7 @@ public class CmsSliderEditBean implements Serializable {
         if (this.selectedSlider != null) {
             try {
                 List<URI> list = new CMSSliderResource(selectedSlider).getSlides();
-                return list.stream().map(URI::toString).collect(Collectors.joining("$"));
+                return list.stream().map(URI::toString).map(slide -> slide.replace("?", "_qm_")).collect(Collectors.joining("$"));
             } catch (ContentNotFoundException | IllegalRequestException | PresentationException | IndexUnreachableException e) {
                 logger.error("Unable to create slider source: {}", e.toString());
                 return "";

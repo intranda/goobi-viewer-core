@@ -404,7 +404,7 @@
 												rendered="#{not slider.isEmpty()}">
 												<div class="cms-sliders-select__preview__frame">
 													<iframe
-														src="#{request.contextPath}/embed/slider/#{slider.id}/?slides=#{cmsSliderEditBean.getSliderSource()}&amp;style=#{slider.style}"
+														src="#{request.contextPath}/embed/slider/#{slider.id == null ? '0' : slider.id}/?slides=#{cmsSliderEditBean.getSliderSource()}&amp;style=#{slider.style}"
 														id="previewIframeSlider"></iframe>
 												</div>
 											</h:panelGroup>

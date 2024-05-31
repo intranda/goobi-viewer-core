@@ -4108,7 +4108,7 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
 
 		this.style = $.extend(true, {}, this.opts.styles.get(this.opts.style));
 
-     	console.log("mounting 'slider.tag' ", this.opts.style, this.style);
+     	console.log("mounting 'slider.tag' ", this.opts, this.style);
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
 
@@ -4129,7 +4129,7 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
     			return;
     		}
     	} else if(this.opts.slides) {
-    		let sourceArray = this.opts.slides.split("$")
+    		let sourceArray = this.opts.slides.replaceAll("_qm_", "?").split("$")
     		pSource = Promise.resolve(sourceArray);
     	}  else {
     		pSource = fetch(this.opts.source)
