@@ -337,29 +337,33 @@ var viewerJS = ( function( viewer ) {
             .each( (index, button) => this.openChildHits(button));
 		},
 		openChildHits: function(button) {
+            if(_debug)console.log("open child hits"); 
 			var $currBtn = $( button );
                 
             let scriptName = button.dataset.loadHitsScript;
             let toggleArea = document.querySelector( "div[data-toggle-id='"+button.dataset.toggleId+"']"  );
-            let hitsDisplayed = $(toggleArea).find(".search-list__hit-content-set").length;
+            let hitsPopulated = toggleArea.querySelector("[data-hits-populated]").dataset.hitsPopulated;
             if(_debug) {
-				console.log("clicked hit-content", button, scriptName, toggleArea, hitsDisplayed);
+				console.log("clicked hit-content", button, scriptName, toggleArea, hitsDisplayed, _defaults.childHitsToLoadOnExpand);
 			}
 
 			$currBtn.toggleClass( 'in' );
 			$(toggleArea).slideToggle();
-			if(hitsDisplayed == 0) {
+            if(_debug)console.log("call script ", scriptName, hitsPopulated);
+			if(hitsPopulated <  _defaults.childHitsToLoadOnExpand) {
+				//show loader now already. Otherwise it will only be shown when the post request starts and the request are carried out sequentially
+				this.showAjaxLoader(toggleArea.querySelector(".search-list__loader").id);
 				window[scriptName](); //execute commandScript to load child hits
 			}
 		},
 		    
 	    showAjaxLoader: function(loaderId) {
 	    	let loader = document.getElementById(loaderId);
-	    	$(loader).show();
+	    	loader.classList.remove("d-none");
 	    },
 	    hideAjaxLoader: function(loaderId) {
 	    	let loader = document.getElementById(loaderId);
-	    	$(loader).hide();
+	    	loader.classList.add("d-none");
 	    },
 	    initChildHitThumbs: function(dataToggleId) {
 			let showThumbs = this.isShowChildHitThumbs();

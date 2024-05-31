@@ -384,8 +384,9 @@ public final class SearchHelper {
                 hit.setSolrDoc(doc);
             }
             ret.add(hit);
-            hit.addCMSPageChildren();
-            hit.addFulltextChild(doc, locale != null ? locale.getLanguage() : null);
+            int populatedChildHits = hit.addCMSPageChildren();
+            populatedChildHits += hit.addFulltextChild(doc, locale != null ? locale.getLanguage() : null);
+            hit.setHitsPreloaded(populatedChildHits);
             // logger.trace("Added search hit {}", hit.getBrowseElement().getLabel());
             // Collect Solr docs of child hits
             String pi = (String) doc.getFieldValue(SolrConstants.PI);

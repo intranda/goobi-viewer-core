@@ -114,7 +114,7 @@
                             <!-- GET CHILD HITS --> 
                             <ui:fragment rendered="#{hit.hasHitCount}">
                             <div class="search-list__child-hits-button-wrapper">
-                                <button onclick="viewerJS.searchList.openChildHits(this)" type="button" class="btn btn--clean" 
+                                <button onclick="viewerJS.searchList.openChildHits(this, 'search_subhits_ajaxloader_#{status.index}')" type="button" class="btn btn--clean" 
                                 data-toggle="hit-content" data-toggle-id="childHits_#{status.index}" data-load-hits-script="loadChildHits_#{status.index}" data-childhits="#{hit.hitCount}">
                                     <ui:fragment rendered="#{hit.hitsPopulated == 0}">
 	                                    <i class="fa fa-caret-right" aria-hidden="true"></i>
@@ -152,7 +152,7 @@
                           	 
                           	<!-- DISPLAY OF CHILD HITS -->
                             <div class="search-list__hit-content"  data-toggle-id="childHits_#{status.index}" style="display: none">
-                            <h:panelGroup id="childHitGroup">
+                            <h:panelGroup id="childHitGroup" pt:data-hits-populated="#{hit.hitsPopulated}">
                             	<ui:repeat var="childHit" value="#{hit.children}">
                             		<div class="search-list__hit-content-set">
                             			<div class="search-list__hit-text-area">
@@ -198,11 +198,11 @@
                             		</div>
                             	</ui:repeat>
                                 <!-- LOADER -->
-                                <span class="search-list__loader" id="search_subhits_ajaxloader_#{status.index}">
+                                <span class="search-list__loader d-none" id="search_subhits_ajaxloader_#{status.index}">
                                     <img src="#{request.contextPath}/resources/images/ajax_preloader.gif" class="img-fluid" alt="Search List Loader" />
                                 </span>
                             	<div class="search-list__hit-content-more">
-                            		<ui:fragment rendered="#{hit.hitsPopulated > 0 and hit.hitsPopulated lt hit.hitCount}">
+                            		<ui:fragment rendered="#{hit.hitsPopulated > 0 and (hit.hitsPopulated+hit.hitsPreloaded) lt hit.hitCount}">
 	                            		<button type="button" class="btn btn--clean" onclick="loadChildHits_#{status.index}()">
 	                            		#{msg.searchList_getMoreHits}
 	                            		</button>
@@ -250,6 +250,7 @@
             var searchListConfig = {
         		listStyle: "#{listStyle}",
         		maxChildHitsToRenderOnStart: #{configurationBean.searchChildHitsInitialLoadLimit},
+        		childHitsToLoadOnExpand: #{configurationBean.searchChildHitsToLoadOnExpand}
             };
              viewerJS.searchList.init( searchListConfig ); 
         } );

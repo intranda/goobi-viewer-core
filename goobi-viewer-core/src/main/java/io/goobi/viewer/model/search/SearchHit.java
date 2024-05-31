@@ -48,8 +48,6 @@ import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.JDOMException;
 import org.jsoup.Jsoup;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataFileTools;
@@ -88,33 +86,31 @@ public class SearchHit implements Comparable<SearchHit> {
     private final BrowseElement browseElement;
     /** Number of this hit in the current hit list. */
     private long hitNumber = 1;
-    @JsonIgnore
     private List<SolrDocument> childDocs;
-    @JsonIgnore
     private final Map<String, SearchHit> ownerHits = new HashMap<>();
-    @JsonIgnore
     private final Map<String, SolrDocument> ownerDocs = new HashMap<>();
-    @JsonIgnore
     private final Set<String> ugcDocIddocs = new HashSet<>();
-    @JsonIgnore
     private final Map<String, Set<String>> searchTerms;
     /** Docstruct metadata that matches the search terms. */
     private final List<StringPair> foundMetadata = new ArrayList<>();
     /** Metadata for Excel export. */
-    @JsonIgnore
     private final Map<String, String> exportMetadata = new HashMap<>();
     private final String url;
-    @JsonIgnore
     private final Locale locale;
     private final List<SearchHit> children = new ArrayList<>();
     private final Map<HitType, Integer> hitTypeCounts = new EnumMap<>(HitType.class);
-    @JsonIgnore
+    /**
+     * Hits generated from {@link #childDocs} in {@link #populateChildren(int, int, Locale, HttpServletRequest)}
+     */
     private int hitsPopulated = 0;
-    @JsonIgnore
+    /**
+     * Hits generated when hit is created in
+     * {@link SearchHelper#searchWithAggregation(String, int, int, List, List, List, Map, Map, List, String, Locale, boolean, int)} This hits are part
+     * of the total hit count returned by {@link #getHitCount()} but don't count towards {@link #hitsPopulated}
+     */
+    private int hitsPreloaded = 0;
     private SolrDocument solrDoc = null;
-    @JsonIgnore
     private int proximitySearchDistance = 0;
-    @JsonIgnore
     private SearchHitFactory factory;
     private boolean containsSearchTerms = true;
 
@@ -200,6 +196,18 @@ public class SearchHit implements Comparable<SearchHit> {
         browseElement.setLabelShort(labelShort);
     }
 
+    public void setHitsPopulated(int hitsPopulated) {
+        this.hitsPopulated = hitsPopulated;
+    }
+
+    public void setHitsPreloaded(int hitsPreloaded) {
+        this.hitsPreloaded = hitsPreloaded;
+    }
+
+    public int getHitsPreloaded() {
+        return hitsPreloaded;
+    }
+
     /**
      * Creates child hit elements for each hit matching a CMS page text, if CMS page texts were also searched.
      *
@@ -207,14 +215,14 @@ public class SearchHit implements Comparable<SearchHit> {
      * @should do nothing if searchTerms do not contain key
      * @should do nothing if no cms pages for record found
      */
-    public void addCMSPageChildren() throws DAOException {
+    public int addCMSPageChildren() throws DAOException {
         if (searchTerms == null || !searchTerms.containsKey(SolrConstants.CMS_TEXT_ALL)) {
-            return;
+            return 0;
         }
 
         List<CMSPage> cmsPages = DataManager.getInstance().getDao().getCMSPagesForRecord(browseElement.getPi(), null);
         if (cmsPages.isEmpty()) {
-            return;
+            return 0;
         }
 
         SortedMap<CMSPage, List<String>> hitPages = new TreeMap<>();
@@ -250,13 +258,15 @@ public class SearchHit implements Comparable<SearchHit> {
                     })
                     .flatMap(List::stream)
                     .collect(Collectors.toList());
-            hitPages.put(page, truncatedStrings);
+            if (!truncatedStrings.isEmpty()) {
+                hitPages.put(page, truncatedStrings);
+            }
         }
 
         // Add hits (one for each page)
         if (!hitPages.isEmpty()) {
+            int count = 0;
             for (Entry<CMSPage, List<String>> entry : hitPages.entrySet()) {
-                int count = 0;
                 SearchHit cmsPageHit = new SearchHit(HitType.CMS,
                         new BrowseElement(browseElement.getPi(), 1, ViewerResourceBundle.getTranslation(entry.getKey().getMenuTitle(), locale), null,
                                 locale, null, entry.getKey().getRelativeUrlPath()),
@@ -274,8 +284,11 @@ public class SearchHit implements Comparable<SearchHit> {
                     count++;
                 }
                 hitTypeCounts.put(HitType.CMS, count);
-                logger.trace("Added {} CMS page child hits", count);
             }
+            logger.trace("Added {} CMS page child hits", count);
+            return count;
+        } else {
+            return 0;
         }
     }
 
@@ -291,14 +304,14 @@ public class SearchHit implements Comparable<SearchHit> {
      * @should do nothing if searchTerms does not contain fulltext
      * @should do nothing if tei file name not found
      */
-    public void addFulltextChild(SolrDocument doc, final String language)
+    public int addFulltextChild(SolrDocument doc, final String language)
             throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (doc == null) {
             throw new IllegalArgumentException("doc may not be null");
         }
 
         if (searchTerms == null || !searchTerms.containsKey(SolrConstants.FULLTEXT)) {
-            return;
+            return 0;
         }
 
         String lang = language;
@@ -312,7 +325,7 @@ public class SearchHit implements Comparable<SearchHit> {
             teiFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_TEI);
         }
         if (StringUtils.isEmpty(teiFilename)) {
-            return;
+            return 0;
         }
 
         try {
@@ -344,12 +357,18 @@ public class SearchHit implements Comparable<SearchHit> {
                 // logger.trace("Added {} fragments", count); //NOSONAR Sometimes used for debugging
                 int oldCount = hit.getHitTypeCounts().get(HitType.PAGE) != null ? hit.getHitTypeCounts().get(HitType.PAGE) : 0;
                 hitTypeCounts.put(HitType.PAGE, oldCount + count);
+                return count;
             }
         } catch (FileNotFoundException e) {
             logger.error(e.getMessage());
         } catch (IOException | JDOMException e) {
             logger.error(e.getMessage(), e);
         }
+        return 0;
+    }
+
+    public int getChildDocCount() {
+        return this.childDocs.size();
     }
 
     /**
@@ -383,7 +402,7 @@ public class SearchHit implements Comparable<SearchHit> {
             num = childDocs.size() - skip;
         }
         int childDocIndex = skip;
-        int hitCount = getHitCount();
+        int hitCount = getHitCount() - getHitsPreloaded();
         while (childDocIndex < childDocs.size() && hitsPopulated < Math.min(hitCount, num + skip)) {
             SolrDocument childDoc = childDocs.get(childDocIndex);
             childDocIndex++;
