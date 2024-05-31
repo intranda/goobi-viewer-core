@@ -199,6 +199,19 @@ class ALTOToolsTest extends AbstractTest {
         Assertions.assertNotNull(text);
         Assertions.assertTrue(text.length() > 100);
     }
+    
+    /**
+     * @see ALTOTools#getFullText(String,HttpServletRequest)
+     * @verifies add uris correctly
+     */
+    @Test
+    void getFullText_shouldAddUrisCorrectly() throws Exception {
+        File file = new File("src/test/resources/data/viewer/data/1/alto/PPN648829383/00000014.xml");
+        Assertions.assertTrue(file.isFile());
+        String text = ALTOTools.getFulltext(file.toPath(), StringTools.DEFAULT_ENCODING);
+        Assertions.assertNotNull(text);
+        Assertions.assertTrue(text.contains("data-entity-authority-data-uri="));
+    }
 
     @Test
     void getMatchALTOWord_findFuzzyTerms() {

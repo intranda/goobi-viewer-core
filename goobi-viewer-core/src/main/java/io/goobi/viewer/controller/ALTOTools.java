@@ -228,8 +228,9 @@ public final class ALTOTools {
      * @throws java.io.IOException if any.
      * @throws javax.xml.stream.XMLStreamException if any.
      * @throws JDOMException
-     * @should use extract fulltext correctly
+     * @should extract fulltext correctly
      * @should concatenate word at line break correctly
+     * @should add uris correctly
      */
     protected static String alto2Txt(String alto, String charset, boolean mergeLineBreakWords)
             throws IOException, XMLStreamException, JDOMException {
