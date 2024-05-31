@@ -4090,9 +4090,8 @@ riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__
 			this.refs.description.innerHTML = this.opts.description
 		});
 });
-riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><img class="swiper-image slider-{this.opts.stylename}__image" riot-src="url({this.opts.image})" alt="{this.opts.alttext}"></a>', '', '', function(opts) {
+riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><img class="swiper-image slider-{this.opts.stylename}__image" riot-src="{this.opts.image}" alt="{this.opts.alttext}"></a>', '', '', function(opts) {
 		this.on("mount", () => {
-			this.refs.description.innerHTML = this.opts.description
 		});
 });
 riot.tag2('slide_indexslider', '<a class="slider-{this.opts.stylename}__link-wrapper" href="{this.opts.link}"><div class="swiper-heading slider-mnha__header">{this.opts.label}</div><img class="slider-{this.opts.stylename}__image" loading="lazy" riot-src="{this.opts.image}"><div class="swiper-lazy-preloader"></div></a>', '', '', function(opts) {
@@ -4111,6 +4110,7 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
 
 		this.style = $.extend(true, {}, this.opts.styles.get(this.opts.style));
 
+     	console.log("mounting 'slider.tag' ", this.opts.style, this.style);
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
 
@@ -4130,6 +4130,9 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
     			logger.error("sourceElement was included but no matching dom element found");
     			return;
     		}
+    	} else if(this.opts.slides) {
+    		let sourceArray = this.opts.slides.split("$")
+    		pSource = Promise.resolve(sourceArray);
     	}  else {
     		pSource = fetch(this.opts.source)
         	.then(result => result.json());

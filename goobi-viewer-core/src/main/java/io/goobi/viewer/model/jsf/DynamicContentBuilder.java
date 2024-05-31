@@ -128,10 +128,13 @@ public class DynamicContentBuilder {
                             composite = loadCompositeComponent(parent, content.getComponentFilename(), "components");
                             if (composite != null) {
                                 composite.getAttributes().put("slider", slider);
-                                String linkTarget = (String) content.getAttributes().get("linkTarget");
-                                if (StringUtils.isNotBlank(linkTarget)) {
-                                    composite.getAttributes().put("linkTarget", linkTarget);
-                                } else {
+                                for (Entry<String, Object> entry : content.getAttributes().entrySet()) {
+                                    if (StringUtils.isNotBlank(entry.getKey()) && entry.getValue() != null && !"sliderId".equals(entry.getKey())) {
+                                        composite.getAttributes().put(entry.getKey(), entry.getValue());
+                                    }
+                                }
+                                String linkTarget = (String) composite.getAttributes().get("linkTarget");
+                                if (StringUtils.isBlank(linkTarget)) {
                                     composite.getAttributes().put("linkTarget", "_blank");
                                 }
                             }

@@ -22,7 +22,7 @@
     	
 		this.style = $.extend(true, {}, this.opts.styles.get(this.opts.style));
     	// console.log(this.style);
-     	// console.log("mounting 'slider.tag' ", this.opts, this.style);
+     	console.log("mounting 'slider.tag' ", this.opts.style, this.style);
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
     	// console.log("init slider with '" + this.opts.style + "''", this.style);
@@ -44,6 +44,9 @@
     			logger.error("sourceElement was included but no matching dom element found");
     			return;
     		}
+    	} else if(this.opts.slides) {
+    		let sourceArray = this.opts.slides.split("$")
+    		pSource = Promise.resolve(sourceArray);
     	}  else {
     		pSource = fetch(this.opts.source)
         	.then(result => result.json());

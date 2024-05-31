@@ -379,13 +379,7 @@
 									</div>
 									<h:panelGroup id="previewSlider" >
 										<h:panelGroup layout="block" class="cms-sliders-select__preview" rendered="#{not slider.isEmpty()}">
-											<h2>#{msg.title__preview}</h2>
-<!-- 												<iframe style="width:70vw; height:500px;" src="#{request.contextPath}/embed/slider/#{slider.id}/" id="previewIframeSlider"></iframe> -->
-											<div class="cms-sliders-select__preview-inner">
-												<h:outputText id="previewSource" class="hidden" value="#{cmsSliderEditBean.sliderSource}"></h:outputText>
-												<viewerComponent:cmsSlider slider="#{slider}" sourceElement="previewSource" linkTarget="none"/>
-												<div class="swiper-pagination"></div>
-											</div>
+											<iframe src="#{request.contextPath}/embed/slider/#{slider.id}/?slides=#{cmsSliderEditBean.getSliderSource()}&amp;style=#{slider.style}" id="previewIframeSlider"></iframe>
 										</h:panelGroup>
 									</h:panelGroup>
 								</div>

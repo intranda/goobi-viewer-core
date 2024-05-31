@@ -36,11 +36,8 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -54,8 +51,8 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSSlider.SourceType;
-import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.cms.Selectable;
+import io.goobi.viewer.model.cms.collections.CMSCollection;
 
 /**
  * @author florian
@@ -256,14 +253,13 @@ public class CmsSliderEditBean implements Serializable {
         if (this.selectedSlider != null) {
             try {
                 List<URI> list = new CMSSliderResource(selectedSlider).getSlides();
-                return new ObjectMapper().writeValueAsString(list);
-            } catch (ContentNotFoundException | IllegalRequestException | PresentationException | IndexUnreachableException
-                    | JsonProcessingException e) {
+                return list.stream().map(URI::toString).collect(Collectors.joining("$"));
+            } catch (ContentNotFoundException | IllegalRequestException | PresentationException | IndexUnreachableException e) {
                 logger.error("Unable to create slider source: {}", e.toString());
-                return "[]";
+                return "";
             }
         }
-        return "[]";
+        return "";
     }
 
     /**
