@@ -84,10 +84,10 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertNotNull(hit);
         Assertions.assertEquals(2, hit.getFoundMetadata().size());
         Assertions.assertEquals("Subtitle", hit.getFoundMetadata().get(0).getOne());
-        Assertions.assertEquals("FROM <span class=\"search-list--highlight\">BAR</span> TO <span class=\"search-list--highlight\">FOO</span>",
+        Assertions.assertEquals("FROM <mark class=\"search-list--highlight\">BAR</mark> TO <mark class=\"search-list--highlight\">FOO</mark>",
                 hit.getFoundMetadata().get(0).getTwo());
         Assertions.assertEquals("MD_2", hit.getFoundMetadata().get(1).getOne());
-        Assertions.assertEquals("bla <span class=\"search-list--highlight\">blup</span>", hit.getFoundMetadata().get(1).getTwo());
+        Assertions.assertEquals("bla <mark class=\"search-list--highlight\">blup</mark>", hit.getFoundMetadata().get(1).getTwo());
     }
 
     /**
