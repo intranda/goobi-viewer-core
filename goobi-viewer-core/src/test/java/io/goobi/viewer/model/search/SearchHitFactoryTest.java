@@ -307,7 +307,7 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
                 .getValues()
                 .get(0)
                 .getComboValueShort(0)
-                .contains("ut <span class=\"search-list--highlight\">labore</span> et"));
+                .contains("ut <mark class=\"search-list--highlight\">labore</mark> et"));
 
         // Via explicit term field
         Assertions.assertEquals(1, be.getMetadataList("MD_SOMETEXT").size());
@@ -318,7 +318,7 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
                 .getValues()
                 .get(0)
                 .getComboValueShort(0)
-                .contains("<span class=\"search-list--highlight\">ipsum</span> dolor"));
+                .contains("<mark class=\"search-list--highlight\">ipsum</mark> dolor"));
     }
 
     /**

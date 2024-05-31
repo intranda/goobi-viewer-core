@@ -320,13 +320,13 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("MD_DESCRIPTION", hit.getFoundMetadata().get(0).getOne());
         Assertions.assertTrue(hit.getFoundMetadata().get(0).getTwo().length() <= maxLength + 56);
         // Truncated snippet is randomized, so cannot test the exact value
-        Assertions.assertTrue(hit.getFoundMetadata().get(0).getTwo().contains("ut <span class=\"search-list--highlight\">labore</span> et"));
+        Assertions.assertTrue(hit.getFoundMetadata().get(0).getTwo().contains("ut <mark class=\"search-list--highlight\">labore</mark> et"));
 
         // Via explicit term field
         Assertions.assertEquals("MD_SOMETEXT", hit.getFoundMetadata().get(1).getOne());
         Assertions.assertTrue(hit.getFoundMetadata().get(1).getTwo().length() <= maxLength + 56);
         // Truncated snippet is randomized, so cannot test the exact value
-        Assertions.assertTrue(hit.getFoundMetadata().get(1).getTwo().contains("<span class=\"search-list--highlight\">ipsum</span> dolor"));
+        Assertions.assertTrue(hit.getFoundMetadata().get(1).getTwo().contains("<mark class=\"search-list--highlight\">ipsum</mark> dolor"));
     }
 
     /**
