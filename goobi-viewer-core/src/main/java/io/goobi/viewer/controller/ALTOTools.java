@@ -183,9 +183,10 @@ public final class ALTOTools {
     /**
      * @param tag
      * @return List<TagCount>
+     * @should add identifier to TagCount
      */
     @SuppressWarnings("rawtypes")
-    private static List<TagCount> createNERTag(Tag tag) {
+    static List<TagCount> createNERTag(Tag tag) {
         String value = tag.getLabel();
         value =
                 value.replaceAll(TAG_LABEL_IGNORE_REGEX, ""); //NOSONAR TAG_LABEL_IGNORE_REGEX contains no lazy internal repetitions

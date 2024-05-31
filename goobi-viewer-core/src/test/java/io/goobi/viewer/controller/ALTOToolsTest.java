@@ -41,8 +41,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
+import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.Tag;
 import de.intranda.digiverso.ocr.alto.utils.AltoCoords;
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.api.rest.model.ner.NERTag;
+import io.goobi.viewer.api.rest.model.ner.TagCount;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 
 class ALTOToolsTest extends AbstractTest {
@@ -158,6 +161,27 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
+     * @see ALTOTools#createNERTag(Tag)
+     * @verifies add identifier to TagCount
+     */
+    @Test
+    void createNERTag_shouldAddIdentifierToTagCount() throws Exception {
+        File file = new File("src/test/resources/data/viewer/data/1/alto/PPN648829383/00000014.xml");
+        Assertions.assertTrue(file.isFile());
+        String text = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
+        Assertions.assertNotNull(text);
+        List<TagCount> tags = ALTOTools.getNERTags(text, StringTools.DEFAULT_ENCODING, NERTag.Type.LOCATION);
+        Assertions.assertFalse(tags.isEmpty());
+        // Tags are out of order
+        for (TagCount tag : tags) {
+            if ("4043271-3".equals(tag.getIdentifier())) {
+                return;
+            }
+        }
+        Assertions.fail("Identifier not found");
+    }
+
+    /**
      * @see ALTOTools#alto2Txt(String)
      * @verifies use extract fulltext correctly
      */
@@ -199,7 +223,7 @@ class ALTOToolsTest extends AbstractTest {
         Assertions.assertNotNull(text);
         Assertions.assertTrue(text.length() > 100);
     }
-    
+
     /**
      * @see ALTOTools#getFullText(String,HttpServletRequest)
      * @verifies add uris correctly
@@ -215,7 +239,7 @@ class ALTOToolsTest extends AbstractTest {
 
     @Test
     void getMatchALTOWord_findFuzzyTerms() {
-        String[] searchTerms = new String[] {"Steigbügel~1", "Halter~1"};
+        String[] searchTerms = new String[] { "Steigbügel~1", "Halter~1" };
         {
             Word word = new Word("Steigbugle", new AltoCoords(10, 10, 12, 12));
             assertEquals(1, ALTOTools.getMatchALTOWord(word, searchTerms));
@@ -225,14 +249,13 @@ class ALTOToolsTest extends AbstractTest {
             assertEquals(2, ALTOTools.getMatchALTOWord(word, searchTerms));
         }
     }
-    
-    
+
     @Test
     void test_getWordCoordsWithWordProximity() throws ViewerConfigurationException, IOException {
-        
+
         File testFile = new File("src/test/resources/data/sample_alto.xml");
         String altoString = FileUtils.readFileToString(testFile, StringTools.DEFAULT_ENCODING);
-        
+
         Set<String> words = Set.of("Büschel Früchten");
         List<String> hits = ALTOTools.getWordCoords(altoString, "utf-8", words, 2, 0);
         assertEquals(3, hits.size());
