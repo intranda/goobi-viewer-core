@@ -22,6 +22,7 @@
 package io.goobi.viewer.api.rest.model;
 
 import java.net.URI;
+import java.util.Objects;
 
 import de.intranda.api.iiif.presentation.content.IContent;
 import de.intranda.metadata.multilanguage.IMetadataValue;
@@ -71,6 +72,7 @@ public class ViewerPage {
                 .sorted()
                 .map(CMSMediaHolder.class::cast)
                 .map(item -> MediaItem.getMediaResource(item.getMediaItem()))
+                .filter(Objects::nonNull)
                 .findFirst()
                 .orElse(null);
     }

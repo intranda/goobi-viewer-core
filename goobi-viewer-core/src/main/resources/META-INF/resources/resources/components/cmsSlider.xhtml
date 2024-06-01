@@ -12,13 +12,17 @@
 		<composite:attribute name="sourceElement" required="false" default="" />
 		<composite:attribute name="linkTarget" required="false"
 			default="_self" />
+		<composite:attribute name="slides" required="false"
+			default="" />
+		<composite:attribute name="style" required="false"
+			default="#{cc.attrs.slider !=  null ? cc.attrs.slider.style : 'base'}" />
 	</composite:interface>
 
 	<composite:implementation>
-		<ui:fragment rendered="#{cc.attrs.slider != null}">
 			<slider
-				source="#{request.contextPath}/api/v1/cms/slider/#{cc.attrs.slider.id}/slides/"
-				style="#{cc.attrs.slider.style}"
+				source="#{request.contextPath}/api/v1/cms/slider/#{cc.attrs.slider != null ? cc.attrs.slider.id : '0'}/slides/"
+				slides="#{cc.attrs.slides}"
+				style="#{cc.attrs.style}"
 				sourceelement="#{cc.attrs.sourceElement}"
 				linkTarget="#{cc.attrs.linkTarget}"
 				language="#{navigationHelper.locale}"
@@ -32,7 +36,6 @@
 				sliderInstanceID="#{cc.attrs.id}"
 				>
 			</slider>
-		</ui:fragment>
 
 	</composite:implementation>
 </ui:composition>
