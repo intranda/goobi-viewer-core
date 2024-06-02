@@ -39,6 +39,10 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.job.upload.UploadJob;
 
+/**
+ * <p>UploadBean class.</p>
+ *
+ */
 @Named
 @ViewScoped
 public class UploadBean implements Serializable {
@@ -68,8 +72,8 @@ public class UploadBean implements Serializable {
 
     /**
      * Initialize all campaigns as lazily loaded list
-     * 
-     * @throws DAOException
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     @PostConstruct
     public void init() throws DAOException {
@@ -110,6 +114,8 @@ public class UploadBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>lazyModelUploadJobs</code>.</p>
+     *
      * @return the lazyModelUploadJobs
      */
     public TableDataProvider<UploadJob> getLazyModelUploadJobs() {
@@ -117,6 +123,8 @@ public class UploadBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>currentUploadJob</code>.</p>
+     *
      * @return the currentUploadJob
      */
     public UploadJob getCurrentUploadJob() {
@@ -127,6 +135,8 @@ public class UploadBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>currentUploadJob</code>.</p>
+     *
      * @param currentUploadJob the currentUploadJob to set
      */
     public void setCurrentUploadJob(UploadJob currentUploadJob) {
@@ -147,7 +157,7 @@ public class UploadBean implements Serializable {
 
     /**
      * Creates new Goobi workflow process via REST and uploads the images.
-     * 
+     *
      * @return Navigation target
      */
     public String createProcessAction() {

@@ -120,6 +120,9 @@ public class CrowdsourcingBean implements Serializable {
     private final Configuration viewerConfig;
     private final IDAO dao;
 
+    /**
+     * <p>Constructor for CrowdsourcingBean.</p>
+     */
     public CrowdsourcingBean() {
         this.viewerConfig = DataManager.getInstance().getConfiguration();
         try {
@@ -129,6 +132,12 @@ public class CrowdsourcingBean implements Serializable {
         }
     }
 
+    /**
+     * <p>Constructor for CrowdsourcingBean.</p>
+     *
+     * @param viewerConfig a {@link io.goobi.viewer.controller.Configuration} object
+     * @param dao a {@link io.goobi.viewer.dao.IDAO} object
+     */
     public CrowdsourcingBean(Configuration viewerConfig, IDAO dao) {
         this.viewerConfig = viewerConfig;
         this.dao = dao;
@@ -353,9 +362,9 @@ public class CrowdsourcingBean implements Serializable {
     /**
      * Returns the list of campaigns that are visible to the given user.
      *
-     * @param user
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object
      * @return List of campaigns allowed to the given user
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public List<Campaign> getAllowedCampaigns(User user) throws DAOException {
         return getAllowedCampaigns(user, getAllCampaigns());
@@ -390,10 +399,11 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
+     * <p>isUserOwnsAnyCampaigns.</p>
      *
-     * @param user
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object
      * @return true if user owns any existing campaigns; false otherwise
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     @Deprecated
     public boolean isUserOwnsAnyCampaigns(User user) throws DAOException {
@@ -652,6 +662,12 @@ public class CrowdsourcingBean implements Serializable {
         }
     }
 
+    /**
+     * <p>setNextIdentifierForAnnotation.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public void setNextIdentifierForAnnotation() throws PresentationException, IndexUnreachableException {
         if (getTargetCampaign() != null) {
             CampaignItemOrder order = CampaignItemOrder.of(viewerConfig.getCrowdsourcingCampaignItemOrder()).orElse(CampaignItemOrder.FIXED);
@@ -660,6 +676,12 @@ public class CrowdsourcingBean implements Serializable {
         }
     }
 
+    /**
+     * <p>setNextIdentifierForReview.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public void setNextIdentifierForReview() throws PresentationException, IndexUnreachableException {
         if (getTargetCampaign() != null) {
             CampaignItemOrder order = CampaignItemOrder.of(viewerConfig.getCrowdsourcingCampaignItemOrder()).orElse(CampaignItemOrder.FIXED);
@@ -753,6 +775,8 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>targetPage</code>.</p>
+     *
      * @return the targetPage
      */
     public int getTargetPage() {
@@ -760,6 +784,8 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>targetPage</code>.</p>
+     *
      * @param targetPage the targetPage to set
      */
     public void setTargetPage(int targetPage) {
@@ -974,11 +1000,18 @@ public class CrowdsourcingBean implements Serializable {
         logger.trace("Added {} identifiers to the map.", DataManager.getInstance().getRecordCampaignMap().size());
     }
 
+    /**
+     * <p>getPossibleReviewModes.</p>
+     *
+     * @return a {@link java.util.Set} object
+     */
     public Set<ReviewMode> getPossibleReviewModes() {
         return EnumSet.allOf(ReviewMode.class);
     }
 
     /**
+     * <p>getAvailableStatisticModes.</p>
+     *
      * @return List of enum values
      */
     public Set<StatisticMode> getAvailableStatisticModes() {
@@ -986,6 +1019,8 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>targetStatus</code>.</p>
+     *
      * @return the targetStatus
      */
     public CrowdsourcingStatus getTargetStatus() {
@@ -993,12 +1028,19 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>targetStatus</code>.</p>
+     *
      * @param targetStatus the targetStatus to set
      */
     public void setTargetStatus(CrowdsourcingStatus targetStatus) {
         this.targetStatus = targetStatus;
     }
 
+    /**
+     * <p>Setter for the field <code>targetStatus</code>.</p>
+     *
+     * @param targetStatus a {@link java.lang.String} object
+     */
     public void setTargetStatus(String targetStatus) {
         this.targetStatus = CrowdsourcingStatus.forName(targetStatus);
     }

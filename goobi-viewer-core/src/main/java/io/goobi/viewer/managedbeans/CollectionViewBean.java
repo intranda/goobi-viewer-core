@@ -51,10 +51,9 @@ import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.model.viewer.collections.CollectionView.BrowseDataProvider;
 
 /**
- * Creates and stored {@link CollectionView}s for a session
- * 
- * @author florian
+ * Creates and stored {@link io.goobi.viewer.model.viewer.collections.CollectionView}s for a session
  *
+ * @author florian
  */
 @Named
 @SessionScoped
@@ -79,23 +78,37 @@ public class CollectionViewBean implements Serializable {
      * Get the {@link io.goobi.viewer.model.viewer.collections.CollectionView} of the given content item in the given page. If the view hasn't been
      * initialized yet, do so and add it to the Bean's CollectionView map
      *
-     * @param content a {@link CMSCollectionContent} instance providing the base data for this collection
+     * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} instance providing the base data for this collection
      * @param collectionBaseLevels The number of hierarchy levels for which collections of these levels should not expand but rather redirect to a
      *            view of the clicked collection alone
      * @param openExpanded whether to open the page with all collections expanded.
      * @param displayParents Whether to display all parent collections of the base collection. Useful in combination with collectionBaseLevels > 0 to
      *            navigate back out of the current collection
-     * @param ignoreHierarchy
+     * @param ignoreHierarchy a boolean
      * @return The CollectionView or null if no matching ContentItem was found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException
      */
     public CollectionView getCollection(CMSCollectionContent content, int collectionBaseLevels, boolean openExpanded, boolean displayParents,
             boolean ignoreHierarchy) throws PresentationException, IndexUnreachableException, IllegalRequestException {
         return getCollection(content, collectionBaseLevels, openExpanded, displayParents, ignoreHierarchy, content.getCollectionName());
     }
 
+    /**
+     * <p>getCollection.</p>
+     *
+     * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
+     * @param collectionBaseLevels a int
+     * @param openExpanded a boolean
+     * @param displayParents a boolean
+     * @param ignoreHierarchy a boolean
+     * @param topVisibleElement a {@link java.lang.String} object
+     * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if any.
+     */
     public CollectionView getCollection(CMSCollectionContent content, int collectionBaseLevels, boolean openExpanded, boolean displayParents,
             boolean ignoreHierarchy, String topVisibleElement) throws PresentationException, IndexUnreachableException, IllegalRequestException {
         String myId = getCollectionId(content);
@@ -117,16 +130,34 @@ public class CollectionViewBean implements Serializable {
         return collection;
     }
 
+    /**
+     * <p>getCollectionId.</p>
+     *
+     * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
+     * @return a {@link java.lang.String} object
+     */
     public static String getCollectionId(CMSCollectionContent content) {
         return content.getOwningComponent().getOwningPage().getId() + "_" + content.getItemId();
     }
 
+    /**
+     * <p>getCollectionIfStored.</p>
+     *
+     * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
+     * @return a {@link java.util.Optional} object
+     */
     public Optional<CollectionView> getCollectionIfStored(CMSCollectionContent content) {
         String myId = getCollectionId(content);
         CollectionView collection = collections.get(myId);
         return Optional.ofNullable(collection);
     }
 
+    /**
+     * <p>removeCollection.</p>
+     *
+     * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
+     * @return a boolean
+     */
     public boolean removeCollection(CMSCollectionContent content) {
         String myId = getCollectionId(content);
         return removeCollection(myId);
@@ -140,16 +171,16 @@ public class CollectionViewBean implements Serializable {
     /**
      * Creates a collection view object from the item's collection related properties
      *
-     * @param content
-     * @param numBaseLevels
-     * @param openExpanded
-     * @param displayParents
-     * @param ignoreHierarchy
-     * @param topVisibleElement
+     * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
+     * @param numBaseLevels a int
+     * @param openExpanded a boolean
+     * @param displayParents a boolean
+     * @param ignoreHierarchy a boolean
+     * @param topVisibleElement a {@link java.lang.String} object
      * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException
      */
     public CollectionView initializeCollection(CMSCollectionContent content, int numBaseLevels, boolean openExpanded, boolean displayParents,
             boolean ignoreHierarchy, String topVisibleElement) throws PresentationException, IllegalRequestException, IndexUnreachableException {
@@ -208,8 +239,8 @@ public class CollectionViewBean implements Serializable {
 
     /**
      * Queries Solr for a list of all values of the set collectionField which my serve as a collection
-     * 
-     * @param content
+     *
+     * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
      * @param ignoreHierarchy If true, sub-collections will be omitted
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -234,9 +265,11 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * @param content
+     * <p>getColletionMap.</p>
+     *
+     * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
      * @return Map&lt;String, CollectionResult&gt;
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public Map<String, CollectionResult> getColletionMap(CMSCollectionContent content) throws IndexUnreachableException {
 
@@ -250,6 +283,11 @@ public class CollectionViewBean implements Serializable {
         return map;
     }
 
+    /**
+     * <p>removeCollectionsForPage.</p>
+     *
+     * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
+     */
     public void removeCollectionsForPage(CMSPage page) {
         String idRegex = page.getId() + "_" + "\\w";
         new ArrayList<>(this.collections.keySet()).forEach(id -> {
@@ -260,6 +298,12 @@ public class CollectionViewBean implements Serializable {
 
     }
 
+    /**
+     * <p>getLoadedCollectionsForPage.</p>
+     *
+     * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
+     * @return a {@link java.util.List} object
+     */
     public List<CollectionView> getLoadedCollectionsForPage(CMSPage page) {
         String idRegex = page.getId() + "_" + "\\w";
         return new ArrayList<>(this.collections.keySet()).stream()
@@ -279,6 +323,9 @@ public class CollectionViewBean implements Serializable {
         return collections.values().stream().filter(collection -> field.equals(collection.getField())).collect(Collectors.toList());
     }
 
+    /**
+     * <p>invalidate.</p>
+     */
     public void invalidate() {
         this.collections = new HashMap<>();
         this.collectionStatistics = new HashMap<>();
