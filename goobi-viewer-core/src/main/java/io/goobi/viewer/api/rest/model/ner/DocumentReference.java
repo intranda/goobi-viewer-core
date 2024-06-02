@@ -99,7 +99,7 @@ public class DocumentReference {
      * addPageRange.
      * </p>
      *
-     * @param range a {@link io.goobi.viewer.servlets.rest.ner.TagGroup} object.
+     * @param range a {@link io.goobi.viewer.api.rest.model.ner.TagGroup} object.
      */
     public void addPageRange(TagGroup range) {
         this.pageRanges.add(range);
@@ -136,7 +136,7 @@ public class DocumentReference {
      * </p>
      *
      * @param startPage a int.
-     * @return a {@link io.goobi.viewer.servlets.rest.ner.TagGroup} object.
+     * @return a {@link io.goobi.viewer.api.rest.model.ner.TagGroup} object.
      */
     public TagGroup getPageRange(int startPage) {
         try {

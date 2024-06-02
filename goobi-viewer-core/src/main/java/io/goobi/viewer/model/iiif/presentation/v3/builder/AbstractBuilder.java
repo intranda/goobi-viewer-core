@@ -249,8 +249,8 @@ public abstract class AbstractBuilder {
     }
 
     /**
-     * Simple method to create a label for a {@link org.apache.solr.common.SolrDocument} from {@link io.goobi.viewer.controller.SolrConstants.LABEL},
-     * {@link io.goobi.viewer.controller.SolrConstants.TITLE} or {@link io.goobi.viewer.controller.SolrConstants.DOCSTRUCT}
+     * Simple method to create a label for a {@link org.apache.solr.common.SolrDocument} from {@link io.goobi.viewer.solr.SolrConstants#LABEL},
+     * {@link io.goobi.viewer.solr.SolrConstants#TITLE} or {@link io.goobi.viewer.solr.SolrConstants#DOCSTRCT}
      *
      * @param solrDocument a {@link org.apache.solr.common.SolrDocument} object.
      * @return a {@link java.util.Optional} object.

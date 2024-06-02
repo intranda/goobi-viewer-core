@@ -652,7 +652,7 @@ public class CollectionView implements Serializable {
     public static interface BrowseDataProvider {
 
         /**
-         * @return Map<String, CollectionResult>
+         * @return Map&lt;String, CollectionResult&gt;
          * @throws IndexUnreachableException
          */
         Map<String, CollectionResult> getData() throws IndexUnreachableException;

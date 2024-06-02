@@ -828,7 +828,7 @@ public class CrowdsourcingBean implements Serializable {
      * </p>
      *
      * @param campaign The campaign with which to annotate/review
-     * @param status if {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus#REVIEW}, return a url for
+     * @param status if {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus#REVIEW}, return a url for
      *            reviewing, otherwise for annotating
      * @return The pretty url to either review or annotate a random work with the given {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}
      */
@@ -844,7 +844,7 @@ public class CrowdsourcingBean implements Serializable {
      * getTargetRecordStatus.
      * </p>
      *
-     * @return the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} of the {@link #targetCampaign}
+     * @return the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus} of the {@link #targetCampaign}
      *         for the {@link #targetIdentifier}
      */
     public CrowdsourcingStatus getTargetRecordStatus() {

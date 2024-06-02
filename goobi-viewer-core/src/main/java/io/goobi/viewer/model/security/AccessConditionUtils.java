@@ -825,7 +825,7 @@ public final class AccessConditionUtils {
      * @param remoteAddress a {@link java.lang.String} object.
      * @param client
      * @param query Solr query describing the resource in question.
-     * @return Map<String, AccessPermission>
+     * @return Map&lt;String, AccessPermission&gt;
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.

@@ -88,7 +88,7 @@ public class CmsCategoriesBean implements Serializable {
     }
 
     /**
-     * Start editing the given category. Editing will continue until either {@link #save()} or {@link #cancel()} is executed
+     * Start editing the given category. Editing will continue until either {@link #saveCategoryAction()} or {@link #cancelAction()} is executed
      *
      * @param category The category to edit
      */

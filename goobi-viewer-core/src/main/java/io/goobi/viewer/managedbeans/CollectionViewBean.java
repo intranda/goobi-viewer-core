@@ -146,7 +146,7 @@ public class CollectionViewBean implements Serializable {
      * @param displayParents
      * @param ignoreHierarchy
      * @param topVisibleElement
-     * @return a {@link io.goobi.viewer.model.viewer.CollectionView} object.
+     * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
@@ -235,7 +235,7 @@ public class CollectionViewBean implements Serializable {
 
     /**
      * @param content
-     * @return Map<String, CollectionResult>
+     * @return Map&lt;String, CollectionResult&gt;
      * @throws IndexUnreachableException
      */
     public Map<String, CollectionResult> getColletionMap(CMSCollectionContent content) throws IndexUnreachableException {
@@ -270,7 +270,7 @@ public class CollectionViewBean implements Serializable {
 
     /**
      * get a list of all {@link io.goobi.viewer.model.viewer.collections.CollectionView}s with the given solr field which are already loaded via
-     * {@link #getCollection(CMSPage)} or {@link #getCollection(String, CMSPage)
+     * {@link #getCollection(CMSPage)} or {@link #getCollection(String, CMSPage)}
      *
      * @param field The solr field the colleciton is based on
      * @return a {@link java.util.List} object.

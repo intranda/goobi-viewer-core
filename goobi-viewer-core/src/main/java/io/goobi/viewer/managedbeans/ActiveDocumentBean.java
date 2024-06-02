@@ -2709,7 +2709,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Check if the current page should initialize a WebSocket
      * 
-     * @return true if a document is loaded and it contains the field {@link SolrConstants.ACCESSCONDITION_CONCURRENTUSE}
+     * @return true if a document is loaded and it contains the field {@link io.goobi.viewer.solr.SolrConstants#ACCESSCONDITION_CONCURRENTUSE}
      */
     public boolean isRequiresWebSocket() {
         if (viewManager != null && viewManager.getTopStructElement() != null && viewManager.getTopStructElement().getMetadataFields() != null) {
