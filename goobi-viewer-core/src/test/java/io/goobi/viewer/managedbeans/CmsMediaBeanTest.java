@@ -40,7 +40,9 @@ class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
 
     CmsMediaBean bean;
 
-    /** {@inheritDoc} */
+    /**
+     * @throws java.lang.Exception
+     */
     @Override
     @BeforeEach
     public void setUp() throws Exception {
@@ -55,7 +57,9 @@ class CmsMediaBeanTest extends AbstractDatabaseEnabledTest {
         bean.userBean = userBean;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @throws java.lang.Exception
+     */
     @Override
     @AfterEach
     public void tearDown() throws Exception {

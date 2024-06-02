@@ -51,7 +51,6 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     private ActiveDocumentBean adb;
     private NavigationHelper navigationHelper;
 
-    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {

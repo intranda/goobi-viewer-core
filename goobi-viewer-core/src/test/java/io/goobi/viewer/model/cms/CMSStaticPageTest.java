@@ -33,9 +33,6 @@ class CMSStaticPageTest {
 
     private CMSStaticPage page = new CMSStaticPage("test");
 
-    /**
-     * <p>setUp.</p>
-     */
     @BeforeEach
     public void setUp() {
 

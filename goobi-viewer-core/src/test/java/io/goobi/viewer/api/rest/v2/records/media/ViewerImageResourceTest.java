@@ -55,14 +55,18 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
     private static final String QUALITY = "default";
     private static final String FORMAT = "jpg";
 
-    /** {@inheritDoc} */
+    /**
+     * @throws java.lang.Exception
+     */
     @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @throws java.lang.Exception
+     */
     @Override
     @AfterEach
     public void tearDown() throws Exception {

@@ -33,11 +33,6 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 
 class RSSFeedTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    /**
-     * <p>setUpClass.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();

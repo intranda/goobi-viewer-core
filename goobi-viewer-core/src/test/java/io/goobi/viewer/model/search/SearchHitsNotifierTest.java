@@ -44,8 +44,6 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 class SearchHitsNotifierTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
-     * <p>setUp.</p>
-     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -54,8 +52,6 @@ class SearchHitsNotifierTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * <p>tearDown.</p>
-     *
      * @throws java.lang.Exception
      */
     @AfterEach

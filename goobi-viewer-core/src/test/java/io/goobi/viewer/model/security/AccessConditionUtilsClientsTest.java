@@ -44,11 +44,6 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
     ClientApplication allClients;
     Set<String> recordAccessConditions = new HashSet<>();
 
-    /**
-     * <p>setUp.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();

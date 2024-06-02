@@ -49,8 +49,6 @@ class JobManagerTest {
     TaskManager manager;
 
     /**
-     * <p>setUp.</p>
-     *
      * @throws java.lang.Exception
      */
     @BeforeEach

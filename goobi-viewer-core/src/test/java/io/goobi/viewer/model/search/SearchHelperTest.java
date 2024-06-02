@@ -70,17 +70,11 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 
 class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    /**
-     * <p>setUpClass.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
 
-    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {

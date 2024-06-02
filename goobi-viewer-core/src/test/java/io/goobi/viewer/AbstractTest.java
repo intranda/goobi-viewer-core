@@ -38,16 +38,9 @@ import io.goobi.viewer.controller.RestApiManager;
  */
 public abstract class AbstractTest {
 
-    /** Constant <code>TEST_CONFIG_PATH="new File(src/test/resources/config_view"{trunked}</code> */
     public static final String TEST_CONFIG_PATH = new File("src/test/resources/config_viewer.test.xml").getAbsolutePath();
-    /** Constant <code>TEST_LOG_CONFIG_PATH="new File(src/test/resources/log4j2.test"{trunked}</code> */
     public static final String TEST_LOG_CONFIG_PATH = new File("src/test/resources/log4j2.test.xml").getAbsolutePath();
 
-    /**
-     * <p>setUpClass.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeAll
     public static void setUpClass() throws Exception {
         System.setProperty("log4j.configurationFile", TEST_LOG_CONFIG_PATH);
@@ -60,11 +53,6 @@ public abstract class AbstractTest {
         DataManager.getInstance().setRestApiManager(new RestApiManager());
     }
 
-    /**
-     * <p>setUp.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeEach
     public void setUp() throws Exception {
         DataManager.getInstance().injectConfiguration(new Configuration(TEST_CONFIG_PATH));

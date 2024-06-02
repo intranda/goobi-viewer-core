@@ -57,8 +57,6 @@ class RecordPagesResourceTest extends AbstractRestApiTest {
 
 
     /**
-     * <p>setUp.</p>
-     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -67,8 +65,6 @@ class RecordPagesResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * <p>tearDown.</p>
-     *
      * @throws java.lang.Exception
      */
     @AfterEach

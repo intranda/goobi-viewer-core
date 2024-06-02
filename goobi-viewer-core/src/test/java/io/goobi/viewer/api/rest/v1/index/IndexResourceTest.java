@@ -60,7 +60,9 @@ class IndexResourceTest extends AbstractRestApiTest {
 
     RecordsRequestParameters params = new RecordsRequestParameters();
 
-    /** {@inheritDoc} */
+    /**
+     * @throws java.lang.Exception
+     */
     @Override
     @BeforeEach
     public void setUp() throws Exception {
@@ -76,7 +78,9 @@ class IndexResourceTest extends AbstractRestApiTest {
 
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @throws java.lang.Exception
+     */
     @Override
     @AfterEach
     public void tearDown() throws Exception {

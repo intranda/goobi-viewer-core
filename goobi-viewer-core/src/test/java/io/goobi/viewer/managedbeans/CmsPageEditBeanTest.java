@@ -60,11 +60,6 @@ class CmsPageEditBeanTest {
 
     CmsPageEditBean bean;
 
-    /**
-     * <p>setUp.</p>
-     *
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
     @BeforeEach
     public void setUp() throws DAOException {
 

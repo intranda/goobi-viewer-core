@@ -81,11 +81,6 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
 
     private static ObjectMapper mapper;
 
-    /**
-     * <p>setUpClass.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseEnabledTest.setUpClass();
@@ -97,7 +92,9 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @throws java.lang.Exception
+     */
     @Override
     @BeforeEach
     public void setUp() throws Exception {
@@ -129,7 +126,9 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         daoAnno = new CrowdsourcingAnnotation(annotation, null, "7", 10);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @throws java.lang.Exception
+     */
     @Override
     @AfterEach
     public void tearDown() throws Exception {

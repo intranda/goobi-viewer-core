@@ -59,17 +59,14 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
 
     List<String> collections;
 
-    /**
-     * <p>setUpClass.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @throws java.lang.Exception
+     */
     @Override
     @BeforeEach
     public void setUp() throws Exception {
@@ -78,7 +75,9 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
                 "c.d.a", "c.d.b", "c.e", "d" });
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @throws java.lang.Exception
+     */
     @Override
     @AfterEach
     public void tearDown() throws Exception {

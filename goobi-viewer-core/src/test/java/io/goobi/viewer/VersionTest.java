@@ -31,11 +31,8 @@ class VersionTest {
             + "ApplicationName: goobi-viewer-core\r\n" + "Implementation-Build-Date: 2020-01-15 18:30";
 
     /**
-     * <p>getInfo_shouldExtractFieldsCorrectly.</p>
-     *
      * @see Version#getInfo(String,String)
      * @verifies extract fields correctly
-     * @throws java.lang.Exception if any.
      */
     @Test
     public void getInfo_shouldExtractFieldsCorrectly() throws Exception {

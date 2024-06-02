@@ -28,41 +28,21 @@ import java.nio.file.Paths;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 
-/**
- * <p>TestServlet class.</p>
- *
- */
 public class TestServlet {
 
     private final ClientAndServer mockServer;
     private final MockServerClient serverClient;
 
-    /**
-     * <p>Constructor for TestServlet.</p>
-     *
-     * @param url a {@link java.lang.String} object
-     * @param port a int
-     */
     public TestServlet(String url, int port) {
         mockServer = ClientAndServer.startClientAndServer(port);
         serverClient = new MockServerClient(url, port);
 
     }
 
-    /**
-     * <p>Getter for the field <code>serverClient</code>.</p>
-     *
-     * @return a {@link org.mockserver.client.MockServerClient} object
-     */
     public MockServerClient getServerClient() {
         return serverClient;
     }
 
-    /**
-     * <p>shutdown.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     public void shutdown() throws Exception {
         serverClient.stop();
         mockServer.stop();

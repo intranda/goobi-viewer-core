@@ -37,11 +37,6 @@ class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private static final String PI = PI_KLEIUNIV;
 
-    /**
-     * <p>setUpClass.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();

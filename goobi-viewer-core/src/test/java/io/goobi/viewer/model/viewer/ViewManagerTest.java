@@ -60,7 +60,6 @@ import io.goobi.viewer.solr.SolrConstants;
 
 class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {

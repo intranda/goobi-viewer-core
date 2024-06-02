@@ -36,11 +36,6 @@ class ConfigurationBeanTest extends AbstractTest {
 
     private ConfigurationBean bean;
 
-    /**
-     * <p>setUp.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeEach
     public void setUp() throws Exception {
         bean = new ConfigurationBean();

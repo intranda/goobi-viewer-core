@@ -40,14 +40,18 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
  */
 class QuestionTest extends AbstractDatabaseEnabledTest {
 
-    /** {@inheritDoc} */
+    /**
+     * @throws java.lang.Exception
+     */
     @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @throws java.lang.Exception
+     */
     @Override
     @AfterEach
     public void tearDown() throws Exception {

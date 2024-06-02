@@ -48,11 +48,6 @@ class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
     CMSTemplateManager templateManager;
     CMSPageContentManager contentManager;
     
-    /**
-     * <p>setUp.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();

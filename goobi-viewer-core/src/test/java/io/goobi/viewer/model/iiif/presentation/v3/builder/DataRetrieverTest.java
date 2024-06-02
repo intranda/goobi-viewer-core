@@ -52,31 +52,16 @@ class DataRetrieverTest extends AbstractSolrEnabledTest{
 
     private DataRetriever dataRetriever = new DataRetriever();
 
-    /**
-     * <p>setUpBeforeClass.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeAll
     public static void setUpBeforeClass() throws Exception {
         AbstractSolrEnabledTest.setUpClass();
     }
 
-    /**
-     * <p>setUp.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
 
-    /**
-     * <p>tearDown.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @AfterEach
     public void tearDown() throws Exception {
        super.tearDown();

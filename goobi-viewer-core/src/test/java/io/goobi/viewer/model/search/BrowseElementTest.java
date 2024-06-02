@@ -47,11 +47,6 @@ import io.goobi.viewer.solr.SolrConstants;
 
 class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    /**
-     * <p>setUpClass.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();

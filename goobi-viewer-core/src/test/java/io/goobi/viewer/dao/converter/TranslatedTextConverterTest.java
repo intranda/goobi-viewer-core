@@ -47,8 +47,6 @@ class TranslatedTextConverterTest {
     private final List<Locale> locales = Arrays.asList(Locale.GERMAN, Locale.ENGLISH, Locale.FRANCE, Locale.CHINESE);
     private final TranslatedTextConverter converter = new TranslatedTextConverter(locales);
     /**
-     * <p>setUp.</p>
-     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -56,8 +54,6 @@ class TranslatedTextConverterTest {
     }
 
     /**
-     * <p>tearDown.</p>
-     *
      * @throws java.lang.Exception
      */
     @AfterEach

@@ -41,8 +41,6 @@ import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 class ViewerPathBuilderTest {
 
     /**
-     * <p>setUp.</p>
-     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -50,8 +48,6 @@ class ViewerPathBuilderTest {
     }
 
     /**
-     * <p>tearDown.</p>
-     *
      * @throws java.lang.Exception
      */
     @AfterEach

@@ -60,7 +60,9 @@ class ThumbnailHandlerTest extends AbstractTest {
     private static final String STATIC_IMAGES_PATH = "http://localhost:8080/viewer/resources/images";
     private ThumbnailHandler handler;
 
-    /** {@inheritDoc} */
+    /**
+     * @throws java.lang.Exception
+     */
     @Override
     @BeforeEach
     public void setUp() throws Exception {

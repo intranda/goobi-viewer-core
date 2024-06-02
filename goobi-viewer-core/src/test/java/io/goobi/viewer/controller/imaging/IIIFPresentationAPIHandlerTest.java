@@ -43,11 +43,6 @@ class IIIFPresentationAPIHandlerTest extends AbstractTest {
     private String DC = "DC";
     private String COLLECTION = "sonstige.ocr";
 
-    /**
-     * <p>setUp.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();

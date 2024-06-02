@@ -53,8 +53,6 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     String germanText = "GERMAN";
 
     /**
-     * <p>setUp.</p>
-     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -65,8 +63,6 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * <p>tearDown.</p>
-     *
      * @throws java.lang.Exception
      */
     @AfterEach

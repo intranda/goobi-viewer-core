@@ -38,8 +38,6 @@ class MediaHandlerTest extends AbstractTest {
     MediaHandler handler;
 
     /**
-     * <p>setUp.</p>
-     *
      * @throws java.lang.Exception
      */
     @BeforeEach

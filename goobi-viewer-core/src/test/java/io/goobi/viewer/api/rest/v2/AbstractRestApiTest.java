@@ -43,9 +43,8 @@ import io.goobi.viewer.api.rest.v2.ApiUrls;
 
 
 /**
- * <p>Abstract AbstractRestApiTest class.</p>
- *
  * @author florian
+ *
  */
 public abstract class AbstractRestApiTest extends JerseyTest {
 
@@ -57,17 +56,14 @@ public abstract class AbstractRestApiTest extends JerseyTest {
     protected ObjectMapper mapper = new ObjectMapper();
     protected ApiUrls urls = new ApiUrls("");
 
-    /**
-     * <p>setUpClass.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @throws java.lang.Exception
+     */
     @Override
     @BeforeEach
     public void setUp() throws Exception {
@@ -77,7 +73,9 @@ public abstract class AbstractRestApiTest extends JerseyTest {
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @throws java.lang.Exception
+     */
     @Override
     @AfterEach
     public void tearDown() throws Exception {
@@ -85,24 +83,17 @@ public abstract class AbstractRestApiTest extends JerseyTest {
         DATA_FRAMEWORK.tearDown();
     }
 
-    /**
-     * <p>tearDownClass.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @AfterAll
     public static void tearDownClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.tearDownClass();
     }
 
 
-    /** {@inheritDoc} */
     @Override
     protected TestContainerFactory getTestContainerFactory() {
         return new GrizzlyWebTestContainerFactory();
     }
 
-    /** {@inheritDoc} */
     @Override
     protected DeploymentContext configureDeployment() {
 

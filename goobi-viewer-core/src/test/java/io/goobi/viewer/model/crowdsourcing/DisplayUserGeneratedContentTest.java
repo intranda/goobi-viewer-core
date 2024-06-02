@@ -32,11 +32,6 @@ import io.goobi.viewer.solr.SolrConstants;
 
 class DisplayUserGeneratedContentTest extends AbstractSolrEnabledTest {
 
-    /**
-     * <p>setUpClass.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractSolrEnabledTest.setUpClass();

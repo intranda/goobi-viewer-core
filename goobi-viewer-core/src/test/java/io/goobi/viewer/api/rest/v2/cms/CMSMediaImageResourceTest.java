@@ -40,8 +40,6 @@ import io.goobi.viewer.api.rest.v2.ApiUrls;
 class CMSMediaImageResourceTest extends AbstractRestApiTest {
 
     /**
-     * <p>setUp.</p>
-     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -50,8 +48,6 @@ class CMSMediaImageResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * <p>tearDown.</p>
-     *
      * @throws java.lang.Exception
      */
     @AfterEach

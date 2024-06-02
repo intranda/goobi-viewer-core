@@ -51,7 +51,9 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private CrowdsourcingBean bean = new CrowdsourcingBean();
 
-    /** {@inheritDoc} */
+    /**
+     * @throws java.lang.Exception
+     */
     @Override
     @BeforeEach
     public void setUp() throws Exception {
@@ -62,7 +64,9 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         bean.init();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @throws java.lang.Exception
+     */
     @Override
     @AfterEach
     public void tearDown() throws Exception {

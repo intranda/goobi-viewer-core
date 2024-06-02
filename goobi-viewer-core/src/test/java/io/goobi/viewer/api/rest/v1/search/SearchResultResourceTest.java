@@ -41,11 +41,6 @@ class SearchResultResourceTest extends AbstractDatabaseEnabledTest {
     private HttpServletRequest servletRequest;
     private HttpServletResponse servletResponse;
 
-    /**
-     * <p>setup.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeEach
     public void setup() throws Exception {
         super.setUp();

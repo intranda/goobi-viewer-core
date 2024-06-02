@@ -58,9 +58,7 @@ import io.goobi.viewer.model.viewer.StructElement;
  */
 class SequenceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    /** Constant <code>PI="PI_KLEIUNIV"</code> */
     public static final String PI = PI_KLEIUNIV;
-    /** Constant <code>ORDER=1</code> */
     public static final int ORDER = 1;
 
     @Test

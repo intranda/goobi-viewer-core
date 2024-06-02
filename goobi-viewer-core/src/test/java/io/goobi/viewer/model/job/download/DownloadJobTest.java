@@ -39,7 +39,6 @@ import io.goobi.viewer.dao.impl.JPADAO;
 
 class DownloadJobTest extends AbstractDatabaseAndSolrEnabledTest {
 
-    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {

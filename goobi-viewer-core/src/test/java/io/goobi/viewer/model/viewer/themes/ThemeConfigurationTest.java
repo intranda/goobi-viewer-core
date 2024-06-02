@@ -58,11 +58,6 @@ class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
     private CMSMediaItem logoItem;
     private CMSMediaItem iconItem;
 
-    /**
-     * <p>setUp.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();

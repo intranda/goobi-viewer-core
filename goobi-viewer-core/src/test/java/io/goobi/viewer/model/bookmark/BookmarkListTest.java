@@ -44,7 +44,6 @@ class BookmarkListTest extends AbstractSolrEnabledTest {
 
     AbstractApiUrlManager urls;
 
-    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {

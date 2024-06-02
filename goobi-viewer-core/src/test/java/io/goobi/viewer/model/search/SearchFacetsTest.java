@@ -49,11 +49,6 @@ import io.goobi.viewer.solr.SolrConstants;
 
 class SearchFacetsTest extends AbstractSolrEnabledTest {
 
-    /**
-     * <p>setUpClass.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractSolrEnabledTest.setUpClass();

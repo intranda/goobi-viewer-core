@@ -42,7 +42,6 @@ import io.goobi.viewer.model.viewer.StructElementStub;
 
 class StructElementStubTest extends AbstractSolrEnabledTest {
 
-    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {

@@ -114,7 +114,6 @@ import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
  */
 class JPADAOTest extends AbstractDatabaseEnabledTest {
 
-    /** Constant <code>NUM_LICENSE_TYPES=6</code> */
     public static final int NUM_LICENSE_TYPES = 6;
 
     String pi = "PI_TEST";
@@ -123,7 +122,6 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     String englishNote = "Note";
     String changed = "CHANGED";
 
-    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {

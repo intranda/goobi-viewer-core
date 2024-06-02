@@ -46,11 +46,6 @@ public abstract class AbstractDatabaseAndSolrEnabledTest extends AbstractSolrEna
     //        return new XmlDataSet(new FileInputStream("resources/test_db_dataset.xml"));
     //    }
 
-    /**
-     * <p>setUpClass.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractSolrEnabledTest.setUpClass();
@@ -62,7 +57,6 @@ public abstract class AbstractDatabaseAndSolrEnabledTest extends AbstractSolrEna
         // databaseTester.setDataSet(getDataSet());
     }
 
-    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {
@@ -71,7 +65,6 @@ public abstract class AbstractDatabaseAndSolrEnabledTest extends AbstractSolrEna
         databaseTester.onSetup();
     }
 
-    /** {@inheritDoc} */
     @Override
     @AfterEach
     public void tearDown() throws Exception {
@@ -83,11 +76,6 @@ public abstract class AbstractDatabaseAndSolrEnabledTest extends AbstractSolrEna
         // .write(databaseTester.getConnection().createDataSet(), new FileOutputStream("resources/" + System.currentTimeMillis() + ".xml"));
     }
 
-    /**
-     * <p>tearDownClass.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @AfterAll
     public static void tearDownClass() throws Exception {
         if (DataManager.getInstance().getDao() != null) {

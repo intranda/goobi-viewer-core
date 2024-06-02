@@ -43,8 +43,6 @@ class PdfHandlerTest extends AbstractTest{
     PdfHandler handler;
 
     /**
-     * <p>setUp.</p>
-     *
      * @throws java.lang.Exception
      */
     @BeforeEach

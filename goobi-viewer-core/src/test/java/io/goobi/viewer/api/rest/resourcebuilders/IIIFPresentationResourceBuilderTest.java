@@ -46,8 +46,6 @@ class IIIFPresentationResourceBuilderTest extends AbstractSolrEnabledTest {
     private IIIFPresentation2ResourceBuilder testee;
 
     /**
-     * <p>setUp.</p>
-     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -57,8 +55,6 @@ class IIIFPresentationResourceBuilderTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * <p>tearDown.</p>
-     *
      * @throws java.lang.Exception
      */
     @AfterEach

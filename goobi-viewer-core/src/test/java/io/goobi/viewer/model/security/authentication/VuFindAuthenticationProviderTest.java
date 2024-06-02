@@ -89,9 +89,6 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
     private static final String RESPONSE_USER_SUSPENDED = "{ " + "\"user\": {" + "\"isValid\": \"N\"," + "\"exists\": \"Y\"" + "}," + "\"expired\": {"
             + "\"isExpired\": \"Y\"" + "}," + "\"blocks\": {" + "\"isBlocked\": \"N\"" + "}" + "}";
 
-    /**
-     * <p>startProxy.</p>
-     */
     @BeforeAll
     public static void startProxy() {
         mockServer = ClientAndServer.startClientAndServer(SERVERPORT);
@@ -123,11 +120,6 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
 
     }
 
-    /**
-     * <p>stopProxy.</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @AfterAll
     public static void stopProxy() throws Exception {
         serverClient.stop();
@@ -139,8 +131,6 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * <p>setUp.</p>
-     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -151,8 +141,6 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * <p>tearDown.</p>
-     *
      * @throws java.lang.Exception
      */
     @AfterEach

@@ -40,7 +40,6 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(PhysicalElementTest.class);
 
-    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {
