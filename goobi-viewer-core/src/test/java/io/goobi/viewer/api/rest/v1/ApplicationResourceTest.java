@@ -40,6 +40,8 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
 class ApplicationResourceTest extends AbstractRestApiTest {
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -48,6 +50,8 @@ class ApplicationResourceTest extends AbstractRestApiTest {
     }
 
     /**
+     * <p>tearDown.</p>
+     *
      * @throws java.lang.Exception
      */
     @AfterEach

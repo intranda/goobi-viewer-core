@@ -64,9 +64,7 @@ class SearchResultConverterTest extends AbstractSolrEnabledTest {
 
     ApiUrls urls = new ApiUrls();
 
-    /**
-     * @throws java.lang.Exception
-     */
+    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {
@@ -76,9 +74,7 @@ class SearchResultConverterTest extends AbstractSolrEnabledTest {
 
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
+    /** {@inheritDoc} */
     @Override
     @AfterEach
     public void tearDown() throws Exception {

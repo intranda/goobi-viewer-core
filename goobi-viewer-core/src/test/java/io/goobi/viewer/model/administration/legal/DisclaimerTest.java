@@ -37,6 +37,11 @@ class DisclaimerTest extends AbstractDatabaseEnabledTest {
 
     private IDAO dao;
 
+    /**
+     * <p>setUp.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     @BeforeEach
     public void setUp() throws DAOException {
         this.dao = DataManager.getInstance().getDao();

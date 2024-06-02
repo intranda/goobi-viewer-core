@@ -47,6 +47,8 @@ class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
     AbstractApiUrlManager urls;
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -60,6 +62,8 @@ class CmsRecordNotesBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * <p>tearDown.</p>
+     *
      * @throws java.lang.Exception
      */
     @AfterEach

@@ -43,12 +43,19 @@ class BookmarkTest extends AbstractDatabaseAndSolrEnabledTest {
     private final String LOGID = "LOG_0003";
     private final Integer PAGE = 10;
 
+    /**
+     * <p>setUpClass.</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -57,6 +64,8 @@ class BookmarkTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * <p>tearDown.</p>
+     *
      * @throws java.lang.Exception
      */
     @AfterEach

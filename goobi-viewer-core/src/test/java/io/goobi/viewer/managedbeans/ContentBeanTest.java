@@ -44,18 +44,14 @@ class ContentBeanTest extends AbstractDatabaseEnabledTest {
 
     private static final String PI = "PI_1";
 
-    /**
-     * @throws java.lang.Exception
-     */
+    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
+    /** {@inheritDoc} */
     @Override
     @AfterEach
     public void tearDown() throws Exception {

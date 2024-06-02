@@ -28,6 +28,10 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+/**
+ * <p>Abstract ContextMocker class.</p>
+ *
+ */
 public abstract class ContextMocker extends FacesContext {
 
     private ContextMocker() {
@@ -43,6 +47,11 @@ public abstract class ContextMocker extends FacesContext {
         }
     }
 
+    /**
+     * <p>mockFacesContext.</p>
+     *
+     * @return a {@link javax.faces.context.FacesContext} object
+     */
     public static FacesContext mockFacesContext() {
         FacesContext context = Mockito.mock(FacesContext.class);
 

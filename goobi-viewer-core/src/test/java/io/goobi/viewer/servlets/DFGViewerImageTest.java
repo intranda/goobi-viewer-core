@@ -43,6 +43,11 @@ class DFGViewerImageTest extends AbstractTest {
     DFGViewerImage servlet;
 
 
+    /**
+     * <p>setUp.</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();

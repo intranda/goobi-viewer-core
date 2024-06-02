@@ -31,17 +31,16 @@ import org.dbunit.ext.h2.H2DataTypeFactory;
  */
 public class H2JdbcDatabaseTester extends JdbcDatabaseTester {
 
+    /**
+     * <p>Constructor for H2JdbcDatabaseTester.</p>
+     *
+     * @throws java.lang.ClassNotFoundException if any.
+     */
     public H2JdbcDatabaseTester() throws ClassNotFoundException {
         super("org.h2.Driver", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "user", "password");
     }
 
-    /**
-     * @param driverClass
-     * @param connectionUrl
-     * @param username
-     * @param password
-     * @throws ClassNotFoundException
-     */
+    /** {@inheritDoc} */
     //    public H2JdbcDatabaseTester(String driverClass, String connectionUrl, String username, String password) throws ClassNotFoundException {
     //        super(driverClass, connectionUrl, username, password);
     //    }

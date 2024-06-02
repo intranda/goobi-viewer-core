@@ -79,6 +79,9 @@ class AnnotationConverterTest {
     private final AnnotationConverter converter;
     private final ObjectMapper mapper = new ObjectMapper();
 
+    /**
+     * <p>Constructor for AnnotationConverterTest.</p>
+     */
     public AnnotationConverterTest() {
         converter = new AnnotationConverter(new ApiUrls("https://viewer.goobi.io/api/v1/"));
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

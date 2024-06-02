@@ -31,6 +31,7 @@ import io.goobi.viewer.controller.DataManager;
 
 class PageTypeTest extends AbstractTest {
 
+    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {

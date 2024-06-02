@@ -35,17 +35,29 @@ import io.goobi.viewer.solr.SolrSearchIndex;
  */
 public abstract class AbstractSolrEnabledTest extends AbstractTest {
 
+    /** Constant <code>PI_KLEIUNIV="PPN517154005"</code> */
     protected static final String PI_KLEIUNIV = "PPN517154005";
+    /** Constant <code>iddocKleiuniv=-1</code> */
     protected static long iddocKleiuniv = -1;
 
     private SolrClient client;
 
+    /**
+     * <p>setUpClass.</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractTest.setUpClass();
 
     }
 
+    /**
+     * <p>setUp.</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
@@ -59,6 +71,11 @@ public abstract class AbstractSolrEnabledTest extends AbstractTest {
         Assertions.assertNotEquals(0, iddocKleiuniv);
     }
 
+    /**
+     * <p>tearDown.</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     @AfterEach
     public void tearDown() throws Exception {
         client.close();

@@ -41,11 +41,21 @@ import io.goobi.viewer.controller.StringConstants;
 
 class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
 
+    /**
+     * <p>setUpClass.</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
 
+    /**
+     * <p>setUp.</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();

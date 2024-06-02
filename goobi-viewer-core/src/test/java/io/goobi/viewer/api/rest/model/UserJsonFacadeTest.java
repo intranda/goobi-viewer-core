@@ -40,6 +40,8 @@ import io.goobi.viewer.model.security.user.User;
 class UserJsonFacadeTest {
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -48,6 +50,8 @@ class UserJsonFacadeTest {
     }
 
     /**
+     * <p>tearDown.</p>
+     *
      * @throws java.lang.Exception
      */
     @AfterEach

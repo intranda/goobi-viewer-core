@@ -57,6 +57,8 @@ class RecordResourceTest extends AbstractRestApiTest{
     private static final String PI_NER = "PPN743674162";
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -65,6 +67,8 @@ class RecordResourceTest extends AbstractRestApiTest{
     }
 
     /**
+     * <p>tearDown.</p>
+     *
      * @throws java.lang.Exception
      */
     @AfterEach

@@ -46,6 +46,8 @@ class TableDataProviderTest {
     TableDataProvider<Integer> provider;
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -92,6 +94,8 @@ class TableDataProviderTest {
     }
 
     /**
+     * <p>tearDown.</p>
+     *
      * @throws java.lang.Exception
      */
     @AfterEach
@@ -220,9 +224,11 @@ class TableDataProviderTest {
     }
 
     /**
-     * @param i
-     * @param filters
-     * @return
+     * <p>matches.</p>
+     *
+     * @param i a {@link java.lang.Integer} object
+     * @param filters a {@link java.util.Map} object
+     * @return a boolean
      */
     protected boolean matches(Integer i, Map<String, String> filters) {
         return filters.entrySet().stream().allMatch(entry -> {

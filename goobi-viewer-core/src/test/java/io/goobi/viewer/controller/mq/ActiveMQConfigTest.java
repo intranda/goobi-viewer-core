@@ -35,6 +35,11 @@ class ActiveMQConfigTest {
 
     ActiveMQConfig config;
     
+    /**
+     * <p>setUp.</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     @BeforeEach
     public void setUp() throws IOException {
         this.config = new ActiveMQConfig(Paths.get(activeMqConfigPath));

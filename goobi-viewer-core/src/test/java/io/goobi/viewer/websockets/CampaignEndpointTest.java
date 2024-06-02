@@ -64,6 +64,11 @@ class CampaignEndpointTest extends AbstractDatabaseEnabledTest{
     private final CampaignEndpoint endpoint2 = new CampaignEndpoint();
     private final CampaignEndpoint endpoint3 = new CampaignEndpoint();
 
+     /**
+      * <p>setUp.</p>
+      *
+      * @throws java.lang.Exception if any.
+      */
      @BeforeEach
      public void setUp() throws Exception {
          super.setUp();

@@ -62,9 +62,7 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
     private static final String QUALITY = "default";
     private static final String FORMAT = "jpg";
 
-    /**
-     * @throws java.lang.Exception
-     */
+    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {
@@ -73,9 +71,7 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
                 .injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_no_local_access.test.xml").getAbsolutePath()));
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
+    /** {@inheritDoc} */
     @Override
     @AfterEach
     public void tearDown() throws Exception {

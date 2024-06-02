@@ -54,6 +54,8 @@ class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
     int numItems = 10;
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -86,6 +88,8 @@ class CMSMediaResourceTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * <p>tearDown.</p>
+     *
      * @throws java.lang.Exception
      */
     @AfterEach

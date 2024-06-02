@@ -51,6 +51,8 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 class ALTOToolsTest extends AbstractTest {
 
     /**
+     * <p>setUpBeforeClass.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeAll
@@ -58,9 +60,7 @@ class ALTOToolsTest extends AbstractTest {
         AbstractTest.setUpClass();
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
+    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {

@@ -41,6 +41,11 @@ class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
     NavigationHelper navigationHelper = Mockito.mock(NavigationHelper.class);
     ImageDeliveryBean imaging = Mockito.mock(ImageDeliveryBean.class);
     
+    /**
+     * <p>setUp.</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();

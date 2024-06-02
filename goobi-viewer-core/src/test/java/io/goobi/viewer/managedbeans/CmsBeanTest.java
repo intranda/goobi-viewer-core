@@ -62,9 +62,7 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     private CMSTemplateManager templateManager;
     private NavigationHelper navigationHelper;
 
-    /**
-     * @throws java.lang.Exception
-     */
+    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {
@@ -75,9 +73,7 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         navigationHelper = new NavigationHelper();
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
+    /** {@inheritDoc} */
     @Override
     @AfterEach
     public void tearDown() throws Exception {

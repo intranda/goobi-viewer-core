@@ -65,6 +65,9 @@ class LitteraProviderTest extends AbstractDatabaseEnabledTest {
     private static ClientAndServer mockServer;
     private static MockServerClient serverClient;
 
+    /**
+     * <p>startProxy.</p>
+     */
     @BeforeAll
     public static void startProxy() {
         mockServer = ClientAndServer.startClientAndServer(SERVERPORT);
@@ -88,6 +91,11 @@ class LitteraProviderTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * <p>stopProxy.</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     @AfterAll
     public static void stopProxy() throws Exception {
         serverClient.stop();
@@ -98,6 +106,7 @@ class LitteraProviderTest extends AbstractDatabaseEnabledTest {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {

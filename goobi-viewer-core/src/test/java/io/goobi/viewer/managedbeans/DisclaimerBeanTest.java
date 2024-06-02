@@ -53,6 +53,13 @@ class DisclaimerBeanTest extends AbstractTest {
     private ActiveDocumentBean activeDocumentBean;
     private UserBean userBean;
 
+    /**
+     * <p>setUp.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     @BeforeEach
     public void setUp() throws DAOException, PresentationException, IndexUnreachableException {
         storedDisclaimer = new Disclaimer();

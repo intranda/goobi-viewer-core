@@ -35,6 +35,8 @@ import io.goobi.viewer.controller.AlphabetIterator;
 class AlphabetIteratorTest {
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -42,6 +44,8 @@ class AlphabetIteratorTest {
     }
 
     /**
+     * <p>tearDown.</p>
+     *
      * @throws java.lang.Exception
      */
     @AfterEach

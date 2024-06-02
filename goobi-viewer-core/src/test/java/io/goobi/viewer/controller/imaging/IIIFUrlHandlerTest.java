@@ -44,6 +44,8 @@ class IIIFUrlHandlerTest extends AbstractTest {
     String format = "jpg";
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach

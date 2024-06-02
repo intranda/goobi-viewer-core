@@ -62,18 +62,14 @@ class RecordFileResourceTest extends AbstractRestApiTest {
     private static final String PI_SPACE_IN_FILENAME = "ARVIErdm5";
     private static final String FILENAME = "00000010";
 
-    /**
-     * @throws java.lang.Exception
-     */
+    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
+    /** {@inheritDoc} */
     @Override
     @AfterEach
     public void tearDown() throws Exception {

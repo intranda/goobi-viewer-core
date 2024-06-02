@@ -38,6 +38,7 @@ class ComplexMetadataContainerTest extends AbstractTest {
 
     List<SolrDocument> metadataDocs;
 
+    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() {   

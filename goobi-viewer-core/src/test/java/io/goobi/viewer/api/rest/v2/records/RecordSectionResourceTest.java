@@ -52,6 +52,8 @@ class RecordSectionResourceTest extends AbstractRestApiTest {
     private static final String DIVID ="LOG_0004";
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -60,6 +62,8 @@ class RecordSectionResourceTest extends AbstractRestApiTest {
     }
 
     /**
+     * <p>tearDown.</p>
+     *
      * @throws java.lang.Exception
      */
     @AfterEach

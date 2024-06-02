@@ -59,6 +59,12 @@ class FeedbackBeanTest {
 
     FeedbackBean bean;
 
+    /**
+     * <p>setUp.</p>
+     *
+     * @throws java.io.UnsupportedEncodingException if any.
+     * @throws jakarta.mail.MessagingException if any.
+     */
     @BeforeEach
     public void setUp() throws UnsupportedEncodingException, MessagingException {
 

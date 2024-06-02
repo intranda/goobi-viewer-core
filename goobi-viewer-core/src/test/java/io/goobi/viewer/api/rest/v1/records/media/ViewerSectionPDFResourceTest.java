@@ -45,18 +45,14 @@ class ViewerSectionPDFResourceTest extends AbstractRestApiTest {
     private static final String PI = "02008031921530";
     private static final String LOGID = "LOG_0000";
 
-    /**
-     * @throws java.lang.Exception
-     */
+    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
+    /** {@inheritDoc} */
     @Override
     @AfterEach
     public void tearDown() throws Exception {

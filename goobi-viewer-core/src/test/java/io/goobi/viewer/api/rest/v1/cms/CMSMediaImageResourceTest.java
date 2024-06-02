@@ -51,6 +51,8 @@ import io.goobi.viewer.model.cms.media.CMSMediaItem;
 class CMSMediaImageResourceTest extends AbstractRestApiTest {
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -59,6 +61,8 @@ class CMSMediaImageResourceTest extends AbstractRestApiTest {
     }
 
     /**
+     * <p>tearDown.</p>
+     *
      * @throws java.lang.Exception
      */
     @AfterEach

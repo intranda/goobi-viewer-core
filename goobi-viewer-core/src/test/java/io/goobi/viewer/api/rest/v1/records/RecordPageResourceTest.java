@@ -60,18 +60,14 @@ class RecordPageResourceTest extends AbstractRestApiTest {
     private static final String PI_ANNOTATIONS = "PI_1";
     private static final String PAGENO_ANNOTATIONS = "1";
 
-    /**
-     * @throws java.lang.Exception
-     */
+    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
+    /** {@inheritDoc} */
     @Override
     @AfterEach
     public void tearDown() throws Exception {

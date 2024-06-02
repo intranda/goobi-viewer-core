@@ -41,6 +41,11 @@ import io.goobi.viewer.solr.SolrConstants;
 
 class FacetItemTest extends AbstractTest {
 
+    /**
+     * <p>setUp.</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();

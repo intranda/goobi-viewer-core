@@ -53,6 +53,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private SearchBean searchBean;
 
+    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {

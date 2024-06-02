@@ -42,6 +42,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 
 class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
+    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {

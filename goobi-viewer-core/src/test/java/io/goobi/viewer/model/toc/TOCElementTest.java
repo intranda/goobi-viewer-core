@@ -32,12 +32,19 @@ import io.goobi.viewer.model.viewer.PageType;
 
 class TOCElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
+    /**
+     * <p>setUpClass.</p>
+     *
+     * @throws java.lang.Exception if any.
+     */
     @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
     }
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach

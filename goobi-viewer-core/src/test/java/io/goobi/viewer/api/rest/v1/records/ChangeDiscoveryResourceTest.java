@@ -51,6 +51,8 @@ import io.goobi.viewer.controller.DataManager;
 class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -59,6 +61,8 @@ class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
     }
 
     /**
+     * <p>tearDown.</p>
+     *
      * @throws java.lang.Exception
      */
     @AfterEach

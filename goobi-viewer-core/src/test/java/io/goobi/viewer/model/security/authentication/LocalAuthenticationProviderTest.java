@@ -55,6 +55,8 @@ class LocalAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
     String userSuspended_pwHash = "abcdef3";
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -70,6 +72,8 @@ class LocalAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * <p>tearDown.</p>
+     *
      * @throws java.lang.Exception
      */
     @AfterEach

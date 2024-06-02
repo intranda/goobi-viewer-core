@@ -42,9 +42,15 @@ import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LoginResult;
 import io.goobi.viewer.model.security.user.User;
 
+/**
+ * <p>TestUtils class.</p>
+ *
+ */
 public class TestUtils {
     
+    /** Constant <code>APPLICATION_ROOT_URL="https://viewer.goobi.io/"</code> */
     public static final String APPLICATION_ROOT_URL = "https://viewer.goobi.io/";
+    /** Constant <code>NUM_ALL_SEARCH_SORTING_OPTIONS=12</code> */
     public static final int NUM_ALL_SEARCH_SORTING_OPTIONS = 12;
 
     /**
@@ -68,6 +74,7 @@ public class TestUtils {
         return facesContext;
     }
 
+    /** Constant <code>testAuthenticationProvider</code> */
     public static IAuthenticationProvider testAuthenticationProvider = new IAuthenticationProvider() {
 
         private User user = null;

@@ -67,6 +67,7 @@ import io.goobi.viewer.solr.SolrConstants;
 class ManifestBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
 
+    /** Constant <code>PI="74241"</code> */
     public static final String PI = "74241";
 
     @Test

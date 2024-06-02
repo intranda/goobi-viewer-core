@@ -41,6 +41,8 @@ class AnnotationBeanTest extends AbstractDatabaseEnabledTest {
     AnnotationBean bean;
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -53,6 +55,8 @@ class AnnotationBeanTest extends AbstractDatabaseEnabledTest {
 
 
     /**
+     * <p>tearDown.</p>
+     *
      * @throws java.lang.Exception
      */
     @AfterEach

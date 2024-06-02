@@ -54,6 +54,8 @@ class ApiUrlManagerTest {
     private ApiUrls manager;
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -62,6 +64,8 @@ class ApiUrlManagerTest {
     }
 
     /**
+     * <p>tearDown.</p>
+     *
      * @throws java.lang.Exception
      */
     @AfterEach

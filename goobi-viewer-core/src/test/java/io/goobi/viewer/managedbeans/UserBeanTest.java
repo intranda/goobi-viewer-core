@@ -55,6 +55,7 @@ class UserBeanTest extends AbstractDatabaseEnabledTest {
     String userSuspended_email = "3@users.org";
     String userSuspended_pwHash = "abcdef3";
 
+    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {

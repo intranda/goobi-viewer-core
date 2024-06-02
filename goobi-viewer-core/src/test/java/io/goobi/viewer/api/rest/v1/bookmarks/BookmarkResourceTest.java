@@ -40,6 +40,8 @@ import io.goobi.viewer.model.bookmark.Bookmark;
 class BookmarkResourceTest {
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -47,6 +49,8 @@ class BookmarkResourceTest {
     }
 
     /**
+     * <p>tearDown.</p>
+     *
      * @throws java.lang.Exception
      */
     @AfterEach

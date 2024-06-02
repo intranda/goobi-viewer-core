@@ -47,6 +47,8 @@ class ImageHandlerTest extends AbstractTest {
     ImageHandler handler;
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach

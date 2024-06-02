@@ -45,6 +45,8 @@ class ViewerRecordPDFResourceTest extends AbstractRestApiTest {
     private static final String PI = "02008031921530";
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -53,6 +55,8 @@ class ViewerRecordPDFResourceTest extends AbstractRestApiTest {
     }
 
     /**
+     * <p>tearDown.</p>
+     *
      * @throws java.lang.Exception
      */
     @AfterEach

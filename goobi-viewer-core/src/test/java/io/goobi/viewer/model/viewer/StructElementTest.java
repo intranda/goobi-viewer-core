@@ -45,6 +45,7 @@ class StructElementTest extends AbstractSolrEnabledTest {
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(StructElementTest.class);
 
+    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {

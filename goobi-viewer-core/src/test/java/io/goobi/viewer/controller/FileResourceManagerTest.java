@@ -42,6 +42,8 @@ class FileResourceManagerTest {
     private static final String CORE_PATH = "/var/lib/tomcat/webapps/viewer/resources/";
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -57,6 +59,8 @@ class FileResourceManagerTest {
     }
 
     /**
+     * <p>tearDown.</p>
+     *
      * @throws java.lang.Exception
      */
     @AfterEach

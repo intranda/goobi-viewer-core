@@ -51,6 +51,8 @@ class CollectionsResourceTest extends AbstractRestApiTest {
     private static final String GROUP = "MD2_VIEWERSUBTHEME";
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -59,6 +61,8 @@ class CollectionsResourceTest extends AbstractRestApiTest {
     }
 
     /**
+     * <p>tearDown.</p>
+     *
      * @throws java.lang.Exception
      */
     @AfterEach

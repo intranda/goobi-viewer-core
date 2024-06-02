@@ -44,6 +44,7 @@ class TextBeanTest extends AbstractSolrEnabledTest {
 
     private TextBean bean;
 
+    /** {@inheritDoc} */
     @Override
     @BeforeEach
     public void setUp() throws Exception {

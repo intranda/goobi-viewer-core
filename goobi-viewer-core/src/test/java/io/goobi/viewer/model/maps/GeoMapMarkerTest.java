@@ -40,6 +40,8 @@ class GeoMapMarkerTest {
 
 
     /**
+     * <p>setUp.</p>
+     *
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -47,6 +49,8 @@ class GeoMapMarkerTest {
     }
 
     /**
+     * <p>tearDown.</p>
+     *
      * @throws java.lang.Exception
      */
     @AfterEach
