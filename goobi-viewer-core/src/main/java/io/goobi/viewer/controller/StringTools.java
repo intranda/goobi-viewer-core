@@ -181,7 +181,7 @@ public final class StringTools {
     }
 
     /**
-     * 
+     *
      * @param s {@link String} to match
      * @param candidates List of {@link String}s with possible matches
      * @param language Language for scoring; English will be used, if no {@link Locale} can be matched for given language
@@ -361,9 +361,8 @@ public final class StringTools {
     }
 
     /**
-     * Escapes the given string using {@link org.apache.commons.lang3.StringEscapeUtils#escapeHtml4(String)} and additionally converts all line breaks.
-     * (\r\n, \r, \n) to html line breaks ({@code <br/>
-     * })
+     * Escapes the given string. Uses {@link org.apache.commons.lang3.StringEscapeUtils#escapeHtml4(String)} and additionally converts all line
+     * breaks (\r\n, \r, \n) to html line breaks ({@code <br/> })
      *
      * @param text the text to escape
      * @return the escaped string
@@ -772,7 +771,7 @@ public final class StringTools {
 
     /**
      * Try to parse the given string as integer.
-     * 
+     *
      * @param s the string to parse
      * @return An Optional containing the parsed int. If the string is blank or cannot be parsed to an integer, an empty Optional is returned
      */
@@ -828,7 +827,7 @@ public final class StringTools {
 
     /**
      * Clean a String from any malicious content like script tags, line breaks and backtracking filepaths.
-     * 
+     *
      * @param data
      * @return a cleaned up string which can be savely used
      */

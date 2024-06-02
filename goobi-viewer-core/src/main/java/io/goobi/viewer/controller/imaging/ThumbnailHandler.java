@@ -781,7 +781,8 @@ public class ThumbnailHandler {
     }
 
     /**
-     * @param doc Needs to have the fields {@link io.goobi.viewer.solr.SolrConstants#MIMETYPE} and {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
+     * @param doc Needs to have the fields {@link io.goobi.viewer.solr.SolrConstants#MIMETYPE} and
+     *        {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
      * @return The representative thumbnail url for the given doc, or a replacement image url if no representative thumbnail url is applicable (born
      *         digital material and - depending on configuration - anchors)
      */
@@ -806,7 +807,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * 
+     *
      * @param doc
      * @param thumbnailUrl
      * @return String
@@ -836,7 +837,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * 
+     *
      * @param doc
      * @param thumbnailUrl
      * @return {@link String}
@@ -893,7 +894,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * 
+     *
      * @param doc
      * @param thumbnailUrl
      * @param anchorThumbnailMode
@@ -929,7 +930,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * 
+     *
      * @param doc
      * @param thumbnailUrl
      * @return String
@@ -971,7 +972,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * 
+     *
      * @param structElement
      * @return Optional&lt;DocType&gt;
      */
@@ -981,7 +982,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * 
+     *
      * @param structElement
      * @return Optional&lt;MetadataGroupType&gt;
      */
@@ -991,7 +992,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * 
+     *
      * @param structElement
      * @return Optional&lt;String&gt;
      */
@@ -1012,7 +1013,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * 
+     *
      * @param structElement
      * @return Optional<String>
      */

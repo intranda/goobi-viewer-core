@@ -72,7 +72,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
 
     /**
      * Returns the session stored bookmark list, creating a new empty one if needed.
-     * 
+     *
      * @param id
      * @param urls
      * @return a {@link java.lang.String} object.
@@ -108,7 +108,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
 
     /**
      * Adds an item with the given pi, logid and page number to the session stored bookmark list, creating a new bookmark list if needed.
-     * 
+     *
      * @param id
      * @param pi a {@link java.lang.String} object.
      * @param logId a {@link java.lang.String} object.
@@ -133,9 +133,9 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     }
 
     /**
-     * Deletes the bookmark with the given pi from the session store bookmark list. This operation returns an object with the property "success: false"
-     * if the operation failed (usually because the object wasn't in the bookmark list to begin with). Otherwise the return object contains "success:
-     * true"
+     * Deletes the bookmark with the given pi from the session store bookmark list. This operation returns an object with the property
+     * "success: false" if the operation failed (usually because the object wasn't in the bookmark list to begin with). Otherwise the
+     * return object contains "success: true"
      *
      * @param id
      * @param pi a {@link java.lang.String} object.
@@ -228,8 +228,8 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     }
 
     /**
-     * Counts the items contained in the session store bookmark list and returns the number as plain integer. If no session store bookmark list exists,
-     * 0 is returned
+     * Counts the items contained in the session store bookmark list and returns the number as plain integer. If no session store bookmark
+     * list exists, 0 is returned
      *
      * @return a {@link java.lang.Integer} object.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.

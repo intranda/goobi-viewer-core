@@ -51,7 +51,7 @@ import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.model.viewer.collections.CollectionView.BrowseDataProvider;
 
 /**
- * Creates and stored {@link io.goobi.viewer.model.viewer.collections.CollectionView}s for a session
+ * Creates and stored {@link io.goobi.viewer.model.viewer.collections.CollectionView}s for a session.
  *
  * @author florian
  */
@@ -64,13 +64,13 @@ public class CollectionViewBean implements Serializable {
     private static final Logger logger = Logger.getLogger(CollectionViewBean.class);
 
     /**
-     * {@link CollectionView}s mapped to contentItem-Ids of {@link CMSCollectionContent} used to create the CollectionView
+     * {@link CollectionView}s mapped to contentItem-Ids of {@link CMSCollectionContent} used to create the CollectionView.
      */
     private Map<String, CollectionView> collections = new HashMap<>();
 
     /**
      * Solr statistics (in the form of {@link CollectionResult}) mapped to collection names which are in turn mapped to contentItem-Ids because each
-     * contentItem may have different statistics for its collections due to different filter queries and excluded subcollections
+     * contentItem may have different statistics for its collections due to different filter queries and excluded subcollections.
      */
     private Map<String, Map<String, CollectionResult>> collectionStatistics = new HashMap<>();
 
@@ -78,7 +78,8 @@ public class CollectionViewBean implements Serializable {
      * Get the {@link io.goobi.viewer.model.viewer.collections.CollectionView} of the given content item in the given page. If the view hasn't been
      * initialized yet, do so and add it to the Bean's CollectionView map
      *
-     * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} instance providing the base data for this collection
+     * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} instance providing the base data for this
+     *        collection
      * @param collectionBaseLevels The number of hierarchy levels for which collections of these levels should not expand but rather redirect to a
      *            view of the clicked collection alone
      * @param openExpanded whether to open the page with all collections expanded.
@@ -169,7 +170,7 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * Creates a collection view object from the item's collection related properties
+     * Creates a collection view object from the item's collection related properties.
      *
      * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
      * @param numBaseLevels a int
@@ -238,7 +239,7 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * Queries Solr for a list of all values of the set collectionField which my serve as a collection
+     * Queries Solr for a list of all values of the set collectionField which my serve as a collection.
      *
      * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
      * @param ignoreHierarchy If true, sub-collections will be omitted
@@ -314,7 +315,7 @@ public class CollectionViewBean implements Serializable {
 
     /**
      * get a list of all {@link io.goobi.viewer.model.viewer.collections.CollectionView}s with the given solr field which are already loaded via
-     * {@link #getCollection(CMSPage)} or {@link #getCollection(String, CMSPage)}
+     * {@link #getCollection(CMSPage)} or {@link #getCollection(String, CMSPage)}.
      *
      * @param field The solr field the colleciton is based on
      * @return a {@link java.util.List} object.

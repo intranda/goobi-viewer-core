@@ -179,7 +179,7 @@ public final class SearchHelper {
             "[+-]*\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)+\\)|[+-]*\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)"
                     + "|[+-]*\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *+)\\)");
 
-    //No danger of catastrophic backtracking: the repetitions are separated by other characters and the overal repetition is possessive ('++') 
+    //No danger of catastrophic backtracking: the repetitions are separated by other characters and the overal repetition is possessive ('++')
     private static final Pattern PATTERN_REGULAR_ITEMS = Pattern.compile("([+-]*)\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)"); //NOSONAR
     //No danger of catastrophic backtracking: separator (':') between the repetition
     private static final Pattern PATTERN_REGULAR_PAIRS = Pattern.compile("(\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ()]+\\))"); //NOSONAR
@@ -195,7 +195,7 @@ public final class SearchHelper {
             Pattern.compile("(\\w++:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]++ TO [\\wäáàâöóòôüúùûëéèêßñ]++\\]\\))"); //NOSONAR
 
     /**
-     * 
+     *
      */
     private SearchHelper() {
         //
@@ -479,9 +479,9 @@ public final class SearchHelper {
     }
 
     /**
-     * Return the {@link HitType} matching the {@link io.goobi.viewer.solr.SolrConstants#DOCTYPE} of the given document. In case the document is of type 'UGC', return the
-     * type matching {@link io.goobi.viewer.solr.SolrConstants#UGCTYPE} instead
-     * 
+     * Return the {@link HitType} matching the {@link io.goobi.viewer.solr.SolrConstants#DOCTYPE} of the given document.
+     * In case the document is of type 'UGC', return the type matching {@link io.goobi.viewer.solr.SolrConstants#UGCTYPE} instead
+     *
      * @param doc
      * @return {@link HitType} for doc
      */
@@ -795,7 +795,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param ret
      * @param luceneField
      * @param groupResults
@@ -1201,7 +1201,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @return Solr query for the moving wall date range
      */
     public static String getMovingWallQuery() {
@@ -1483,8 +1483,8 @@ public final class SearchHelper {
     }
 
     /**
-     * if maxDistance &lt;= 0, or either phrase or term is blank, simply return {@link StringUtils#contains(phrase, term)}. Otherwise check if the phrase
-     * contains a word which has a Damerau-Levenshtein distance of at most maxDistance to the term
+     * if maxDistance &lt;= 0, or either phrase or term is blank, simply return {@link StringUtils#contains(phrase, term)}.
+     * Otherwise check if the phrase contains a word which has a Damerau-Levenshtein distance of at most maxDistance to the term
      *
      * @param phrase
      * @param term
@@ -1612,7 +1612,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param phrase
      * @return phrase without highlighting placeholders
      * @should replace placeholders with empty strings
@@ -2267,7 +2267,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param query
      * @param facetString
      * @param template Advanced search fields template
@@ -2664,7 +2664,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param fieldName
      * @param prefix
      * @return fieldName with prefix
@@ -3565,7 +3565,7 @@ public final class SearchHelper {
 
     /**
      * Constructs an expand query from given facet queries. Constrains the query to DOCSTRCT doc types only.
-     * 
+     *
      * @param allFacetQueries
      * @param allowedFacetQueryRegexes Optional list containing regexes for allowed facet queries
      * @return Expand query

@@ -956,7 +956,8 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * Set the current {@link io.goobi.viewer.model.urlresolution.ViewerPath} as the {@link #lastUsedSearchPage} This is where returning to search hit list from record will direct to
+     * Set the current {@link io.goobi.viewer.model.urlresolution.ViewerPath} as the {@link #lastUsedSearchPage}.
+     * This is where returning to search hit list from record will direct to
      */
     public void setLastUsedSearchPage() {
         this.lastUsedSearchPage = ViewHistory.getCurrentView(BeanUtils.getRequest());
