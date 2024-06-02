@@ -129,7 +129,7 @@ public class ProcessDataResolver {
      * Returns a map of Paths for each data folder name passed as an argument.
      *
      * @param pi The record identifier. This is both the actual name of the folder and the identifier used to look up data repository in Solr
-     * @return HashMap<dataFolderName,Path>
+     * @return HashMap&lt;dataFolderName,Path&gt;
      * @param dataFolderNames a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.

@@ -277,7 +277,7 @@ public abstract class AbstractBuilder {
      * addMetadata.
      * </p>
      *
-     * @param manifest a {@link de.intranda.api.iiif.presentation.AbstractPresentationModelElement} object.
+     * @param manifest a {@link de.intranda.api.iiif.presentation.v3.AbstractPresentationModelElement3} object.
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      */
     public void addMetadata(AbstractPresentationModelElement3 manifest, StructElement ele) {

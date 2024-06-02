@@ -46,7 +46,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 
 /**
- * Creates an {@link de.intranda.api.iiif.presentation.AnnotationList} of {@link TextualAnnotation}s from the content of an ALTO document. Depending
+ * Creates an {@link de.intranda.api.iiif.presentation.v2.AnnotationList} of {@link TextualAnnotation}s from the content of an ALTO document. Depending
  * on selected granularity, it is either one annotation per page, per TextBlock, per line or per word
  *
  * @author Florian
