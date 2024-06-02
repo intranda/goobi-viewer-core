@@ -883,7 +883,7 @@ public class CmsBean implements Serializable {
      *
      * @param hits
      * @param groupingField
-     * @return List<Entry<String, List<SearchHit>>>
+     * @return List&lt;Entry&lt;String, List&lt;SearchHit&gt;&gt;&gt;
      */
     public List<Entry<String, List<SearchHit>>> getGroupedQueryResults(List<SearchHit> hits, String groupingField) {
 
@@ -1402,7 +1402,7 @@ public class CmsBean implements Serializable {
      * getRepresentativeImageForQuery.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.pages.content.CMSContentItem} object.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1447,7 +1447,7 @@ public class CmsBean implements Serializable {
      * getRepresentativeImageForQuery.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.CMSContentItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.pages.content.CMSContentItem} object.
      * @param width a int.
      * @param height a int.
      * @return a {@link java.lang.String} object.

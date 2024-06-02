@@ -93,8 +93,8 @@ public class NERTag {
      *
      * @param id a {@link java.lang.String} object.
      * @param value a {@link java.lang.String} object.
-     * @param type a {@link io.goobi.viewer.servlets.rest.ner.NERTag.Type} object.
-     * @param element a {@link io.goobi.viewer.servlets.rest.ner.ElementReference} object.
+     * @param type a {@link io.goobi.viewer.api.rest.model.ner.NERTag.Type} object.
+     * @param element a {@link io.goobi.viewer.api.rest.model.ner.ElementReference} object.
      */
     public NERTag(String id, String value, Type type, ElementReference element) {
         this.id = id;
@@ -130,7 +130,7 @@ public class NERTag {
      * Getter for the field <code>type</code>.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.servlets.rest.ner.NERTag.Type} object.
+     * @return a {@link io.goobi.viewer.api.rest.model.ner.NERTag.Type} object.
      */
     public Type getType() {
         return type;
@@ -141,7 +141,7 @@ public class NERTag {
      * Getter for the field <code>element</code>.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.servlets.rest.ner.ElementReference} object.
+     * @return a {@link io.goobi.viewer.api.rest.model.ner.ElementReference} object.
      */
     public ElementReference getElement() {
         return element;
@@ -152,7 +152,7 @@ public class NERTag {
      * Setter for the field <code>element</code>.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.servlets.rest.ner.ElementReference} object.
+     * @param element a {@link io.goobi.viewer.api.rest.model.ner.ElementReference} object.
      */
     public void setElement(ElementReference element) {
         this.element = element;

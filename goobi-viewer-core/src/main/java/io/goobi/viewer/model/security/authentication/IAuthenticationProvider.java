@@ -43,7 +43,7 @@ public interface IAuthenticationProvider {
      * {@link io.goobi.viewer.model.security.user.User} as well as the {@link javax.servlet.http.HttpServletRequest} and
      * {@link javax.servlet.http.HttpServletResponse} to be used to complete the login and possible request forwarding If an error occurs and the
      * request can not be processed, an {@link io.goobi.viewer.exceptions.AuthenticationException} must be thrown. If a login has been refused, the
-     * exact reasons can be determined using the methods {@link isActive}, {@link isSuspended} and {@link isRefused}
+     * exact reasons can be determined using the methods {@link io.goobi.viewer.model.security.user.User#isActive}, {@link io.goobi.viewer.model.security.user.User#isSuspended} and {@link io.goobi.viewer.model.security.authentication.LoginResult#isRefused}
      *
      * @param password A string to be used as a password or similar for login. If the provider does not require such a string, this can be left empty
      *            or null

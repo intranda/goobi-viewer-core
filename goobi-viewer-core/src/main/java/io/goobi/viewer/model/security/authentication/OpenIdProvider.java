@@ -240,7 +240,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
      * Tries to find or create a valid {@link io.goobi.viewer.model.security.user.User} based on the given json object. Generates a
      * {@link io.goobi.viewer.model.security.authentication.LoginResult} containing the given request and response and either an optional containing
      * the user or nothing if no user was found, or a {@link io.goobi.viewer.model.security.authentication.AuthenticationProviderException} if an
-     * internal error occured during login If this method is not called within {@link #getTimeoutMillis()} ms after calling {@#login(String, String)},
+     * internal error occured during login If this method is not called within {@link #getTimeoutMillis()} ms after calling {@link #login(String, String)},
      * a loginResponse is created containing an appropriate exception. In any case, the future returned by {@link #login(String, String)} is resolved
      *
      * @param json The server response as json object. If null, the login request is resolved as failure

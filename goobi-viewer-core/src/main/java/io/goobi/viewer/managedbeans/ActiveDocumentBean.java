@@ -248,7 +248,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * TODO This can cause NPEs if called while update() is running.
      *
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @should reset lastReceivedIdentifier
      */
     public void reset() throws IndexUnreachableException {
@@ -309,16 +309,17 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * <p>reload.</p>
      *
-     * @param pi
+     * @param pi a {@link java.lang.String} object
      * @return output of open()
-     * @throws PresentationException
-     * @throws RecordNotFoundException
-     * @throws RecordDeletedException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws ViewerConfigurationException
-     * @throws RecordLimitExceededException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.RecordNotFoundException
+     * @throws io.goobi.viewer.exceptions.RecordDeletedException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.RecordLimitExceededException
      */
     public String reload(String pi) throws PresentationException, RecordNotFoundException, RecordDeletedException, IndexUnreachableException,
             DAOException, ViewerConfigurationException, RecordLimitExceededException {
@@ -342,16 +343,15 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.RecordDeletedException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     * @throws IDDOCNotFoundException
-     * @throws RecordLimitExceededException
-     * @throws NumberFormatException
+     * @throws io.goobi.viewer.exceptions.IDDOCNotFoundException
+     * @throws io.goobi.viewer.exceptions.RecordLimitExceededException
+     * @throws java.lang.NumberFormatException
      * @should create ViewManager correctly
      * @should update ViewManager correctly if LOGID has changed
      * @should not override topDocumentIddoc if LOGID has changed
      * @should throw RecordNotFoundException if listing not allowed by default
      * @should load records that have been released via moving wall
      */
-
     public void update() throws PresentationException, IndexUnreachableException, RecordNotFoundException, RecordDeletedException, DAOException,
             ViewerConfigurationException, IDDOCNotFoundException, NumberFormatException, RecordLimitExceededException {
         synchronized (this) {
@@ -615,8 +615,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     * @throws RecordLimitExceededException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.RecordLimitExceededException
      */
     public String open()
             throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException,
@@ -685,8 +684,8 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     * @throws RecordLimitExceededException
-     * @throws NumberFormatException
+     * @throws io.goobi.viewer.exceptions.RecordLimitExceededException
+     * @throws java.lang.NumberFormatException
      */
     public String openFulltext()
             throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException,
@@ -779,9 +778,9 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      * Sets imageToShow to the representative page found in the search index, or "1" if none found.
-     * 
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     *
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public void setRepresentativeImage() throws PresentationException, IndexUnreachableException {
         logger.trace("setRepresentativeImage"); //NOSONAR Debug
@@ -824,7 +823,7 @@ public class ActiveDocumentBean implements Serializable {
      * </p>
      *
      * @param logid the logid to set
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public void setLogid(String logid) throws PresentationException {
         synchronized (this) {
@@ -940,6 +939,15 @@ public class ActiveDocumentBean implements Serializable {
         }
     }
 
+    /**
+     * <p>getPIFromFieldValue.</p>
+     *
+     * @param value a {@link java.lang.String} object
+     * @param field a {@link java.lang.String} object
+     * @return a {@link java.lang.String} object
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public String getPIFromFieldValue(String value, String field) throws PresentationException, IndexUnreachableException {
         String query = "{field}:\"{value}\"".replace("{field}", field).replace("{value}", value);
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, List.of(SolrConstants.PI));
@@ -1262,10 +1270,11 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * 
-     * @param order
+     * <p>getPageUrl.</p>
+     *
+     * @param order a int
      * @return Page URL for the given page number
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public String getPageUrl(int order) throws IndexUnreachableException {
         return getPageUrl(Integer.toString(order));
@@ -1276,7 +1285,7 @@ public class ActiveDocumentBean implements Serializable {
      * getPreviousPageUrl.
      * </p>
      *
-     * @param step
+     * @param step a int
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -1289,7 +1298,7 @@ public class ActiveDocumentBean implements Serializable {
      * getNextPageUrl.
      * </p>
      *
-     * @param step
+     * @param step a int
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -1322,12 +1331,13 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * <p>getPreviousDocstructUrl.</p>
      *
      * @return URL to the previous docstruct
-     * @throws IndexUnreachableException
-     * @throws ViewerConfigurationException
-     * @throws DAOException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public String getPreviousDocstructUrl() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         // logger.trace("getPreviousDocstructUrl"); //NOSONAR Sometimes needed for debugging
@@ -1377,12 +1387,13 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * <p>getNextDocstructUrl.</p>
      *
      * @return URL to the next docstruct
-     * @throws IndexUnreachableException
-     * @throws ViewerConfigurationException
-     * @throws DAOException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public String getNextDocstructUrl() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         // logger.trace("getNextDocstructUrl"); //NOSONAR Sometimes needed for debugging
@@ -1811,6 +1822,7 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * <p>getActiveDocumentIddoc.</p>
      *
      * @return a long.
      * @deprecated Use getTopDocumentIddoc()
@@ -1889,10 +1901,11 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * <p>clearCacheAction.</p>
      *
      * @return empty string
-     * @throws IOException
-     * @throws IndexUnreachableException
+     * @throws java.io.IOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public String clearCacheAction() throws IOException, IndexUnreachableException {
         logger.trace("clearCacheAction: {}", clearCacheMode);
@@ -1957,6 +1970,8 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>lastReceivedIdentifier</code>.</p>
+     *
      * @return the lastReceivedIdentifier
      */
     public String getLastReceivedIdentifier() {
@@ -1964,6 +1979,8 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>lastReceivedIdentifier</code>.</p>
+     *
      * @param lastReceivedIdentifier the lastReceivedIdentifier to set
      */
     public void setLastReceivedIdentifier(String lastReceivedIdentifier) {
@@ -2042,8 +2059,8 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      * Setter to match getSelectedRecordLanguage3() for URL patterns.
-     * 
-     * @param selectedRecordLanguageCode
+     *
+     * @param selectedRecordLanguageCode a {@link java.lang.String} object
      */
     public void setSelectedRecordLanguage3(String selectedRecordLanguageCode) {
         setSelectedRecordLanguage(selectedRecordLanguageCode);
@@ -2410,6 +2427,8 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>clearCacheMode</code>.</p>
+     *
      * @return the clearCacheMode
      */
     public String getClearCacheMode() {
@@ -2417,6 +2436,8 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>clearCacheMode</code>.</p>
+     *
      * @param clearCacheMode the clearCacheMode to set
      */
     public void setClearCacheMode(String clearCacheMode) {
@@ -2428,19 +2449,20 @@ public class ActiveDocumentBean implements Serializable {
      * Get a CMSSidebarElement with a map containing all GeoMarkers for the current PI. The widget is stored in the bean, but refreshed each time the
      * PI changes
      *
-     * @return {@link GeoMap}
-     * @throws DAOException
-     * @throws IndexUnreachableException
+     * @return {@link io.goobi.viewer.model.maps.GeoMap}
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public synchronized GeoMap getGeoMap() throws DAOException, IndexUnreachableException {
         return getRecordGeoMap().getGeoMap();
     }
 
     /**
-     * 
-     * @return {@link RecordGeoMap}
-     * @throws DAOException
-     * @throws IndexUnreachableException
+     * <p>getRecordGeoMap.</p>
+     *
+     * @return {@link io.goobi.viewer.model.maps.RecordGeoMap}
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public RecordGeoMap getRecordGeoMap() throws DAOException, IndexUnreachableException {
         RecordGeoMap map = this.geoMaps.get(getPersistentIdentifier());
@@ -2472,11 +2494,12 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * 
-     * @param pi
-     * @return {@link GeoMap}
-     * @throws PresentationException
-     * @throws DAOException
+     * <p>generateGeoMap.</p>
+     *
+     * @param pi a {@link java.lang.String} object
+     * @return {@link io.goobi.viewer.model.maps.GeoMap}
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public GeoMap generateGeoMap(String pi) throws PresentationException, DAOException {
         try {
@@ -2565,13 +2588,15 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     *
+     * <p>toggleDownloadImageModal.</p>
      */
     public void toggleDownloadImageModal() {
         downloadImageModalVisible = !downloadImageModalVisible;
     }
 
     /**
+     * <p>isDownloadImageModalVisible.</p>
+     *
      * @return the downloadImageModalVisible
      */
     public boolean isDownloadImageModalVisible() {
@@ -2579,7 +2604,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * @return Selected {@link DownloadOption}
+     * <p>getSelectedDownloadOption.</p>
+     *
+     * @return Selected {@link io.goobi.viewer.model.job.download.DownloadOption}
      */
     public DownloadOption getSelectedDownloadOption() {
         if (selectedDownloadOptionLabel == null) {
@@ -2590,6 +2617,8 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>selectedDownloadOptionLabel</code>.</p>
+     *
      * @return the selectedDownloadOptionLabel
      */
     public String getSelectedDownloadOptionLabel() {
@@ -2597,6 +2626,8 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>selectedDownloadOptionLabel</code>.</p>
+     *
      * @param selectedDownloadOptionLabel the selectedDownloadOptionLabel to set
      */
     public void setSelectedDownloadOptionLabel(String selectedDownloadOptionLabel) {
@@ -2604,6 +2635,9 @@ public class ActiveDocumentBean implements Serializable {
         this.selectedDownloadOptionLabel = selectedDownloadOptionLabel;
     }
 
+    /**
+     * <p>setDownloadOptionLabelFromRequestParameter.</p>
+     */
     public void setDownloadOptionLabelFromRequestParameter() {
         Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 
@@ -2660,7 +2694,7 @@ public class ActiveDocumentBean implements Serializable {
      * Indicates whether user comments are allowed for the current record based on several criteria.
      *
      * @return a boolean.
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public synchronized boolean isAllowUserComments() throws DAOException {
         if (viewManager == null) {
@@ -2708,8 +2742,8 @@ public class ActiveDocumentBean implements Serializable {
 
     /**
      * Check if the current page should initialize a WebSocket
-     * 
-     * @return true if a document is loaded and it contains the field {@link SolrConstants.ACCESSCONDITION_CONCURRENTUSE}
+     *
+     * @return true if a document is loaded and it contains the field {@link io.goobi.viewer.solr.SolrConstants#ACCESSCONDITION_CONCURRENTUSE}
      */
     public boolean isRequiresWebSocket() {
         if (viewManager != null && viewManager.getTopStructElement() != null && viewManager.getTopStructElement().getMetadataFields() != null) {
@@ -2719,6 +2753,11 @@ public class ActiveDocumentBean implements Serializable {
         return false;
     }
 
+    /**
+     * <p>getGeomapFilters.</p>
+     *
+     * @return a {@link java.util.List} object
+     */
     public List<String> getGeomapFilters() {
         return List.of("MD_METADATATYPE", "MD_GENRE").stream().map(s -> "'" + s + "'").collect(Collectors.toList());
     }

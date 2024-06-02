@@ -95,7 +95,7 @@ public class CMSPageTemplate implements Serializable {
      * @throws java.lang.IllegalArgumentException if file is null
      * @should load template correctly
      * @should throw IllegalArgumentException if file is null
-     * @return a {@link io.goobi.viewer.model.cms.CMSPageTemplate} object.
+     * @return a {@link io.goobi.viewer.model.cms.legacy.CMSPageTemplate} object.
      */
     public static CMSPageTemplate loadFromXML(Path file) {
         if (file == null) {
@@ -409,7 +409,7 @@ public class CMSPageTemplate implements Serializable {
      * </p>
      *
      * @param itemId a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.CMSContentItemTemplate} object.
+     * @return a {@link io.goobi.viewer.model.cms.legacy.CMSContentItemTemplate} object.
      */
     public CMSContentItemTemplate getContentItem(String itemId) {
         for (CMSContentItemTemplate item : contentItems) {

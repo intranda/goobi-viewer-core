@@ -336,7 +336,7 @@ public class CMSNavigationManager implements Serializable {
      * addVisibleItem.
      * </p>
      *
-     * @param navigationItem a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
+     * @param navigationItem a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      */
     public void addVisibleItem(CMSNavigationItem navigationItem) {
         if (navigationItem.getItemLabel() == null || navigationItem.getPageUrl() == null) {
@@ -365,7 +365,7 @@ public class CMSNavigationManager implements Serializable {
      * getItem.
      * </p>
      *
-     * @param id the item's {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem#getSortingListId()}
+     * @param id the item's {@link io.goobi.viewer.model.cms.CMSNavigationItem#getSortingListId()}
      * @return The first matching item from all visible items as optional. Empty optional if no matching item was found
      */
     public Optional<CMSNavigationItem> getItem(String id) {

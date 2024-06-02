@@ -387,7 +387,7 @@ public abstract class DownloadJob implements Serializable {
      * notifyObservers.
      * </p>
      *
-     * @param status a {@link io.goobi.viewer.model.job.download.DownloadJob.JobStatus} object.
+     * @param status a {@link io.goobi.viewer.model.job.JobStatus} object.
      * @param message a {@link java.lang.String} object.
      * @return a boolean.
      * @throws java.io.UnsupportedEncodingException if any.

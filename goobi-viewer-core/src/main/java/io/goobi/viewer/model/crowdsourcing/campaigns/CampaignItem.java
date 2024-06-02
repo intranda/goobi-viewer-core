@@ -135,7 +135,7 @@ public class CampaignItem {
      * </p>
      *
      * @return true exactly if {@link #getRecordStatus()} is
-     *         {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus.FINISHED FINISHED}
+     *         {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus#FINISHED}
      */
     public boolean isFinished() {
         return CrowdsourcingStatus.FINISHED.equals(getRecordStatus());
@@ -147,7 +147,7 @@ public class CampaignItem {
      * </p>
      *
      * @return true exactly if {@link #getRecordStatus()} is
-     *         {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus.REVIEW REVIEW}
+     *         {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus#REVIEW}
      */
     public boolean isInReview() {
         return CrowdsourcingStatus.REVIEW.equals(getRecordStatus());

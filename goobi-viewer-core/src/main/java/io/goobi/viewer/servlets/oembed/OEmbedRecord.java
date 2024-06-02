@@ -40,13 +40,18 @@ public class OEmbedRecord {
     private URI uri = null;
 
     /**
-     * @param uri
-     * @throws URISyntaxException
+     * <p>Constructor for OEmbedRecord.</p>
+     *
+     * @param uri a {@link java.lang.String} object
+     * @throws java.net.URISyntaxException
      */
     public OEmbedRecord(String uri) throws URISyntaxException {
         this.uri = PathConverter.toURI(uri);
     }
 
+    /**
+     * <p>Constructor for OEmbedRecord.</p>
+     */
     public OEmbedRecord() {
 
     }
@@ -95,11 +100,18 @@ public class OEmbedRecord {
         this.physicalElement = physicalElement;
     }
 
+    /**
+     * <p>isRichResponse.</p>
+     *
+     * @return a boolean
+     */
     public boolean isRichResponse() {
         return this.uri != null;
     }
 
     /**
+     * <p>Getter for the field <code>uri</code>.</p>
+     *
      * @return the uri
      */
     public URI getUri() {
@@ -107,6 +119,8 @@ public class OEmbedRecord {
     }
 
     /**
+     * <p>Setter for the field <code>uri</code>.</p>
+     *
      * @param uri the uri to set
      */
     public void setUri(URI uri) {

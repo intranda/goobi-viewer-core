@@ -400,7 +400,7 @@ public final class DataManager {
      * injectOAuthResponseListener.
      * </p>
      *
-     * @param listener a {@link io.goobi.viewer.model.security.authentication.IAuthResponseListener} object.
+     * @param listener a {@link io.goobi.viewer.model.security.authentication.AuthResponseListener} object.
      */
     public void injectOAuthResponseListener(AuthResponseListener<OpenIdProvider> listener) {
         if (listener != null) {
@@ -413,7 +413,7 @@ public final class DataManager {
      * Getter for the field <code>oAuthResponseListener</code>.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.security.authentication.IAuthResponseListener} object.
+     * @return a {@link io.goobi.viewer.model.security.authentication.AuthResponseListener} object.
      */
     public AuthResponseListener<OpenIdProvider> getOAuthResponseListener() {
         if (oAuthResponseListener == null) {

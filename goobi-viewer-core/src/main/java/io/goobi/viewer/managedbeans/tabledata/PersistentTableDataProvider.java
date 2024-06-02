@@ -29,7 +29,6 @@ import java.util.Optional;
  * <p>
  * PersistentTableDataProvider class.
  * </p>
- * 
  *
  * @author Florian Alpers
  * @param <T>

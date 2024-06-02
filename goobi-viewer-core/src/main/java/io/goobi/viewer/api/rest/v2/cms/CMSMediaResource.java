@@ -138,7 +138,7 @@ public class CMSMediaResource {
      * @param maxItems
      * @param prioritySlots
      * @param random
-     * @return a {@link io.goobi.viewer.servlets.rest.cms.CMSMediaResource.MediaList} object.
+     * @return a {@link io.goobi.viewer.api.rest.v2.cms.CMSMediaResource.MediaList} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
@@ -174,7 +174,7 @@ public class CMSMediaResource {
      * @param maxItems
      * @param prioritySlots
      * @param random
-     * @return a {@link io.goobi.viewer.servlets.rest.cms.CMSMediaResource.MediaList} object.
+     * @return a {@link io.goobi.viewer.api.rest.v2.cms.CMSMediaResource.MediaList} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET

@@ -78,6 +78,10 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 
+/**
+ * <p>CmsPageEditBean class.</p>
+ *
+ */
 @Named
 @ViewScoped
 public class CmsPageEditBean implements Serializable {
@@ -113,6 +117,9 @@ public class CmsPageEditBean implements Serializable {
     private String templateName = "";
     private boolean templateLockComponents = false;
 
+    /**
+     * <p>setup.</p>
+     */
     @PostConstruct
     public void setup() {
         try {
@@ -162,6 +169,11 @@ public class CmsPageEditBean implements Serializable {
         }
     }
 
+    /**
+     * <p>savePageAndForwardToEdit.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public void savePageAndForwardToEdit() throws DAOException {
         this.saveSelectedPage();
         if (this.selectedPage.getId() != null) {
@@ -355,6 +367,7 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
+     * <p>getSelectedPageId.</p>
      *
      * @return ID of selectedPage
      */
@@ -367,9 +380,10 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
+     * <p>setSelectedPageId.</p>
      *
-     * @param id
-     * @throws DAOException
+     * @param id a {@link java.lang.String} object
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void setSelectedPageId(String id) throws DAOException {
         logger.trace("setSelectedPageId: {}", id);
@@ -377,6 +391,11 @@ public class CmsPageEditBean implements Serializable {
         setSelectedPage(page);
     }
 
+    /**
+     * <p>Getter for the field <code>selectedPage</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
+     */
     public CMSPage getSelectedPage() {
         return selectedPage;
     }
@@ -408,36 +427,75 @@ public class CmsPageEditBean implements Serializable {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>sidebarWidgets</code>.</p>
+     *
+     * @return a {@link java.util.Map} object
+     */
     public Map<WidgetDisplayElement, Boolean> getSidebarWidgets() {
         return sidebarWidgets;
     }
 
+    /**
+     * <p>Setter for the field <code>sidebarWidgets</code>.</p>
+     *
+     * @param sidebarWidgets a {@link java.util.Map} object
+     */
     public void setSidebarWidgets(Map<WidgetDisplayElement, Boolean> sidebarWidgets) {
         this.sidebarWidgets = sidebarWidgets;
     }
 
+    /**
+     * <p>getSelectedWidgets.</p>
+     *
+     * @return a {@link java.util.List} object
+     */
     public List<WidgetDisplayElement> getSelectedWidgets() {
         return this.sidebarWidgets.entrySet().stream().filter(Entry::getValue).map(Map.Entry::getKey).collect(Collectors.toList());
     }
 
+    /**
+     * <p>resetSelectedWidgets.</p>
+     */
     public void resetSelectedWidgets() {
         this.sidebarWidgets.entrySet().forEach(e -> e.setValue(false));
     }
 
+    /**
+     * <p>getAndResetSelectedWidgets.</p>
+     *
+     * @return a {@link java.util.List} object
+     */
     public List<WidgetDisplayElement> getAndResetSelectedWidgets() {
         List<WidgetDisplayElement> selected = getSelectedWidgets();
         resetSelectedWidgets();
         return selected;
     }
 
+    /**
+     * <p>Getter for the field <code>selectedComponent</code>.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     public String getSelectedComponent() {
         return selectedComponent;
     }
 
+    /**
+     * <p>Setter for the field <code>selectedComponent</code>.</p>
+     *
+     * @param selectedComponent a {@link java.lang.String} object
+     */
     public void setSelectedComponent(String selectedComponent) {
         this.selectedComponent = selectedComponent;
     }
 
+    /**
+     * <p>getAvailableComponents.</p>
+     *
+     * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
+     * @return a {@link java.util.List} object
+     */
     public List<SelectItem> getAvailableComponents(CMSPage page) {
         Stream<CMSComponent> stream = templateManager.getContentManager().getComponents().stream();
         boolean hidePagedComponents = page != null && page.isContainsPagedComponents();
@@ -511,10 +569,18 @@ public class CmsPageEditBean implements Serializable {
         this.editMode = editMode;
     }
 
+    /**
+     * <p>setNewSelectedPage.</p>
+     */
     public void setNewSelectedPage() {
         this.selectedPage = new CMSPage();
     }
 
+    /**
+     * <p>setNewSelectedPage.</p>
+     *
+     * @param templateId a {@link java.lang.Long} object
+     */
     public void setNewSelectedPage(Long templateId) {
         CMSPageTemplate template = loadTemplate(templateId);
         if (template == null) {
@@ -540,18 +606,37 @@ public class CmsPageEditBean implements Serializable {
         return null;
     }
 
+    /**
+     * <p>Getter for the field <code>pageEditState</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPageEditState} object
+     */
     public CMSPageEditState getPageEditState() {
         return pageEditState;
     }
 
+    /**
+     * <p>Setter for the field <code>pageEditState</code>.</p>
+     *
+     * @param pageEditState a {@link io.goobi.viewer.model.cms.pages.CMSPageEditState} object
+     */
     public void setPageEditState(CMSPageEditState pageEditState) {
         this.pageEditState = pageEditState;
     }
 
+    /**
+     * <p>deleteComponent.</p>
+     *
+     * @param component a {@link io.goobi.viewer.model.cms.pages.content.CMSComponent} object
+     * @return a boolean
+     */
     public boolean deleteComponent(CMSComponent component) {
         return this.selectedPage.removeComponent(component);
     }
 
+    /**
+     * <p>addComponent.</p>
+     */
     public void addComponent() {
         if (addComponent(getSelectedPage(), getSelectedComponent())) {
             setSelectedComponent(null);
@@ -606,18 +691,38 @@ public class CmsPageEditBean implements Serializable {
 
     }
 
+    /**
+     * <p>Setter for the field <code>saveAsTemplate</code>.</p>
+     *
+     * @param saveAsTemplate a boolean
+     */
     public void setSaveAsTemplate(boolean saveAsTemplate) {
         this.saveAsTemplate = saveAsTemplate;
     }
 
+    /**
+     * <p>isSaveAsTemplate.</p>
+     *
+     * @return a boolean
+     */
     public boolean isSaveAsTemplate() {
         return saveAsTemplate;
     }
 
+    /**
+     * <p>Setter for the field <code>templateName</code>.</p>
+     *
+     * @param templateName a {@link java.lang.String} object
+     */
     public void setTemplateName(String templateName) {
         this.templateName = templateName;
     }
 
+    /**
+     * <p>Getter for the field <code>templateName</code>.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     public String getTemplateName() {
         if (StringUtils.isBlank(this.templateName)) {
             return getSelectedPage().getTitle(IPolyglott.getDefaultLocale());
@@ -625,10 +730,20 @@ public class CmsPageEditBean implements Serializable {
         return templateName;
     }
 
+    /**
+     * <p>isTemplateLockComponents.</p>
+     *
+     * @return a boolean
+     */
     public boolean isTemplateLockComponents() {
         return templateLockComponents;
     }
 
+    /**
+     * <p>Setter for the field <code>templateLockComponents</code>.</p>
+     *
+     * @param templateLockComponents a boolean
+     */
     public void setTemplateLockComponents(boolean templateLockComponents) {
         this.templateLockComponents = templateLockComponents;
     }

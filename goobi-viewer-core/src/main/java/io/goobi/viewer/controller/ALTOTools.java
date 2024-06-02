@@ -139,7 +139,7 @@ public final class ALTOTools {
      *
      * @param alto a {@link java.lang.String} object.
      * @param inCharset
-     * @param type a {@link io.goobi.viewer.servlets.rest.ner.NERTag.Type} object.
+     * @param type a {@link io.goobi.viewer.api.rest.model.ner.NERTag.Type} object.
      * @return a {@link java.util.List} object.
      */
     public static List<TagCount> getNERTags(String alto, final String inCharset, NERTag.Type type) {
