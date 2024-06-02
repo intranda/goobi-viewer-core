@@ -97,15 +97,15 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     private static final Logger logger = LogManager.getLogger(PhysicalElement.class);
 
-    /** Constant <code>WATERMARK_TEXT_TYPE_URN="URN"</code> */
+    /** Constant <code>WATERMARK_TEXT_TYPE_URN="URN"</code>. */
     public static final String WATERMARK_TEXT_TYPE_URN = "URN";
-    /** Constant <code>WATERMARK_TEXT_TYPE_PURL="PURL"</code> */
+    /** Constant <code>WATERMARK_TEXT_TYPE_PURL="PURL"</code>. */
     public static final String WATERMARK_TEXT_TYPE_PURL = "PURL";
-    /** Constant <code>WATERMARK_TEXT_TYPE_SOLR="SOLR:"</code> */
+    /** Constant <code>WATERMARK_TEXT_TYPE_SOLR="SOLR:"</code>. */
     public static final String WATERMARK_TEXT_TYPE_SOLR = "SOLR:";
-    /** Constant <code>defaultVideoWidth=320</code> */
+    /** Constant <code>defaultVideoWidth=320</code>. */
     private static final int DEFAULT_VIDEO_WIDTH = 320;
-    /** Constant <code>defaultVideoHeight=240</code> */
+    /** Constant <code>defaultVideoHeight=240</code>. */
     private static final int DEFAULT_VIDEO_HEIGHT = 240;
 
     private static List<String> watermarkTextConfiguration;
@@ -166,7 +166,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private Set<String> accessConditions = new HashSet<>();
     /** List of <code>StructElement</code>s contained on this page. */
     private List<StructElement> containedStructElements;
-    /** Content type of loaded fulltext */
+    /** Content type of loaded fulltext. */
     private String textContentType = null;
 
     /**
@@ -1135,7 +1135,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * Returns The first matching media filename for this page
+     * Returns The first matching media filename for this page.
      *
      * @return The first matching media filename for this page
      */
@@ -1145,8 +1145,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * Returns the fileName alone, if {@link io.goobi.viewer.model.viewer.PhysicalElement#getFilePath()} is a local file, or the entire filePath
-     * otherwise
+     * Returns the fileName alone, if {@link io.goobi.viewer.model.viewer.PhysicalElement#getFilepath()} is a local file, or the entire filePath
+     * otherwise.
      *
      * @return a {@link java.lang.String} object.
      */
@@ -1402,7 +1402,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * Checks if the media type is displayable as a 3d object and access is granted for viewing it
+     * Checks if the media type is displayable as a 3d object and access is granted for viewing it.
      *
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1429,7 +1429,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * Checks if the media type is displayable as an image and access is granted for viewing an image
+     * Checks if the media type is displayable as an image and access is granted for viewing an image.
      *
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -1467,8 +1467,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * checks if the user has the privilege {@link IPrivilegeHolder.PRIV_ZOOM_IMAGES} If the check fails and
-     * {@link Configuration#getUnzoomedImageAccessMaxWidth()} is greater than 0, false is returned
+     * checks if the user has the privilege {@link io.goobi.viewer.model.security.IPrivilegeHolder#PRIV_ZOOM_IMAGES} If the check fails and
+     * {@link Configuration#getUnzoomedImageAccessMaxWidth()} is greater than 0, false is returned.
      *
      * @return true exactly if the user is allowed to zoom images. false otherwise
      * @throws IndexUnreachableException
@@ -1656,7 +1656,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * return true if this image has its own width/height measurements, and does not rely on default width/height
+     * return true if this image has its own width/height measurements, and does not rely on default width/height.
      *
      * @return a boolean.
      */
@@ -1771,8 +1771,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * Gets the filename but with its extension replaced by the given extension If the extension is an empty String, the filename without any
-     * extension is returned If the extension is null, {@link io.goobi.viewer.model.viewer.PhysicalElement#getFileName()} is returned
+     * Gets the filename but with its extension replaced by the given extension. If the extension is an empty String, the filename without any
+     * extension is returned If the extension is null, {@link io.goobi.viewer.model.viewer.PhysicalElement#getFileName()} is returned.
      *
      * @param extension a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.

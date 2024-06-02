@@ -58,7 +58,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     }
 
     /**
-     * Returns the session stored bookmark list, creating a new empty one if needed
+     * Returns the session stored bookmark list, creating a new empty one if needed.
      *
      * @return a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -71,7 +71,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     }
 
     /**
-     * Returns the session stored bookmark list, creating a new empty one if needed
+     * Returns the session stored bookmark list, creating a new empty one if needed.
      * 
      * @param id
      * @param urls
@@ -93,11 +93,11 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     }
 
     /**
-     * Adds an item with the given pi to the session stored bookmark list, creating a new bookmark list if needed
+     * Adds an item with the given pi to the session stored bookmark list, creating a new bookmark list if needed.
      *
      * @param id
      * @param pi a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
+     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -107,13 +107,13 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     }
 
     /**
-     * Adds an item with the given pi, logid and page number to the session stored bookmark list, creating a new bookmark list if needed
+     * Adds an item with the given pi, logid and page number to the session stored bookmark list, creating a new bookmark list if needed.
      * 
      * @param id
      * @param pi a {@link java.lang.String} object.
      * @param logId a {@link java.lang.String} object.
      * @param pageString a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
+     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -133,7 +133,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     }
 
     /**
-     * Deletes the bookmark with the given pi from the session store bookmark list This operation returns an object with the property "success: false"
+     * Deletes the bookmark with the given pi from the session store bookmark list. This operation returns an object with the property "success: false"
      * if the operation failed (usually because the object wasn't in the bookmark list to begin with). Otherwise the return object contains "success:
      * true"
      *
@@ -149,7 +149,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     }
 
     /**
-     * Deletes the bookmark with the given pi, logid and page number from the session store bookmark list This operation returns an object with the
+     * Deletes the bookmark with the given pi, logid and page number from the session store bookmark list. This operation returns an object with the
      * property "success: false" if the operation failed (usually because the object wasn't in the bookmark list to begin with). Otherwise the return
      * object contains "success: true"
      *
@@ -180,7 +180,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * Deletes the entry bookmark list from the session store. Always returns an object with the property "success: true", unless an error occurs in
      * which case an error status code and an error object is returned
      *
-     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
+     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
      */
     public SuccessMessage deleteSessionBookmarkList() throws RestApiException {
@@ -189,7 +189,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     }
 
     /**
-     * Returns "true" if the object with the given IP is in the session store bookmark list, "false" otherwise
+     * Returns "true" if the object with the given IP is in the session store bookmark list, "false" otherwise.
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link java.lang.Boolean} object.
@@ -202,7 +202,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     }
 
     /**
-     * Returns "true" if the object with the given IP, logid and page number is in the session store bookmark list, "false" otherwise
+     * Returns "true" if the object with the given IP, logid and page number is in the session store bookmark list, "false" otherwise.
      *
      * @param pi a {@link java.lang.String} object.
      * @param logId a {@link java.lang.String} object.
@@ -228,7 +228,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     }
 
     /**
-     * Counts the items contained in the session store bookmark list and returns the number as plain integer If no session store bookmark list exists,
+     * Counts the items contained in the session store bookmark list and returns the number as plain integer. If no session store bookmark list exists,
      * 0 is returned
      *
      * @return a {@link java.lang.Integer} object.
@@ -239,7 +239,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
     }
 
     /**
-     * Returns the bookmark list with the given id, provided it is owned by the user or it is public or shared to him
+     * Returns the bookmark list with the given id, provided it is owned by the user or it is public or shared to him.
      *
      * @param id a {@link java.lang.Long} object.
      * @return a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.

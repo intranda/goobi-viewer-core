@@ -68,30 +68,30 @@ public final class StringTools {
 
     private static final Logger logger = LogManager.getLogger(StringTools.class);
 
-    /** Constant <code>REGEX_QUOTATION_MARKS="\"[^()]*?\""</code> */
+    /** Constant <code>REGEX_QUOTATION_MARKS="\"[^()]*?\""</code>. */
     public static final String REGEX_QUOTATION_MARKS = "\"[^()]*?\"";
-    /** Constant <code>REGEX_PARENTHESES="\\([^()]*\\)"</code> */
+    /** Constant <code>REGEX_PARENTHESES="\\([^()]*\\)"</code>. */
     public static final String REGEX_PARENTHESES = "\\([^()]*\\)";
-    /** Constant <code>REGEX_PARENTESES_DATES="\\([\\w|\\s|\\-|\\.|\\?]+\\)"</code> */
+    /** Constant <code>REGEX_PARENTESES_DATES="\\([\\w|\\s|\\-|\\.|\\?]+\\)"</code>. */
     public static final String REGEX_PARENTESES_DATES = "\\([\\w|\\s|\\-|\\.|\\?]+\\)";
-    /** Constant <code>REGEX_BRACES="\\{(\\w+)\\}"</code> */
+    /** Constant <code>REGEX_BRACES="\\{(\\w+)\\}"</code>. */
     public static final String REGEX_BRACES = "\\{(\\w+)\\}";
-    /** Constant <code>REGEX_WORDS="[a-zäáàâöóòôüúùûëéèêßñ0123456789]+"</code> */
+    /** Constant <code>REGEX_WORDS="[a-zäáàâöóòôüúùûëéèêßñ0123456789]+"</code>. */
     public static final String REGEX_WORDS = "[\\wäáàâöóòôüúùûëéèêßñ]+";
-    /** Constant <code>DEFAULT_ENCODING="UTF-8"</code> */
+    /** Constant <code>DEFAULT_ENCODING="UTF-8"</code>. */
     public static final String DEFAULT_ENCODING = StandardCharsets.UTF_8.name();
 
-    /** Constant <code>SLASH_REPLACEMENT="U002F"</code> */
+    /** Constant <code>SLASH_REPLACEMENT="U002F"</code>. */
     public static final String SLASH_REPLACEMENT = "U002F";
-    /** Constant <code>BACKSLASH_REPLACEMENT="U005C"</code> */
+    /** Constant <code>BACKSLASH_REPLACEMENT="U005C"</code>. */
     public static final String BACKSLASH_REPLACEMENT = "U005C";
-    /** Constant <code>PIPE_REPLACEMENT="U007C"</code> */
+    /** Constant <code>PIPE_REPLACEMENT="U007C"</code>. */
     public static final String PIPE_REPLACEMENT = "U007C";
-    /** Constant <code>QUESTION_MARK_REPLACEMENT="U003F"</code> */
+    /** Constant <code>QUESTION_MARK_REPLACEMENT="U003F"</code>. */
     public static final String QUESTION_MARK_REPLACEMENT = "U003F";
-    /** Constant <code>PERCENT_REPLACEMENT="U0025"</code> */
+    /** Constant <code>PERCENT_REPLACEMENT="U0025"</code>. */
     public static final String PERCENT_REPLACEMENT = "U0025";
-    /** Constant <code>PLUS_REPLACEMENT="U0025"</code> */
+    /** Constant <code>PLUS_REPLACEMENT="U0025"</code>. */
     public static final String PLUS_REPLACEMENT = "U002B";
 
     /**
@@ -164,7 +164,7 @@ public final class StringTools {
     }
 
     /**
-     * Finds the first String matching a regex within another string and return it as an {@link java.util.Optional}
+     * Finds the first String matching a regex within another string and return it as an {@link java.util.Optional}.
      *
      * @param text The String in which to search
      * @param regex The regex to search for
@@ -226,7 +226,7 @@ public final class StringTools {
     }
 
     /**
-     * Escapes <> in the given string.
+     * Escapes &lt;&gt; in the given string.
      *
      * @param str a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
@@ -348,7 +348,7 @@ public final class StringTools {
     }
 
     /**
-     * Return the length of the given string, or 0 if the string is null
+     * Return the length of the given string, or 0 if the string is null.
      *
      * @param s a {@link java.lang.String} object.
      * @return the length of the string if it exists, 0 otherwise
@@ -361,7 +361,7 @@ public final class StringTools {
     }
 
     /**
-     * Escapes the given string using {@link org.apache.commons.lang3.StringEscapeUtils#escapeHtml4(String)} and additionally converts all line breaks
+     * Escapes the given string using {@link org.apache.commons.lang3.StringEscapeUtils#escapeHtml4(String)} and additionally converts all line breaks.
      * (\r\n, \r, \n) to html line breaks ({@code <br/>
      * })
      *
@@ -614,7 +614,7 @@ public final class StringTools {
     }
 
     /**
-     * Normalizes WebAnnotation coordinates for rectangle rendering (x,y,w,h -> minX,minY,maxX,maxY).
+     * Normalizes WebAnnotation coordinates for rectangle rendering (x,y,w,h -&gt; minX,minY,maxX,maxY).
      *
      * @param coords a {@link java.lang.String} object.
      * @return Legacy format coordinates
@@ -827,7 +827,7 @@ public final class StringTools {
     }
 
     /**
-     * Clean a String from any malicious content like script tags, line breaks and backtracking filepaths
+     * Clean a String from any malicious content like script tags, line breaks and backtracking filepaths.
      * 
      * @param data
      * @return a cleaned up string which can be savely used

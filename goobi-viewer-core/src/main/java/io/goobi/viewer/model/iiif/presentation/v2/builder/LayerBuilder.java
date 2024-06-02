@@ -85,7 +85,7 @@ public class LayerBuilder extends AbstractBuilder {
      * @param motivation a {@link java.lang.String} object.
      * @param fileGetter a {@link java.util.function.BiFunction} object.
      * @param linkGetter a {@link java.util.function.BiFunction} object.
-     * @return a {@link de.intranda.api.iiif.presentation.Layer} object.
+     * @return a {@link de.intranda.api.iiif.presentation.v2.Layer} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws java.io.IOException if any.
@@ -152,7 +152,7 @@ public class LayerBuilder extends AbstractBuilder {
      * @param annotations a {@link java.util.List} object.
      * @param id a {@link java.net.URI} object.
      * @param type a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
-     * @return a {@link de.intranda.api.iiif.presentation.AnnotationList} object.
+     * @return a {@link de.intranda.api.iiif.presentation.v2.AnnotationList} object.
      */
     public AnnotationList createAnnotationList(List<IAnnotation> annotations, URI id, AnnotationType type) {
         AnnotationList annoList = new AnnotationList(id);
@@ -171,7 +171,7 @@ public class LayerBuilder extends AbstractBuilder {
      * @param pi a {@link java.lang.String} object.
      * @param annoLists a {@link java.util.Map} object.
      * @param annoType a {@link de.intranda.api.iiif.presentation.enums.AnnotationType} object.
-     * @return a {@link de.intranda.api.iiif.presentation.Layer} object.
+     * @return a {@link de.intranda.api.iiif.presentation.v2.Layer} object.
      * @throws java.net.URISyntaxException if any.
      */
     public Layer generateLayer(String pi, Map<AnnotationType, List<AnnotationList>> annoLists, AnnotationType annoType) throws URISyntaxException {

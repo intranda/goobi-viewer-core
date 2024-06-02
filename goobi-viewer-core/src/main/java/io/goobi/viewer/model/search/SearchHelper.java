@@ -479,8 +479,8 @@ public final class SearchHelper {
     }
 
     /**
-     * Return the {@link HitType} matching the {@link SolrConstants#DocType} of the given document. In case the document is of type 'UGC', return the
-     * type matching {@link SolrConstants#UGCTYPE} instead
+     * Return the {@link HitType} matching the {@link io.goobi.viewer.solr.SolrConstants#DOCTYPE} of the given document. In case the document is of type 'UGC', return the
+     * type matching {@link io.goobi.viewer.solr.SolrConstants#UGCTYPE} instead
      * 
      * @param doc
      * @return {@link HitType} for doc
@@ -1483,7 +1483,7 @@ public final class SearchHelper {
     }
 
     /**
-     * if maxDistance <= 0, or either phrase or term is blank, simply return {@link StringUtils#contains(phrase, term)}. Otherwise check if the phrase
+     * if maxDistance &lt;= 0, or either phrase or term is blank, simply return {@link StringUtils#contains(phrase, term)}. Otherwise check if the phrase
      * contains a word which has a Damerau-Levenshtein distance of at most maxDistance to the term
      *
      * @param phrase
@@ -3320,7 +3320,7 @@ public final class SearchHelper {
 
     /**
      * @param expandQuery
-     * @return Map<String, String>
+     * @return Map&lt;String, String&gt;
      */
     public static Map<String, String> getExpandQueryParams(String expandQuery) {
         Map<String, String> params = new HashMap<>();

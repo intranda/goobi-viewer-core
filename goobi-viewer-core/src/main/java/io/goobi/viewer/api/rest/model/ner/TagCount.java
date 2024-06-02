@@ -50,9 +50,9 @@ public class TagCount implements Comparable<TagCount> {
      * Constructor for TagCount.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.servlets.rest.ner.ElementReference} object.
+     * @param element a {@link io.goobi.viewer.api.rest.model.ner.ElementReference} object.
      * @param value a {@link java.lang.String} object.
-     * @param type a {@link io.goobi.viewer.servlets.rest.ner.NERTag.Type} object.
+     * @param type a {@link io.goobi.viewer.api.rest.model.ner.NERTag.Type} object.
      */
     public TagCount(String value, Type type, ElementReference element) {
         this.value = value;

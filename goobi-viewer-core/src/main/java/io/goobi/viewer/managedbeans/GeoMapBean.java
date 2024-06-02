@@ -61,7 +61,7 @@ import io.goobi.viewer.model.maps.SolrFeatureSet;
 import io.goobi.viewer.model.translations.IPolyglott;
 
 /**
- * Bean for managing {@link GeoMaps} in the admin Backend
+ * Bean for managing {@link io.goobi.viewer.model.maps.GeoMap}s in the admin Backend.
  *
  * @author florian
  */
@@ -101,8 +101,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     *
-     * Sets the current map to a clone of the given map
+     * Sets the current map to a clone of the given map.
      *
      * @param currentMap the currentMap to set
      */
@@ -118,7 +117,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * If a GeoMap of the given mapId exists in the database, set the current map to a clone of that map
+     * If a GeoMap of the given mapId exists in the database, set the current map to a clone of that map.
      *
      * @param mapId a {@link java.lang.Long} object
      * @throws io.goobi.viewer.exceptions.DAOException
@@ -144,7 +143,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * Save the current map. Either add it to database if it has no id yet, or otherwise update it in the database
+     * Save the current map. Either add it to database if it has no id yet, or otherwise update it in the database.
      *
      * @throws io.goobi.viewer.exceptions.DAOException
      */
@@ -220,7 +219,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
 
     /**
      * If the current map has an id, restore the map from the database, removing all unsaved changes. If the current map exists but has no id, set the
-     * current map to a new empty map
+     * current map to a new empty map.
      *
      * @throws io.goobi.viewer.exceptions.DAOException
      */
@@ -235,7 +234,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * Sets the currentMap to a new empty {@link io.goobi.viewer.model.maps.GeoMap}
+     * Sets the currentMap to a new empty {@link io.goobi.viewer.model.maps.GeoMap}.
      */
     public void createEmptyCurrentMap() {
         this.currentMap = new GeoMap();
@@ -260,7 +259,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * Get a list of all {@link io.goobi.viewer.model.maps.GeoMap}s from the databse. Note that the databse is queries at each method call
+     * Get a list of all {@link io.goobi.viewer.model.maps.GeoMap}s from the databse. Note that the databse is queries at each method call.
      *
      * @return a list of all stored GeoMaps
      * @throws io.goobi.viewer.exceptions.DAOException

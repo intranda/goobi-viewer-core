@@ -91,7 +91,7 @@ public class GeoFacetItem implements IFacetItem {
     }
 
     /**
-     * Sets {@link #currentGeoFacettingFeature} and sets the matching search string to the WKT_COORDS facet if available
+     * Sets {@link io.goobi.viewer.model.search.GeoCoordinateFeature} and sets the matching search string to the WKT_COORDS facet if available.
      *
      * @param feature
      */
@@ -152,7 +152,7 @@ public class GeoFacetItem implements IFacetItem {
     }
 
     /**
-     * Create a polygon feature from the given vertices
+     * Create a polygon feature from the given vertices.
      *
      * @param vertices
      */

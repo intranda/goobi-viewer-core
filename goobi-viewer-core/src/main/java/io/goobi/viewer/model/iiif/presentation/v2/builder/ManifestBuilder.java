@@ -159,7 +159,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * </p>
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param manifest a {@link de.intranda.api.iiif.presentation.AbstractPresentationModelElement} object.
+     * @param manifest a {@link de.intranda.api.iiif.presentation.v2.AbstractPresentationModelElement2} object.
      * @param pages
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -473,7 +473,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * addAnchor.
      * </p>
      *
-     * @param manifest a {@link de.intranda.api.iiif.v2.Manifest} object.
+     * @param manifest a {@link de.intranda.api.iiif.presentation.v2.Manifest2} object.
      * @param anchorPI a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -509,7 +509,7 @@ public class ManifestBuilder extends AbstractBuilder {
     /**
      * Retrieves the logo url configured in webapi.iiif.logo. If the configured value is an absulute http(s) url, this url will be returned. If it is
      * any other absolute url a contentserver link to that url will be returned. If it is a non-absolute url, it will be considered a filepath within
-     * the static images folder of the viewer theme and the appropriate url will be returned
+     * the static images folder of the viewer theme and the appropriate url will be returned.
      *
      * @return An optional containing the configured logo url, or an empty optional if no logo was configured
      * @throws ViewerConfigurationException
