@@ -80,7 +80,6 @@ import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
  * <p>CmsPageEditBean class.</p>
- *
  */
 @Named
 @ViewScoped

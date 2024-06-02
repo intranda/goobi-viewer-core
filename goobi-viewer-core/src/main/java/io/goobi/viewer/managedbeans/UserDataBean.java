@@ -60,7 +60,6 @@ import io.goobi.viewer.model.security.user.UserActivity;
 
 /**
  * <p>UserDataBean class.</p>
- *
  */
 @Named
 @ViewScoped

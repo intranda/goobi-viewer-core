@@ -41,7 +41,6 @@ import io.goobi.viewer.model.job.upload.UploadJob;
 
 /**
  * <p>UploadBean class.</p>
- *
  */
 @Named
 @ViewScoped

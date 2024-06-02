@@ -54,7 +54,6 @@ import io.goobi.viewer.model.security.user.User;
 
 /**
  * <p>AdminCommentBean class.</p>
- *
  */
 @Named
 @SessionScoped

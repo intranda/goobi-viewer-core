@@ -58,7 +58,6 @@ import io.goobi.viewer.model.maps.GeoMap;
 
 /**
  * <p>CMSSidebarWidgetsBean class.</p>
- *
  */
 @Named("cmsSidebarWidgetsBean")
 @RequestScoped

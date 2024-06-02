@@ -74,7 +74,6 @@ import io.goobi.viewer.model.xml.XMLError;
 
 /**
  * <p>AdminConfigEditorBean class.</p>
- *
  */
 @Named
 @SessionScoped

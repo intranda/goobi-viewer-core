@@ -79,7 +79,6 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 
 /**
  * <p>MessageQueueBean class.</p>
- *
  */
 @Named
 @ApplicationScoped
