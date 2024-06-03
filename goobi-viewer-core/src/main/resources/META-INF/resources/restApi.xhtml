@@ -11,13 +11,15 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPage('label__api_swagger', false, true)}" />
+				listener="#{navigationHelper.setCurrentPage('API', false, true)}" />
 		</f:metadata>
 	</ui:define>
 
 	<ui:define name="head">
 		<link rel="stylesheet"	href="#{request.contextPath}/resources/css/libs/swagger/swagger-ui.css" />
 		<script type="text/javascript"	src="#{request.contextPath}/resources/javascript/libs/swagger/swagger-ui-bundle.js" />
+			<title>API -
+				#{adminThemesBean.getThemeLabel(configurationBean.name)}</title>
 	</ui:define>
 
 	<ui:define name="content">
