@@ -84,7 +84,7 @@ public final class SolrTools {
     private static final String SUFFIX_LANGUAGE_REGEX = SolrConstants.MIDFIX_LANG + "([A-Z]{2,3})$";
 
     /**
-     * 
+     *
      */
     private SolrTools() {
         //
@@ -141,7 +141,7 @@ public final class SolrTools {
     }
 
     /**
-     * Parses a Solr-Field value in order to return it as String
+     * Parses a Solr-Field value in order to return it as String.
      *
      * @param fieldValue a {@link java.lang.Object} object.
      * @return a {@link java.lang.String} object.
@@ -151,7 +151,7 @@ public final class SolrTools {
     }
 
     /**
-     * 
+     *
      * @param fieldValue
      * @return Boolean
      */
@@ -166,7 +166,7 @@ public final class SolrTools {
     }
 
     /**
-     * 
+     *
      * @param fieldValue
      * @param separator
      * @return String
@@ -522,7 +522,7 @@ public final class SolrTools {
     }
 
     /**
-     * 
+     *
      * @param field
      * @param language
      * @return true if language code different
@@ -559,7 +559,7 @@ public final class SolrTools {
     }
 
     /**
-     * 
+     *
      * @param exceptionMessage
      * @return Extracted message
      * @should return empty string if exceptionMessage empty
@@ -665,8 +665,8 @@ public final class SolrTools {
      * isHasImages.
      * </p>
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object. Needs to contain metadata fields {@link SolrConstants.FILENAME} and
-     *            {@link SolrConstants.THUMBNAIL}
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object. Needs to contain metadata fields 
+     *        {@link io.goobi.viewer.solr.SolrConstants#FILENAME} and {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
      * @return true if record described by doc has images; false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should return correct value for page docs
@@ -841,7 +841,7 @@ public final class SolrTools {
     }
 
     /**
-     * 
+     *
      * @return JDOM2 Document containing the Solr schema XML
      */
     private static Document getSolrSchemaDocument() {
@@ -863,10 +863,11 @@ public final class SolrTools {
     }
 
     /**
-     * Escapes all special characters used by SOLR (as detailed here:
-     * https://solr.apache.org/guide/7_3/the-standard-query-parser.html#escaping-special-characters) as well as the characters '<' and '>' by adding a
-     * '\' before them. Special characters which already are escaped by '\' are not escaped any further making this method idempotent
-     * 
+     * Escapes all special characters used by SOLR.
+     * Details here: https://solr.apache.org/guide/7_3/the-standard-query-parser.html#escaping-special-characters
+     * as well as the characters '&lt;' and '&gt;' by adding a '\' before them. Special characters which already are escaped by '\' are not
+     * escaped any further making this method idempotent.
+     *
      * @param string the string to escape
      * @return the escaped string. if the original string is null, null is also returned
      */
@@ -878,8 +879,8 @@ public final class SolrTools {
     }
 
     /**
-     * reverts the operation of {@link #escapeSpecialCharacters(String)}
-     * 
+     * reverts the operation of {@link #escapeSpecialCharacters(String)}.
+     *
      * @param string the string to unescape
      * @return the unescaped string
      */
@@ -891,7 +892,7 @@ public final class SolrTools {
     }
 
     /**
-     * 
+     *
      * @param query
      * @return cleaned up query
      * @should remove brace pairs
@@ -907,7 +908,7 @@ public final class SolrTools {
     }
 
     /**
-     * 
+     *
      * @param fieldName
      * @return fieldName without language suffix
      */
@@ -919,7 +920,7 @@ public final class SolrTools {
     }
 
     /**
-     * 
+     *
      * @param fieldName
      * @return language part of fieldName
      */
@@ -935,7 +936,7 @@ public final class SolrTools {
     }
 
     /**
-     * 
+     *
      * @param fieldName
      * @return Locale based on the language part of fieldName
      */
@@ -948,7 +949,7 @@ public final class SolrTools {
     }
 
     /**
-     * 
+     *
      * @param doc
      * @param fieldNameFilter
      * @return Map
@@ -958,7 +959,7 @@ public final class SolrTools {
     }
 
     /**
-     * 
+     *
      * @param doc
      * @param metadata
      * @param documentLocale
@@ -1010,7 +1011,7 @@ public final class SolrTools {
     }
 
     /**
-     * 
+     *
      * @param doc
      * @return Value of MD_REFID in doc, if available
      */

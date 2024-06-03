@@ -179,7 +179,7 @@ public final class SearchHelper {
             "[+-]*\\((\\w+:\\\"[\\wäáàâöóòôüúùûëéèêßñ ]+\\\" *)+\\)|[+-]*\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)"
                     + "|[+-]*\\((\\w+:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]+ TO [\\wäáàâöóòôüúùûëéèêßñ]+\\]\\) *+)\\)");
 
-    //No danger of catastrophic backtracking: the repetitions are separated by other characters and the overal repetition is possessive ('++') 
+    //No danger of catastrophic backtracking: the repetitions are separated by other characters and the overal repetition is possessive ('++')
     private static final Pattern PATTERN_REGULAR_ITEMS = Pattern.compile("([+-]*)\\(((\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ]+\\)) *)++\\)"); //NOSONAR
     //No danger of catastrophic backtracking: separator (':') between the repetition
     private static final Pattern PATTERN_REGULAR_PAIRS = Pattern.compile("(\\w+:\\([\\wäáàâöóòôüúùûëéèêßñ ()]+\\))"); //NOSONAR
@@ -195,7 +195,7 @@ public final class SearchHelper {
             Pattern.compile("(\\w++:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]++ TO [\\wäáàâöóòôüúùûëéèêßñ]++\\]\\))"); //NOSONAR
 
     /**
-     * 
+     *
      */
     private SearchHelper() {
         //
@@ -214,7 +214,6 @@ public final class SearchHelper {
      * @param searchTerms a {@link java.util.Map} object.
      * @param exportFields a {@link java.util.List} object.
      * @param locale a {@link java.util.Locale} object.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param proximitySearchDistance
      * @return List of <code>StructElement</code>s containing the search hits.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -224,10 +223,10 @@ public final class SearchHelper {
      */
     public static List<SearchHit> searchWithFulltext(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
             List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
-            HttpServletRequest request, int proximitySearchDistance)
+            int proximitySearchDistance)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        return searchWithFulltext(query, first, rows, sortFields, resultFields, filterQueries, params, searchTerms, exportFields, locale, request,
-                false, proximitySearchDistance);
+        return searchWithFulltext(query, first, rows, sortFields, resultFields, filterQueries, params, searchTerms, exportFields, locale, false,
+                proximitySearchDistance);
     }
 
     /**
@@ -243,7 +242,6 @@ public final class SearchHelper {
      * @param searchTerms a {@link java.util.Map} object.
      * @param exportFields a {@link java.util.List} object.
      * @param locale a {@link java.util.Locale} object.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param keepSolrDoc
      * @param proximitySearchDistance
      * @return List of <code>StructElement</code>s containing the search hits.
@@ -253,8 +251,7 @@ public final class SearchHelper {
      */
     public static List<SearchHit> searchWithFulltext(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
             List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
-            HttpServletRequest request, boolean keepSolrDoc, int proximitySearchDistance)
-            throws PresentationException, IndexUnreachableException, DAOException {
+            boolean keepSolrDoc, int proximitySearchDistance) throws PresentationException, IndexUnreachableException, DAOException {
         Map<String, SolrDocument> ownerDocs = new HashMap<>();
         QueryResponse resp =
                 DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries, params);
@@ -293,14 +290,14 @@ public final class SearchHelper {
                     if (StringUtils.isNotBlank(plaintextFilename)) {
                         boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, plaintextFilename, false).isGranted();
                         if (access) {
-                            fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false, request);
+                            fulltext = DataFileTools.loadFulltext(null, plaintextFilename, false);
                         } else {
                             fulltext = ViewerResourceBundle.getTranslation("fulltextAccessDenied", null);
                         }
                     } else if (StringUtils.isNotBlank(altoFilename)) {
                         boolean access = AccessConditionUtils.checkAccess(BeanUtils.getRequest(), "text", pi, altoFilename, false).isGranted();
                         if (access) {
-                            fulltext = DataFileTools.loadFulltext(altoFilename, null, false, request);
+                            fulltext = DataFileTools.loadFulltext(altoFilename, null, false);
                         } else {
                             fulltext = ViewerResourceBundle.getTranslation("fulltextAccessDenied", null);
                         }
@@ -384,8 +381,9 @@ public final class SearchHelper {
                 hit.setSolrDoc(doc);
             }
             ret.add(hit);
-            hit.addCMSPageChildren();
-            hit.addFulltextChild(doc, locale != null ? locale.getLanguage() : null);
+            int populatedChildHits = hit.addCMSPageChildren();
+            populatedChildHits += hit.addFulltextChild(doc, locale != null ? locale.getLanguage() : null);
+            hit.setHitsPreloaded(populatedChildHits);
             // logger.trace("Added search hit {}", hit.getBrowseElement().getLabel());
             // Collect Solr docs of child hits
             String pi = (String) doc.getFieldValue(SolrConstants.PI);
@@ -481,9 +479,9 @@ public final class SearchHelper {
     }
 
     /**
-     * Return the {@link HitType} matching the {@link SolrConstants#DocType} of the given document. In case the document is of type 'UGC', return the
-     * type matching {@link SolrConstants#UGCTYPE} instead
-     * 
+     * Return the {@link HitType} matching the {@link io.goobi.viewer.solr.SolrConstants#DOCTYPE} of the given document.
+     * In case the document is of type 'UGC', return the type matching {@link io.goobi.viewer.solr.SolrConstants#UGCTYPE} instead
+     *
      * @param doc
      * @return {@link HitType} for doc
      */
@@ -797,7 +795,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param ret
      * @param luceneField
      * @param groupResults
@@ -1203,7 +1201,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @return Solr query for the moving wall date range
      */
     public static String getMovingWallQuery() {
@@ -1485,8 +1483,8 @@ public final class SearchHelper {
     }
 
     /**
-     * if maxDistance <= 0, or either phrase or term is blank, simply return {@link StringUtils#contains(phrase, term)}. Otherwise check if the phrase
-     * contains a word which has a Damerau-Levenshtein distance of at most maxDistance to the term
+     * if maxDistance &lt;= 0, or either phrase or term is blank, simply return {@link StringUtils#contains(phrase, term)}.
+     * Otherwise check if the phrase contains a word which has a Damerau-Levenshtein distance of at most maxDistance to the term
      *
      * @param phrase
      * @param term
@@ -1609,12 +1607,12 @@ public final class SearchHelper {
      * @should replace placeholders with html tags
      */
     public static String replaceHighlightingPlaceholders(String phrase) {
-        return phrase.replace(PLACEHOLDER_HIGHLIGHTING_START, "<span class=\"search-list--highlight\">")
-                .replace(PLACEHOLDER_HIGHLIGHTING_END, "</span>");
+        return phrase.replace(PLACEHOLDER_HIGHLIGHTING_START, "<mark class=\"search-list--highlight\">")
+                .replace(PLACEHOLDER_HIGHLIGHTING_END, "</mark>");
     }
 
     /**
-     * 
+     *
      * @param phrase
      * @return phrase without highlighting placeholders
      * @should replace placeholders with empty strings
@@ -2269,7 +2267,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param query
      * @param facetString
      * @param template Advanced search fields template
@@ -2666,7 +2664,7 @@ public final class SearchHelper {
     }
 
     /**
-     * 
+     *
      * @param fieldName
      * @param prefix
      * @return fieldName with prefix
@@ -3322,7 +3320,7 @@ public final class SearchHelper {
 
     /**
      * @param expandQuery
-     * @return Map<String, String>
+     * @return Map&lt;String, String&gt;
      */
     public static Map<String, String> getExpandQueryParams(String expandQuery) {
         Map<String, String> params = new HashMap<>();
@@ -3567,7 +3565,7 @@ public final class SearchHelper {
 
     /**
      * Constructs an expand query from given facet queries. Constrains the query to DOCSTRCT doc types only.
-     * 
+     *
      * @param allFacetQueries
      * @param allowedFacetQueryRegexes Optional list containing regexes for allowed facet queries
      * @return Expand query

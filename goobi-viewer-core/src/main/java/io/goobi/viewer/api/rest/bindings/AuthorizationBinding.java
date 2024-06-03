@@ -30,7 +30,7 @@ import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
 
 /**
  * <p>
- * Binding for resources which use an {@link AuthorizationFilter}
+ * Binding for resources which use an {@link AuthorizationFilter}.
  * </p>
  */
 @NameBinding

@@ -43,7 +43,7 @@ import io.goobi.viewer.exceptions.DAOException;
  * <p>
  * TableDataProvider class.
  * </p>
- * 
+ *
  * @param <T>
  */
 public class TableDataProvider<T> implements Serializable {
@@ -75,6 +75,16 @@ public class TableDataProvider<T> implements Serializable {
         }
     }
 
+    /**
+     * <p>initDataProvider.</p>
+     *
+     * @param itemsPerPage a int
+     * @param defaultSortField a {@link java.lang.String} object
+     * @param defaultSortOrder a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder} object
+     * @param search a {@link io.goobi.viewer.controller.DAOSearchFunction} object
+     * @param <T> a T class
+     * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object
+     */
     public static <T> TableDataProvider<T> initDataProvider(int itemsPerPage, String defaultSortField, SortOrder defaultSortOrder,
             DAOSearchFunction<T> search) {
         return new TableDataProvider<>(itemsPerPage, defaultSortOrder, new TableDataSource<T>() {
@@ -137,7 +147,7 @@ public class TableDataProvider<T> implements Serializable {
      * </p>
      *
      * @param entriesPerPage the number of entries per page
-     * @param sortOrder
+     * @param sortOrder a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder} object
      * @param source a {@link io.goobi.viewer.managedbeans.tabledata.TableDataSource} object.
      */
     public TableDataProvider(int entriesPerPage, SortOrder sortOrder, TableDataSource<T> source) {
@@ -568,6 +578,12 @@ public class TableDataProvider<T> implements Serializable {
         resetTotalNumberOfRecords();
     }
 
+    /**
+     * <p>getFilter.</p>
+     *
+     * @param columns a {@link java.lang.String} object
+     * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataFilter} object
+     */
     public TableDataFilter getFilter(String... columns) {
         return getFilterIfPresent(columns).orElseGet(() -> addFilter(columns));
     }
@@ -578,11 +594,22 @@ public class TableDataProvider<T> implements Serializable {
         return filter;
     }
 
+    /**
+     * <p>addFilter.</p>
+     *
+     * @param filter a {@link io.goobi.viewer.managedbeans.tabledata.TableDataFilter} object
+     */
     public void addFilter(TableDataFilter filter) {
         this.filters.add(filter);
 
     }
 
+    /**
+     * <p>getFilterIfPresent.</p>
+     *
+     * @param columns a {@link java.lang.String} object
+     * @return a {@link java.util.Optional} object
+     */
     public Optional<TableDataFilter> getFilterIfPresent(String... columns) {
         for (TableDataFilter filter : this.getFilters()) {
             if (CollectionUtils.isEqualCollection(Arrays.asList(columns), filter.getColumns())) {

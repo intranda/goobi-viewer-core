@@ -118,6 +118,14 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
         }
     }
 
+    /**
+     * <p>parseScale.</p>
+     *
+     * @param widthString a {@link java.lang.String} object
+     * @return a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if any.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotImplementedException if any.
+     */
     public Scale parseScale(String widthString) throws IllegalRequestException, ServiceNotImplementedException {
         try {            
             Scale scale;

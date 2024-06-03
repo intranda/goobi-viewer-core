@@ -84,6 +84,7 @@ public class BrowsingMenuFieldConfig implements Serializable {
                 break;
             default:
                 if (field.startsWith("MD_") || field.startsWith("MD2_")) {
+                    // TODO Remove to enable terms from events, etc.
                     filterQueries.add("+" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name());
                 }
                 break;

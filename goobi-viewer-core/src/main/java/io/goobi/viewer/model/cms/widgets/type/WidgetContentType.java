@@ -29,28 +29,28 @@ public interface WidgetContentType {
     public String getIconClass();
 
     /**
-     * Get a message key providing a label for this widget
+     * Get a message key providing a label for this widget.
      * 
      * @return {@link String}
      */
     public String getLabel();
 
     /**
-     * The filename of the xhtml component for this widget
+     * The filename of the xhtml component for this widget.
      * 
      * @return {@link String}
      */
     public String getFilename();
 
     /**
-     * The enum value of this type, taken from the classes implementing this interface
+     * The enum value of this type, taken from the classes implementing this interface.
      * 
      * @return {@link String}
      */
     public String getName();
 
     /**
-     * Get the WidgetContentType for which {@link #getName()} method matches the given name
+     * Get the WidgetContentType for which {@link #getName()} method matches the given name.
      * 
      * @param name
      * @return null if no matching type exists

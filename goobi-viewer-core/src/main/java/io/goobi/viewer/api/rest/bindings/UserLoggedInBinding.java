@@ -28,7 +28,7 @@ import javax.ws.rs.NameBinding;
 
 /**
  * <p>
- * Allows request by sessions with a logged in user
+ * Allows request by sessions with a logged in user.
  * </p>
  */
 @NameBinding

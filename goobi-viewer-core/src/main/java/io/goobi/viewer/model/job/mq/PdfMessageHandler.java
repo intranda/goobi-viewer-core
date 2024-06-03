@@ -117,7 +117,7 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
             }
             downloadJob.setStatus(JobStatus.READY);
             try {
-                downloadJob.notifyObservers(JobStatus.READY, "");
+                downloadJob.notifyObservers(JobStatus.READY, message.getMessageId(), "");
             } catch (MessagingException e) {
                 logger.error("Error notifying observers: {}", e.toString());
             }

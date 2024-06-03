@@ -29,7 +29,7 @@ import javax.ws.rs.NameBinding;
 import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
 
 /**
- * Binding for all resources which should be authorized by {@link AccessConditionRequestFilter}
+ * Binding for all resources which should be authorized by {@link AccessConditionRequestFilter}.
  *
  * @author florian
  *

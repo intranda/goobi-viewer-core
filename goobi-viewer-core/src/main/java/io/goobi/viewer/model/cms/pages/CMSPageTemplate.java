@@ -311,7 +311,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
      * addSidebarElement.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.cms.widgets.CMSSidebarElement} object.
+     * @param element a {@link io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement} object.
      */
     public void addSidebarElement(CMSSidebarElement element) {
         if (element != null) {

@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -51,6 +50,8 @@ import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.output.XMLOutputter;
 
+import de.intranda.digiverso.normdataimporter.NormDataImporter;
+import de.intranda.digiverso.normdataimporter.Utils;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Line;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
@@ -62,7 +63,9 @@ import io.goobi.viewer.api.rest.model.ner.ElementReference;
 import io.goobi.viewer.api.rest.model.ner.NERTag;
 import io.goobi.viewer.api.rest.model.ner.NERTag.Type;
 import io.goobi.viewer.api.rest.model.ner.TagCount;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.search.FuzzySearchTerm;
+import io.goobi.viewer.model.viewer.PageType;
 
 /**
  * <p>
@@ -105,7 +108,7 @@ public final class ALTOTools {
      */
     public static String getFulltext(Path path, String encoding) throws IOException {
         String altoString = FileTools.getStringFromFile(path.toFile(), encoding);
-        return getFulltext(altoString, encoding, false, null);
+        return getFulltext(altoString, encoding, false);
     }
 
     /**
@@ -116,13 +119,12 @@ public final class ALTOTools {
      * @param alto a {@link java.lang.String} object.
      * @param charset
      * @param mergeLineBreakWords a boolean.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @return a {@link java.lang.String} object.
      * @should extract fulltext correctly
      */
-    public static String getFulltext(String alto, String charset, boolean mergeLineBreakWords, HttpServletRequest request) {
+    public static String getFulltext(String alto, String charset, boolean mergeLineBreakWords) {
         try {
-            return alto2Txt(alto, charset, mergeLineBreakWords, request);
+            return alto2Txt(alto, charset, mergeLineBreakWords);
         } catch (IOException | XMLStreamException | JDOMException e) {
             logger.error(e.getMessage(), e);
         }
@@ -137,7 +139,7 @@ public final class ALTOTools {
      *
      * @param alto a {@link java.lang.String} object.
      * @param inCharset
-     * @param type a {@link io.goobi.viewer.servlets.rest.ner.NERTag.Type} object.
+     * @param type a {@link io.goobi.viewer.api.rest.model.ner.NERTag.Type} object.
      * @return a {@link java.util.List} object.
      */
     public static List<TagCount> getNERTags(String alto, final String inCharset, NERTag.Type type) {
@@ -181,9 +183,10 @@ public final class ALTOTools {
     /**
      * @param tag
      * @return List<TagCount>
+     * @should add identifier to TagCount
      */
     @SuppressWarnings("rawtypes")
-    private static List<TagCount> createNERTag(Tag tag) {
+    static List<TagCount> createNERTag(Tag tag) {
         String value = tag.getLabel();
         value =
                 value.replaceAll(TAG_LABEL_IGNORE_REGEX, ""); //NOSONAR TAG_LABEL_IGNORE_REGEX contains no lazy internal repetitions
@@ -201,6 +204,13 @@ public final class ALTOTools {
             String elementContent = reference.getContent();
             element = new ElementReference(elementId, elementCoordinates, elementContent, tag.getUri());
             TagCount nerTag = new TagCount(value, type, element);
+            if (tag.getUri() != null) {
+                // Parse authority identifier from URI, if available
+                String identifier = Utils.getIdentifierFromURI(tag.getUri());
+                if (StringUtils.isNotEmpty(identifier)) {
+                    nerTag.setIdentifier(identifier);
+                }
+            }
             ret.add(nerTag);
         }
 
@@ -215,15 +225,15 @@ public final class ALTOTools {
      * @param alto a {@link java.lang.String} object.
      * @param charset ALTO charset
      * @param mergeLineBreakWords a boolean.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      * @throws javax.xml.stream.XMLStreamException if any.
      * @throws JDOMException
-     * @should use extract fulltext correctly
+     * @should extract fulltext correctly
      * @should concatenate word at line break correctly
+     * @should add uris correctly
      */
-    protected static String alto2Txt(String alto, String charset, boolean mergeLineBreakWords, HttpServletRequest request)
+    protected static String alto2Txt(String alto, String charset, boolean mergeLineBreakWords)
             throws IOException, XMLStreamException, JDOMException {
         if (alto == null) {
             throw new IllegalArgumentException("alto may not be null");
@@ -285,55 +295,38 @@ public final class ALTOTools {
                                 }
                             }
                             if (tagref != null && neTypeMap.get(tagref) != null) {
-                                // NE tag
+                                // NE tag found
                                 if (!usedTags.contains(tagref)) {
-                                    String type = neTypeMap.get(tagref);
-                                    strings.append("<span class=\"ner-");
-                                    strings.append(type.toLowerCase());
-                                    strings.append("\">");
+                                    // Tag ID
+                                    strings.append("<button class=\"view-fulltext__entity-action-button\" type=\"button\" data-entity-id=\"")
+                                            .append(tagref)
+                                            .append('"');
+                                    // Tag type
+                                    strings.append(" data-entity-type=\"")
+                                            .append(neTypeMap.get(tagref).toLowerCase())
+                                            .append('"');
                                     if (neUriMap.get(tagref) != null) {
-                                        // with URI (skip if tag is already used so
-                                        // that the tag link is not rendered for
-                                        // every tagged word)
-                                        if (request != null) {
-                                            String contextPath = request.getContextPath();
-                                            strings.append("<span data-remotecontent=\"");
-                                            strings.append(contextPath);
-                                            strings.append("/api?action=normdata&amp;url=");
-                                            strings.append(neUriMap.get(tagref));
-                                            strings.append("&amp;lang=de\" class=\"ner-trigger\" title=\"");
-                                            strings.append(neLabelMap.get(tagref));
-                                            strings.append("\" tabindex=\"-1\"><span class=\"ner-popover-pointer\"></span>");
-                                        }
-                                        switch (neTypeMap.get(tagref)) {
-                                            case "person":
-                                                strings.append("<i class=\"fa fa-user\" aria-hidden=\"true\"></i>");
-                                                break;
-                                            case "location":
-                                                strings.append("<i class=\"fa fa-map-marker\" aria-hidden=\"true\"></i>");
-                                                break;
-                                            case "institution":
-                                                strings.append("<i class=\"fa fa-home\" aria-hidden=\"true\"></i>");
-                                                break;
-                                            default:
-                                                strings.append("<i></i>");
-                                                break;
-                                        }
-
-                                        // Use the tag's label instead of individual
-                                        // strings so that there's only one link per
-                                        // tag
-                                        strings.append(neLabelMap.get(tagref));
-                                        strings.append("</span>");
-                                    } else {
-                                        // w/o URI
-
-                                        // Use the tag's label instead of individual
-                                        // strings so that there's only one link per
-                                        // tag
-                                        strings.append(neLabelMap.get(tagref));
+                                        // Authority data URI
+                                        strings.append(" data-entity-authority-data-uri=\"")
+                                                .append(DataManager.getInstance().getConfiguration().getRestApiUrl())
+                                                .append("authority/resolver?id=")
+                                                .append(neUriMap.get(tagref))
+                                                .append("&amp;lang=de\"");
+                                        // Authority data search URL
+                                        String identifier = neUriMap.get(tagref).replaceAll("^https?:\\/\\/d-nb.info\\/gnd\\/([\\d-]+)\\/?$", "$1");
+                                        strings.append(" data-entity-authority-data-search=\"")
+                                                .append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+                                                .append('/')
+                                                .append(PageType.search.getName())
+                                                .append("/-/")
+                                                .append(NormDataImporter.FIELD_IDENTIFIER)
+                                                .append(":%22")
+                                                .append(identifier)
+                                                .append("%22/1/-/-/-/\"");
                                     }
-                                    strings.append(" </span>");
+                                    strings.append('>')
+                                            .append(neLabelMap.get(tagref))
+                                            .append("</button> ");
                                     usedTags.add(tagref);
                                 }
                             } else {

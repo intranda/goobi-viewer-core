@@ -78,7 +78,7 @@
 		<buildDate>${maven.build.timestamp}</buildDate>
 
 		<!-- intranda libraries -->
-		<alto.version>1.5.15</alto.version>
+		<alto.version>1.6.0</alto.version>
 		<ics.version>3.12.1</ics.version>
 		<tei-conversion.version>1.3.1</tei-conversion.version>
 		<iiif-api-model.version>2.6.3</iiif-api-model.version>
@@ -94,9 +94,9 @@
 		<commons-io.version>2.16.1</commons-io.version>
 		<commons-jxpath.version>1.3</commons-jxpath.version>
 		<commons-lang3.version>3.14.0</commons-lang3.version>
-		<commons-net.version>3.10.0</commons-net.version>
+		<commons-net.version>3.11.0</commons-net.version>
 		<commons-text.version>1.12.0</commons-text.version>
-		<dbunit.version>2.7.3</dbunit.version>
+		<dbunit.version>2.8.0</dbunit.version>
 		<eclipselink.version>4.0.3</eclipselink.version>
 		<h2.version>1.4.200</h2.version>
 		<httpclient.version>4.5.14</httpclient.version>
@@ -137,7 +137,7 @@
 		<prettyfaces.version>3.5.2.Final</prettyfaces.version>
 		<rome.version>2.1.0</rome.version>
 		<log4j.version>2.23.1</log4j.version>
-		<solr.version>9.6.0</solr.version>
+		<solr.version>9.6.1</solr.version>
 		<swagger.version>2.2.22</swagger.version>
 		<tomcat.version>9.0.58</tomcat.version>
 		<weld-servlet-shaded.version>3.1.9.Final</weld-servlet-shaded.version>
@@ -829,7 +829,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>3.4.1</version>
+				<version>3.5.0</version>
 				<executions>
 					<execution>
 						<id>enforce-maven</id>
@@ -1048,7 +1048,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.6.3</version>
+				<version>3.7.0</version>
 				<configuration>
 					<doclint>none</doclint>
 					<fixTags>link,throws,return,param</fixTags>
@@ -1121,7 +1121,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>10.16.0</version>
+						<version>10.17.0</version>
 					</dependency>
 				</dependencies>
 				<executions>

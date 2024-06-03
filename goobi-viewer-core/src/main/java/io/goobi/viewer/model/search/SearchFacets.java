@@ -382,6 +382,8 @@ public class SearchFacets implements Serializable {
      * @param field
      * @param value
      * @return Specific facet item for the given field and value; null if none found
+     * @should return null if field or value null
+     * @should return correct facet item
      */
     public IFacetItem getFacet(String field, String value) {
         if (field == null || value == null) {

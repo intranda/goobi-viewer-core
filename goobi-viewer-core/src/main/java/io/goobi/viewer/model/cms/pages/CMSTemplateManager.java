@@ -389,7 +389,7 @@ public class CMSTemplateManager implements Serializable {
      * </p>
      *
      * @param templateId a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.model.cms.CMSPageTemplate} object.
+     * @return a {@link io.goobi.viewer.model.cms.pages.CMSPageTemplate} object.
      */
     public CMSComponent getLegacyComponent(String templateId) {
         return legacyTemplateComponents.get(templateId);

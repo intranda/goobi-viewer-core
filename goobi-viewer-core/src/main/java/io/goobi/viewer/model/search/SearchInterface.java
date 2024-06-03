@@ -100,9 +100,9 @@ public interface SearchInterface {
     public boolean isSearchInFacetFieldFlag(String fieldName);
 
     /**
-     * List all current {@link SearchFacet}s
+     * List all current {@link io.goobi.viewer.model.search.SearchFacets}
      *
-     * @return all current {@link SearchFacet}s
+     * @return all current {@link io.goobi.viewer.model.search.SearchFacets}
      */
     public SearchFacets getFacets();
 
@@ -158,14 +158,14 @@ public interface SearchInterface {
     public void setCurrentSearchFilterString(String filter);
 
     /**
-     * Get the currently active search type. The possible types are defined in {@link io.goobi.viewer.model.search.SearchHelper#}
+     * Get the currently active search type. The possible types are defined in {@link io.goobi.viewer.model.search.SearchHelper}
      *
      * @return the active search type
      */
     public int getActiveSearchType();
 
     /**
-     * Set the search type to use. The possible types are defined in {@link io.goobi.viewer.model.search.SearchHelper#}
+     * Set the search type to use. The possible types are defined in {@link io.goobi.viewer.model.search.SearchHelper}
      *
      * @param type a int.
      */
