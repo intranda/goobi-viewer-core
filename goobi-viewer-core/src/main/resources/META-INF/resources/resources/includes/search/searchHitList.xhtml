@@ -145,7 +145,7 @@
                                     </h:outputFormat>
                                 </button>
                                 <o:commandScript name="loadChildHits_#{status.index}" action="#{hit.loadChildHits(configurationBean.searchChildHitsToLoadOnExpand)}" render="childHitGroup" 
-                                oncomplete="viewerJS.searchList.initChildHitThumbs('childHits_#{status.index}');viewerJS.searchList.triggerNext();">
+                                oncomplete="viewerJS.searchList.initChildHitThumbs('childHits_#{status.index}');">
                                 </o:commandScript>
                                <!-- END OF EXPAND BUTTON AREA -->
                             </div>

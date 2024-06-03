@@ -9,8 +9,9 @@
 
 	<ui:define name="metadata">
 		<f:metadata>
-			<f:event type="preRenderView"
-				listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage)}" />
+			<!-- navigationHelper.setCurrentPage should be a viewAction and not an event to prevent it from being triggered on postback (ajax-requests) which can collide with a parallel record load -->
+			<f:viewAction onPostback="false"
+				action="#{navigationHelper.setCurrentPage(cmsBean.currentPage)}" />
 			<f:event type="preRenderView"
 				listener="#{breadcrumbBean.updateBreadcrumbs(cmsBean.currentPage)}" />
 		</f:metadata>
@@ -75,11 +76,12 @@
 				</f:view>
 			</c:when>
 			<c:otherwise>
-				<h:outputText escape="false" value="#{msg.cms_pagePreviewNotPublished}"/>
+				<h:outputText escape="false"
+					value="#{msg.cms_pagePreviewNotPublished}" />
 			</c:otherwise>
 		</c:choose>
 	</ui:define>
- 
+
 	<!-- SIDEBAR -->
 	<ui:define name="sidebar">
 		<ui:include src="/resources/cms/includes/cms_sidebar.xhtml" />

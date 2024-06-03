@@ -304,12 +304,13 @@ public class ActiveDocumentBean implements Serializable {
                 logger.error(e.getMessage(), e);
             }
         }
-
         return viewManager;
     }
 
     /**
-     * <p>reload.</p>
+     * <p>
+     * reload.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object
      * @return output of open()
@@ -940,7 +941,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getPIFromFieldValue.</p>
+     * <p>
+     * getPIFromFieldValue.
+     * </p>
      *
      * @param value a {@link java.lang.String} object
      * @param field a {@link java.lang.String} object
@@ -1270,7 +1273,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getPageUrl.</p>
+     * <p>
+     * getPageUrl.
+     * </p>
      *
      * @param order a int
      * @return Page URL for the given page number
@@ -1331,7 +1336,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getPreviousDocstructUrl.</p>
+     * <p>
+     * getPreviousDocstructUrl.
+     * </p>
      *
      * @return URL to the previous docstruct
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
@@ -1387,7 +1394,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getNextDocstructUrl.</p>
+     * <p>
+     * getNextDocstructUrl.
+     * </p>
      *
      * @return URL to the next docstruct
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
@@ -1822,7 +1831,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getActiveDocumentIddoc.</p>
+     * <p>
+     * getActiveDocumentIddoc.
+     * </p>
      *
      * @return a long.
      * @deprecated Use getTopDocumentIddoc()
@@ -1901,7 +1912,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>clearCacheAction.</p>
+     * <p>
+     * clearCacheAction.
+     * </p>
      *
      * @return empty string
      * @throws java.io.IOException
@@ -1970,7 +1983,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>lastReceivedIdentifier</code>.</p>
+     * <p>
+     * Getter for the field <code>lastReceivedIdentifier</code>.
+     * </p>
      *
      * @return the lastReceivedIdentifier
      */
@@ -1979,7 +1994,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>lastReceivedIdentifier</code>.</p>
+     * <p>
+     * Setter for the field <code>lastReceivedIdentifier</code>.
+     * </p>
      *
      * @param lastReceivedIdentifier the lastReceivedIdentifier to set
      */
@@ -2427,7 +2444,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>clearCacheMode</code>.</p>
+     * <p>
+     * Getter for the field <code>clearCacheMode</code>.
+     * </p>
      *
      * @return the clearCacheMode
      */
@@ -2436,7 +2455,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>clearCacheMode</code>.</p>
+     * <p>
+     * Setter for the field <code>clearCacheMode</code>.
+     * </p>
      *
      * @param clearCacheMode the clearCacheMode to set
      */
@@ -2458,7 +2479,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getRecordGeoMap.</p>
+     * <p>
+     * getRecordGeoMap.
+     * </p>
      *
      * @return {@link io.goobi.viewer.model.maps.RecordGeoMap}
      * @throws io.goobi.viewer.exceptions.DAOException
@@ -2494,7 +2517,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>generateGeoMap.</p>
+     * <p>
+     * generateGeoMap.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object
      * @return {@link io.goobi.viewer.model.maps.GeoMap}
@@ -2588,14 +2613,18 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>toggleDownloadImageModal.</p>
+     * <p>
+     * toggleDownloadImageModal.
+     * </p>
      */
     public void toggleDownloadImageModal() {
         downloadImageModalVisible = !downloadImageModalVisible;
     }
 
     /**
-     * <p>isDownloadImageModalVisible.</p>
+     * <p>
+     * isDownloadImageModalVisible.
+     * </p>
      *
      * @return the downloadImageModalVisible
      */
@@ -2604,7 +2633,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getSelectedDownloadOption.</p>
+     * <p>
+     * getSelectedDownloadOption.
+     * </p>
      *
      * @return Selected {@link io.goobi.viewer.model.job.download.DownloadOption}
      */
@@ -2617,7 +2648,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>selectedDownloadOptionLabel</code>.</p>
+     * <p>
+     * Getter for the field <code>selectedDownloadOptionLabel</code>.
+     * </p>
      *
      * @return the selectedDownloadOptionLabel
      */
@@ -2626,7 +2659,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>selectedDownloadOptionLabel</code>.</p>
+     * <p>
+     * Setter for the field <code>selectedDownloadOptionLabel</code>.
+     * </p>
      *
      * @param selectedDownloadOptionLabel the selectedDownloadOptionLabel to set
      */
@@ -2636,7 +2671,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>setDownloadOptionLabelFromRequestParameter.</p>
+     * <p>
+     * setDownloadOptionLabelFromRequestParameter.
+     * </p>
      */
     public void setDownloadOptionLabelFromRequestParameter() {
         Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
@@ -2754,7 +2791,9 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * <p>getGeomapFilters.</p>
+     * <p>
+     * getGeomapFilters.
+     * </p>
      *
      * @return a {@link java.util.List} object
      */

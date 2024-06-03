@@ -330,26 +330,14 @@ var viewerJS = ( function( viewer ) {
              }
 		},
         initSubHits: function() {
-			this.childHitLoaders = [];          
             document.querySelectorAll('[data-toggle="hit-content"]')
             .forEach(button => {
                 if(parseInt(button.dataset.childhits) <= _defaults.maxChildHitsToRenderOnStart ) {
-                    this.childHitLoaders.push(button);
+                    this.openChildHits(button);
                 }
             });
-            this.childHitLoaders.reverse();
-            this.triggerNext()
 
-            // get child hits            
-/*             $( '[data-toggle="hit-content"]' )
-            .filter( (index, button) => parseInt(button.dataset.childhits) <= _defaults.maxChildHitsToRenderOnStart )
-            .each( (index, button) => this.openChildHits(button)); */
 		},
-        triggerNext() {
-            if(this.childHitLoaders && this.childHitLoaders.length > 0) {
-                this.openChildHits(this.childHitLoaders.pop());
-            }
-        },
 		openChildHits: function(button) {
             console.log("open child hits"); 
 			var $currBtn = $( button );
