@@ -399,15 +399,20 @@
 										</div>
 										<h:panelGroup id="previewSlider">
 											<h2>#{msg.title__preview}</h2>
+											
+											<div class="admin__default-block">
+											<p>#{msg.cms__edit_slider__preview_info}</p>
 											<h:panelGroup layout="block"
 												class="cms-sliders-select__preview"
 												rendered="#{not slider.isEmpty()}">
+												
 												<div class="cms-sliders-select__preview__frame">
 													<iframe
 														src="#{request.contextPath}/embed/slider/#{slider.id == null ? '0' : slider.id}/?slides=#{cmsSliderEditBean.getSliderSource()}&amp;style=#{slider.style}"
 														id="previewIframeSlider"></iframe>
 												</div>
 											</h:panelGroup>
+											</div>
 										</h:panelGroup>
 									</div>
 

@@ -19,6 +19,8 @@
         <f:view contentType="text/html" encoding="utf-8">
             <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}" />
             <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" />
+			<title>#{msg.viewMirador} -
+				#{adminThemesBean.getThemeLabel(configurationBean.name)}</title>
         </f:view>
     </ui:define>
     
