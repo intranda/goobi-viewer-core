@@ -42,7 +42,7 @@ class SearchQueryGroupTest extends AbstractSolrEnabledTest {
     void init_shouldCreateAndPreselectVisibleFields() throws Exception {
         SearchQueryGroup group = new SearchQueryGroup(DataManager.getInstance().getConfiguration().getAdvancedSearchFields(null, true, "en"), null);
         Assertions.assertEquals(3, group.getQueryItems().size());
-        Assertions.assertEquals(SearchHelper.SEARCH_FILTER_ALL.getLabel(), group.getQueryItems().get(0).getField());
+        Assertions.assertEquals(SearchHelper.SEARCH_FILTER_ALL.getField(), group.getQueryItems().get(0).getField());
         Assertions.assertEquals(SolrConstants.DC, group.getQueryItems().get(1).getField());
         Assertions.assertEquals("MD_TITLE", group.getQueryItems().get(2).getField());
     }
@@ -55,7 +55,7 @@ class SearchQueryGroupTest extends AbstractSolrEnabledTest {
     void init_shouldOnlyCreateAllfieldsItemIfFieldConfigsNull() throws Exception {
         SearchQueryGroup group = new SearchQueryGroup(null, null);
         Assertions.assertEquals(1, group.getQueryItems().size());
-        Assertions.assertEquals(SearchHelper.SEARCH_FILTER_ALL.getLabel(), group.getQueryItems().get(0).getField());
+        Assertions.assertEquals(SearchHelper.SEARCH_FILTER_ALL.getField(), group.getQueryItems().get(0).getField());
     }
 
     /**

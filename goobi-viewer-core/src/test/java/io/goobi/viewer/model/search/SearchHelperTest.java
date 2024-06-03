@@ -1810,7 +1810,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
         Assertions.assertEquals(3, group.getQueryItems().size());
 
-        Assertions.assertEquals(SearchHelper.SEARCH_FILTER_ALL.getLabel(), group.getQueryItems().get(0).getField());
+        Assertions.assertEquals(SearchHelper.SEARCH_FILTER_ALL.getField(), group.getQueryItems().get(0).getField());
         Assertions.assertEquals("foo bar", group.getQueryItems().get(0).getValue());
         Assertions.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(0).getOperator());
 
@@ -1832,7 +1832,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
         Assertions.assertEquals(3, group.getQueryItems().size());
 
-        Assertions.assertEquals(SearchHelper.SEARCH_FILTER_ALL.getLabel(), group.getQueryItems().get(0).getField());
+        Assertions.assertEquals(SearchHelper.SEARCH_FILTER_ALL.getField(), group.getQueryItems().get(0).getField());
         Assertions.assertEquals("foo bar", group.getQueryItems().get(0).getValue());
         Assertions.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(0).getOperator());
 
@@ -1890,7 +1890,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertNotNull(group);
         Assertions.assertEquals(6, group.getQueryItems().size());
 
-        Assertions.assertEquals(SearchHelper.SEARCH_FILTER_ALL.getLabel(), group.getQueryItems().get(0).getField());
+        Assertions.assertEquals(SearchHelper.SEARCH_FILTER_ALL.getField(), group.getQueryItems().get(0).getField());
         Assertions.assertEquals("foo bar", group.getQueryItems().get(0).getValue());
         Assertions.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(0).getOperator());
 
