@@ -102,22 +102,16 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
         this.mode = mode;
     }
 
-    /** {@inheritDoc} */
-
     public ContentItemMode getMode() {
         return mode;
     }
-
-    /** {@inheritDoc} */
 
     public boolean isHasInlineHelp() {
         return StringUtils.isNotBlank(inlineHelp);
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * Message key to display when clicking the inline help button
+     * Message key to display when clicking the inline help button.
      */
 
     public String getInlineHelp() {
@@ -134,8 +128,6 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     public void setInlineHelp(String inlineHelp) {
         this.inlineHelp = inlineHelp;
     }
-
-    /** {@inheritDoc} */
 
     public String getMediaFilter() {
         return mediaFilter;
@@ -155,7 +147,6 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.cms.CMSContentItem#isPreview()
      */
-    /** {@inheritDoc} */
 
     public boolean isPreview() {
         return this.preview;

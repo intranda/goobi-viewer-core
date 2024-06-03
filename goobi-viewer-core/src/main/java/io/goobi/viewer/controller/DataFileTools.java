@@ -141,7 +141,7 @@ public final class DataFileTools {
      * Returns a map of Paths for each data folder name passed as an argument.
      *
      * @param pi The record identifier. This is both the actual name of the folder and the identifier used to look up data repository in Solr
-     * @return HashMap<dataFolderName,Path>
+     * @return HashMap&lt;dataFolderName,Path&gt;
      * @should return all requested data folders
      * @param dataFolderNames a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -412,7 +412,6 @@ public final class DataFileTools {
      * @param altoFilePath ALTO file path relative to the repository root (e.g. "alto/PPN123/00000001.xml")
      * @param fulltextFilePath plain full-text file path relative to the repository root (e.g. "fulltext/PPN123/00000001.xml")
      * @param mergeLineBreakWords a boolean.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @should load fulltext from alto correctly
      * @should load fulltext from plain text correctly
      * @return a {@link java.lang.String} object.
@@ -423,7 +422,7 @@ public final class DataFileTools {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public static String loadFulltext(String altoFilePath, String fulltextFilePath, boolean mergeLineBreakWords, HttpServletRequest request)
+    public static String loadFulltext(String altoFilePath, String fulltextFilePath, boolean mergeLineBreakWords)
             throws IOException, IndexUnreachableException {
         TextResourceBuilder builder = new TextResourceBuilder();
         if (fulltextFilePath != null) {
@@ -446,7 +445,7 @@ public final class DataFileTools {
             try {
                 StringPair alto = loadAlto(altoFilePath);
                 if (alto != null) {
-                    return ALTOTools.getFulltext(alto.getOne(), alto.getTwo(), mergeLineBreakWords, request);
+                    return ALTOTools.getFulltext(alto.getOne(), alto.getTwo(), mergeLineBreakWords);
                 }
             } catch (ContentNotFoundException e) {
                 throw new FileNotFoundException(e.getMessage());

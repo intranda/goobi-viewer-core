@@ -1,7 +1,6 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
@@ -32,391 +31,421 @@
 						<h1 class="admin__title">#{msg.cms__edit_slider__title}</h1>
 					</c:if>
 				</div>
-				
+
 				<viewerComponent:adminBreadcrumbs />
 
 				<h:form prependId="false">
+					<div class="w-100">
+						<ui:param name="slider"
+							value="#{cmsSliderEditBean.selectedSlider}"></ui:param>
 
-					<ui:param name="slider" value="#{cmsSliderEditBean.selectedSlider}"></ui:param>
-					
-					
-					<c:if test="#{slider == null}">
-	
-						<div class="admin__content-inner-content">
-							<div class="admin__info-text">#{msg.cms__add_slider__select_type}</div>
-	
-							<div class="admin__entry-list -w25">
-								<ui:repeat var="type" value="#{cmsSliderEditBean.sourceTypes}">
-									<div class="admin__boxed-entry -w25">
-										<div class="d-flex flex-column h-100">
-											<div>
-												<h2>#{msg[type.label]}</h2>
-											</div>
-											<div class="mb-2">
-												<p>#{msg['cms__slider_type_description__'.concat(type.name().toLowerCase())]}</p>
-											</div>
-											<div class="mt-auto">
-												<div class="d-flex">
-													<button class="btn btn--default ml-auto"
-														jsf:action="#{cmsSliderEditBean.createSlider(type)}">#{msg.action__select}</button>
+
+						<c:if test="#{slider == null}">
+
+							<div class="admin__content-inner-content">
+								<div class="admin__info-text">#{msg.cms__add_slider__select_type}</div>
+
+								<div class="admin__entry-list -w25">
+									<ui:repeat var="type" value="#{cmsSliderEditBean.sourceTypes}">
+										<div class="admin__boxed-entry -w25">
+											<div class="d-flex flex-column h-100">
+												<div>
+													<h2>#{msg[type.label]}</h2>
+												</div>
+												<div class="mb-2">
+													<p>#{msg['cms__slider_type_description__'.concat(type.name().toLowerCase())]}</p>
+												</div>
+												<div class="mt-auto">
+													<div class="d-flex">
+														<button class="btn btn--default ml-auto"
+															jsf:action="#{cmsSliderEditBean.createSlider(type)}">#{msg.action__select}</button>
+													</div>
 												</div>
 											</div>
 										</div>
-									</div>
-								</ui:repeat>
+									</ui:repeat>
+								</div>
 							</div>
-						</div>
-					</c:if>
-						
-					<c:if test="#{slider != null}">
-						<div class="admin__content-inner-content">
-	
-							<div class="form-horizontal form-group admin__content-wrapper">
-								<div class="w-100">
-									<h2 class="admin__content-inner-content__form_title mt-0">
-										#{msg.general} <span class="ajax_loader"> <img
-											src="#{request.contextPath}/resources/images/infinity_loader.gif"
-											class="img-responsive" alt="Waiting..." />
-										</span>
-									</h2>
-									<div class="admin__default-block">
-	
-										<!-- TITLE -->
-										<div class="form-group form-row">
-											<div class="col-2 control-label admin__form-label">
-												<label for="sliderName"> #{msg.name}: <span
-													class="admin__label-required-field">(#{msg.form__required_field})</span>
-												</label>
-											</div>
-	
-											<div
-												class="col-9 admin__form-input cms-module__option-control">
-	
-												<h:message for="sliderName"
-													errorClass="-validation-message -danger"></h:message>
-												<div class="-validation-mark">
-													<i class="fa fa-check" aria-hidden="true"></i> <i
-														class="fa fa-exclamation" aria-hidden="true"></i>
+						</c:if>
+
+						<c:if test="#{slider != null}">
+							<div class="admin__content-inner-content">
+
+								<div class="form-horizontal form-group">
+									<div>
+										<h2 class="admin__content-inner-content__form_title mt-0">
+											#{msg.general} <span class="ajax_loader"> <img
+												src="#{request.contextPath}/resources/images/infinity_loader.gif"
+												class="img-responsive" alt="Waiting..." />
+											</span>
+										</h2>
+										<div class="admin__default-block">
+
+											<!-- TITLE -->
+											<div class="form-group form-row">
+												<div class="col-2 control-label admin__form-label">
+													<label for="sliderName"> #{msg.name}: <span
+														class="admin__label-required-field">(#{msg.form__required_field})</span>
+													</label>
 												</div>
-												<h:inputText id="sliderName"
-													styleClass="form-control -validation-input" required="true"
-													requiredMessage="#{msg.info__input_required}"
-													value="#{slider.name}">
-												</h:inputText>
-												<span class="admin__form-help-text">#{msg.cms__edit_slider__name__help}</span>
-											</div>
-											<div class="col-1 admin__form-help-icon">
-												<button type="button" class="btn btn--clean"
-													data-toggle="helptext" aria-label="inline help icon">
-													<i class="fa fa-question-circle" aria-hidden="true"></i>
-												</button>
-											</div>
-										</div>
-	
-										<!-- Beschreibung -->
-										<div class="form-group form-row">
-											<div class="col-2 control-label admin__form-label">
-												<label for="sliderName"> #{msg.description}:
-												</label>
-											</div>
-	
-											<div
-												class="col-9 admin__form-input cms-module__option-control">
-	
-												<h:inputTextarea id="sliderDesc" styleClass="form-control"
-													value="#{slider.description}">
-												</h:inputTextarea>
-												<span class="admin__form-help-text">#{msg.cms__edit_slider__description__help}</span>
-											</div>
-											<div class="col-1 admin__form-help-icon">
-												<button type="button" class="btn btn--clean"
-													data-toggle="helptext" aria-label="inline help icon">
-													<i class="fa fa-question-circle" aria-hidden="true"></i>
-												</button>
-											</div>
-										</div>
-	
-										<c:choose>
-	
-											<c:when test="#{slider.sourceType == 'COLLECTIONS'}">
-												
-												<div class="#{fn:length(cmsSliderEditBean.allCollectionFields) > 1 ? '' : 'd-none'} form-group form-row">
-						                              <!-- COLLECTION FIELD -->
-						                              <div class="col-2 control-label admin__form-label xx">
-						                                  <label for="SolrFieldSelect">#{msg.cms_collections_solrField}:</label>
-						                              </div>
-						
-						                              <!-- CONTROL -->
-						                              <div class="col-9 admin__form-input">
-						                                  <h:selectOneMenu id="SolrFieldSelect" name="SolrFieldSelect" value="#{cmsSliderEditBean.collectionField}" styleClass="form-control">
-						                                      <f:selectItems value="#{cmsSliderEditBean.allCollectionFields}" />
-						                                      <f:ajax render="collectionsSelect"></f:ajax>
-						                                  </h:selectOneMenu>
-						                                  <span class="admin__form-help-text">#{msg.cms__edit_slider__collections_field__help}</span>
-						                              </div>
-						                              <div class="col-1 admin__form-help-icon">
-						                                  <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-						                                      <i class="fa fa-question-circle" aria-hidden="true"></i>
-						                                  </button>
-						                              </div>
-						                          </div>
-												
-												<div class="form-group form-row">
-													<div class="col-2 control-label admin__form-label">
-														<label for="collectionsSelect">
-															#{msg.admin__cms_collections}: <span
-															class="admin__label-required-field">(#{msg.form__required_field})</span>
-														</label>
+
+												<div
+													class="col-9 admin__form-input cms-module__option-control">
+
+													<h:message for="sliderName"
+														errorClass="-validation-message -danger"></h:message>
+													<div class="-validation-mark">
+														<i class="fa fa-check" aria-hidden="true"></i> <i
+															class="fa fa-exclamation" aria-hidden="true"></i>
 													</div>
-	
+													<h:inputText id="sliderName"
+														styleClass="form-control -validation-input"
+														required="true"
+														requiredMessage="#{msg.info__input_required}"
+														value="#{slider.name}">
+													</h:inputText>
+													<span class="admin__form-help-text">#{msg.cms__edit_slider__name__help}</span>
+												</div>
+												<div class="col-1 admin__form-help-icon">
+													<button type="button" class="btn btn--clean"
+														data-toggle="helptext" aria-label="inline help icon">
+														<i class="fa fa-question-circle" aria-hidden="true"></i>
+													</button>
+												</div>
+											</div>
+
+											<!-- Beschreibung -->
+											<div class="form-group form-row">
+												<div class="col-2 control-label admin__form-label">
+													<label for="sliderName"> #{msg.description}: </label>
+												</div>
+
+												<div
+													class="col-9 admin__form-input cms-module__option-control">
+
+													<h:inputTextarea id="sliderDesc" styleClass="form-control"
+														value="#{slider.description}">
+													</h:inputTextarea>
+													<span class="admin__form-help-text">#{msg.cms__edit_slider__description__help}</span>
+												</div>
+												<div class="col-1 admin__form-help-icon">
+													<button type="button" class="btn btn--clean"
+														data-toggle="helptext" aria-label="inline help icon">
+														<i class="fa fa-question-circle" aria-hidden="true"></i>
+													</button>
+												</div>
+											</div>
+
+											<c:choose>
+
+												<c:when test="#{slider.sourceType == 'COLLECTIONS'}">
+
 													<div
-														class="col-9 admin__form-input cms-module__option-control">
-	
-														<h:message for="collectionsSelect"
-															errorClass="-validation-message -danger"></h:message>
-														<div class="-validation-mark">
-															<i class="fa fa-check" aria-hidden="true"></i> <i
-																class="fa fa-exclamation" aria-hidden="true"></i>
+														class="#{fn:length(cmsSliderEditBean.allCollectionFields) > 1 ? '' : 'd-none'} form-group form-row">
+														<!-- COLLECTION FIELD -->
+														<div class="col-2 control-label admin__form-label xx">
+															<label for="SolrFieldSelect">#{msg.cms_collections_solrField}:</label>
 														</div>
-														<h:selectManyListbox id="collectionsSelect"
-															styleClass="form-control -validation-input"
-															required="true"
-															requiredMessage="#{msg.info__input_required}"
-															value="#{slider.collections}">
-															<f:selectItems 
-																value="#{cmsSliderEditBean.availableCollections}"
-																var="collection"
-																itemLabel="#{msg[collection.solrFieldValue]}"
-																itemValue="#{collection.toString()}"
-															></f:selectItems>
-															<f:ajax event="change" render="previewSlider"/>
-														</h:selectManyListbox>
-														<span class="admin__form-help-text">#{msg.cms__edit_slider__collections__help}</span>
-													</div>
-													<div class="col-1 admin__form-help-icon">
-														<button type="button" class="btn btn--clean"
-															data-toggle="helptext" aria-label="inline help icon">
-															<i class="fa fa-question-circle" aria-hidden="true"></i>
-														</button>
-													</div>
-												</div>
-											</c:when>
-	
-											<c:when test="#{slider.sourceType == 'RECORDS'}">
-												<!-- SOLR QUERY -->
-												<div class="form-group form-row">
-													<div class="col-2 control-label admin__form-label">
-														<label for="recordsQuery">
-															#{msg.cms_itemSolrQuery}: <span
-															class="admin__label-required-field">(#{msg.form__required_field})</span>
-														</label>
-													</div>
-	
-													<h:panelGroup id="recordsQueryValidation" layout="block" 
-														class="col-9 admin__form-input cms-module__option-control">
-	
-														<div class="cms-module__option-message">
-										                    <h:messages for="recordsQuery" 
-										                        infoClass="cms-module__option-message-status success" 
-										                        warnClass="cms-module__option-message-status warning"
-										                        errorClass="cms-module__option-message-status danger" />
-										
-										                    <div class="cms-module__option-message-mark">
-										                        <i class="fa fa-check" aria-hidden="true"></i>
-										                        <i class="fa fa-exclamation" aria-hidden="true"></i>
-										                    </div>
-										                </div>
-														<h:inputText id="recordsQuery"
-															styleClass="form-control -validation-input"
-															required="true"
-															requiredMessage="#{msg.info__input_required}"
-															value="#{slider.solrQuery}">
-															<f:validator validatorId="solrQueryValidator" for="recordsQuery" />
-															<f:ajax event="change" render="previewSlider recordsQueryValidation"/>
-														</h:inputText>
-														<span class="admin__form-help-text">#{msg.cms__edit_slider__solr_query__help}</span>
-													</h:panelGroup>
-													<div class="col-1 admin__form-help-icon">
-														<button type="button" class="btn btn--clean"
-															data-toggle="helptext" aria-label="inline help icon">
-															<i class="fa fa-question-circle" aria-hidden="true"></i>
-														</button>
-													</div>
-												</div>
-												
-												<!-- SORT FIELD -->
-												<div class="form-group form-row">
-													<div class="col-2 control-label admin__form-label">
-														<label for="recordsQuery">
-															#{msg.cms_itemSolrSortFields}:
-														</label>
-													</div>
-	
-													<h:panelGroup layout="block" 
-														class="col-9 admin__form-input cms-module__option-control">
 
-														<h:selectOneMenu id="solrSortFields" styleClass="form-control" value="#{slider.sortField}">
-											                  <f:selectItem itemValue="" itemLabel="#{msg.action__select}" />
-											                  <c:forEach var="field" items="#{configurationBean.sortFields}">
-											                      <f:selectItem itemValue="#{field}" itemLabel="#{msg[field]} (#{msg.searchSortingDropdown_ascending})" />
-											                      <f:selectItem itemValue="!#{field}" itemLabel="#{msg[field]} (#{msg.searchSortingDropdown_descending})" />
-											                  </c:forEach>
-														      <f:ajax event="change" render="previewSlider"/>											                  
-															  <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemSolrSortFields}" />
-										                </h:selectOneMenu>
-														<span class="admin__form-help-text">#{msg.cms__edit_slider__solr_sortfield__help}</span>
-													</h:panelGroup>
-													<div class="col-1 admin__form-help-icon">
-														<button type="button" class="btn btn--clean"
-															data-toggle="helptext" aria-label="inline help icon">
-															<i class="fa fa-question-circle" aria-hidden="true"></i>
-														</button>
+														<!-- CONTROL -->
+														<div class="col-9 admin__form-input">
+															<h:selectOneMenu id="SolrFieldSelect"
+																name="SolrFieldSelect"
+																value="#{cmsSliderEditBean.collectionField}"
+																styleClass="form-control">
+																<f:selectItems
+																	value="#{cmsSliderEditBean.allCollectionFields}" />
+																<f:ajax render="collectionsSelect"></f:ajax>
+															</h:selectOneMenu>
+															<span class="admin__form-help-text">#{msg.cms__edit_slider__collections_field__help}</span>
+														</div>
+														<div class="col-1 admin__form-help-icon">
+															<button type="button" class="btn btn--clean"
+																data-toggle="helptext"
+																aria-label="#{msg.aria_label__help}">
+																<i class="fa fa-question-circle" aria-hidden="true"></i>
+															</button>
+														</div>
 													</div>
-												</div>
-												
-												<!-- ITEM COUNT -->
-												<div class="form-group form-row">
-													<div class="col-2 control-label admin__form-label">
-														<label for="recordsQuery">
-															#{msg.cms_itemCount}: <span
-															class="admin__label-required-field">(#{msg.form__required_field})</span>
-														</label>
-													</div>
-	
-													<h:panelGroup layout="block" 
-														class="col-9 admin__form-input cms-module__option-control">
 
-														<h:selectOneMenu id="maxItems" styleClass="form-control" value="#{slider.maxEntries}">
-											                  <f:selectItems value="#{slider.maxEntriesOptions}" />
-														      <f:ajax event="change" render="previewSlider"/>											                  
-															  <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemSolrSortFields}" />
-										                </h:selectOneMenu>
-														<span class="admin__form-help-text">#{msg.cms__edit_slider__max_entries__help}</span>
-													</h:panelGroup>
-													<div class="col-1 admin__form-help-icon">
-														<button type="button" class="btn btn--clean"
-															data-toggle="helptext" aria-label="inline help icon">
-															<i class="fa fa-question-circle" aria-hidden="true"></i>
-														</button>
-													</div>
-												</div>
-											</c:when>
-	
-											<c:when test="#{slider.sourceType == 'PAGES' or slider.sourceType == 'MEDIA'}">
-												<div class="form-group form-row">
-													<div class="col-2 control-label admin__form-label">
-														<label for="categoriesSelect"> #{msg.categories}: <span
-															class="admin__label-required-field">(#{msg.form__required_field})</span>
-														</label>
-													</div>
-	
-													<div
-														class="col-9 admin__form-input cms-module__option-control">
-														<div>
-															<h:panelGroup layout="block" class="overflow-hidden"
-																id="selectedCategories">
-																<ui:repeat var="category" value="#{cmsSliderEditBean.selectableCategories.stream().filter(sel -> sel.selected).map(sel -> sel.value.name).toList()}">
-																	<div class="badge badge-violet">#{msg[category]}</div>
-																</ui:repeat>
-															</h:panelGroup>
+													<div class="form-group form-row">
+														<div class="col-2 control-label admin__form-label">
+															<label for="collectionsSelect">
+																#{msg.admin__cms_collections}: <span
+																class="admin__label-required-field">(#{msg.form__required_field})</span>
+															</label>
 														</div>
-														<h:message for="categoriesSelect"
-															errorClass="-validation-message -danger"></h:message>
-														<div class="-validation-mark">
-															<i class="fa fa-check" aria-hidden="true"></i> <i
-																class="fa fa-exclamation" aria-hidden="true"></i>
-														</div>
-														<div class="cms-module__option-dropdown">
-															<div class="cms-module__option-dropdown-trigger"
-																data-toggle="option-dropdown">#{msg.admin__category_select}</div>
-															<ul>
-																<ui:repeat var="selectable"
-																	value="#{cmsSliderEditBean.selectableCategories}">
-																	<li><label> <h:selectBooleanCheckbox
-																				type="checkbox" value="#{selectable.selected}">
-																			<f:ajax event="change" render="selectedCategories previewSlider"
-																					listener="#{cmsSliderEditBean.writeCategories}"></f:ajax>
-																			</h:selectBooleanCheckbox>
-																			#{selectable.value.name}</label></li>
-																</ui:repeat>
-															</ul>
-														</div>
-														<span class="admin__form-help-text">#{msg.cms__edit_slider__categories__help}</span>
-													</div>
-													<div class="col-1 admin__form-help-icon">
-														<button type="button" class="btn btn--clean"
-															data-toggle="helptext" aria-label="inline help icon">
-															<i class="fa fa-question-circle" aria-hidden="true"></i>
-														</button>
-													</div>
-												</div>
-											</c:when>
-										</c:choose>
-										
-										<!-- STYLE -->
-										<div class="form-group form-row">
-											<div class="col-2 control-label admin__form-label">
-												<label for="styleSelect">
-													#{msg.cms__edit_slider__style__label}: </label>
-											</div>
 
-											<div class="col-9 admin__form-input cms-module__option-control">
-												<select onchange="setStyle({sliderStyle : this.value});" id="styleSelect" class="form-control" data-value="#{slider.style}" data-options="slider-styles">
-													<option value="" disabled="disabled">#{msg.action__select}</option>
-												</select>
-												<span class="admin__form-help-text">#{msg.cms__edit_slider__style__help}</span>
+														<div
+															class="col-9 admin__form-input cms-module__option-control">
+
+															<h:message for="collectionsSelect"
+																errorClass="-validation-message -danger"></h:message>
+															<div class="-validation-mark">
+																<i class="fa fa-check" aria-hidden="true"></i> <i
+																	class="fa fa-exclamation" aria-hidden="true"></i>
+															</div>
+															<h:selectManyListbox id="collectionsSelect"
+																styleClass="form-control -validation-input"
+																required="true"
+																requiredMessage="#{msg.info__input_required}"
+																value="#{slider.collections}">
+																<f:selectItems
+																	value="#{cmsSliderEditBean.availableCollections}"
+																	var="collection"
+																	itemLabel="#{msg[collection.solrFieldValue]}"
+																	itemValue="#{collection.toString()}"></f:selectItems>
+																<f:ajax event="change" render="previewSlider" />
+															</h:selectManyListbox>
+															<span class="admin__form-help-text">#{msg.cms__edit_slider__collections__help}</span>
+														</div>
+														<div class="col-1 admin__form-help-icon">
+															<button type="button" class="btn btn--clean"
+																data-toggle="helptext" aria-label="inline help icon">
+																<i class="fa fa-question-circle" aria-hidden="true"></i>
+															</button>
+														</div>
+													</div>
+												</c:when>
+
+												<c:when test="#{slider.sourceType == 'RECORDS'}">
+													<!-- SOLR QUERY -->
+													<div class="form-group form-row">
+														<div class="col-2 control-label admin__form-label">
+															<label for="recordsQuery">
+																#{msg.cms_itemSolrQuery}: <span
+																class="admin__label-required-field">(#{msg.form__required_field})</span>
+															</label>
+														</div>
+
+														<h:panelGroup id="recordsQueryValidation" layout="block"
+															class="col-9 admin__form-input cms-module__option-control">
+
+															<div class="cms-module__option-message">
+																<h:messages for="recordsQuery"
+																	infoClass="cms-module__option-message-status success"
+																	warnClass="cms-module__option-message-status warning"
+																	errorClass="cms-module__option-message-status danger" />
+
+																<div class="cms-module__option-message-mark">
+																	<i class="fa fa-check" aria-hidden="true"></i> <i
+																		class="fa fa-exclamation" aria-hidden="true"></i>
+																</div>
+															</div>
+															<h:inputText id="recordsQuery"
+																styleClass="form-control -validation-input"
+																required="true"
+																requiredMessage="#{msg.info__input_required}"
+																value="#{slider.solrQuery}">
+																<f:validator validatorId="solrQueryValidator"
+																	for="recordsQuery" />
+																<f:ajax event="change"
+																	render="previewSlider recordsQueryValidation" />
+															</h:inputText>
+															<span class="admin__form-help-text">#{msg.cms__edit_slider__solr_query__help}</span>
+														</h:panelGroup>
+														<div class="col-1 admin__form-help-icon">
+															<button type="button" class="btn btn--clean"
+																data-toggle="helptext" aria-label="inline help icon">
+																<i class="fa fa-question-circle" aria-hidden="true"></i>
+															</button>
+														</div>
+													</div>
+
+													<!-- SORT FIELD -->
+													<div class="form-group form-row">
+														<div class="col-2 control-label admin__form-label">
+															<label for="recordsQuery">
+																#{msg.cms_itemSolrSortFields}: </label>
+														</div>
+
+														<h:panelGroup layout="block"
+															class="col-9 admin__form-input cms-module__option-control">
+
+															<h:selectOneMenu id="solrSortFields"
+																styleClass="form-control" value="#{slider.sortField}">
+																<f:selectItem itemValue=""
+																	itemLabel="#{msg.action__select}" />
+																<c:forEach var="field"
+																	items="#{configurationBean.sortFields}">
+																	<f:selectItem itemValue="#{field}"
+																		itemLabel="#{msg[field]} (#{msg.searchSortingDropdown_ascending})" />
+																	<f:selectItem itemValue="!#{field}"
+																		itemLabel="#{msg[field]} (#{msg.searchSortingDropdown_descending})" />
+																</c:forEach>
+																<f:ajax event="change" render="previewSlider" />
+																<f:passThroughAttribute name="aria-label"
+																	value="#{msg.cms_itemSolrSortFields}" />
+															</h:selectOneMenu>
+															<span class="admin__form-help-text">#{msg.cms__edit_slider__solr_sortfield__help}</span>
+														</h:panelGroup>
+														<div class="col-1 admin__form-help-icon">
+															<button type="button" class="btn btn--clean"
+																data-toggle="helptext" aria-label="inline help icon">
+																<i class="fa fa-question-circle" aria-hidden="true"></i>
+															</button>
+														</div>
+													</div>
+
+													<!-- ITEM COUNT -->
+													<div class="form-group form-row">
+														<div class="col-2 control-label admin__form-label">
+															<label for="recordsQuery"> #{msg.cms_itemCount}:
+																<span class="admin__label-required-field">(#{msg.form__required_field})</span>
+															</label>
+														</div>
+
+														<h:panelGroup layout="block"
+															class="col-9 admin__form-input cms-module__option-control">
+
+															<h:selectOneMenu id="maxItems" styleClass="form-control"
+																value="#{slider.maxEntries}">
+																<f:selectItems value="#{slider.maxEntriesOptions}" />
+																<f:ajax event="change" render="previewSlider" />
+																<f:passThroughAttribute name="aria-label"
+																	value="#{msg.cms_itemSolrSortFields}" />
+															</h:selectOneMenu>
+															<span class="admin__form-help-text">#{msg.cms__edit_slider__max_entries__help}</span>
+														</h:panelGroup>
+														<div class="col-1 admin__form-help-icon">
+															<button type="button" class="btn btn--clean"
+																data-toggle="helptext" aria-label="inline help icon">
+																<i class="fa fa-question-circle" aria-hidden="true"></i>
+															</button>
+														</div>
+													</div>
+												</c:when>
+
+												<c:when
+													test="#{slider.sourceType == 'PAGES' or slider.sourceType == 'MEDIA'}">
+													<div class="form-group form-row">
+														<div class="col-2 control-label admin__form-label">
+															<label for="categoriesSelect"> #{msg.categories}:
+																<span class="admin__label-required-field">(#{msg.form__required_field})</span>
+															</label>
+														</div>
+
+														<div
+															class="col-9 admin__form-input cms-module__option-control">
+															<div>
+																<h:panelGroup layout="block" class="overflow-hidden"
+																	id="selectedCategories">
+																	<ui:repeat var="category"
+																		value="#{cmsSliderEditBean.selectableCategories.stream().filter(sel -> sel.selected).map(sel -> sel.value.name).toList()}">
+																		<div class="badge badge-violet">#{msg[category]}</div>
+																	</ui:repeat>
+																</h:panelGroup>
+															</div>
+															<h:message for="categoriesSelect"
+																errorClass="-validation-message -danger"></h:message>
+															<div class="-validation-mark">
+																<i class="fa fa-check" aria-hidden="true"></i> <i
+																	class="fa fa-exclamation" aria-hidden="true"></i>
+															</div>
+															<div class="cms-module__option-dropdown">
+																<div class="cms-module__option-dropdown-trigger"
+																	data-toggle="option-dropdown">#{msg.admin__category_select}</div>
+																<ul>
+																	<ui:repeat var="selectable"
+																		value="#{cmsSliderEditBean.selectableCategories}">
+																		<li><label> <h:selectBooleanCheckbox
+																					type="checkbox" value="#{selectable.selected}">
+																					<f:ajax event="change"
+																						render="selectedCategories previewSlider"
+																						listener="#{cmsSliderEditBean.writeCategories}"></f:ajax>
+																				</h:selectBooleanCheckbox> #{selectable.value.name}
+																		</label></li>
+																	</ui:repeat>
+																</ul>
+															</div>
+															<span class="admin__form-help-text">#{msg.cms__edit_slider__categories__help}</span>
+														</div>
+														<div class="col-1 admin__form-help-icon">
+															<button type="button" class="btn btn--clean"
+																data-toggle="helptext" aria-label="inline help icon">
+																<i class="fa fa-question-circle" aria-hidden="true"></i>
+															</button>
+														</div>
+													</div>
+												</c:when>
+											</c:choose>
+
+											<!-- STYLE -->
+											<div class="form-group form-row">
+												<div class="col-2 control-label admin__form-label">
+													<label for="styleSelect">
+														#{msg.cms__edit_slider__style__label}: </label>
+												</div>
+
+												<div
+													class="col-9 admin__form-input cms-module__option-control">
+													<select onchange="setStyle({sliderStyle : this.value});"
+														id="styleSelect" class="form-control"
+														data-value="#{slider.style}" data-options="slider-styles">
+														<option value="" disabled="disabled">#{msg.action__select}</option>
+													</select> <span class="admin__form-help-text">#{msg.cms__edit_slider__style__help}</span>
+												</div>
+												<div class="col-1 admin__form-help-icon">
+													<button type="button" class="btn btn--clean"
+														data-toggle="helptext" aria-label="inline help icon">
+														<i class="fa fa-question-circle" aria-hidden="true"></i>
+													</button>
+												</div>
 											</div>
-											<div class="col-1 admin__form-help-icon">
-												<button type="button" class="btn btn--clean"
-													data-toggle="helptext" aria-label="inline help icon">
-													<i class="fa fa-question-circle" aria-hidden="true"></i>
-												</button>
-											</div>
+											<h:commandScript render="previewSlider" name="setStyle"
+												action="#{cmsSliderEditBean.setStyleFromRequestParameter()}"></h:commandScript>
+
+
 										</div>
-										<h:commandScript render="previewSlider" name="setStyle" action="#{cmsSliderEditBean.setStyleFromRequestParameter()}"></h:commandScript>
-										
-
-									</div>
-									<h:panelGroup id="previewSlider" >
-										<h:panelGroup layout="block" class="cms-sliders-select__preview" rendered="#{not slider.isEmpty()}">
+										<h:panelGroup id="previewSlider">
 											<h2>#{msg.title__preview}</h2>
-<!-- 												<iframe src="#{request.contextPath}" id="previewIframeSlider"></iframe> -->
-											<div class="cms-sliders-select__preview-inner">
-												<h:outputText id="previewSource" class="hidden" value="#{cmsSliderEditBean.sliderSource}"></h:outputText>
-												<viewerComponent:cmsSlider slider="#{slider}" sourceElement="previewSource" linkTarget="none"/>
-												<div class="swiper-pagination"></div>
+											
+											<div class="admin__default-block">
+											<p>#{msg.cms__edit_slider__preview_info}</p>
+											<h:panelGroup layout="block"
+												class="cms-sliders-select__preview"
+												rendered="#{not slider.isEmpty()}">
+												
+												<div class="cms-sliders-select__preview__frame">
+													<iframe
+														src="#{request.contextPath}/embed/slider/#{slider.id == null ? '0' : slider.id}/?slides=#{cmsSliderEditBean.getSliderSource()}&amp;style=#{slider.style}"
+														id="previewIframeSlider"></iframe>
+												</div>
+											</h:panelGroup>
 											</div>
 										</h:panelGroup>
-									</h:panelGroup>
+									</div>
+
+
 								</div>
-								
-								
+
+								<div
+									class="row no-gutters justify-content-end admin__final-actions">
+
+									<a class="btn btn--cancel"
+										href="#{cmsSliderEditBean.returnUrl}">#{msg.button__abort}
+									</a>
+									<button class="btn btn--success"
+										jsf:action="#{cmsSliderEditBean.save()}">
+										#{msg.button__save}
+										<f:ajax render=":messages" execute="@form"></f:ajax>
+									</button>
+								</div>
+
 							</div>
-	
-							<div
-								class="row no-gutters justify-content-end admin__final-actions">
-	
-								<a class="btn btn--cancel"
-									href="#{cmsSliderEditBean.returnUrl}">#{msg.button__abort}
-								</a>
-								<button class="btn btn--success"
-									jsf:action="#{cmsSliderEditBean.save()}">
-									#{msg.button__save}
-									<f:ajax render=":messages" execute="@form"></f:ajax>
-								</button>
-							</div>
-	
-						</div>
-					</c:if>
+						</c:if>
+					</div>
 				</h:form>
+
+
 			</h:panelGroup>
 		</div>
-		
+
 		<script>
 			cmsJS.createSlider.init();
 		</script>
-		
-		
+
+
 	</ui:define>
 
 </ui:composition>

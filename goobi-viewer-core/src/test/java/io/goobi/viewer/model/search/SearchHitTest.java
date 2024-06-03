@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -50,6 +51,21 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
+    }
+    
+    /**
+     * @see SearchHit#SearchHit(HitType,BrowseElement,SolrDocument,Map,Locale,SearchHitFactory)
+     * @verifies set authorityDataIdentifier correctly
+     */
+    @Test
+    void SearchHit_shouldSetAuthorityDataIdentifierCorrectly() throws Exception {
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(NormDataImporter.FIELD_IDENTIFIER, Collections.singleton( "1234567-8"));
+        SolrDocument doc = new SolrDocument();
+        doc.addField(SolrConstants.IDDOC, "1");
+        SearchHit hit = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.ENGLISH).createSearchHit(doc, null, null, null);
+        Assertions.assertNotNull(hit);
+        Assertions.assertEquals("1234567-8", hit.getAuthorityDataIdentifier());
     }
 
     /**
@@ -84,10 +100,10 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertNotNull(hit);
         Assertions.assertEquals(2, hit.getFoundMetadata().size());
         Assertions.assertEquals("Subtitle", hit.getFoundMetadata().get(0).getOne());
-        Assertions.assertEquals("FROM <span class=\"search-list--highlight\">BAR</span> TO <span class=\"search-list--highlight\">FOO</span>",
+        Assertions.assertEquals("FROM <mark class=\"search-list--highlight\">BAR</mark> TO <mark class=\"search-list--highlight\">FOO</mark>",
                 hit.getFoundMetadata().get(0).getTwo());
         Assertions.assertEquals("MD_2", hit.getFoundMetadata().get(1).getOne());
-        Assertions.assertEquals("bla <span class=\"search-list--highlight\">blup</span>", hit.getFoundMetadata().get(1).getTwo());
+        Assertions.assertEquals("bla <mark class=\"search-list--highlight\">blup</mark>", hit.getFoundMetadata().get(1).getTwo());
     }
 
     /**
@@ -117,10 +133,10 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertNotNull(hit);
         Assertions.assertEquals(2, hit.getFoundMetadata().size());
         Assertions.assertEquals("Subtitle", hit.getFoundMetadata().get(0).getOne());
-        Assertions.assertEquals("FROM <span class=\"search-list--highlight\">FOO</span> TO <span class=\"search-list--highlight\">BAR</span>",
+        Assertions.assertEquals("FROM <mark class=\"search-list--highlight\">FOO</mark> TO <mark class=\"search-list--highlight\">BAR</mark>",
                 hit.getFoundMetadata().get(0).getTwo());
         Assertions.assertEquals("MD_2", hit.getFoundMetadata().get(1).getOne());
-        Assertions.assertEquals("bla <span class=\"search-list--highlight\">blup</span>", hit.getFoundMetadata().get(1).getTwo());
+        Assertions.assertEquals("bla <mark class=\"search-list--highlight\">blup</mark>", hit.getFoundMetadata().get(1).getTwo());
     }
 
     /**
@@ -148,7 +164,7 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertNotNull(hit);
         Assertions.assertEquals(1, hit.getFoundMetadata().size());
         Assertions.assertEquals("Author", hit.getFoundMetadata().get(0).getOne());
-        Assertions.assertEquals("Doe, <span class=\"search-list--highlight\">John</span>", hit.getFoundMetadata().get(0).getTwo());
+        Assertions.assertEquals("Doe, <mark class=\"search-list--highlight\">John</mark>", hit.getFoundMetadata().get(0).getTwo());
     }
 
     /**
@@ -180,7 +196,7 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertNotNull(hit);
         Assertions.assertEquals(1, hit.getFoundMetadata().size());
         Assertions.assertEquals("Author", hit.getFoundMetadata().get(0).getOne());
-        Assertions.assertEquals("Doe, <span class=\"search-list--highlight\">John</span>", hit.getFoundMetadata().get(0).getTwo());
+        Assertions.assertEquals("Doe, <mark class=\"search-list--highlight\">John</mark>", hit.getFoundMetadata().get(0).getTwo());
     }
 
     /**
@@ -244,9 +260,9 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertNotNull(hit);
         Assertions.assertEquals(2, hit.getFoundMetadata().size());
         Assertions.assertEquals("Structure type", hit.getFoundMetadata().get(0).getOne());
-        Assertions.assertEquals("<span class=\"search-list--highlight\">Monograph</span>", hit.getFoundMetadata().get(0).getTwo());
+        Assertions.assertEquals("<mark class=\"search-list--highlight\">Monograph</mark>", hit.getFoundMetadata().get(0).getTwo());
         Assertions.assertEquals("Collection", hit.getFoundMetadata().get(1).getOne());
-        Assertions.assertEquals("<span class=\"search-list--highlight\">Administration</span>", hit.getFoundMetadata().get(1).getTwo());
+        Assertions.assertEquals("<mark class=\"search-list--highlight\">Administration</mark>", hit.getFoundMetadata().get(1).getTwo());
     }
 
     /**
@@ -280,11 +296,11 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
 
         // Via explicit term field
         Assertions.assertEquals("MD_COUNT_SE", hit.getFoundMetadata().get(0).getOne());
-        Assertions.assertEquals("<span class=\"search-list--highlight\">ett</span>, <span class=\"search-list--highlight\">två</span>",
+        Assertions.assertEquals("<mark class=\"search-list--highlight\">ett</mark>, <mark class=\"search-list--highlight\">två</mark>",
                 hit.getFoundMetadata().get(0).getTwo());
         // Via DEFAULT
         Assertions.assertEquals("MD_COUNT_EU", hit.getFoundMetadata().get(1).getOne());
-        Assertions.assertEquals("<span class=\"search-list--highlight\">bat</span>, <span class=\"search-list--highlight\">hiru</span>",
+        Assertions.assertEquals("<mark class=\"search-list--highlight\">bat</mark>, <mark class=\"search-list--highlight\">hiru</mark>",
                 hit.getFoundMetadata().get(1).getTwo());
     }
 
@@ -320,13 +336,13 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("MD_DESCRIPTION", hit.getFoundMetadata().get(0).getOne());
         Assertions.assertTrue(hit.getFoundMetadata().get(0).getTwo().length() <= maxLength + 56);
         // Truncated snippet is randomized, so cannot test the exact value
-        Assertions.assertTrue(hit.getFoundMetadata().get(0).getTwo().contains("ut <span class=\"search-list--highlight\">labore</span> et"));
+        Assertions.assertTrue(hit.getFoundMetadata().get(0).getTwo().contains("ut <mark class=\"search-list--highlight\">labore</mark> et"));
 
         // Via explicit term field
         Assertions.assertEquals("MD_SOMETEXT", hit.getFoundMetadata().get(1).getOne());
         Assertions.assertTrue(hit.getFoundMetadata().get(1).getTwo().length() <= maxLength + 56);
         // Truncated snippet is randomized, so cannot test the exact value
-        Assertions.assertTrue(hit.getFoundMetadata().get(1).getTwo().contains("<span class=\"search-list--highlight\">ipsum</span> dolor"));
+        Assertions.assertTrue(hit.getFoundMetadata().get(1).getTwo().contains("<mark class=\"search-list--highlight\">ipsum</mark> dolor"));
     }
 
     /**
@@ -354,7 +370,7 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertTrue(hit.getBrowseElement()
                 .getLabelShort()
                 .startsWith(
-                        "Lorem <span class=\"search-list--highlight\">ipsum</span> dolor sit amet, consectetur adipisicing elit,"
+                        "Lorem <mark class=\"search-list--highlight\">ipsum</mark> dolor sit amet, consectetur adipisicing elit,"
                                 + " sed do eiusmod tempor incididunt ut labore"),
                 "label: " + hit.getBrowseElement().getLabelShort());
     }
@@ -384,7 +400,7 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertTrue(hit.getBrowseElement()
                 .getLabelShort()
                 .startsWith(
-                        "Lorem <span class=\"search-list--highlight\">ipsum</span> dolor sit amet, consectetur adipisicing elit,"
+                        "Lorem <mark class=\"search-list--highlight\">ipsum</mark> dolor sit amet, consectetur adipisicing elit,"
                                 + " sed do eiusmod tempor incididunt ut labore"),
                 "label: " + hit.getBrowseElement().getLabelShort());
     }

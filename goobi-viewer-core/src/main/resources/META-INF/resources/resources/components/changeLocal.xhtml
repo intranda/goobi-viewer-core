@@ -2,7 +2,8 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html">
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:jsf="http://xmlns.jcp.org/jsf">
 
     <composite:interface>
         <composite:attribute name="showFlags" required="false" default="false" />
@@ -16,15 +17,16 @@
     </composite:interface>
 
     <composite:implementation>
-        <nav id="#{cc.attrs.selector}" class="change-local clearfix">
+        <nav id="#{cc.attrs.selector}" aria-label="#{msg.a11y__language_selection_nav}" class="change-local clearfix">
             <!-- standard language select -->
             <h:panelGroup rendered="#{cc.attrs.displayAll == true and cc.attrs.toggleLanguage == false}">
                 <h:form id="changeLocalForm1" prependId="false">
                     <ul>
                         <ui:repeat var="lang" value="#{navigationHelper.supportedLanguages}">
                             <li>
-                                <h:commandLink styleClass="#{navigationHelper.localeString == lang ?'activeLang':''}"
-                                	action="#{navigationHelper.setLocaleString(lang)}">
+                                <button title="#{msg['changeLocal_' += lang]} - #{msg['changeLocal_long_' += lang]}" type="submit" aria-current="#{navigationHelper.localeString == lang ? 'true':'false'}" class="#{navigationHelper.localeString == lang ?'activeLang':''}"
+                                	jsf:action="#{navigationHelper.setLocaleString(lang)}">
+
                                     <h:panelGroup rendered="#{cc.attrs.showFlags == true}">
                                         <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_#{lang}.gif" alt="Flag Icon" />
                                     </h:panelGroup>
@@ -40,8 +42,7 @@
                                     <h:outputText value="#{msg['changeLocal_long_' += lang]}"
                                         rendered="#{cc.attrs.showLabels == true}" />
                                     </ui:fragment>
-
-                                </h:commandLink>
+                                </button>
                             </li>
                         </ui:repeat>
                     </ul>
@@ -57,24 +58,24 @@
 								<li>
 								    <!-- RENDER SHORT LANGUAGE STRINGS -->
                                     <ui:fragment rendered="#{cc.attrs.longLanguageStrings == false}">
-										<h:commandLink styleClass="flag #{navigationHelper.localeString eq lang ?'activeLang':''}"
-										action="#{navigationHelper.setLocaleString(lang)}">
+										<button class="flag #{navigationHelper.localeString eq lang ?'activeLang':''}"
+										jsf:action="#{navigationHelper.setLocaleString(lang)}">
 											<h:outputText value="#{msg['changeLocal_' += lang]}" rendered="#{cc.attrs.showLabels == true}" />
 											<h:panelGroup rendered="#{cc.attrs.showFlags == true}">
 											<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_#{lang}.gif" alt="Flag Icon" />
 		                                	</h:panelGroup>
-										</h:commandLink>
+										</button>
 									</ui:fragment>
 									
 									<!-- RENDER LONG LANGUAGE STRINGS -->
                                     <ui:fragment rendered="#{cc.attrs.longLanguageStrings == true}">
-										<h:commandLink styleClass="flag #{navigationHelper.localeString eq lang ?'activeLang':''}"
-										action="#{navigationHelper.setLocaleString(lang)}">
+										<button class="flag #{navigationHelper.localeString eq lang ?'activeLang':''}"
+										jsf:action="#{navigationHelper.setLocaleString(lang)}">
 											<h:outputText value="#{msg['changeLocal_long_' += lang]}" rendered="#{cc.attrs.showLabels == true}" />
 											<h:panelGroup rendered="#{cc.attrs.showFlags == true}">
 											<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_#{lang}.gif" alt="Flag Icon" />
 		                                	</h:panelGroup>
-										</h:commandLink>
+										</button>
 									</ui:fragment>
 								</li>
 							</h:panelGroup>
@@ -88,12 +89,12 @@
                 <h:form id="changeLocalForm3" prependId="false">
                     <ul>
                         <li>
-                            <h:commandLink action="#{navigationHelper.setLocaleString(cc.attrs.singleLanguage)}">
+                            <button jsf:action="#{navigationHelper.setLocaleString(cc.attrs.singleLanguage)}">
 								<h:panelGroup rendered="#{cc.attrs.showFlags == true}">
 									<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_#{cc.attrs.singleLanguage}.gif" alt="Flag Icon" />
 								</h:panelGroup>
                                 <h:outputText value="#{msg[cc.attrs.singleLanguage]}" rendered="#{cc.attrs.showLabels == true}" />
-                            </h:commandLink>
+                            </button>
                         </li>
                     </ul>
                 </h:form>

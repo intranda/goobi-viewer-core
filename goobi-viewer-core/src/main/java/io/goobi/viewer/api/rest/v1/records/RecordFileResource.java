@@ -289,10 +289,9 @@ public class RecordFileResource {
                     IOUtils.copy(in, out);
                 }
             };
-        } else {
-            throw new ContentNotFoundException("No resource found at " + resourceFile);
         }
 
+        throw new ContentNotFoundException("No resource found at " + resourceFile);
     }
 
     /**

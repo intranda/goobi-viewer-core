@@ -600,7 +600,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
 
     /**
      *
-     * @return List<Selectable<String>>
+     * @return List&lt;Selectablei&lt;String&gt;&gt;
      * @throws DAOException
      * @throws PresentationException
      */
@@ -617,7 +617,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
 
     /**
      *
-     * @return List<Selectable<CMSCategory>>
+     * @return List&lt;Selectable&lt;CMSCategory&gt;&gt;
      * @throws DAOException
      */
     public List<Selectable<CMSCategory>> getSelectableCategories() throws DAOException {
@@ -631,7 +631,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
 
     /**
      *
-     * @return List<Selectable<CMSPageTemplate>>
+     * @return List&lt;Selectable&lt;CMSPageTemplate&gt;&gt;
      * @throws DAOException
      */
     public List<Selectable<CMSPageTemplate>> getSelectableTemplates() throws DAOException {

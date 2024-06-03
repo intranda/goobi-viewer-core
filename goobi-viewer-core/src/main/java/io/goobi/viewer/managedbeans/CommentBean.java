@@ -55,8 +55,9 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * @author florian
+ * <p>CommentBean class.</p>
  *
+ * @author florian
  */
 @Named
 @SessionScoped
@@ -81,9 +82,10 @@ public class CommentBean implements Serializable {
     private Map<String, Boolean> deleteCommentPermissionMap = new HashMap<>();
 
     /**
+     * <p>Constructor for CommentBean.</p>
      *
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public CommentBean() throws IndexUnreachableException, DAOException {
         commentManager = new CommentManager(
@@ -95,10 +97,11 @@ public class CommentBean implements Serializable {
     }
 
     /**
+     * <p>createComment.</p>
      *
-     * @param text
-     * @param restricted
-     * @throws AjaxResponseException
+     * @param text a {@link java.lang.String} object
+     * @param restricted a boolean
+     * @throws io.goobi.viewer.exceptions.AjaxResponseException
      */
     public void createComment(String text, boolean restricted) throws AjaxResponseException {
         try {
@@ -110,8 +113,9 @@ public class CommentBean implements Serializable {
     }
 
     /**
+     * <p>editComment.</p>
      *
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public void editComment() throws PresentationException {
         String idString = Faces.getRequestParameter("id");
@@ -128,13 +132,14 @@ public class CommentBean implements Serializable {
     }
 
     /**
+     * <p>editComment.</p>
      *
-     * @param original
-     * @param text
-     * @param restricted
-     * @throws DAOException
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @param original a {@link io.goobi.viewer.model.annotation.comments.Comment} object
+     * @param text a {@link java.lang.String} object
+     * @param restricted a boolean
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public void editComment(Comment original, String text, boolean restricted) throws DAOException, PresentationException, IndexUnreachableException {
         if (original == null) {
@@ -149,9 +154,10 @@ public class CommentBean implements Serializable {
     }
 
     /**
+     * <p>deleteComment.</p>
      *
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public void deleteComment() throws PresentationException, IndexUnreachableException {
         String idString = Faces.getRequestParameter("id");
@@ -167,11 +173,12 @@ public class CommentBean implements Serializable {
     }
 
     /**
+     * <p>deleteComment.</p>
      *
-     * @param annotation
-     * @throws DAOException
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @param annotation a {@link io.goobi.viewer.model.annotation.comments.Comment} object
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public void deleteComment(Comment annotation) throws DAOException, PresentationException, IndexUnreachableException {
         if (annotation == null) {
@@ -186,13 +193,14 @@ public class CommentBean implements Serializable {
     }
 
     /**
+     * <p>getComments.</p>
      *
-     * @param startIndex
-     * @param numItems
-     * @param filter
-     * @param user
-     * @param sortField
-     * @param descending
+     * @param startIndex a int
+     * @param numItems a int
+     * @param filter a {@link java.lang.String} object
+     * @param user a {@link io.goobi.viewer.model.security.user.User} object
+     * @param sortField a {@link java.lang.String} object
+     * @param descending a boolean
      * @return List of comments that match the search criteria
      */
     public List<Comment> getComments(int startIndex, int numItems, String filter, User user, String sortField, boolean descending) {
@@ -201,9 +209,10 @@ public class CommentBean implements Serializable {
     }
 
     /**
+     * <p>getCommentsForCurrentPage.</p>
      *
      * @return List of comments for the current page of the loaded record
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public List<Comment> getCommentsForCurrentPage() throws IndexUnreachableException {
         if (!activeDocumentBean.isRecordLoaded()) {
@@ -231,8 +240,9 @@ public class CommentBean implements Serializable {
     }
 
     /**
+     * <p>isRestricted.</p>
      *
-     * @param anno
+     * @param anno a {@link io.goobi.viewer.model.annotation.CrowdsourcingAnnotation} object
      * @return true if given annotation requires special privileges for commenting; false otherwise
      */
     public boolean isRestricted(CrowdsourcingAnnotation anno) {
@@ -279,7 +289,7 @@ public class CommentBean implements Serializable {
      * </p>
      *
      * @return a boolean.
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public boolean isUserCommentsEnabled() throws DAOException {
         if (userCommentsEnabled == null) {
@@ -300,9 +310,9 @@ public class CommentBean implements Serializable {
      *
      * @param pi Record identifier
      * @return true if logged in user may edit comments for record with given PI; false otherwise
-     * @throws DAOException
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public boolean isMayEditCommentsForRecord(String pi) throws DAOException, PresentationException, IndexUnreachableException {
         if (userBean == null || userBean.getUser() == null || pi == null) {
@@ -323,9 +333,9 @@ public class CommentBean implements Serializable {
      *
      * @param pi Record identifier
      * @return true if logged in user may delete comments for record with given PI; false otherwise
-     * @throws DAOException
-     * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      */
     public boolean isMayDeleteCommentsForRecord(String pi) throws DAOException, PresentationException, IndexUnreachableException {
         if (userBean == null || userBean.getUser() == null || pi == null) {

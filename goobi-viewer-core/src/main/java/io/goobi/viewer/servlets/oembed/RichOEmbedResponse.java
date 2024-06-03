@@ -50,8 +50,8 @@ public class RichOEmbedResponse extends OEmbedResponse {
      * Constructor.
      *
      * @param rec a {@link io.goobi.viewer.servlets.oembed.OEmbedRecord} object.
-     * @param maxWidth
-     * @param maxHeight
+     * @param maxWidth a {@link java.lang.Integer} object
+     * @param maxHeight a {@link java.lang.Integer} object
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public RichOEmbedResponse(OEmbedRecord rec, Integer maxWidth, Integer maxHeight) throws ViewerConfigurationException {
