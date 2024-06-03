@@ -247,7 +247,7 @@ public class SearchQueryItem implements Serializable {
      * @return true if selected field is "all fields"; false otherwise
      */
     public boolean isAllFields() {
-        return SearchHelper.SEARCH_FILTER_ALL_LABEL.equals(field);
+        return SearchHelper.SEARCH_FILTER_ALL.getField().equals(field);
     }
 
     /**
@@ -476,7 +476,7 @@ public class SearchQueryItem implements Serializable {
             case SolrConstants.BOOKMARKS:
                 displaySelectItems = true;
                 break;
-            case SearchHelper.SEARCH_FILTER_ALL_LABEL:
+            case SearchHelper.SEARCH_FILTER_ALL_FIELD:
             case SolrConstants.FULLTEXT:
                 displaySelectItems = false;
                 break;
@@ -524,7 +524,7 @@ public class SearchQueryItem implements Serializable {
         }
         this.proximitySearchDistance = 0;
         List<String> fields = new ArrayList<>();
-        if (SearchHelper.SEARCH_FILTER_ALL_LABEL.equals(field)) {
+        if (SearchHelper.SEARCH_FILTER_ALL.getField().equals(this.field)) {
             // Search everywhere
             if (aggregateHits) {
                 // When doing an aggregated search, make sure to include both SUPER and regular fields (because sub-elements don't have the SUPER)
@@ -656,7 +656,7 @@ public class SearchQueryItem implements Serializable {
                             sbItem.append(" -");
                             val = val.substring(1);
                         } else if (moreThanOneValue) {
-                            if (SearchHelper.SEARCH_FILTER_ALL.getLabel().equals(this.field)) {
+                            if (SearchHelper.SEARCH_FILTER_ALL.getField().equals(this.field)) {
                                 sbItem.append(' ');
                             } else {
                                 sbItem.append(SolrConstants.SOLR_QUERY_AND);

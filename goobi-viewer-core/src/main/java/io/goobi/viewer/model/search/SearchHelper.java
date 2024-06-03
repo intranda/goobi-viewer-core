@@ -132,7 +132,7 @@ public final class SearchHelper {
     public static final int SEARCH_TYPE_TERMS = 4;
     /** Constant <code>SEARCH_FILTER_ALL</code> */
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL", false);
-    public static final String SEARCH_FILTER_ALL_LABEL = "filter_ALL";
+    public static final String SEARCH_FILTER_ALL_FIELD = "ALL";
     public static final String TITLE_TERMS = "_TITLE_TERMS";
     public static final String AGGREGATION_QUERY_PREFIX = "{!join from=PI_TOPSTRUCT to=PI}";
     public static final String BOOSTING_QUERY_TEMPLATE = "(+" + SolrConstants.PI + ":* +" + SolrConstants.TITLE + ":({0}))^20.0";
@@ -2464,7 +2464,8 @@ public final class SearchHelper {
                     && fieldNames.contains(SolrConstants.UGCTERMS) && fieldNames.contains(SolrConstants.CMS_TEXT_ALL)) {
                 // All fields
                 item.setOperator(operator);
-                item.setField(SearchHelper.SEARCH_FILTER_ALL.getLabel());
+                item.setLabel(SearchHelper.SEARCH_FILTER_ALL.getLabel());
+                item.setField(SearchHelper.SEARCH_FILTER_ALL.getField());
                 item.setValue(pairs.get(0).getTwo());
                 logger.trace("added item: {}:{}", SearchHelper.SEARCH_FILTER_ALL.getLabel(), pairs.get(0).getTwo());
             } else {
@@ -2880,7 +2881,7 @@ public final class SearchHelper {
             switch (item.getField()) {
                 case SolrConstants.FULLTEXT:
                 case SolrConstants.UGCTERMS:
-                case SEARCH_FILTER_ALL_LABEL:
+                case SEARCH_FILTER_ALL_FIELD:
                     orMode = true;
                     break;
                 default:
@@ -2943,7 +2944,7 @@ public final class SearchHelper {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
                 if (queryGroup != null) {
                     for (SearchQueryItem item : queryGroup.getQueryItems()) {
-                        if (SEARCH_FILTER_ALL_LABEL.equals(item.getField())) {
+                        if (SEARCH_FILTER_ALL_FIELD.equals(item.getField())) {
                             if (!ret.contains(SolrConstants.DEFAULT)) {
                                 ret.add(SolrConstants.DEFAULT);
                             }

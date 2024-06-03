@@ -70,7 +70,6 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 
-import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.model.tasks.Task;
 import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
@@ -2277,7 +2276,11 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return List of allowed advanced search fields
      */
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchAllowedFields() {
-        return getAdvancedSearchAllowedFields(navigationHelper.getLocaleString(), advancedSearchFieldTemplate);
+        return getAdvancedSearchAllowedFields(navigationHelper.getLocaleString(), advancedSearchFieldTemplate, false);
+    }
+
+    public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFirstItemAllowedFields() {
+        return getAdvancedSearchAllowedFields(navigationHelper.getLocaleString(), advancedSearchFieldTemplate, true);
     }
 
     /**
@@ -2286,10 +2289,13 @@ public class SearchBean implements SearchInterface, Serializable {
      *
      * @param language Optional language code for filtering language-specific fields
      * @param template a {@link java.lang.String} object
+     * @param addSearchFilters
      * @return List of allowed advanced search fields
      * @should omit languaged fields for other languages
+     * @should add search filters
      */
-    public static List<AdvancedSearchFieldConfiguration> getAdvancedSearchAllowedFields(final String language, String template) {
+    public static List<AdvancedSearchFieldConfiguration> getAdvancedSearchAllowedFields(final String language, String template,
+            boolean addSearchFilters) {
         List<AdvancedSearchFieldConfiguration> fields =
                 DataManager.getInstance().getConfiguration().getAdvancedSearchFields(template, false, language);
         if (fields == null) {
@@ -2309,10 +2315,11 @@ public class SearchBean implements SearchInterface, Serializable {
             }
         }
 
-        // fields.add(0, new AdvancedSearchFieldConfiguration(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS));
-        int i = 0;
-        for (SearchFilter sf : DataManager.getInstance().getConfiguration().getSearchFilters()) {
-            fields.add(i++, new AdvancedSearchFieldConfiguration(sf.getLabel()));
+        if (addSearchFilters) {
+            int i = 0;
+            for (SearchFilter sf : DataManager.getInstance().getConfiguration().getSearchFilters()) {
+                fields.add(i++, new AdvancedSearchFieldConfiguration(sf.getField()).setLabel(sf.getLabel()));
+            }
         }
 
         return fields;
@@ -3157,7 +3164,8 @@ public class SearchBean implements SearchInterface, Serializable {
             this.advancedSearchQueryGroup.getQueryItems().get(0).setValue(queryValue);
         }
         this.advancedSearchQueryGroup.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
-        this.advancedSearchQueryGroup.getQueryItems().get(1).setField(SearchHelper.SEARCH_FILTER_ALL_LABEL);
+        this.advancedSearchQueryGroup.getQueryItems().get(1).setField(SearchHelper.SEARCH_FILTER_ALL.getField());
+        this.advancedSearchQueryGroup.getQueryItems().get(1).setLabel(SearchHelper.SEARCH_FILTER_ALL.getLabel());
         this.advancedSearchQueryGroup.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
         this.setActiveSearchType(1);
 

@@ -42,7 +42,7 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
         {
             SearchQueryItem item = new SearchQueryItem();
             item.setOperator(SearchItemOperator.OR);
-            item.setField(SearchHelper.SEARCH_FILTER_ALL.getLabel());
+            item.setField(SearchHelper.SEARCH_FILTER_ALL.getField());
             item.setValue("foo bar");
             Set<String> searchTerms = new HashSet<>(2);
             Assertions.assertEquals(
@@ -124,7 +124,7 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
     void generateQuery_shouldAlwaysUseOROperatorIfSearchingInAllFields() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
         item.setOperator(SearchItemOperator.AND);
-        item.setField(SearchHelper.SEARCH_FILTER_ALL.getLabel());
+        item.setField(SearchHelper.SEARCH_FILTER_ALL.getField());
         item.setValue("foo bar");
         Set<String> searchTerms = new HashSet<>(2);
         Assertions.assertEquals(
@@ -140,7 +140,7 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
     void generateQuery_shouldPreserveTruncation() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
         item.setOperator(SearchItemOperator.AND);
-        item.setField(SearchHelper.SEARCH_FILTER_ALL.getLabel());
+        item.setField(SearchHelper.SEARCH_FILTER_ALL.getField());
         item.setValue("*foo*");
         Set<String> searchTerms = new HashSet<>(2);
         Assertions.assertEquals(
@@ -216,7 +216,7 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
     @Test
     void toggleDisplaySelectItems_shouldSetDisplaySelectItemsFalseIfSearchingInAllFields() throws Exception {
         SearchQueryItem item = new SearchQueryItem();
-        item.setField(SearchHelper.SEARCH_FILTER_ALL.getLabel());
+        item.setField(SearchHelper.SEARCH_FILTER_ALL.getField());
         item.setDisplaySelectItems(true);
         item.toggleDisplaySelectItems();
         Assertions.assertFalse(item.isDisplaySelectItems());

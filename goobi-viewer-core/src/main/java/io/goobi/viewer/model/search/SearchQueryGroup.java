@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
@@ -78,7 +77,8 @@ public class SearchQueryGroup implements Serializable {
 
         if (template == null || StringConstants.DEFAULT_NAME.equals(template)) {
             SearchQueryItem firstItem = new SearchQueryItem(template);
-            firstItem.setField(SearchHelper.SEARCH_FILTER_ALL_LABEL);
+            firstItem.setField(SearchHelper.SEARCH_FILTER_ALL.getField());
+            firstItem.setLabel(SearchHelper.SEARCH_FILTER_ALL.getLabel());
             queryItems.add(firstItem);
         }
         if (fieldConfigs != null) {
