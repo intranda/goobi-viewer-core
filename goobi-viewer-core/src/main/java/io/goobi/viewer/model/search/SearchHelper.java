@@ -132,6 +132,7 @@ public final class SearchHelper {
     public static final int SEARCH_TYPE_TERMS = 4;
     /** Constant <code>SEARCH_FILTER_ALL</code> */
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL", false);
+    public static final String SEARCH_FILTER_ALL_LABEL = "filter_ALL";
     public static final String TITLE_TERMS = "_TITLE_TERMS";
     public static final String AGGREGATION_QUERY_PREFIX = "{!join from=PI_TOPSTRUCT to=PI}";
     public static final String BOOSTING_QUERY_TEMPLATE = "(+" + SolrConstants.PI + ":* +" + SolrConstants.TITLE + ":({0}))^20.0";
@@ -479,8 +480,8 @@ public final class SearchHelper {
     }
 
     /**
-     * Return the {@link HitType} matching the {@link io.goobi.viewer.solr.SolrConstants#DOCTYPE} of the given document.
-     * In case the document is of type 'UGC', return the type matching {@link io.goobi.viewer.solr.SolrConstants#UGCTYPE} instead
+     * Return the {@link HitType} matching the {@link io.goobi.viewer.solr.SolrConstants#DOCTYPE} of the given document. In case the document is of
+     * type 'UGC', return the type matching {@link io.goobi.viewer.solr.SolrConstants#UGCTYPE} instead
      *
      * @param doc
      * @return {@link HitType} for doc
@@ -1483,8 +1484,8 @@ public final class SearchHelper {
     }
 
     /**
-     * if maxDistance &lt;= 0, or either phrase or term is blank, simply return {@link StringUtils#contains(phrase, term)}.
-     * Otherwise check if the phrase contains a word which has a Damerau-Levenshtein distance of at most maxDistance to the term
+     * if maxDistance &lt;= 0, or either phrase or term is blank, simply return {@link StringUtils#contains(phrase, term)}. Otherwise check if the
+     * phrase contains a word which has a Damerau-Levenshtein distance of at most maxDistance to the term
      *
      * @param phrase
      * @param term
@@ -2463,9 +2464,9 @@ public final class SearchHelper {
                     && fieldNames.contains(SolrConstants.UGCTERMS) && fieldNames.contains(SolrConstants.CMS_TEXT_ALL)) {
                 // All fields
                 item.setOperator(operator);
-                item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
+                item.setField(SearchHelper.SEARCH_FILTER_ALL.getLabel());
                 item.setValue(pairs.get(0).getTwo());
-                logger.trace("added item: {}:{}", SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, pairs.get(0).getTwo());
+                logger.trace("added item: {}:{}", SearchHelper.SEARCH_FILTER_ALL.getLabel(), pairs.get(0).getTwo());
             } else {
                 for (StringPair pair : pairs) {
                     switch (pair.getOne()) {
@@ -2879,7 +2880,7 @@ public final class SearchHelper {
             switch (item.getField()) {
                 case SolrConstants.FULLTEXT:
                 case SolrConstants.UGCTERMS:
-                case SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS:
+                case SEARCH_FILTER_ALL_LABEL:
                     orMode = true;
                     break;
                 default:
@@ -2942,7 +2943,7 @@ public final class SearchHelper {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
                 if (queryGroup != null) {
                     for (SearchQueryItem item : queryGroup.getQueryItems()) {
-                        if (SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS.equals(item.getField())) {
+                        if (SEARCH_FILTER_ALL_LABEL.equals(item.getField())) {
                             if (!ret.contains(SolrConstants.DEFAULT)) {
                                 ret.add(SolrConstants.DEFAULT);
                             }

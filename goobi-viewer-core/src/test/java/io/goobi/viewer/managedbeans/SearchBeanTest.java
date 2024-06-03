@@ -139,7 +139,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         searchBean.resetAdvancedSearchParameters();
         assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
         SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
-        assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, item.getField());
+        assertEquals(SearchHelper.SEARCH_FILTER_ALL.getLabel(), item.getField());
 
         searchBean.getFacets().setActiveFacetString("DC:a");
         searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
@@ -156,7 +156,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         searchBean.resetAdvancedSearchParameters();
         assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
         SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
-        assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, item.getField());
+        assertEquals(SearchHelper.SEARCH_FILTER_ALL.getLabel(), item.getField());
 
         searchBean.getFacets().setActiveFacetString("DC:a");
         searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
@@ -319,7 +319,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             // OR-operator, search in all fields
             SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
             item.setOperator(SearchItemOperator.OR);
-            item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
+            item.setField(SearchHelper.SEARCH_FILTER_ALL.getLabel());
             item.setValue("foo bar");
         }
         {
@@ -348,7 +348,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             // OR-operator, search in all fields
             SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
             item.setOperator(SearchItemOperator.OR);
-            item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
+            item.setField(SearchHelper.SEARCH_FILTER_ALL.getLabel());
             item.setValue("monograph"); // should NOT be translated
         }
         {
@@ -987,7 +987,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(SearchItemOperator.AND, items.get(0).getOperator());
         Assertions.assertNull(items.get(0).getValue());
     }
-    
+
     /**
      * @see SearchBean#setActiveResultGroupName(String)
      * @verifies not change hitsPerPageSetterCalled value
@@ -996,7 +996,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     void setHitsPerPageNoTrigger_shouldNotChangeHitsPerPageSetterCalledValue() throws Exception {
         SearchBean sb = new SearchBean();
         Assertions.assertFalse(sb.isHitsPerPageSetterCalled());
-        
+
         sb.setHitsPerPageNoTrigger(5);
         Assertions.assertFalse(sb.isHitsPerPageSetterCalled());
     }
