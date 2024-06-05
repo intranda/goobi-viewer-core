@@ -30,7 +30,7 @@ import io.goobi.viewer.api.rest.filters.AdminLoggedInFilter;
 
 /**
  * <p>
- * Binding for resources which should be authorized by {@link AdminLoggedInFilter}
+ * Binding for resources which should be authorized by {@link AdminLoggedInFilter}.
  * </p>
  */
 @NameBinding

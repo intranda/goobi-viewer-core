@@ -32,7 +32,6 @@ import javax.inject.Named;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jboss.weld.exceptions.IllegalStateException;
 
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -40,8 +39,9 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 
 /**
- * @author florian
+ * <p>CmsDynamicContentBean class.</p>
  *
+ * @author florian
  */
 @Named
 @ViewScoped
@@ -53,11 +53,21 @@ public class CmsDynamicContentBean implements Serializable {
     private transient HtmlPanelGroup topBarGroup = null;
     private CMSPage cmsPage = null;
 
+    /**
+     * <p>Setter for the field <code>cmsPage</code>.</p>
+     *
+     * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
+     */
     @Deprecated //no longer needed to set
     public void setCmsPage(CMSPage page) {
         this.cmsPage = page;
     }
 
+    /**
+     * <p>getTopBarContent.</p>
+     *
+     * @return a {@link javax.faces.component.html.HtmlPanelGroup} object
+     */
     public HtmlPanelGroup getTopBarContent() {
         this.cmsPage = Optional.ofNullable(BeanUtils.getCmsBean()).map(CmsBean::getCurrentPage).orElse(null);
         if (topBarGroup == null) {
@@ -71,6 +81,8 @@ public class CmsDynamicContentBean implements Serializable {
     }
 
     /**
+     * <p>setTopBarContent.</p>
+     *
      * @param topBarGroup the topBarGroup to set
      */
     public void setTopBarContent(HtmlPanelGroup topBarGroup) {

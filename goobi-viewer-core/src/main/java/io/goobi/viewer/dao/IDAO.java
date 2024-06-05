@@ -784,7 +784,7 @@ public interface IDAO {
      * </p>
      *
      * @param id a long.
-     * @return a {@link io.goobi.viewer.model.security.getLicense} object.
+     * @return a {@link io.goobi.viewer.model.security.License} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public License getLicense(Long id) throws DAOException;
@@ -1704,7 +1704,7 @@ public interface IDAO {
      * </p>
      *
      * @param id a long.
-     * @return a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
+     * @return a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public CMSNavigationItem getCMSNavigationItem(long id) throws DAOException;
@@ -1714,7 +1714,7 @@ public interface IDAO {
      * addCMSNavigationItem.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1725,7 +1725,7 @@ public interface IDAO {
      * updateCMSNavigationItem.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1736,7 +1736,7 @@ public interface IDAO {
      * deleteCMSNavigationItem.
      * </p>
      *
-     * @param item a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
+     * @param item a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1918,7 +1918,7 @@ public interface IDAO {
      *
      * @param pi a {@link java.lang.String} object.
      * @param transkribusUserId a {@link java.lang.String} object.
-     * @param status a {@link io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus} object.
+     * @param status a {@link io.goobi.viewer.model.job.JobStatus} object.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -2024,7 +2024,7 @@ public interface IDAO {
      * </p>
      *
      * @param pi a {@link java.lang.String} object.
-     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} object.
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus} object.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -2036,7 +2036,7 @@ public interface IDAO {
      * </p>
      *
      * @param pi a {@link java.lang.String} object.
-     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} object.
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus} object.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -2423,7 +2423,7 @@ public interface IDAO {
      * Get all {@link CMSRecordNote}s for the given pi
      *
      * @param pi The pi of the record.
-     * @param displayedNotesOnly set to true to only return notes with {@link CMSRecordNote#isDisplayŃote()} set to true
+     * @param displayedNotesOnly set to true to only return notes with {@link io.goobi.viewer.model.cms.recordnotes.CMSRecordNote#isDisplayNote()} set to true
      * @return List of {@link CMSSingleRecordNote}s for the given pi
      * @throws DAOException
      */

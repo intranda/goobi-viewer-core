@@ -60,7 +60,7 @@
 
 					<h:form id="geoMapEditForm" prependId="false">
 						<h2>#{msg.cms__geomaps__metadata__title}</h2>
-						<h:panelGroup id="metadataPanel">
+						<h:panelGroup layout="block" id="metadataPanel">
 						
 						<div class="admin__language-tabs">
 							<viewerComponent:localeSelector object="#{geoMapBean}" render="metadataPanel" />
@@ -94,7 +94,7 @@
 								<!--                         	<ui:repeat value="#{navigationHelper.supportedLanguages}" var="language" varStatus="status"> -->
 								<div id="nameLanguage-#{geoMapBean.selectedLanguage}">
 
-									<div class="admin__content-inner-content">
+
 										<!-- TITLE -->
 										<div class="form-group form-row">
 											<div class="col-2 control-label admin__form-label">
@@ -142,7 +142,7 @@
 											</div>
 
 										</div>
-									</div>
+
 								</div>
 							</div>
 						</h:panelGroup>
@@ -154,6 +154,7 @@
 
 						<h:panelGroup id="featureSetsPanel">
 							<div class="admin__default-block">
+							<p class="admin__boxed-entry-description">#{msg.cms__geomaps__featuresets_desc}</p>
 								<ui:repeat var="featureSet"
 									value="#{geoMapBean.currentMap.featureSets}" varStatus="status">
 									<div class="admin__language-tabs">
@@ -338,7 +339,7 @@
 									
 										<ui:param name="featureSetType" value="#{MANUAL}" />
 										
-										<div class="admin__content-component-add-area-label">#{msg.cms__geomap__add_featureset}</div>
+										<div class="admin__content-component-add-area-label">#{msg.cms__geomap__add_featureset}:</div>
 										<div class="input_form__option_marker in"></div>
 										
 										

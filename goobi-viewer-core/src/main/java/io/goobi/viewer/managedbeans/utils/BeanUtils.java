@@ -121,6 +121,7 @@ public final class BeanUtils {
     }
 
     /**
+     * <p>getSession.</p>
      *
      * @return HttpSession from current request
      */
@@ -203,8 +204,9 @@ public final class BeanUtils {
     }
 
     /**
+     * <p>getInitialLocale.</p>
      *
-     * @return Currently selected or default {@link Locale}
+     * @return Currently selected or default {@link java.util.Locale}
      */
     public static Locale getInitialLocale() {
         Locale ret = null;
@@ -242,7 +244,7 @@ public final class BeanUtils {
      * getLocale.
      * </p>
      *
-     * @return Current Locale in {@link NavigationHelper}; default locale if none found
+     * @return Current Locale in {@link io.goobi.viewer.managedbeans.NavigationHelper}; default locale if none found
      */
     public static Locale getLocale() {
         NavigationHelper nh = BeanUtils.getNavigationHelper();
@@ -350,6 +352,11 @@ public final class BeanUtils {
         return (AdminBean) getBeanByName("adminBean", AdminBean.class);
     }
 
+    /**
+     * <p>getCollectionViewBean.</p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.CollectionViewBean} object
+     */
     public static CollectionViewBean getCollectionViewBean() {
         return (CollectionViewBean) getBeanByName("collectionViewBean", CollectionViewBean.class);
     }
@@ -365,6 +372,11 @@ public final class BeanUtils {
         return (ActiveDocumentBean) getBeanByName("activeDocumentBean", ActiveDocumentBean.class);
     }
 
+    /**
+     * <p>getPersistentStorageBean.</p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.PersistentStorageBean} object
+     */
     public static PersistentStorageBean getPersistentStorageBean() {
         return (PersistentStorageBean) getBeanByName("applicationBean", PersistentStorageBean.class);
     }
@@ -380,10 +392,20 @@ public final class BeanUtils {
         return (SearchBean) getBeanByName("searchBean", SearchBean.class);
     }
 
+    /**
+     * <p>getBookmarkBean.</p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.BookmarkBean} object
+     */
     public static BookmarkBean getBookmarkBean() {
         return (BookmarkBean) getBeanByName("bookmarkBean", BookmarkBean.class);
     }
 
+    /**
+     * <p>getCreateRecordBean.</p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.CreateRecordBean} object
+     */
     public static CreateRecordBean getCreateRecordBean() {
         return (CreateRecordBean) getBeanByName("createRecordBean", CreateRecordBean.class);
     }
@@ -465,6 +487,11 @@ public final class BeanUtils {
         return (UserBean) getBeanByName("userBean", UserBean.class);
     }
 
+    /**
+     * <p>getSessionBean.</p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.SessionBean} object
+     */
     public static SessionBean getSessionBean() {
         Object bean = getBeanByName("sessionBean", SessionBean.class);
         if (bean != null) {
@@ -542,6 +569,15 @@ public final class BeanUtils {
         return null;
     }
 
+    /**
+     * <p>getBeanFromRequest.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object
+     * @param beanName a {@link java.lang.String} object
+     * @param clazz a {@link java.lang.Class} object
+     * @param <T> a T class
+     * @return a {@link java.util.Optional} object
+     */
     @SuppressWarnings("unchecked")
     public static <T> Optional<T> getBeanFromRequest(HttpServletRequest request, String beanName, Class<T> clazz) {
         if (request != null && request.getSession() != null) {
@@ -584,6 +620,14 @@ public final class BeanUtils {
         return StringTools.escapeCriticalUrlChracters(value, false);
     }
 
+    /**
+     * <p>findInstanceInSessionAttributes.</p>
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object
+     * @param clazz a {@link java.lang.Class} object
+     * @param <T> a T class
+     * @return a {@link java.util.Optional} object
+     */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Optional<T> findInstanceInSessionAttributes(HttpServletRequest request, Class<T> clazz) {
         Enumeration<String> attributeNames = request.getSession().getAttributeNames();
@@ -618,6 +662,12 @@ public final class BeanUtils {
         return null;
     }
 
+    /**
+     * <p>getManagedBeanValue.</p>
+     *
+     * @param expr a {@link java.lang.String} object
+     * @return a {@link java.lang.Object} object
+     */
     public static Object getManagedBeanValue(String expr) {
         FacesContext context = FacesContext.getCurrentInstance();
         if (context == null) {

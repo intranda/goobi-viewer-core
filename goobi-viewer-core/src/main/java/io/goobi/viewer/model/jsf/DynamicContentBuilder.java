@@ -120,18 +120,22 @@ public class DynamicContentBuilder {
                 }
                 break;
             case SLIDER:
-                Long sliderId = (Long) content.getAttributes().get("sliderId");
+                String sliderId = (String) content.getAttributes().get("sliderId");
                 try {
                     if (sliderId != null) {
-                        CMSSlider slider = DataManager.getInstance().getDao().getSlider(sliderId);
-                        if (slider != null) {
-                            composite = loadCompositeComponent(parent, content.getComponentFilename(), "components");
-                            if (composite != null) {
-                                composite.getAttributes().put("slider", slider);
-                                String linkTarget = (String) content.getAttributes().get("linkTarget");
-                                if (StringUtils.isNotBlank(linkTarget)) {
-                                    composite.getAttributes().put("linkTarget", linkTarget);
-                                } else {
+                        composite = loadCompositeComponent(parent, content.getComponentFilename(), "components");
+                        if (composite != null) {
+                            for (Entry<String, Object> entry : content.getAttributes().entrySet()) {
+                                if (StringUtils.isNotBlank(entry.getKey()) && entry.getValue() != null && !"sliderId".equals(entry.getKey())) {
+                                    composite.getAttributes().put(entry.getKey(), entry.getValue());
+                                } else if ("sliderId".equals(entry.getKey())) {
+                                    CMSSlider slider = DataManager.getInstance().getDao().getSlider(Long.parseLong(sliderId));
+                                    if (slider != null) {
+                                        composite.getAttributes().put("slider", slider);
+                                    }
+                                }
+                                String linkTarget = (String) composite.getAttributes().get("linkTarget");
+                                if (StringUtils.isBlank(linkTarget)) {
                                     composite.getAttributes().put("linkTarget", "_blank");
                                 }
                             }

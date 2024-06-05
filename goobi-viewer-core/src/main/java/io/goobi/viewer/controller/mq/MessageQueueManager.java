@@ -39,6 +39,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
@@ -73,6 +74,7 @@ import org.apache.activemq.broker.BrokerFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.jmx.QueueViewMBean;
 import org.apache.activemq.command.ActiveMQTextMessage;
+import org.apache.activemq.memory.buffer.MessageQueue;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -96,7 +98,7 @@ import io.goobi.viewer.model.job.TaskType;
 /**
  * Manages handling of messages by their respective MessageHandlers. Main method is {@link #handle(ViewerMessage message)} which accepts a
  * {@link ViewerMessage} and calls a {@link MessageHandler} instance to process the message, returning a {@link MessageStatus} result. #handle may
- * either be called directly to handle the message instantly, or from a {@link MessageQueue
+ * either be called directly to handle the message instantly, or from a {@link MessageQueue}
  * 
  * @author florian
  *
@@ -162,7 +164,7 @@ public class MessageQueueManager {
     }
 
     /**
-     * Add the message to the internal message queue to be handled later
+     * Add the message to the internal message queue to be handled later.
      * 
      * @param message
      * @return Message ID
@@ -193,7 +195,7 @@ public class MessageQueueManager {
     }
 
     /**
-     * Send a notification to the "messageQueueState" WebSocket to update message lists in the admin backend
+     * Send a notification to the "messageQueueState" WebSocket to update message lists in the admin backend.
      */
     public static void notifyMessageQueueStateUpdate() {
         MessageQueueBean mqBean = (MessageQueueBean) BeanUtils.getBeanByName("messageQueueBean", MessageQueueBean.class);
@@ -203,7 +205,7 @@ public class MessageQueueManager {
     }
 
     /**
-     * Finds the appropriate MessageHandler for a message, lets the handler handle the message and update the message in the database
+     * Finds the appropriate MessageHandler for a message, lets the handler handle the message and update the message in the database.
      * 
      * @param message
      * @return the result of the handler calling the message
@@ -407,7 +409,7 @@ public class MessageQueueManager {
     }
 
     /**
-     * Check if the queue has been successfully initialized
+     * Check if the queue has been successfully initialized.
      * 
      * @return true if the queue is running
      */
@@ -436,6 +438,30 @@ public class MessageQueueManager {
             logger.error(e);
         }
         return fastQueueContent;
+    }
+
+    public int countMessagesBefore(String queueName, String messageType, String messageId) {
+        int count = 0;
+        try (QueueConnection connection = startConnection();
+                QueueSession queueSession = connection.createQueueSession(false, Session.CLIENT_ACKNOWLEDGE);
+                QueueBrowser browser = queueSession.createBrowser(queueSession.createQueue(queueName));) {
+
+            Enumeration<?> messagesInQueue = browser.getEnumeration();
+            while (messagesInQueue.hasMoreElements()) {
+                ActiveMQTextMessage queueMessage = (ActiveMQTextMessage) messagesInQueue.nextElement();
+                String type = queueMessage.getStringProperty("JMSType");
+                String id = queueMessage.getJMSMessageID();
+                if (Objects.equals(type, messageType)) {
+                    count++;
+                }
+                if (Objects.equals(messageId, id)) {
+                    break;
+                }
+            }
+        } catch (JMSException e) {
+            logger.error(e);
+        }
+        return count;
     }
 
     public ActiveMQConnection startConnection() throws JMSException {

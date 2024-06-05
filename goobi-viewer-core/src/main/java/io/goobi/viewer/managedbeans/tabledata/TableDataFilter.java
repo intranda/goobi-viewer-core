@@ -56,6 +56,11 @@ public class TableDataFilter implements Serializable {
         this.joinTable = null;
     }
 
+    /**
+     * <p>Constructor for TableDataFilter.</p>
+     *
+     * @param columns a {@link java.lang.String} object
+     */
     public TableDataFilter(String... columns) {
         this(null, columns);
     }
@@ -71,6 +76,11 @@ public class TableDataFilter implements Serializable {
         return columns;
     }
 
+    /**
+     * <p>getName.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     public String getName() {
         return this.columns.stream().collect(Collectors.joining());
     }
@@ -112,6 +122,11 @@ public class TableDataFilter implements Serializable {
         return Optional.ofNullable(joinTable);
     }
 
+    /**
+     * <p>Setter for the field <code>joinTable</code>.</p>
+     *
+     * @param joinTable a {@link java.lang.String} object
+     */
     public void setJoinTable(String joinTable) {
         this.joinTable = joinTable;
     }

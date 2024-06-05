@@ -89,7 +89,7 @@
       <!-- EXCLUDED PREVENT MESSED UP STYLING FOR NEW MIRADOR AND SWAGGER API PAGE -->
 
       <!-- SUBTHEME CSS -->
-      <h:panelGroup rendered="#{navigationHelper.subthemeSelected and navigationHelper.subThemeDiscriminatorValue!='-' and navigationHelper.currentPage != 'label__api_swagger'}">
+      <h:panelGroup rendered="#{navigationHelper.subthemeSelected and navigationHelper.subThemeDiscriminatorValue!='-' and navigationHelper.currentPage != 'API'}">
           <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{navigationHelper.subThemeDiscriminatorValue}.min.css?${navigationHelper.buildVersion}" />
       </h:panelGroup>
 

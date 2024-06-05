@@ -56,6 +56,9 @@ import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.DynamicContentType;
 import io.goobi.viewer.model.maps.GeoMap;
 
+/**
+ * <p>CMSSidebarWidgetsBean class.</p>
+ */
 @Named("cmsSidebarWidgetsBean")
 @RequestScoped
 public class CMSSidebarWidgetsBean implements Serializable {
@@ -80,10 +83,23 @@ public class CMSSidebarWidgetsBean implements Serializable {
     @Inject
     private CmsBean cmsBean;
 
+    /**
+     * <p>getAllWidgets.</p>
+     *
+     * @return a {@link java.util.List} object
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public List<WidgetDisplayElement> getAllWidgets() throws DAOException {
         return getAllWidgets(false);
     }
 
+    /**
+     * <p>getAllWidgets.</p>
+     *
+     * @param queryAdditionalInformation a boolean
+     * @return a {@link java.util.List} object
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public List<WidgetDisplayElement> getAllWidgets(boolean queryAdditionalInformation) throws DAOException {
 
         List<WidgetDisplayElement> widgets = new ArrayList<>();
@@ -149,10 +165,23 @@ public class CMSSidebarWidgetsBean implements Serializable {
         }
     }
 
+    /**
+     * <p>deleteWidget.</p>
+     *
+     * @param id a {@link java.lang.Long} object
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public void deleteWidget(Long id) throws DAOException {
         DataManager.getInstance().getDao().deleteCustomWidget(id);
     }
 
+    /**
+     * <p>Getter for the field <code>sidebarGroup</code>.</p>
+     *
+     * @param elements a {@link java.util.List} object
+     * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
+     * @return a {@link javax.faces.component.html.HtmlPanelGroup} object
+     */
     public HtmlPanelGroup getSidebarGroup(List<CMSSidebarElement> elements, CMSPage page) {
         if (elements != null && !elements.isEmpty()) {
             sidebarGroup = new HtmlPanelGroup();
@@ -164,6 +193,11 @@ public class CMSSidebarWidgetsBean implements Serializable {
         return sidebarGroup;
     }
 
+    /**
+     * <p>Getter for the field <code>sidebarGroup</code>.</p>
+     *
+     * @return a {@link javax.faces.component.html.HtmlPanelGroup} object
+     */
     public HtmlPanelGroup getSidebarGroup() {
         return Optional.ofNullable(cmsBean).map(CmsBean::getCurrentPage).map(page -> {
             List<CMSSidebarElement> elements = Optional.of(page).map(CMSPage::getSidebarElements).orElse(Collections.emptyList());
@@ -171,6 +205,11 @@ public class CMSSidebarWidgetsBean implements Serializable {
         }).orElseGet(() -> getSidebarGroup(Collections.emptyList(), null));
     }
 
+    /**
+     * <p>Setter for the field <code>sidebarGroup</code>.</p>
+     *
+     * @param sidebarGroup a {@link javax.faces.component.html.HtmlPanelGroup} object
+     */
     public void setSidebarGroup(HtmlPanelGroup sidebarGroup) {
         this.sidebarGroup = sidebarGroup;
     }

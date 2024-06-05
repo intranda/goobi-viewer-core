@@ -26,8 +26,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
 import javax.ws.rs.core.Response;
 
 import org.apache.http.client.ResponseHandler;
@@ -36,9 +34,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -47,6 +45,8 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.CmsBean;
 import io.goobi.viewer.model.job.JobStatus;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 /**
  * <p>
@@ -128,7 +128,6 @@ public class EPUBDownloadJob extends DownloadJob {
     public String getDisplayName() {
         return "EPUB";
     }
-
 
     /**
      * <p>
@@ -235,5 +234,11 @@ public class EPUBDownloadJob extends DownloadJob {
     @Override
     protected String getRestApiPath() {
         return "/viewerepub";
+    }
+
+    @Override
+    protected void triggerCreation() throws PresentationException, IndexUnreachableException {
+        // TODO Auto-generated method stub
+
     }
 }

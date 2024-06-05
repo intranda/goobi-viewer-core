@@ -7,7 +7,7 @@
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-	template="/resources/themes/#{navigationHelper.theme}/templateMirador.html">
+	template="/resources/themes/#{navigationHelper.theme}/templateBlankUnstyled.html">
 
     <ui:define name="metadata">
         <f:metadata>
@@ -19,6 +19,39 @@
         <f:view contentType="text/html" encoding="utf-8">
             <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}" />
             <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" />
+			<title>#{msg.viewMirador} -
+				#{adminThemesBean.getThemeLabel(configurationBean.name)}</title>
         </f:view>
     </ui:define>
+    
+    
+    <ui:define name="content">
+    
+		<!-- MIRADOR WRAPPER -->
+		<div id="viewMirador" class="view-mirador">
+			<!-- MIRADOR CONTAINER -->
+			<div id="miradorViewer" class="view-mirador__viewer"></div>
+		</div>
+
+		<!-- TODO: REST-Aufrufe entwickeln, die die notwendigen Parameter an Mirador übergeben. -->
+
+		<script type="text/javascript">
+		
+			function getPageFromQueryParameter()  {
+				let query = window.location.search;
+				let params = new URLSearchParams(query);
+				let page = params.get("page");
+				return page;
+			}
+		
+            var miradorConfig = {
+                root: "#{request.contextPath}",
+                restEndpoint: "#{configurationBean.restApiUrl}",
+                manifestEndpoint: "#{configurationBean.restApiUrlForIIIFPresention}/",
+                startPage: getPageFromQueryParameter()
+            };
+            viewerJS.mirador.init( miradorConfig );
+        </script>
+    </ui:define>
+    
 </ui:composition>

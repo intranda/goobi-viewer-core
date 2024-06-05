@@ -34,24 +34,23 @@
             	<div class="download__status">
 	                <h1 >#{msg.downloadHeading}</h1>
 
-	                <h:inputHidden id="jobStatusField" value="#{downloadBean.downloadJob.status}" />
-
-	                <h:panelGroup rendered="#{downloadBean.downloadJob!= null}">
+	                <h:inputHidden id="jobStatusField" value="#{downloadBean.message.messageStatus.name()}" />
+	                <h:panelGroup rendered="#{downloadBean.message != null}">
 	                    <!-- ERROR MESSAGE -->
-	                    <h:panelGroup rendered="#{downloadBean.downloadJob.status == 'ERROR'}">
+	                    <h:panelGroup rendered="#{downloadBean.message.messageStatus.name() == 'ERROR'}">
 	                    	<div class="card card-danger">
 	                    		<div class="card-header">
 	                                <h2 class="card-title">#{msg.downloadQueueTitle}</h2>
 	                            </div>
 	                            <div class="card-body">
 	                            	<!-- TODO: Add error message to job once it fails -->
-	                            	#{downloadBean.downloadJob.message}
+	                            	#{downloadBean.message.properties['message']}
 	                            </div>
 	                    	</div>
 	                    </h:panelGroup>
 
 	                    <!-- DOWNLOAD QUEUE -->
-	                    <h:panelGroup rendered="#{downloadBean.downloadJob.status == 'WAITING' or downloadBean.downloadJob.status == 'UNDEFINED'}">
+	                    <h:panelGroup rendered="#{downloadBean.message.messageStatus.name() == 'WAIT' or downloadBean.message.messageStatus.name() == 'NEW'}">
 	                        <div class="card card-info">
 	                            <div class="card-header">
 	                                <h2 class="card-title">#{msg.downloadQueueTitle}</h2>
@@ -60,11 +59,11 @@
 	                            	<div class="row">
 	                            		<div class="col-10">
 			                                <h:outputFormat value="#{msg.downloadQueuePosition}">
-			                                    <f:param value="#{downloadBean.downloadJob.displayName}" />
+			                                    <f:param value="#{msg['application/pdf']}" />
 			                                </h:outputFormat>
 	                            		</div>
 	                            		<div class="col-1">
-			                                <span class="label label-primary">#{downloadBean.downloadJob.queuePosition}</span>
+			                                <span class="label label-primary">#{downloadBean.queuePosition}</span>
 	                            		</div>
 	                            		<div class="col-1">
 	                            			<div class="download__status-loader">
@@ -77,7 +76,7 @@
 	                    </h:panelGroup>
 
 	                    <!-- DOWNLOAD -->
-	                    <h:panelGroup rendered="#{downloadBean.downloadJob.status == 'READY'}">
+	                    <h:panelGroup rendered="#{downloadBean.message.messageStatus.name() == 'FINISH'}">
 	                        <!-- LICENSE TEXT -->
 	                        <div class="card card-success">
 	                            <div class="card-header">

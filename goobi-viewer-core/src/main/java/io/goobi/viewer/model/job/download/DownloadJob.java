@@ -39,17 +39,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.client.ClientProperties;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -61,6 +53,8 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -163,8 +157,8 @@ public abstract class DownloadJob implements Serializable {
      * </p>
      *
      * @param criteria a {@link java.lang.String} object.
-     * @should generate same id from same criteria
      * @return a {@link java.lang.String} object.
+     * @should generate same id from same criteria
      */
     public static String generateDownloadJobId(String... criteria) {
         StringBuilder sbCriteria = new StringBuilder(criteria.length * 10);
@@ -176,6 +170,118 @@ public abstract class DownloadJob implements Serializable {
 
         return StringTools.generateHash(sbCriteria.toString());
     }
+
+    /**
+     * <p>
+     * checkDownload.
+     * </p>
+     *
+     * @param type For now just 'pdf'.
+     * @param email Optional e-mail address to be notified.
+     * @param pi a {@link java.lang.String} object.
+     * @param logId a {@link java.lang.String} object.
+     * @param downloadIdentifier Identifier has (Construct via DownloadJob.generateDownloadJobId()).
+     * @param ttl Number of ms before the job expires.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should throw IllegalArgumentException if type or pi or downloadIdentifier null
+     * @should throw IllegalArgumentException if downloadIdentifier mismatches pattern
+     * @should throw IllegalArgumentException if type unknown
+     */
+    public static synchronized DownloadJob checkDownload(String type, final String email, String pi, String logId, String downloadIdentifier,
+            long ttl) throws DAOException, PresentationException, IndexUnreachableException {
+        if (type == null) {
+            throw new IllegalArgumentException("type may not be null");
+        }
+        if (pi == null) {
+            throw new IllegalArgumentException("pi may not be null");
+        }
+        if (downloadIdentifier == null) {
+            throw new IllegalArgumentException("downloadIdentifier may not be null");
+        }
+        String controlIdentifier = DownloadJob.generateDownloadJobId(type, pi, logId);
+        if (!controlIdentifier.equals(downloadIdentifier)) {
+            throw new IllegalArgumentException("wrong downloadIdentifier");
+        }
+
+        logger.debug("Checking download of job {}", controlIdentifier);
+
+        try {
+            /*Get or create job*/
+            boolean newJob = false;
+            DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(downloadIdentifier);
+            if (downloadJob == null) {
+                logger.debug("Create new download job");
+                newJob = true;
+                switch (type) {
+                    case PDFDownloadJob.LOCAL_TYPE:
+                        downloadJob = new PDFDownloadJob(pi, logId, LocalDateTime.now(), ttl);
+                        break;
+                    case EPUBDownloadJob.LOCAL_TYPE:
+                        downloadJob = new EPUBDownloadJob(pi, logId, LocalDateTime.now(), ttl);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unknown type: " + type);
+                }
+            } else {
+                // Update latest request timestamp of an existing job
+                logger.debug("Retrieve existing job");
+                downloadJob.setLastRequested(LocalDateTime.now());
+                //                downloadJob.updateStatus();
+            }
+
+            /*set observer email*/
+            String useEmail = null;
+            if (StringUtils.isNotBlank(email)) {
+                useEmail = email.trim().toLowerCase();
+            }
+            if (StringUtils.isNotBlank(useEmail)) {
+                downloadJob.getObservers().add(useEmail);
+            }
+            if (downloadJob.status.equals(JobStatus.WAITING)) {
+                //keep waiting
+            } else if (downloadJob.getFile() != null && downloadJob.getFile().toFile().exists()) {
+                //not waiting and file exists -> file has been created
+                downloadJob.setStatus(JobStatus.READY);
+            } else {
+                //not waiting but file doesn't exist -> trigger creation
+                logger.debug("Triggering {} creation", downloadJob.getType());
+                try {
+                    downloadJob.triggerCreation();
+                    downloadJob.setStatus(JobStatus.WAITING);
+                } catch (DownloadException e) {
+                    downloadJob.setStatus(JobStatus.ERROR);
+                    downloadJob.setMessage(e.getMessage());
+                }
+            }
+
+            /*Add or update job in database*/
+            boolean updated = false;
+            if (newJob) {
+                DataManager.getInstance().getDao().addDownloadJob(downloadJob);
+            }
+            updated = DataManager.getInstance().getDao().updateDownloadJob(downloadJob);
+            if (updated) {
+                return downloadJob;
+            }
+            return null;
+        } finally {
+            // Clean up expired jobs AFTER updating the one in use
+            DownloadJobTools.cleanupExpiredDownloads();
+        }
+    }
+
+    /**
+     * <p>
+     * triggerCreation.
+     * </p>
+     *
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    protected abstract void triggerCreation() throws PresentationException, IndexUnreachableException;
 
     /**
      * <p>
@@ -281,13 +387,13 @@ public abstract class DownloadJob implements Serializable {
      * notifyObservers.
      * </p>
      *
-     * @param status a {@link io.goobi.viewer.model.job.download.DownloadJob.JobStatus} object.
+     * @param status a {@link io.goobi.viewer.model.job.JobStatus} object.
      * @param message a {@link java.lang.String} object.
      * @return a boolean.
      * @throws java.io.UnsupportedEncodingException if any.
      * @throws javax.mail.MessagingException if any.
      */
-    public boolean notifyObservers(JobStatus status, String message) throws UnsupportedEncodingException, MessagingException {
+    public boolean notifyObservers(JobStatus status, String messageId, String message) throws UnsupportedEncodingException, MessagingException {
         if (observers == null || observers.isEmpty()) {
             return false;
         }
@@ -299,7 +405,7 @@ public abstract class DownloadJob implements Serializable {
                 body = ViewerResourceBundle.getTranslation("downloadReadyBody", null);
                 if (body != null) {
                     body = body.replace("{0}", pi);
-                    body = body.replace("{1}", DataManager.getInstance().getConfiguration().getDownloadUrl() + identifier + "/");
+                    body = body.replace("{1}", DataManager.getInstance().getConfiguration().getDownloadUrl() + messageId + "/");
                     body = body.replace("{4}", getType().toUpperCase());
                     LocalDateTime exirationDate = lastRequested;
                     exirationDate = exirationDate.plus(ttl, ChronoUnit.MILLIS);
@@ -620,58 +726,9 @@ public abstract class DownloadJob implements Serializable {
     }
 
     /**
-     * <p>
-     * getJobStatus.
-     * </p>
-     *
-     * @param identifier a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    public String getJobStatus(String identifier) {
-        StringBuilder url = new StringBuilder();
-        url.append(DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
-        url.append(getRestApiPath()).append("/info/");
-        url.append(identifier);
-        ResponseHandler<String> handler = new BasicResponseHandler();
-        HttpGet httpGet = new HttpGet(url.toString());
-        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-            CloseableHttpResponse response = httpclient.execute(httpGet);
-            String ret = handler.handleResponse(response);
-            logger.trace("TaskManager response: {}", ret);
-            return ret;
-        } catch (Exception e) {
-            logger.error("Error getting response from TaskManager", e);
-            return "";
-        }
-    }
-
-    /**
      * @return {@link String}
      */
     protected abstract String getRestApiPath();
-
-    /**
-     * <p>
-     * updateStatus.
-     * </p>
-     */
-    public void updateStatus() {
-        String ret = getJobStatus(identifier);
-        try {
-            JSONObject object = new JSONObject(ret);
-            String statusString = object.getString("status");
-            JobStatus s = JobStatus.getByName(statusString);
-            setStatus(s);
-            if (JobStatus.ERROR.equals(s)) {
-                String errorMessage = object.getString("errorMessage");
-                setMessage(errorMessage);
-            }
-        } catch (JSONException e) {
-            setStatus(JobStatus.ERROR);
-            setMessage("Unable to parse TaskManager response");
-        }
-
-    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

@@ -52,9 +52,9 @@ public final class TranskribusUtils {
 
     private static final Logger logger = LogManager.getLogger(TranskribusUtils.class);
 
-    /** Constant <code>TRANSRIBUS_REST_URL="https://transkribus.eu/TrpServer/rest/"</code> */
+    /** Constant <code>TRANSRIBUS_REST_URL="https://transkribus.eu/TrpServer/rest/"</code>. */
     public static final String TRANSRIBUS_REST_URL = "https://transkribus.eu/TrpServer/rest/";
-    /** Constant <code>TRANSRIBUS_REST_TESTING_URL="https://transkribus.eu/TrpServerTesting"{trunked}</code> */
+    /** Constant <code>TRANSRIBUS_REST_TESTING_URL="https://transkribus.eu/TrpServerTesting"{trunked}</code>. */
     public static final String TRANSRIBUS_REST_TESTING_URL = "https://transkribus.eu/TrpServerTesting/rest/";
     private static final String URLPART_CHECK_JOB_STATUS = "jobs/{id}";
     private static final String URLPART_COLLECTION_LIST = "collections/listByName";
@@ -401,7 +401,7 @@ public final class TranskribusUtils {
      * @param sessionId a {@link java.lang.String} object.
      * @param jobId a {@link java.lang.String} object.
      * @should return correct status
-     * @return a {@link io.goobi.viewer.model.transkribus.TranskribusJob.JobStatus} object.
+     * @return a {@link io.goobi.viewer.model.job.JobStatus} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.HTTPException if any.
      */

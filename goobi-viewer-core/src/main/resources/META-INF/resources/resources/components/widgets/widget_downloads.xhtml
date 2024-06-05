@@ -143,7 +143,7 @@
                         
 	                            <!-- METS -->
 	                            <ui:fragment
-	                                rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS' or activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS_MARC'}">
+	                                rendered="#{(activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS' or activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS_MARC') and (navigationHelper.currentView != 'fulltext')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.metsResolverUrl}"
 	                                    id="lidomets" 
@@ -216,7 +216,7 @@
                                                  activeDocumentBean.viewManager.hasPages and 
                                                  activeDocumentBean.accessPermissionPdf}">
 								<ui:fragment
-									rendered="#{!configurationBean.generatePdfInTaskManager}">
+									rendered="#{!configurationBean.generatePdfInMessageQueue}">
 									<c:set scope="request" var="hasPrerenderedPagePdfs"
 										value="#{activeDocumentBean.viewManager.hasPrerenderedPagePdfs()}" />
 									<ui:fragment rendered="#{hasPrerenderedPagePdfs}">
@@ -257,9 +257,9 @@
 									</ui:fragment>
 								</ui:fragment>
 								<ui:fragment
-									rendered="#{configurationBean.generatePdfInTaskManager}">
+									rendered="#{configurationBean.generatePdfInMessageQueue}">
 									<a href="#" id="pdfWork"
-										class="badge badge-dark widget-downloads__work-download-pdf download-modal-widget"
+										class="badge badge-dark widget-downloads__work-download-pdf download-modal"
 										data-type="pdf"
 										data-title="#{activeDocumentBean.titleBarLabel}" data-id=""
 										data-pi="#{activeDocumentBean.viewManager.pi}"
@@ -539,7 +539,7 @@
 
 					<!-- PAGE RANGE DOWNLOADS -->
 					<ui:fragment
-						rendered="#{!activeDocumentBean.viewManager.bornDigital}">
+						rendered="#{!activeDocumentBean.viewManager.bornDigital and configurationBean.pdfPageRangeEnabled}">
 
 						<div
 							class="widget-downloads__page-range-downloads widget__badge-container">
@@ -680,36 +680,7 @@
 			</script>
 
 
-			<!-- Set up download modal for work and struct PDF -->
-			<script>
-            	var downloadModalConfig = {
-                    downloadBtn: $( ".download-modal-widget" ),
-                    path: "#{navigationHelper.applicationUrl}",
-                    iiifPath: "#{configurationBean.iiifApiUrl}",
-                    userEmail: $( "#userEmail" ).val(),
-                    useReCaptcha: #{configurationBean.useReCaptcha},
-                    reCaptchaSiteKey: "#{configurationBean.reCaptchaSiteKey}",
-                    messages: {
-                        downloadInfo: {
-                            text: "#{msg.downloadInfoText}",
-                            title: "#{msg.downloadInfoTitle}",
-                            part: "#{msg.downloadInfoPart}",
-                            fileSize: "#{msg.downloadInfoFileSize}"
-                        },
-                        reCaptchaText: "#{msg.downloadReCaptchaText}",
-                        rcInvalid: "#{msg.downloadRcInvalid}",
-                        rcValid: "#{msg.downloadRcValid}",
-                        eMailText: "#{msg.downloadEMailText}",
-                        eMailTextLoggedIn: "#{msg.downloadEMailTextLoggedIn}",
-                        eMail: "#{msg.downloadEmail}",
-                        closeBtn: "#{msg.downloadCloseModal}",
-                        saveBtn: "#{msg.downloadGenerateFile}",
-                    }
-                };
 
-                viewerJS.downloadModal.init( downloadModalConfig );
-                viewerJS.clipboard.init();
-            </script>
 		</ui:fragment>
 	</composite:implementation>
 </ui:composition>

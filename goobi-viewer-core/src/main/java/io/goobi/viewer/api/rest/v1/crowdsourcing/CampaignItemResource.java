@@ -203,7 +203,7 @@ public class CampaignItemResource {
     }
 
     /**
-     * Sets the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} for the given campaign and work and
+     * Sets the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus} for the given campaign and work and
      * records the {@link io.goobi.viewer.model.security.user.User} who made the change
      *
      * @param item a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} object.

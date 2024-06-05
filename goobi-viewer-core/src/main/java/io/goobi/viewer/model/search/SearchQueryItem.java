@@ -171,7 +171,7 @@ public class SearchQueryItem implements Serializable {
      * 
      * @param language
      * @param additionalValues 0-n additional, manually added values
-     * @return List<CheckboxSelectable<String>>
+     * @return List&lt;CheckboxSelectable&lt;String&gt;&gt;
      * @throws DAOException
      * @throws PresentationException
      * @throws IndexUnreachableException

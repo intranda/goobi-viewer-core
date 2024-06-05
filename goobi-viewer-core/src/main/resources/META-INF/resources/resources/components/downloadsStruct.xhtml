@@ -29,7 +29,7 @@
 							                         activeDocumentBean.viewManager.hasPages and 
 							                         activeDocumentBean.accessPermissionPdf}">
 					<ui:fragment
-						rendered="#{!configurationBean.generatePdfInTaskManager}">
+						rendered="#{!configurationBean.generatePdfInMessageQueue}">
 						<c:set scope="request" var="hasPrerenderedPagePdfs"
 							value="#{activeDocumentBean.viewManager.hasPrerenderedPagePdfs()}" />
 						<ui:fragment rendered="#{hasPrerenderedPagePdfs}">
@@ -70,7 +70,7 @@
 						</ui:fragment>
 					</ui:fragment>
 					<ui:fragment
-						rendered="#{configurationBean.generatePdfInTaskManager}">
+						rendered="#{configurationBean.generatePdfInMessageQueue}">
 						<a href="#" id="pdfStruct"
 							class="badge badge-dark widget-usage__struct-download-pdf download-modal-widget"
 							data-type="pdf" data-title="#{activeDocumentBean.titleBarLabel}"

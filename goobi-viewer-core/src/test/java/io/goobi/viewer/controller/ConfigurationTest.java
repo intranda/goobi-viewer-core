@@ -1201,12 +1201,12 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isGeneratePdfInTaskManager()
+     * @see Configuration#isGeneratePdfInMessageQueue()
      * @verifies return correct value
      */
     @Test
     void isGeneratePdfInTaskManager_shouldReturnCorrectValue() throws Exception {
-        assertTrue(DataManager.getInstance().getConfiguration().isGeneratePdfInTaskManager());
+        assertTrue(DataManager.getInstance().getConfiguration().isGeneratePdfInMessageQueue());
     }
 
     /**
@@ -1786,13 +1786,23 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getAllFacetFields_shouldReturnCorrectOrder() throws Exception {
         List<String> result = DataManager.getInstance().getConfiguration().getAllFacetFields();
-        assertEquals(6, result.size());
+        assertEquals(7, result.size());
         assertEquals("DC", result.get(0));
         assertEquals("YEAR", result.get(1));
         assertEquals("MD_CREATOR", result.get(2));
         assertEquals("MD_PLACEPUBLISH", result.get(3));
         assertEquals("WKT_COORDS", result.get(4));
         assertEquals("MD_PERSON", result.get(5));
+        assertEquals("BOOL_HASIMAGES", result.get(6));
+    }
+    
+    /**
+     * @see Configuration#getBooleanFacetFields()
+     * @verifies return all values
+     */
+    @Test
+    void getBooleanFacetFields_shouldReturnAllValues() throws Exception {
+        assertEquals(1, DataManager.getInstance().getConfiguration().getBooleanFacetFields().size());
     }
 
     /**

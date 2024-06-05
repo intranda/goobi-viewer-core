@@ -58,7 +58,7 @@ public class RestApiManager {
     private Configuration config = null;
 
     /**
-     * Create an instance directly using the unchanged given ApiUrlManagers
+     * Create an instance directly using the unchanged given ApiUrlManagers.
      */
     public RestApiManager() {
         this(DataManager.getInstance().getConfiguration());
@@ -102,7 +102,7 @@ public class RestApiManager {
 
     /**
      * @return The url to the content api. Either {@link AbstractApiUrlManager#getApiUrl()} of the {@link #getContentApiManager()} if it exists, or
-     *         else the configured {@link Configuration#getIIIApiUrl()}
+     *         else the configured {@link Configuration#getIIIFApiUrl()}
      */
     public String getContentApiUrl() {
         return config.getIIIFApiUrl();

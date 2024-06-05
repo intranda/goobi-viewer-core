@@ -933,7 +933,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isTocEpubEnabled() {
-        return DataManager.getInstance().getConfiguration().isTocEpubEnabled() && isGeneratePdfInTaskManager();
+        return DataManager.getInstance().getConfiguration().isTocEpubEnabled() && isGeneratePdfInMessageQueue();
     }
 
     /**
@@ -943,8 +943,8 @@ public class ConfigurationBean implements Serializable {
      *
      * @return a boolean.
      */
-    public boolean isGeneratePdfInTaskManager() {
-        return DataManager.getInstance().getConfiguration().isGeneratePdfInTaskManager();
+    public boolean isGeneratePdfInMessageQueue() {
+        return DataManager.getInstance().getConfiguration().isGeneratePdfInMessageQueue();
     }
 
     /**
@@ -960,7 +960,8 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isShowSearchInItem. </p
+     * isShowSearchInItem.
+     * </p>
      *
      * @return a boolean.
      */
@@ -1592,6 +1593,16 @@ public class ConfigurationBean implements Serializable {
     public boolean isFacetFieldDisplayValueFilter(String facetField) {
         return DataManager.getInstance().getConfiguration().isFacetFieldDisplayValueFilter(facetField);
     }
+    
+    /**
+    *
+    * @param facetField
+    * @return Configured value
+    * @should return correct value
+    */
+   public boolean isFacetFieldTypeBoolean(String facetField) {
+       return DataManager.getInstance().getConfiguration().getBooleanFacetFields().contains(facetField);
+   }
 
     public boolean isPdfPageRangeEnabled() {
         return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsagePdfPageRange();

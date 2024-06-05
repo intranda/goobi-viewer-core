@@ -428,7 +428,6 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         return !this.categories.isEmpty();
     }
 
-    /** {@inheritDoc} */
     public List<CMSCategory> getCategories() {
         return this.categories;
     }
@@ -471,7 +470,6 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         return this.categories.add(cat);
     }
 
-    /** {@inheritDoc} */
     public boolean isImportant() {
         return Priority.IMPORTANT.equals(this.priority);
     }
@@ -487,7 +485,6 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
         this.priority = important ? Priority.IMPORTANT : Priority.DEFAULT;
     }
 
-    /** {@inheritDoc} */
     public Priority getPriority() {
         if (priority == null) {
             priority = Priority.DEFAULT;
@@ -653,7 +650,6 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
      * @see io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile#
      * getName(java.lang.String)
      */
-    /** {@inheritDoc} */
     public String getName(String language) {
         if (getMetadataForLanguage(language) != null) {
             return getMetadataForLanguage(language).getName();
@@ -681,7 +677,6 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
      * @see io.goobi.viewer.model.cms.tilegrid.ImageGalleryTile#
      * getDisplayOrder()
      */
-    /** {@inheritDoc} */
     public int getDisplayOrder() {
         return this.displayOrder;
     }

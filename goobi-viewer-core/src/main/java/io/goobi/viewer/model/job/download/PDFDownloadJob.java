@@ -21,24 +21,19 @@
  */
 package io.goobi.viewer.model.job.download;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
-import javax.ws.rs.core.Response;
-
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
 
-import io.goobi.viewer.controller.DataFileTools;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringTools;
-import io.goobi.viewer.exceptions.DownloadException;
+import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.job.JobStatus;
+import io.goobi.viewer.model.job.TaskType;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
@@ -125,63 +120,6 @@ public class PDFDownloadJob extends DownloadJob {
 
     /**
      * <p>
-     * triggerCreation.
-     * </p>
-     *
-     * @param pi a {@link java.lang.String} object.
-     * @param logId a {@link java.lang.String} object.
-     * @param downloadIdentifier a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    public static void triggerCreation(String pi, String logId, String downloadIdentifier)
-            throws PresentationException, IndexUnreachableException {
-
-        File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(PDFDownloadJob.LOCAL_TYPE));
-        if (!targetFolder.isDirectory() && !targetFolder.mkdir()) {
-            throw new DownloadException("Cannot create download folder: " + targetFolder);
-        }
-
-        String cleanedPi = StringTools.cleanUserGeneratedData(pi);
-        String cleanedLogId = StringTools.cleanUserGeneratedData(logId);
-
-        String title = cleanedPi + "_" + cleanedLogId;
-        logger.debug("Trigger PDF generation for {}", title);
-
-        String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
-        String mediaRepository = DataFileTools.getDataRepositoryPathForRecord(cleanedPi);
-        // Path imageFolder = Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getMediaFolder()).resolve(pi);
-        Path metsPath =
-                Paths.get(mediaRepository).resolve(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).resolve(cleanedPi + ".xml");
-
-        logger.debug("Calling taskManager at {}", taskManagerUrl);
-
-        TaskManagerPDFRequest requestObject = new TaskManagerPDFRequest();
-        requestObject.setPi(cleanedPi);
-        requestObject.setLogId(cleanedLogId);
-        requestObject.setGoobiId(downloadIdentifier);
-        requestObject.setSourceDir(metsPath.toString());
-        try {
-            Response response = postJobRequest(taskManagerUrl, requestObject);
-            String entity = response.readEntity(String.class);
-            JSONObject entityJson = new JSONObject(entity);
-            if (entityJson.has("STATUS") && "ERROR".equals(entityJson.get("STATUS"))) {
-                if ("Job already in DB, not adding it!".equals(entityJson.get("ERRORMESSAGE"))) {
-                    logger.debug("Job is already being processed");
-                } else {
-                    throw new DownloadException(
-                            "Failed to start pdf creation for PI=" + cleanedPi + " and LOGID=" + cleanedLogId + ": TaskManager returned error "
-                                    + entityJson.get("ERRORMESSAGE"));
-                }
-            }
-        } catch (Exception e) {
-            // Had to catch generic exception here because a ParseException triggered by Tomcat error HTML getting parsed as JSON cannot be caught
-            throw new DownloadException("Failed to start pdf creation for PI=" + cleanedPi + " and LOGID=" + cleanedLogId + ": " + e.getMessage());
-        }
-    }
-
-    /**
-     * <p>
      * getPDFJobsInQueue.
      * </p>
      *
@@ -199,6 +137,25 @@ public class PDFDownloadJob extends DownloadJob {
     @Override
     protected String getRestApiPath() {
         return "/viewerpdf";
+    }
+
+    @Override
+    protected void triggerCreation() throws PresentationException, IndexUnreachableException {
+        ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
+        message.getProperties().put("pi", this.pi);
+        if (StringUtils.isNotBlank(this.logId)) {
+            message.getProperties().put("logId", this.logId);
+        }
+        try {
+            BeanUtils.getPersistentStorageBean().getMessageBroker().addToQueue(message);
+        } catch (MessageQueueException e) {
+            throw new PresentationException("Error adding pdf creation message to message queue", e);
+        }
+
+    }
+
+    public static String generateJobId(String pi, String logId) {
+        return DownloadJob.generateDownloadJobId(LOCAL_TYPE, pi, logId);
     }
 
 }

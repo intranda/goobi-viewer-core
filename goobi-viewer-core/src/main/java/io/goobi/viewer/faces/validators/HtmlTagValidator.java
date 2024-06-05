@@ -38,8 +38,9 @@ import org.jsoup.nodes.Document;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
- * Validates that any input text has no html-tags other than <br>
- * <
+ * Validates that any input text has no html-tags other than
+ * &lt;br&gt;, &lt;b&gt;, &lt;strong&gt;, &lt;em&gt;, &lt;i&gt;, &lt;mark&gt;, &lt;small&gt;, &lt;del&gt;, &lt;ins&gt;, &lt;sub&gt;, &lt;sup&gt;
+ * 
  *
  * @author Florian Alpers
  */

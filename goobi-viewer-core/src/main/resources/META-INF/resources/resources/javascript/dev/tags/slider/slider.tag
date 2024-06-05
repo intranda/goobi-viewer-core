@@ -2,30 +2,38 @@
 
 <slider>
 
-<div ref="container" class="swiper-container slider-{this.styleName}__container">
+<div ref="container" class="swiper slider-{this.styleName}__container slider-{this.sliderInstance}">
 	<div class="swiper-wrapper slider-{this.styleName}__wrapper">
 		<div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}">
 		</div>
 	</div>
-	<div if="{this.showPaginator}" ref="paginator" class="swiper-pagination slider-{this.styleName}__dots"></div>
+	
+	<div if="{this.showPaginator}" ref="paginator" class="swiper-pagination swiper-pagination-wrapper slider-paginator-wrapper-{this.styleName} slider-pagination-{this.sliderInstance}"></div>
+
 </div>
 
-<script>
+<script> 
 
 	//initially show paginator so it can be referenced when amending style config (see this.amendStyle())
 	this.showPaginator = true;
 
     this.on( 'mount', function() {
-		this.style = this.opts.styles.get(this.opts.style);
-//    	console.log(this.style);
-//     	console.log("mounting 'slider.tag' ", this.opts, this.style);
+    	this.sliderInstance = this.opts.sliderinstanceid;
+    	
+		this.style = $.extend(true, {}, this.opts.styles.get(this.opts.style));
+    	// console.log(this.style);
+     	console.log("mounting 'slider.tag' ", this.opts, this.style);
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
     	// console.log("init slider with '" + this.opts.style + "''", this.style);
 		this.timeout = this.style.timeout ? this.style.timeout : 100000;
 		this.maxSlides = this.style.maxSlides ? this.style.maxSlides : 1000;
 		this.linkTarget = this.opts.linktarget ? this.opts.linktarget : "_self";
-    	
+		
+
+		
+		firstSlideMessage = this.opts.firstslidemessage;
+
     	let pSource;
     	if(this.opts.sourceelement) {
     		let sourceElement = document.getElementById(this.opts.sourceelement);
@@ -36,6 +44,9 @@
     			logger.error("sourceElement was included but no matching dom element found");
     			return;
     		}
+    	} else if(this.opts.slides) {
+    		let sourceArray = this.opts.slides.replaceAll("_qm_", "?").split("$")
+    		pSource = Promise.resolve(sourceArray);
     	}  else {
     		pSource = fetch(this.opts.source)
         	.then(result => result.json());
@@ -63,9 +74,16 @@
     	if(this.slides && this.slides.length > 0) {
     		if(this.slider) {
     			this.slider.destroy();
+    			
     		}
 			this.initSlideTags(this.slides);
     		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
+    		window.viewerJS.slider.sliders.push(this.swiper);
+
+    		 
+    		// console.log(this.swiper);
+    		// console.log(this.refs.container);
+    		
     	}
     	
     	if (this.style.onUpdate) {
@@ -79,6 +97,8 @@
     	this.slides = slides;
     	this.update();
     }
+    
+    let imagealtmsgkey = this.opts.imagealtmsgkey;
     
     /**
     * Mount riot tag for all <slide> elements using a riot tag named "slide_[style.layout]"
@@ -94,6 +114,8 @@
    				image: this.getImage(slide),
    				label: this.translate(slide.label),
    				description: this.translate(slide.description),
+   				alttext: this.translate(slide.altText),
+   				altimagemsgkey: this.translate(imagealtmsgkey),
     		});
     	});
     }
@@ -169,15 +191,25 @@
     amendStyle(styleConfig) {
     	let swiperConfig = styleConfig.swiperConfig;
     	if(swiperConfig.pagination && !swiperConfig.pagination.el)  {
-    		swiperConfig.pagination.el = this.refs.paginator;
+    		swiperConfig.pagination.el = '.slider-pagination-' + this.sliderInstance;
+    		// console.log('log swiper pagination el: ' + swiperConfig.pagination.el); 
     		this.showPaginator = true;
+    		
     	} else {
     		this.showPaginator = false;
     	}
-    }
+	  	swiperConfig.a11y = {
+	  		prevSlideMessage: this.opts.prevslideMessage,
+			nextSlideMessage: this.opts.nextslideMessage,
+	  		lastSlideMessage: this.opts.firstslidemessage,
+			firstSlideMessage: this.opts.lastslidemessage,
+			paginationBulletMessage: this.opts.paginationbulletmessage + ' \{\{index\}\}',
+		}
+	}
     
     getLayout() {
     	let layout = this.style.layout ? this.style.layout : 'default';
+    	// console.log('layout:' + this.style.layout); 
     	return layout;
     }
     

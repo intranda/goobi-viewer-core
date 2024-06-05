@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -102,7 +101,7 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * 
+     *
      * @param page
      * @return {@link AnnotationPage}
      * @throws IllegalRequestException
@@ -170,7 +169,7 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * 
+     *
      * @param pi
      * @param pageNo
      * @param uri
@@ -240,7 +239,7 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * 
+     *
      * @param pi
      * @param pageNo
      * @param uri
@@ -282,7 +281,7 @@ public class AnnotationsResourceBuilder {
         }
         return collection;
     }
-    
+
     /**
      * @param pi
      * @param pageNo
@@ -306,7 +305,7 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * 
+     *
      * @param pi
      * @param uri
      * @param page
@@ -330,8 +329,9 @@ public class AnnotationsResourceBuilder {
                                 .collect(Collectors.toList()),
                         page);
     }
-    
-    public AnnotationPage getWebAnnotationPageForPageComments(String pi, URI uri, Integer pageNo, Integer collectionPage) throws DAOException, IllegalRequestException {
+
+    public AnnotationPage getWebAnnotationPageForPageComments(String pi, URI uri, Integer pageNo, Integer collectionPage)
+            throws DAOException, IllegalRequestException {
         if (collectionPage == null || collectionPage < 1) {
             throw new IllegalRequestException("Page number must be at least 1");
         }
@@ -349,7 +349,7 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * 
+     *
      * @param pi
      * @param uri
      * @return {@link AnnotationList}
@@ -364,7 +364,7 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * 
+     *
      * @param pi
      * @param pageNo
      * @param uri
@@ -380,7 +380,7 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * 
+     *
      * @param pi
      * @param pageNo
      * @param uri
@@ -410,7 +410,7 @@ public class AnnotationsResourceBuilder {
     }
 
     /**
-     * 
+     *
      * @param id
      * @return Optional<WebAnnotation>
      * @throws DAOException

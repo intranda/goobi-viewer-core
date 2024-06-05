@@ -131,7 +131,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * Like {@link #StructElement(long, SolrDocument)}, but get the lucene Id from the SolrDocument
+     * Like {@link #StructElement(long, SolrDocument)}, but get the lucene Id from the SolrDocument.
      *
      * @param doc
      * @throws IndexUnreachableException
@@ -422,8 +422,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
     /**
      * Returns a StructElement that represents the top non-anchor element of the hierarchy (ISWORK=true). If the element itself is an anchor, itself
-     * will be returned. If no topStruct element is found because no metadata {@link SolrConstants#IDDOC_TOPSTRUCT} is found or because it could not
-     * be resolved, null is returned
+     * will be returned. If no topStruct element is found because no metadata {@link io.goobi.viewer.solr.SolrConstants#IDDOC_TOPSTRUCT} is found 
+     * or because it could not be resolved, null is returned
      *
      * @should retrieve top struct correctly
      * @should return self if topstruct

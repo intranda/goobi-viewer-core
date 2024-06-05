@@ -79,7 +79,7 @@
                     color: @locationColor;
                 }
                 &.active[data-type="corporation"] {
-                    color: @corporationColor;
+                    color: @corporateColor;
                 }
             }
             &.reset-filter {
@@ -138,16 +138,21 @@
             &:hover {
                 background-color: @tagHoverColor;
             }
-            &.empty {}
-            &.person {
-                color: @personColor;
-            }
-            &.location {
-                color: @locationColor;
-            }
-            &.corporation {
-                color: @corporationColor;
-            }
+	        &.empty {
+	            display: none;
+	        }
+	        &.PERSON {
+	            color: @personColor;
+	        }
+	        &.LOCATION {
+	            color: @locationColor;
+	        }
+	        &.CORPORATION {
+	            color: @corporateColor;
+	        }
+	        &.INSTITUTION {
+	            color: @corporateColor;
+	        }
         }
     }
     .set-tag-range-widget {
@@ -190,16 +195,21 @@
                             background-color: @tagHoverColor;                        
                         }
                         &:hover {}
-                        &.empty {}
-                        &.person {
-                            color: @personColor;
-                        }
-                        &.location {
-                            color: @locationColor;
-                        }
-                        &.corporation {
-                            color: @corporationColor;
-                        }
+				        &.empty {
+				            display: none;
+				        }
+				        &.PERSON {
+				            color: @personColor;
+				        }
+				        &.LOCATION {
+				            color: @locationColor;
+				        }
+				        &.CORPORATION {
+				            color: @corporateColor;
+				        }
+				        &.INSTITUTION {
+				            color: @corporateColor;
+				        }
                     }
                 }
             }
@@ -348,14 +358,17 @@
         &.empty {
             display: none;
         }
-        &.person {
+        &.PERSON {
             color: @personColor;
         }
-        &.location {
+        &.LOCATION {
             color: @locationColor;
         }
-        &.corporation {
-            color: @corporationColor;
+        &.CORPORATION {
+            color: @corporateColor;
+        }
+        &.INSTITUTION {
+            color: @corporateColor;
         }
     }
 }

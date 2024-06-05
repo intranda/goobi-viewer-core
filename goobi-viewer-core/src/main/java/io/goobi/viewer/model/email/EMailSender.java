@@ -107,13 +107,14 @@ public class EMailSender {
      * @param recipients
      * @param cc
      * @param bcc
+     * @param replyTo
      * @param subject
      * @param body
      * @return true if mail sent successfully; false otherwise
      * @throws MessagingException
      * @throws UnsupportedEncodingException
      */
-    public boolean postMail(List<String> recipients, List<String> cc, List<String> bcc, String subject, String body)
+    public boolean postMail(List<String> recipients, List<String> cc, List<String> bcc, List<String> replyTo, String subject, String body)
             throws MessagingException, UnsupportedEncodingException {
         if (recipients == null) {
             throw new IllegalArgumentException("recipients may not be null");
@@ -135,7 +136,7 @@ public class EMailSender {
                 smtpSecurity.toUpperCase());
 
         Session session = createSession(debug, auth);
-        Message msg = createMessage(recipients, cc, bcc, subject, body, session);
+        Message msg = createMessage(recipients, cc, bcc, replyTo, subject, body, session);
         Transport.send(msg);
 
         return true;
@@ -146,15 +147,17 @@ public class EMailSender {
      * @param recipients
      * @param cc
      * @param bcc
+     * @param replyTo
      * @param subject
      * @param body
      * @param session
      * @return Created {@link Message}
      * @throws UnsupportedEncodingException
      * @throws MessagingException
+     * @should create message correctly
      */
-    private Message createMessage(List<String> recipients, List<String> cc, List<String> bcc, String subject, String body, Session session)
-            throws UnsupportedEncodingException, MessagingException {
+    Message createMessage(List<String> recipients, List<String> cc, List<String> bcc, List<String> replyTo, String subject, String body,
+            Session session) throws UnsupportedEncodingException, MessagingException {
         Message msg = new MimeMessage(session);
         InternetAddress addressFrom = new InternetAddress(smtpSenderAddress, smtpSenderName);
         msg.setFrom(addressFrom);
@@ -168,10 +171,15 @@ public class EMailSender {
         }
 
         // BCC
-
         if (bcc != null && !bcc.isEmpty()) {
             msg.setRecipients(Message.RecipientType.BCC, prepareRecipients(bcc));
         }
+
+        // reply-to
+        if (replyTo != null && !replyTo.isEmpty()) {
+            msg.setReplyTo(prepareRecipients(replyTo));
+        }
+
         // Optional : You can also set your custom headers in the Email if you want
         // msg.addHeader("MyHeaderName", "myHeaderValue");
         msg.setSubject(subject);
@@ -188,7 +196,7 @@ public class EMailSender {
         return msg;
     }
 
-    private Session createSession(boolean debug, boolean auth) {
+     Session createSession(boolean debug, boolean auth) {
         Properties props = createProperties(auth);
         Session session;
         if (auth) {
@@ -250,6 +258,7 @@ public class EMailSender {
      * @param recipients
      * @return {@link InternetAddress}[]
      * @throws AddressException
+     * @should parse addresses correctly
      */
     static InternetAddress[] prepareRecipients(List<String> recipients) throws AddressException {
         if (recipients == null) {

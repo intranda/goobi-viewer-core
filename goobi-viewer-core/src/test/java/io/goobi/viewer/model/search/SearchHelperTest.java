@@ -313,7 +313,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true, true, 0);
         Assertions.assertFalse(truncated.isEmpty());
         //        Assertions.assertTrue(truncated.get(0).contains("<span class=\"search-list--highlight\">ipsum</span>"));
-        Assertions.assertTrue(truncated.get(0).contains("<span class=\"search-list--highlight\">tempor</span>"));
+        Assertions.assertTrue(truncated.get(0).contains("<mark class=\"search-list--highlight\">tempor</mark>"));
         //        Assertions.assertTrue(truncated.get(0).contains("<span class=\"search-list--highlight\">labore</span>"));
         // TODO The other two terms aren't highlighted when using random length phrase
     }
@@ -385,7 +385,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true, 0);
         Assertions.assertEquals(7, truncated.size());
         for (String fragment : truncated) {
-            Assertions.assertTrue(fragment.contains("<span class=\"search-list--highlight\">in</span>"));
+            Assertions.assertTrue(fragment.contains("<mark class=\"search-list--highlight\">in</mark>"));
         }
     }
 
@@ -400,7 +400,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true, 0);
         Assertions.assertEquals(1, truncated.size());
         for (String fragment : truncated) {
-            Assertions.assertTrue(fragment.contains("<span class=\"search-list--highlight\">two</span>"));
+            Assertions.assertTrue(fragment.contains("<mark class=\"search-list--highlight\">two</mark>"));
         }
     }
 
@@ -415,7 +415,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true, 0);
         Assertions.assertEquals(1, truncated.size());
         for (String fragment : truncated) {
-            Assertions.assertTrue(fragment.contains("<span class=\"search-list--highlight\">beats</span>"));
+            Assertions.assertTrue(fragment.contains("<mark class=\"search-list--highlight\">beats</mark>"));
         }
     }
 
@@ -425,8 +425,8 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String[] terms = { "dolor~1" };
         List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true, 0);
         Assertions.assertEquals(4, truncated.size());
-        Assertions.assertEquals(2, truncated.stream().filter(t -> t.contains("<span class=\"search-list--highlight\">dolor</span>")).count());
-        Assertions.assertEquals(2, truncated.stream().filter(t -> t.contains("<span class=\"search-list--highlight\">dolore</span>")).count());
+        Assertions.assertEquals(2, truncated.stream().filter(t -> t.contains("<mark class=\"search-list--highlight\">dolor</mark>")).count());
+        Assertions.assertEquals(2, truncated.stream().filter(t -> t.contains("<mark class=\"search-list--highlight\">dolore</mark>")).count());
     }
 
     /**
@@ -1303,7 +1303,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void replaceHighlightingPlaceholders_shouldReplacePlaceholdersWithHtmlTags() throws Exception {
-        Assertions.assertEquals("<span class=\"search-list--highlight\">foo</span>", SearchHelper
+        Assertions.assertEquals("<mark class=\"search-list--highlight\">foo</mark>", SearchHelper
                 .replaceHighlightingPlaceholders(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END));
     }
 

@@ -13,6 +13,7 @@
 		<composite:attribute name="component" required="true"/>
 		<composite:attribute name="cmsContent" required="false" default="#{cc.attrs.component.firstContentItem.content}"/>
 		<composite:attribute name="image" required="false" default="#{cc.attrs.cmsContent.mediaItem}"/>
+		<composite:attribute name="imageLink" required="false" default="#{cc.attrs.cmsContent.mediaItem.linkURI}"/>
     </composite:interface>
 
 
@@ -30,21 +31,31 @@
 				<ui:fragment rendered="#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user)}">
 					<div class="content-component__not-published-info">#{msg.cms__content_not_published_yet}</div>
 				</ui:fragment>
+				
+				<!-- IMAGE WITH LINK -->
+	        	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.image) and cc.attrs.cmsContent.mediaItem.linkURI != null and !cc.attrs.lightbox}">
+					<div class="content-component__image">
+						<a class="content-component__image-link" target="_blank" href="#{cc.attrs.cmsContent.mediaItem.linkURI}">
+							<img src="#{cc.attrs.cmsContent.getUrl(1920, null)}" class="img-fluid content-component__image-img" alt="#{cc.attrs.image.alternativeText}" />
+							<span class="content-component__image-text">#{cc.attrs.image.name}</span>
+						</a>
+					</div>
+	            </ui:fragment>
 
 	            <!-- IMAGE WITH LIGHTBOX -->
 	        	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.image) and cc.attrs.lightbox}">
 					<div class="content-component__image">
-						<a class="content-component__image-lightbox-link" aria-label="#{msg.open_as_lightbox} #{cc.attrs.image.alternativeText}" data-target="imageLightbox" href="#{cc.attrs.cmsContent.getUrl(1920, null)}" title="#{cc.attrs.image.name}">
+						<a class="content-component__image-lightbox-link" aria-label="#{msg.open_as_lightbox}: #{cc.attrs.image.name}" data-target="imageLightbox" href="#{cc.attrs.cmsContent.getUrl(1920, null)}">
 							<img src="#{cc.attrs.cmsContent.getUrl(1920, null)}" class="img-fluid content-component__image-lightbox-img " alt="#{cc.attrs.image.alternativeText}" title="#{cc.attrs.image.name}" />
 							<span class="content-component__image-text">#{cc.attrs.image.name}</span>
 						</a>
 					</div>
 	            </ui:fragment>
 	            
-	            <!-- SIMPLE IMAGE -->
-	        	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.image) and !cc.attrs.lightbox}">
+	            <!-- SIMPLE IMAGE WITHOUT LINK OR LIGHTBOX -->
+	        	<ui:fragment rendered="#{cmsMediaBean.isImage(cc.attrs.image) and !cc.attrs.lightbox and cc.attrs.cmsContent.mediaItem.linkURI == null}">
 					<div class="content-component__image">
-						<img src="#{cc.attrs.cmsContent.getUrl(1920, null)}" class="img-fluid content-component__image-img" alt="#{cc.attrs.image.alternativeText}" title="#{cc.attrs.image.name}" />
+						<img src="#{cc.attrs.cmsContent.getUrl(1920, null)}" class="img-fluid content-component__image-img" alt="#{cc.attrs.image.alternativeText}" />
 						<span class="content-component__image-text">#{cc.attrs.image.name}</span>
 					</div>
 					
