@@ -143,7 +143,7 @@
                         
 	                            <!-- METS -->
 	                            <ui:fragment
-	                                rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS' or activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS_MARC'}">
+	                                rendered="#{(activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS' or activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS_MARC') and (navigationHelper.currentView != 'fulltext')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.metsResolverUrl}"
 	                                    id="lidomets" 
