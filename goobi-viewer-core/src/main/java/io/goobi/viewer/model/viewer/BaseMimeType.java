@@ -76,7 +76,7 @@ public enum BaseMimeType {
             return MODEL;
         }
         for (BaseMimeType o : BaseMimeType.values()) {
-            if (o.getName().equals(useName)) {
+            if (o.getName().equalsIgnoreCase(useName)) {
                 return o;
             }
         }

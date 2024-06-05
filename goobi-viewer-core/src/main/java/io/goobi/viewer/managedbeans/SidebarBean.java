@@ -2,20 +2,25 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.enterprise.context.SessionScoped;
+import javax.faces.component.UIComponent;
+import javax.faces.component.UINamingContainer;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.commons.lang3.StringUtils;
 
-import io.goobi.viewer.controller.JsonTools;
+import io.goobi.viewer.controller.json.JsonStringConverter;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.viewer.record.views.VisibilityCondition;
+import io.goobi.viewer.model.viewer.record.views.VisibilityConditionInfo;
 
 @Named
 @SessionScoped
@@ -29,82 +34,49 @@ public class SidebarBean implements Serializable {
     @Inject
     private HttpServletRequest httpRequest;
 
-    public boolean isVisibleForRecord(VisibilityCondition condition) throws IndexUnreachableException, DAOException, RecordNotFoundException {
-        if (activeDocumentBean != null && activeDocumentBean.isRecordLoaded()) {
-            return condition.matchesRecord(navigationHelper.getCurrentPageType(), activeDocumentBean.getViewManager(), httpRequest);
-        }
-        return false;
+    public boolean checkVisibilityForRecord(String json) throws IOException, IndexUnreachableException, DAOException, RecordNotFoundException {
+        json = json.replaceAll(":\\s*!\\[", ":[!,");
+        VisibilityConditionInfo info = JsonStringConverter.of(VisibilityConditionInfo.class).convert(json);
+        VisibilityCondition condition = new VisibilityCondition(info);
+        boolean visible = condition.matchesRecord(navigationHelper.getCurrentPageType(), activeDocumentBean.getViewManager(), httpRequest);
+        return visible;
     }
 
-    public boolean isVisibleForPage(VisibilityCondition condition) throws IndexUnreachableException, DAOException, RecordNotFoundException {
-        if (activeDocumentBean != null && activeDocumentBean.isRecordLoaded()) {
-            return condition.matchesPage(navigationHelper.getCurrentPageType(), activeDocumentBean.getViewManager().getCurrentPage(), httpRequest);
-        }
-        return false;
+    public boolean checkVisibilityForPage(String json) throws IOException, IndexUnreachableException, DAOException, RecordNotFoundException {
+        json = json.replaceAll(":\\s*![", ":[!,");
+        VisibilityConditionInfo info = JsonStringConverter.of(VisibilityConditionInfo.class).convert(json);
+        VisibilityCondition condition = new VisibilityCondition(info);
+        return condition.matchesPage(navigationHelper.getCurrentPageType(), activeDocumentBean.getViewManager().getCurrentPage(), httpRequest);
     }
 
-    public boolean checkVisibility(String json) throws IOException {
-        json = json.replace("`", "\"");
-        VisibilityConditionInfo info = JsonTools.getAsObject(json, VisibilityConditionInfo.class);
-        return true;
+    public long getChildCount(UINamingContainer component, String styleClass) {
+        return getDescendants(component.getFacets()
+                .get("javax.faces.component.COMPOSITE_FACET_NAME"))
+                        .stream()
+                        .filter(child -> child.isRendered())
+                        .filter(child -> StringUtils.isNotBlank(styleClass) ? hasStyleClass(child, styleClass) : true)
+                        .count();
     }
 
-    public static class VisibilityConditionInfo {
-        private List<String> fileTypes;
-        private String baseMimeType;
-        private String accessCondition;
-        private List<String> pageTypes;
-        private Boolean hasPages;
-
-        public List<String> getFileTypes() {
-            return fileTypes;
+    private List<UIComponent> getDescendants(UIComponent container) {
+        List<UIComponent> descs = new ArrayList<UIComponent>();
+        for (UIComponent child : container.getChildren()) {
+            descs.add(child);
+            descs.addAll(getDescendants(child));
         }
+        return descs;
+    }
 
-        public void setFileTypes(List<String> fileTypes) {
-            this.fileTypes = fileTypes;
+    private boolean hasStyleClass(UIComponent c, String styleClass) {
+        //        Object data = c.getAttributes().get("data-test");
+        Object styles = c.getAttributes().get("visibilty-type");
+        if (styles instanceof Collection) {
+            return ((Collection) styles).contains(styleClass);
+        } else if (styles != null) {
+            return styles.toString().contains(styleClass);
+        } else {
+            return false;
         }
-
-        public String getBaseMimeType() {
-            return baseMimeType;
-        }
-
-        public void setBaseMimeType(String baseMimeType) {
-            this.baseMimeType = baseMimeType;
-        }
-
-        public String getAccessCondition() {
-            return accessCondition;
-        }
-
-        public void setAccessCondition(String accessCondition) {
-            this.accessCondition = accessCondition;
-        }
-
-        public List<String> getPageTypes() {
-            return pageTypes;
-        }
-
-        public void setPageTypes(List<String> pageTypes) {
-            this.pageTypes = pageTypes;
-        }
-
-        public Boolean getHasPages() {
-            return hasPages;
-        }
-
-        public void setHasPages(Boolean hasPages) {
-            this.hasPages = hasPages;
-        }
-
-        @Override
-        public String toString() {
-            try {
-                return JsonTools.getAsJson(this);
-            } catch (JsonProcessingException e) {
-                return super.toString();
-            }
-        }
-
     }
 
 }
