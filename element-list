@@ -7,7 +7,6 @@ io.goobi.viewer.api.rest.model
 io.goobi.viewer.api.rest.model.index
 io.goobi.viewer.api.rest.model.monitoring
 io.goobi.viewer.api.rest.model.ner
-io.goobi.viewer.api.rest.model.search
 io.goobi.viewer.api.rest.model.statistics.usage
 io.goobi.viewer.api.rest.model.tasks
 io.goobi.viewer.api.rest.resourcebuilders
@@ -22,6 +21,7 @@ io.goobi.viewer.api.rest.v1.clients
 io.goobi.viewer.api.rest.v1.cms
 io.goobi.viewer.api.rest.v1.collections
 io.goobi.viewer.api.rest.v1.crowdsourcing
+io.goobi.viewer.api.rest.v1.downloads
 io.goobi.viewer.api.rest.v1.index
 io.goobi.viewer.api.rest.v1.localization
 io.goobi.viewer.api.rest.v1.media
