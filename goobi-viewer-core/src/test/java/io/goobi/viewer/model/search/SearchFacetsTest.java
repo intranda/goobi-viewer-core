@@ -75,8 +75,8 @@ class SearchFacetsTest extends AbstractSolrEnabledTest {
     void generateFacetPrefix_shouldEncodeSlashedAndBackslashes() throws Exception {
         List<IFacetItem> list = new ArrayList<>();
         list.add(new FacetItem("FIELD:a/b\\c", false));
-        Assertions.assertEquals("FIELD:a/b\\c;;", SearchFacets.generateFacetPrefix(list, false));
-        Assertions.assertEquals("FIELD:aU002FbU005Cc;;", SearchFacets.generateFacetPrefix(list, true));
+        Assertions.assertEquals("FIELD:a/b\\c;;", SearchFacets.generateFacetPrefix(list, null, false));
+        Assertions.assertEquals("FIELD:aU002FbU005Cc;;", SearchFacets.generateFacetPrefix(list, null, true));
     }
 
     /**
@@ -508,7 +508,7 @@ class SearchFacetsTest extends AbstractSolrEnabledTest {
         SearchFacets facets = new SearchFacets();
         SortedMap<String, Long> values = new TreeMap<>(Map.of("-20", 1L, "-10", 1L, "10", 1L, "2018", 1L));
         facets.populateAbsoluteMinMaxValuesForField(SolrConstants.CALENDAR_YEAR, values);
-        Assertions.assertEquals("-20", facets.getAbsoluteMinRangeValue(SolrConstants.CALENDAR_YEAR)); 
+        Assertions.assertEquals("-20", facets.getAbsoluteMinRangeValue(SolrConstants.CALENDAR_YEAR));
         Assertions.assertEquals("2018", facets.getAbsoluteMaxRangeValue(SolrConstants.CALENDAR_YEAR));
     }
 
@@ -526,7 +526,7 @@ class SearchFacetsTest extends AbstractSolrEnabledTest {
         Assertions.assertEquals(4, valueRange.size());
         Assertions.assertArrayEquals(new Integer[] { -20, -10, 10, 2018 }, valueRange.toArray());
     }
-    
+
     /**
      * @see SearchFacets#populateAbsoluteMinMaxValuesForField(String)
      * @verifies use configured min max values correctly
@@ -565,6 +565,28 @@ class SearchFacetsTest extends AbstractSolrEnabledTest {
                 Collections.singletonList(filterQueryString), null, null, null, null, Locale.GERMANY, false, 0);
         assertEquals(2, hits.size());
 
+    }
+
+    /**
+     * @see SearchFacets#isUnselectedValuesAvailable()
+     * @verifies return null if field or value null
+     */
+    @Test
+    void getFacet_shouldReturnNullIfFieldOrValueNull() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        Assertions.assertNull(facets.getFacet(null, "bar"));
+        Assertions.assertNull(facets.getFacet("FOO", null));
+    }
+
+    /**
+     * @see SearchFacets#isUnselectedValuesAvailable()
+     * @verifies return correct facet item
+     */
+    @Test
+    void getFacet_shouldReturnCorrectFacetItem() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        facets.getAvailableFacets().put("FOO", Collections.singletonList(new FacetItem("FOO:bar", false)));
+        Assertions.assertNotNull(facets.getFacet("FOO", "bar"));
     }
 
     /**

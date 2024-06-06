@@ -116,7 +116,7 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * Creates a sequence from all pages within the given doc and appends it to manifest
+     * Creates a sequence from all pages within the given doc and appends it to manifest.
      *
      * @param manifest The manifest to include the sequence. May be null
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
@@ -188,7 +188,7 @@ public class SequenceBuilder extends AbstractBuilder {
      * addSeeAlsos.
      * </p>
      *
-     * @param canvas a {@link de.intranda.api.iiif.presentation.v2.Canvas} object.
+     * @param canvas a {@link de.intranda.api.iiif.presentation.v2.Canvas2} object.
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
@@ -218,7 +218,7 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * Adds a comment annotation to all cavases which contain comments
+     * Adds a comment annotation to all cavases which contain comments.
      *
      * @param canvases All canvases which may get comments, mapped by their page order
      * @param pi The pi of the work containing the pages
@@ -306,7 +306,7 @@ public class SequenceBuilder extends AbstractBuilder {
      *
      * @param pi Record identifier
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @return a {@link de.intranda.api.iiif.presentation.v2.Canvas} object.
+     * @return a {@link de.intranda.api.iiif.presentation.v2.Canvas2} object.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -415,7 +415,7 @@ public class SequenceBuilder extends AbstractBuilder {
      *
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
-     * @param canvas a {@link de.intranda.api.iiif.presentation.v2.Canvas} object.
+     * @param canvas a {@link de.intranda.api.iiif.presentation.v2.Canvas2} object.
      * @param populate a boolean.
      * @return a {@link java.util.Map} object.
      * @throws java.net.URISyntaxException if any.

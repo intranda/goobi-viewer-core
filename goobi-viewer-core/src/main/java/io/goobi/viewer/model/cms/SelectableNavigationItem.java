@@ -25,7 +25,7 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 
 /**
  *
- * A {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} which can be selected and deselected. Used for selecting available NavigationItems
+ * A {@link io.goobi.viewer.model.cms.CMSNavigationItem} which can be selected and deselected. Used for selecting available NavigationItems
  * to be used in the navigation menu
  *
  * @author Florian Alpers
@@ -50,7 +50,7 @@ public class SelectableNavigationItem extends CMSNavigationItem {
      * Constructor for SelectableNavigationItem.
      * </p>
      *
-     * @param original a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
+     * @param original a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      */
     public SelectableNavigationItem(CMSNavigationItem original) {
         super(original);

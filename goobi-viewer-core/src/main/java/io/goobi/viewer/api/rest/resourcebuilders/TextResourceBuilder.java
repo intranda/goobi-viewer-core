@@ -184,7 +184,11 @@ public class TextResourceBuilder {
         java.nio.file.Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder(),
                 DataManager.getInstance().getConfiguration().getAltoFolder(), fileName);
 
-        if (file == null || !Files.isRegularFile(file)) {
+        if (file == null) {
+            throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
+        }
+        if (!Files.isRegularFile(file)) {
+            logger.warn("ALTO file not found: {}", file.toAbsolutePath());
             throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
         }
 

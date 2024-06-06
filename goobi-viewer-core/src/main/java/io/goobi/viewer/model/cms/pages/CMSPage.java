@@ -406,7 +406,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * addSidebarElement.
      * </p>
      *
-     * @param element a {@link io.goobi.viewer.model.cms.widgets.CMSSidebarElement} object.
+     * @param element a {@link io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement} object.
      */
     public void addSidebarElement(CMSSidebarElement element) {
         if (element != null) {

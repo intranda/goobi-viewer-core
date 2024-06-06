@@ -669,7 +669,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return true if the given user is allowed to perform the action associated with the given status; false otherwise
-     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} object.
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -1417,7 +1417,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Get the targetIdentifier to a random PI from the Solr query result list.
      *
-     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} object.
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus} object.
      * @param piToIgnore a {@link java.lang.String} object.
      * @param user
      * @return a {@link java.lang.String} object.
@@ -1440,7 +1440,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Get the targetIdentifier to a random PI from the Solr query result list.
      *
-     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} object.
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus} object.
      * @param currentPi a {@link java.lang.String} object.
      * @param user
      * @return a {@link java.lang.String} object.
@@ -1498,13 +1498,13 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     /**
      * Check if the given user may annotate/review (depending on status) a specific pi within this campaign
      *
-     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} object.
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus} object.
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return true if
      *         <ul>
-     *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus#REVIEW REVIEW} and
+     *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus#REVIEW REVIEW} and
      *         the user is not contained in the annotators list</li> or
-     *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus#ANNOTATE ANNOTATE}
+     *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus#ANNOTATE ANNOTATE}
      *         and the user is not contained in the reviewers list</li> or
      *         <li>The user is admin</li> or
      *         <li>The user is null</li>
@@ -1638,7 +1638,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      * Updates record status in the campaign statistics.
      *
      * @param pi a {@link java.lang.String} object.
-     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic.CrowdsourcingStatus} object.
+     * @param status a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus} object.
      * @param user a {@link java.util.Optional} object.
      */
     public void setRecordStatus(String pi, CrowdsourcingStatus status, Optional<User> user) {

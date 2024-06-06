@@ -1331,6 +1331,15 @@
 		<action onPostback="false">#{dynamicBean.addComponent('map', 'geoMap', {'geoMapId':mapId, 'linkTarget':linkTarget})}</action>
 		<query-param name="linkTarget">#{linkTarget}</query-param>
 	</url-mapping>
+    <url-mapping id="embedSlider">
+		<pattern value="/embed/slider/#{sliderId}/"/>
+        <view-id value="/contentOnly.xhtml" />
+		<query-param name="linkTarget">#{linkTarget}</query-param>
+		<query-param name="style">#{style}</query-param>
+		<query-param name="slides">#{slides}</query-param>
+		<action onPostback="false">#{dynamicBean.addComponent('slider', 'slider', {'sliderId':sliderId, 'linkTarget':linkTarget, 'slides': slides, 'style': style})}</action>
+	</url-mapping>
+	
 
 	<!-- Swagger OpenApi -->
 	<url-mapping id="swagger">

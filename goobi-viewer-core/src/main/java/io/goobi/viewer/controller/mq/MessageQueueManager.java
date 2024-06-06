@@ -98,7 +98,7 @@ import io.goobi.viewer.model.job.TaskType;
 /**
  * Manages handling of messages by their respective MessageHandlers. Main method is {@link #handle(ViewerMessage message)} which accepts a
  * {@link ViewerMessage} and calls a {@link MessageHandler} instance to process the message, returning a {@link MessageStatus} result. #handle may
- * either be called directly to handle the message instantly, or from a {@link MessageQueue
+ * either be called directly to handle the message instantly, or from a {@link MessageQueue}
  * 
  * @author florian
  *
@@ -164,7 +164,7 @@ public class MessageQueueManager {
     }
 
     /**
-     * Add the message to the internal message queue to be handled later
+     * Add the message to the internal message queue to be handled later.
      * 
      * @param message
      * @return Message ID
@@ -195,7 +195,7 @@ public class MessageQueueManager {
     }
 
     /**
-     * Send a notification to the "messageQueueState" WebSocket to update message lists in the admin backend
+     * Send a notification to the "messageQueueState" WebSocket to update message lists in the admin backend.
      */
     public static void notifyMessageQueueStateUpdate() {
         MessageQueueBean mqBean = (MessageQueueBean) BeanUtils.getBeanByName("messageQueueBean", MessageQueueBean.class);
@@ -205,7 +205,7 @@ public class MessageQueueManager {
     }
 
     /**
-     * Finds the appropriate MessageHandler for a message, lets the handler handle the message and update the message in the database
+     * Finds the appropriate MessageHandler for a message, lets the handler handle the message and update the message in the database.
      * 
      * @param message
      * @return the result of the handler calling the message
@@ -409,7 +409,7 @@ public class MessageQueueManager {
     }
 
     /**
-     * Check if the queue has been successfully initialized
+     * Check if the queue has been successfully initialized.
      * 
      * @return true if the queue is running
      */

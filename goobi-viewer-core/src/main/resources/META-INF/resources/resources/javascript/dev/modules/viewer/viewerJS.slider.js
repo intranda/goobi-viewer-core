@@ -34,9 +34,12 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     // default variables
-    var _debug = false;
+    var _debug = false; 
     
     viewer.slider = {
+	
+		sliders: [],
+
      	
      	styles: new Map([
 		  ["base", {
@@ -49,6 +52,10 @@ var viewerJS = ( function( viewer ) {
 				  loop: false,
 			      slidesPerView: 2,
 			      spaceBetween: 20,
+				  a11y: {
+				    prevSlideMessage: 'Previous slide',
+				    nextSlideMessage: 'Next slide',
+				  },
 			    }
 		  }], 
      	["full-width", {
@@ -60,6 +67,10 @@ var viewerJS = ( function( viewer ) {
 				  direction: 'horizontal',
 				  loop: false,
 			      slidesPerView: 1,
+				  a11y: {
+				    prevSlideMessage: 'Previous slide',
+				    nextSlideMessage: 'Next slide',
+				  },
 			    }
 			  }],
 		["3-slides-pagination", {
@@ -91,7 +102,12 @@ var viewerJS = ( function( viewer ) {
 			    	      slidesPerView: 3,
 			    	      spaceBetween: 20
 			    	    }
-			      }
+			      },
+				  a11y: {
+					enabled: true,
+				    prevSlideMessage: 'Previous slide',
+				    nextSlideMessage: 'Next slide',
+				  },
 			    }
 			}],
 		["fade-effect-auto-play", {
@@ -142,6 +158,7 @@ var viewerJS = ( function( viewer ) {
 			}],
      	]),
      	init: function() {
+     		if(_debug)console.log("loading slider ", this);
      		riot.mount("slider", {language: currentLang, styles: this});
      		
      		//Remount all sliders after each ajax call which responst contains a slider tag

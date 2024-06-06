@@ -235,7 +235,7 @@ public class TranslatedText extends MultiLanguageMetadataValue implements IPolyg
     /**
      * Get the values as a map of locales and associated texts. The default language text is never included since it does not have a locale
      * 
-     * @return Map<Locale, String>
+     * @return Map&lt;Locale, String&gt;
      */
     public Map<Locale, String> toMap() {
         return super.getValues().stream()

@@ -207,7 +207,7 @@ class MetadataValueTest {
         List<String> values = Arrays.asList("foobar", "something");
         mdValue.getParamValues().add(values);
         mdValue.applyHighlightingToParamValue(0, Collections.singleton("foo"));
-        Assertions.assertEquals("<span class=\"search-list--highlight\">foo</span>bar", mdValue.getParamValues().get(0).get(0));
+        Assertions.assertEquals("<mark class=\"search-list--highlight\">foo</mark>bar", mdValue.getParamValues().get(0).get(0));
     }
 
     /**

@@ -35,6 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.search.FacetItem.FacetType;
 
 /**
  * @author florian
@@ -90,7 +91,7 @@ public class GeoFacetItem implements IFacetItem {
     }
 
     /**
-     * Sets {@link #currentGeoFacettingFeature} and sets the matching search string to the WKT_COORDS facet if available
+     * Sets {@link io.goobi.viewer.model.search.GeoCoordinateFeature} and sets the matching search string to the WKT_COORDS facet if available.
      *
      * @param feature
      */
@@ -151,7 +152,7 @@ public class GeoFacetItem implements IFacetItem {
     }
 
     /**
-     * Create a polygon feature from the given vertices
+     * Create a polygon feature from the given vertices.
      *
      * @param vertices
      */
@@ -190,6 +191,11 @@ public class GeoFacetItem implements IFacetItem {
         } catch (UnsupportedEncodingException e) {
             return ret;
         }
+    }
+
+    @Override
+    public FacetType getType() {
+        return FacetType.GEO;
     }
 
     /* (non-Javadoc)
@@ -331,6 +337,11 @@ public class GeoFacetItem implements IFacetItem {
      */
     @Override
     public boolean isHierarchial() {
+        return false;
+    }
+
+    @Override
+    public boolean isBooleanType() {
         return false;
     }
 }

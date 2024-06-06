@@ -67,7 +67,6 @@ public class MetsResolver extends HttpServlet {
 
     /**
      * {@inheritDoc}
-     * 
      * @should return METS file correctly via pi
      * @should return METS file correctly via urn
      * @should return LIDO file correctly

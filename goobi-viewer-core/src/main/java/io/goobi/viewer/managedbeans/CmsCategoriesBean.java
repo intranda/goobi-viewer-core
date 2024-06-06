@@ -88,7 +88,7 @@ public class CmsCategoriesBean implements Serializable {
     }
 
     /**
-     * Start editing the given category. Editing will continue until either {@link #save()} or {@link #cancel()} is executed
+     * Start editing the given category. Editing will continue until either {@link #saveCategoryAction()} or {@link #cancelAction()} is executed
      *
      * @param category The category to edit
      */
@@ -103,9 +103,8 @@ public class CmsCategoriesBean implements Serializable {
      * Otherwise, if {@link #isValid()} is true, create a new category based on {@link #getCategoryName()} and
      * {@link io.goobi.viewer.managedbeans.CmsCategoriesBean#getCategoryDescription()} and persist it. Also clear categoryName and
      * categoryDescription.
-     * 
+     *
      * @return Navigation outcome
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveCategoryAction() {
         try {
@@ -170,7 +169,7 @@ public class CmsCategoriesBean implements Serializable {
 
     /**
      * End the editing mode if active without persisting anything. Also clear categoryName and categoryDescription
-     * 
+     *
      * @return Navigation outcome
      */
     public String cancelAction() {
@@ -187,6 +186,9 @@ public class CmsCategoriesBean implements Serializable {
         return getSelectedCategory() != null;
     }
 
+    /**
+     * <p>endEditing.</p>
+     */
     public void endEditing() {
         this.selectedCategory = null;
         setCategoryName("");
@@ -259,6 +261,7 @@ public class CmsCategoriesBean implements Serializable {
     }
 
     /**
+     * <p>getSelectedCategoryId.</p>
      *
      * @return ID of the selected category
      */
@@ -271,9 +274,10 @@ public class CmsCategoriesBean implements Serializable {
     }
 
     /**
+     * <p>setSelectedCategoryId.</p>
      *
-     * @param id
-     * @throws DAOException
+     * @param id a {@link java.lang.Long} object
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void setSelectedCategoryId(Long id) throws DAOException {
         edit(DataManager.getInstance().getDao().getCategory(id));

@@ -157,8 +157,8 @@ public abstract class DownloadJob implements Serializable {
      * </p>
      *
      * @param criteria a {@link java.lang.String} object.
-     * @should generate same id from same criteria
      * @return a {@link java.lang.String} object.
+     * @should generate same id from same criteria
      */
     public static String generateDownloadJobId(String... criteria) {
         StringBuilder sbCriteria = new StringBuilder(criteria.length * 10);
@@ -186,10 +186,12 @@ public abstract class DownloadJob implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should throw IllegalArgumentException if type or pi or downloadIdentifier null
+     * @should throw IllegalArgumentException if downloadIdentifier mismatches pattern
+     * @should throw IllegalArgumentException if type unknown
      */
     public static synchronized DownloadJob checkDownload(String type, final String email, String pi, String logId, String downloadIdentifier,
-            long ttl)
-            throws DAOException, PresentationException, IndexUnreachableException {
+            long ttl) throws DAOException, PresentationException, IndexUnreachableException {
         if (type == null) {
             throw new IllegalArgumentException("type may not be null");
         }
@@ -221,7 +223,7 @@ public abstract class DownloadJob implements Serializable {
                         downloadJob = new EPUBDownloadJob(pi, logId, LocalDateTime.now(), ttl);
                         break;
                     default:
-                        throw new IllegalArgumentException("Uknown type: " + type);
+                        throw new IllegalArgumentException("Unknown type: " + type);
                 }
             } else {
                 // Update latest request timestamp of an existing job
@@ -385,13 +387,13 @@ public abstract class DownloadJob implements Serializable {
      * notifyObservers.
      * </p>
      *
-     * @param status a {@link io.goobi.viewer.model.job.download.DownloadJob.JobStatus} object.
+     * @param status a {@link io.goobi.viewer.model.job.JobStatus} object.
      * @param message a {@link java.lang.String} object.
      * @return a boolean.
      * @throws java.io.UnsupportedEncodingException if any.
      * @throws javax.mail.MessagingException if any.
      */
-    public boolean notifyObservers(JobStatus status, String message) throws UnsupportedEncodingException, MessagingException {
+    public boolean notifyObservers(JobStatus status, String messageId, String message) throws UnsupportedEncodingException, MessagingException {
         if (observers == null || observers.isEmpty()) {
             return false;
         }
@@ -403,7 +405,7 @@ public abstract class DownloadJob implements Serializable {
                 body = ViewerResourceBundle.getTranslation("downloadReadyBody", null);
                 if (body != null) {
                     body = body.replace("{0}", pi);
-                    body = body.replace("{1}", DataManager.getInstance().getConfiguration().getDownloadUrl() + identifier + "/");
+                    body = body.replace("{1}", DataManager.getInstance().getConfiguration().getDownloadUrl() + messageId + "/");
                     body = body.replace("{4}", getType().toUpperCase());
                     LocalDateTime exirationDate = lastRequested;
                     exirationDate = exirationDate.plus(ttl, ChronoUnit.MILLIS);

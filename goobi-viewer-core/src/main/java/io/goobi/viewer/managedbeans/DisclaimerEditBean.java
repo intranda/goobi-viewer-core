@@ -37,10 +37,9 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.administration.legal.Disclaimer;
 
 /**
- * Bean for editing the disclaimer. ViewScoped, so all settings are discarded when loading a new view
- * 
- * @author florian
+ * Bean for editing the disclaimer. ViewScoped, so all settings are discarded when loading a new view.
  *
+ * @author florian
  */
 @Named
 @ViewScoped
@@ -53,7 +52,7 @@ public class DisclaimerEditBean implements Serializable {
     private final Disclaimer disclaimerForEdit;
 
     /**
-     * Default constructor using the IDAO from the {@link DataManager} class
+     * Default constructor using the IDAO from the {@link io.goobi.viewer.controller.DataManager} class.
      */
     public DisclaimerEditBean() {
         dao = retrieveDAO();
@@ -61,7 +60,7 @@ public class DisclaimerEditBean implements Serializable {
     }
 
     /**
-     * Constructor for testing purposes
+     * Constructor for testing purposes.
      *
      * @param dao the IDAO implementation to use
      */
@@ -70,6 +69,9 @@ public class DisclaimerEditBean implements Serializable {
         this.disclaimerForEdit = loadDisclaimerForEdit();
     }
 
+    /**
+     * <p>save.</p>
+     */
     public void save() {
         if (this.disclaimerForEdit != null) {
             //            this.disclaimerForEdit.setAcceptanceScope(new ConsentScope(this.disclaimerForEdit.getAcceptanceScope().toString()));
@@ -84,15 +86,20 @@ public class DisclaimerEditBean implements Serializable {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>disclaimerForEdit</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.model.administration.legal.Disclaimer} object
+     */
     public Disclaimer getDisclaimerForEdit() {
         return disclaimerForEdit;
     }
 
     /**
-     * Activate/deactivate the disclaimer. Applies directly to the persisted object
+     * Activate/deactivate the disclaimer. Applies directly to the persisted object.
      *
-     * @param active
-     * @throws DAOException
+     * @param active a boolean
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void setDisclaimerActive(boolean active) throws DAOException {
         if (this.dao != null) {
@@ -106,7 +113,7 @@ public class DisclaimerEditBean implements Serializable {
     }
 
     /**
-     * Check if the banner is active, i.e. should be displayed at all
+     * Check if the banner is active, i.e. should be displayed at all.
      *
      * @return true if the banner should be shown if appropriate
      */
@@ -115,9 +122,10 @@ public class DisclaimerEditBean implements Serializable {
     }
 
     /**
-     * Set the {@link Disclaimer#getRequiresConsentAfter()} to the current time. Applies directly to the persisted object
+     * Set the {@link io.goobi.viewer.model.administration.legal.Disclaimer#getRequiresConsentAfter()} to the current time.
+     * Applies directly to the persisted object.
      *
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void resetUserConsent() throws DAOException {
         //save the current date both to the banner managed by the persistence context and to the copy we are editing

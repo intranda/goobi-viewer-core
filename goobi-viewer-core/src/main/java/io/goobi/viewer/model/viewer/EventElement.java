@@ -80,7 +80,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      */
     public EventElement(SolrDocument doc, Locale locale, boolean forSearchHit) throws IndexUnreachableException, PresentationException {
         type = (String) doc.getFieldValue(SolrConstants.EVENTTYPE);
-        logger.trace("new EventElement: {}", (type == null ? "(no type)" : type));
+        // logger.trace("new EventElement: {}", (type == null ? "(no type)" : type));
 
         Collection<Object> eventDateValues = doc.getFieldValues(SolrConstants.EVENTDATE);
         if (eventDateValues != null && !eventDateValues.isEmpty()) {
@@ -118,7 +118,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         if (forSearchHit) {
             // Search metadata
             searchHitMetadata = DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(type);
-            logger.trace("event search hit metadata: {}", searchHitMetadata.size());
+            // logger.trace("event search hit metadata: {}", searchHitMetadata.size());
             populateMetadata(searchHitMetadata, doc, locale);
         } else {
             // Main metadata

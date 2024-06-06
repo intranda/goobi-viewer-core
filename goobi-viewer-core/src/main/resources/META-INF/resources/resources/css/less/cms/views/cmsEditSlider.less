@@ -25,9 +25,21 @@
 
 .cms-sliders-select {
 	&__preview {
-		margin-top: 1rem;
-		padding-left: 8%;
-		padding-right: 8%;
+		display: flex;
+		justify-content: center;
+		&__frame {
+			width: 100%;
+			min-height: 400px;
+			min-width: 380px;
+			resize: both;
+			overflow: hidden;
+			color:white;
+			line-height: 1;
+			iframe {
+				width: 100%;
+				height: 100%;
+			}
+		}
 		div[class*="__container"] {	
 		}
 		div[class$="__wrapper"] {	

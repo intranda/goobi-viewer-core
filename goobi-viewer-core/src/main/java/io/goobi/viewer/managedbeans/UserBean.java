@@ -135,13 +135,18 @@ public class UserBean implements Serializable {
     }
 
     /**
-    *
-    */
+     * <p>updateSessionTimeoutCounter.</p>
+     */
     public void updateSessionTimeoutCounter() {
         logger.trace("updateSessionTimeoutCounter");
         sessionTimeoutCounter.send("update");
     }
 
+    /**
+     * <p>getSessionTimeout.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     public String getSessionTimeout() {
         long lastActityTimestamp = BeanUtils.getSession().getLastAccessedTime();
         logger.trace("lastActityTimestamp: {}", lastActityTimestamp);
@@ -922,6 +927,11 @@ public class UserBean implements Serializable {
         return getProvidersOfType("userPassword").stream().findFirst().orElse(null);
     }
 
+    /**
+     * <p>showAuthenticationProviderSelection.</p>
+     *
+     * @return a boolean
+     */
     public boolean showAuthenticationProviderSelection() {
         return getAuthenticationProviders().stream()
                 .filter(p -> "local".equalsIgnoreCase(p.getType()) || "userPassword".equalsIgnoreCase(p.getType()))
@@ -1035,6 +1045,8 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>lastName</code>.</p>
+     *
      * @return the lastName
      */
     public String getLastName() {
@@ -1042,6 +1054,8 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>lastName</code>.</p>
+     *
      * @param lastName the lastName to set
      */
     public void setLastName(String lastName) {
@@ -1144,9 +1158,9 @@ public class UserBean implements Serializable {
      * persisted for the duration of the session.
      *
      * @return the hasAdminBackendAccess
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
+     * @throws io.goobi.viewer.exceptions.DAOException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public Boolean getHasAdminBackendAccess() throws PresentationException, IndexUnreachableException, DAOException {
         if (hasAdminBackendAccess == null) {
@@ -1162,6 +1176,8 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>hasAdminBackendAccess</code>.</p>
+     *
      * @param hasAdminBackendAccess the hasAdminBackendAccess to set
      */
     public void setHasAdminBackendAccess(Boolean hasAdminBackendAccess) {
@@ -1256,6 +1272,11 @@ public class UserBean implements Serializable {
 
     }
 
+    /**
+     * <p>isRequireLoginCaptcha.</p>
+     *
+     * @return a boolean
+     */
     public boolean isRequireLoginCaptcha() {
         // TODO
         return false;
@@ -1264,12 +1285,17 @@ public class UserBean implements Serializable {
     /**
      * Check if the current user is required to agree to the terms of use
      *
-     * @return true if a user is logged in and {@link User#isAgreedToTermsOfUse()} returns false for this user
+     * @return true if a user is logged in and {@link io.goobi.viewer.model.security.user.User#isAgreedToTermsOfUse()} returns false for this user
      */
     public boolean mustAgreeToTermsOfUse() {
         return this.user != null && !this.user.isAgreedToTermsOfUse();
     }
 
+    /**
+     * <p>agreeToTermsOfUse.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public void agreeToTermsOfUse() throws DAOException {
         if (this.user != null) {
             this.user.setAgreedToTermsOfUse(true);
@@ -1277,6 +1303,11 @@ public class UserBean implements Serializable {
         }
     }
 
+    /**
+     * <p>rejectTermsOfUse.</p>
+     *
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     public void rejectTermsOfUse() throws DAOException {
         if (this.user != null) {
             this.user.setAgreedToTermsOfUse(false);
@@ -1284,12 +1315,21 @@ public class UserBean implements Serializable {
         }
     }
 
+    /**
+     * <p>logoutWithMessage.</p>
+     *
+     * @param messageKey a {@link java.lang.String} object
+     * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
+     */
     public void logoutWithMessage(String messageKey) throws AuthenticationProviderException {
         this.logout();
         Messages.info(messageKey);
 
     }
 
+    /**
+     * <p>createBackupOfCurrentUser.</p>
+     */
     public void createBackupOfCurrentUser() {
         if (getUser() != null) {
             getUser().backupFields();

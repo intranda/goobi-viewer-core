@@ -65,7 +65,7 @@ public class StructureBuilder extends AbstractBuilder {
     private static final Logger logger = LogManager.getLogger(StructureBuilder.class);
     protected ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
 
-    /** Constant <code>BASE_RANGE_LABEL="CONTENT"</code> */
+    /** Constant <code>BASE_RANGE_LABEL="CONTENT"</code>. */
     public static final String BASE_RANGE_LABEL = "CONTENT";
 
     /**
@@ -81,7 +81,7 @@ public class StructureBuilder extends AbstractBuilder {
 
     /**
      * Generates the topmost range from the given elements. This is an abstract "CONTENT" range if baseElement is a work, or the range representing
-     * the given baseElement otherwise
+     * the given baseElement otherwise.
      *
      * @param elements All elements to include in the list
      * @param useMembers a boolean.
@@ -129,7 +129,7 @@ public class StructureBuilder extends AbstractBuilder {
     }
 
     /**
-     * Generates the list of child ranges of the given range from the given elements which have the given parentiddoc
+     * Generates the list of child ranges of the given range from the given elements which have the given parent iddoc.
      *
      * @param elements
      * @param parentIddoc
@@ -145,11 +145,11 @@ public class StructureBuilder extends AbstractBuilder {
     }
 
     /**
-     * Adds Metadata and links to external services to a range
+     * Adds Metadata and links to external services to a range.
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param pi a {@link java.lang.String} object.
-     * @param range a {@link de.intranda.api.iiif.presentation.Range} object.
+     * @param range a {@link de.intranda.api.iiif.presentation.v2.Range2} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -226,7 +226,7 @@ public class StructureBuilder extends AbstractBuilder {
      *
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param pi a {@link java.lang.String} object.
-     * @param range a {@link de.intranda.api.iiif.presentation.Range} object.
+     * @param range a {@link de.intranda.api.iiif.presentation.v2.Range2} object.
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -252,7 +252,7 @@ public class StructureBuilder extends AbstractBuilder {
      * getDescendents.
      * </p>
      *
-     * @param range a {@link de.intranda.api.iiif.presentation.Range} object.
+     * @param range a {@link de.intranda.api.iiif.presentation.v2.Range2} object.
      * @return a {@link java.util.List} object.
      */
     public List<Range2> getDescendents(Range2 range) {
