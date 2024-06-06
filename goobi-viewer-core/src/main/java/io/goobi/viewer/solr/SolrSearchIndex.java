@@ -94,7 +94,7 @@ public class SolrSearchIndex {
 
     private static final Logger logger = LogManager.getLogger(SolrSearchIndex.class);
 
-    /** Constant <code>MAX_HITS=1000000</code> */
+    /** Constant <code>MAX_HITS=1000000</code>. */
     public static final int MAX_HITS = 1000000;
     private static final int TIMEOUT_SO = 30000;
     private static final int TIMEOUT_CONNECTION = 30000;
@@ -439,8 +439,8 @@ public class SolrSearchIndex {
      * 
      *
      * @param query a {@link java.lang.String} object.
-     * @return {@link Hits}
      * @param fieldList a {@link java.util.List} object.
+     * @return {@link Hits}
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -463,7 +463,7 @@ public class SolrSearchIndex {
     }
 
     /**
-     * Retrieves the first document found by the given query
+     * Retrieves the first document found by the given query.
      *
      * @param query a {@link java.lang.String} object.
      * @param fieldList a {@link java.util.List} object.
@@ -478,7 +478,7 @@ public class SolrSearchIndex {
 
     /**
      *
-     * Retrieves the first document found by the given query
+     * Retrieves the first document found by the given query.
      *
      * @param query The query to search
      * @param fieldList The fields retrieved
@@ -1227,7 +1227,7 @@ public class SolrSearchIndex {
     }
 
     /**
-     * Catches the filename of the page with the given order under the given ip
+     * Catches the filename of the page with the given order under the given ip.
      *
      * @param pi The topstruct pi
      * @param order The page order (1-based

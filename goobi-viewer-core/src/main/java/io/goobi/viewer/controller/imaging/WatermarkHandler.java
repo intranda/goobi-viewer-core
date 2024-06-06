@@ -62,19 +62,19 @@ public class WatermarkHandler implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(WatermarkHandler.class);
 
-    /** Constant <code>WATERMARK_TEXT_TYPE_URN="URN"</code> */
+    /** Constant <code>WATERMARK_TEXT_TYPE_URN="URN"</code>. */
     public static final String WATERMARK_TEXT_TYPE_URN = "URN";
-    /** Constant <code>WATERMARK_TEXT_TYPE_PURL="PURL"</code> */
+    /** Constant <code>WATERMARK_TEXT_TYPE_PURL="PURL"</code>. */
     public static final String WATERMARK_TEXT_TYPE_PURL = "PURL";
-    /** Constant <code>WATERMARK_TEXT_TYPE_SOLR="SOLR:"</code> */
+    /** Constant <code>WATERMARK_TEXT_TYPE_SOLR="SOLR:"</code>. */
     public static final String WATERMARK_TEXT_TYPE_SOLR = "SOLR:";
 
-    /** Constant <code>REQUIRED_SOLR_FIELDS</code> */
+    /** Constant <code>REQUIRED_SOLR_FIELDS</code>. */
     public static final String[] REQUIRED_SOLR_FIELDS = new String[] { SolrConstants.PI, SolrConstants.IDDOC, SolrConstants.LOGID,
             SolrConstants.ISWORK, SolrConstants.ISANCHOR, SolrConstants.DOCSTRCT, SolrConstants.DATAREPOSITORY };
 
     /**
-     * caches all watermark texts for documents by document pi
+     * caches all watermark texts for documents by document pi.
      */
     private final Map<String, String> documentWatermarkTextMap = new HashMap<>();
     private final List<String> watermarkTextConfiguration;
@@ -98,7 +98,8 @@ public class WatermarkHandler implements Serializable {
 
     /**
      * Creates the watermark url for the given pageType, adding watermarkId for the given {@link io.goobi.viewer.model.viewer.StructElement} and
-     * {@link page}. If the watermark height of the given pageType and image is 0, an empty optional is returned
+     * {@link io.goobi.viewer.model.viewer.PhysicalElement} page. If the watermark height of the given pageType and image is 0, an empty optional 
+     * is returned
      *
      * @param page a {@link java.util.Optional} object.
      * @param doc a {@link java.util.Optional} object.
@@ -116,8 +117,9 @@ public class WatermarkHandler implements Serializable {
 
     /**
      * Creates the watermark url for the given pageType, adding watermarkId for the current
-     * {@link io.goobi.viewer.managedbeans.ActiveDocumentBean#getTopDocument()} and watermarkText for the current {@link PhysicalElement page} If the
-     * watermark height of the given pageType and image is 0, an empty optional is returned
+     * {@link io.goobi.viewer.managedbeans.ActiveDocumentBean#getTopDocument()} and watermarkText for the current 
+     * {@link io.goobi.viewer.model.viewer.PhysicalElement} page. If the  watermark height of the given pageType and image is 0, 
+     * an empty optional is returned.
      *
      * @param pageType The pageType of the currentView. Taken into consideration for footer height, if not null
      * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
@@ -297,7 +299,7 @@ public class WatermarkHandler implements Serializable {
     }
 
     /**
-     * Return the watermark id for the given {@link io.goobi.viewer.model.viewer.StructElement}
+     * Return the watermark id for the given {@link io.goobi.viewer.model.viewer.StructElement}.
      *
      * @param topDocument a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return a {@link java.util.Optional} object.
