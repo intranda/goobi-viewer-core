@@ -30,7 +30,7 @@ import io.goobi.viewer.api.rest.filters.CrowdsourcingCampaignFilter;
 
 /**
  * <p>
- * Binding for resources which should use the {@link CrowdsourcingCampaignFilter} to check access
+ * Binding for resources which should use the {@link CrowdsourcingCampaignFilter} to check access.
  * </p>
  */
 @NameBinding

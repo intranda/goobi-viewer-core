@@ -987,4 +987,17 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(SearchItemOperator.AND, items.get(0).getOperator());
         Assertions.assertNull(items.get(0).getValue());
     }
+    
+    /**
+     * @see SearchBean#setActiveResultGroupName(String)
+     * @verifies not change hitsPerPageSetterCalled value
+     */
+    @Test
+    void setHitsPerPageNoTrigger_shouldNotChangeHitsPerPageSetterCalledValue() throws Exception {
+        SearchBean sb = new SearchBean();
+        Assertions.assertFalse(sb.isHitsPerPageSetterCalled());
+        
+        sb.setHitsPerPageNoTrigger(5);
+        Assertions.assertFalse(sb.isHitsPerPageSetterCalled());
+    }
 }

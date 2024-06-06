@@ -117,6 +117,11 @@ public class DownloadBean implements Serializable {
         }
     }
 
+    /**
+     * <p>getQueuePosition.</p>
+     *
+     * @return a int
+     */
     public int getQueuePosition() {
         if (message != null) {
             return this.messageBroker.countMessagesBefore(MessageQueueManager.getQueueForMessageType(message.getTaskName()), message.getTaskName(),
@@ -126,6 +131,11 @@ public class DownloadBean implements Serializable {
         }
     }
 
+    /**
+     * <p>Getter for the field <code>message</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.controller.mq.ViewerMessage} object
+     */
     public ViewerMessage getMessage() {
         return message;
     }

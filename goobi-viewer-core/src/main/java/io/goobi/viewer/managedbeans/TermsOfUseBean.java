@@ -40,7 +40,6 @@ import io.goobi.viewer.model.administration.legal.TermsOfUse;
  * Keeps the global termsOfUse object for the current session
  *
  * @author florian
- *
  */
 @Named("termsOfUseBean")
 @SessionScoped
@@ -61,10 +60,20 @@ public class TermsOfUseBean implements Serializable {
         }
     }
 
+    /**
+     * <p>isTermsOfUseActive.</p>
+     *
+     * @return a boolean
+     */
     public boolean isTermsOfUseActive() {
         return termsOfUse.map(TermsOfUse::isActive).orElse(false);
     }
 
+    /**
+     * <p>getTitle.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     public String getTitle() {
         return this.termsOfUse.map(t -> t.getTitleIfExists(BeanUtils.getLocale().getLanguage())
                 .orElse(t.getTitleIfExists(BeanUtils.getDefaultLocale().getLanguage())
@@ -72,6 +81,11 @@ public class TermsOfUseBean implements Serializable {
                 .orElse("");
     }
 
+    /**
+     * <p>getDescription.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     public String getDescription() {
         return this.termsOfUse.map(t -> t.getDescriptionIfExists(BeanUtils.getLocale().getLanguage())
                 .orElse(t.getDescriptionIfExists(BeanUtils.getDefaultLocale().getLanguage())

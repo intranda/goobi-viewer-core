@@ -52,6 +52,9 @@ import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.security.user.User;
 
+/**
+ * <p>AdminCommentBean class.</p>
+ */
 @Named
 @SessionScoped
 public class AdminCommentBean implements Serializable {
@@ -70,6 +73,8 @@ public class AdminCommentBean implements Serializable {
     private Comment currentComment = null;
 
     /**
+     * <p>init.</p>
+     *
      * @should sort lazyModelComments by dateCreated desc by default
      */
     @PostConstruct
@@ -150,6 +155,7 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
+     * <p>isUserCommentsEnabled.</p>
      *
      * @return true if comments enabled; false otherwise
      */
@@ -161,18 +167,29 @@ public class AdminCommentBean implements Serializable {
         return false;
     }
 
+    /**
+     * <p>Setter for the field <code>userBean</code>.</p>
+     *
+     * @param userBean a {@link io.goobi.viewer.managedbeans.UserBean} object
+     */
     public void setUserBean(UserBean userBean) {
         this.userBean = userBean;
     }
 
+    /**
+     * <p>Getter for the field <code>userBean</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.UserBean} object
+     */
     public UserBean getUserBean() {
         return userBean;
     }
 
     /**
+     * <p>setUserCommentsEnabled.</p>
      *
-     * @param userCommentsEnabled
-     * @throws DAOException
+     * @param userCommentsEnabled a boolean
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void setUserCommentsEnabled(boolean userCommentsEnabled) throws DAOException {
         if (commentGroupAll != null && commentGroupAll.isEnabled() != userCommentsEnabled) {
@@ -182,19 +199,21 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
+     * <p>getAllCommentGroups.</p>
      *
      * @return All comment groups in the database
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public List<CommentGroup> getAllCommentGroups() throws DAOException {
         return DataManager.getInstance().getDao().getAllCommentGroups();
     }
 
     /**
+     * <p>getCommentGroupsForUser.</p>
      *
      * @param user Current user
-     * @return Filtered list of available {@link CommentGroup}s to the given user
-     * @throws DAOException
+     * @return Filtered list of available {@link io.goobi.viewer.model.annotation.comments.CommentGroup}s to the given user
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public List<CommentGroup> getCommentGroupsForUser(User user) throws DAOException {
         if (user == null) {
@@ -219,14 +238,14 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
-     *
+     * <p>resetCurrentCommentGroupAction.</p>
      */
     public void resetCurrentCommentGroupAction() {
         currentCommentGroup = null;
     }
 
     /**
-     *
+     * <p>newCurrentCommentGroupAction.</p>
      */
     public void newCurrentCommentGroupAction() {
         logger.trace("newCurrentCommentGroupAction");
@@ -234,9 +253,10 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
+     * <p>saveCurentCommentGroupAction.</p>
      *
      * @return Navigation outcome
-     * @throws DAOException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public String saveCurentCommentGroupAction() throws DAOException {
         return saveCommentGroupAction(currentCommentGroup);
@@ -293,7 +313,7 @@ public class AdminCommentBean implements Serializable {
     // Comments
 
     /**
-     *
+     * <p>resetCurrentCommentAction.</p>
      */
     public void resetCurrentCommentAction() {
         currentComment = null;
@@ -370,6 +390,8 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
+     * <p>Getter for the field <code>currentCommentGroup</code>.</p>
+     *
      * @return the currentCommentGroup
      */
     public CommentGroup getCurrentCommentGroup() {
@@ -377,6 +399,8 @@ public class AdminCommentBean implements Serializable {
     }
 
     /**
+     * <p>Setter for the field <code>currentCommentGroup</code>.</p>
+     *
      * @param currentCommentGroup the currentCommentGroup to set
      */
     public void setCurrentCommentGroup(CommentGroup currentCommentGroup) {
@@ -400,8 +424,8 @@ public class AdminCommentBean implements Serializable {
     /**
      * Sets <code>currentCommentGroup</code> by loading it from the DB via the given ID.
      *
-     * @param id
-     * @throws DAOException
+     * @param id a {@link java.lang.Long} object
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void setCurrentCommentGroupId(Long id) throws DAOException {
         logger.trace("setCurrentCommentGroupId: {}", id);

@@ -825,7 +825,7 @@ public final class AccessConditionUtils {
      * @param remoteAddress a {@link java.lang.String} object.
      * @param client
      * @param query Solr query describing the resource in question.
-     * @return Map<String, AccessPermission>
+     * @return Map&lt;String, AccessPermission&gt;
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -840,7 +840,7 @@ public final class AccessConditionUtils {
     public static AccessPermission checkAccessPermission(List<LicenseType> allLicenseTypes, final Set<String> requiredAccessConditions,
             String privilegeName, User user, String remoteAddress, Optional<ClientApplication> client, String query)
             throws IndexUnreachableException, PresentationException, DAOException {
-        logger.trace("checkAccessPermission({},{})", requiredAccessConditions, privilegeName); //NOSONAR Debugging
+        // logger.trace("checkAccessPermission({},{})", requiredAccessConditions, privilegeName); //NOSONAR Debugging
 
         // If user is superuser, allow immediately
         if (user != null && user.isSuperuser()) {
@@ -1115,6 +1115,29 @@ public final class AccessConditionUtils {
         }
 
         return false;
+    }
+
+    /**
+     * 
+     * @param doc
+     * @param privilegeName
+     * @return true if granted; false otherwise
+     */
+    public static boolean isPrivilegeGrantedForDoc(SolrDocument doc, String privilegeName, HttpServletRequest request) {
+        // Check whether user may see full-text, before adding them to count
+        String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
+        Collection<Object> accessConditions = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
+        if (!(accessConditions.size() == 1 && accessConditions.contains(SolrConstants.OPEN_ACCESS_VALUE))) {
+            try {
+                boolean ret = checkAccessPermissionByIdentifierAndLogId(pi, null, privilegeName, request).isGranted();
+                logger.trace("{} access checked for {} and is: {}", privilegeName, pi, ret);
+                return ret;
+            } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        return true;
     }
 
     /**

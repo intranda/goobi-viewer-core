@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -46,6 +48,7 @@ import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.search.HitListView;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchResultGroup;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -56,6 +59,8 @@ import jakarta.persistence.Transient;
 @Table(name = "cms_content_search")
 @DiscriminatorValue("search")
 public class CMSSearchContent extends CMSContent implements PagedCMSContent {
+
+    private static final Logger logger = LogManager.getLogger(CMSSearchContent.class);
 
     private static final String BACKEND_COMPONENT_NAME = "search";
 
@@ -147,6 +152,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
 
     @Override
     public String handlePageLoad(boolean resetResults, CMSComponent component) throws PresentationException {
+        logger.trace("handlePageLoad");
         if (this.search == null) {
             this.search = initSearch();
             //store search in session bean so it will be available when reloading a page
@@ -170,7 +176,10 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
                 if (searchBean.getSearchSortingOption().isDefaultOption()) {
                     searchBean.setSortString(this.sortField);
                 }
-                searchBean.setHitsPerPage(this.elementsPerPage);
+                // Only set hits per page to configured value if not manually changed by user
+                if (!searchBean.isHitsPerPageSetterCalled()) {
+                    searchBean.setHitsPerPageNoTrigger(this.elementsPerPage);
+                }
                 if (StringUtils.isNotBlank(searchBean.getExactSearchString().replace("-", ""))) {
                     return searchAction();
                 } else if (this.isDisplayEmptySearchResults() || StringUtils.isNotBlank(searchBean.getFacets().getActiveFacetString())) {

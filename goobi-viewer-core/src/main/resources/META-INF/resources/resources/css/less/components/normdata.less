@@ -59,6 +59,9 @@
             margin: 0;
         }
         .normdata-popover-close {
+			background: transparent;
+			border: none;
+			padding: 0px;
             display: inline-block;
             position: absolute;
             top: 5px;
@@ -73,6 +76,8 @@
     }
     .normdata-popover-content {
         padding: 5px;
+        max-height: 400px;
+        overflow-y: scroll;
         .dl-horizontal {
             margin: 0;
             dt, dd {

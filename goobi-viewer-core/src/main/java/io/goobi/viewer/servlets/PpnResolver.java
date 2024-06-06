@@ -79,7 +79,6 @@ public class PpnResolver extends HttpServlet implements Serializable {
      * using the page field; if a document is found in this alternative way, target field and page field of the document are inserted into the target
      * page url. NOTE: If you forward, the target URL must be on the same server and must be below the context root of this servlet, e.g. this servlet
      * can not forward to a target above '/'. A redirect changes the URL displayed in the browser, a forward does not.
-     *
      * @should return 400 if record identifier missing
      * @should return 404 if record not found
      * @should return 500 if record identifier bad

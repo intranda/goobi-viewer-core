@@ -143,7 +143,7 @@ public class TaskManager {
 
     /**
      * @param type
-     * @return BiConsumer<HttpServletRequest, Task>
+     * @return BiConsumer&lt;HttpServletRequest, Task&gt;
      */
     public static BiConsumer<HttpServletRequest, Task> createTask(TaskType type) {
         switch (type) {

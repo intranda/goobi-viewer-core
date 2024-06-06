@@ -62,7 +62,7 @@ var viewerJS = ( function( viewer ) {
          * var normdataConfig = {
          *     path: '#{request.contextPath}',
          *     lang: {
-         *         popoverTitle: '#{msg.normdataPopverTitle}',
+         *         popoverTitle: '#{msg.normdataPopoverTitle}',
          *         popoverClose: '#{msg.normdataPopoverClose}'
          *     },
          *     elemWrapper: $( '#metadataElementWrapper' )
@@ -84,6 +84,11 @@ var viewerJS = ( function( viewer ) {
             // hide close icons
             $( '.closeAllPopovers' ).hide();
             
+            if ( _debug ) {
+            console.log('(default) selector:' + _defaults.linkSelector )
+            }
+            
+            
             // first level click
             $( _defaults.linkSelector ).on( 'click', function(event) {
             	_$this = $( this );
@@ -92,6 +97,8 @@ var viewerJS = ( function( viewer ) {
                 
                 _renderPopoverAction( _$this, _defaults.id );
                 event.preventDefault();
+                
+                        $('.normdata-popover-close').focus();
                 
             } );
         },
@@ -110,6 +117,7 @@ var viewerJS = ( function( viewer ) {
             console.log( '_renderPopoverAction: $Obj = ', $Obj );
             console.log( '_renderPopoverAction: id = ', id );
         }
+
         
         _normdataIcon = $Obj.find( '.fa-list-ul' );
         _preloader = $Obj.find( '.normdata-preloader' );
@@ -186,7 +194,7 @@ var viewerJS = ( function( viewer ) {
         html += '<div id="normdataPopover-' + id + '" class="normdata-popover">';
         html += '<div class="normdata-popover-title">';
         html += '<h3>' + _defaults.lang.popoverTitle + '</h3>';
-        html += '<i class="normdata-popover-close fa fa-times" title="' + _defaults.lang.popoverClose + '" aria-hidden="true"></i>';
+        html += '<button type="button" class="normdata-popover-close" aria-label="' + _defaults.lang.popoverClose + '"><i class="fa fa-times"aria-hidden="true"></i></button>';
         html += '</div>';
         html += '<div class="normdata-popover-content">';
         html += '<dl class="dl-horizontal">';
@@ -361,7 +369,7 @@ var viewerJS = ( function( viewer ) {
             console.log( '_getRemoteData: loader = ', loader );
             console.log( '_getRemoteData: icon = ', icon );
         }
-        
+         
         loader.show();
         icon.hide();
         
@@ -375,6 +383,7 @@ var viewerJS = ( function( viewer ) {
                 icon.show();
             }
         } ).responseText;
+        
         
         return jQuery.parseJSON( data );
     }

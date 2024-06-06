@@ -410,7 +410,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                                     if (JobStatus.ERROR.equals(djStatus) || JobStatus.READY.equals(djStatus)) {
                                         // Send out the word
                                         try {
-                                            job.notifyObservers(djStatus, message);
+                                            job.notifyObservers(djStatus, job.getIdentifier(), message);
                                             job.resetObservers();
                                         } catch (UnsupportedEncodingException e) {
                                             logger.error(e.getMessage());

@@ -194,7 +194,7 @@ public class CmsNavigationBean implements Serializable {
      * getNavigationItem.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
+     * @return a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      */
     public CMSNavigationItem getNavigationItem() {
         if (selectedNavigationItem == null) {
@@ -244,7 +244,7 @@ public class CmsNavigationBean implements Serializable {
      * Getter for the field <code>itemManager</code>.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationManager} object.
+     * @return a {@link io.goobi.viewer.model.cms.CMSNavigationManager} object.
      */
     public CMSNavigationManager getItemManager() {
         return itemManager;
@@ -255,7 +255,7 @@ public class CmsNavigationBean implements Serializable {
      * Setter for the field <code>itemManager</code>.
      * </p>
      *
-     * @param itemManager a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationManager} object.
+     * @param itemManager a {@link io.goobi.viewer.model.cms.CMSNavigationManager} object.
      */
     public void setItemManager(CMSNavigationManager itemManager) {
         this.itemManager = itemManager;

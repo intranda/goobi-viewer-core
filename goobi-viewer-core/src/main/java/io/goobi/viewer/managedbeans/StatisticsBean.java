@@ -295,6 +295,7 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
+     * <p>getCoreVersion.</p>
      *
      * @return goobi-viewer-core version
      */
@@ -303,6 +304,8 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
+     * <p>getConnectorVersion.</p>
+     *
      * @return goobi-viewer-connector version
      */
     public String getConnectorVersion() {
@@ -310,6 +313,8 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
+     * <p>getContentServerVersion.</p>
+     *
      * @return intrandaContentServer version
      */
     public String getContentServerVersion() {
@@ -324,6 +329,8 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
+     * <p>getIndexerVersion.</p>
+     *
      * @return goobi-viewer-indexer version
      */
     public String getIndexerVersion() {
@@ -331,12 +338,13 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * 
-     * @param pi
-     * @return {@link StatisticsSummary}
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
+     * <p>getUsageStatisticsForRecord.</p>
+     *
+     * @param pi a {@link java.lang.String} object
+     * @return {@link io.goobi.viewer.model.statistics.usage.StatisticsSummary}
+     * @throws io.goobi.viewer.exceptions.PresentationException
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws io.goobi.viewer.exceptions.DAOException
      */
     public StatisticsSummary getUsageStatisticsForRecord(String pi) throws PresentationException, IndexUnreachableException, DAOException {
         if (StringUtils.isNotBlank(pi)) {
@@ -350,6 +358,12 @@ public class StatisticsBean implements Serializable {
         return new StatisticsSummary(Collections.emptyMap());
     }
 
+    /**
+     * <p>getLastUsageStatisticsCheck.</p>
+     *
+     * @return a {@link java.time.LocalDate} object
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
     public LocalDate getLastUsageStatisticsCheck() throws IndexUnreachableException {
         try {
             SolrDocumentList docs = DataManager.getInstance()
@@ -370,6 +384,11 @@ public class StatisticsBean implements Serializable {
 
     }
 
+    /**
+     * <p>isUsageStatisticsActive.</p>
+     *
+     * @return a boolean
+     */
     public boolean isUsageStatisticsActive() {
         return DataManager.getInstance().getConfiguration().isStatisticsEnabled();
     }
