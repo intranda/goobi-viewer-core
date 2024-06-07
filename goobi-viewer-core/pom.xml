@@ -407,17 +407,17 @@
 			<artifactId>jdom2</artifactId>
 			<version>${jdom2.version}</version>
 		</dependency>
- 		<dependency>
- 			<groupId>org.glassfish.jersey.core</groupId>
- 			<artifactId>jersey-client</artifactId>
- 			<version>${jersey.version}</version>
- 			<exclusions>
- 				<exclusion>
- 					<groupId>jakarta.ws.rs</groupId>
- 					<artifactId>jakarta.ws.rs-api</artifactId>
- 				</exclusion>
- 			</exclusions>
- 		</dependency>
+		 <dependency>
+			 <groupId>org.glassfish.jersey.core</groupId>
+			 <artifactId>jersey-client</artifactId>
+			 <version>${jersey.version}</version>
+			 <exclusions>
+				 <exclusion>
+					 <groupId>jakarta.ws.rs</groupId>
+					 <artifactId>jakarta.ws.rs-api</artifactId>
+				 </exclusion>
+			 </exclusions>
+		 </dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-server</artifactId>
@@ -1045,15 +1045,22 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- This plugin is specified with the same config options in the reporting section below, too -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.7.0</version>
 				<configuration>
 					<doclint>none</doclint>
+					<!-- Specifies the tags to be fixed automatically when running the mvn javadox:fix command, see:
+						 https://maven.apache.org/plugins/maven-javadoc-plugin/fix-mojo.html#fixTags
+					-->
 					<fixTags>link,throws,return,param</fixTags>
 					<tags>
 						<tag>
+							<!-- Disables custom @should tag in Javadoc see:
+								 https://maven.apache.org/plugins/maven-javadoc-plugin/javadoc-mojo.html#tags
+							-->
 							<name>should</name>
 							<placement>X</placement>
 						</tag>
@@ -1151,7 +1158,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.1.1</version>
+				<version>3.7.0</version>
 				<configuration>
 					<doclint>none</doclint>
 					<fixTags>link,throws,return,param</fixTags>
