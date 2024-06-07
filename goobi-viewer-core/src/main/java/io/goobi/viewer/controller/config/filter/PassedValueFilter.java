@@ -64,7 +64,7 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
     /**
      * get a filter which blocks all matches
      * 
-     * @param match a regex which must match the value parameter for the filter to match
+     * @param matchRegex a regex which must match the value parameter for the filter to match
      * @return a new {@link PassedValueFilter}
      */
     public static PassedValueFilter getHideFilter(String matchRegex) {
@@ -101,9 +101,8 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
     public boolean passes(String value, VariableReplacer vr) {
         if (this.applies(vr)) {
             return this.test(value, vr);
-        } else {
-            return true;
         }
+        return true;
     }
 
     /**
@@ -141,6 +140,8 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
 
     /**
      * Get get {@link #matchRegex}
+     * 
+     * @return the matchRegex
      */
     public String getMatchRegex() {
         return matchRegex;

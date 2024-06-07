@@ -95,6 +95,8 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
 
     /**
      * Get the {@link FilterAction}
+     * 
+     * @return {@link FilterAction}
      */
     public FilterAction getAction() {
         return action;
@@ -102,13 +104,15 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
 
     /**
      * Get all {@link #filterConditions}
+     * 
+     * @return List<AbstractFilterConfiguration>
      */
     public List<AbstractFilterConfiguration> getFilterConditions() {
         return Collections.unmodifiableList(filterConditions);
     }
 
     /**
-     * return true if {@link #action} is {@link FilterAction#SHOW}
+     * @return true if {@link #action} is {@link FilterAction#SHOW}
      */
     public boolean passesOnMatch() {
         return FilterAction.SHOW == this.action;
