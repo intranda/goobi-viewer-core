@@ -83,7 +83,7 @@ public class CollectionViewBean implements Serializable {
      * @param collectionBaseLevels The number of hierarchy levels for which collections of these levels should not expand but rather redirect to a
      *            view of the clicked collection alone
      * @param openExpanded whether to open the page with all collections expanded.
-     * @param displayParents Whether to display all parent collections of the base collection. Useful in combination with collectionBaseLevels > 0 to
+     * @param displayParents Whether to display all parent collections of the base collection. Useful in combination with collectionBaseLevels &gt; 0 to
      *            navigate back out of the current collection
      * @param ignoreHierarchy a boolean
      * @return The CollectionView or null if no matching ContentItem was found
@@ -317,7 +317,7 @@ public class CollectionViewBean implements Serializable {
      * get a list of all {@link io.goobi.viewer.model.viewer.collections.CollectionView}s with the given solr field which are already loaded via
      * {@link #getCollection(CMSPage)} or {@link #getCollection(String, CMSPage)}.
      *
-     * @param field The solr field the colleciton is based on
+     * @param field The solr field the collection is based on
      * @return a {@link java.util.List} object.
      */
     public List<CollectionView> getCollections(String field) {
