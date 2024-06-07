@@ -211,7 +211,7 @@ public class ArchiveEntry {
         if ((displayChildren || ignoreDisplayChildren) && subEntryList != null && !subEntryList.isEmpty()) {
             for (ArchiveEntry ds : subEntryList) {
                 list.addAll(ds.getAsFlatList(ignoreDisplayChildren));
-                 logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchyLevel()); //NOSONAR Sometimes needed for debugging
+                logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchyLevel()); //NOSONAR Sometimes needed for debugging
             }
         }
         return list;
@@ -418,17 +418,17 @@ public class ArchiveEntry {
                 break;
         }
     }
-    
+
     /**
      * 
      * @return Root node
      */
     public ArchiveEntry getRootNode() {
         ArchiveEntry parent = null;
-        while(getParentNode() != null) {
+        while (getParentNode() != null) {
             parent = getParentNode();
         }
-        
+
         logger.trace("found parent: {}", parent);
         return parent;
     }
