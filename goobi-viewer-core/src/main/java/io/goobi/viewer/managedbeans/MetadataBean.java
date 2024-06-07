@@ -371,7 +371,7 @@ public class MetadataBean {
      * value of MD_ORDER matches the given <code>order</code> value.
      * 
      * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
-     * @param fieldName Name metadata field
+     * @param mainFieldName Main metadata field
      * @param language Optional metadata field language
      * @param subFieldName Child metadata field
      * @param order Page number
@@ -400,7 +400,7 @@ public class MetadataBean {
      * value of MD_ORDER matches the given <code>order</code> value.
      * 
      * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
-     * @param fieldName Name metadata field
+     * @param mainFieldName Main metadata field
      * @param language Optional metadata field language
      * @param subFieldName Child metadata field
      * @param order Page number
@@ -420,14 +420,14 @@ public class MetadataBean {
      * value of MD_ORDER matches the given <code>order</code> value.
      * 
      * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
-     * @param fieldName Name metadata field
+     * @param mainFieldName Main metadata field
      * @param language Optional metadata field language
      * @param subFieldName Child metadata field
      * @param order Page number
      * @return First value of subFieldName; null if none found
      */
     public String getFirstMetadataValue(int metadataViewIndex, String mainFieldName, String language, String subFieldName) {
-        List<String> values = getMetadataValues(metadataViewIndex, mainFieldName, language, subFieldName);
+        List<String> values = getMetadataValues(metadataViewIndex, mainFieldName, subFieldName, language);
         if (!values.isEmpty()) {
             return values.get(0);
         }
@@ -440,7 +440,7 @@ public class MetadataBean {
      * value of MD_ORDER matches the given <code>order</code> value.
      * 
      * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
-     * @param fieldName Name metadata field
+     * @param mainFieldName Main metadata field
      * @param language Optional metadata field language
      * @param subFieldName Child metadata field
      * @param order Page number
