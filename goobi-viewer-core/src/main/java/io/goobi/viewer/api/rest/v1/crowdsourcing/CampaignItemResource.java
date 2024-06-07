@@ -79,7 +79,7 @@ import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Rest resources to create a frontend-view for a campaign to annotate or review a work, and to process the created annotations and/or changes to the
- * campaign status
+ * campaign status.
  *
  * The following api points are defined:
  * <ul>
@@ -132,7 +132,7 @@ public class CampaignItemResource {
 
     /**
      * Get the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} for a campaign and work, containing the URL of the targeted resource
-     * (IIIF manifest) and all information to create a GUI for the campaign's questions
+     * (IIIF manifest) and all information to create a GUI for the campaign's questions.
      *
      * @param persistentIdentifier a {@link java.lang.String} object.
      * @param servletRequest
@@ -204,7 +204,7 @@ public class CampaignItemResource {
 
     /**
      * Sets the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus} for the given campaign and work and
-     * records the {@link io.goobi.viewer.model.security.user.User} who made the change
+     * records the {@link io.goobi.viewer.model.security.user.User} who made the change.
      *
      * @param item a {@link io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem} object.
      * @param persistentIdentifier a {@link java.lang.String} object.
@@ -331,7 +331,7 @@ public class CampaignItemResource {
     }
 
     /**
-     * Get all annotations for the given campaign and work, sorted by target
+     * Get all annotations for the given campaign and work, sorted by target.
      *
      * @param pi a {@link java.lang.String} object.
      * @param request
@@ -440,7 +440,7 @@ public class CampaignItemResource {
     }
 
     /**
-     * Used to create or read a list of WebAnnotations sorted by their target (a iiif manifest or canvas)
+     * Used to create or read a list of WebAnnotations sorted by their target (a iiif manifest or canvas).
      *
      * @author florian
      *

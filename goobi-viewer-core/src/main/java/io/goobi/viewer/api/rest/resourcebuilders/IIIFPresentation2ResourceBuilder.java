@@ -335,7 +335,7 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * Returns a iiif collection of all collections from the given solr-field The response includes the metadata and subcollections of the topmost
+     * Returns a iiif collection of all collections from the given solr-field. The response includes the metadata and subcollections of the topmost
      * collections. Child collections may be accessed following the links in the @id properties in the member-collections Requires passing a language
      * to set the language for all metadata values
      *
@@ -354,7 +354,7 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * Returns a iiif collection of all collections from the given solr-field The response includes the metadata and subcollections of the topmost
+     * Returns a iiif collection of all collections from the given solr-field. The response includes the metadata and subcollections of the topmost
      * collections. Child collections may be accessed following the links in the @id properties in the member-collections Requires passing a language
      * to set the language for all metadata values
      *
@@ -380,7 +380,7 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * Returns a iiif collection of the given topCollection for the give collection field The response includes the metadata and subcollections of the
+     * Returns a iiif collection of the given topCollection for the give collection field. The response includes the metadata and subcollections of the
      * direct child collections. Collections further down the hierarchy may be accessed following the links in the @id properties in the
      * member-collections Requires passing a language to set the language for all metadata values
      *

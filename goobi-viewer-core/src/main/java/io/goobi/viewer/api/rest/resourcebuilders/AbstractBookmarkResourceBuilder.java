@@ -118,7 +118,7 @@ public abstract class AbstractBookmarkResourceBuilder {
     }
 
     /**
-     * Returns all public bookmark lists
+     * Returns all public bookmark lists.
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.

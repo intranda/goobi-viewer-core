@@ -78,7 +78,7 @@ public class TaskManager {
     private final Duration timeToLive;
 
     /**
-     * Create new JobManager
+     * Create new JobManager.
      *
      * @param jobLiveTime The guaranteed live time of jobs in the jobManager
      */
@@ -93,7 +93,7 @@ public class TaskManager {
     }
 
     /**
-     * Clean out all jobs that are older than {@link #timeToLive}
+     * Clean out all jobs that are older than {@link #timeToLive}.
      */
     private void cleanOldTasks() {
         this.tasks.values()

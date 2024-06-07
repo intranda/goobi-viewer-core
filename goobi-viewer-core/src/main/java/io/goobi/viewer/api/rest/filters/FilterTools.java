@@ -67,8 +67,6 @@ public final class FilterTools {
     }
 
     /**
-     *
-     *
      * @param pi
      * @param request
      * @throws ServiceNotAllowedException
