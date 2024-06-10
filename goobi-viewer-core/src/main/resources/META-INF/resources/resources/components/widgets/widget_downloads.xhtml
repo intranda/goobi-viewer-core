@@ -9,30 +9,14 @@
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
 
-	<composite:interface />
+	<composite:interface>
+	</composite:interface>
 
 	<composite:implementation>
-		<ui:param name="childCount"
-			value="#{sidebarBean.getChildCount(cc, 'widget-element')}"/>
-		<div class="test">child count = #{childCount}</div>
 
-<!-- 		<ui:fragment visibilty-type="widget-element" -->
-<!-- 			rendered="#{sidebarBean.checkVisibilityForRecord(' -->
-<!-- 			{`requiredFileTypes`:[`IMAGE`], -->
-<!-- 			`accessCondition`:`PRIV_DOWNLOAD_PDF`,  -->
-<!-- 			`pageTypes`:[`viewObject`,`viewFullscreen`],  -->
-<!-- 			`docTypes`:[`!`,`group`, `anchor`], -->
-<!-- 			`hasPages`:true}')}"> -->
-<!-- 			<div>test</div> -->
-<!-- 		</ui:fragment> -->
-
-		<ui:fragment 
-			rendered="#{sidebarBean.checkVisibilityForRecord('{pageTypes:[viewObject, viewFulltext]}')}">
+		<div>children: #{displayConditions.getTag('widgetDownloads').getChildCount('widget-element')}</div>
 			
-			<div jsf:id="testid" class="widget-element otherclass" disabled="false" data-test="mytest"></div>
-			<h:panelGroup styleClass="widget-element someotherclass" pt:disabled="false" pt:data-test="othertest"></h:panelGroup>
-			
-			<div id="widgetDownloads" class="widget widget-downloads">
+			<div jsf:id="widgetDownloads" class="widget widget-downloads" rendered="#{displayConditions.getTag('widgetDownloads').getChildCount('widget-element') > 0 and displayConditions.matchRecord('{pageTypes:[viewObject, viewFulltext]}')}">
 
 				<div class="widget-downloads__topbar">
 					<!-- WIDGET TITLE -->
@@ -46,16 +30,16 @@
 				<!-- WIDGET BODY -->
 				<div
 					class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group or (navigationHelper.currentPage == 'fulltext') or (activeDocumentBean.viewManager.displayContentDownloadMenu) ? '' : 'collapseable'}">
+					
 					<!-- INTRODUCTION TEXT -->
 					<ui:fragment
-						rendered="#{fn:length(msg['widget__downloads__intro_text_object_downloads']) > 0 and navigationHelper.currentPage == 'object' }">
+						rendered="#{fn:length(msg['widget__downloads__intro_text_object_downloads-a']) > 0 and navigationHelper.currentPage == 'object' }">
 						<p id="introductionText" class="widget-downloads__license-text">
 							<h:outputText
 								value="#{msg['widget__downloads__intro_text_object_downloads']}"
 								escape="false" />
 						</p>
 					</ui:fragment>
-
 
 					<!-- INTRODUCTION TEXT DOWNLOADS GENERAL -->
 					<ui:fragment
@@ -67,6 +51,7 @@
 						</p>
 					</ui:fragment>
 
+					<!-- ADDITIONAL FILES TEXT -->
 					<ui:fragment
 						rendered="#{activeDocumentBean.viewManager.displayContentDownloadMenu}">
 
@@ -84,26 +69,20 @@
 					</ui:fragment>
 
 					<!-- WORK -->
-					<ui:fragment
-						rendered="#{navigationHelper.currentView == 'object' or navigationHelper.currentView == 'fulltext'}">
 
 						<!-- WORK DOWNLOADS -->
-						<div
+						<div jsf:id="recordDownloads" rendered="#{displayConditions.getTag('recordDownloads').getChildCount('widget-element') > 0}"
 							class="widget-downloads__work-downloads widget__badge-container">
-							<!-- 							<h3 id="titleWork" -->
-							<!-- 								class="widget-downloads__subtitle widget__badge-container-heading">#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}</h3> -->
 
 							<h3 id="titleWork"
 								class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget__downloads__complete_record}</h3>
 
 
 							<!-- WORK FULLTEXT FORMATS (VIEW_FULLTEXT not checked here because each method already has access permission checks) -->
-							<ui:fragment
-								rendered="#{navigationHelper.currentView == 'fulltext'}">
 
 								<!-- ALTO (WORK) -->
-								<ui:fragment
-									rendered="#{activeDocumentBean.viewManager.altoAvailableForWork}">
+								<ui:fragment 
+									rendered="#{displayConditions.matchesRecord('{fileTypes:[ALTO]}', pageTypes:[viewFulltext], accessCondition:PRIV_VIEW_FULLTEXT)}">
 									<a href="#{activeDocumentBean.viewManager.altoUrlForAllPages}"
 										id="alto"
 										class="badge badge-dark widget-downloads__work-download-alto"
@@ -116,10 +95,10 @@
 
 								<!-- TEI (WORK) -->
 								<ui:fragment
-									rendered="#{activeDocumentBean.viewManager.teiAvailableForWork}">
+									rendered="#{displayConditions.matchesRecord('{fileTypes:[TEI, ALTO, FULLTEXT]}', pageTypes:[viewFulltext], accessCondition:PRIV_VIEW_FULLTEXT)}">
 									<!-- MULTILANGUAGE -->
 									<ui:fragment
-										rendered="#{activeDocumentBean.viewManager.fulltextFromTEI}">
+										rendered="#{displayConditions.matchesRecord('{fileTypes:[TEI]}')}">
 										<ui:repeat var="lang"
 											value="#{textBean.getRecordLanguages(activeDocumentBean.viewManager.topStructElement)}">
 											<a
@@ -135,7 +114,7 @@
 									</ui:fragment>
 									<!-- SINGLE LANGUAGE -->
 									<ui:fragment
-										rendered="#{!activeDocumentBean.viewManager.fulltextFromTEI}">
+										rendered="#{displayConditions.matchesRecord('{fileTypes:![TEI]}')}">
 										<a href="#{activeDocumentBean.viewManager.teiUrlForAllPages}"
 											id="teiWork"
 											class="badge badge-dark widget-downloads__work-download-tei"
@@ -149,7 +128,7 @@
 
 								<!-- FULLTEXT (WORK) -->
 								<ui:fragment
-									rendered="#{activeDocumentBean.viewManager.fulltextAvailableForWork}">
+									rendered="#{displayConditions.matchesRecord('{fileTypes:[ALTO, FULLTEXT]}', pageTypes:[viewFulltext], accessCondition:PRIV_VIEW_FULLTEXT)}">
 									<a
 										href="#{activeDocumentBean.viewManager.fulltextUrlForAllPages}"
 										id="textWork"
@@ -160,7 +139,6 @@
 										aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.fulltext}">
 										#{msg.fulltext} </a>
 								</ui:fragment>
-							</ui:fragment>
 
 							<!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
 							<ui:fragment
@@ -355,7 +333,6 @@
 
 						</div>
 
-					</ui:fragment>
 
 
 					<!-- PAGE -->
@@ -688,28 +665,27 @@
 
 
 				</div>
+				<!--  Handling page range download buttons and inputs -->
+				<script>
+					$('[data-target="showPageRangeDownload"]')
+							.on(
+									"click",
+									function() {
+										$(this).hide();
+										$('[data-target="pageRangeDownload"]')
+												.show();
+										$('[data-target="pageRangeDownload"]')
+												.addClass('-active');
+										$(
+												'.widget-downloads__page-range-downloads-inputs-wrapper')
+												.slideDown('fast');
+	
+									});
+				</script>
 			</div>
 
-			<!--  Handling page range download buttons and inputs -->
-			<script>
-				$('[data-target="showPageRangeDownload"]')
-						.on(
-								"click",
-								function() {
-									$(this).hide();
-									$('[data-target="pageRangeDownload"]')
-											.show();
-									$('[data-target="pageRangeDownload"]')
-											.addClass('-active');
-									$(
-											'.widget-downloads__page-range-downloads-inputs-wrapper')
-											.slideDown('fast');
-
-								});
-			</script>
 
 
 
-		</ui:fragment>
 	</composite:implementation>
 </ui:composition>

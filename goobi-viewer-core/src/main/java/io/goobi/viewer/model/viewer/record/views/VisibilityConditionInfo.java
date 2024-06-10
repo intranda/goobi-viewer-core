@@ -8,7 +8,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.goobi.viewer.controller.JsonTools;
 
 public class VisibilityConditionInfo {
-    private List<String> requiredFileTypes;
+    private List<String> fileTypes;
+    private String sourceFormat;
     private String baseMimeType;
     private String accessCondition;
     private List<String> pageTypes;
@@ -16,11 +17,11 @@ public class VisibilityConditionInfo {
     private Boolean hasPages;
 
     public List<String> getRequiredFileTypes() {
-        return requiredFileTypes == null ? Collections.emptyList() : requiredFileTypes;
+        return fileTypes == null ? Collections.emptyList() : fileTypes;
     }
 
     public void setRequiredFileTypes(List<String> fileTypes) {
-        this.requiredFileTypes = fileTypes;
+        this.fileTypes = fileTypes;
     }
 
     public String getBaseMimeType() {
@@ -61,6 +62,14 @@ public class VisibilityConditionInfo {
 
     public void setDocTypes(List<String> docTypes) {
         this.docTypes = docTypes;
+    }
+
+    public String getSourceFormat() {
+        return sourceFormat;
+    }
+
+    public void setSourceFormat(String sourceFormat) {
+        this.sourceFormat = sourceFormat;
     }
 
     @Override

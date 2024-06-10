@@ -2,7 +2,10 @@ package io.goobi.viewer.model.viewer.record.views;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -16,7 +19,6 @@ import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.ViewManager;
-import io.goobi.viewer.solr.SolrConstants;
 
 public enum FileType {
 
@@ -32,28 +34,29 @@ public enum FileType {
 
     private static final Logger logger = LogManager.getLogger(FileType.class);
 
-    public static Collection<FileType> containedFiletypes(ViewManager viewManager) {
+    public static Collection<FileType> containedFiletypes(ViewManager viewManager) throws IndexUnreachableException, PresentationException {
         Set<FileType> types = new HashSet<>();
 
-        String mimeType = viewManager.getTopStructElement().getMetadataValue(SolrConstants.MIMETYPE);
-        BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
+        Map<String, List<String>> filenames = viewManager.getFilenamesByMimeType();
 
-        if (BaseMimeType.AUDIO.equals(baseMimeType)) {
+        List<BaseMimeType> baseTypes = filenames.keySet().stream().map(BaseMimeType::getByName).collect(Collectors.toList());
+
+        if (baseTypes.contains(BaseMimeType.AUDIO)) {
             types.add(FileType.AUDIO);
         }
-        if (BaseMimeType.VIDEO.equals(baseMimeType)) {
+        if (baseTypes.contains(BaseMimeType.VIDEO)) {
             types.add(FileType.VIDEO);
         }
-        if (BaseMimeType.IMAGE.equals(baseMimeType)) {
+        if (baseTypes.contains(BaseMimeType.IMAGE)) {
             types.add(FileType.IMAGE);
         }
-        if (BaseMimeType.MODEL.equals(baseMimeType)) {
+        if (baseTypes.contains(BaseMimeType.MODEL)) {
             types.add(FileType.MODEL);
         }
-        if ("application/pdf".equals(mimeType)) {
+        if (filenames.keySet().contains("application/pdf")) {
             types.add(FileType.PDF);
         }
-        if ("application/epub+zip".equals(mimeType)) {
+        if (filenames.keySet().contains("application/epub+zip")) {
             types.add(FileType.EPUB);
         }
         if (viewManager.getTopStructElement().isHasTei()) {

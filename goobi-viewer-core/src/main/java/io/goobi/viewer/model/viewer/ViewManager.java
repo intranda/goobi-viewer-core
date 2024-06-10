@@ -61,6 +61,7 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -78,6 +79,8 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetPdfAction;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.SinglePdfRequest;
+import de.unigoettingen.sub.commons.util.MimeType;
+import de.unigoettingen.sub.commons.util.MimeType.UnknownMimeTypeException;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
@@ -2797,6 +2800,37 @@ public class ViewManager implements Serializable {
         int threshold = 1; // TODO ???
 
         return pagesWithAlto >= threshold;
+    }
+
+    public Map getFilenamesByMimeType() throws IndexUnreachableException, PresentationException {
+        List<SolrDocument> pageDocs = DataManager.getInstance()
+                .getSearchIndex()
+                .getDocs(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                        .append(':')
+                        .append(pi)
+                        .append(" +")
+                        .append(SolrConstants.DOCTYPE)
+                        .append(":PAGE")
+                        .append(" +")
+                        .append(SolrConstants.FILENAME)
+                        .append(":*")
+                        .toString(), List.of(SolrConstants.FILENAME));
+        return pageDocs.stream()
+                .map(doc -> doc.getFieldValue(SolrConstants.FILENAME))
+                .map(Object::toString)
+
+                .collect(Collectors.toMap(
+                        filename -> getMimetype((String) filename),
+                        filename -> List.of(filename),
+                        (set1, set2) -> CollectionUtils.union((List) set1, (List) set2)));
+    }
+
+    public String getMimetype(String filename) {
+        try {
+            return MimeType.getMimeTypeFromExtension(filename);
+        } catch (UnknownMimeTypeException e) {
+            return "unknown";
+        }
     }
 
     public Long getPageCountWithAlto() throws IndexUnreachableException, PresentationException {

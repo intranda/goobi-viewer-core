@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessPermission;
@@ -22,7 +23,8 @@ import io.goobi.viewer.solr.SolrConstants;
 
 public class VisibilityCondition {
 
-    private final AnyMatchCondition<FileType> requiredFileTypes;
+    private final AnyMatchCondition<FileType> fileTypes;
+    private final Condition<String> sourceFormat;
     private final Condition<BaseMimeType> mimeType;
     private final Condition<String> accessCondition;
     private final AnyMatchCondition<PageType> views;
@@ -39,8 +41,9 @@ public class VisibilityCondition {
                                 .map(FileType::valueOf)
                                 .collect(Collectors.toList()),
                         !info.getRequiredFileTypes().contains("!")),
-                new Condition<BaseMimeType>(BaseMimeType.getByName(getValue(info.getBaseMimeType())), isNegated(info.getBaseMimeType())),
-                new Condition<String>(getValue(info.getAccessCondition()), isNegated(info.getAccessCondition())),
+                new Condition<String>(getValue(info.getSourceFormat()), !isNegated(info.getSourceFormat())),
+                new Condition<BaseMimeType>(BaseMimeType.getByName(getValue(info.getBaseMimeType())), !isNegated(info.getBaseMimeType())),
+                new Condition<String>(getValue(info.getAccessCondition()), !isNegated(info.getAccessCondition())),
                 new AnyMatchCondition<PageType>(
                         info.getPageTypes().stream().filter(s -> !s.equals("!")).map(PageType::getByName).collect(Collectors.toList()),
                         !info.getPageTypes().contains("!")),
@@ -49,9 +52,10 @@ public class VisibilityCondition {
                 Condition.of(info.getHasPages(), true));
     }
 
-    public VisibilityCondition(AnyMatchCondition<FileType> requiredFileTypes, Condition<BaseMimeType> mimeType,
+    public VisibilityCondition(AnyMatchCondition<FileType> fileTypes, Condition<String> sourceFormat, Condition<BaseMimeType> mimeType,
             Condition<String> accessCondition, AnyMatchCondition<PageType> views, AnyMatchCondition<String> docTypes, Condition<Boolean> hasPages) {
-        this.requiredFileTypes = requiredFileTypes;
+        this.fileTypes = fileTypes;
+        this.sourceFormat = sourceFormat;
         this.mimeType = mimeType;
         this.accessCondition = accessCondition;
         this.views = views;
@@ -72,7 +76,7 @@ public class VisibilityCondition {
     }
 
     public boolean matchesRecord(PageType pageType, ViewManager viewManager, HttpServletRequest request)
-            throws IndexUnreachableException, DAOException, RecordNotFoundException {
+            throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException {
 
         List<String> docTypes = new ArrayList<>(List.of(viewManager.getTopStructElement().getDocStructType()));
         if (viewManager.getTopStructElement().isGroup()) {
@@ -90,7 +94,8 @@ public class VisibilityCondition {
         Collection<FileType> existingFileTypes = FileType.containedFiletypes(viewManager);
         BaseMimeType baseMimeType = BaseMimeType.getByName(viewManager.getTopStructElement().getMetadataValue(SolrConstants.MIMETYPE));
         return checkAccess(viewManager, request) &&
-                this.requiredFileTypes.matches(existingFileTypes) &&
+                this.fileTypes.matches(existingFileTypes) &&
+                this.sourceFormat.matches(viewManager.getTopStructElement().getSourceDocFormat()) &&
                 this.mimeType.matches(baseMimeType) &&
                 this.views.matches(List.of(pageType)) &&
                 this.docTypes.matches(docTypes) &&
@@ -120,7 +125,7 @@ public class VisibilityCondition {
 
         Collection<FileType> existingFileTypes = FileType.containedFiletypes(page);
         BaseMimeType baseMimeType = page.getBaseMimeType();
-        return this.requiredFileTypes.matches(existingFileTypes) &&
+        return this.fileTypes.matches(existingFileTypes) &&
                 this.mimeType.matches(baseMimeType) &&
                 this.views.matches(List.of(pageType)) &&
                 this.hasPages.matches(true);

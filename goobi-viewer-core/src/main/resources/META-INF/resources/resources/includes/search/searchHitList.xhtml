@@ -21,9 +21,12 @@
     
     <!-- THIS INCLUDE MUST BE WRAPPED IN AN DIV WITH THE CLASS ".search-list"! -->
     
+    
     <!-- SEARCH LIST HITS --> 
     <div class="search-list__hits #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : 'noClass'}">
         <!-- SEARCH LIST SORTING -->
+    <div>Suchfelder: #{searchBean.advancedSearchQueryGroup.queryItems.stream().filter(item -> not empty item.value).map(item -> item.field).toList().contains('FULLTEXT')}</div>
+	<div>Suchfelder2: #{searchBean.searchTerms['FULLTEXT']}</div>
         <h:panelGroup rendered="#{!groupPreviewMode and showOptions and search.hitsCount > 1}">
         	<h2 class="-sr-only">#{msg.searchHitNavigation}:</h2>
             <div class="search-list__nav-helper-wrapper">
