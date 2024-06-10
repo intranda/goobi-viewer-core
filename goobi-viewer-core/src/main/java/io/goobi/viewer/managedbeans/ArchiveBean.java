@@ -46,7 +46,6 @@ import io.goobi.viewer.model.archives.ArchiveManager.DatabaseState;
 import io.goobi.viewer.model.archives.ArchiveResource;
 import io.goobi.viewer.model.archives.ArchiveTree;
 import io.goobi.viewer.model.archives.NodeType;
-import io.goobi.viewer.model.archives.SolrEADParser;
 
 @Named
 @SessionScoped
@@ -119,11 +118,12 @@ public class ArchiveBean implements Serializable {
      * @return the archiveTree
      */
     public ArchiveTree getArchiveTree() {
-        logger.trace("getArchiveTree");
+        // logger.trace("getArchiveTree");
         return archiveTree;
     }
 
     public void toggleEntryExpansion(ArchiveEntry entry) {
+        logger.trace("toggleEntryExpansion: {}", entry);
         if (entry.isExpanded()) {
             collapseEntry(entry);
         } else {
@@ -144,12 +144,12 @@ public class ArchiveBean implements Serializable {
             return;
         }
         synchronized (getArchiveTree()) {
-            boolean updateTree = entry.isChildrenFound() && !entry.isChildrenLoaded();
+//            boolean updateTree = entry.isChildrenFound() && !entry.isChildrenLoaded();
             entry.expand();
-            if (updateTree) {
-                logger.trace("Updating tree");
-                getArchiveTree().generate(entry.getRootNode());
-            }
+//            if (updateTree) {
+//                logger.trace("Updating tree");
+//                getArchiveTree().generate(entry.getRootNode());
+//            }
         }
     }
 

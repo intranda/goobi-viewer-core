@@ -23,6 +23,7 @@ package io.goobi.viewer.model.archives;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -316,8 +317,8 @@ public class ArchiveEntry {
         if (!isChildrenLoaded()) {
             logger.trace("Loading children for entry: {}", label);
             try {
-                ((SolrEADParser) DataManager.getInstance().getArchiveManager().getEadParser()).loadChildren(this,
-                        SolrEADParser.getChildDocMapForIddoc(SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC)), false);
+                // TODO Use persistent map
+                ((SolrEADParser) DataManager.getInstance().getArchiveManager().getEadParser()).loadChildren(this, new HashMap<>(), false);
             } catch (PresentationException | IndexUnreachableException e) {
                 logger.error(e.getMessage());
             }
@@ -424,13 +425,13 @@ public class ArchiveEntry {
      * @return Root node
      */
     public ArchiveEntry getRootNode() {
-        ArchiveEntry parent = null;
-        while (getParentNode() != null) {
-            parent = getParentNode();
+        ArchiveEntry ret = this;
+        while (ret.getParentNode() != null) {
+            ret = ret.getParentNode();
         }
 
-        logger.trace("found parent: {}", parent);
-        return parent;
+        logger.trace("found root: {}", ret);
+        return ret;
     }
 
     /**

@@ -249,6 +249,15 @@ public class SolrEADParser extends ArchiveParser {
             int subOrder = 0;
             int subHierarchy = entry.getHierarchyLevel() + 1;
             for (SolrDocument c : archiveDocMap.get(iddoc)) {
+                archiveDocMap.computeIfAbsent(iddoc, k -> {
+                    try {
+                        return getChildDocsForIddoc((String) c.getFieldValue(SolrConstants.IDDOC));
+                    } catch (PresentationException | IndexUnreachableException e) {
+                        logger.error(e.getMessage());
+                    }
+                    return null;
+                });
+
                 ArchiveEntry child = loadHierarchyFromIndex(null, subOrder, subHierarchy, c, archiveDocMap, loadRecursively);
                 entry.addSubEntry(child);
                 child.setParentNode(entry);
@@ -268,16 +277,17 @@ public class SolrEADParser extends ArchiveParser {
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static Map<String, List<SolrDocument>> getChildDocMapForIddoc(String iddoc) throws PresentationException, IndexUnreachableException {
+    public static List<SolrDocument> getChildDocsForIddoc(String iddoc)
+            throws PresentationException, IndexUnreachableException {
+        logger.trace("getChildDocMapForIddoc: {}", iddoc);
         SolrDocumentList archiveDocs = DataManager.getInstance()
                 .getSearchIndex()
                 .search(SolrConstants.IDDOC_PARENT + ":\"" + iddoc + "\"");
-        Map<String, List<SolrDocument>> ret = new HashMap<>();
+        List<SolrDocument> ret = new ArrayList<>();
         for (SolrDocument doc : archiveDocs) {
             String iddocParent = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_PARENT);
             if (iddocParent != null) {
-                List<SolrDocument> docList = ret.computeIfAbsent(iddocParent, k -> new ArrayList<>());
-                docList.add(doc);
+                ret.add(doc);
             }
         }
 
