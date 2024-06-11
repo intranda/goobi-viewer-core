@@ -6,7 +6,7 @@
      xsi:schemaLocation="http://mojo.codehaus.org/versions-maven-plugin/rule/2.0.0 http://www.mojohaus.org/versions-maven-plugin/xsd/rule-2.0.0.xsd">
 
     <ignoreVersions>
-        <ignoreVersion type="regex">.*[-_\.](alpha|Alpha|ALPHA|beta|Beta|BETA|rc|RC|M|EA|B)[-_\.]?[0-9]??.*</ignoreVersion>
+        <ignoreVersion type="regex">.*[-_\.](alpha|Alpha|ALPHA|beta|Beta|BETA|rc|RC|M|EA|B)[-_\.]?[0-9]?.*</ignoreVersion>
     </ignoreVersions>
 
     <!-- The following rules exist, because updating to this major versions include changing the javax. to jakarta. namespaces.
