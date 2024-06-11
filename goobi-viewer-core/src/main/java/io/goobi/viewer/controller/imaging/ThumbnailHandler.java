@@ -572,8 +572,7 @@ public class ThumbnailHandler {
      * Returns a link to an image representing the given document of the given size (to be exact: the largest image size which fits within the given
      * bounds and keeps the image proportions.
      *
-     * @param se Needs to have the fields {@link io.goobi.viewer.solr.SolrConstants#MIMETYPE} and
-     *            {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
+     * @param se Needs to have the fields {@link io.goobi.viewer.solr.SolrConstants#MIMETYPE} and {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
      * @param width a int.
      * @param height a int.
      * @return a {@link java.lang.String} object.
@@ -613,8 +612,14 @@ public class ThumbnailHandler {
             return IIIFUrlResolver.getIIIFImageUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
         } else if (thumbnailUrl != null) {
             String region = Region.FULL_IMAGE;
-            if (doc.getShapeMetadata() != null && !doc.getShapeMetadata().isEmpty()) {
-                region = doc.getShapeMetadata().get(0).getCoords();
+
+            if (!doc.isWork() && !doc.isAnchor() && !doc.isGroup() && doc.getShapeMetadata() != null && !doc.getShapeMetadata().isEmpty()) {
+                region = doc.getShapeMetadata()
+                        .stream()
+                        .filter(shape -> shape.getPageNo() == doc.getImageNumber())
+                        .map(shape -> shape.getCoords())
+                        .findFirst()
+                        .orElse(Region.FULL_IMAGE);
             }
             return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, pi, region, "!" + width + "," + height, "0", StringConstants.DEFAULT,
                     ImageFileFormat.getMatchingTargetFormat(format).getFileExtension());
@@ -684,8 +689,7 @@ public class ThumbnailHandler {
      * Returns a link the an image representing the given document of the given size. The image is always square and contains as much of the actual
      * image as is possible to fit into a square - the delivered square is always centered within the full image.
      *
-     * @param se Needs to have the fields {@link io.goobi.viewer.solr.SolrConstants#MIMETYPE} and
-     *            {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
+     * @param se Needs to have the fields {@link io.goobi.viewer.solr.SolrConstants#MIMETYPE} and {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
      * @param size a int.
      * @return a {@link java.lang.String} object.
      */
@@ -782,7 +786,7 @@ public class ThumbnailHandler {
 
     /**
      * @param doc Needs to have the fields {@link io.goobi.viewer.solr.SolrConstants#MIMETYPE} and
-     *        {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
+     *            {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
      * @return The representative thumbnail url for the given doc, or a replacement image url if no representative thumbnail url is applicable (born
      *         digital material and - depending on configuration - anchors)
      */
