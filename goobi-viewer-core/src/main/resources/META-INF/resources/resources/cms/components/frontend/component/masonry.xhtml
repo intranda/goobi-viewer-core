@@ -55,24 +55,24 @@
 				<script type="text/javascript"
 					src="#{request.contextPath}/resources/javascript/libs/masonry/masonry.min.js"></script>
 				<script type="text/javascript">
-                	// console.log("load url #{cc.attrs.imagelistItem.content.tileGridUrl}");
-                	$.ajax( {
-						url : "#{cc.attrs.imagelistItem.content.tileGridUrl}",
-						type : "GET",
-						datatype : "JSON"
-					}).then( function( data ) {
-					   // console.log("init masonry with", data)
-						var masonryConfig = {
-								$grid : $("#masonry#{cc.clientId}"),
-								language: currentLang,
-								loaderSelector: '.tpl-masonry__loader#{cc.clientId}',
-			                    itemSelector: '.grid-item#{cc.clientId}',
-			                    columnWidth: '.grid-sizer#{cc.clientId}',
-			                    gutter: '.gutter-sizer#{cc.clientId}',
-						};
-
-						cmsJS.masonry.init( masonryConfig, data);
-					});
+	                	 $.ajax( { 
+							url : "#{cc.attrs.imagelistItem.content.tileGridUrl}",
+							type : "GET",
+							datatype : "JSON"
+						}).then( function( data ) {
+						    //console.log("init masonry with", data)
+							var masonryConfig = {
+									$grid : $("#masonry#{cc.clientId}"),
+									language: currentLang,
+									loaderSelector: '.tpl-masonry__loader#{cc.clientId}',
+				                    itemSelector: '.grid-item#{cc.clientId}',
+				                    columnWidth: '.grid-sizer#{cc.clientId}',
+				                    gutter: '.gutter-sizer#{cc.clientId}',
+							};
+		                	$(document).ready(() => {                		
+								cmsJS.masonry.init( masonryConfig, data);
+							});
+                		})
 				</script>
 
 			</div>
