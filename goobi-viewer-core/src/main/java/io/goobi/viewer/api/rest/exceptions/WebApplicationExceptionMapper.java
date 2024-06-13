@@ -50,7 +50,7 @@ import io.goobi.viewer.exceptions.NotImplementedException;
 import io.goobi.viewer.exceptions.PresentationException;
 
 /**
- * Catches general exceptions encountered during rest-api calls and creates an error response
+ * Catches general exceptions encountered during rest-api calls and creates an error response.
  *
  * @author Florian Alpers
  */

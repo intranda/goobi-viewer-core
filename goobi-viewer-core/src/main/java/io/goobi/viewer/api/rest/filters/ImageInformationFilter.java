@@ -234,7 +234,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     }
 
     /**
-     * Write
+     * Write.
      *
      * @param info
      * @param mayZoom

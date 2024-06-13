@@ -50,7 +50,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
 /**
- * Adds additional parameters to iiif contentServer requests as requestContext properties Parameters must be named "param:" followed by the name of
+ * Adds additional parameters to iiif contentServer requests as requestContext properties. Parameters must be named "param:" followed by the name of
  * the corresponding contentServer request parameter
  */
 @Provider

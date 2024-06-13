@@ -62,19 +62,19 @@ public class Task {
 
     public enum Accessibility {
         /**
-         * Anyone may access this task
+         * Anyone may access this task.
          */
         PUBLIC,
         /**
-         * Anyone may access this tasks, but they are only visible within the session in which they were created
+         * Anyone may access this tasks, but they are only visible within the session in which they were created.
          */
         SESSION,
         /**
-         * Only users with admin rights may access this task
+         * Only users with admin rights may access this task.
          */
         ADMIN,
         /**
-         * This task is only accessibly by requests containing a valid access token
+         * This task is only accessibly by requests containing a valid access token.
          */
         TOKEN;
     }

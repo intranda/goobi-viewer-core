@@ -58,10 +58,10 @@ public class ContextListener implements ServletContextListener {
 
     private static final Logger logger = LogManager.getLogger(ContextListener.class);
 
-    /** Constant <code>PRETTY_FACES_CONFIG_PARAM_NAME="com.ocpsoft.pretty.CONFIG_FILES"</code> */
+    /** Constant <code>PRETTY_FACES_CONFIG_PARAM_NAME="com.ocpsoft.pretty.CONFIG_FILES"</code>. */
     public static final String PRETTY_FACES_CONFIG_PARAM_NAME = "com.ocpsoft.pretty.CONFIG_FILES";
 
-    /** Constant <code>prettyConfigFiles="resources/themes/theme-url-mappings.xml"{trunked}</code> */
+    /** Constant <code>prettyConfigFiles="resources/themes/theme-url-mappings.xml"{trunked}</code>. */
     private volatile String prettyConfigFiles =
             "resources/themes/theme-url-mappings.xml, pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml";
 

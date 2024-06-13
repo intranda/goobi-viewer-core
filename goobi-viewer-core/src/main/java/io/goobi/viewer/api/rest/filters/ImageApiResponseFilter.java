@@ -27,7 +27,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerResponseFilter;
 
 /**
- * default implementation of {@link ContentServerResponseFilter} to apply this filter in /api/v1/ environment
+ * Default implementation of {@link ContentServerResponseFilter} to apply this filter in /api/v1/ environment.
  *
  * @author florian
  *

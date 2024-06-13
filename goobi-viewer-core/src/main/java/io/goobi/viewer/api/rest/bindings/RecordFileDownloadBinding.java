@@ -21,10 +21,11 @@ import java.lang.annotation.RetentionPolicy;
 import javax.ws.rs.NameBinding;
 
 /**
+ * <p>
+ * Binding for downloading files belonging to a record.
+ * </p>
+ *
  * @author florian
- *
- *         Binding for downloading files belonging to a record
- *
  */
 @NameBinding
 @Retention(RetentionPolicy.RUNTIME)

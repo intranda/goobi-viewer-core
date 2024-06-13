@@ -44,7 +44,7 @@ public class CoreMessagesTranslationGroupItem extends TranslationGroupItem {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.translations.TranslationGroupKey#loadValues()
+     * @see io.goobi.viewer.model.translations.admin.TranslationGroupItem#loadEntries()
      */
     @Override
     protected void loadEntries() {

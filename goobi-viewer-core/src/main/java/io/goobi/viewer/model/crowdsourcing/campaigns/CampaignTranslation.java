@@ -32,7 +32,7 @@ import jakarta.persistence.Table;
 import io.goobi.viewer.model.translations.Translation;
 
 /**
- * A persistence object holding a translated String value
+ * A persistence object holding a translated String value.
  *
  * @author Florian Alpers
  */

@@ -62,7 +62,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
 /**
- * Resolver for normdata authority resources identified by their escaped url
+ * Resolver for normdata authority resources identified by their escaped url.
  *
  * @author florian
  *

@@ -339,7 +339,7 @@ var viewerJS = ( function( viewer ) {
 
 		},
 		openChildHits: function(button) {
-            console.log("open child hits"); 
+            // console.log("open child hits"); 
 			var $currBtn = $( button );
                 
             let scriptName = button.dataset.loadHitsScript;

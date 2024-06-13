@@ -36,7 +36,7 @@ import io.goobi.viewer.model.security.user.User;
 
 
 /**
- * Only allow requests from a session with a logged in goobi-viewer user
+ * Only allow requests from a session with a logged in Goobi viewer user.
  *
  * @author florian
  *
