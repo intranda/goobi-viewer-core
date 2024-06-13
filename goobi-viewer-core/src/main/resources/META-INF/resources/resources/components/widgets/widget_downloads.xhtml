@@ -271,9 +271,26 @@
 										#{msg.label__pdf_download}
 									</a>
 								</ui:fragment>
-							</ui:fragment>
+							</ui:fragment> 	
+							
+	                        <!-- External download link -->
+	                        <ui:fragment rendered="#{activeDocumentBean.viewManager.externalDownloadUrl != null}">
+	                            <a
+	                                href="#{activeDocumentBean.viewManager.externalDownloadUrl}"
+	                                id="externalDownloadWork" 
+	                                class="badge badge-dark widget-format-links__work-download-external" 
+	                                title="#{msg.downloadWorkExternal}"
+	                                data-toggle="tooltip"
+	                                data-placement="top"
+	                                data-trigger="hover"
+	                                target="_blank" rel="nofollow noopener"
+	                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadWorkExternal}">
+	                                <i class="fa fa-download" aria-hidden="true"></i>
+	                                #{msg.downloadWorkExternal}
+	                            </a>
+	                        </ui:fragment>
 				
-	<!-- EPUB -->
+							<!-- EPUB -->
 							<ui:fragment
 								rendered="#{activeDocumentBean.accessPermissionEpub}">
 								<a href="#"
