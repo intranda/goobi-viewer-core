@@ -106,7 +106,7 @@ public class SearchHitFactory {
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param ownerDoc a {@link org.apache.solr.common.SolrDocument} object.
      * @param fulltext Optional fulltext (page docs only).
-     * @param overrideType a {@link io.goobi.viewer.model.search.SearchHit.HitType} object.
+     * @param overrideType a {@link io.goobi.viewer.model.search.HitType} object.
      * @return a {@link io.goobi.viewer.model.search.SearchHit} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -114,8 +114,8 @@ public class SearchHitFactory {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should add export fields correctly
      */
-    public SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, String fulltext,
-            HitType overrideType) throws PresentationException, IndexUnreachableException {
+    public SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, String fulltext, HitType overrideType)
+            throws PresentationException, IndexUnreachableException {
 
         List<String> fulltextFragments =
                 (fulltext == null || searchTerms == null) ? null

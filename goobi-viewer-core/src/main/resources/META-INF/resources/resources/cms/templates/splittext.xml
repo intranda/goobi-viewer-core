@@ -18,7 +18,7 @@
 		</item>
 
 		<item id="text">
-			<label>cms_component__split_text__content</label>
+			<label>cms_component__htmltext_label</label>
 			<className>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</className>
 			<jsfComponent>
 				<library>cms/components/backend/content</library>

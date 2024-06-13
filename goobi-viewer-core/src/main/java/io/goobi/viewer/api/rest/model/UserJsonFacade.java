@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * Simplified representation of a {@link User} object for json (de-)serialization
+ * Simplified representation of a {@link User} object for json (de-)serialization.
  *
  * @author florian
  *

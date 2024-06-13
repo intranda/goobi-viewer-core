@@ -46,7 +46,7 @@ public class TranslatedTextSerializer extends WebAnnotationMetadataValueSerializ
     }
 
     /**
-     * Always assume all translations are unique to write full translation info
+     * Always assume all translations are unique to write full translation info.
      */
     @Override
     protected boolean allTranslationsEqual(MultiLanguageMetadataValue element) {

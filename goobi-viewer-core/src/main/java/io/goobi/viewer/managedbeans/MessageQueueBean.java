@@ -77,6 +77,9 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 
+/**
+ * <p>MessageQueueBean class.</p>
+ */
 @Named
 @ApplicationScoped
 public class MessageQueueBean implements Serializable {
@@ -103,16 +106,27 @@ public class MessageQueueBean implements Serializable {
 
     private TableDataProvider<ViewerMessage> lazyModelViewerHistory;
 
+    /**
+     * <p>Constructor for MessageQueueBean.</p>
+     */
     public MessageQueueBean() {
         this.initMessageBrokerStart();
 
     }
 
+    /**
+     * <p>Constructor for MessageQueueBean.</p>
+     *
+     * @param broker a {@link io.goobi.viewer.controller.mq.MessageQueueManager} object
+     */
     public MessageQueueBean(MessageQueueManager broker) {
         this.messageBroker = broker;
         this.initMessageBrokerStart();
     }
 
+    /**
+     * <p>init.</p>
+     */
     @PostConstruct
     public void init() {
 
@@ -131,6 +145,11 @@ public class MessageQueueBean implements Serializable {
 
     }
 
+    /**
+     * <p>close.</p>
+     *
+     * @throws javax.jms.JMSException if any.
+     */
     @PreDestroy
     public void close() throws JMSException {
         if (this.queueSession != null) {
@@ -141,6 +160,11 @@ public class MessageQueueBean implements Serializable {
         }
     }
 
+    /**
+     * <p>getQueueContent.</p>
+     *
+     * @return a {@link java.util.Map} object
+     */
     public Map<String, Integer> getQueueContent() {
         Map<String, Integer> fastQueueContent = new TreeMap<>();
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
@@ -150,6 +174,9 @@ public class MessageQueueBean implements Serializable {
         return fastQueueContent;
     }
 
+    /**
+     * <p>pauseQueue.</p>
+     */
     public void pauseQueue() {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
             paused = this.messageBroker.pauseQueue(MessageQueueManager.QUEUE_NAME_VIEWER)
@@ -157,6 +184,9 @@ public class MessageQueueBean implements Serializable {
         }
     }
 
+    /**
+     * <p>resumeQueue.</p>
+     */
     public void resumeQueue() {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
             paused = !(this.messageBroker.resumeQueue(MessageQueueManager.QUEUE_NAME_VIEWER)
@@ -164,6 +194,9 @@ public class MessageQueueBean implements Serializable {
         }
     }
 
+    /**
+     * <p>clearQueue.</p>
+     */
     public void clearQueue() {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
             this.messageBroker.clearQueue(MessageQueueManager.QUEUE_NAME_VIEWER);
@@ -171,6 +204,9 @@ public class MessageQueueBean implements Serializable {
         }
     }
 
+    /**
+     * <p>initMessageBrokerStart.</p>
+     */
     public void initMessageBrokerStart() {
         this.messageBrokerStart = DataManager.getInstance().getConfiguration().isStartInternalMessageBroker();
     }
@@ -183,7 +219,7 @@ public class MessageQueueBean implements Serializable {
 
     /**
      * Get a list of all active messages in the goobi_slow queue.
-     * 
+     *
      * @return List<ViewerMessage>
      */
     public List<ViewerMessage> getActiveQueryMesssages() {
@@ -191,8 +227,9 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * 
-     * @param messageType
+     * <p>getQueryMessages.</p>
+     *
+     * @param messageType a {@link java.lang.String} object
      * @return List<ViewerMessage>
      */
     public List<ViewerMessage> getQueryMessages(String messageType) {
@@ -206,8 +243,8 @@ public class MessageQueueBean implements Serializable {
 
     /**
      * Remove all active messages of a given type from the queue.
-     * 
-     * @param type
+     *
+     * @param type a {@link java.lang.String} object
      */
     public void removeMessagesFromQueue(String type) {
 
@@ -219,8 +256,8 @@ public class MessageQueueBean implements Serializable {
 
     /**
      * Delete a single message from the queue
-     * 
-     * @param ticket
+     *
+     * @param ticket a {@link io.goobi.viewer.controller.mq.ViewerMessage} object
      */
     public void deleteMessage(ViewerMessage ticket) {
 
@@ -230,18 +267,38 @@ public class MessageQueueBean implements Serializable {
 
     }
 
+    /**
+     * <p>Getter for the field <code>messageType</code>.</p>
+     *
+     * @return a {@link java.lang.String} object
+     */
     public String getMessageType() {
         return messageType;
     }
 
+    /**
+     * <p>Setter for the field <code>messageType</code>.</p>
+     *
+     * @param messageType a {@link java.lang.String} object
+     */
     public void setMessageType(String messageType) {
         this.messageType = messageType;
     }
 
+    /**
+     * <p>isMessageBrokerStart.</p>
+     *
+     * @return a boolean
+     */
     public boolean isMessageBrokerStart() {
         return messageBrokerStart;
     }
 
+    /**
+     * <p>isPaused.</p>
+     *
+     * @return a boolean
+     */
     public boolean isPaused() {
         return paused;
     }
@@ -288,10 +345,18 @@ public class MessageQueueBean implements Serializable {
         return model;
     }
 
+    /**
+     * <p>Getter for the field <code>lazyModelViewerHistory</code>.</p>
+     *
+     * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object
+     */
     public TableDataProvider<ViewerMessage> getLazyModelViewerHistory() {
         return lazyModelViewerHistory;
     }
 
+    /**
+     * <p>updateMessageQueueState.</p>
+     */
     public void updateMessageQueueState() {
         messageQueueState.send("update");
         cleanOldMessages();
@@ -310,10 +375,18 @@ public class MessageQueueBean implements Serializable {
 
     }
 
+    /**
+     * <p>getListeners.</p>
+     *
+     * @return a {@link java.util.List} object
+     */
     public List<DefaultQueueListener> getListeners() {
         return Optional.ofNullable(this.messageBroker).map(broker -> broker.getListeners()).orElse(Collections.emptyList());
     }
 
+    /**
+     * <p>restartAllListeners.</p>
+     */
     public void restartAllListeners() {
         getListeners().forEach(l -> {
             try {

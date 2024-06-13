@@ -574,17 +574,18 @@ public final class MetadataTools {
      * findMetadataGroupType.
      * </p>
      *
-     * @param gndspec a {@link java.lang.String} object.
+     * @param type a {@link java.lang.String} object.
      * @return MetadataGroupType value corresponding to the given gndspec type
      * @should map values correctly
      */
-    public static String findMetadataGroupType(String gndspec) {
-        if (gndspec == null) {
+    public static String findMetadataGroupType(String type) {
+        if (type == null) {
             return null;
         }
-        if (gndspec.length() == 3) {
-            String ret = null;
-            switch (gndspec.substring(0, 2)) {
+        
+        String ret = null;
+        if (type.length() == 3) {
+            switch (type.substring(0, 2)) {
                 case "gi":
                     ret = MetadataGroupType.LOCATION.name();
                     break;
@@ -610,9 +611,24 @@ public final class MetadataTools {
                 logger.trace("Authority data type determined from 075$b (gndspec): {}", ret);
                 return ret;
             }
+        } else {
+            switch (type.toLowerCase()) {
+                case "place":
+                    ret = MetadataGroupType.LOCATION.name();
+                    break;
+                case "person":
+                    ret = MetadataGroupType.PERSON.name();
+                    break;
+                default:
+                    break;
+            }
+            if (ret != null) {
+                logger.trace("Authority data type determined from 075$b (gndspec): {}", ret);
+                return ret;
+            }
         }
 
-        logger.trace("Authority data type could not be determined for '{}'.", gndspec);
+        logger.trace("Authority data type could not be determined for '{}'.", type);
         return null;
     }
 

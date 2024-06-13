@@ -136,7 +136,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     /**
      * Created a copy of the passed item ignoring all data concerning the item hierarchy (order, child and parent items)
      *
-     * @param original a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
+     * @param original a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      */
     public CMSNavigationItem(CMSNavigationItem original) {
         setItemLabel(original.getItemLabel());
@@ -349,7 +349,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
      * addChildItem.
      * </p>
      *
-     * @param child a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
+     * @param child a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      */
     public void addChildItem(CMSNavigationItem child) {
         if (!childItems.contains(child)) {
@@ -362,7 +362,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
      * removeChildItem.
      * </p>
      *
-     * @param child a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem} object.
+     * @param child a {@link io.goobi.viewer.model.cms.CMSNavigationItem} object.
      */
     public void removeChildItem(CMSNavigationItem child) {
         if (childItems.contains(child)) {
@@ -642,7 +642,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
      * Setter for the field <code>displayRule</code>.
      * </p>
      *
-     * @param rule a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem.DisplayRule} object.
+     * @param rule a {@link io.goobi.viewer.model.cms.CMSNavigationItem.DisplayRule} object.
      */
     public void setDisplayRule(DisplayRule rule) {
         this.displayRule = rule;
@@ -653,7 +653,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
      * Getter for the field <code>displayRule</code>.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.model.cms.navigation.CMSNavigationItem.DisplayRule} object.
+     * @return a {@link io.goobi.viewer.model.cms.CMSNavigationItem.DisplayRule} object.
      */
     public DisplayRule getDisplayRule() {
         if (this.displayRule == null) {

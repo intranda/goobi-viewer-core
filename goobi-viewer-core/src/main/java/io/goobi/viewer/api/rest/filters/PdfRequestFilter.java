@@ -127,7 +127,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * set watermarkText and watermarkId properties to request object
+     * Set watermarkText and watermarkId properties to request object.
      *
      * @param pi
      * @param divId
@@ -177,7 +177,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * If the imageName is actually a list of names, return the first name
+     * If the imageName is actually a list of names, return the first name.
      *
      * @param imageName
      * @return First image name

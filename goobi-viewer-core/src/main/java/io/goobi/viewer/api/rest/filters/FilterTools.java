@@ -67,8 +67,6 @@ public final class FilterTools {
     }
 
     /**
-     *
-     *
      * @param pi
      * @param request
      * @throws ServiceNotAllowedException
@@ -120,7 +118,7 @@ public final class FilterTools {
     /**
      * <p>
      * Check if the request contains a size and region parameter (and is this a IIIF image request) and if so wether they describe a request for a
-     * full image not larger than {@link Configuration#getUnconditionalImageAccessMaxWidth()}.
+     * full image not larger than {@link Configuration#getThumbnailImageAccessMaxWidth()}.
      * </p>
      *
      * @param servletRequest The servlet request for the resource

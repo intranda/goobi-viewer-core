@@ -78,6 +78,7 @@ import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * <p>
@@ -158,7 +159,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * </p>
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
-     * @param manifest a {@link de.intranda.api.iiif.presentation.AbstractPresentationModelElement} object.
+     * @param manifest a {@link de.intranda.api.iiif.presentation.v2.AbstractPresentationModelElement2} object.
      * @param pages
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -427,14 +428,22 @@ public class ManifestBuilder extends AbstractBuilder {
         return uri;
     }
 
+    /**
+     * 
+     * @param ele {@link StructElement}
+     * @return {@link PageType}
+     */
     private static PageType getMatchingPageType(StructElement ele) {
-        PageType pageType = PageType.viewMetadata;
-        if (ele.isHasImages()) {
-            pageType = PageType.viewImage;
-        } else if (ele.isAnchor()) {
-            pageType = PageType.viewToc;
-        }
-        return pageType;
+        //        PageType pageType = PageType.viewMetadata;
+        //        if (ele.isHasImages()) {
+        //            pageType = PageType.viewImage;
+        //        } else if (ele.isAnchor()) {
+        //            pageType = PageType.viewToc;
+        //        }
+        //        return pageType;
+
+        return PageType.determinePageType(ele.getDocStructType(), ele.getMetadataValue(SolrConstants.MIMETYPE), ele.isAnchor() || ele.isGroup(),
+                ele.isHasImages(), false);
     }
 
     /**
@@ -449,8 +458,8 @@ public class ManifestBuilder extends AbstractBuilder {
         for (StructElement volume : volumes) {
             try {
                 IPresentationModelElement child = generateManifest(volume, Collections.emptyList());
-                if (child instanceof Manifest2) {
-                    anchor.addManifest((Manifest2) child);
+                if (child instanceof Manifest2 manifest2) {
+                    anchor.addManifest(manifest2);
                 }
             } catch (ViewerConfigurationException | URISyntaxException | PresentationException | IndexUnreachableException | DAOException e) {
                 logger.error("Error creating child manigest for {}", volume);
@@ -464,7 +473,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * addAnchor.
      * </p>
      *
-     * @param manifest a {@link de.intranda.api.iiif.v2.Manifest} object.
+     * @param manifest a {@link de.intranda.api.iiif.presentation.v2.Manifest2} object.
      * @param anchorPI a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -500,7 +509,7 @@ public class ManifestBuilder extends AbstractBuilder {
     /**
      * Retrieves the logo url configured in webapi.iiif.logo. If the configured value is an absulute http(s) url, this url will be returned. If it is
      * any other absolute url a contentserver link to that url will be returned. If it is a non-absolute url, it will be considered a filepath within
-     * the static images folder of the viewer theme and the appropriate url will be returned
+     * the static images folder of the viewer theme and the appropriate url will be returned.
      *
      * @return An optional containing the configured logo url, or an empty optional if no logo was configured
      * @throws ViewerConfigurationException

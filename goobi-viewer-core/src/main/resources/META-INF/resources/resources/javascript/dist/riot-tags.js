@@ -4085,9 +4085,11 @@ riot.tag2('rawhtml', '', '', '', function(opts) {
     this.root.innerHTML = opts.content;
   })
 });
-riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><div class="swiper-image slider-{this.opts.stylename}__image" riot-style="background-image: url({this.opts.image})"></div><div class="swiper-description slider-{this.opts.stylename}__description" ref="description"></div></a>', '', '', function(opts) {
+riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><img class="swiper-image slider-{this.opts.stylename}__image" riot-src="{this.opts.image}" alt="{this.opts.alttext}"></a>', '', '', function(opts) {
 		this.on("mount", () => {
-			this.refs.description.innerHTML = this.opts.description
+			if(this.refs.description) {
+				   this.refs.description.innerHTML = this.opts.description;
+			}
 		});
 });
 riot.tag2('slide_indexslider', '<a class="slider-{this.opts.stylename}__link-wrapper" href="{this.opts.link}"><div class="swiper-heading slider-mnha__header">{this.opts.label}</div><img class="slider-{this.opts.stylename}__image" loading="lazy" riot-src="{this.opts.image}"><div class="swiper-lazy-preloader"></div></a>', '', '', function(opts) {
@@ -4096,20 +4098,25 @@ riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" rio
 });
 
 
-riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.styleName}__container"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}"></div></div><div if="{this.showPaginator}" ref="paginator" class="swiper-pagination slider-{this.styleName}__dots"></div></div>', '', '', function(opts) {
+riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}__container slider-{this.sliderInstance}"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}"></div></div><div if="{this.showPaginator}" ref="paginator" class="swiper-pagination swiper-pagination-wrapper slider-paginator-wrapper-{this.styleName} slider-pagination-{this.sliderInstance}"></div></div>', '', '', function(opts) {
 
 
 	this.showPaginator = true;
 
     this.on( 'mount', function() {
-		this.style = this.opts.styles.get(this.opts.style);
+    	this.sliderInstance = this.opts.sliderinstanceid;
 
+		this.style = $.extend(true, {}, this.opts.styles.get(this.opts.style));
+
+     	console.log("mounting 'slider.tag' ", this.opts, this.style);
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
 
 		this.timeout = this.style.timeout ? this.style.timeout : 100000;
 		this.maxSlides = this.style.maxSlides ? this.style.maxSlides : 1000;
 		this.linkTarget = this.opts.linktarget ? this.opts.linktarget : "_self";
+
+		firstSlideMessage = this.opts.firstslidemessage;
 
     	let pSource;
     	if(this.opts.sourceelement) {
@@ -4121,6 +4128,9 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
     			logger.error("sourceElement was included but no matching dom element found");
     			return;
     		}
+    	} else if(this.opts.slides) {
+    		let sourceArray = this.opts.slides.replaceAll("_qm_", "?").split("$")
+    		pSource = Promise.resolve(sourceArray);
     	}  else {
     		pSource = fetch(this.opts.source)
         	.then(result => result.json());
@@ -4146,9 +4156,12 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
     	if(this.slides && this.slides.length > 0) {
     		if(this.slider) {
     			this.slider.destroy();
+
     		}
 			this.initSlideTags(this.slides);
     		this.swiper = new Swiper(this.refs.container, this.style.swiperConfig);
+    		window.viewerJS.slider.sliders.push(this.swiper);
+
     	}
 
     	if (this.style.onUpdate) {
@@ -4163,6 +4176,8 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
     	this.update();
     }.bind(this)
 
+    let imagealtmsgkey = this.opts.imagealtmsgkey;
+
     this.initSlideTags = function(slides) {
     	slides.forEach( (slide, index) => {
     		let tagElement = this.refs["slide_" + index];
@@ -4174,6 +4189,8 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
    				image: this.getImage(slide),
    				label: this.translate(slide.label),
    				description: this.translate(slide.description),
+   				alttext: this.translate(slide.altText),
+   				altimagemsgkey: this.translate(imagealtmsgkey),
     		});
     	});
     }.bind(this)
@@ -4249,15 +4266,25 @@ riot.tag2('slider', '<div ref="container" class="swiper-container slider-{this.s
     this.amendStyle = function(styleConfig) {
     	let swiperConfig = styleConfig.swiperConfig;
     	if(swiperConfig.pagination && !swiperConfig.pagination.el)  {
-    		swiperConfig.pagination.el = this.refs.paginator;
+    		swiperConfig.pagination.el = '.slider-pagination-' + this.sliderInstance;
+
     		this.showPaginator = true;
+
     	} else {
     		this.showPaginator = false;
     	}
-    }.bind(this)
+	  	swiperConfig.a11y = {
+	  		prevSlideMessage: this.opts.prevslideMessage,
+			nextSlideMessage: this.opts.nextslideMessage,
+	  		lastSlideMessage: this.opts.firstslidemessage,
+			firstSlideMessage: this.opts.lastslidemessage,
+			paginationBulletMessage: this.opts.paginationbulletmessage + ' \{\{index\}\}',
+		}
+	}.bind(this)
 
     this.getLayout = function() {
     	let layout = this.style.layout ? this.style.layout : 'default';
+
     	return layout;
     }.bind(this)
 

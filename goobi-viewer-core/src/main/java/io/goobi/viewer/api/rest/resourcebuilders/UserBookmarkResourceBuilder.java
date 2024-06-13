@@ -61,7 +61,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * Returns all BookmarkList owned by the current user
+     * Returns all BookmarkList owned by the current user.
      *
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -77,7 +77,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * Returns the bookmark list with the given id, provided it is owned by the user or it is public or shared to him
+     * Returns the bookmark list with the given id, provided it is owned by the user or it is public or shared to him.
      *
      * @param id a {@link java.lang.Long} object.
      * @return a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
@@ -106,14 +106,14 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * Adds a new Bookmark with the given pi, LOGID and page number to the current user's bookmark list with the given id Returns 203 if no matching
-     * bookmark list was found or 400 if the Bookmark could not be created (wrong pi/logid/page)
+     * Adds a new Bookmark with the given pi, LOGID and page number to the current user's bookmark list with the given id. Returns 203 if no matching
+     * bookmark list was found or 400 if the Bookmark could not be created (wrong pi/logid/page).
      *
      * @param id a {@link java.lang.Long} object.
      * @param pi a {@link java.lang.String} object.
      * @param logId a {@link java.lang.String} object.
      * @param pageString a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
+     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -139,12 +139,12 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * Adds a new Bookmark with the given pi to the current users bookmark list with the given id Returns 203 if no matching bookmark list was found
-     * or 400 if the Bookmark could not be created (wrong pi)
+     * Adds a new Bookmark with the given pi to the current users bookmark list with the given id. Returns 203 if no matching bookmark list was found
+     * or 400 if the Bookmark could not be created (wrong pi).
      *
      * @param id a {@link java.lang.Long} object.
      * @param pi a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
+     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -156,14 +156,14 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * Removes a Bookmark with the given pi, logid and page number from the current users bookmark list with the given id Returns 203 if no matching
-     * bookmark list was found or 400 if the requested Bookmark is invalid (wrong pi/logid/page)
+     * Removes a Bookmark with the given pi, logid and page number from the current users bookmark list with the given id. Returns 203 if no matching
+     * bookmark list was found or 400 if the requested Bookmark is invalid (wrong pi/logid/page).
      *
      * @param id a {@link java.lang.Long} object.
      * @param pi a {@link java.lang.String} object.
      * @param logId a {@link java.lang.String} object.
      * @param pageString a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
+     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -189,12 +189,12 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * Removes a Bookmark with the given pi from the current users bookmark list with the given id Returns 203 if no matching bookmark list was found
-     * or 400 if the requested Bookmark is invalid (wrong pi)
+     * Removes a Bookmark with the given pi from the current users bookmark list with the given id. Returns 203 if no matching bookmark list was found
+     * or 400 if the requested Bookmark is invalid (wrong pi).
      *
      * @param id a {@link java.lang.Long} object.
      * @param pi a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
+     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -206,10 +206,10 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * Adds a new BookmarkList with the given name to the current users bookmark lists
+     * Adds a new BookmarkList with the given name to the current users bookmark lists.
      *
      * @param name a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
+     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -230,9 +230,9 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * Adds a new BookmarkList with the given name to the current users bookmark lists
+     * Adds a new BookmarkList with the given name to the current users bookmark lists.
      *
-     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
+     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -244,10 +244,10 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * Adds the current session bookmark list to the current user bookmark lists under a newly generated name
+     * Adds the current session bookmark list to the current user bookmark lists under a newly generated name.
      * 
      * @param session
-     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
+     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -258,11 +258,11 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * Adds the current session bookmark list to the current user's bookmark lists under the given name
+     * Adds the current session bookmark list to the current user's bookmark lists under the given name.
      *
      * @param name a {@link java.lang.String} object.
      * @param session
-     * @return a {@link io.goobi.viewer.servlets.rest.SuccessMessage} object.
+     * @return a {@link io.goobi.viewer.api.rest.model.SuccessMessage} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.RestApiException if any.
@@ -281,7 +281,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
 
     /**
      * Deletes the current user's bookmark list with the given id. If no such bookmark list could be found a message with 'success:false' is returned,
-     * otherwise one with 'success:true'
+     * otherwise one with 'success:true'.
      *
      * @param id The bookmark list id
      * @return an object containing the boolean property 'success', detailing wether the operation was successfull
@@ -327,7 +327,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
 
     /**
      * Returns the bookmark list containing the object with the given pi, logid and page number if is contained in any bookmark list of the current
-     * user Otherwise an json object with the property "success:false" is returned
+     * user. Otherwise an json object with the property "success:false" is returned.
      *
      * @param pi a {@link java.lang.String} object.
      * @param logId a {@link java.lang.String} object.
@@ -354,8 +354,8 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * Returns the bookmark list containing the object with the given pi if is contained in any bookmark list of the current user Otherwise an json
-     * object with the property "success:false" is returned
+     * Returns the bookmark list containing the object with the given pi if is contained in any bookmark list of the current user. Otherwise an json
+     * object with the property "success:false" is returned.
      *
      * @param pi a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
@@ -368,8 +368,8 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * Counts the items contained in the current user's bookmark list with the given id and returns the number as plain integer If no session store
-     * bookmark list exists, 0 is returned
+     * Counts the items contained in the current user's bookmark list with the given id and returns the number as plain integer. If no session store
+     * bookmark list exists, 0 is returned.
      *
      * @param id a {@link java.lang.Long} object.
      * @return a {@link java.lang.Long} object.

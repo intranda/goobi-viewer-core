@@ -104,14 +104,17 @@ public class MediaItem {
      * @return {@link IContent}
      */
     public static IContent getMediaResource(CMSMediaItem source) {
-
-        ImageContent image = new ImageContent(source.getIconURI());
-        image.setFormat(Format.fromFilename(source.getFileName()));
-        if (IIIFUrlResolver.isIIIFImageUrl(source.getIconURI().toString())) {
-            URI imageInfoURI = URI.create(IIIFUrlResolver.getIIIFImageBaseUrl(source.getIconURI().toString()));
-            image.setService(new ImageInformation(imageInfoURI.toString()));
+        if (source != null) {
+            ImageContent image = new ImageContent(source.getIconURI());
+            image.setFormat(Format.fromFilename(source.getFileName()));
+            if (IIIFUrlResolver.isIIIFImageUrl(source.getIconURI().toString())) {
+                URI imageInfoURI = URI.create(IIIFUrlResolver.getIIIFImageBaseUrl(source.getIconURI().toString()));
+                image.setService(new ImageInformation(imageInfoURI.toString()));
+            }
+            return image;
+        } else {
+            return null;
         }
-        return image;
 
     }
 

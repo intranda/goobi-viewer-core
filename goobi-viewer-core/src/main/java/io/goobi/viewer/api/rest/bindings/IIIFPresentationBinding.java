@@ -29,8 +29,8 @@ import javax.ws.rs.NameBinding;
 /**
  * <p>
  *
- * Binding interface to collect all services for the IIIF presentation API Used to add a filter to all IIIF Presentation resource answers which adds
- * the @context property to the topmost element *
+ * Binding interface to collect all services for the IIIF presentation API. Used to add a filter to all IIIF Presentation resource answers which adds
+ * the @context property to the topmost element.
  * </p>
  *
  * @author Florian Alpers

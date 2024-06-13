@@ -236,7 +236,7 @@ public class JPADAO implements IDAO {
 
     /**
      * Call {@link EntityManager#getTransaction() getTransaction()} on the given EntityManager and then {@link EntityTransaction#begin() begin()} on
-     * the transaction
+     * the transaction.
      *
      * @return the transaction gotten from the entity manager
      */
@@ -252,7 +252,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * Commits a persistence context transaction Only to be used following a {@link #startTransaction()} call
+     * Commits a persistence context transaction. Only to be used following a {@link jakarta.persistence.EntityTransaction#startTransaction()} call
      */
     @Override
     public void commitTransaction(EntityTransaction et) throws PersistenceException {

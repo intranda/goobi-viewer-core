@@ -262,7 +262,7 @@ public class CMSCollectionContent extends CMSContent {
     }
 
     /**
-     * @return Map<String, CollectionResult>
+     * @return Map&lt;String, CollectionResult&gt;
      * @throws IndexUnreachableException
      */
     public Map<String, CollectionResult> getColletionMap() throws IndexUnreachableException {

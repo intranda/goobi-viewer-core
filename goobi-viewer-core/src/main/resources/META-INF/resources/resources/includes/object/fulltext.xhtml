@@ -13,7 +13,8 @@
     <!-- VIEW TEXT -->
     <div id="fulltext-box" class="view-fulltext__box">
                 
-        <ui:fragment rendered="#{activeDocumentBean.viewManager.getFulltextMimeType(navigationHelper.localeString) == 'text/plain'}">        
+        <ui:fragment rendered="#{activeDocumentBean.viewManager.getFulltextMimeType(navigationHelper.localeString) == 'text/plain'}">  
+              
 	        <pre>
 	        	<!-- Single page mode -->
 	        	<ui:fragment rendered="#{!activeDocumentBean.viewManager.doublePageMode}">
@@ -45,7 +46,7 @@
         
         <ui:fragment rendered="#{activeDocumentBean.viewManager.getFulltextMimeType(navigationHelper.localeString) != 'text/plain'}">        
 	        <div class="view-fulltext__content">
-	        
+
 	            <!-- TEI files -->
                 <ui:fragment rendered="#{activeDocumentBean.viewManager.fulltextFromTEI}"> 
                     <h:outputText escape="false" value="#{textBean.getTeiText(activeDocumentBean.viewManager.topStructElement, activeDocumentBean.selectedRecordLanguage)}" /> 
@@ -81,6 +82,32 @@
                 </ui:fragment>
             </div>
         </ui:fragment>
+        
+        
+        <!-- HIDDEN POPOVER ELEMENT FOR EVERY ENTITY TERM -->
+        <script>
+			$( document ).ready(function() {
 
-    </div>
+		      	var fulltextActionsConfig = {
+		              	msg: {
+		              		fulltextPopoverActionsTermMsg: "#{msg.fulltext__ner_actions_term}",
+		              		fulltextPopoverAuthorityDataMsg: "#{msg.fulltext__ner_authority_data}",
+		              		fulltextPopoverTriggerSearchMsg: "#{msg.fulltext__ner_trigger_search}",
+		              	},
+		              	normdataConfig: {
+							path: "#{request.contextPath}",
+							lang: {
+								popoverTitle: "#{msg.normdataPopoverTitle}",
+								popoverClose: "#{msg.normdataPopoverClose}",
+								showNormdata: "#{msg.normdataExpand}"
+							},
+							linkSelector: "[data-remotecontent]",
+							elemWrapper: $("#view_fulltext_wrapp"),
+		              	},
+		              };
+		  		viewerJS.fulltextActions.init(fulltextActionsConfig);
+			});
+        </script>
+
+	</div>
 </ui:composition>

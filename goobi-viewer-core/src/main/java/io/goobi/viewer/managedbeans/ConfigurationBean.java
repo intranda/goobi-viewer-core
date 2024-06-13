@@ -960,7 +960,8 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isShowSearchInItem. </p
+     * isShowSearchInItem.
+     * </p>
      *
      * @return a boolean.
      */

@@ -73,7 +73,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 
 /**
- * Delivers Thumbnail urls for pages and StructElements
+ * Delivers Thumbnail urls for pages and StructElements.
  *
  * @author Florian Alpers
  */
@@ -91,7 +91,7 @@ public class ThumbnailHandler {
     private static final String ANCHOR_THUMBNAIL_MODE_GENERIC = "GENERIC";
     private static final String ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME = "FIRSTVOLUME";
 
-    /** Constant <code>REQUIRED_SOLR_FIELDS</code> */
+    /** Constant <code>REQUIRED_SOLR_FIELDS</code>. */
     public static final Set<String> REQUIRED_SOLR_FIELDS =
             Collections.unmodifiableSet(Set.of(SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT,
                     SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE, SolrConstants.FILENAME,
@@ -144,7 +144,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Returns a link to a small image representing the given page. The size depends on viewer configuration
+     * Returns a link to a small image representing the given page. The size depends on viewer configuration.
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @return a {@link java.lang.String} object.
@@ -155,7 +155,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Returns a link to the representative image for the given pi. If the pi doesn't match an indexed item, null is returned
+     * Returns a link to the representative image for the given pi. If the pi doesn't match an indexed item, null is returned.
      *
      * @param pi the persistent identifier of the work which representative we want
      * @return The url string or null of no work is found
@@ -217,7 +217,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Returns a link to a square representative image for the given pi. If the pi doesn't match an indexed item, null is returned
+     * Returns a link to a square representative image for the given pi. If the pi doesn't match an indexed item, null is returned.
      *
      * @param pi the persistent identifier of the work which representative we want
      * @return The url string or null of no work is found
@@ -230,7 +230,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Returns a link to a square representative image for the given pi. If the pi doesn't match an indexed item, null is returned
+     * Returns a link to a square representative image for the given pi. If the pi doesn't match an indexed item, null is returned.
      *
      * @param pi the persistent identifier of the work which representative we want
      * @param size the size (width and heigt) of the image
@@ -249,7 +249,7 @@ public class ThumbnailHandler {
 
     /**
      * Returns a link to the image of the page of the given order (=page number) within the work with the given pi . If the pi doesn't match an
-     * indexed work or the work desn't contain a page of the given order, null is returned
+     * indexed work or the work desn't contain a page of the given order, null is returned.
      *
      * @param order the page number
      * @param pi the persistent identifier of the work which representative we want
@@ -267,7 +267,7 @@ public class ThumbnailHandler {
 
     /**
      * Returns a link to the image of the page of the given order (=page number) within the work with the given pi of the given width and height. If
-     * the pi doesn't match an indexed work or the work desn't contain a page of the given order, null is returned
+     * the pi doesn't match an indexed work or the work desn't contain a page of the given order, null is returned.
      *
      * @param order the page number
      * @param pi the persistent identifier of the work which representative we want
@@ -294,7 +294,7 @@ public class ThumbnailHandler {
 
     /**
      * Returns a link to a square image of the page of the given order (=page number) within the work with the given pi. If the pi doesn't match an
-     * indexed work or the work desn't contain a page of the given order, null is returned
+     * indexed work or the work desn't contain a page of the given order, null is returned.
      *
      * @param order the page number
      * @param pi the persistent identifier of the work which representative we want
@@ -311,7 +311,7 @@ public class ThumbnailHandler {
 
     /**
      * Returns a link to a square image of the page of the given order (=page number) within the work with the given pi of the given size. If the pi
-     * doesn't match an indexed work or the work desn't contain a page of the given order, null is returned
+     * doesn't match an indexed work or the work desn't contain a page of the given order, null is returned.
      *
      * @param order the page number
      * @param pi the persistent identifier of the work which representative we want
@@ -356,7 +356,7 @@ public class ThumbnailHandler {
 
     /**
      * Returns a link to an image representing the given page of the given size (to be exact: the largest image size which fits within the given
-     * bounds and keeps the image proportions
+     * bounds and keeps the image proportions.
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @param width a int.
@@ -369,7 +369,7 @@ public class ThumbnailHandler {
 
     /**
      * Returns a link to an image representing the given page of the given size (to be exact: the largest image size which fits within the given
-     * bounds and keeps the image proportions
+     * bounds and keeps the image proportions.
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @param width a int.
@@ -439,8 +439,8 @@ public class ThumbnailHandler {
     }
 
     /**
-     * returns a link the an image representing the given page. Its size depends on configuration. The image is always square and contains as much of
-     * the actual image as is possible to fit into a square - the delivered square is always centered within the full image
+     * Returns a link the an image representing the given page. Its size depends on configuration. The image is always square and contains as much of
+     * the actual image as is possible to fit into a square - the delivered square is always centered within the full image.
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @return a {@link java.lang.String} object.
@@ -450,8 +450,8 @@ public class ThumbnailHandler {
     }
 
     /**
-     * returns a link the an image representing the given page of the given size. The image is always square and contains as much of the actual image
-     * as is possible to fit into a square - the delivered square is always centered within the full image
+     * Returns a link the an image representing the given page of the given size. The image is always square and contains as much of the actual image
+     * as is possible to fit into a square - the delivered square is always centered within the full image.
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @param size a int.
@@ -474,7 +474,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Returns a link to a small image representing the given document. The size depends on viewer configuration
+     * Returns a link to a small image representing the given document. The size depends on viewer configuration.
      *
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return a {@link java.lang.String} object.
@@ -486,7 +486,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Returns a link to a small image representing the given document with the given pi. The size depends on viewer configuration
+     * Returns a link to a small image representing the given document with the given pi. The size depends on viewer configuration.
      *
      * @param doc a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @param pi a {@link java.lang.String} object.
@@ -499,7 +499,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Returns a link to a small image representing the given document. The size depends on viewer configuration
+     * Returns a link to a small image representing the given document. The size depends on viewer configuration.
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @return a {@link java.lang.String} object.
@@ -512,7 +512,7 @@ public class ThumbnailHandler {
 
     /**
      * Returns a link to a small image representing the given document. The size depends on viewer configuration. The image may be cut at the longer
-     * side to provide a square image
+     * side to provide a square image.
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @return a {@link java.lang.String} object.
@@ -542,7 +542,7 @@ public class ThumbnailHandler {
 
     /**
      * Returns a link to an image representing the given page of the given size (to be exact: the largest image size which fits within the given
-     * bounds and keeps the image proportions
+     * bounds and keeps the image proportions.
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param width a int.
@@ -556,7 +556,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Returns a link to an image representing the given page of the given size. The image will be cut at the longer side to create a square image
+     * Returns a link to an image representing the given page of the given size. The image will be cut at the longer side to create a square image.
      *
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @param size a int.
@@ -570,10 +570,9 @@ public class ThumbnailHandler {
 
     /**
      * Returns a link to an image representing the given document of the given size (to be exact: the largest image size which fits within the given
-     * bounds and keeps the image proportions
+     * bounds and keeps the image proportions.
      *
-     * @param se Needs to have the fields {@link io.goobi.viewer.controller.SolrConstants.MIMETYPE} and
-     *            {@link io.goobi.viewer.controller.SolrConstants.THUMBNAIL}
+     * @param se Needs to have the fields {@link io.goobi.viewer.solr.SolrConstants#MIMETYPE} and {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
      * @param width a int.
      * @param height a int.
      * @return a {@link java.lang.String} object.
@@ -613,8 +612,14 @@ public class ThumbnailHandler {
             return IIIFUrlResolver.getIIIFImageUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
         } else if (thumbnailUrl != null) {
             String region = Region.FULL_IMAGE;
-            if (doc.getShapeMetadata() != null && !doc.getShapeMetadata().isEmpty()) {
-                region = doc.getShapeMetadata().get(0).getCoords();
+
+            if (!doc.isWork() && !doc.isAnchor() && !doc.isGroup() && doc.getShapeMetadata() != null && !doc.getShapeMetadata().isEmpty()) {
+                region = doc.getShapeMetadata()
+                        .stream()
+                        .filter(shape -> shape.getPageNo() == doc.getImageNumber())
+                        .map(shape -> shape.getCoords())
+                        .findFirst()
+                        .orElse(Region.FULL_IMAGE);
             }
             return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, pi, region, "!" + width + "," + height, "0", StringConstants.DEFAULT,
                     ImageFileFormat.getMatchingTargetFormat(format).getFileExtension());
@@ -670,8 +675,8 @@ public class ThumbnailHandler {
     }
 
     /**
-     * returns a link the an image representing the given document. Its size depends on configuration. The image is always square and contains as much
-     * of the actual image as is possible to fit into a square - the delivered square is always centered within the full image
+     * Returns a link the an image representing the given document. Its size depends on configuration. The image is always square and contains as much
+     * of the actual image as is possible to fit into a square - the delivered square is always centered within the full image.
      *
      * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return a {@link java.lang.String} object.
@@ -681,11 +686,10 @@ public class ThumbnailHandler {
     }
 
     /**
-     * returns a link the an image representing the given document of the given size. The image is always square and contains as much of the actual
-     * image as is possible to fit into a square - the delivered square is always centered within the full image
+     * Returns a link the an image representing the given document of the given size. The image is always square and contains as much of the actual
+     * image as is possible to fit into a square - the delivered square is always centered within the full image.
      *
-     * @param se Needs to have the fields {@link io.goobi.viewer.controller.SolrConstants.MIMETYPE} and
-     *            {@link io.goobi.viewer.controller.SolrConstants.THUMBNAIL}
+     * @param se Needs to have the fields {@link io.goobi.viewer.solr.SolrConstants#MIMETYPE} and {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
      * @param size a int.
      * @return a {@link java.lang.String} object.
      */
@@ -781,7 +785,8 @@ public class ThumbnailHandler {
     }
 
     /**
-     * @param doc Needs to have the fields {@link SolrConstants.MIMETYPE} and {@link SolrConstants.THUMBNAIL}
+     * @param doc Needs to have the fields {@link io.goobi.viewer.solr.SolrConstants#MIMETYPE} and
+     *            {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
      * @return The representative thumbnail url for the given doc, or a replacement image url if no representative thumbnail url is applicable (born
      *         digital material and - depending on configuration - anchors)
      */
@@ -806,7 +811,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * 
+     *
      * @param doc
      * @param thumbnailUrl
      * @return String
@@ -836,7 +841,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * 
+     *
      * @param doc
      * @param thumbnailUrl
      * @return {@link String}
@@ -893,7 +898,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * 
+     *
      * @param doc
      * @param thumbnailUrl
      * @param anchorThumbnailMode
@@ -929,7 +934,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * 
+     *
      * @param doc
      * @param thumbnailUrl
      * @return String
@@ -971,9 +976,9 @@ public class ThumbnailHandler {
     }
 
     /**
-     * 
+     *
      * @param structElement
-     * @return Optional<DocType>
+     * @return Optional&lt;DocType&gt;
      */
     private static Optional<DocType> getDocType(StructElement structElement) {
         DocType docType = DocType.getByName(structElement.getMetadataValue(SolrConstants.DOCTYPE));
@@ -981,9 +986,9 @@ public class ThumbnailHandler {
     }
 
     /**
-     * 
+     *
      * @param structElement
-     * @return Optional<MetadataGroupType>
+     * @return Optional&lt;MetadataGroupType&gt;
      */
     private static Optional<MetadataGroupType> getMetadataGroupType(StructElement structElement) {
         MetadataGroupType type = MetadataGroupType.getByName(structElement.getMetadataValue(SolrConstants.METADATATYPE));
@@ -991,9 +996,9 @@ public class ThumbnailHandler {
     }
 
     /**
-     * 
+     *
      * @param structElement
-     * @return Optional<String>
+     * @return Optional&lt;String&gt;
      */
     private static Optional<String> getFilename(StructElement structElement) {
         String filename = structElement.getMetadataValue(SolrConstants.FILENAME);
@@ -1012,7 +1017,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * 
+     *
      * @param structElement
      * @return Optional<String>
      */
@@ -1037,7 +1042,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem}, fit into a box of the default width and height
+     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem}, fit into a box of the default width and height.
      *
      * @param item a {@link java.util.Optional} object.
      * @return a {@link java.lang.String} object.
@@ -1048,7 +1053,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem}, fit into a box of the default width and height
+     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem}, fit into a box of the default width and height.
      *
      * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a {@link java.lang.String} object.
@@ -1059,7 +1064,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem}, fit into a box of the given width and height
+     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem}, fit into a box of the given width and height.
      *
      * @param width a int.
      * @param height a int.
@@ -1099,7 +1104,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Get the thumbnailUrl for a IIIF image identifier with default size
+     * Get the thumbnailUrl for a IIIF image identifier with default size.
      *
      * @param baseUri IIIF image identifier
      * @return Generated URL
@@ -1110,7 +1115,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Get the thumbnailUrl for a IIIF image identifier
+     * Get the thumbnailUrl for a IIIF image identifier.
      *
      * @param baseUri IIIF image identifier
      * @param width thumbnail width
@@ -1122,7 +1127,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Get the square thumbnailUrl for a IIIF image identifier with default size
+     * Get the square thumbnailUrl for a IIIF image identifier with default size.
      *
      * @param baseUri IIIF image identifier
      * @return Generated URL
@@ -1133,7 +1138,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Get the square thumbnailUrl for a IIIF image identifier
+     * Get the square thumbnailUrl for a IIIF image identifier.
      *
      * @param baseUri IIIF image identifier
      * @param size thumbnail size
@@ -1144,7 +1149,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Get the thumbnailUrl for a IIIF image identifier
+     * Get the thumbnailUrl for a IIIF image identifier.
      *
      * @param baseUri IIIF image identifier
      * @param width thumbnail width
@@ -1209,7 +1214,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem}, fit into a box of the given width and height
+     * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem}, fit into a box of the given width and height.
      *
      * @param width a int.
      * @param height a int.
@@ -1222,7 +1227,7 @@ public class ThumbnailHandler {
 
     /**
      * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem} of the given size. The image is always square and
-     * contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image
+     * contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image.
      *
      * @param size a int.
      * @param optional a {@link java.util.Optional} object.
@@ -1243,7 +1248,7 @@ public class ThumbnailHandler {
 
     /**
      * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem} of the given size. The image is always square and
-     * contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image
+     * contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image.
      *
      * @param size a int.
      * @param media a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
@@ -1255,7 +1260,7 @@ public class ThumbnailHandler {
 
     /**
      * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem} of the default size. The image is always square
-     * and contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image
+     * and contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image.n
      *
      * @param item a {@link java.util.Optional} object.
      * @return a {@link java.lang.String} object.
@@ -1266,7 +1271,7 @@ public class ThumbnailHandler {
 
     /**
      * Return the url to the image of the given {@link io.goobi.viewer.model.cms.media.CMSMediaItem} of the default size. The image is always square
-     * and contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image
+     * and contains as much of the actual image as is possible to fit into a square - the delivered square is always centered within the full image.
      *
      * @param item a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      * @return a {@link java.lang.String} object.
@@ -1299,7 +1304,7 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Tests whether the given url refers to an image within the viewer image resource folder
+     * Tests whether the given url refers to an image within the viewer image resource folder.
      *
      * @param thumbnailUrl a {@link java.lang.String} object.
      * @return true if the url starts with the viewer url path to image resources
@@ -1314,7 +1319,7 @@ public class ThumbnailHandler {
     /**
      * Creates a {@link Scale} representing the given width and height. If both values are greater than 0, a scale is returned which scaled the image
      * to fit a box of the given size. If just of width and height is greater than 0, a scale is returned to that value; if both values are 0 or less,
-     * the full (max) image scale is returned
+     * the full (max) image scale is returned.
      *
      * @param width
      * @param height

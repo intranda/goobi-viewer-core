@@ -77,6 +77,9 @@ class MetadataToolsTest extends AbstractSolrEnabledTest {
         Assertions.assertEquals(MetadataGroupType.SUBJECT.name(), MetadataTools.findMetadataGroupType("saa"));
         Assertions.assertEquals(MetadataGroupType.CONFERENCE.name(), MetadataTools.findMetadataGroupType("viz"));
         Assertions.assertEquals(MetadataGroupType.RECORD.name(), MetadataTools.findMetadataGroupType("wiz"));
+        
+        Assertions.assertEquals(MetadataGroupType.LOCATION.name(), MetadataTools.findMetadataGroupType("Place"));
+        Assertions.assertEquals(MetadataGroupType.PERSON.name(), MetadataTools.findMetadataGroupType("Person"));
     }
 
     /**
