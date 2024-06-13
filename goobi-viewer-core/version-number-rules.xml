@@ -52,6 +52,7 @@
             <ignoreVersions>
                 <ignoreVersion>5.0.0</ignoreVersion>
                 <ignoreVersion>6.0.0</ignoreVersion>
+                <ignoreVersion>6.1.0</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="jakarta.xml.bind" artifactId="jakarta.xml.bind-api">
