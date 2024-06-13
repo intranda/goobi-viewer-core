@@ -83,7 +83,7 @@ public class Application extends ResourceConfig {
     }
 
     /**
-     * Constructor with custom injection binder for tests
+     * Constructor with custom injection binder for tests.
      *
      * @param binder
      */

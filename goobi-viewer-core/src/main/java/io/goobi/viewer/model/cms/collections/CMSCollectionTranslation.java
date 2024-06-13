@@ -31,7 +31,7 @@ import java.io.Serializable;
 import io.goobi.viewer.model.translations.Translation;
 
 /**
- * A persistence object holding a translated String value
+ * A persistence object holding a translated String value.
  *
  * @author Florian Alpers
  */
@@ -67,7 +67,7 @@ public class CMSCollectionTranslation extends Translation implements Serializabl
     }
 
     /**
-     * Cloning constructor
+     * Cloning constructor.
      * 
      * @param tr
      * @param owner

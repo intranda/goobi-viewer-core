@@ -49,7 +49,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 
 /**
- * A rest resource for delivering video and audio files
+ * A rest resource for delivering video and audio files.
  *
  * @author Florian Alpers
  */

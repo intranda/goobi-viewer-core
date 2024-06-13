@@ -32,7 +32,7 @@ import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 
 /**
- * Provides a context for the extent service used in the viewer IIIF Presentation collection responses
+ * Provides a context for the extent service used in the viewer IIIF Presentation collection responses.
  *
  * @author Florian Alpers
  */
@@ -42,7 +42,7 @@ public class JsonLdDefinitionsResource {
 
     /**
      * Returns a service context for the size information service for viewer collections: Number of direct child-collections and of total contained
-     * works
+     * works.
      *
      * @return a {@link de.intranda.api.services.CollectionExtentDefinition} object.
      */

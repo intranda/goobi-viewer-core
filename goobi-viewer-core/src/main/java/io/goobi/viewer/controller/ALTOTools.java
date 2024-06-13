@@ -87,7 +87,7 @@ public final class ALTOTools {
     private static final String URI = "URI";
     private static final String LABEL = "LABEL";
 
-    /** Constant <code>TAG_LABEL_IGNORE_REGEX</code> */
+    /** Constant <code>TAG_LABEL_IGNORE_REGEX</code>. */
     public static final String TAG_LABEL_IGNORE_REGEX =
             "(^[^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+)|([^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+$)";
 

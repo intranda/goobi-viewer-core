@@ -21,7 +21,7 @@
 					<h2
 						tabindex="0"
 						role="button"
-						class="widget__title #{(activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group) or (navigationHelper.currentPage == 'metadata') ? '' : 'collapseable'}">
+						class="widget__title widget-format-links__title #{(activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group) or (navigationHelper.currentPage == 'metadata') ? '' : 'collapseable'}">
 	                    <span>#{msg.widget_formatsLinks}</span>
 	                    <i class="fa fa-angle-down" aria-hidden="true"></i>
 	                </h2>
@@ -173,23 +173,6 @@
                                 #{msg.iiif}
                             </button> 
                         </ui:fragment>      
-                        
-                        <!-- External download link -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.externalDownloadUrl != null}">
-                            <a 
-                                href="#{activeDocumentBean.viewManager.externalDownloadUrl}"
-                                id="externalDownloadWork" 
-                                class="badge badge-dark widget-format-links__work-download-external" 
-                                title="#{msg.downloadWorkExternal}"
-                                data-toggle="tooltip"
-                                data-placement="top"
-                                data-trigger="hover"
-                                target="_blank" rel="nofollow noopener"
-                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadWorkExternal}">
-                                <i class="fa fa-download" aria-hidden="true"></i>
-                                #{msg.downloadWorkExternal}
-                            </a>
-                        </ui:fragment>
     
                       
                     </div>

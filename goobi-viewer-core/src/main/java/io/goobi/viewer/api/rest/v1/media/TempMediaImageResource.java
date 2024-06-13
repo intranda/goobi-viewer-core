@@ -127,7 +127,7 @@ public class TempMediaImageResource extends ImageResource {
     }
 
     /**
-     * Delete the file with the given filename in the temp media folder for the given uuid
+     * Delete the file with the given filename in the temp media folder for the given uuid.
      *
      * @param folder
      * @param filename

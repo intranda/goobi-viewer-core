@@ -630,7 +630,8 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * get the url for the avatar. If useGravatar is active, return {@link #getGravatarUrl(int size)}. Otherwise build a resource url to
+     * get the url for the avatar. If useGravatar is active, return 
+     * {@link io.goobi.viewer.model.security.user.icon.GravatarUserAvatar#getGravatarUrl(int size)}. Otherwise build a resource url to
      * 'resources/images/backend/thumbnail_goobi_person.svg' from the request or the JSF-Context if no request is provided
      *
      * @param size

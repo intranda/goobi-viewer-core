@@ -49,7 +49,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceUnavailableExce
 import io.goobi.viewer.solr.SolrTools;
 
 /**
- * Copied from ContentServer to catch ContentServer exceptions
+ * Copied from ContentServer to catch ContentServer exceptions.
  *
  * @author Florian Alpers
  *

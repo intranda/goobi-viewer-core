@@ -35,7 +35,7 @@ import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.search.SearchHelper;
 
 /**
- * Manages contentAssist requests by returning lists of suggested values from partial input
+ * Manages contentAssist requests by returning lists of suggested values from partial input.
  *
  * @author florian
  *

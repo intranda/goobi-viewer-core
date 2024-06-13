@@ -32,13 +32,13 @@ import org.apache.commons.configuration2.tree.ImmutableNode;
 import io.goobi.viewer.model.variables.VariableReplacer;
 
 /**
- * A configurable filter allowing passage to document entities (record, docStruct, page) which satisfy certain conditions The filter itself may
+ * A configurable filter allowing passage to document entities (record, docStruct, page) which satisfy certain conditions. The filter itself may
  * contain condition filters which determine if the filter should be applied to an entity
  */
 public abstract class AbstractFilterConfiguration implements IFilterConfiguration {
 
     /**
-     * Whether the filter should block or pass entities meeting its condition
+     * Whether the filter should block or pass entities meeting its condition.
      */
     protected final FilterAction action;
     /**
@@ -48,11 +48,9 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
     protected final List<AbstractFilterConfiguration> filterConditions;
 
     /**
-     * internal constructor
+     * internal constructor.
      * 
      * @param action whether to pass or block matching entities
-     * @param value the value to test
-     * @param matchRegex a regex which must match the value parameter for the filter to match
      */
     protected AbstractFilterConfiguration(FilterAction action) {
         this.action = action;
@@ -60,7 +58,7 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
     }
 
     /**
-     * Create a new filter from a configuration block
+     * Create a new filter from a configuration block.
      * 
      * @param config an xml configuration
      * @throws ConfigurationException if the config is invalid
@@ -73,7 +71,7 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
     }
 
     /**
-     * Test whether all conditions of this filter apply, if any
+     * Test whether all conditions of this filter apply, if any.
      * 
      * @param vr a variable replacer representing the object to test
      * @return true if the {@link #filterConditions} all pass. If they don't the filter should not be applied

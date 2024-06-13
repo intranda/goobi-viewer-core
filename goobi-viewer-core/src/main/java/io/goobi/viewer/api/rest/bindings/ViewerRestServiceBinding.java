@@ -30,7 +30,7 @@ import io.goobi.viewer.api.rest.exceptions.WebApplicationExceptionMapper;
 
 /**
  * <p>
- * Binding to handle exception in requests by the {@link WebApplicationExceptionMapper}
+ * Binding to handle exception in requests by the {@link WebApplicationExceptionMapper}.
  * </p>
  */
 @NameBinding

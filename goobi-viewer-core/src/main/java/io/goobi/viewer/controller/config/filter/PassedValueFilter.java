@@ -30,7 +30,7 @@ import org.apache.commons.configuration2.tree.ImmutableNode;
 import io.goobi.viewer.model.variables.VariableReplacer;
 
 /**
- * A configurable filter allowing passage to document entities (record, docStruct, page) which satisfy certain conditions The filter itself may
+ * A configurable filter allowing passage to document entities (record, docStruct, page) which satisfy certain conditions. The filter itself may
  * contain condition filters which determine if the filter should be applied to an entity
  */
 public final class PassedValueFilter extends AbstractFilterConfiguration {
@@ -41,7 +41,7 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
     private final String matchRegex;
 
     /**
-     * internal constructor
+     * internal constructor.
      * 
      * @param action whether to pass or block matching entities
      * @param matchRegex a regex which must match the value parameter for the filter to match
@@ -52,7 +52,7 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * get a filter which passes all matches
+     * get a filter which passes all matches.
      * 
      * @param matchRegex a regex which must match the value parameter for the filter to match
      * @return a new {@link PassedValueFilter}
@@ -62,7 +62,7 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * get a filter which blocks all matches
+     * get a filter which blocks all matches.
      * 
      * @param matchRegex a regex which must match the value parameter for the filter to match
      * @return a new {@link PassedValueFilter}
@@ -72,7 +72,7 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * Create a new filter from a configuration block
+     * Create a new filter from a configuration block.
      * 
      * @param config an xml configuration
      * @return a new {@link PassedValueFilter}
@@ -91,8 +91,8 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
 
     /**
      * This is the main method to apply the filter. It first checks if the conditions apply. If they don't, true is always returned. Otherwise, it
-     * returns true if action is {@link FilterAction#SHOW} and {@link #matches(VariableReplacer)} returns true, or if action is
-     * {@link FilterAction#HIDE} and {@link #matches(VariableReplacer)} returns false. In all other cases, it returns false
+     * returns true if action is {@link FilterAction#SHOW} and {@link #matches(String value, VariableReplacer)} returns true, or if action is
+     * {@link FilterAction#HIDE} and {@link #matches(String value, VariableReplacer)} returns false. In all other cases, it returns false
      * 
      * @param value the value to test. May contain {@link VariableReplacer} expressions
      * @param vr a variable replacer containing values to test
@@ -106,7 +106,7 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * Similar to {@link #matches(VariableReplacer)}, but if {@link #action} is {@link FilterAction#HIDE} the return value is negated
+     * Similar to {@link #matches(Strinf value, VariableReplacer)}, but if {@link #action} is {@link FilterAction#HIDE} the return value is negated.
      * 
      * @param value the value to test. May contain {@link VariableReplacer} expressions
      * @param vr a variable replacer containing values to test
@@ -118,7 +118,7 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * Test the match condition on a variable replacer
+     * Test the match condition on a variable replacer.
      * 
      * @param value the value to test. May contain {@link VariableReplacer} expressions
      * @param vr a variable replacer containing values to test

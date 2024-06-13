@@ -89,7 +89,7 @@ public class ChangeDiscoveryResource {
 
     /**
      * Provides a partial list of {@link Activity Activities} along with links to the preceding and succeeding page as well as the parent collection
-     * as provided by {@link #getAllChanges() /iiif/discovery/activities/} The number of Activities on the page is determined by
+     * as provided by {@link #getAllChanges() /iiif/discovery/activities/}. The number of Activities on the page is determined by
      * {@link io.goobi.viewer.controller.Configuration#getIIIFDiscoveryAvtivitiesPerPage() Configuration#getIIIFDiscoveryAvtivitiesPerPage()}
      *
      * @param pageNo The page number, starting with 0

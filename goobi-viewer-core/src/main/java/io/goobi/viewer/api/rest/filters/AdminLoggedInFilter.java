@@ -38,7 +38,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 
 /**
- * Only allows requests by sessisions belonging to a logged in goobi-viewer admin account
+ * Only allows requests by sessisions belonging to a logged in goobi-viewer admin account.
  *
  * @author florian
  *

@@ -69,7 +69,7 @@ public class TranslationResource {
      * </p>
      *
      * @param inKeys a {@link java.lang.String} object.
-     * @return a {@link io.goobi.viewer.servlets.rest.TranslationResource.TranslationList} object.
+     * @return a {@link io.goobi.viewer.api.rest.v1.localization.TranslationResource.TranslationList} object.
      * @throws IllegalRequestException
      */
     @GET

@@ -89,7 +89,7 @@ public class TempMediaFileResource {
     private ApiUrls urls;
 
     /**
-     * Upload a file to the hotfolder
+     * Upload a file to the hotfolder.
      *
      * @param foldername
      * @param enabled
@@ -150,7 +150,7 @@ public class TempMediaFileResource {
     }
 
     /**
-     * Get a filename list of all uploaded files in the media directory of the given folder
+     * Get a filename list of all uploaded files in the media directory of the given folder.
      *
      * @param folder
      * @return a filename list of all uploaded files in the media folder
@@ -192,7 +192,7 @@ public class TempMediaFileResource {
     }
 
     /**
-     * Delete all files uploaded for the given folder
+     * Delete all files uploaded for the given folder.
      *
      * @param folder
      * @return a 200 response if deletion was successful, otherwise 500
@@ -236,7 +236,7 @@ public class TempMediaFileResource {
     }
 
     /**
-     * Get the appropriate media subfolder for foldername in the viewer hotfolder
+     * Get the appropriate media subfolder for foldername in the viewer hotfolder.
      *
      * @param foldername
      * @return the folder for upload

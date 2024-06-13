@@ -122,7 +122,7 @@ public class ClientApplicationsResource {
     }
 
     /**
-     * Change properties of an existing {@link ClientApplication}
+     * Change properties of an existing {@link ClientApplication}.
      * 
      * @param clientIdentifier
      * @param update
@@ -169,7 +169,7 @@ public class ClientApplicationsResource {
     }
 
     /**
-     * List all registered {@link ClientApplication}s
+     * List all registered {@link ClientApplication}s.
      * 
      * @return All clients from the DB
      * @throws DAOException If an error occurs accessing the database
@@ -187,7 +187,7 @@ public class ClientApplicationsResource {
     }
 
     /**
-     * List all registered {@link ClientApplication}s
+     * List all registered {@link ClientApplication}s.
      * 
      * @param clientIdentifier
      * @return Client with given clientIdentifier
