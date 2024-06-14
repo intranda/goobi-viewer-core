@@ -70,11 +70,34 @@ public class ArchiveTree implements Serializable {
         logger.trace("new EADTree()");
     }
 
+    /**
+     * Cloning constructor.
+     * 
+     * @param orig
+     */
     public ArchiveTree(ArchiveTree orig) {
         this.generate(new ArchiveEntry(orig.getRootElement(), null));
         this.getTreeViewForGroup(DEFAULT_GROUP);
     }
 
+    /**
+     * 
+     * @param rootElement
+     */
+    public void update(ArchiveEntry rootElement) {
+        generate(rootElement);
+        if (getSelectedEntry() == null) {
+            setSelectedEntry(getRootElement());
+        }
+        // This should happen before the tree is expanded to the selected entry, otherwise the collapse level will be reset
+        getTreeView();
+    }
+
+    /**
+     * Sets the given root entry, generates a new flat list and adds it to entryMap.
+     * 
+     * @param root The root entry to set
+     */
     public void generate(ArchiveEntry root) {
         logger.trace("generate: {}", root);
         if (root == null) {
@@ -163,8 +186,7 @@ public class ArchiveTree implements Serializable {
      * @param collapseLevel
      */
     private void buildTree(String group, int collapseLevel) {
-
-        logger.trace("buildTree");
+        logger.trace("buildTree: {} - {}", group, collapseLevel);
         if (group == null) {
             throw new IllegalArgumentException("group may not be null");
         }
@@ -182,6 +204,7 @@ public class ArchiveTree implements Serializable {
                     if (entry.getHierarchyLevel() > collapseLevel) {
                         entries.get(index - 1).setExpanded(false);
                         entry.setVisible(false);
+                        logger.trace("Set node invisible: {} (level {})", entry.getLabel(), entry.getHierarchyLevel());
                     } else {
                         entries.get(index - 1).setExpanded(true);
                     }
@@ -232,7 +255,7 @@ public class ArchiveTree implements Serializable {
      * @param selectedEntry the selectedEntry to set
      */
     public void setSelectedEntry(ArchiveEntry selectedEntry) {
-        logger.trace("setSelectedEntry: {}", selectedEntry != null ? selectedEntry.getId() : null);
+        logger.trace("setSelectedEntry: {}", selectedEntry != null ? selectedEntry.getLabel() : null);
         this.selectedEntry = selectedEntry;
         if (selectedEntry != null && !selectedEntry.isMetadataLoaded()) {
             selectedEntry.loadMetadata();

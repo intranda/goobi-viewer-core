@@ -144,12 +144,12 @@ public class ArchiveBean implements Serializable {
             return;
         }
         synchronized (getArchiveTree()) {
-//            boolean updateTree = entry.isChildrenFound() && !entry.isChildrenLoaded();
+            boolean updateTree = entry.isChildrenFound() && !entry.isChildrenLoaded();
             entry.expand();
-//            if (updateTree) {
-//                logger.trace("Updating tree");
-//                getArchiveTree().generate(entry.getRootNode());
-//            }
+            if (updateTree) {
+                logger.trace("Updating tree");
+                getArchiveTree().update(entry.getRootNode());
+            }
         }
     }
 

@@ -21,9 +21,9 @@
  */
 package io.goobi.viewer.model.archives;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,10 +38,13 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrTools;
 
-public class ArchiveEntry {
+/**
+ * Single archive tree node.
+ */
+public class ArchiveEntry implements Serializable {
+
+    private static final long serialVersionUID = 8544674817802657532L;
 
     private static final Logger logger = LogManager.getLogger(ArchiveEntry.class);
 
@@ -206,13 +209,13 @@ public class ArchiveEntry {
      * @return List<ArchiveEntry>
      */
     public List<ArchiveEntry> getAsFlatList(boolean ignoreDisplayChildren) {
-        logger.trace("getAsFlatList");
+        // logger.trace("getAsFlatList");
         List<ArchiveEntry> list = new LinkedList<>();
         list.add(this);
         if ((displayChildren || ignoreDisplayChildren) && subEntryList != null && !subEntryList.isEmpty()) {
             for (ArchiveEntry ds : subEntryList) {
                 list.addAll(ds.getAsFlatList(ignoreDisplayChildren));
-                logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchyLevel()); //NOSONAR Sometimes needed for debugging
+                // logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchyLevel()); //NOSONAR Sometimes needed for debugging
             }
         }
         return list;
@@ -317,8 +320,7 @@ public class ArchiveEntry {
         if (!isChildrenLoaded()) {
             logger.trace("Loading children for entry: {}", label);
             try {
-                // TODO Use persistent map
-                ((SolrEADParser) DataManager.getInstance().getArchiveManager().getEadParser()).loadChildren(this, new HashMap<>(), false);
+                ((SolrEADParser) DataManager.getInstance().getArchiveManager().getEadParser()).loadChildren(this, false);
             } catch (PresentationException | IndexUnreachableException e) {
                 logger.error(e.getMessage());
             }

@@ -470,8 +470,7 @@ public class ArchiveManager implements Serializable {
      * @throws IndexUnreachableException
      */
     ArchiveTree loadDatabase(ArchiveParser eadParser, ArchiveResource archive)
-            throws IllegalStateException, IOException, HTTPException, JDOMException, PresentationException,
-            IndexUnreachableException {
+            throws IllegalStateException, IOException, HTTPException, JDOMException, PresentationException, IndexUnreachableException {
         ArchiveEntry rootElement = eadParser.loadDatabase(archive);
         if (rootElement != null) {
             logger.info("Loaded EAD database: {}", archive.getCombinedName());
@@ -490,15 +489,9 @@ public class ArchiveManager implements Serializable {
      */
     static ArchiveTree loadTree(ArchiveEntry rootElement) {
         ArchiveTree ret = new ArchiveTree();
-        ret.generate(rootElement);
-        if (ret.getSelectedEntry() == null) {
-            ret.setSelectedEntry(ret.getRootElement());
-        }
-        // This should happen before the tree is expanded to the selected entry, otherwise the collapse level will be reset
-        ret.getTreeView();
+        ret.update(rootElement);
 
         return ret;
-
     }
 
     /**
