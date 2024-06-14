@@ -180,7 +180,7 @@ public class SolrEADParser extends ArchiveParser {
      */
     public ArchiveEntry loadHierarchyFromIndex(ArchiveEntry inEntry, int order, int hierarchy, SolrDocument doc, boolean loadChildren)
             throws PresentationException, IndexUnreachableException {
-        logger.trace("loadHierarchyFromIndex: {}", order);
+        // logger.trace("loadHierarchyFromIndex: {}", order);
         if (doc == null) {
             throw new IllegalArgumentException("doc may not be null");
         }
@@ -260,6 +260,7 @@ public class SolrEADParser extends ArchiveParser {
                 subOrder++;
             }
             entry.setChildrenLoaded(true);
+            logger.trace("Children loaded for {}", entry.getLabel());
         }
     }
 

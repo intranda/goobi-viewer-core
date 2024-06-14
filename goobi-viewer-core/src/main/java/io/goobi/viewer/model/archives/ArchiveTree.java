@@ -85,6 +85,7 @@ public class ArchiveTree implements Serializable {
      * @param rootElement
      */
     public void update(ArchiveEntry rootElement) {
+        logger.trace("update: {}", rootElement);
         generate(rootElement);
         if (getSelectedEntry() == null) {
             setSelectedEntry(getRootElement());
@@ -137,6 +138,7 @@ public class ArchiveTree implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<ArchiveEntry> getTreeViewForGroup(String group) {
+        logger.trace("getTreeViewForGroup: {}", group);
         if (!treeBuilt) {
             buildTree(group, DEFAULT_COLLAPSE_LEVEL);
         }
@@ -151,7 +153,7 @@ public class ArchiveTree implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<ArchiveEntry> getFlatView() {
-        // logger.trace("getFlatView"); //NOSONAR Sometimes needed for debugging
+        logger.trace("getFlatView"); //NOSONAR Sometimes needed for debugging
         return getViewForGroup(DEFAULT_GROUP);
     }
 
@@ -163,6 +165,7 @@ public class ArchiveTree implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<ArchiveEntry> getTreeView() {
+        logger.trace("getTreeView");
         return getTreeViewForGroup(DEFAULT_GROUP);
     }
 
