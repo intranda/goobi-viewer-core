@@ -143,8 +143,17 @@
 
 											<div
 												class="admin__config-editor-file-selection-single-entry #{adminConfigEditorBean.fileInEditionNumber == status.index ? '-selectedFile' : ''} #{record.readable  ? '-isReadable' : '-isNotReadable'}">
-												<div class="status-test #{!record.writable and record.readable ? '-yellow' : ''}">
-
+												<div class="admin__config-editor-status-entry #{!record.writable and record.readable ? '-show' : ''} #{adminConfigEditorBean.isFileLocked(record) ? '-show' : ''}">
+												<ui:fragment rendered="#{!record.writable and record.readable}"> 
+													<div class="admin__config-editor-status-entry-inner" title="#{msg.admin__config_editor__not_writable}" data-toggle="tooltip" data-placement="top" data-trigger="hover">
+													<ui:include src="/resources/images/icons/icon_eye.svg" />
+													</div>
+												</ui:fragment>
+												<ui:fragment rendered="#{adminConfigEditorBean.isFileLocked(record)}">
+													<div class="admin__config-editor-status-entry-inner" title="#{msg.admin__config_editor__locked}" data-toggle="tooltip" data-placement="top" data-trigger="hover">
+														<ui:include src="/resources/images/icons/icon-lock.svg" />
+													</div>
+												</ui:fragment>
 												
 												</div>
 												
@@ -190,39 +199,15 @@
 														</button>
 														<div class="admin__config-editor-file-selection-single-entry-actions-wrapper">
 															<div class="admin__config-editor-file-selection-single-entry-action-upload">
-																<label for="file" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="upload"><i class="fa fa-upload" ></i></label>
+																<label for="file" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.button__upload}"><i class="fa fa-upload" ></i></label>
 																<input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" />
 															</div>
 															
 															<div class="admin__config-editor-file-selection-single-entry-action-download">
-																<a href="#" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="" data-original-title="Herunterladen"><i class="fa fa-download"></i>
+																<a href="#" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.downloadHeading}"><i class="fa fa-download"></i>
 																</a>
 															</div>
 														</div>
-														<!-- 												<h:panelGroup styleClass="admin__config-editor-file-selection-single-entry-button-wrapper-info-wrapper" layout="block" rendered="#{!record.writable or !record.readable}"> -->
-
-
-
-
-
-
-
-
-													<ui:fragment
-														rendered="#{adminConfigEditorBean.isFileLocked(record)}">
-														<div
-															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
-															title="#{msg.admin__config_editor__locked}"
-															data-toggle="tooltip" data-placement="top"
-															data-trigger="hover">
-															<i class="fa fa-lock" aria-hidden="true"></i> 
-<!-- 															<i class="fa fa-ban" aria-hidden="true"></i> -->
-														</div>
-													</ui:fragment>
-													<!-- 												</h:panelGroup>	 -->
-
-
-
 
 												</div>
 

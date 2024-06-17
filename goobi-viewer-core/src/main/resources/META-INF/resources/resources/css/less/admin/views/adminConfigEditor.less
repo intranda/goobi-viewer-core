@@ -179,6 +179,12 @@
 			}
 			&.-selectedFile {
 				background: @blue;
+				.admin__config-editor-file-selection-single-entry-action-upload,
+				.admin__config-editor-file-selection-single-entry-action-download {
+					.fa {
+						color: white;
+					}
+				}
 				.admin__config-editor-file-selection-single-entry-button {
 					color: white;
 					&:hover,
@@ -340,11 +346,8 @@
 		    background-color: #F2F2F2;
 		    background-image: linear-gradient(top, #FCFCFC, #E0E0E0);
 		}
-		
-	}
-}
-
-		.status-test {
+		&-status-entry {
+			display: none;
 			left: -10px;
 			top: 13px;
 			position: absolute;
@@ -353,10 +356,20 @@
 			background: white;
 			height: 20px;
 			border: 1px solid #ccc;
-//			&.-yellow {
-//				background: #f6dea7;
-//			}
+  			align-items: center;
+			&.-show {
+				display: flex;
+			}
 		}
+		&-status-entry-inner {
+			display: flex;
+  			align-items: center;
+  			max-width: 100%;
+		}
+		
+	}
+}
+
 
 
 // CUSTOM OVERRIDES FOR FULLSCREEN
