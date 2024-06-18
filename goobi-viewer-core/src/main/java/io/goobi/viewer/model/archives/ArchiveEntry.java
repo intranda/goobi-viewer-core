@@ -71,13 +71,15 @@ public class ArchiveEntry implements Serializable {
     // true if the validation of all metadata fields was successful
     private boolean valid = true;
 
+    private String associatedRecordPi;
+
     private String descriptionLevel;
+
+    private String unitdate;
 
     private boolean visible = true;
 
     private boolean expanded = false;
-
-    private String associatedRecordPi;
 
     private boolean containsImage = false;
 
@@ -398,6 +400,9 @@ public class ArchiveEntry implements Serializable {
         switch (metadata.getType()) {
             case 1:
                 getIdentityStatementAreaList().add(metadata);
+                if ("unitdate".equals(metadata.getLabel())) {
+                    this.unitdate = metadata.getFirstValue();
+                }
                 break;
             case 2:
                 getContextAreaList().add(metadata);
@@ -496,6 +501,7 @@ public class ArchiveEntry implements Serializable {
      * @return the id
      */
     public String getId() {
+        // logger.trace("getId: {}", id);
         return id;
     }
 
@@ -794,6 +800,13 @@ public class ArchiveEntry implements Serializable {
      */
     public void setDescriptionLevel(String descriptionLevel) {
         this.descriptionLevel = descriptionLevel;
+    }
+
+    /**
+     * @return the unitdate
+     */
+    public String getUnitdate() {
+        return unitdate;
     }
 
     /**

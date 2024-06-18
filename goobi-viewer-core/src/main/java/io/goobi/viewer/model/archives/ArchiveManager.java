@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -69,7 +70,7 @@ public class ArchiveManager implements Serializable {
 
     private Map<ArchiveResource, ArchiveTree> archives = new HashMap<>();
 
-    private final List<NodeType> nodeTypes;
+    private final Map<String, NodeType> nodeTypes;
 
     private final ArchiveParser eadParser;
 
@@ -127,7 +128,6 @@ public class ArchiveManager implements Serializable {
     public ArchiveManager(ArchiveParser eadParser, Map<String, String> archiveNodeTypes) {
         try {
             initArchives(eadParser);
-            //this.archives = eadParser.getPossibleDatabases().stream().collect(Collectors.toMap(db -> db, db -> null));
             this.databaseState = DatabaseState.ARCHIVES_LOADED;
         } catch (IOException | HTTPException | PresentationException | IndexUnreachableException e) {
             logger.error("Failed to retrieve database names from '{}': {}", eadParser.getUrl(), e.toString());
@@ -160,6 +160,9 @@ public class ArchiveManager implements Serializable {
         this.archives = new HashMap<>();
         boolean updated = false;
         for (ArchiveResource db : eadParser.getPossibleDatabases()) {
+            if (db == null) {
+                continue;
+            }
             ArchiveResource cachedResource =
                     cachedDatabases.keySet().stream().filter(res -> res.getCombinedId().equals(db.getCombinedId())).findAny().orElse(null);
             ArchiveTree cachedTree = cachedDatabases.get(cachedResource);
@@ -228,7 +231,8 @@ public class ArchiveManager implements Serializable {
      * @return {@link NodeType}
      */
     public NodeType getNodeType(String name) {
-        return this.nodeTypes.stream().filter(node -> node.getName().equals(name)).findAny().orElse(new NodeType("", ""));
+        return this.nodeTypes.getOrDefault(name, new NodeType("", ""));
+        // return this.nodeTypes.stream().filter(node -> node.getName().equals(name)).findAny().orElse(new NodeType("", ""));
     }
 
     /**
@@ -497,14 +501,19 @@ public class ArchiveManager implements Serializable {
     /**
      * 
      * @param archiveNodeTypes
-     * @return List<NodeType>
+     * @return Map<String, NodeType>
      */
-    private static List<NodeType> loadNodeTypes(Map<String, String> archiveNodeTypes) {
+    private static Map<String, NodeType> loadNodeTypes(Map<String, String> archiveNodeTypes) {
         if (archiveNodeTypes != null) {
-            return archiveNodeTypes.entrySet().stream().map(entry -> new NodeType(entry.getKey(), entry.getValue())).toList();
+            Map<String, NodeType> ret = new HashMap<>(archiveNodeTypes.size());
+            for (Entry<String, String> entry : archiveNodeTypes.entrySet()) {
+                ret.put(entry.getKey(), new NodeType(entry.getKey(), entry.getValue()));
+            }
+            
+            return ret;
         }
 
-        return Collections.emptyList();
+        return Collections.emptyMap();
     }
 
     /**
@@ -520,7 +529,7 @@ public class ArchiveManager implements Serializable {
                 this.databaseState = DatabaseState.ARCHIVES_LOADED;
             }
         } catch (IOException | HTTPException e) {
-            logger.error("Failed to retrieve database names from '{}': {}", eadParser.getUrl(), e.toString());
+            logger.error("Failed to retrieve database names from '{}': {}", eadParser != null ? eadParser.getUrl() : "null", e.toString());
             this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
         } catch (PresentationException | IndexUnreachableException e) {
             logger.error("Failed to retrieve associated records from SOLR: {}", e.toString());

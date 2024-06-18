@@ -21,9 +21,6 @@
  */
 package io.goobi.viewer.model.archives;
 
-import java.util.stream.Stream;
-
-
 /**
  * @author florian
  *
@@ -45,5 +42,4 @@ public class NodeType {
     public String getIconClass() {
         return this.iconClass;
     }
-
 }
