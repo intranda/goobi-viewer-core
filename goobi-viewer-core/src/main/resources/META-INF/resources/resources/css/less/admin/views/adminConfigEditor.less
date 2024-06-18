@@ -279,31 +279,35 @@
 			align-items: center;
 			padding: .5rem 1rem;
 			border-bottom: 1px solid #ccc;
-			gap: 10px;
+			// gap: 10px;
 			&:hover {
 				background: #f1f2f3;
 				.admin__config-editor-backup-single-entry-icon {
 					opacity: 1;
 				}
 			}
-		}
-		&-backup-single-entry {
-
 			&:last-child {
 				border-bottom: none;
 			}
+		}
+		&-backup-single-entry {
+
 			&.-noHover {
 				&:hover {
 					background: transparent;
 				}
 			}
 		}
-		&-backup-single-entry-text {
-			max-width: 290px;
+		&-backup-single-entry-button {
+			max-width: unset;
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
 			flex-grow: 1;
+			background: transparent;
+			border: none;
+			text-align: left;
+			padding-right: 10px;
 		}
 		&-backup-single-entry-icon {
 			margin-left: auto;
