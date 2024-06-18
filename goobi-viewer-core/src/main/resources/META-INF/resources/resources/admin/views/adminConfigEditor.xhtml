@@ -131,7 +131,7 @@
 
 								<div class="admin__form-help-text in mb-2">#{msg.admin__config_editor__files_help}:</div>
 
-								<h:form id="file-form">
+								<h:form id="file-form" enctype="multipart/form-data">
 
 									<div class="admin__config-editor-file-selection-inner"
 										id="file-table">
@@ -160,38 +160,10 @@
 												<div
 													class="admin__config-editor-file-selection-single-entry-button-wrapper">
 
-<!-- 													<h:commandButton value="#{record.fileName}" -->
-<!-- 														styleClass="admin__config-editor-file-selection-single-entry-button" -->
-<!-- 														action="#{adminConfigEditorBean.editFile(record.writable)}" -->
-<!-- 														name="#{record.number}" disabled="#{!record.readable}" -->
-<!-- 														onclick="viewerJS.showLoader();"> -->
-<!-- 														<f:ajax execute="@this" -->
-<!-- 															render="editor-form file-form backup-form configEditorActualFile" -->
-<!-- 															immediate="true" /> -->
-<!-- 													</h:commandButton> -->
-
 														<button onclick="viewerJS.showLoader();"
 															jsf:action="#{adminConfigEditorBean.editFile(record.writable)}"
 															class="admin__config-editor-file-selection-single-entry-button">
 															<span class="admin__config-editor-file-selection-single-entry-button-text">#{record.fileName}</span>
-<!-- 																<ui:fragment rendered="#{!record.writable and record.readable and !adminConfigEditorBean.isFileLocked(record)}"> -->
-<!-- 																	<span -->
-<!-- 																		class="admin__config-editor-file-selection-single-entry-button-info" -->
-<!-- 																		title="#{msg.admin__config_editor__not_writable}" -->
-<!-- 																		data-toggle="tooltip" data-placement="top" -->
-<!-- 																		data-trigger="hover"> -->
-<!-- 																		<i class="fa fa-exclamation-circle" aria-hidden="true"></i> -->
-<!-- 																	</span> -->
-<!-- 																</ui:fragment> -->
-<!-- 																<ui:fragment rendered="#{!record.writable and record.readable and adminConfigEditorBean.isFileLocked(record)}"> -->
-<!-- 																	<span -->
-<!-- 																		class="admin__config-editor-file-selection-single-entry-button-info" -->
-<!-- 																		title="#{msg.admin__config_editor__not_writable} + #{msg.admin__config_editor__locked}" -->
-<!-- 																		data-toggle="tooltip" data-placement="top" -->
-<!-- 																		data-trigger="hover"> -->
-<!-- 																		<i class="fa fa-exclamation-circle" aria-hidden="true"></i> -->
-<!-- 																	</span> -->
-<!-- 																</ui:fragment> -->
 																
 															<f:ajax execute="@this"
 																render="editor-form file-form backup-form configEditorActualFile"
@@ -199,8 +171,10 @@
 														</button>
 														<div class="admin__config-editor-file-selection-single-entry-actions-wrapper">
 															<div class="admin__config-editor-file-selection-single-entry-action-upload">
-																<label for="file" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.button__upload}"><i class="fa fa-upload" ></i></label>
-																<input id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" />
+																<label jsf:for="file" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.button__upload}"><i class="fa fa-upload" ></i></label>
+																<input jsf:id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" jsf:value="#{adminConfigEditorBean.fileUploader.file}">
+																	<f:ajax listener="#{adminConfigEditorBean.upload(record.file)}" render="editor-form file-form backup-form configEditorActualFile" />
+																</input>
 															</div>
 															
 															<div class="admin__config-editor-file-selection-single-entry-action-download">

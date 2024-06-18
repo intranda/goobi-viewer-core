@@ -34,6 +34,7 @@ import java.nio.channels.OverlappingFileLockException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,10 +71,13 @@ import io.goobi.viewer.model.administration.configeditor.BackupRecord;
 import io.goobi.viewer.model.administration.configeditor.FileLocks;
 import io.goobi.viewer.model.administration.configeditor.FileRecord;
 import io.goobi.viewer.model.administration.configeditor.FilesListing;
+import io.goobi.viewer.model.files.upload.FileUploader;
 import io.goobi.viewer.model.xml.XMLError;
 
 /**
- * <p>AdminConfigEditorBean class.</p>
+ * <p>
+ * AdminConfigEditorBean class.
+ * </p>
  */
 @Named
 @SessionScoped
@@ -115,15 +119,21 @@ public class AdminConfigEditorBean implements Serializable {
 
     private boolean nightMode = false;
 
+    private FileUploader fileUploader = new FileUploader();
+
     /**
-     * <p>Constructor for AdminConfigEditorBean.</p>
+     * <p>
+     * Constructor for AdminConfigEditorBean.
+     * </p>
      */
     public AdminConfigEditorBean() {
         //
     }
 
     /**
-     * <p>init.</p>
+     * <p>
+     * init.
+     * </p>
      */
     @PostConstruct
     public void init() {
@@ -148,7 +158,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>isRenderBackend.</p>
+     * <p>
+     * isRenderBackend.
+     * </p>
      *
      * @return a boolean
      */
@@ -157,14 +169,43 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>refresh.</p>
+     * <p>
+     * refresh.
+     * </p>
      */
     public void refresh() {
         filesListing.refresh();
     }
 
+    public void upload(Path file) {
+        if (this.fileUploader.isReadoForUpload()) {
+            this.fileUploader.upload();
+            if (this.fileUploader.isUploaded()) {
+                try {
+                    Files.write(file, this.fileUploader.getFileContents(), StandardOpenOption.CREATE,
+                            StandardOpenOption.TRUNCATE_EXISTING);
+                    FileRecord uploadedRecord = getRecord(file.getFileName().toString());
+                    if (uploadedRecord != null) {
+                        this.createBackup(uploadedRecord);
+                        if (uploadedRecord.equals(currentFileRecord)) {
+                            this.selectFileAndShowBackups(uploadedRecord, uploadedRecord.isWritable());
+                        }
+
+                    }
+                } catch (IOException e) {
+                    logger.error("Error uploading file {}: {}", file, e);
+                    Messages.error("Error uploading file");
+                } finally {
+                    this.fileUploader = new FileUploader();
+                }
+            }
+        }
+    }
+
     /**
-     * <p>getFileRecordsModel.</p>
+     * <p>
+     * getFileRecordsModel.
+     * </p>
      *
      * @return a {@link javax.faces.model.DataModel} object
      */
@@ -173,7 +214,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>fileInEditionNumber</code>.</p>
+     * <p>
+     * Getter for the field <code>fileInEditionNumber</code>.
+     * </p>
      *
      * @return a int
      */
@@ -182,7 +225,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>fileInEditionNumber</code>.</p>
+     * <p>
+     * Setter for the field <code>fileInEditionNumber</code>.
+     * </p>
      *
      * @param fileInEditionNumber a int
      */
@@ -191,7 +236,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentFileRecord</code>.</p>
+     * <p>
+     * Getter for the field <code>currentFileRecord</code>.
+     * </p>
      *
      * @return the currentFileRecord
      */
@@ -200,7 +247,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>fileContent</code>.</p>
+     * <p>
+     * Getter for the field <code>fileContent</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -209,7 +258,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>fileContent</code>.</p>
+     * <p>
+     * Setter for the field <code>fileContent</code>.
+     * </p>
      *
      * @param fileContent a {@link java.lang.String} object
      */
@@ -218,7 +269,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>backupRecords</code>.</p>
+     * <p>
+     * Getter for the field <code>backupRecords</code>.
+     * </p>
      *
      * @return a {@link java.util.List} object
      */
@@ -227,7 +280,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>backupRecordsModel</code>.</p>
+     * <p>
+     * Getter for the field <code>backupRecordsModel</code>.
+     * </p>
      *
      * @return a {@link javax.faces.model.DataModel} object
      */
@@ -236,7 +291,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>isEditable.</p>
+     * <p>
+     * isEditable.
+     * </p>
      *
      * @return a boolean
      */
@@ -245,7 +302,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>editable</code>.</p>
+     * <p>
+     * Setter for the field <code>editable</code>.
+     * </p>
      *
      * @param editable a boolean
      */
@@ -254,7 +313,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>isBackupsAvailable.</p>
+     * <p>
+     * isBackupsAvailable.
+     * </p>
      *
      * @return a boolean
      */
@@ -263,7 +324,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>getCurrentConfigFileType.</p>
+     * <p>
+     * getCurrentConfigFileType.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -290,7 +353,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>isNightMode.</p>
+     * <p>
+     * isNightMode.
+     * </p>
      *
      * @return a boolean
      */
@@ -299,14 +364,18 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>changeNightMode.</p>
+     * <p>
+     * changeNightMode.
+     * </p>
      */
     public void changeNightMode() {
         nightMode = !nightMode;
     }
 
     /**
-     * <p>openFile.</p>
+     * <p>
+     * openFile.
+     * </p>
      *
      * @throws java.io.IOException
      */
@@ -355,7 +424,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>closeCurrentFileAction.</p>
+     * <p>
+     * closeCurrentFileAction.
+     * </p>
      *
      * @return Navigation outcome
      */
@@ -386,7 +457,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>editFile.</p>
+     * <p>
+     * editFile.
+     * </p>
      *
      * @param writable a boolean
      * @return a {@link java.lang.String} object
@@ -512,6 +585,16 @@ public class AdminConfigEditorBean implements Serializable {
         return "";
     }
 
+    public void createBackup(FileRecord record) throws IOException {
+        String newBackupFolderPath = backupsPath + record.getFileName().replaceFirst("[.][^.]+$", "");
+        File newBackupFolder = new File(newBackupFolderPath);
+        if (!newBackupFolder.exists()) {
+            newBackupFolder.mkdir();
+        }
+        createBackup(newBackupFolderPath, record.getFileName(), Files.readString(record.getFile()));
+        refreshBackups(newBackupFolder);
+    }
+
     /**
      * Creates a timestamped backup of the given file name and content.
      *
@@ -539,7 +622,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>refreshBackups.</p>
+     * <p>
+     * refreshBackups.
+     * </p>
      *
      * @param backupFolder a {@link java.io.File} object
      */
@@ -610,7 +695,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>isConfigViewer.</p>
+     * <p>
+     * isConfigViewer.
+     * </p>
      *
      * @return true if currently editing config_viewer.xml; false otherwise
      */
@@ -619,11 +706,18 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>selectFileAndShowBackups.</p>
+     * <p>
+     * selectFileAndShowBackups.
+     * </p>
      *
      * @param writable a boolean
      */
     public void selectFileAndShowBackups(boolean writable) {
+        this.selectFileAndShowBackups(filesListing.getFileRecordsModel().getRowData(), writable);
+    }
+
+    public void selectFileAndShowBackups(FileRecord record, boolean writable) {
+
         currentFileRecord = filesListing.getFileRecordsModel().getRowData();
         fullCurrentConfigFileType = ".".concat(currentFileRecord.getFileType());
 
@@ -641,14 +735,18 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>showBackups.</p>
+     * <p>
+     * showBackups.
+     * </p>
      */
     public void showBackups() {
         selectFileAndShowBackups(false);
     }
 
     /**
-     * <p>downloadFile.</p>
+     * <p>
+     * downloadFile.
+     * </p>
      *
      * @param rec {@link io.goobi.viewer.model.administration.configeditor.BackupRecord} for which to download the file
      * @return Navigation outcome
@@ -699,7 +797,9 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * <p>getCurrentFileName.</p>
+     * <p>
+     * getCurrentFileName.
+     * </p>
      *
      * @return File name of the currently selected file record row
      */
@@ -746,12 +846,27 @@ public class AdminConfigEditorBean implements Serializable {
         throw new FileNotFoundException(decodedFileName);
     }
 
+    public FileRecord getRecord(String filename) {
+        String decodedFileName = URLDecoder.decode(filename, StandardCharsets.UTF_8);
+        return filesListing.getFileRecords()
+                .stream()
+                .filter(record -> record.getFileName().equals(decodedFileName))
+                .findAny()
+                .orElse(null);
+    }
+
     /**
-     * <p>getCurrentFilePath.</p>
+     * <p>
+     * getCurrentFilePath.
+     * </p>
      *
      * @return a {@link java.nio.file.Path} object
      */
     public Path getCurrentFilePath() {
         return Optional.ofNullable(currentFileRecord).map(FileRecord::getFile).orElse(null);
+    }
+
+    public FileUploader getFileUploader() {
+        return fileUploader;
     }
 }
