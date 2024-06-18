@@ -165,7 +165,7 @@
 			flex: 0 0 100%;
 			max-width: 100%;
 			padding: .5rem 1rem;
-			padding-left: 1.5rem;
+			padding-left: 1.2rem;
 			padding-right: 0.8rem;
 			border-bottom: 1px solid #ccc;
 			transition: background 0.2s ease;
@@ -176,6 +176,9 @@
 			}
 			&:hover {
 				background: #f1f2f3;
+				.admin__config-editor-file-selection-single-entry-actions-wrapper {
+					opacity: 1;
+				}
 			}
 			&.-selectedFile {
 				background: @blue;
@@ -211,6 +214,8 @@
 			display: flex;
 			align-items: center;
 			gap: 2px;
+			opacity: 0;
+			transition: 0.25s ease all;
 		}
 		&-file-selection-single-entry-action-upload {
 			label {
@@ -224,6 +229,7 @@
 			a {
 				padding: 2px 5px;
 				display: block;
+				color: #212529;
 			}
 		}
 		&-file-selection-single-entry-button-wrapper {
@@ -268,33 +274,40 @@
 			font-size: 1.4rem;
 			font-weight: 500;
 		}
-		&-backup-single-entry {
+		&-backup-single-entry-wrapper {
 			display: flex;
 			align-items: center;
-			opacity: 1;
 			padding: .5rem 1rem;
-			padding-right: 2rem;
 			border-bottom: 1px solid #ccc;
-			&:last-child {
-				border-bottom: none;
-			}
+			// gap: 10px;
 			&:hover {
 				background: #f1f2f3;
 				.admin__config-editor-backup-single-entry-icon {
 					opacity: 1;
 				}
 			}
+			&:last-child {
+				border-bottom: none;
+			}
+		}
+		&-backup-single-entry {
+
 			&.-noHover {
 				&:hover {
 					background: transparent;
 				}
 			}
 		}
-		&-backup-single-entry-text {
-			max-width: 290px;
+		&-backup-single-entry-button {
+			max-width: unset;
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
+			flex-grow: 1;
+			background: transparent;
+			border: none;
+			text-align: left;
+			padding-right: 10px;
 		}
 		&-backup-single-entry-icon {
 			margin-left: auto;
@@ -349,7 +362,7 @@
 		&-status-entry {
 			display: none;
 			left: -10px;
-			top: 10px;
+			top: 9px;
 			position: absolute;
 			width: 20px;
 			border-radius: 999px;
