@@ -207,7 +207,7 @@ public class ArchiveTree implements Serializable {
                     if (entry.getHierarchyLevel() > collapseLevel) {
                         entries.get(index - 1).setExpanded(false);
                         entry.setVisible(false);
-                        logger.trace("Set node invisible: {} (level {})", entry.getLabel(), entry.getHierarchyLevel());
+                        // logger.trace("Set node invisible: {} (level {})", entry.getLabel(), entry.getHierarchyLevel()); //NOSONAR Debug
                     } else {
                         entries.get(index - 1).setExpanded(true);
                     }
