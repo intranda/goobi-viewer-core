@@ -44,7 +44,7 @@
                                                     <h:selectOneMenu id="advsearch_field_0-#{status.count}" styleClass="value-text"
                                                         value="#{queryItem.field}" valueChangeListener="#{queryItem.selectOneMenuListener}">
                                                         
-                                                        <c:forEach var="field" items="#{searchBean.advancedSearchAllowedFields}">
+                                                        <c:forEach var="field" items="#{searchBean.advancedSearchFirstItemAllowedFields}">
                                                     	   <f:passThroughAttribute name="aria-label" value="#{msg.searchIn}"/>
 														  <f:passThroughAttribute name="aria-haspopup" value="listbox"/>
                                                             <f:selectItem itemValue="#{field.field}" itemLabel="#{msg[field.label]}" itemDisabled="#{field.disabled}" />
