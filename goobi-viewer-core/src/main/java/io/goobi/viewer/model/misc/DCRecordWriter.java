@@ -33,8 +33,8 @@ import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
+
+import io.goobi.viewer.controller.XmlTools;
 
 /**
  * @author florian
@@ -121,19 +121,15 @@ public class DCRecordWriter {
         } else if (!Files.exists(path.getParent())) {
             throw new IOException("Parent directory of output destination " + path + " must exist to create file");
         }
-        XMLOutputter xmlOutput = new XMLOutputter();
-        xmlOutput.setFormat(Format.getPrettyFormat());
         try (OutputStream out = Files.newOutputStream(filePath)) {
-            xmlOutput.output(doc, out);
+            XmlTools.getXMLOutputter().output(doc, out);
         }
     }
 
     public String getAsString() {
-        XMLOutputter xmlOutput = new XMLOutputter();
-        xmlOutput.setFormat(Format.getPrettyFormat());
         StringWriter writer = new StringWriter();
         try {
-            xmlOutput.output(doc, writer);
+            XmlTools.getXMLOutputter().output(doc, writer);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
