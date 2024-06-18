@@ -158,8 +158,11 @@ public class SolrEADParser extends ArchiveParser {
                 }
             }
             try {
-                boolean recursion = archiveDocs.size() < 10000;
-                return loadHierarchyFromIndex(null, 0, 0, topDoc, false);
+                boolean recursion = archiveDocs.size() < 1000;
+                if (!recursion) {
+                    logger.debug("Using lazy loading due to the archive tree size ({} nodes).", archiveDocs.size());
+                }
+                return loadHierarchyFromIndex(null, 0, 0, topDoc, recursion);
             } finally {
                 logger.trace("Database loaded.");
             }
