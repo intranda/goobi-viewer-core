@@ -11,10 +11,10 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('searchlist', false, true)}" />
-<!--             <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('searchList',1)}" /> -->
+        	<!-- navigationHelper.setCurrentPage should be a viewAction and not an event to prevent it from being triggered on postback (ajax-requests) which can collide with a parallel record load -->
+			<f:viewAction onPostback="false"
+				action="#{navigationHelper.setCurrentPage('searchlist', false, true)}" />
             <f:event type="preRenderView" listener="#{searchBean.resetCurrentHitIndex}" />
-<!--             <f:event type="preRenderView" listener="#{breadcrumbBean.updateBreadcrumbsForSearchHits}" /> -->
         </f:metadata>
     </ui:define>
 

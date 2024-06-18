@@ -58,7 +58,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
 /**
- * Class for retrieving usage statistics for a day or a range of days
+ * Class for retrieving usage statistics for a day or a range of days.
  * 
  * @author florian
  *

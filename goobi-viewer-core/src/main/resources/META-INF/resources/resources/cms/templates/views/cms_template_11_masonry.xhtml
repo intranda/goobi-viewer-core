@@ -47,13 +47,15 @@
 						type : "GET",
 						datatype : "JSON"
 					}).then( function( data ) {
-						var masonryConfig = {
+						const masonryConfig = {
 								$grid : $(".grid"),
 								language: currentLang
 						};
-
-						cmsJS.masonry.init( masonryConfig, data);
-					});
+		                $(document).ready(() => {                		
+							cmsJS.masonry.init( masonryConfig, data);
+						});
+                	});
+                	
 				</script>
 			</div>
      </composite:implementation>

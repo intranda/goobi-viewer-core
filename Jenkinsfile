@@ -38,7 +38,7 @@ pipeline {
         }
       }
       steps {
-              sh 'mvn -f goobi-viewer-core/pom.xml -DskipTests=false -DskipDependencyCheck=true -DskipCheckstyle=false -DfailOnSnapshot=true clean verify -U'
+              sh 'mvn -f goobi-viewer-core/pom.xml -DskipTests=false -DskipDependencyCheck=false -DskipCheckstyle=false -DfailOnSnapshot=true clean verify -U'
       }
     }
     stage('sonarcloud') {

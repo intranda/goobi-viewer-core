@@ -56,7 +56,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 
 /**
  *
- * provides listings of records in reduced iiif form
+ * provides listings of records in reduced iiif form.
  *
  * @author florian
  *

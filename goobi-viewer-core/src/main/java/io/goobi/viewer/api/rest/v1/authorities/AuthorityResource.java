@@ -62,7 +62,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
 /**
- * Resolver for normdata authority resources identified by their escaped url
+ * Resolver for normdata authority resources identified by their escaped url.
  *
  * @author florian
  *
@@ -92,7 +92,7 @@ public class AuthorityResource {
             @Parameter(description = "Metadata template to use") @QueryParam("template") String template,
             @Parameter(description = "Language to use for metadata fields") @QueryParam("lang") String lang)
             throws ContentNotFoundException, PresentationException {
-        logger.trace("getIdentity: {} (template: {})", inUrl, template);
+        
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
