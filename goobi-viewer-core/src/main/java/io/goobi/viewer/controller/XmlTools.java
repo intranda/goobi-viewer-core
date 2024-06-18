@@ -387,7 +387,7 @@ public final class XmlTools {
      * @return a new XMLOutputter instance with standard format settings
      */
     public static XMLOutputter getXMLOutputter() {
-        Format format = Format.getPrettyFormat();
+        Format format = Format.getRawFormat();
         format.setEncoding(StringTools.DEFAULT_ENCODING);
         format.setLineSeparator(LineSeparator.SYSTEM);
         return new XMLOutputter(format);

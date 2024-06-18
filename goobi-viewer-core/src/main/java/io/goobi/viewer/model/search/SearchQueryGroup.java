@@ -77,7 +77,8 @@ public class SearchQueryGroup implements Serializable {
 
         if (template == null || StringConstants.DEFAULT_NAME.equals(template)) {
             SearchQueryItem firstItem = new SearchQueryItem(template);
-            firstItem.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
+            firstItem.setField(SearchHelper.SEARCH_FILTER_ALL.getField());
+            firstItem.setLabel(SearchHelper.SEARCH_FILTER_ALL.getLabel());
             queryItems.add(firstItem);
         }
         if (fieldConfigs != null) {
