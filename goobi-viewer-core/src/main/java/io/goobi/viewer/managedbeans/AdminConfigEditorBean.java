@@ -178,6 +178,13 @@ public class AdminConfigEditorBean implements Serializable {
         filesListing.refresh();
     }
 
+    public void selectBackup(int backupNumber) throws IOException {
+        if (backupNumber > -1 && backupNumber < backupFiles.length) {
+            Path path = backupFiles[backupNumber].toPath();
+            fileContent = Files.readString(path);
+        }
+    }
+
     public void upload(Path file) {
         if (this.fileUploader.isReadoForUpload()) {
             this.fileUploader.upload();

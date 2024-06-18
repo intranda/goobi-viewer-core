@@ -78,6 +78,7 @@
 									<script>			
 																														
 										$( document ).ready(function() {
+											console.log("LOAD CODEMIRROR");
 											adminJS.configEditor.init({
 												fileNotReadableMsgKey: '#{msg.admin__config_editor__not_readable}',
 											    currentFileIsReadable: #{adminConfigEditorBean.currentFileRecord.readable},
@@ -94,8 +95,8 @@
 											<h:commandButton value="#{msg.reset}"
 												disabled="#{not(adminConfigEditorBean.editable)}"
 												styleClass="btn btn--default admin__overlay-bar-action"
-												pt:data-cm="cancel">
-												<f:ajax execute="@form" render="nothing" />
+												pt:data-cm="cancel" action="#{adminConfigEditorBean.openFile()}">
+												<f:ajax execute="@form" render="editor-form" />
 											</h:commandButton>
 
 											<!-- SAVE -->
@@ -172,7 +173,7 @@
 															<div class="admin__config-editor-file-selection-single-entry-action-upload">
 																<label jsf:for="file" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.button__upload}"><i class="fa fa-upload" ></i></label>
 																<input jsf:id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" jsf:value="#{adminConfigEditorBean.fileUploader.file}">
-																	<f:ajax listener="#{adminConfigEditorBean.upload(record.file)}" render="editor-form file-form backup-form configEditorActualFile" />
+																	<f:ajax listener="#{adminConfigEditorBean.upload(record.file)}" render="editor-form file-form backup-form configEditorActualFile"/>
 																</input>
 															</div>
 															
@@ -208,11 +209,12 @@
 											<div class="admin__config-editor-backup-wrapper">
 												<ui:repeat var="record" value="#{adminConfigEditorBean.backupRecordsModel}">
 													<div class="admin__config-editor-backup-single-entry-wrapper">
-														<button type="button" class="admin__config-editor-backup-single-entry-button">
+														<button jsf:action="#{adminConfigEditorBean.selectBackup(record.number)}" type="button" class="admin__config-editor-backup-single-entry-button">
 															<h:outputText value="#{record.date}">
 																<f:converter converterId="localDateTimeConverter" />
 																<f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
 															</h:outputText>
+															<f:ajax render="editor-form file-form backup-form configEditorActualFile" onevent="adminJS.configEditor.loadBackup" />
 														</button>
 														<h:commandLink
 															styleClass="btn btn--clean admin__config-editor-backup-single-entry"
