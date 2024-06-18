@@ -53,7 +53,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
-import org.jdom2.output.XMLOutputter;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
@@ -246,7 +245,7 @@ public class RecordFileResource {
         if (filePath != null && Files.isRegularFile(filePath)) {
             try {
                 Document doc = XmlTools.readXmlFile(filePath);
-                return new XMLOutputter().outputString(doc);
+                return XmlTools.getXMLOutputter().outputString(doc);
             } catch (FileNotFoundException e) {
                 logger.debug(e.getMessage());
             } catch (IOException | JDOMException e) {
