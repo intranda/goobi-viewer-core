@@ -58,6 +58,7 @@ public class SolrEADParser extends ArchiveParser {
     private static final Logger logger = LogManager.getLogger(SolrEADParser.class);
 
     private static final String FIELD_ARCHIVE_ENTRY_LEVEL = "MD_ARCHIVE_ENTRY_LEVEL";
+    private static final String FIELD_ARCHIVE_ENTRY_OTHERLEVEL = "MD_ARCHIVE_ENTRY_OTHERLEVEL";
     public static final String DATABASE_NAME = "EAD";
 
     private static final List<String> SOLR_FIELDS_DATABASES =
@@ -204,8 +205,11 @@ public class SolrEADParser extends ArchiveParser {
             }
 
             // nodeType
-            // TODO check otherlevel first
-            entry.setNodeType(SolrTools.getSingleFieldStringValue(doc, FIELD_ARCHIVE_ENTRY_LEVEL));
+            String level = SolrTools.getSingleFieldStringValue(doc, FIELD_ARCHIVE_ENTRY_OTHERLEVEL);
+            if (StringUtils.isEmpty(level)) {
+                level = SolrTools.getSingleFieldStringValue(doc, FIELD_ARCHIVE_ENTRY_LEVEL);
+            }
+            entry.setNodeType(level);
             if (entry.getNodeType() == null) {
                 entry.setNodeType("folder");
             }
