@@ -56,6 +56,7 @@ import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.output.XMLOutputter;
+import org.omnifaces.util.Faces;
 import org.xml.sax.SAXException;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
@@ -200,6 +201,10 @@ public class AdminConfigEditorBean implements Serializable {
                 }
             }
         }
+    }
+
+    public void download(Path file) throws IOException {
+        Faces.sendFile(file, file.getFileName().toString(), true);
     }
 
     /**

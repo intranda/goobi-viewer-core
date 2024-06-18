@@ -144,17 +144,16 @@
 											<div
 												class="admin__config-editor-file-selection-single-entry #{adminConfigEditorBean.fileInEditionNumber == status.index ? '-selectedFile' : ''} #{record.readable  ? '-isReadable' : '-isNotReadable'}">
 												<div class="admin__config-editor-status-entry #{!record.writable and record.readable ? '-show' : ''} #{adminConfigEditorBean.isFileLocked(record) ? '-show' : ''}">
-												<ui:fragment rendered="#{!record.writable and record.readable}"> 
-													<div class="admin__config-editor-status-entry-inner" title="#{msg.admin__config_editor__not_writable}" data-toggle="tooltip" data-placement="top" data-trigger="hover">
-													<ui:include src="/resources/images/icons/icon-eye.svg" />
-													</div>
-												</ui:fragment>
-												<ui:fragment rendered="#{adminConfigEditorBean.isFileLocked(record)}">
-													<div class="admin__config-editor-status-entry-inner" title="#{msg.admin__config_editor__locked}" data-toggle="tooltip" data-placement="top" data-trigger="hover">
-														<ui:include src="/resources/images/icons/icon-lock.svg" />
-													</div>
-												</ui:fragment>
-												
+													<ui:fragment rendered="#{!record.writable and record.readable}"> 
+														<div class="admin__config-editor-status-entry-inner" title="#{msg.admin__config_editor__not_writable}" data-toggle="tooltip" data-placement="top" data-trigger="hover">
+														<ui:include src="/resources/images/icons/icon-eye.svg" />
+														</div>
+													</ui:fragment>
+													<ui:fragment rendered="#{adminConfigEditorBean.isFileLocked(record)}">
+														<div class="admin__config-editor-status-entry-inner" title="#{msg.admin__config_editor__locked}" data-toggle="tooltip" data-placement="top" data-trigger="hover">
+															<ui:include src="/resources/images/icons/icon-lock.svg" />
+														</div>
+													</ui:fragment>
 												</div>
 												
 												<div
@@ -178,7 +177,7 @@
 															</div>
 															
 															<div class="admin__config-editor-file-selection-single-entry-action-download">
-																<a href="#" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.downloadHeading}"><i class="fa fa-download"></i>
+																<a jsf:action="#{adminConfigEditorBean.download(record.file)}" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.downloadHeading}"><i class="fa fa-download"></i>
 																</a>
 															</div>
 														</div>
