@@ -183,18 +183,23 @@ public class ArchiveTree implements Serializable {
         return ret;
     }
 
+    /**
+     * 
+     * @param searchActive
+     * @return List<ArchiveEntry>
+     */
     public List<ArchiveEntry> getVisibleTree(boolean searchActive) {
         logger.trace("getVisibleTree");
-        // return getTreeView().stream().filter(e -> e.isVisible()).filter(e -> e.isDisplaySearch() || !searchActive).toList();
+        return getTreeView().stream().filter(e -> e.isVisible()).filter(e -> e.isDisplaySearch() || !searchActive).toList();
 
-        List<ArchiveEntry> ret = new ArrayList<>();
-        for (ArchiveEntry entry : getTreeView()) {
-            if (entry.isVisible() && (!searchActive || entry.isDisplaySearch())) {
-                ret.add(entry);
-            }
-        }
-
-        return ret;
+        //        List<ArchiveEntry> ret = new ArrayList<>();
+        //        for (ArchiveEntry entry : getTreeView()) {
+        //            if (entry.isVisible() && (!searchActive || entry.isDisplaySearch())) {
+        //                ret.add(entry);
+        //            }
+        //        }
+        //
+        //        return ret;
     }
 
     /**
