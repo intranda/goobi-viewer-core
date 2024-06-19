@@ -36,8 +36,8 @@ class DCRecordWriterTest {
 
     private static final String RECORD_REFERENCE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<record xmlns:dc=\"http://purl.org/dc/elements/1.1/\">" +
-            " <dc:title>Titel</dc:title>" +
-            " <dc:identifier>ID</dc:identifier>" +
+            "<dc:title>Titel</dc:title>" +
+            "<dc:identifier>ID</dc:identifier>" +
             "</record>";
 
     /**
