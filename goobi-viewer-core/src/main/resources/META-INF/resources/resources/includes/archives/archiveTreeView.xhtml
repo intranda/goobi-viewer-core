@@ -56,7 +56,7 @@
 					</div>
 					<nav class="archives-tree__list">
 						<ul>
-							<c:forEach var="entry" items="#{visibleTree}" varStatus="status">
+							<ui:repeat var="entry" value="#{visibleTree}" varStatus="status">
 								<!-- This will break indentation if replaced with a c:if -->
 								<li class="archives-tree__entry #{entry.hasChild == true ? 'parent' : 'child' }"
 									data-id="id_#{entry.id}"
@@ -96,7 +96,7 @@
 									</div>
 
 								</li>
-							</c:forEach>
+						    </ui:repeat>
 						</ul>
 					</nav>
 				</h:panelGroup>
