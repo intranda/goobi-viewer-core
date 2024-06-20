@@ -55,7 +55,6 @@ import org.apache.logging.log4j.Logger;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.jdom2.output.XMLOutputter;
 import org.omnifaces.util.Faces;
 import org.xml.sax.SAXException;
 
@@ -567,7 +566,7 @@ public class AdminConfigEditorBean implements Serializable {
                     }
                     logger.trace("configEditor settings restored");
 
-                    fileContent = new XMLOutputter().outputString(doc);
+                    fileContent = XmlTools.getXMLOutputter().outputString(doc);
                 }
             }
 

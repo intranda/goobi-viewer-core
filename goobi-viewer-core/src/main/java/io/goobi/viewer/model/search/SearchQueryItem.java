@@ -59,7 +59,7 @@ public class SearchQueryItem implements Serializable {
     private static final long serialVersionUID = -367323410132252816L;
 
     /** Constant <code>ADVANCED_SEARCH_ALL_FIELDS="searchAdvanced_allFields"</code> */
-    public static final String ADVANCED_SEARCH_ALL_FIELDS = "searchAdvanced_allFields";
+    // public static final String ADVANCED_SEARCH_ALL_FIELDS = "searchAdvanced_allFields";
 
     public enum SearchItemOperator {
         AND,
@@ -247,7 +247,7 @@ public class SearchQueryItem implements Serializable {
      * @return true if selected field is "all fields"; false otherwise
      */
     public boolean isAllFields() {
-        return ADVANCED_SEARCH_ALL_FIELDS.equals(field);
+        return SearchHelper.SEARCH_FILTER_ALL.getField().equals(field);
     }
 
     /**
@@ -476,7 +476,7 @@ public class SearchQueryItem implements Serializable {
             case SolrConstants.BOOKMARKS:
                 displaySelectItems = true;
                 break;
-            case ADVANCED_SEARCH_ALL_FIELDS:
+            case SearchHelper.SEARCH_FILTER_ALL_FIELD:
             case SolrConstants.FULLTEXT:
                 displaySelectItems = false;
                 break;
@@ -522,9 +522,9 @@ public class SearchQueryItem implements Serializable {
         if (values.isEmpty() || StringUtils.isBlank(getValue())) {
             return "";
         }
-        this.proximitySearchDistance  = 0;
+        this.proximitySearchDistance = 0;
         List<String> fields = new ArrayList<>();
-        if (ADVANCED_SEARCH_ALL_FIELDS.equals(field)) {
+        if (SearchHelper.SEARCH_FILTER_ALL.getField().equals(this.field)) {
             // Search everywhere
             if (aggregateHits) {
                 // When doing an aggregated search, make sure to include both SUPER and regular fields (because sub-elements don't have the SUPER)
@@ -656,7 +656,7 @@ public class SearchQueryItem implements Serializable {
                             sbItem.append(" -");
                             val = val.substring(1);
                         } else if (moreThanOneValue) {
-                            if (ADVANCED_SEARCH_ALL_FIELDS.equals(this.field)) {
+                            if (SearchHelper.SEARCH_FILTER_ALL.getField().equals(this.field)) {
                                 sbItem.append(' ');
                             } else {
                                 sbItem.append(SolrConstants.SOLR_QUERY_AND);
@@ -751,7 +751,7 @@ public class SearchQueryItem implements Serializable {
     public String toString() {
         return field + " " + operator + " " + getValue();
     }
-    
+
     public int getProximitySearchDistance() {
         return proximitySearchDistance;
     }

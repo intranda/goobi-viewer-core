@@ -139,7 +139,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         searchBean.resetAdvancedSearchParameters();
         assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
         SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
-        assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, item.getField());
+        assertEquals(SearchHelper.SEARCH_FILTER_ALL.getField(), item.getField());
 
         searchBean.getFacets().setActiveFacetString("DC:a");
         searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
@@ -156,7 +156,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         searchBean.resetAdvancedSearchParameters();
         assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
         SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
-        assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, item.getField());
+        assertEquals(SearchHelper.SEARCH_FILTER_ALL.getField(), item.getField());
 
         searchBean.getFacets().setActiveFacetString("DC:a");
         searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
@@ -319,7 +319,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             // OR-operator, search in all fields
             SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
             item.setOperator(SearchItemOperator.OR);
-            item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
+            item.setField(SearchHelper.SEARCH_FILTER_ALL.getField());
             item.setValue("foo bar");
         }
         {
@@ -348,7 +348,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             // OR-operator, search in all fields
             SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
             item.setOperator(SearchItemOperator.OR);
-            item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
+            item.setField(SearchHelper.SEARCH_FILTER_ALL.getLabel());
             item.setValue("monograph"); // should NOT be translated
         }
         {
@@ -367,7 +367,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         }
 
         searchBean.generateAdvancedSearchString();
-        assertEquals("OR (All fields: monograph) AND (Title: bla &quot;blup&quot; -nein) NOT (Structure type: Monograph)",
+        assertEquals("OR (Global search: monograph) AND (Title: bla &quot;blup&quot; -nein) NOT (Structure type: Monograph)",
                 searchBean.getAdvancedSearchQueryInfo());
     }
 
@@ -675,7 +675,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void getAdvancedSearchAllowedFields_shouldOmitLanguagedFieldsForOtherLanguages() throws Exception {
-        List<AdvancedSearchFieldConfiguration> fields = SearchBean.getAdvancedSearchAllowedFields("en", StringConstants.DEFAULT_NAME);
+        List<AdvancedSearchFieldConfiguration> fields = SearchBean.getAdvancedSearchAllowedFields("en", StringConstants.DEFAULT_NAME, false);
         boolean en = false;
         boolean de = false;
         boolean es = false;
@@ -695,6 +695,22 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertTrue(en);
         Assertions.assertFalse(de);
         Assertions.assertFalse(es);
+    }
+    
+    /**
+     * @see SearchBean#getAdvancedSearchAllowedFields()
+     * @verifies addSearchFilters
+     */
+    @Test
+    void getAdvancedSearchAllowedFields_shouldAddSearchFilters() throws Exception {
+        List<AdvancedSearchFieldConfiguration> fields = SearchBean.getAdvancedSearchAllowedFields("en", StringConstants.DEFAULT_NAME, true);
+        assertEquals(16, fields.size());
+        assertEquals(SearchHelper.SEARCH_FILTER_ALL.getField(), fields.get(0).getField());
+        assertEquals("DEFAULT", fields.get(1).getField());
+        assertEquals("FULLTEXT", fields.get(2).getField());
+        assertEquals("NORMDATATERMS", fields.get(3).getField());
+        assertEquals("UGCTERMS", fields.get(4).getField());
+        assertEquals("CMS_TEXT_ALL", fields.get(5).getField());
     }
 
     /**
@@ -987,7 +1003,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(SearchItemOperator.AND, items.get(0).getOperator());
         Assertions.assertNull(items.get(0).getValue());
     }
-    
+
     /**
      * @see SearchBean#setActiveResultGroupName(String)
      * @verifies not change hitsPerPageSetterCalled value
@@ -996,7 +1012,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     void setHitsPerPageNoTrigger_shouldNotChangeHitsPerPageSetterCalledValue() throws Exception {
         SearchBean sb = new SearchBean();
         Assertions.assertFalse(sb.isHitsPerPageSetterCalled());
-        
+
         sb.setHitsPerPageNoTrigger(5);
         Assertions.assertFalse(sb.isHitsPerPageSetterCalled());
     }

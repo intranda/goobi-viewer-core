@@ -48,7 +48,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
-import org.jdom2.output.XMLOutputter;
 
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.Utils;
@@ -247,7 +246,7 @@ public final class ALTOTools {
             AltoDocument altoDoc = AltoDocument.getDocumentFromString(alto, charset);
             new HyphenationLinker().linkWords(altoDoc);
             Document doc = new Document(altoDoc.writeToDom());
-            useAlto = new XMLOutputter().outputString(doc);
+            useAlto = XmlTools.getXMLOutputter().outputString(doc);
         }
 
         Map<String, String> neTypeMap = new HashMap<>();
