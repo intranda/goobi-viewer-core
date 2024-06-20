@@ -34,6 +34,7 @@ import java.nio.channels.OverlappingFileLockException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +55,7 @@ import org.apache.logging.log4j.Logger;
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import org.omnifaces.util.Faces;
 import org.xml.sax.SAXException;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
@@ -69,6 +71,7 @@ import io.goobi.viewer.model.administration.configeditor.BackupRecord;
 import io.goobi.viewer.model.administration.configeditor.FileLocks;
 import io.goobi.viewer.model.administration.configeditor.FileRecord;
 import io.goobi.viewer.model.administration.configeditor.FilesListing;
+import io.goobi.viewer.model.files.upload.FileUploader;
 import io.goobi.viewer.model.xml.XMLError;
 
 /**
@@ -115,6 +118,8 @@ public class AdminConfigEditorBean implements Serializable {
     private String fullCurrentConfigFileType; // "." + currentConfigFileType
 
     private boolean nightMode = false;
+
+    private FileUploader fileUploader = new FileUploader();
 
     /**
      * <p>
@@ -170,6 +175,42 @@ public class AdminConfigEditorBean implements Serializable {
      */
     public void refresh() {
         filesListing.refresh();
+    }
+
+    public void selectBackup(int backupNumber) throws IOException {
+        if (backupNumber > -1 && backupNumber < backupFiles.length) {
+            Path path = backupFiles[backupNumber].toPath();
+            fileContent = Files.readString(path);
+        }
+    }
+
+    public void upload(Path file) {
+        if (this.fileUploader.isReadoForUpload()) {
+            this.fileUploader.upload();
+            if (this.fileUploader.isUploaded()) {
+                try {
+                    Files.write(file, this.fileUploader.getFileContents(), StandardOpenOption.CREATE,
+                            StandardOpenOption.TRUNCATE_EXISTING);
+                    FileRecord uploadedRecord = getRecord(file.getFileName().toString());
+                    if (uploadedRecord != null) {
+                        this.createBackup(uploadedRecord);
+                        if (uploadedRecord.equals(currentFileRecord)) {
+                            this.selectFileAndShowBackups(uploadedRecord, uploadedRecord.isWritable());
+                        }
+
+                    }
+                } catch (IOException e) {
+                    logger.error("Error uploading file {}: {}", file, e);
+                    Messages.error("Error uploading file");
+                } finally {
+                    this.fileUploader = new FileUploader();
+                }
+            }
+        }
+    }
+
+    public void download(Path file) throws IOException {
+        Faces.sendFile(file, file.getFileName().toString(), true);
     }
 
     /**
@@ -555,6 +596,16 @@ public class AdminConfigEditorBean implements Serializable {
         return "";
     }
 
+    public void createBackup(FileRecord record) throws IOException {
+        String newBackupFolderPath = backupsPath + record.getFileName().replaceFirst("[.][^.]+$", "");
+        File newBackupFolder = new File(newBackupFolderPath);
+        if (!newBackupFolder.exists()) {
+            newBackupFolder.mkdir();
+        }
+        createBackup(newBackupFolderPath, record.getFileName(), Files.readString(record.getFile()));
+        refreshBackups(newBackupFolder);
+    }
+
     /**
      * Creates a timestamped backup of the given file name and content.
      *
@@ -673,6 +724,11 @@ public class AdminConfigEditorBean implements Serializable {
      * @param writable a boolean
      */
     public void selectFileAndShowBackups(boolean writable) {
+        this.selectFileAndShowBackups(filesListing.getFileRecordsModel().getRowData(), writable);
+    }
+
+    public void selectFileAndShowBackups(FileRecord record, boolean writable) {
+
         currentFileRecord = filesListing.getFileRecordsModel().getRowData();
         fullCurrentConfigFileType = ".".concat(currentFileRecord.getFileType());
 
@@ -801,6 +857,15 @@ public class AdminConfigEditorBean implements Serializable {
         throw new FileNotFoundException(decodedFileName);
     }
 
+    public FileRecord getRecord(String filename) {
+        String decodedFileName = URLDecoder.decode(filename, StandardCharsets.UTF_8);
+        return filesListing.getFileRecords()
+                .stream()
+                .filter(record -> record.getFileName().equals(decodedFileName))
+                .findAny()
+                .orElse(null);
+    }
+
     /**
      * <p>
      * getCurrentFilePath.
@@ -810,5 +875,9 @@ public class AdminConfigEditorBean implements Serializable {
      */
     public Path getCurrentFilePath() {
         return Optional.ofNullable(currentFileRecord).map(FileRecord::getFile).orElse(null);
+    }
+
+    public FileUploader getFileUploader() {
+        return fileUploader;
     }
 }
