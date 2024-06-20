@@ -45,6 +45,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -150,7 +151,8 @@ public class SolrEADParser extends ArchiveParser {
             String query = "+" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name() + " +" + SolrConstants.PI_TOPSTRUCT + ":\""
                     + database.getResourceId() + "\" -" + SolrConstants.PI + ":\"" + database.getResourceId() + '"' + SearchHelper.getAllSuffixes();
             // logger.trace("archive query: {}", query); //NOSONAR Debug
-            SolrDocumentList archiveDocs = searchIndex.search(query, solrFields);
+            SolrDocumentList archiveDocs = searchIndex.search(query, SolrSearchIndex.MAX_HITS,
+                    Arrays.asList(new StringPair(SolrConstants.IDDOC_PARENT, "asc"), new StringPair("SORT_TITLE", "asc")), solrFields);
 
             // Add all Solr docs for this archive to map
             for (SolrDocument doc : archiveDocs) {

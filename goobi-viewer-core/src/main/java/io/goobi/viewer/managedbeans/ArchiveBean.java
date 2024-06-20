@@ -23,7 +23,6 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +30,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -79,11 +79,11 @@ public class ArchiveBean implements Serializable {
         this.databaseLoaded = false;
     }
 
-    public void initializeArchiveTree() {
+    public void initializeArchiveTree() throws ArchiveException {
         initializeArchiveTree(null);
     }
 
-    public void initializeArchiveTree(String selectedEntryId) {
+    public void initializeArchiveTree(String selectedEntryId) throws ArchiveException {
         logger.trace("initializeArchiveTree: {}", selectedEntryId);
         if (getCurrentArchive() != null) {
             try {
@@ -98,6 +98,7 @@ public class ArchiveBean implements Serializable {
                 logger.error("Error initializing archive tree: {}", e.getMessage());
                 Messages.error("Error initializing archive tree: " + e.getMessage());
                 this.databaseLoaded = false;
+                throw new ArchiveException("Error initializing archive tree: " + e.getMessage());
             }
         }
     }
@@ -393,7 +394,7 @@ public class ArchiveBean implements Serializable {
         return Optional.ofNullable(getCurrentArchive()).map(ArchiveResource::getCombinedId).orElse("");
     }
 
-    public void setArchiveId(String archiveName) {
+    public void setArchiveId(String archiveName) throws ArchiveException {
         ArchiveResource database = this.archiveManager.getArchiveResource(archiveName);
         if (database != null) {
             this.currentDatabase = database.getDatabaseId();
@@ -404,7 +405,7 @@ public class ArchiveBean implements Serializable {
         }
     }
 
-    public void loadDatabaseResource(String databaseId, String resourceId) {
+    public void loadDatabaseResource(String databaseId, String resourceId) throws ArchiveException {
         this.currentDatabase = databaseId;
         this.currentResource = resourceId;
         this.initializeArchiveTree();
