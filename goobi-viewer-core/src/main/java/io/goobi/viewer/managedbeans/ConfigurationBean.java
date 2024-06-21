@@ -1219,31 +1219,6 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * @param levelName
-     * @return List of configured citation links
-     */
-    public List<CitationLink> getSidebarWidgetUsageCitationLinksForLevel(String levelName) {
-        if (StringUtils.isEmpty(levelName)) {
-            return Collections.emptyList();
-        }
-
-        CitationLinkLevel level = CitationLinkLevel.getByName(levelName);
-        if (level == null) {
-            logger.warn("Unknown citation link level: {}", levelName);
-            return Collections.emptyList();
-        }
-
-        List<CitationLink> ret = new ArrayList<>();
-        for (CitationLink link : DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks()) {
-            if (level.equals(link.getLevel())) {
-                ret.add(link);
-            }
-        }
-
-        return ret;
-    }
-
-    /**
      * <p>
      * isSubthemeDiscriminatorFieldSet.
      * </p>
@@ -1593,16 +1568,16 @@ public class ConfigurationBean implements Serializable {
     public boolean isFacetFieldDisplayValueFilter(String facetField) {
         return DataManager.getInstance().getConfiguration().isFacetFieldDisplayValueFilter(facetField);
     }
-    
+
     /**
-    *
-    * @param facetField
-    * @return Configured value
-    * @should return correct value
-    */
-   public boolean isFacetFieldTypeBoolean(String facetField) {
-       return DataManager.getInstance().getConfiguration().getBooleanFacetFields().contains(facetField);
-   }
+     *
+     * @param facetField
+     * @return Configured value
+     * @should return correct value
+     */
+    public boolean isFacetFieldTypeBoolean(String facetField) {
+        return DataManager.getInstance().getConfiguration().getBooleanFacetFields().contains(facetField);
+    }
 
     public boolean isPdfPageRangeEnabled() {
         return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsagePdfPageRange();
