@@ -123,7 +123,7 @@
 	 			console.log("object details: ", json);
 	 			let modelSize = json.resourceSizes[json.uri];
 	 			if(modelSize) {	 				
-	 				$("#objectSize").text((modelSize / 1000 / 1000).toFixed(3) + " MB")
+	 				$("#objectSize").text((modelSize / 1000 / 1000).toFixed(2) + " MB")
 	 			} else {
 	 				// if object size unknown change all text
 	 				const unknownSizeMsgKey = '#{msg.object_3d__before_load_unknown_size}';
