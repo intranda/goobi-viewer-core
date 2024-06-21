@@ -107,7 +107,7 @@ public class SolrEADParser extends ArchiveParser {
             List<String> lastUpdatedList = SolrTools.getMetadataValues(doc, SolrConstants.DATEINDEXED);
             if (!lastUpdatedList.isEmpty()) {
                 lastUpdated = formatDate(Long.parseLong(lastUpdatedList.get(lastUpdatedList.size() - 1)));
-                logger.trace("Last updated: {}", lastUpdated);
+                // logger.trace("Last updated: {}", lastUpdated);
             }
 
             String size = "0";
@@ -229,7 +229,7 @@ public class SolrEADParser extends ArchiveParser {
         if (archiveDocMap.containsKey(iddoc)) {
             logger.trace("found {} children of {}", archiveDocMap.get(iddoc).size(), iddoc); //NOSONAR Debug
             entry.setChildrenFound(true);
-            if (loadChildrenRecursively || archiveDocMap.get(iddoc).size() == 1) {
+            if (loadChildrenRecursively || entry.equals(entry.getRootNode())) {
                 loadChildren(entry, loadChildrenRecursively);
             }
         }
