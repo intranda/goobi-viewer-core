@@ -37,10 +37,14 @@
         <!-- MAP -->
         <div id="world" class="view-object__object-3d-world" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
             <div id="preloader">
-        		<label class="before-load">Hier könnte Ihr Objekt stehen. Größe: ~<span id="objectSize">unknown</span></label>
-        		<button id="startLoadButton" class="before-load" onclick="loadObject()">Load Object</button>
+ 
+        		<p id="beforeLoad" class="before-load view-object__object-3d-world-before-load-text">
+        			<h:outputText value="#{msg.object_3d__before_load}" escape="false" /> 
+        		</p>
+        		<button id="startLoadButton" class="before-load btn btn--default" onclick="loadObject()">#{msg.show}</button>
 		        <progress id="loadingProgress"  max="undefined" value="undefined"></progress>
 		        <img id="objectLoader" src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+
         	</div>
         </div>
     </div>
@@ -120,6 +124,10 @@
 	 			let modelSize = json.resourceSizes[json.uri];
 	 			if(modelSize) {	 				
 	 				$("#objectSize").text((modelSize / 1000 / 1000).toFixed(3) + " MB")
+	 			} else {
+	 				// if object size unknown change all text
+	 				const unknownSizeMsgKey = '#{msg.object_3d__before_load_unknown_size}';
+	 			 	$("#beforeLoad").text(unknownSizeMsgKey);
 	 			}
 	       		world.loadingMonitor.subscribe(e => {
 	       			console.log("load progress ", e);

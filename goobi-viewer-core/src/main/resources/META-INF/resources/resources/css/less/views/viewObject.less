@@ -17,7 +17,36 @@
 
 	&__image-loader {}
 
-	&__object-3d-world,
+	&__object-3d-world {
+		position: relative;
+		width: 100%;
+		height: 600px;
+		span {
+			font-size: @fontNormal;
+		}
+
+		img {
+			max-width: none;
+		}
+
+		.ugcBox {
+			&.focus {
+				border: 2px solid red;
+			}
+
+			&.drawing {
+				border: 2px solid blue;
+			}
+		}
+
+		.openseadragon-canvas:focus-visible {
+			background: rgba(255, 0, 0, 0.4) !important;
+			z-index: 1 !important;
+		}
+		#objectSize {
+			font-weight: 700;
+		}
+	}
 	&__image-map {
 		position: relative;
 		width: 100%;
@@ -49,7 +78,11 @@
 			z-index: 1 !important;
 		}
 	}
-
+	&__object-3d-world-before-load-text {
+		text-align: center;
+		padding: 0 20px;
+		font-size: @fontNormal;
+	}
 	&__access-denied {
 		text-align: center;
 		overflow: hidden;
