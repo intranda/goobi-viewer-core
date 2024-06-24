@@ -437,7 +437,7 @@ public class ArchiveEntry implements Serializable {
             ret = ret.getParentNode();
         }
 
-        logger.trace("found root: {}", ret);
+        // logger.trace("found root: {}", ret);
         return ret;
     }
 

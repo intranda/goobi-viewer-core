@@ -60,6 +60,7 @@ public class SolrEADParser extends ArchiveParser {
 
     private static final String FIELD_ARCHIVE_ENTRY_LEVEL = "MD_ARCHIVE_ENTRY_LEVEL";
     private static final String FIELD_ARCHIVE_ENTRY_OTHERLEVEL = "MD_ARCHIVE_ENTRY_OTHERLEVEL";
+    private static final String FIELD_ARCHIVE_ORDER = "SORTNUM_ARCHIVE_ORDER";
     public static final String DATABASE_NAME = "EAD";
 
     private static final List<String> SOLR_FIELDS_DATABASES =
@@ -150,9 +151,9 @@ public class SolrEADParser extends ArchiveParser {
         if (topDoc != null) {
             String query = "+" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name() + " +" + SolrConstants.PI_TOPSTRUCT + ":\""
                     + database.getResourceId() + "\" -" + SolrConstants.PI + ":\"" + database.getResourceId() + '"' + SearchHelper.getAllSuffixes();
-            // logger.trace("archive query: {}", query); //NOSONAR Debug
+            logger.trace("archive query: {}", query); //NOSONAR Debug
             SolrDocumentList archiveDocs = searchIndex.search(query, SolrSearchIndex.MAX_HITS,
-                    Arrays.asList(new StringPair(SolrConstants.IDDOC_PARENT, "asc"), new StringPair("SORT_TITLE", "asc")), solrFields);
+                    Arrays.asList(new StringPair(SolrConstants.IDDOC_PARENT, "asc"), new StringPair(FIELD_ARCHIVE_ORDER, "asc")), solrFields);
 
             // Add all Solr docs for this archive to map
             for (SolrDocument doc : archiveDocs) {
