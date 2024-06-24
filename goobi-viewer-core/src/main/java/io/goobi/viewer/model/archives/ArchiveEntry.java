@@ -60,6 +60,8 @@ public class ArchiveEntry implements Serializable {
     private String id;
     // display label
     private String label;
+    // Main record  PI
+    private String topstructPi;
     // node is open/closed
     private boolean displayChildren;
     // node is search hit
@@ -322,7 +324,7 @@ public class ArchiveEntry implements Serializable {
         if (!isChildrenLoaded()) {
             logger.trace("Loading children for entry: {}", label);
             try {
-                ((SolrEADParser) DataManager.getInstance().getArchiveManager().getEadParser()).loadChildren(this, false);
+                ((SolrEADParser) DataManager.getInstance().getArchiveManager().getEadParser()).loadChildren(this, null, false);
             } catch (PresentationException | IndexUnreachableException e) {
                 logger.error(e.getMessage());
             }
@@ -524,6 +526,20 @@ public class ArchiveEntry implements Serializable {
      */
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    /**
+     * @return the topstructPi
+     */
+    public String getTopstructPi() {
+        return topstructPi;
+    }
+
+    /**
+     * @param topstructPi the topstructPi to set
+     */
+    public void setTopstructPi(String topstructPi) {
+        this.topstructPi = topstructPi;
     }
 
     /**

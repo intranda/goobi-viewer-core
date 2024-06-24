@@ -1059,7 +1059,7 @@ public final class SearchHelper {
      * @return a {@link java.lang.String} object.
      */
     protected static String generateCollectionBlacklistFilterSuffix(String field) {
-        logger.trace("Generating blacklist suffix for field '{}'...", field);
+        // logger.trace("Generating blacklist suffix for field '{}'...", field);
         StringBuilder sbQuery = new StringBuilder();
         List<String> list = DataManager.getInstance().getConfiguration().getCollectionBlacklist(field);
         if (list != null && !list.isEmpty()) {

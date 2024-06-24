@@ -135,4 +135,12 @@ public abstract class ArchiveParser {
     }
 
     public abstract String getUrl();
+    
+    /**
+     * 
+     * @param node
+     * @param searchValue
+     * @return true if new nodes were loaded; false otherwise
+     */
+    public abstract boolean searchInUnparsedNodes(ArchiveEntry node, String searchValue);
 }

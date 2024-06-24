@@ -69,6 +69,10 @@ public class SolrEADParser extends ArchiveParser {
             SolrConstants.IDDOC_PARENT, SolrConstants.EAD_NODE_ID, FIELD_ARCHIVE_ENTRY_LEVEL, SolrConstants.TITLE };
 
     private Map<String, List<SolrDocument>> archiveDocMap = new HashMap<>();
+    /** Map of IDDOCs and their parent IDDOCs */
+    private Map<String, String> parentIddocMap = new HashMap<>();
+    /** Map of IDDOCs and loaded ArchiveEntry nodes */
+    private Map<String, ArchiveEntry> loadedNodeMap = new HashMap<>();
 
     /**
      *
@@ -161,6 +165,7 @@ public class SolrEADParser extends ArchiveParser {
                 if (iddocParent != null) {
                     List<SolrDocument> docList = archiveDocMap.computeIfAbsent(iddocParent, k -> new ArrayList<>());
                     docList.add(doc);
+                    parentIddocMap.put(SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC), iddocParent);
                 }
             }
             try {
@@ -168,7 +173,7 @@ public class SolrEADParser extends ArchiveParser {
                 if (!recursion) {
                     logger.debug("Using lazy loading due to the archive tree size ({} nodes).", archiveDocs.size());
                 }
-                return loadHierarchyFromIndex(0, 0, topDoc, recursion);
+                return loadHierarchyFromIndex(0, 0, topDoc, null, recursion);
             } finally {
                 logger.trace("Database loaded.");
             }
@@ -181,12 +186,13 @@ public class SolrEADParser extends ArchiveParser {
      * @param order
      * @param hierarchy
      * @param doc
+     * @param loadPath
      * @param loadChildrenRecursively
      * @return {@link ArchiveEntry}
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public ArchiveEntry loadHierarchyFromIndex(int order, int hierarchy, SolrDocument doc, boolean loadChildrenRecursively)
+    public ArchiveEntry loadHierarchyFromIndex(int order, int hierarchy, SolrDocument doc, Set<String> loadPath, boolean loadChildrenRecursively)
             throws PresentationException, IndexUnreachableException {
         // logger.trace("loadHierarchyFromIndex: {}", order);
         if (doc == null) {
@@ -203,6 +209,11 @@ public class SolrEADParser extends ArchiveParser {
         String label = SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE);
         if (StringUtils.isNotEmpty(label)) {
             entry.setLabel(label);
+        }
+
+        String topstructPi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
+        if (StringUtils.isNotEmpty(topstructPi)) {
+            entry.setTopstructPi(topstructPi);
         }
 
         // nodeType
@@ -230,8 +241,8 @@ public class SolrEADParser extends ArchiveParser {
         if (archiveDocMap.containsKey(iddoc)) {
             logger.trace("found {} children of {}", archiveDocMap.get(iddoc).size(), iddoc); //NOSONAR Debug
             entry.setChildrenFound(true);
-            if (loadChildrenRecursively || entry.equals(entry.getRootNode())) {
-                loadChildren(entry, loadChildrenRecursively);
+            if (loadChildrenRecursively || (loadPath != null && !loadPath.isEmpty()) || entry.equals(entry.getRootNode())) {
+                loadChildren(entry, loadPath, loadChildrenRecursively);
             }
         }
 
@@ -240,25 +251,34 @@ public class SolrEADParser extends ArchiveParser {
             entry.setId(String.valueOf(UUID.randomUUID()));
         }
 
+        loadedNodeMap.put(iddoc, entry);
+
         return entry;
     }
 
     /**
      * 
      * @param entry
+     * @param loadPath
      * @param loadChildrenRecursively
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public void loadChildren(ArchiveEntry entry, boolean loadChildrenRecursively)
+    public void loadChildren(ArchiveEntry entry, Set<String> loadPath, boolean loadChildrenRecursively)
             throws PresentationException, IndexUnreachableException {
         String iddoc = SolrTools.getSingleFieldStringValue(entry.getDoc(), SolrConstants.IDDOC);
+        boolean loadChildren = loadChildrenRecursively;
         if (archiveDocMap.containsKey(iddoc)) {
             logger.trace("Loading {} children of {}", archiveDocMap.get(iddoc).size(), entry.getLabel()); //NOSONAR Debug
             int subOrder = 0;
             int subHierarchy = entry.getHierarchyLevel() + 1;
             for (SolrDocument c : archiveDocMap.get(iddoc)) {
-                ArchiveEntry child = loadHierarchyFromIndex(subOrder, subHierarchy, c, loadChildrenRecursively);
+                if (!loadChildrenRecursively && loadPath != null) {
+                    String childIddoc = SolrTools.getSingleFieldStringValue(c, SolrConstants.IDDOC);
+                    loadChildren = loadPath.contains(childIddoc);
+                    logger.trace("Child {}: allow recursion due to it being on the search path.", childIddoc);
+                }
+                ArchiveEntry child = loadHierarchyFromIndex(subOrder, subHierarchy, c, loadPath, loadChildren);
                 entry.addSubEntry(child);
                 child.setParentNode(entry);
                 if (child.isContainsImage()) {
@@ -290,6 +310,48 @@ public class SolrEADParser extends ArchiveParser {
             if (iddocParent != null) {
                 ret.add(doc);
             }
+        }
+
+        return ret;
+    }
+
+    @Override
+    public boolean searchInUnparsedNodes(ArchiveEntry node, String searchValue) {
+        logger.trace("searchInUnparsedNodes");
+        if (node == null) {
+            throw new IllegalArgumentException("node may not be null");
+        }
+
+        String query =
+                "+" + SolrConstants.PI_TOPSTRUCT + ":\"" + node.getTopstructPi() + "\" +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name()
+                        + " +(" + SolrConstants.EAD_NODE_ID + ":\"" + searchValue + "\" " + SolrConstants.TITLE + ":" + searchValue + ")"
+                        + SearchHelper.getAllSuffixes();
+        // logger.trace("Unparsed node search query: {}", query);
+
+        boolean ret = false;
+        try {
+            SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(query, SOLR_FIELDS_DATABASES);
+            for (SolrDocument doc : result) {
+                String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
+                if (!loadedNodeMap.containsKey(iddoc)) {
+                    // Load tree from given node down to hit node
+                    Set<String> loadPath = new HashSet<>();
+                    String parentIddoc = parentIddocMap.get(iddoc);
+                    if (parentIddoc != null) {
+                        loadPath.add(parentIddoc);
+                        while (!loadedNodeMap.containsKey(parentIddoc) && parentIddocMap.get(parentIddoc) != null) {
+                            parentIddoc = parentIddocMap.get(parentIddoc);
+                            loadPath.add(parentIddoc);
+                            logger.trace("added parent iddoc to hierarchy: {}", parentIddoc);
+                        }
+                        loadChildren(loadedNodeMap.get(parentIddoc), loadPath, false);
+                        ret = true;
+                    }
+
+                }
+            }
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.error(e.getMessage());
         }
 
         return ret;
