@@ -709,13 +709,14 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void getAdvancedSearchAllowedFields_shouldAddSearchFilters() throws Exception {
         List<AdvancedSearchFieldConfiguration> fields = SearchBean.getAdvancedSearchAllowedFields("en", StringConstants.DEFAULT_NAME, true);
-        assertEquals(16, fields.size());
+        assertEquals(17, fields.size());
         assertEquals(SearchHelper.SEARCH_FILTER_ALL.getField(), fields.get(0).getField());
-        assertEquals("DEFAULT", fields.get(1).getField());
-        assertEquals("FULLTEXT", fields.get(2).getField());
-        assertEquals("NORMDATATERMS", fields.get(3).getField());
-        assertEquals("UGCTERMS", fields.get(4).getField());
-        assertEquals("CMS_TEXT_ALL", fields.get(5).getField());
+        assertEquals(SolrConstants.DEFAULT, fields.get(1).getField());
+        assertEquals(SolrConstants.FULLTEXT, fields.get(2).getField());
+        assertEquals(SolrConstants.NORMDATATERMS, fields.get(3).getField());
+        assertEquals(SolrConstants.UGCTERMS, fields.get(4).getField());
+        assertEquals(SolrConstants.SEARCHTERMS_ARCHIVE, fields.get(5).getField());
+        assertEquals(SolrConstants.CMS_TEXT_ALL, fields.get(6).getField());
     }
 
     /**
