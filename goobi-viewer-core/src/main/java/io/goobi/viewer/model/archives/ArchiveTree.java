@@ -62,7 +62,7 @@ public class ArchiveTree implements Serializable {
     private ArchiveEntry selectedEntry;
 
     private boolean treeBuilt = false;
-    private boolean treeFullyLoaded = false;
+    private boolean treeFullyLoaded = true;
 
     /**
      * <p>
@@ -111,6 +111,13 @@ public class ArchiveTree implements Serializable {
         setTrueRootElement(root);
 
         List<ArchiveEntry> tree = root.getAsFlatList(true);
+        for (ArchiveEntry entry : tree) {
+            if (entry.isHasChildren() && !entry.isChildrenLoaded()) {
+                treeFullyLoaded = false;
+                logger.trace("Tree not fully loaded due to lazy loading.");
+                break;
+            }
+        }
         entryMap.put(DEFAULT_GROUP, tree);
     }
 
@@ -454,7 +461,7 @@ public class ArchiveTree implements Serializable {
             // search in all/some metadata fields of all elements?
 
             // for now: search only labels
-            searchInNode(getRootElement(), searchValue);
+            searchInNode(getRootElement(), searchValue, isTreeFullyLoaded());
 
             // fill flatList with displayable fields
             flatEntryList = getRootElement().getSearchList();
@@ -468,14 +475,15 @@ public class ArchiveTree implements Serializable {
      * 
      * @param node
      * @param searchValue Search terms
+     * @param searchInNotLoadedNodes
      */
-    void searchInNode(ArchiveEntry node, String searchValue) {
-        if (!isTreeFullyLoaded()) {
+    void searchInNode(ArchiveEntry node, String searchValue, boolean searchInNotLoadedNodes) {
+        if (searchInNotLoadedNodes) {
+            // Do a Solr search and load subtrees of found nodes
             if (DataManager.getInstance().getArchiveManager().getEadParser().searchInUnparsedNodes(node, searchValue)) {
                 update(node.getRootNode());
+                logger.trace("New nodes were loaded during the search, updating tree...");
             }
-            treeFullyLoaded = true;
-            logger.trace("New nodes were loaded during the search, updating tree...");
         }
         if (node.getId() != null && node.getId().equals(searchValue)) {
             // ID match
@@ -486,7 +494,7 @@ public class ArchiveTree implements Serializable {
         }
         if (node.getSubEntryList() != null) {
             for (ArchiveEntry child : node.getSubEntryList()) {
-                searchInNode(child, searchValue);
+                searchInNode(child, searchValue, false);
             }
         }
     }
@@ -522,7 +530,6 @@ public class ArchiveTree implements Serializable {
     }
 
     public boolean isTreeFullyLoaded() {
-        // TODO implement
         return treeFullyLoaded;
     }
 }
