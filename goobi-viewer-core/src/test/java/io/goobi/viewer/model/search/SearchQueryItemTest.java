@@ -46,7 +46,8 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
             item.setValue("foo bar");
             Set<String> searchTerms = new HashSet<>(2);
             Assertions.assertEquals(
-                    "(SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) DEFAULT:(foo bar) FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) CMS_TEXT_ALL:(foo bar))",
+                    "(SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) SUPERSEARCHTERMS_ARCHIVE:(foo bar) DEFAULT:(foo bar)"
+                            + " FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) SEARCHTERMS_ARCHIVE:(foo bar) CMS_TEXT_ALL:(foo bar))",
                     item.generateQuery(searchTerms, true, false));
             Assertions.assertTrue(searchTerms.contains("foo"));
             Assertions.assertTrue(searchTerms.contains("bar"));
@@ -128,7 +129,8 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
         item.setValue("foo bar");
         Set<String> searchTerms = new HashSet<>(2);
         Assertions.assertEquals(
-                "+(SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) DEFAULT:(foo bar) FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) CMS_TEXT_ALL:(foo bar))",
+                "+(SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) SUPERSEARCHTERMS_ARCHIVE:(foo bar) DEFAULT:(foo bar)"
+                        + " FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) SEARCHTERMS_ARCHIVE:(foo bar) CMS_TEXT_ALL:(foo bar))",
                 item.generateQuery(searchTerms, true, false));
     }
 
@@ -144,7 +146,8 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
         item.setValue("*foo*");
         Set<String> searchTerms = new HashSet<>(2);
         Assertions.assertEquals(
-                "+(SUPERDEFAULT:(*foo*) SUPERFULLTEXT:(*foo*) SUPERUGCTERMS:(*foo*) DEFAULT:(*foo*) FULLTEXT:(*foo*) NORMDATATERMS:(*foo*) UGCTERMS:(*foo*) CMS_TEXT_ALL:(*foo*))",
+                "+(SUPERDEFAULT:(*foo*) SUPERFULLTEXT:(*foo*) SUPERUGCTERMS:(*foo*) SUPERSEARCHTERMS_ARCHIVE:(*foo*) DEFAULT:(*foo*)"
+                        + " FULLTEXT:(*foo*) NORMDATATERMS:(*foo*) UGCTERMS:(*foo*) SEARCHTERMS_ARCHIVE:(*foo*) CMS_TEXT_ALL:(*foo*))",
                 item.generateQuery(searchTerms, true, false));
     }
 

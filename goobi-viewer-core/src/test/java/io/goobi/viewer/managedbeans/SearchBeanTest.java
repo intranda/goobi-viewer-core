@@ -239,7 +239,9 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     void generateSimpleSearchString_shouldGeneratePhraseSearchQueryWithoutFilterCorrectly() throws Exception {
         searchBean.generateSimpleSearchString("\"foo bar\"");
         assertEquals(
-                "SUPERDEFAULT:(\"foo bar\") OR SUPERFULLTEXT:(\"foo bar\") OR SUPERUGCTERMS:(\"foo bar\") OR DEFAULT:(\"foo bar\") OR FULLTEXT:(\"foo bar\") OR NORMDATATERMS:(\"foo bar\") OR UGCTERMS:(\"foo bar\") OR CMS_TEXT_ALL:(\"foo bar\")",
+                "SUPERDEFAULT:(\"foo bar\") OR SUPERFULLTEXT:(\"foo bar\") OR SUPERUGCTERMS:(\"foo bar\") OR SUPERSEARCHTERMS_ARCHIVE:(\"foo bar\")"
+                        + " OR DEFAULT:(\"foo bar\") OR FULLTEXT:(\"foo bar\") OR NORMDATATERMS:(\"foo bar\") OR UGCTERMS:(\"foo bar\")"
+                        + " OR SEARCHTERMS_ARCHIVE:(\"foo bar\") OR CMS_TEXT_ALL:(\"foo bar\")",
                 searchBean.getSearchStringInternal());
     }
 
@@ -262,7 +264,9 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     void generateSimpleSearchString_shouldGenerateNonphraseSearchQueryWithoutFilterCorrectly() throws Exception {
         searchBean.generateSimpleSearchString("foo bar");
         assertEquals(
-                "SUPERDEFAULT:(foo AND bar) SUPERFULLTEXT:(foo AND bar) SUPERUGCTERMS:(foo AND bar) DEFAULT:(foo AND bar) FULLTEXT:(foo AND bar) NORMDATATERMS:(foo AND bar) UGCTERMS:(foo AND bar) CMS_TEXT_ALL:(foo AND bar)",
+                "SUPERDEFAULT:(foo AND bar) SUPERFULLTEXT:(foo AND bar) SUPERUGCTERMS:(foo AND bar) SUPERSEARCHTERMS_ARCHIVE:(foo AND bar)"
+                        + " DEFAULT:(foo AND bar) FULLTEXT:(foo AND bar) NORMDATATERMS:(foo AND bar) UGCTERMS:(foo AND bar)"
+                        + " SEARCHTERMS_ARCHIVE:(foo AND bar) CMS_TEXT_ALL:(foo AND bar)",
                 searchBean.getSearchStringInternal());
     }
 
@@ -330,8 +334,9 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             item.setValue("bla \"blup\" -nein");
         }
 
-        assertEquals("((SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) DEFAULT:(foo bar)"
-                + " FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) CMS_TEXT_ALL:(foo bar)) +(MD_TITLE:(bla AND \\\"blup\\\" -nein)))",
+        assertEquals("((SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) SUPERSEARCHTERMS_ARCHIVE:(foo bar)"
+                + " DEFAULT:(foo bar) FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) SEARCHTERMS_ARCHIVE:(foo bar)"
+                + " CMS_TEXT_ALL:(foo bar)) +(MD_TITLE:(bla AND \\\"blup\\\" -nein)))",
                 searchBean.generateAdvancedSearchString());
     }
 
@@ -696,7 +701,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertFalse(de);
         Assertions.assertFalse(es);
     }
-    
+
     /**
      * @see SearchBean#getAdvancedSearchAllowedFields()
      * @verifies addSearchFilters
