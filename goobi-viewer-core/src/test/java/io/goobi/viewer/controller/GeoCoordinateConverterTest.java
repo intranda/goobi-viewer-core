@@ -22,7 +22,6 @@
 package io.goobi.viewer.controller;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 
@@ -31,13 +30,6 @@ class GeoCoordinateConverterTest extends AbstractTest {
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
-    }
-
-    @Test
-    void escapeQuotes() {
-        String s = "Rue d'Ernzen";
-        s = s.replace("'", "\\'");
-        System.out.println(s);
     }
 
     //@Test
