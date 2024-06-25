@@ -2239,7 +2239,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getSearchFilters_shouldReturnAllConfiguredElements() throws Exception {
         List<SearchFilter> result = DataManager.getInstance().getConfiguration().getSearchFilters();
-        assertEquals(6, result.size());
+        assertEquals(7, result.size());
         assertEquals("filter_ALL", result.get(0).getLabel());
         assertEquals("ALL", result.get(0).getField());
         assertTrue(result.get(0).isDefaultFilter());

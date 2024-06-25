@@ -417,6 +417,7 @@
             <filter>filter_FULLTEXT</filter>
             <filter>filter_NORMDATATERMS</filter>
             <filter>filter_UGCTERMS</filter>
+            <filter>filter_SEARCHTERMS_ARCHIVE</filter>
             <filter>filter_CMS_TEXT_ALL</filter>
 		</filters>
 		<!-- @enabled: if false, the option to sort search hits is hidden (since 2.0) -->
