@@ -51,7 +51,8 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
             SolrEADParser tempParser = new SolrEADParser(DataManager.getInstance().getSearchIndex());
             List<ArchiveResource> tempDatabases = tempParser.getPossibleDatabases();
             if (!tempDatabases.isEmpty()) {
-                ArchiveEntry root = tempParser.loadDatabase(tempDatabases.get(0));
+                ArchiveEntry root =
+                        tempParser.loadDatabase(tempDatabases.get(0), DataManager.getInstance().getConfiguration().getArchivesLazyLoadingThreshold());
 
                 possibleDatabases = new ArrayList<>();
                 possibleDatabases.add(new ArchiveResource("database 1", "resource 1", "r1",
@@ -65,7 +66,7 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
                         return possibleDatabases;
                     }
 
-                    public ArchiveEntry loadDatabase(ArchiveResource database) {
+                    public ArchiveEntry loadDatabase(ArchiveResource database, int lazyLoadingThreshold) {
                         return root;
                     }
                 };
@@ -143,7 +144,8 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
      */
     @Test
     void loadTree_shouldLoadTreeCorrectly() throws Exception {
-        ArchiveEntry entry = eadParser.loadDatabase(possibleDatabases.get(0));
+        ArchiveEntry entry =
+                eadParser.loadDatabase(possibleDatabases.get(0), DataManager.getInstance().getConfiguration().getArchivesLazyLoadingThreshold());
         assertNotNull(entry);
         ArchiveTree tree = ArchiveManager.loadTree(entry);
         assertNotNull(tree);
