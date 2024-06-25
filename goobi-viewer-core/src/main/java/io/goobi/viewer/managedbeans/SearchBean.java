@@ -1256,6 +1256,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         }
                         sb.append(") OR ");
                         sb.append(SolrConstants.SUPERUGCTERMS).append(":(\"").append(phrase).append("\") OR ");
+                        sb.append(SolrConstants.SUPERSEARCHTERMS_ARCHIVE).append(":(\"").append(phrase).append("\") OR ");
                         sb.append(SolrConstants.DEFAULT).append(":(\"").append(phrase).append("\") OR ");
                         sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append('"');
                         if (proximitySearchDistance > 0) {
@@ -1265,6 +1266,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         sb.append(") OR ");
                         sb.append(SolrConstants.NORMDATATERMS).append(":(\"").append(phrase).append("\") OR ");
                         sb.append(SolrConstants.UGCTERMS).append(":(\"").append(phrase).append("\") OR ");
+                        sb.append(SolrConstants.SEARCHTERMS_ARCHIVE).append(":(\"").append(phrase).append("\") OR ");
                         sb.append(SolrConstants.CMS_TEXT_ALL).append(":(\"").append(phrase).append("\")");
                     } else {
                         // Specific filter selected
@@ -1292,6 +1294,10 @@ public class SearchBean implements SearchInterface, Serializable {
                             case SolrConstants.UGCTERMS:
                                 sb.append(SolrConstants.SUPERUGCTERMS).append(":(\"").append(phrase).append("\") OR ");
                                 sb.append(SolrConstants.UGCTERMS).append(":(\"").append(phrase).append("\")");
+                                break;
+                            case SolrConstants.SEARCHTERMS_ARCHIVE:
+                                sb.append(SolrConstants.SUPERSEARCHTERMS_ARCHIVE).append(":(\"").append(phrase).append("\") OR ");
+                                sb.append(SolrConstants.SEARCHTERMS_ARCHIVE).append(":(\"").append(phrase).append("\")");
                                 break;
                             default:
                                 sb.append(currentSearchFilter.getField()).append(":(\"").append(phrase).append("\")");
@@ -1354,13 +1360,12 @@ public class SearchBean implements SearchInterface, Serializable {
                     sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(innerQuery);
                     sbOuter.append(") ").append(SolrConstants.SUPERFULLTEXT).append(":(").append(innerQuery);
                     sbOuter.append(") ").append(SolrConstants.SUPERUGCTERMS).append(":(").append(innerQuery);
-                    sbOuter.append(") ")
-                            .append(SolrConstants.DEFAULT)
-                            .append(":(")
-                            .append(innerQuery);
+                    sbOuter.append(") ").append(SolrConstants.SUPERSEARCHTERMS_ARCHIVE).append(":(").append(innerQuery);
+                    sbOuter.append(") ").append(SolrConstants.DEFAULT).append(":(").append(innerQuery);
                     sbOuter.append(") ").append(SolrConstants.FULLTEXT).append(":(").append(innerQuery);
                     sbOuter.append(") ").append(SolrConstants.NORMDATATERMS).append(":(").append(innerQuery);
                     sbOuter.append(") ").append(SolrConstants.UGCTERMS).append(":(").append(innerQuery);
+                    sbOuter.append(") ").append(SolrConstants.SEARCHTERMS_ARCHIVE).append(":(").append(innerQuery);
                     sbOuter.append(") ").append(SolrConstants.CMS_TEXT_ALL).append(":(").append(innerQuery).append(')');
                 } else {
                     // Specific filter selected
@@ -1376,6 +1381,10 @@ public class SearchBean implements SearchInterface, Serializable {
                         case SolrConstants.UGCTERMS:
                             sbOuter.append(SolrConstants.SUPERUGCTERMS).append(":(").append(innerQuery).append(") OR ");
                             sbOuter.append(SolrConstants.UGCTERMS).append(":(").append(innerQuery).append(')');
+                            break;
+                        case SolrConstants.SEARCHTERMS_ARCHIVE:
+                            sbOuter.append(SolrConstants.SUPERSEARCHTERMS_ARCHIVE).append(":(").append(innerQuery).append(") OR ");
+                            sbOuter.append(SolrConstants.SEARCHTERMS_ARCHIVE).append(":(").append(innerQuery).append(')');
                             break;
                         default:
                             sbOuter.append(currentSearchFilter.getField()).append(":(").append(innerQuery).append(')');

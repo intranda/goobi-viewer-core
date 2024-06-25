@@ -241,6 +241,8 @@ public final class SolrConstants {
     public static final String PUBLISHER = "MD_PUBLISHER";
     /** Constant <code>RESOURCE="RESOURCE"</code> */
     public static final String RESOURCE = "RESOURCE";
+    /** Constant <code>SEARCHTERMS_ARCHIVE="SEARCHTERMS_ARCHIVE"</code> */
+    public static final String SEARCHTERMS_ARCHIVE = "SEARCHTERMS_ARCHIVE";
     /** Constant <code>SOURCEDOCFORMAT="SOURCEDOCFORMAT"</code> */
     public static final String SOURCEDOCFORMAT = "SOURCEDOCFORMAT";
     /** Constant <code>SUBTITLE="SUBTITLE"</code> */
@@ -249,6 +251,8 @@ public final class SolrConstants {
     public static final String SUPERDEFAULT = "SUPERDEFAULT";
     /** Constant <code>SUPERFULLTEXT="SUPERFULLTEXT"</code> */
     public static final String SUPERFULLTEXT = "SUPERFULLTEXT";
+    /** Constant <code>SUPERSEARCHTERMS_ARCHIVE="SUPERSEARCHTERMS_ARCHIVE"</code> */
+    public static final String SUPERSEARCHTERMS_ARCHIVE = "SUPERSEARCHTERMS_ARCHIVE";
     /** Constant <code>SUPERUGCTERMS="SUPERUGCTERMS"</code> */
     public static final String SUPERUGCTERMS = "SUPERUGCTERMS";
     /** Constant <code>TITLE="MD_TITLE"</code> */

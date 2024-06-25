@@ -531,11 +531,13 @@ public class SearchQueryItem implements Serializable {
                 fields.add(SolrConstants.SUPERDEFAULT);
                 fields.add(SolrConstants.SUPERFULLTEXT);
                 fields.add(SolrConstants.SUPERUGCTERMS);
+                fields.add(SolrConstants.SUPERSEARCHTERMS_ARCHIVE);
             }
             fields.add(SolrConstants.DEFAULT);
             fields.add(SolrConstants.FULLTEXT);
             fields.add(SolrConstants.NORMDATATERMS);
             fields.add(SolrConstants.UGCTERMS);
+            fields.add(SolrConstants.SEARCHTERMS_ARCHIVE);
             fields.add(SolrConstants.CMS_TEXT_ALL);
         } else if (SolrConstants.SUPERDEFAULT.equals(field) || SolrConstants.DEFAULT.equals(field)) {
             if (aggregateHits) {
@@ -552,6 +554,11 @@ public class SearchQueryItem implements Serializable {
                 fields.add(SolrConstants.SUPERUGCTERMS);
             }
             fields.add(SolrConstants.UGCTERMS);
+        } else if (SolrConstants.SUPERSEARCHTERMS_ARCHIVE.equals(field) || SolrConstants.SEARCHTERMS_ARCHIVE.equals(field)) {
+            if (aggregateHits) {
+                fields.add(SolrConstants.SUPERSEARCHTERMS_ARCHIVE);
+            }
+            fields.add(SolrConstants.SEARCHTERMS_ARCHIVE);
         } else {
             fields.add(field);
         }
@@ -671,6 +678,7 @@ public class SearchQueryItem implements Serializable {
                             case SolrConstants.NORMDATATERMS:
                             case SolrConstants.SUPERUGCTERMS:
                             case SolrConstants.UGCTERMS:
+                            case SolrConstants.SEARCHTERMS_ARCHIVE:
                             case SolrConstants.CMS_TEXT_ALL:
                                 val = val.toLowerCase();
                                 break;

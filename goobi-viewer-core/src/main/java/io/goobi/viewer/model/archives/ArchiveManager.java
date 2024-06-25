@@ -207,6 +207,7 @@ public class ArchiveManager implements Serializable {
      * @throws IllegalStateException
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @should load ArchiveTree correctly
      */
     public ArchiveTree getArchiveTree(String archiveId, String resourceId)
             throws IllegalStateException, PresentationException, IndexUnreachableException {

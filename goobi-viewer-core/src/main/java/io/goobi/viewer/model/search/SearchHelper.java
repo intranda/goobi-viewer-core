@@ -2190,6 +2190,8 @@ public final class SearchHelper {
                 field = SolrConstants.FULLTEXT;
             } else if (SolrConstants.SUPERUGCTERMS.equals(field)) {
                 field = SolrConstants.UGCTERMS;
+            } else if (SolrConstants.SUPERSEARCHTERMS_ARCHIVE.equals(field)) {
+                field = SolrConstants.SEARCHTERMS_ARCHIVE;
             } else if (field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
                 field = field.substring(0, field.length() - SolrConstants.SUFFIX_UNTOKENIZED.length());
             }
@@ -2476,8 +2478,8 @@ public final class SearchHelper {
                 ret.getQueryItems().add(item);
             }
             if (fieldNames.contains(SolrConstants.DEFAULT) && fieldNames.contains(SolrConstants.FULLTEXT)
-                    && fieldNames.contains(SolrConstants.NORMDATATERMS)
-                    && fieldNames.contains(SolrConstants.UGCTERMS) && fieldNames.contains(SolrConstants.CMS_TEXT_ALL)) {
+                    && fieldNames.contains(SolrConstants.NORMDATATERMS) && fieldNames.contains(SolrConstants.UGCTERMS)
+                    && fieldNames.contains(SolrConstants.SEARCHTERMS_ARCHIVE) && fieldNames.contains(SolrConstants.CMS_TEXT_ALL)) {
                 // All fields
                 item.setOperator(operator);
                 item.setLabel(SearchHelper.SEARCH_FILTER_ALL.getLabel());
@@ -2490,6 +2492,7 @@ public final class SearchHelper {
                         case SolrConstants.SUPERDEFAULT:
                         case SolrConstants.SUPERFULLTEXT:
                         case SolrConstants.SUPERUGCTERMS:
+                        case SolrConstants.SUPERSEARCHTERMS_ARCHIVE:
                             break;
                         default:
                             item.setOperator(operator);
@@ -2897,6 +2900,7 @@ public final class SearchHelper {
             switch (item.getField()) {
                 case SolrConstants.FULLTEXT:
                 case SolrConstants.UGCTERMS:
+                case SolrConstants.SEARCHTERMS_ARCHIVE:
                 case SEARCH_FILTER_ALL_FIELD:
                     orMode = true;
                     break;
@@ -2973,6 +2977,9 @@ public final class SearchHelper {
                             if (!ret.contains(SolrConstants.UGCTERMS)) {
                                 ret.add(SolrConstants.UGCTERMS);
                             }
+                            if (!ret.contains(SolrConstants.SEARCHTERMS_ARCHIVE)) {
+                                ret.add(SolrConstants.SEARCHTERMS_ARCHIVE);
+                            }
                             if (!ret.contains(SolrConstants.CMS_TEXT_ALL)) {
                                 ret.add(SolrConstants.CMS_TEXT_ALL);
                             }
@@ -2984,6 +2991,10 @@ public final class SearchHelper {
                             ret.add(SolrConstants.FULLTEXT);
                         } else if (SolrConstants.UGCTERMS.equals(item.getField())
                                 || SolrConstants.SUPERUGCTERMS.equals(item.getField()) && !ret.contains(SolrConstants.UGCTERMS)) {
+                            ret.add(SolrConstants.UGCTERMS);
+                        } else if (SolrConstants.SEARCHTERMS_ARCHIVE.equals(item.getField())
+                                || SolrConstants.SUPERSEARCHTERMS_ARCHIVE.equals(item.getField())
+                                        && !ret.contains(SolrConstants.SEARCHTERMS_ARCHIVE)) {
                             ret.add(SolrConstants.UGCTERMS);
                         } else if (SolrConstants.CMS_TEXT_ALL.equals(item.getField()) && !ret.contains(SolrConstants.CMS_TEXT_ALL)) {
                             ret.add(SolrConstants.CMS_TEXT_ALL);
@@ -3009,6 +3020,7 @@ public final class SearchHelper {
                     ret.add(SolrConstants.FULLTEXT);
                     ret.add(SolrConstants.NORMDATATERMS);
                     ret.add(SolrConstants.UGCTERMS);
+                    ret.add(SolrConstants.SEARCHTERMS_ARCHIVE);
                     ret.add(SolrConstants.CMS_TEXT_ALL);
                     ret.add(SolrConstants.CALENDAR_DAY);
                 } else {
