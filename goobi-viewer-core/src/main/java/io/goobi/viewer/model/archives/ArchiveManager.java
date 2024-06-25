@@ -475,7 +475,7 @@ public class ArchiveManager implements Serializable {
      */
     ArchiveTree loadDatabase(ArchiveParser eadParser, ArchiveResource archive)
             throws IllegalStateException, IOException, HTTPException, JDOMException, PresentationException, IndexUnreachableException {
-        ArchiveEntry rootElement = eadParser.loadDatabase(archive);
+        ArchiveEntry rootElement = eadParser.loadDatabase(archive, DataManager.getInstance().getConfiguration().getArchivesLazyLoadingThreshold());
         if (rootElement != null) {
             logger.info("Loaded EAD database: {}", archive.getCombinedName());
             return loadTree(rootElement);
@@ -509,7 +509,7 @@ public class ArchiveManager implements Serializable {
             for (Entry<String, String> entry : archiveNodeTypes.entrySet()) {
                 ret.put(entry.getKey(), new NodeType(entry.getKey(), entry.getValue()));
             }
-            
+
             return ret;
         }
 

@@ -139,12 +139,13 @@ public class SolrEADParser extends ArchiveParser {
      * Loads the given database and parses the EAD document.
      *
      * @param database
+     * @param lazyLoadingThreshold
      * @return Root element of the loaded tree
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
     @Override
-    public ArchiveEntry loadDatabase(ArchiveResource database) throws PresentationException, IndexUnreachableException {
+    public ArchiveEntry loadDatabase(ArchiveResource database, int lazyLoadingThreshold) throws PresentationException, IndexUnreachableException {
         if (database == null) {
             throw new IllegalArgumentException("database may not be null");
         }
@@ -169,7 +170,7 @@ public class SolrEADParser extends ArchiveParser {
                 }
             }
             try {
-                boolean recursion = archiveDocs.size() < 1000;
+                boolean recursion = archiveDocs.size() < lazyLoadingThreshold;
                 if (!recursion) {
                     logger.debug("Using lazy loading due to the archive tree size ({} nodes).", archiveDocs.size());
                 }

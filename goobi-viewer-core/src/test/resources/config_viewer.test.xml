@@ -1456,7 +1456,7 @@
       </record>
 	</maps>
 
-    <archives enabled="true">
+    <archives enabled="true" lazyLoadingThreshold="100">
         <nodeTypes>
 			<node name="collection" icon="fa fa-folder-open-o" />
             <node name="folder" icon="fa fa-folder-open-o" />

@@ -5753,6 +5753,15 @@ public class Configuration extends AbstractConfiguration {
         return getLocalBoolean("archives[@enabled]", false);
     }
 
+    /**
+     * 
+     * @return Configured value
+     * @should return correct value
+     */
+    public int getArchivesLazyLoadingThreshold() {
+        return getLocalInt("archives[@lazyLoadingThreshold]", 100);
+    }
+
     public Map<String, String> getArchiveNodeTypes() {
         List<HierarchicalConfiguration<ImmutableNode>> nodeTypes = getLocalConfigurationsAt("archives.nodeTypes.node");
         nodeTypes.get(0).getString(getReCaptchaSiteKey());

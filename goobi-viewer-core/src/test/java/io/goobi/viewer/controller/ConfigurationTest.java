@@ -404,7 +404,7 @@ class ConfigurationTest extends AbstractTest {
     void getMainMetadataForTemplate_shouldReturnDefaultTemplateIfTemplateIsNull() throws Exception {
         assertEquals(6, DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, null).size());
     }
-    
+
     /**
      * @see Configuration#getArchiveMetadataForTemplate(String)
      * @verifies return default template configuration if template not found
@@ -1813,7 +1813,7 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("MD_PERSON", result.get(5));
         assertEquals("BOOL_HASIMAGES", result.get(6));
     }
-    
+
     /**
      * @see Configuration#getBooleanFacetFields()
      * @verifies return all values
@@ -3563,6 +3563,15 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void isArchivesEnabled_shouldReturnCorrectValue() throws Exception {
-        Assertions.assertTrue(DataManager.getInstance().getConfiguration().isArchivesEnabled());
+        assertTrue(DataManager.getInstance().getConfiguration().isArchivesEnabled());
+    }
+
+    /**
+     * @see Configuration#getArchivesLazyLoadingThreshold()
+     * @verifies return correct value
+     */
+    @Test
+    void getArchivesLazyLoadingThreshold_shouldReturnCorrectValue() throws Exception {
+        assertEquals(100, DataManager.getInstance().getConfiguration().getArchivesLazyLoadingThreshold());
     }
 }

@@ -99,6 +99,7 @@ public abstract class ArchiveParser {
      * Loads the given database and parses the EAD document.
      *
      * @param database
+     * @param lazyLoadingThreshold Number of total archive nodes from which to no longer eager load the entire tree
      * @return Root element of the loaded tree
      * @throws HTTPException
      * @throws IllegalStateException
@@ -107,35 +108,15 @@ public abstract class ArchiveParser {
      * @throws JDOMException
      * @throws PresentationException
      */
-    public abstract ArchiveEntry loadDatabase(ArchiveResource database)
+    public abstract ArchiveEntry loadDatabase(ArchiveResource database, int lazyLoadingThreshold)
             throws PresentationException, IndexUnreachableException, IllegalStateException, IOException, HTTPException, JDOMException;
-
-    /**
-     *
-     * @param node
-     * @param searchValue
-     */
-    static void searchInNode(ArchiveEntry node, String searchValue) {
-        if (node.getId() != null && node.getId().equals(searchValue)) {
-            // ID match
-            node.markAsFound(true);
-        } else if (node.getLabel() != null && node.getLabel().toLowerCase().contains(searchValue.toLowerCase())) {
-            // mark element + all parents as displayable
-            node.markAsFound(true);
-        }
-        if (node.getSubEntryList() != null) {
-            for (ArchiveEntry child : node.getSubEntryList()) {
-                searchInNode(child, searchValue);
-            }
-        }
-    }
 
     public static String getIdForName(String name) {
         return name.replaceAll("(?i)\\.xml", "");
     }
 
     public abstract String getUrl();
-    
+
     /**
      * 
      * @param node
