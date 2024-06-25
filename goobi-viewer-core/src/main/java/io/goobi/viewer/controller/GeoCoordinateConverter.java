@@ -435,7 +435,8 @@ public class GeoCoordinateConverter {
     }
 
     private static Predicate<String> getEntityFieldFilter() {
-        return new StringMatchConfiguration(".*", "FACET_.*|BOOL_.*|CENTURY|DEFAULT|.*_UNTOKENIZED|WKT_COORDS|NORMDATATERMS|.*_NAME_SEARCH");
+        return new StringMatchConfiguration(".*",
+                "FACET_.*|BOOL_.*|CENTURY|DEFAULT|.*_UNTOKENIZED|WKT_COORDS|NORMDATATERMS|.*_NAME_SEARCH");
     }
 
     /**
