@@ -113,12 +113,27 @@ public class ArchiveTree implements Serializable {
         List<ArchiveEntry> tree = root.getAsFlatList(true);
         for (ArchiveEntry entry : tree) {
             if (entry.isHasChildren() && !entry.isChildrenLoaded()) {
+                checkTreeFullyLoaded(tree);
+                break;
+            }
+        }
+        entryMap.put(DEFAULT_GROUP, tree);
+    }
+
+    /**
+     * Checks whether any nodes in given tree have children that are not yet loaded.
+     * 
+     * @param tree
+     * @should set treeFullyLoaded false if tree incomplete
+     */
+    void checkTreeFullyLoaded(List<ArchiveEntry> tree) {
+        for (ArchiveEntry node : tree) {
+            if (node.isHasChildren() && !node.isChildrenLoaded()) {
                 treeFullyLoaded = false;
                 logger.trace("Tree not fully loaded due to lazy loading.");
                 break;
             }
         }
-        entryMap.put(DEFAULT_GROUP, tree);
     }
 
     /**
@@ -201,15 +216,6 @@ public class ArchiveTree implements Serializable {
     public List<ArchiveEntry> getVisibleTree(boolean searchActive) {
         logger.trace("getVisibleTree");
         return getTreeView().stream().filter(e -> e.isVisible()).filter(e -> e.isDisplaySearch() || !searchActive).toList();
-
-        //        List<ArchiveEntry> ret = new ArrayList<>();
-        //        for (ArchiveEntry entry : getTreeView()) {
-        //            if (entry.isVisible() && (!searchActive || entry.isDisplaySearch())) {
-        //                ret.add(entry);
-        //            }
-        //        }
-        //
-        //        return ret;
     }
 
     /**
@@ -500,7 +506,7 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * Return this node if it has the given identifier or the first of its descendents with the identifier
+     * Return this node if it has the given identifier or the first of its descendants with the identifier
      *
      * @param identifier
      * @param node
