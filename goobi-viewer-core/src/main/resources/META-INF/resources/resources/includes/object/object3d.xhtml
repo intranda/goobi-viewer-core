@@ -11,17 +11,48 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <!-- IMAGE CONTAINER -->
+    
+    <style>
+    
+    #preloader {
+    	display: flex;
+    	width: 100%;
+    	height: 100%;
+    	justify-content: center;
+ 		align-items: center;
+  		flex-direction: column;
+    }
+    #world canvas {
+    	display: none;
+    }
+    #world #loadingProgress {
+     	display: none; 
+    }    
+    #world #objectLoader {
+     	display: none; 
+    }  
+    </style>
+    
     <div id="objectContainer" class="view-object__object-3d">        
         <!-- MAP -->
         <div id="world" class="view-object__object-3d-world" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
-            <div id="ajaxloader_image">
-                <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
-            </div>
+            <div id="preloader">
+ 
+        		<p id="beforeLoad" class="before-load view-object__object-3d-world-before-load-text">
+        			<h:outputText value="#{msg.object_3d__before_load}" escape="false" /> 
+        		</p>
+        		<button id="startLoadButton" class="before-load btn btn--default" onclick="loadObject()">#{msg.show}</button>
+		        <progress id="loadingProgress"  max="undefined" value="undefined"></progress>
+		        <img id="objectLoader" src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+
+        	</div>
         </div>
     </div>
 
     <!-- MOBILE IMAGE VIEW -->
-        <div id="imageContainerMobile" class="view-object__image-mobile"></div>
+        <div id="imageContainerMobile" class="view-object__image-mobile">
+
+        </div>
 
     <!-- 3D-Models -->
     <script type="text/javascript"
@@ -85,9 +116,40 @@
                 
        	// desktop object view
        	if ( access && objectVisible ) {
-       	 	$('#ajaxloader_image').show();
 	 		var world = WorldGenerator.create(worldConfig);
-	 		world.loadObject({
+	 		fetch("#{activeDocumentBean.viewManager.currentObjectUrl}")
+	 		.then(resp => resp.json())
+	 		.then(json => {
+	 			console.log("object details: ", json);
+	 			let modelSize = json.resourceSizes[json.uri];
+	 			if(modelSize) {	 				
+	 				$("#objectSize").text((modelSize / 1000 / 1000).toFixed(2) + " MB")
+	 			} else {
+	 				// if object size unknown change all text
+	 				const unknownSizeMsgKey = '#{msg.object_3d__before_load_unknown_size}';
+	 			 	$("#beforeLoad").text(unknownSizeMsgKey);
+	 			}
+	       		world.loadingMonitor.subscribe(e => {
+	       			console.log("load progress ", e);
+	       			let loaded = e.loaded;
+	       			let total = json.resourceSizes[e.url];
+	       			let finished = total - loaded  <= 0;
+	       			console.log("loaded ", loaded, " of ", total);
+	       			$("#loadingProgress").attr("max", total).attr("title", e.url).val(loaded);
+	       			if(total && finished) {
+	       				$('#loadingProgress').hide();
+	            		$('#objectLoader').show();
+	       			}
+	       		});
+	 		})
+        } else if ( objectVisible ) {
+            worldElement.append( accessDeniedMessage );
+       	}
+       	
+       	function loadObject() {
+       		$("#startLoadButton").hide();
+       		$("#loadingProgress").show();
+       		const params = {
 	 	 		 url: "#{activeDocumentBean.viewManager.currentObjectUrl}",
 	 			 position: { x:0, y:0, z:-0 },
 	 			 rotation:  { x:0, y:0, z:0 },
@@ -96,16 +158,16 @@
 	 					color: 0x44bb33
 	 				},
 	 			focus: true,
-	 		 }).then(function(object) {
-	 	       	 $('#ajaxloader_image').fadeOut(2000);
+	 		 }
+       		console.log("loading object with params ", params);
+	 		world.loadObject(params).then(function(object) {
+	 	       	 $('#preloader').fadeOut(2000);
+	 	       	 $("#world canvas").show();
 	 		 	world.render();
 	 		 }).catch(function(error) {
-	 		    $('#ajaxloader_image').fadeOut(2000);
+	 		    $('#preloader').fadeOut(2000);
 	 			 console.error("failed to load: ", error);
 	 		 })
-	 		
-        } else if ( objectVisible ) {
-            worldElement.append( accessDeniedMessage );
        	}
 
         function freeJSResources(data) {
