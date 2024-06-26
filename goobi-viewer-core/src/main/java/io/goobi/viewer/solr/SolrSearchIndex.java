@@ -153,7 +153,7 @@ public class SolrSearchIndex {
             try {
                 client.ping();
             } catch (Exception e) {
-                logger.warn("HTTP client was closed, re-initializing Sorl client...");
+                logger.warn("HTTP client was closed, re-initializing Solr client...");
                 synchronized (this) {
                     try {
                         client.close();
