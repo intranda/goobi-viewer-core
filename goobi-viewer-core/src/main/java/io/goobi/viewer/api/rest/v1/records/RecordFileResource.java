@@ -45,10 +45,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
@@ -58,8 +58,11 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.api.rest.bindings.MediaResourceBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.model.MediaResourceHelper;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
@@ -90,6 +93,8 @@ public class RecordFileResource {
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
+    @Context
+    private Configuration config;
 
     private final String pi;
     private final TextResourceBuilder builder = new TextResourceBuilder();
@@ -150,8 +155,7 @@ public class RecordFileResource {
     @GET
     @javax.ws.rs.Path(RECORDS_FILES_SOURCE)
     @Operation(tags = { "records" }, summary = "Get source files of record")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public StreamingOutput getSourceFile(
+    public Response getSourceFile(
             @Parameter(description = "Source file name") @PathParam("filename") String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
         if (!filename.equals(StringTools.stripJS(filename))) {
@@ -167,30 +171,26 @@ public class RecordFileResource {
             throw new ServiceNotAllowedException("Access to source file " + filename + " not allowed");
         }
 
+        String mimeType = "application/octet-stream";
         try {
-            String contentType = Files.probeContentType(path);
-            logger.trace("content type: {}", contentType);
-            if (StringUtils.isNotBlank(contentType)) {
-                servletResponse.setContentType(contentType);
-            }
-            servletResponse.setHeader("Content-Disposition", new StringBuilder("attachment;filename=").append(filename).toString());
-            servletResponse.setHeader("Content-Length", String.valueOf(Files.size(path)));
+            mimeType = new MediaResourceHelper(config).setContentHeaders(servletResponse, filename, path);
         } catch (IOException e) {
             logger.error("Failed to probe file content type");
         }
 
-        return out -> {
+        StreamingOutput so = out -> {
             try (InputStream in = Files.newInputStream(path)) {
                 IOUtils.copy(in, out);
             }
         };
+        return Response.ok(so, mimeType).build();
     }
 
     @GET
     @javax.ws.rs.Path(RECORDS_FILES_MEDIA)
     @Operation(tags = { "records" }, summary = "Get media files of record")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public StreamingOutput getMediaFile(
+    @MediaResourceBinding
+    public Response getMediaFile(
             @Parameter(description = "Media file name") @PathParam("filename") String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
         if (!filename.equals(StringTools.stripJS(filename))) {
@@ -207,23 +207,19 @@ public class RecordFileResource {
             throw new ServiceNotAllowedException("Access to source file " + filename + " not allowed");
         }
 
+        String mimeType = "application/octet-stream";
         try {
-            String contentType = Files.probeContentType(path);
-            logger.trace("content type: {}", contentType);
-            if (StringUtils.isNotBlank(contentType)) {
-                servletResponse.setContentType(contentType);
-            }
-            servletResponse.setHeader("Content-Disposition", new StringBuilder("attachment;filename=").append(filename).toString());
-            servletResponse.setHeader("Content-Length", String.valueOf(Files.size(path)));
+            mimeType = new MediaResourceHelper(config).setContentHeaders(servletResponse, filename, path);
         } catch (IOException e) {
             logger.error("Failed to probe file content type");
         }
 
-        return out -> {
+        StreamingOutput so = out -> {
             try (InputStream in = Files.newInputStream(path)) {
                 IOUtils.copy(in, out);
             }
         };
+        return Response.ok(so, mimeType).build();
     }
 
     @GET
@@ -259,8 +255,7 @@ public class RecordFileResource {
     @GET
     @javax.ws.rs.Path(RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD)
     @Operation(tags = { "records" }, summary = "Get cmdi for record file")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public StreamingOutput getDownloadedResource(
+    public Response getDownloadedResource(
             @Parameter(description = "download resource task id") @PathParam("taskId") String taskId,
             @Parameter(description = "file path relative to the download directory") @PathParam("path") String path)
             throws PresentationException, IndexUnreachableException, ContentNotFoundException {
@@ -270,24 +265,19 @@ public class RecordFileResource {
         Path downloadFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
         Path taskFolder = downloadFolder.resolve(taskId);
         Path resourceFile = taskFolder.resolve(Path.of(path));
+        String mimeType = "application/octet-stream";
         if (Files.isRegularFile(resourceFile)) {
             try {
-                servletResponse.setHeader("Content-Disposition",
-                        new StringBuilder("attachment;filename=").append(resourceFile.getFileName()).toString());
-                servletResponse.setHeader("Content-Length", String.valueOf(Files.size(resourceFile)));
-                String contentType = Files.probeContentType(resourceFile);
-                logger.trace("content type: {}", contentType);
-                if (StringUtils.isNotBlank(contentType)) {
-                    servletResponse.setContentType(contentType);
-                }
+                mimeType = new MediaResourceHelper(config).setContentHeaders(servletResponse, resourceFile.getFileName().toString(), resourceFile);
             } catch (IOException e) {
                 logger.error("Failed to probe file content type");
             }
-            return out -> {
+            StreamingOutput so = out -> {
                 try (InputStream in = Files.newInputStream(resourceFile)) {
                     IOUtils.copy(in, out);
                 }
             };
+            return Response.ok(so, mimeType).build();
         }
 
         throw new ContentNotFoundException("No resource found at " + resourceFile);

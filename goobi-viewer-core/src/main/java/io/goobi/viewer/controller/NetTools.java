@@ -99,9 +99,10 @@ public final class NetTools {
 
     public static final String HTTP_HEADER_CONTENT_DISPOSITION = "Content-Disposition";
     public static final String HTTP_HEADER_CONTENT_TYPE = "Content-Type";
-    
+    public static final String HTTP_HEADER_CONTENT_LENGTH = "Content-Length";
+
     public static final String HTTP_HEADER_VALUE_ATTACHMENT_FILENAME = "attachment; filename=\"";
-    
+
     private static final String HTTP_METHOD_DELETE = "DELETE";
 
     public static final String PARAM_CLEAR_CACHE_ALL = "all";

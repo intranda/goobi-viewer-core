@@ -44,11 +44,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
@@ -59,8 +59,10 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.model.MediaResourceHelper;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.api.rest.v2.ApiUrls;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
@@ -90,6 +92,8 @@ public class RecordFilesResource {
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
+    @Context
+    private Configuration config;
     @Inject
     private ApiUrls urls;
 
@@ -149,7 +153,7 @@ public class RecordFilesResource {
     @javax.ws.rs.Path(RECORDS_FILES_SOURCE)
     @Operation(tags = { "records" }, summary = "Get source files of record")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public StreamingOutput getSourceFile(
+    public Response getSourceFile(
             @Parameter(description = "Source file name") @PathParam("filename") final String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
         String f = FilenameUtils.getName(filename); // Make sure filename doesn't inject a path traversal
@@ -163,29 +167,24 @@ public class RecordFilesResource {
             throw new ServiceNotAllowedException("Access to source file " + f + " not allowed");
         }
 
+        String mimeType = "appplication/octet-stream";
         try {
-            String contentType = Files.probeContentType(path);
-            logger.trace("content type: {}", contentType);
-            if (StringUtils.isNotBlank(contentType)) {
-                servletResponse.setContentType(contentType);
-            }
-            servletResponse.setHeader("Content-Disposition", new StringBuilder("attachment;filename=").append(f).toString());
-            servletResponse.setHeader("Content-Length", String.valueOf(Files.size(path)));
+            mimeType = new MediaResourceHelper(config).setContentHeaders(servletResponse, f, path);
         } catch (IOException e) {
             logger.error("Failed to probe file content type");
         }
 
-        return out -> {
+        StreamingOutput so = out -> {
             try (InputStream in = Files.newInputStream(path)) {
                 IOUtils.copy(in, out);
             }
         };
+        return Response.ok(so, mimeType).build();
     }
 
     @GET
     @javax.ws.rs.Path(RECORDS_FILES_CMDI)
     @Operation(tags = { "records" }, summary = "Get cmdi for record file")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public String getCMDI(
             @Parameter(description = "Image file name for cmdi") @PathParam("filename") String filename,
             @Parameter(description = "Language for CMDI") @QueryParam("lang") final String lang)
