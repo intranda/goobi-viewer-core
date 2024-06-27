@@ -344,6 +344,7 @@ public class SearchHitFactory {
             switch (entry.getKey()) {
                 case SolrConstants.DEFAULT:
                 case SolrConstants.NORMDATATERMS:
+                case SolrConstants.SEARCHTERMS_ARCHIVE:
                     // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
                     for (String docFieldName : availableMetadata.keySet()) {
                         // Skip fields that are in the ignore list
