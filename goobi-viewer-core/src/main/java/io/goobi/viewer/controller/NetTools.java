@@ -99,9 +99,10 @@ public final class NetTools {
 
     public static final String HTTP_HEADER_CONTENT_DISPOSITION = "Content-Disposition";
     public static final String HTTP_HEADER_CONTENT_TYPE = "Content-Type";
-    
+    public static final String HTTP_HEADER_CONTENT_LENGTH = "Content-Length";
+
     public static final String HTTP_HEADER_VALUE_ATTACHMENT_FILENAME = "attachment; filename=\"";
-    
+
     private static final String HTTP_METHOD_DELETE = "DELETE";
 
     public static final String PARAM_CLEAR_CACHE_ALL = "all";
@@ -734,8 +735,7 @@ public final class NetTools {
     /**
      * Check if the request Contains a 'User-Agent' header matching the regex configured in {@link Configuration#getCrawlerDetectionRegex()}. If it
      * matches, the request is assumed be be from a web-crawler bot and not from a human. Identifying a web-crawler request via the
-     * {@link org.apache.catalina.valves.CrawlerSessionManagerValve} session attribute does not work for this purpose since it is only applied to the
-     * session after the first request
+     * CrawlerSessionManagerValve session attribute does not work for this purpose since it is only applied to the session after the first request
      * 
      * @param request
      * @return true if the request is made by a web crawler

@@ -112,8 +112,9 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
 
     /**
      * Message key to display when clicking the inline help button.
+     * 
+     * @return the {@link #inlineHelp}
      */
-
     public String getInlineHelp() {
         return this.inlineHelp;
     }

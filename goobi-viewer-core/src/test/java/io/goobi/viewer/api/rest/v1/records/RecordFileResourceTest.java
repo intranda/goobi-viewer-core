@@ -146,7 +146,7 @@ class RecordFileResourceTest extends AbstractRestApiTest {
             assertEquals(200, response.getStatus(), response.getStatusInfo().getReasonPhrase());
             String contentType = response.getHeaderString("Content-Type");
             String entity = response.readEntity(String.class);
-            assertEquals("application/octet-stream", contentType);
+            assertEquals("text/plain", contentType);
             assertEquals("apples", entity.trim());
         }
     }

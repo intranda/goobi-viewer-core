@@ -79,12 +79,12 @@ public class CollectionViewBean implements Serializable {
      * initialized yet, do so and add it to the Bean's CollectionView map
      *
      * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} instance providing the base data for this
-     *        collection
+     *            collection
      * @param collectionBaseLevels The number of hierarchy levels for which collections of these levels should not expand but rather redirect to a
      *            view of the clicked collection alone
      * @param openExpanded whether to open the page with all collections expanded.
-     * @param displayParents Whether to display all parent collections of the base collection. Useful in combination with collectionBaseLevels &gt; 0 to
-     *            navigate back out of the current collection
+     * @param displayParents Whether to display all parent collections of the base collection. Useful in combination with collectionBaseLevels &gt; 0
+     *            to navigate back out of the current collection
      * @param ignoreHierarchy a boolean
      * @return The CollectionView or null if no matching ContentItem was found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -97,7 +97,9 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * <p>getCollection.</p>
+     * <p>
+     * getCollection.
+     * </p>
      *
      * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
      * @param collectionBaseLevels a int
@@ -132,7 +134,9 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * <p>getCollectionId.</p>
+     * <p>
+     * getCollectionId.
+     * </p>
      *
      * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
      * @return a {@link java.lang.String} object
@@ -142,7 +146,9 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * <p>getCollectionIfStored.</p>
+     * <p>
+     * getCollectionIfStored.
+     * </p>
      *
      * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
      * @return a {@link java.util.Optional} object
@@ -154,7 +160,9 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * <p>removeCollection.</p>
+     * <p>
+     * removeCollection.
+     * </p>
      *
      * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
      * @return a boolean
@@ -266,7 +274,9 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * <p>getColletionMap.</p>
+     * <p>
+     * getColletionMap.
+     * </p>
      *
      * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
      * @return Map&lt;String, CollectionResult&gt;
@@ -285,7 +295,9 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * <p>removeCollectionsForPage.</p>
+     * <p>
+     * removeCollectionsForPage.
+     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
      */
@@ -300,7 +312,9 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * <p>getLoadedCollectionsForPage.</p>
+     * <p>
+     * getLoadedCollectionsForPage.
+     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
      * @return a {@link java.util.List} object
@@ -315,7 +329,7 @@ public class CollectionViewBean implements Serializable {
 
     /**
      * get a list of all {@link io.goobi.viewer.model.viewer.collections.CollectionView}s with the given solr field which are already loaded via
-     * {@link #getCollection(CMSPage)} or {@link #getCollection(String, CMSPage)}.
+     * {@link #getCollection(CMSCollectionContent, int, boolean, boolean, boolean)}.
      *
      * @param field The solr field the collection is based on
      * @return a {@link java.util.List} object.
@@ -325,7 +339,9 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * <p>invalidate.</p>
+     * <p>
+     * invalidate.
+     * </p>
      */
     public void invalidate() {
         this.collections = new HashMap<>();

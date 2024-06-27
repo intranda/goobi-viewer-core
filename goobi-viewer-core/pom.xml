@@ -70,7 +70,7 @@
 		<sonar.java.target>17</sonar.java.target>
 
 		<!-- Checkstyle -->
-		<checkstyle.max.violations>140</checkstyle.max.violations>
+		<checkstyle.max.violations>120</checkstyle.max.violations>
 		<skipCheckstyle>true</skipCheckstyle>
 
 		<!-- Manifest information -->
@@ -1052,6 +1052,7 @@
 				<version>3.7.0</version>
 				<configuration>
 					<doclint>none</doclint>
+					<failOnWarnings>true</failOnWarnings>
 					<!-- Specifies the tags to be fixed automatically when running the mvn javadox:fix command, see:
 						 https://maven.apache.org/plugins/maven-javadoc-plugin/fix-mojo.html#fixTags
 					-->
@@ -1161,6 +1162,7 @@
 				<version>3.7.0</version>
 				<configuration>
 					<doclint>none</doclint>
+					<failOnWarnings>true</failOnWarnings>
 					<fixTags>link,throws,return,param</fixTags>
 					<tags>
 						<tag>

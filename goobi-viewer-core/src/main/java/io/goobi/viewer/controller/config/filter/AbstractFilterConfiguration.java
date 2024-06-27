@@ -43,7 +43,7 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
     protected final FilterAction action;
     /**
      * Additional filters which must be passed in order for this filter to apply. If any filter conditions don't pass, this
-     * #{@link #passes(VariableReplacer)} will always return true
+     * #{@link #applies(VariableReplacer)} will always return false
      */
     protected final List<AbstractFilterConfiguration> filterConditions;
 
@@ -110,7 +110,9 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
     }
 
     /**
-     * @return true if {@link #action} is {@link FilterAction#SHOW}
+     * check if matching this filter results in a pass or block
+     * 
+     * @return true if {@link #action} is {@link FilterAction#SHOW}.
      */
     public boolean passesOnMatch() {
         return FilterAction.SHOW == this.action;

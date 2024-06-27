@@ -223,7 +223,6 @@ public class GeoMapFeature {
                     JSONArray array = new JSONArray();
                     for (IMetadataValue value : values) {
                         Object escapedValue = JsonTools.getAsObjectForJson(value);
-
                         array.put(escapedValue);
                     }
                     jsonMetadata.put(name, array);

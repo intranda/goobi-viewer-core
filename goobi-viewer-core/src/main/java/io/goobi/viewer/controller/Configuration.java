@@ -6116,4 +6116,15 @@ public class Configuration extends AbstractConfiguration {
                 "{config-folder-path}/script_create_package.sh -d viewer -f {base-path} -w /var/www/  -s {solr-url}");
     }
 
+    public String getMediaTypeHandling(String mimeType) {
+        String defaultDisposition = "attachment";
+        String defaultMimeType = "default";
+        return getLocalConfigurationsAt("viewer.mediaTypes.type").stream()
+                .filter(conf -> conf.getString("[@mimeType]", defaultMimeType).equals(mimeType))
+                .map(conf -> conf.getString("content-disposition", defaultDisposition))
+                .findFirst()
+                .orElse(defaultDisposition);
+
+    }
+
 }

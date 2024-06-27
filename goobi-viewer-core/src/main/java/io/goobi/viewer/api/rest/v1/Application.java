@@ -32,6 +32,7 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.dao.IDAO;
@@ -72,6 +73,7 @@ public class Application extends ResourceConfig {
                 MessageQueueManager messageBroker = applicationBean.getMessageBroker();
                 bind(templateManager).to(CMSTemplateManager.class);
                 bind(messageBroker).to(MessageQueueManager.class);
+                bind(DataManager.getInstance().getConfiguration()).to(Configuration.class);
                 try {
                     bind(DataManager.getInstance().getDao()).to(IDAO.class);
                 } catch (DAOException e) {

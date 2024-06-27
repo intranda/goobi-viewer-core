@@ -153,7 +153,7 @@ public class SolrSearchIndex {
             try {
                 client.ping();
             } catch (Exception e) {
-                logger.warn("HTTP client was closed, re-initializing Sorl client...");
+                logger.warn("HTTP client was closed, re-initializing Solr client...");
                 synchronized (this) {
                     try {
                         client.close();
@@ -440,7 +440,7 @@ public class SolrSearchIndex {
      *
      * @param query a {@link java.lang.String} object.
      * @param fieldList a {@link java.util.List} object.
-     * @return {@link Hits}
+     * @return {@link SolrDocumentList}
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -453,7 +453,7 @@ public class SolrSearchIndex {
      * Diese Methode führt eine Suche im Lucene durch.
      *
      * @param query a {@link java.lang.String} object.
-     * @return {@link Hits}
+     * @return {@link SolrDocumentList}
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
