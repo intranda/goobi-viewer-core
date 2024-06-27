@@ -348,7 +348,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             // OR-operator, search in all fields
             SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
             item.setOperator(SearchItemOperator.OR);
-            item.setField(SearchHelper.SEARCH_FILTER_ALL.getLabel());
+            item.setField(SearchHelper.SEARCH_FILTER_ALL.getField());
             item.setValue("monograph"); // should NOT be translated
         }
         {
