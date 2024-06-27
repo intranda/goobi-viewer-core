@@ -29,18 +29,18 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.Configuration;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.v2.ApiUrls;
-
+import io.goobi.viewer.controller.DataManager;
 
 /**
  * @author florian
@@ -51,7 +51,7 @@ public abstract class AbstractRestApiTest extends JerseyTest {
     private static AbstractDatabaseAndSolrEnabledTest DATA_FRAMEWORK = new AbstractDatabaseAndSolrEnabledTest() {
     };
 
-//    private static final String BASE_URL = "http://localhost:9999/";
+    //    private static final String BASE_URL = "http://localhost:9999/";
 
     protected ObjectMapper mapper = new ObjectMapper();
     protected ApiUrls urls = new ApiUrls("");
@@ -88,7 +88,6 @@ public abstract class AbstractRestApiTest extends JerseyTest {
         AbstractDatabaseAndSolrEnabledTest.tearDownClass();
     }
 
-
     @Override
     protected TestContainerFactory getTestContainerFactory() {
         return new GrizzlyWebTestContainerFactory();
@@ -102,13 +101,12 @@ public abstract class AbstractRestApiTest extends JerseyTest {
             @Override
             protected void configure() {
                 bind(urls).to(AbstractApiUrlManager.class);
-
+                bind(DataManager.getInstance().getConfiguration()).to(Configuration.class);
             }
         };
 
         ResourceConfig config = new io.goobi.viewer.api.rest.v2.Application(binder);
         return ServletDeploymentContext.forServlet(new ServletContainer(config)).build();
     }
-
 
 }

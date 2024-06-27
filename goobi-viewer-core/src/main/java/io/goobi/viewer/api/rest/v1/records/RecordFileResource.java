@@ -196,6 +196,7 @@ public class RecordFileResource {
         if (!filename.equals(StringTools.stripJS(filename))) {
             throw new ServiceNotAllowedException("Script detected in input");
         }
+
         Path path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getMediaFolder(), null, filename);
         if (!Files.isRegularFile(path)) {
             throw new ContentNotFoundException("Media file " + filename + " not found");
