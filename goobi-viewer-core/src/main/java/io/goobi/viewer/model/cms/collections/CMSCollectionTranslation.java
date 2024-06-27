@@ -21,14 +21,13 @@
  */
 package io.goobi.viewer.model.cms.collections;
 
+import java.io.Serializable;
+
+import io.goobi.viewer.model.translations.Translation;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-import java.io.Serializable;
-
-import io.goobi.viewer.model.translations.Translation;
 
 /**
  * A persistence object holding a translated String value.
@@ -41,7 +40,7 @@ public class CMSCollectionTranslation extends Translation implements Serializabl
 
     private static final long serialVersionUID = 6110495225727273302L;
 
-    /** Reference to the owning {@link PersistentEntity}. */
+    /** Reference to the owning {@link CMSCollection}. */
     @ManyToOne
     @JoinColumn(name = "translation_owner_id")
     private CMSCollection owner;

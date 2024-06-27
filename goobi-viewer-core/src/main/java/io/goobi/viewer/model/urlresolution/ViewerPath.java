@@ -23,7 +23,6 @@ package io.goobi.viewer.model.urlresolution;
 
 import java.io.Serializable;
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -336,7 +335,7 @@ public class ViewerPath implements Serializable {
      * matches.
      * </p>
      *
-     * @see PageType#matches(Path)
+     * @see PageType#matches(URI)
      * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @return The matching {@link io.goobi.viewer.model.viewer.PageType} or null if no PageType matches
      */

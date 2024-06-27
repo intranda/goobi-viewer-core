@@ -43,7 +43,7 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
     protected final FilterAction action;
     /**
      * Additional filters which must be passed in order for this filter to apply. If any filter conditions don't pass, this
-     * #{@link #passes(VariableReplacer)} will always return true
+     * #{@link #applies(VariableReplacer)} will always return false
      */
     protected final List<AbstractFilterConfiguration> filterConditions;
 
