@@ -102,12 +102,12 @@ public class SolrEADParser extends ArchiveParser {
         List<ArchiveResource> ret = new ArrayList<>();
         String dbName = DATABASE_NAME;
         for (SolrDocument doc : docs) {
+            String resourceIdentifier = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
             String resourceName = SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE);
             if (resourceName == null) {
-                logger.warn("Indexed archive tree is missing field: {}", SolrConstants.TITLE);
-                resourceName = SolrConstants.TITLE + " NOT FOUND";
+                logger.warn("Indexed archive tree is missing field: {}. Using PI instead.", SolrConstants.TITLE);
+                resourceName = resourceIdentifier;
             }
-            String resourceIdentifier = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
             String lastUpdated = null;
             List<String> lastUpdatedList = SolrTools.getMetadataValues(doc, SolrConstants.DATEINDEXED);
             if (!lastUpdatedList.isEmpty()) {
