@@ -552,7 +552,8 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void extractSearchTermsFromQuery_shouldAddTitleTermsField() throws Exception {
         Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
-                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello-world\" AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
+                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello-world\""
+                        + " AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
                 null);
         Set<String> terms = result.get(SearchHelper.TITLE_TERMS);
         Assertions.assertNotNull(terms);
@@ -588,7 +589,8 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void extractSearchTermsFromQuery_shouldRemoveProximitySearchTokens() throws Exception {
         Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
-                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello world\"~10 AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
+                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello world\"~10"
+                        + " AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
                 null);
         Set<String> terms = result.get(SolrConstants.FULLTEXT);
         Assertions.assertNotNull(terms);

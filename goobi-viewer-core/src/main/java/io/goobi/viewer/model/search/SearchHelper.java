@@ -2184,16 +2184,24 @@ public final class SearchHelper {
             String phrase = queryCopy.substring(mPhrases.start(), mPhrases.end());
             String[] phraseSplit = phrase.split(":");
             String field = phraseSplit[0];
-            if (SolrConstants.SUPERDEFAULT.equals(field)) {
-                field = SolrConstants.DEFAULT;
-            } else if (SolrConstants.SUPERFULLTEXT.equals(field)) {
-                field = SolrConstants.FULLTEXT;
-            } else if (SolrConstants.SUPERUGCTERMS.equals(field)) {
-                field = SolrConstants.UGCTERMS;
-            } else if (SolrConstants.SUPERSEARCHTERMS_ARCHIVE.equals(field)) {
-                field = SolrConstants.SEARCHTERMS_ARCHIVE;
-            } else if (field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
-                field = field.substring(0, field.length() - SolrConstants.SUFFIX_UNTOKENIZED.length());
+            switch (field) {
+                case SolrConstants.SUPERDEFAULT:
+                    field = SolrConstants.DEFAULT;
+                    break;
+                case SolrConstants.SUPERFULLTEXT:
+                    field = SolrConstants.FULLTEXT;
+                    break;
+                case SolrConstants.SUPERUGCTERMS:
+                    field = SolrConstants.UGCTERMS;
+                    break;
+                case SolrConstants.SUPERSEARCHTERMS_ARCHIVE:
+                    field = SolrConstants.SEARCHTERMS_ARCHIVE;
+                    break;
+                default:
+                    if (field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
+                        field = field.substring(0, field.length() - SolrConstants.SUFFIX_UNTOKENIZED.length());
+                    }
+                    break;
             }
             String phraseWithoutQuotation = phraseSplit[1].replace("\"", "");
             if (phraseWithoutQuotation.length() > 0 && !stopwords.contains(phraseWithoutQuotation)) {
@@ -2229,12 +2237,21 @@ public final class SearchHelper {
                         currentField = currentField.substring(1);
                     }
 
-                    if (SolrConstants.SUPERDEFAULT.equals(currentField)) {
-                        currentField = SolrConstants.DEFAULT;
-                    } else if (SolrConstants.SUPERFULLTEXT.equals(currentField)) {
-                        currentField = SolrConstants.FULLTEXT;
-                    } else if (SolrConstants.SUPERUGCTERMS.equals(currentField)) {
-                        currentField = SolrConstants.UGCTERMS;
+                    switch (currentField) {
+                        case SolrConstants.SUPERDEFAULT:
+                            currentField = SolrConstants.DEFAULT;
+                            break;
+                        case SolrConstants.SUPERFULLTEXT:
+                            currentField = SolrConstants.FULLTEXT;
+                            break;
+                        case SolrConstants.SUPERUGCTERMS:
+                            currentField = SolrConstants.UGCTERMS;
+                            break;
+                        case SolrConstants.SUPERSEARCHTERMS_ARCHIVE:
+                            currentField = SolrConstants.SEARCHTERMS_ARCHIVE;
+                            break;
+                        default:
+                            break;
                     }
                     if (currentField.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
                         currentField = currentField.substring(0, currentField.length() - SolrConstants.SUFFIX_UNTOKENIZED.length());
