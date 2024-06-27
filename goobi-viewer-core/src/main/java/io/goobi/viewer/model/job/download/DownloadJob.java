@@ -389,6 +389,7 @@ public abstract class DownloadJob implements Serializable {
      *
      * @param status a {@link io.goobi.viewer.model.job.JobStatus} object.
      * @param message a {@link java.lang.String} object.
+     * @param messageId Id of the MQ message to link to
      * @return a boolean.
      * @throws java.io.UnsupportedEncodingException if any.
      * @throws javax.mail.MessagingException if any.

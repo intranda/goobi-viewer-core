@@ -140,7 +140,9 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * Get get {@link #matchRegex}.
+     * Get the {@link #matchRegex}.
+     * 
+     * @return the {@link #matchRegex}
      */
     public String getMatchRegex() {
         return matchRegex;
