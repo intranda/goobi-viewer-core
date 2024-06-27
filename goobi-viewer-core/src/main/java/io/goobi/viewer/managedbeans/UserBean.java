@@ -135,7 +135,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>updateSessionTimeoutCounter.</p>
+     * <p>
+     * updateSessionTimeoutCounter.
+     * </p>
      */
     public void updateSessionTimeoutCounter() {
         logger.trace("updateSessionTimeoutCounter");
@@ -143,7 +145,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>getSessionTimeout.</p>
+     * <p>
+     * getSessionTimeout.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -564,6 +568,12 @@ public class UserBean implements Serializable {
                         .ifPresentOrElse(SessionBean::cleanSessionObjects, () -> {
                             throw new IllegalStateException("Cannot access sessionBean to cleanSessionObjects");
                         });
+                BeanUtils.getBeanFromRequest(request, "archiveBean", ArchiveBean.class)
+                        .ifPresentOrElse(ArchiveBean::reset, () -> {
+                            throw new IllegalStateException("Cannot access archiveBean to reset");
+                        });
+                // Unload all loaded archives
+                DataManager.getInstance().getArchiveManager().reset();
             } catch (Exception e) {
                 logger.warn(e.getMessage());
             }
@@ -928,7 +938,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>showAuthenticationProviderSelection.</p>
+     * <p>
+     * showAuthenticationProviderSelection.
+     * </p>
      *
      * @return a boolean
      */
@@ -1045,7 +1057,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>lastName</code>.</p>
+     * <p>
+     * Getter for the field <code>lastName</code>.
+     * </p>
      *
      * @return the lastName
      */
@@ -1054,7 +1068,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>lastName</code>.</p>
+     * <p>
+     * Setter for the field <code>lastName</code>.
+     * </p>
      *
      * @param lastName the lastName to set
      */
@@ -1176,7 +1192,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>hasAdminBackendAccess</code>.</p>
+     * <p>
+     * Setter for the field <code>hasAdminBackendAccess</code>.
+     * </p>
      *
      * @param hasAdminBackendAccess the hasAdminBackendAccess to set
      */
@@ -1273,7 +1291,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>isRequireLoginCaptcha.</p>
+     * <p>
+     * isRequireLoginCaptcha.
+     * </p>
      *
      * @return a boolean
      */
@@ -1292,7 +1312,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>agreeToTermsOfUse.</p>
+     * <p>
+     * agreeToTermsOfUse.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1304,7 +1326,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>rejectTermsOfUse.</p>
+     * <p>
+     * rejectTermsOfUse.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1316,7 +1340,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>logoutWithMessage.</p>
+     * <p>
+     * logoutWithMessage.
+     * </p>
      *
      * @param messageKey a {@link java.lang.String} object
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
@@ -1328,7 +1354,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>createBackupOfCurrentUser.</p>
+     * <p>
+     * createBackupOfCurrentUser.
+     * </p>
      */
     public void createBackupOfCurrentUser() {
         if (getUser() != null) {
