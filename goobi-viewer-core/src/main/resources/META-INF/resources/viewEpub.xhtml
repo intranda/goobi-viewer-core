@@ -1,0 +1,92 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/templateBlank.html">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentView('epub')}" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="head">
+		<f:view contentType="text/html" encoding="utf-8">
+			<h:outputText escape="false"
+				value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}" />
+			<h:outputText escape="false"
+				value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" />
+			<title>#{msg.viewEpub} -
+				#{adminThemesBean.getThemeLabel(configurationBean.name)}</title>
+		</f:view>
+	</ui:define>
+
+
+	<ui:define name="content">
+
+		<style>
+.container-epub {
+/* 	background: white; */
+	width: 90vw;
+	height: 90vh;
+	margin-left: 5vh;
+/* 	border: 5px solid black; */
+}
+
+.controls {
+	display: flex;
+	justify-content: center;
+	height: 5vh;
+	padding: 10px;
+	gap: 20px;
+}
+
+.controls button {
+	width: 50px;
+}
+</style>
+
+		<div class="controls">
+			<button title="#{msg.previousHit}" data-toggle="tooltip"
+				data-placement="top" aria-label="#{msg.previousHit}"
+				onclick="rendition.prev()">
+				<i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+			</button>
+			<button title="#{msg.nextHit}" data-toggle="tooltip"
+				data-placement="top" aria-label="#{msg.nextHit}"
+				onclick="rendition.next()">
+				<i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+			</button>
+		</div>
+
+		<div class="container-epub" id="container"></div>
+
+
+
+		<script>
+			console.log("load epub")
+			let epubUrl = new URLSearchParams(location.search).get("url");
+			console.log("epubUrl", epubUrl);
+			if(epubUrl) {
+				var book = ePub(epubUrl);
+				console.log("epub", book);
+				var rendition = book.renderTo("container", {manager: "continuous",
+			        flow: "paginated", width: "100%", height: "100%"});
+				rendition.display()
+				.then(e => {
+					console.log("displaying ", e)
+				})
+			}
+		
+		</script>
+
+	</ui:define>
+
+</ui:composition>

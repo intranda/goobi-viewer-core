@@ -221,4 +221,9 @@ public class VariableReplacer {
         return temp;
     }
 
+    public void addReplacement(String var, String value) {
+        Map<String, List<String>> map = this.replacementsMap.putIfAbsent("custom", new HashMap<>());
+        map.put(var, List.of(value));
+    }
+
 }
