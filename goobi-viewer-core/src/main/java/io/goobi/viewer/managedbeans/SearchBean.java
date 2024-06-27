@@ -756,7 +756,9 @@ public class SearchBean implements SearchInterface, Serializable {
             }
 
             logger.trace("Item query: {}", itemQuery);
-            sbInfo.append('(').append(ViewerResourceBundle.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ");
+            String infoFieldLabel =
+                    SearchHelper.SEARCH_FILTER_ALL.getField().equals(queryItem.getField()) ? queryItem.getLabel() : queryItem.getField();
+            sbInfo.append('(').append(ViewerResourceBundle.getTranslation(infoFieldLabel, BeanUtils.getLocale())).append(": ");
             switch (queryItem.getOperator()) {
                 case AND:
                     if (SolrConstants.BOOKMARKS.equals(queryItem.getField()) && !userBean.isLoggedIn()) {
