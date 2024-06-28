@@ -65,8 +65,8 @@ public class SolrEADParser extends ArchiveParser {
 
     private static final List<String> SOLR_FIELDS_DATABASES =
             Arrays.asList(SolrConstants.DATEINDEXED, SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE);
-    private static final String[] SOLR_FIELDS_ENTRIES = { SolrConstants.IDDOC,
-            SolrConstants.IDDOC_PARENT, SolrConstants.EAD_NODE_ID, FIELD_ARCHIVE_ENTRY_LEVEL, SolrConstants.TITLE };
+    private static final String[] SOLR_FIELDS_ENTRIES = { SolrConstants.ACCESSCONDITION, SolrConstants.EAD_NODE_ID, SolrConstants.IDDOC,
+            SolrConstants.IDDOC_PARENT, FIELD_ARCHIVE_ENTRY_LEVEL, SolrConstants.LOGID, SolrConstants.TITLE };
 
     private Map<String, List<SolrDocument>> archiveDocMap = new HashMap<>();
     /** Map of IDDOCs and their parent IDDOCs */
@@ -155,7 +155,7 @@ public class SolrEADParser extends ArchiveParser {
         SolrDocument topDoc = searchIndex.getFirstDoc(SolrConstants.PI + ":\"" + database.getResourceId() + '"', solrFields);
         if (topDoc != null) {
             String query = "+" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name() + " +" + SolrConstants.PI_TOPSTRUCT + ":\""
-                    + database.getResourceId() + "\" -" + SolrConstants.PI + ":\"" + database.getResourceId() + '"' + SearchHelper.getAllSuffixes();
+                    + database.getResourceId() + "\" -" + SolrConstants.PI + ":\"" + database.getResourceId() + '"'; // + SearchHelper.getAllSuffixes();
             logger.trace("archive query: {}", query); //NOSONAR Debug
             SolrDocumentList archiveDocs = searchIndex.search(query, SolrSearchIndex.MAX_HITS,
                     Arrays.asList(new StringPair(SolrConstants.IDDOC_PARENT, "asc"), new StringPair(FIELD_ARCHIVE_ORDER, "asc")), solrFields);
@@ -217,6 +217,11 @@ public class SolrEADParser extends ArchiveParser {
             entry.setTopstructPi(topstructPi);
         }
 
+        String logId = SolrTools.getSingleFieldStringValue(doc, SolrConstants.LOGID);
+        if (StringUtils.isNotEmpty(logId)) {
+            entry.setLogId(logId);
+        }
+
         // nodeType
         String level = SolrTools.getSingleFieldStringValue(doc, FIELD_ARCHIVE_ENTRY_OTHERLEVEL);
         if (StringUtils.isEmpty(level)) {
@@ -236,6 +241,15 @@ public class SolrEADParser extends ArchiveParser {
 
         // Set description level value
         entry.setDescriptionLevel(SolrTools.getSingleFieldStringValue(doc, FIELD_ARCHIVE_ENTRY_LEVEL));
+
+        // Set access conditions (omitting OPENACCESS to save some memory)
+        if (doc.containsKey(SolrConstants.ACCESSCONDITION)) {
+            for (String accessCondition : SolrTools.getMetadataValues(doc, SolrConstants.ACCESSCONDITION)) {
+                if (!SolrConstants.OPEN_ACCESS_VALUE.equals(accessCondition)) {
+                    entry.getAccessConditions().add(accessCondition);
+                }
+            }
+        }
 
         // get child elements
         String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);

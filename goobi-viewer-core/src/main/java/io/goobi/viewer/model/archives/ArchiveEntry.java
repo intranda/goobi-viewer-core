@@ -34,9 +34,14 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StructElement;
 
 /**
@@ -62,6 +67,8 @@ public class ArchiveEntry implements Serializable {
     private String label;
     // Main record  PI
     private String topstructPi;
+    // Node LOGID
+    private String logId;
     // node is open/closed
     private boolean displayChildren;
     // node is search hit
@@ -78,6 +85,8 @@ public class ArchiveEntry implements Serializable {
     private String descriptionLevel;
 
     private String unitdate;
+
+    private List<String> accessConditions = new ArrayList<>();
 
     private boolean visible = true;
 
@@ -170,6 +179,12 @@ public class ArchiveEntry implements Serializable {
         this.orderNumber = orig.orderNumber;
         this.hierarchyLevel = orig.hierarchyLevel;
         this.descriptionLevel = orig.descriptionLevel;
+
+        this.topstructPi = orig.topstructPi;
+        this.logId = orig.logId;
+        for (String accessCondition : orig.getAccessConditions()) {
+            this.getAccessConditions().add(accessCondition);
+        }
 
         this.subEntryList = orig.subEntryList.stream().map(e -> new ArchiveEntry(e, this)).collect(Collectors.toList());
         this.accessAndUseAreaList = orig.accessAndUseAreaList; //flat copy, because effectively final
@@ -543,6 +558,20 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
+     * @return the logId
+     */
+    public String getLogId() {
+        return logId;
+    }
+
+    /**
+     * @param logId the logId to set
+     */
+    public void setLogId(String logId) {
+        this.logId = logId;
+    }
+
+    /**
      * @return the displayChildren
      */
     public boolean isDisplayChildren() {
@@ -686,6 +715,27 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
+     * Checks whether access to the given node is allowed due to set access conditions.
+     * 
+     * @return true if access granted; false otherwise
+     */
+    public boolean isAccessAllowed() {
+        if (getAccessConditions().isEmpty()) {
+            // OPENACCESS values are omitted
+            return true;
+        }
+
+        try {
+            return AccessConditionUtils
+                    .checkAccessPermissionByIdentifierAndLogId(topstructPi, logId, IPrivilegeHolder.PRIV_LIST, BeanUtils.getRequest())
+                    .isGranted();
+        } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
+            logger.error(e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * @return the identityStatementAreaList
      */
     public List<Metadata> getIdentityStatementAreaList() {
@@ -823,6 +873,20 @@ public class ArchiveEntry implements Serializable {
      */
     public String getUnitdate() {
         return unitdate;
+    }
+
+    /**
+     * @return the accessConditions
+     */
+    public List<String> getAccessConditions() {
+        return accessConditions;
+    }
+
+    /**
+     * @param accessConditions the accessConditions to set
+     */
+    public void setAccessConditions(List<String> accessConditions) {
+        this.accessConditions = accessConditions;
     }
 
     /**
