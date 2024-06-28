@@ -538,13 +538,6 @@ public class ArchiveManager implements Serializable {
         }
     }
 
-    /**
-     * Unloads any archives.
-     */
-    public void reset() {
-        archives.clear();
-    }
-
     public boolean isInErrorState() {
         return this.databaseState == DatabaseState.ERROR_INVALID_CONFIGURATION
                 || this.databaseState == DatabaseState.ERROR_INVALID_FORMAT
