@@ -66,7 +66,7 @@ public class SolrEADParser extends ArchiveParser {
     private static final List<String> SOLR_FIELDS_DATABASES =
             Arrays.asList(SolrConstants.DATEINDEXED, SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE);
     private static final String[] SOLR_FIELDS_ENTRIES = { SolrConstants.ACCESSCONDITION, SolrConstants.EAD_NODE_ID, SolrConstants.IDDOC,
-            SolrConstants.IDDOC_PARENT, FIELD_ARCHIVE_ENTRY_LEVEL, SolrConstants.LOGID, SolrConstants.TITLE };
+            SolrConstants.IDDOC_PARENT, FIELD_ARCHIVE_ENTRY_LEVEL, SolrConstants.LOGID, SolrConstants.PI_TOPSTRUCT, SolrConstants.TITLE };
 
     private Map<String, List<SolrDocument>> archiveDocMap = new HashMap<>();
     /** Map of IDDOCs and their parent IDDOCs */
@@ -174,7 +174,7 @@ public class SolrEADParser extends ArchiveParser {
                 if (!recursion) {
                     logger.debug("Using lazy loading due to the archive tree size ({} nodes).", archiveDocs.size());
                 }
-                return loadHierarchyFromIndex(0, 0, topDoc, null, recursion);
+                return loadNode(0, 0, topDoc, null, recursion);
             } finally {
                 logger.trace("Database loaded.");
             }
@@ -193,9 +193,9 @@ public class SolrEADParser extends ArchiveParser {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public ArchiveEntry loadHierarchyFromIndex(int order, int hierarchy, SolrDocument doc, Set<String> loadPath, boolean loadChildrenRecursively)
+    public ArchiveEntry loadNode(int order, int hierarchy, SolrDocument doc, Set<String> loadPath, boolean loadChildrenRecursively)
             throws PresentationException, IndexUnreachableException {
-        // logger.trace("loadHierarchyFromIndex: {}", order);
+        // logger.trace("loadNode: {}", order);
         if (doc == null) {
             throw new IllegalArgumentException("doc may not be null");
         }
@@ -293,7 +293,7 @@ public class SolrEADParser extends ArchiveParser {
                     loadChildren = loadPath.contains(childIddoc);
                     logger.trace("Child {}: allow recursion due to it being on the search path.", childIddoc);
                 }
-                ArchiveEntry child = loadHierarchyFromIndex(subOrder, subHierarchy, c, loadPath, loadChildren);
+                ArchiveEntry child = loadNode(subOrder, subHierarchy, c, loadPath, loadChildren);
                 entry.addSubEntry(child);
                 child.setParentNode(entry);
                 if (child.isContainsImage()) {

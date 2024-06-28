@@ -726,11 +726,15 @@ public class ArchiveEntry implements Serializable {
         }
 
         try {
-            return AccessConditionUtils
+            boolean ret = AccessConditionUtils
                     .checkAccessPermissionByIdentifierAndLogId(topstructPi, logId, IPrivilegeHolder.PRIV_LIST, BeanUtils.getRequest())
                     .isGranted();
+            if (!ret) {
+                logger.trace("Access denied to {}", label);
+            }
+            return ret;
         } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
             return false;
         }
     }
