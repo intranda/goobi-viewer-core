@@ -26,6 +26,9 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Contains a list of {@link MediaItem MediaItems} built from {@link CMSMediaItem CMSMediaItems}
+ */
 public class MediaList {
 
     private final List<MediaItem> mediaItems;

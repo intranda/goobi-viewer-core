@@ -2822,7 +2822,7 @@ public class ViewManager implements Serializable {
                 .collect(Collectors.toMap(
                         filename -> getMimetype((String) filename),
                         filename -> List.of(filename),
-                        (set1, set2) -> CollectionUtils.union((List) set1, (List) set2)));
+                        (set1, set2) -> new ArrayList<>(CollectionUtils.union((List) set1, (List) set2))));
     }
 
     public String getMimetype(String filename) {

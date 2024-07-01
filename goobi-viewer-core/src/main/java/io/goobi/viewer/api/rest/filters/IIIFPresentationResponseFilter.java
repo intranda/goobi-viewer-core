@@ -38,7 +38,7 @@ import io.goobi.viewer.controller.NetTools;
 
 /**
  * <p>
- * Adds the @context property to all IIIF Presentation responses in the topmost json element
+ * Adds the @context property to all IIIF Presentation responses in the topmost json element.
  * </p>
  *
  * @author Florian Alpers

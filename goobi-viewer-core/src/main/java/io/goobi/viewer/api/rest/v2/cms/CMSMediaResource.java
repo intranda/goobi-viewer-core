@@ -185,15 +185,12 @@ public class CMSMediaResource {
     @AuthorizationBinding
     public MediaList getAllMedia(
             @Parameter(
-                    description = "Comma separated list of tags. Only media items with any of these tags will be included")
-            @QueryParam("tags") String tags,
+                    description = "Comma separated list of tags. Only media items with any of these tags will be included") @QueryParam("tags") String tags,
             @Parameter(description = "Maximum number of items to return") @QueryParam("max") Integer maxItems,
             @Parameter(
-                    description = "Number of media items marks as 'important' that must be included in the result")
-            @QueryParam("prioritySlots") Integer prioritySlots,
+                    description = "Number of media items marks as 'important' that must be included in the result") @QueryParam("prioritySlots") Integer prioritySlots,
             @Parameter(
-                    description = "Set to 'true' to return random items for each call. Otherwise the items will be ordererd by their upload date")
-            @QueryParam("random") Boolean random)
+                    description = "Set to 'true' to return random items for each call. Otherwise the items will be ordererd by their upload date") @QueryParam("random") Boolean random)
             throws DAOException {
         List<String> tagList = new ArrayList<>();
         if (StringUtils.isNotBlank(tags)) {
@@ -228,7 +225,7 @@ public class CMSMediaResource {
     @CORSBinding
     public static StreamingOutput getPDFMediaItemContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
-        String decFilename = StringTools.decodeUrl(filename);
+        String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
         Path path = Paths.get(
                 DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder(),
@@ -253,7 +250,7 @@ public class CMSMediaResource {
     @CORSBinding
     public static StreamingOutput getSvgContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
-        String decFilename = StringTools.decodeUrl(filename);
+        String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
         Path path = Paths.get(
                 DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder(),
@@ -278,7 +275,7 @@ public class CMSMediaResource {
     @CORSBinding
     public static StreamingOutput getIcoContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
-        String decFilename = StringTools.decodeUrl(filename);
+        String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
         Path path = Paths.get(
                 DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder(),
@@ -303,7 +300,7 @@ public class CMSMediaResource {
             throws PresentationException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-        Path file = cmsMediaFolder.resolve(StringTools.decodeUrl(filename));
+        Path file = cmsMediaFolder.resolve(StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename)));
         return serveMediaContent("video", file);
     }
 
@@ -313,7 +310,7 @@ public class CMSMediaResource {
             throws PresentationException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-        Path file = cmsMediaFolder.resolve(StringTools.decodeUrl(filename));
+        Path file = cmsMediaFolder.resolve(StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename)));
         return serveMediaContent("audio", file);
     }
 
@@ -332,7 +329,7 @@ public class CMSMediaResource {
     @Produces({ MediaType.TEXT_HTML })
     public static String getMediaItemContent(@PathParam("filename") String filename) throws ContentNotFoundException {
 
-        String decFilename = StringTools.decodeUrl(filename);
+        String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
         decFilename = Paths.get(decFilename).getFileName().toString(); // Make sure filename doesn't inject a path traversal
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
@@ -367,7 +364,8 @@ public class CMSMediaResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response validateUploadMediaFiles(@PathParam("filename") String filename) throws DAOException {
 
-        CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItemByFilename(filename);
+        CMSMediaItem item =
+                DataManager.getInstance().getDao().getCMSMediaItemByFilename(StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename)));
         if (item != null) {
             MediaItem jsonItem = new MediaItem(item, servletRequest);
             return Response.status(Status.OK).entity(jsonItem).build();
@@ -376,7 +374,7 @@ public class CMSMediaResource {
     }
 
     /**
-     * List all uploaded media files
+     * List all uploaded media files.
      * 
      * @return All CMS media files
      * @throws PresentationException
@@ -413,7 +411,7 @@ public class CMSMediaResource {
     }
 
     /**
-     * May receive a file from a multipart form and saves the file in the cms media folder
+     * May receive a file from a multipart form and saves the file in the cms media folder.
      *
      * @return an ACCEPTED response if the upload was successful, a FORBIDDEN response if no user is registered in the html session or the user does
      *         not have rights to upload media, or a CONFLICT response if a file of the same name already exists in the cms media foler
@@ -439,7 +437,7 @@ public class CMSMediaResource {
 
             Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                     DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-            Path mediaFile = cmsMediaFolder.resolve(filename);
+            Path mediaFile = cmsMediaFolder.resolve(StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename)));
             return writeMediaFile(uploadedInputStream, cmsMediaFolder, mediaFile);
         } catch (RestApiException e) {
             return Response.status(e.getStatus()).entity(e.getMessage()).build();

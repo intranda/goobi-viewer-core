@@ -219,7 +219,7 @@
                     </ui:repeat>
                     <!-- EXPAND LINK -->
                     <ui:fragment rendered="#{groupPreviewMode and searchBean.activeResultGroupName eq '-' and resultGroup.displayExpandUrl}">
-                        <a class="search-list__expand-group-link" href="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{resultGroup.name}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetString}/">#{msg.search__all_records} <i class="fa fa-caret-right" aria-hidden="true"></i></a>
+                        <a class="search-list__expand-group-link" href="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{resultGroup.name}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetString}/">#{msg.search__all_records}: #{msg[resultGroup.name]} <i class="fa fa-caret-right" aria-hidden="true"></i></a>
                     </ui:fragment> 
                 </ui:fragment>
             </ui:repeat>

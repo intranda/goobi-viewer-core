@@ -131,6 +131,16 @@ public class ObjectResource {
             List<URI> resourceURIs = getResources(mediaDirectory.toString(), baseFilename, objectURI);
             ObjectInfo info = new ObjectInfo(objectURI);
             info.setResources(resourceURIs);
+
+            //calculate sizes
+            Path modelFile = mediaDirectory.resolve(filename);
+            try {
+                long modelSize = Files.size(modelFile);
+                info.setSize(info.getUri(), modelSize);
+            } catch (IOException e) {
+                logger.error("Error determining file size of {}: {}", modelFile, e.toString());
+            }
+
             return info;
         } catch (IOException | URISyntaxException e) {
             throw new PresentationException(e.getMessage(), e);

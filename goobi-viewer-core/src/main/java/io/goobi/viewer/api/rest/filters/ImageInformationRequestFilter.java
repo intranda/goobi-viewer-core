@@ -53,7 +53,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 
 /**
  * <p>
- * Forwards requests to IIIF image resources referencing a image number (Solr-field "ORDER") to a requests with the appropriate filename
+ * Forwards requests to IIIF image resources referencing a image number (Solr-field "ORDER") to a requests with the appropriate filename.
  * </p>
  */
 @Provider

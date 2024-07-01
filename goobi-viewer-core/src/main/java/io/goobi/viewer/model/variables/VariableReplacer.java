@@ -37,6 +37,7 @@ import static io.goobi.viewer.model.variables.ReplacerVariables.ORDER_LABEL;
 import static io.goobi.viewer.model.variables.ReplacerVariables.REST_API_URL;
 import static io.goobi.viewer.model.variables.ReplacerVariables.SOLR_URL;
 import static io.goobi.viewer.model.variables.ReplacerVariables.THEME_PATH;
+import static io.goobi.viewer.model.variables.ReplacerVariables.VIEWER_URL;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -216,6 +217,7 @@ public class VariableReplacer {
         temp.put(THEME_PATH, List.of(Optional.ofNullable(config.getThemeRootPath()).orElse("")));
         temp.put(CONFIG_FOLDER_PATH, List.of(Path.of(viewerHome).resolve("config").toString()));
         temp.put(REST_API_URL, List.of(config.getRestApiUrl()));
+        temp.put(VIEWER_URL, List.of(config.getViewerBaseUrl()));
         return temp;
     }
 

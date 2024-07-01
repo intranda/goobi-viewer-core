@@ -24,15 +24,14 @@ package io.goobi.viewer.model.crowdsourcing.campaigns;
 import java.io.Serializable;
 import java.util.List;
 
+import io.goobi.viewer.model.translations.Translation;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-import io.goobi.viewer.model.translations.Translation;
-
 /**
- * A persistence object holding a translated String value
+ * A persistence object holding a translated String value.
  *
  * @author Florian Alpers
  */
@@ -42,7 +41,7 @@ public class CampaignTranslation extends Translation implements Serializable {
 
     private static final long serialVersionUID = 3598889812893282906L;
 
-    /** Reference to the owning {@link PersistentEntity}. */
+    /** Reference to the owning {@link Campaign}. */
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private Campaign owner;

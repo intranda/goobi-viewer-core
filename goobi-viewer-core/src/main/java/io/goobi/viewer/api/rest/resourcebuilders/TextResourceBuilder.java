@@ -54,7 +54,6 @@ import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
 
 import de.intranda.digiverso.ocr.tei.TEIBuilder;
 import de.intranda.digiverso.ocr.tei.convert.AbstractTEIConvert;
@@ -263,7 +262,7 @@ public class TextResourceBuilder {
             // TEI-based records
             try {
                 Document doc = XmlTools.readXmlFile(filePath);
-                return new XMLOutputter().outputString(doc);
+                return XmlTools.getXMLOutputter().outputString(doc);
             } catch (FileNotFoundException e) {
                 logger.debug(e.getMessage());
             } catch (IOException | JDOMException e) {
@@ -383,7 +382,7 @@ public class TextResourceBuilder {
         if (filePath != null && Files.isRegularFile(filePath)) {
             try {
                 Document doc = XmlTools.readXmlFile(filePath);
-                return new XMLOutputter().outputString(doc);
+                return XmlTools.getXMLOutputter().outputString(doc);
             } catch (FileNotFoundException e) {
                 logger.debug(e.getMessage());
             } catch (IOException | JDOMException e) {

@@ -72,9 +72,9 @@ public interface WidgetContentType {
     }
 
     /**
-     * Get the corresponding generation type. Widgets of class {@link DefaultWidgetType} have the generation type {@link WidgetGenerationType.DEFAULT}
-     * Widgets of class {@link AutomaticWidgetType} have the generation type {@link WidgetGenerationType.AUTOMATIC} Widgets of class
-     * {@link CustomWidgetType} have the generation type {@link WidgetGenerationType.CUSTOM}
+     * Get the corresponding generation type. Widgets of class {@link DefaultWidgetType} have the generation type {@link WidgetGenerationType#DEFAULT}
+     * Widgets of class {@link AutomaticWidgetType} have the generation type {@link WidgetGenerationType#AUTOMATIC} Widgets of class
+     * {@link CustomWidgetType} have the generation type {@link WidgetGenerationType#CUSTOM}
      * 
      * @param type
      * @return {@link WidgetGenerationType}
@@ -91,9 +91,8 @@ public interface WidgetContentType {
                 throw new IllegalArgumentException("Generation type for WidgetContentType " + type + " not known");
         }
     }
-    
-    public boolean isAllowedForPage(CMSPage page);
 
+    public boolean isAllowedForPage(CMSPage page);
 
     boolean isAllowedForPage(CMSPageTemplate template);
 }

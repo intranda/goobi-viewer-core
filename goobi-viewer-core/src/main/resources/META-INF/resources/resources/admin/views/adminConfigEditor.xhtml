@@ -44,12 +44,12 @@
 
 
 							<!-- CURRENT FILE NAME -->
-							<div class="admin__config-editor-current-file-wrapper">
-								<h:form id="configEditorActualFile">
-									<h2>#{msg.admin__config_editor__actual_file}:
-										#{adminConfigEditorBean.currentFileName}</h2>
-								</h:form>
-							</div>
+							<h:panelGroup id="configEditorActualFile" layout="block" class="admin__config-editor-current-file-wrapper">
+								<h2>#{msg.admin__config_editor__actual_file}: #{adminConfigEditorBean.currentFileName}
+									<ui:fragment rendered="#{adminConfigEditorBean.currentFileRecord.writable == false}">
+									<i class="fa fa-exclamation-circle" aria-hidden="true" data-toggle="tooltip" title="#{msg.admin__config_editor__not_writable}"></i></ui:fragment>
+								</h2>
+							</h:panelGroup>
 						<div>
 
 					</div>
@@ -78,6 +78,7 @@
 									<script>			
 																														
 										$( document ).ready(function() {
+											console.log("LOAD CODEMIRROR");
 											adminJS.configEditor.init({
 												fileNotReadableMsgKey: '#{msg.admin__config_editor__not_readable}',
 											    currentFileIsReadable: #{adminConfigEditorBean.currentFileRecord.readable},
@@ -94,8 +95,8 @@
 											<h:commandButton value="#{msg.reset}"
 												disabled="#{not(adminConfigEditorBean.editable)}"
 												styleClass="btn btn--default admin__overlay-bar-action"
-												pt:data-cm="cancel">
-												<f:ajax execute="@form" render="nothing" />
+												pt:data-cm="cancel" action="#{adminConfigEditorBean.openFile()}">
+												<f:ajax execute="@form" render="editor-form" />
 											</h:commandButton>
 
 											<!-- SAVE -->
@@ -131,7 +132,7 @@
 
 								<div class="admin__form-help-text in mb-2">#{msg.admin__config_editor__files_help}:</div>
 
-								<h:form id="file-form">
+								<h:form id="file-form" enctype="multipart/form-data">
 
 									<div class="admin__config-editor-file-selection-inner"
 										id="file-table">
@@ -143,52 +144,44 @@
 
 											<div
 												class="admin__config-editor-file-selection-single-entry #{adminConfigEditorBean.fileInEditionNumber == status.index ? '-selectedFile' : ''} #{record.readable  ? '-isReadable' : '-isNotReadable'}">
+												<div class="admin__config-editor-status-entry #{!record.writable and record.readable ? '-show' : ''} #{adminConfigEditorBean.isFileLocked(record) ? '-show' : ''}">
+													<ui:fragment rendered="#{!record.writable and record.readable}"> 
+														<div class="admin__config-editor-status-entry-inner" title="#{msg.admin__config_editor__not_writable}" data-toggle="tooltip" data-placement="top" data-trigger="hover">
+														<ui:include src="/resources/images/icons/icon-eye.svg" />
+														</div>
+													</ui:fragment>
+													<ui:fragment rendered="#{adminConfigEditorBean.isFileLocked(record)}">
+														<div class="admin__config-editor-status-entry-inner" title="#{msg.admin__config_editor__locked}" data-toggle="tooltip" data-placement="top" data-trigger="hover">
+															<ui:include src="/resources/images/icons/icon-lock.svg" />
+														</div>
+													</ui:fragment>
+												</div>
+												
 												<div
 													class="admin__config-editor-file-selection-single-entry-button-wrapper">
 
-													<h:commandButton value="#{record.fileName}"
-														styleClass="admin__config-editor-file-selection-single-entry-button"
-														action="#{adminConfigEditorBean.editFile(record.writable)}"
-														name="#{record.number}" disabled="#{!record.readable}"
-														onclick="viewerJS.showLoader();">
-														<f:ajax execute="@this"
-															render="editor-form file-form backup-form configEditorActualFile"
-															immediate="true" />
-													</h:commandButton>
-
-
-													<!-- 												<h:panelGroup styleClass="admin__config-editor-file-selection-single-entry-button-wrapper-info-wrapper" layout="block" rendered="#{!record.writable or !record.readable}"> -->
-
-
-
-
-
-
-
-													<ui:fragment rendered="#{!record.writable and record.readable}">
-														<div
-															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
-															title="#{msg.admin__config_editor__not_writable}"
-															data-toggle="tooltip" data-placement="top"
-															data-trigger="hover">
-															<i class="fa fa-eye" aria-hidden="true"></i>
+														<button onclick="viewerJS.showLoader();"
+															jsf:action="#{adminConfigEditorBean.editFile(record.writable)}"
+															class="admin__config-editor-file-selection-single-entry-button">
+															<span class="admin__config-editor-file-selection-single-entry-button-text">#{record.fileName}</span>
+																
+															<f:ajax execute="@this"
+																render="editor-form file-form backup-form configEditorActualFile"
+																immediate="true" />
+														</button>
+														<div class="admin__config-editor-file-selection-single-entry-actions-wrapper">
+															<div class="admin__config-editor-file-selection-single-entry-action-upload">
+																<label jsf:for="file" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.button__upload}"><i class="fa fa-upload" ></i></label>
+																<input jsf:id="file" class="admin-cms-media__upload-file" type="file" multiple="multiple" jsf:value="#{adminConfigEditorBean.fileUploader.file}">
+																	<f:ajax listener="#{adminConfigEditorBean.upload(record.file)}" render="editor-form file-form backup-form configEditorActualFile"/>
+																</input>
+															</div>
+															
+															<div class="admin__config-editor-file-selection-single-entry-action-download">
+																<a jsf:action="#{adminConfigEditorBean.download(record.file)}" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.downloadHeading}"><i class="fa fa-download"></i>
+																</a>
+															</div>
 														</div>
-													</ui:fragment>
-													<ui:fragment
-														rendered="#{adminConfigEditorBean.isFileLocked(record)}">
-														<div
-															class="admin__config-editor-file-selection-single-entry-button-wrapper-info"
-															title="#{msg.admin__config_editor__locked}"
-															data-toggle="tooltip" data-placement="top"
-															data-trigger="hover">
-															<i class="fa fa-lock" aria-hidden="true"></i> 
-<!-- 															<i class="fa fa-ban" aria-hidden="true"></i> -->
-														</div>
-													</ui:fragment>
-													<!-- 												</h:panelGroup>	 -->
-
-
-
 
 												</div>
 
@@ -215,19 +208,22 @@
 										<h:form id="backup-form">
 											<div class="admin__config-editor-backup-wrapper">
 												<ui:repeat var="record" value="#{adminConfigEditorBean.backupRecordsModel}">
-													<h:commandLink
-														styleClass="btn btn--clean admin__config-editor-backup-single-entry"
-														action="#{adminConfigEditorBean.downloadFile(record)}">
-														<span class="admin__config-editor-backup-single-entry-text">
+													<div class="admin__config-editor-backup-single-entry-wrapper">
+														<button jsf:action="#{adminConfigEditorBean.selectBackup(record.number)}" type="button" class="admin__config-editor-backup-single-entry-button">
 															<h:outputText value="#{record.date}">
 																<f:converter converterId="localDateTimeConverter" />
 																<f:attribute name="pattern" value="#{navigationHelper.dateTimePattern}" />
 															</h:outputText>
-														</span>
-														<span class="admin__config-editor-backup-single-entry-icon">
-															<i class="fa fa-download" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.downloadButton}"></i>
-														</span>
-													</h:commandLink>
+															<f:ajax render="editor-form file-form backup-form configEditorActualFile" onevent="adminJS.configEditor.loadBackup" />
+														</button>
+														<h:commandLink
+															styleClass="btn btn--clean admin__config-editor-backup-single-entry"
+															action="#{adminConfigEditorBean.downloadFile(record)}">
+															<span class="admin__config-editor-backup-single-entry-icon">
+																<i class="fa fa-download" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.downloadButton}"></i>
+															</span>
+														</h:commandLink>
+													</div>
 												</ui:repeat>
 											</div>
 										</h:form>

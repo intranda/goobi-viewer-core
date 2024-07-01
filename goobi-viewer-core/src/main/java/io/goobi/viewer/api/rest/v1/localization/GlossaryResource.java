@@ -33,12 +33,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.model.glossary.Glossary;
 import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.swagger.v3.oas.annotations.Operation;
@@ -96,7 +97,7 @@ public class GlossaryResource {
     @ApiResponse(responseCode = "404", description = "Not vocabulary found with that filename")
     public String getVocabulary(@PathParam("filename") @Parameter(description = "Glossary filename") String filename)
             throws IOException, ContentNotFoundException {
-        return new GlossaryManager().getGlossaryAsJson(filename);
+        return new GlossaryManager().getGlossaryAsJson(StringTools.cleanUserGeneratedData(filename));
 
     }
 

@@ -54,6 +54,7 @@ import org.jdom2.filter.Filter;
 import org.jdom2.filter.Filters;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
+import org.jdom2.output.LineSeparator;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.xpath.XPathBuilder;
 import org.jdom2.xpath.XPathExpression;
@@ -378,5 +379,17 @@ public final class XmlTools {
         }
 
         return eh.getErrors();
+    }
+
+    /**
+     * Create an XMLOutputter with default encoding and system linebreaks
+     * 
+     * @return a new XMLOutputter instance with standard format settings
+     */
+    public static XMLOutputter getXMLOutputter() {
+        Format format = Format.getRawFormat();
+        format.setEncoding(StringTools.DEFAULT_ENCODING);
+        format.setLineSeparator(LineSeparator.SYSTEM);
+        return new XMLOutputter(format);
     }
 }

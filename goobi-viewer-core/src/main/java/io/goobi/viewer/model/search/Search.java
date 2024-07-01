@@ -179,7 +179,7 @@ public class Search implements Serializable {
 
     /**
      * cloning constructor. Creates a new search in a state as it might be loaded from database, i.e. without any transient fields set. In particular
-     * with empty {@link #hits}
+     * with empty {@link #getHits()}
      *
      * @param blueprint
      */

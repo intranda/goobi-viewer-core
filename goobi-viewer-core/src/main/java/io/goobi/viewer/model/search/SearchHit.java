@@ -228,6 +228,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @should do nothing if searchTerms do not contain key
      * @should do nothing if no cms pages for record found
+     * @return the number of child hits added
      */
     public int addCMSPageChildren() throws DAOException {
         if (searchTerms == null || !searchTerms.containsKey(SolrConstants.CMS_TEXT_ALL)) {
@@ -317,6 +318,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @should throw IllegalArgumentException if doc null
      * @should do nothing if searchTerms does not contain fulltext
      * @should do nothing if tei file name not found
+     * @return the number of child hits added
      */
     public int addFulltextChild(SolrDocument doc, final String language)
             throws IndexUnreachableException, DAOException, ViewerConfigurationException {

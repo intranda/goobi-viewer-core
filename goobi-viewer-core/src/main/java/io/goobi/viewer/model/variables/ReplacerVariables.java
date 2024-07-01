@@ -40,6 +40,7 @@ public final class ReplacerVariables {
     public static final String ORDER_LABEL = "orderLabel";
     public static final String FILENAME = "filename";
     public static final String FILENAME_BASE = "baseFilename";
+    public static final String VIEWER_URL = "viewer-url";
 
     /**
      * should not be instantiated

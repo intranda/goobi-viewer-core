@@ -54,7 +54,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignLogMessage;
 import io.goobi.viewer.model.log.LogMessage;
 
 /**
- * Request filter to ensure only users with sufficient rights may access campaign resources
+ * Request filter to ensure only users with sufficient rights may access campaign resources.
  *
  * @author florian
  *

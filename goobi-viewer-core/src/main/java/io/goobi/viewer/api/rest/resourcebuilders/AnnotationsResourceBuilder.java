@@ -76,7 +76,7 @@ public class AnnotationsResourceBuilder {
     private static final int MAX_ANNOTATIONS_PER_PAGE = 100;
 
     /**
-     * Default constructor
+     * Default constructor.
      *
      * @param urls TheApiUrlManager handling the creation of annotation urls/ids
      * @param request Used to check access to restricted annotations. May be null, which prevents delivering any annotations with accessconditions

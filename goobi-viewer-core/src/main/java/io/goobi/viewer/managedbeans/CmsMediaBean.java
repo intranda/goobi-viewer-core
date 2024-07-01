@@ -356,7 +356,7 @@ public class CmsMediaBean implements Serializable {
     }
 
     /**
-     * Deletes all mediaItems from {@link #mediaItems} which are are marked as selected. Reloads the media list
+     * Deletes all mediaItems from {@link #getMediaItems()} which are are marked as selected. Reloads the media list
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -374,7 +374,7 @@ public class CmsMediaBean implements Serializable {
     }
 
     /**
-     * Saves all mediaItems from {@link #mediaItems} which are are marked as selected. Reloads the media list
+     * Saves all mediaItems from {@link #getMediaItems()} which are are marked as selected. Reloads the media list
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */

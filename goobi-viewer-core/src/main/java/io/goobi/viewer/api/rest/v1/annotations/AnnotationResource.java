@@ -113,7 +113,7 @@ public class AnnotationResource {
     /**
      *
      * @param page
-     * @return <a>
+     * @return &lt;a&gt;
      * @throws DAOException
      * @throws ContentLibException
      * @throws IndexUnreachableException
