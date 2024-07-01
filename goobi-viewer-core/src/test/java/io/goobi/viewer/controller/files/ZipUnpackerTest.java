@@ -41,6 +41,7 @@ class ZipUnpackerTest {
 
     @Test
     void test_downloadArchive(@TempDir Path tempDir) throws IOException, ArchiveSizeExceededException {
+
         try (InputStream input = Files.newInputStream(ARCHIVE_PATH);
                 ZipInputStream zis = new ZipInputStream(input)) {
             Path extractedArchive = new ZipUnpacker().extractZip(tempDir, zis);
@@ -48,6 +49,8 @@ class ZipUnpackerTest {
             assertTrue(Files.isDirectory(extractedArchive.resolve("texts")));
             assertTrue(Files.isRegularFile(extractedArchive.resolve("owl.png")));
             assertTrue(Files.isRegularFile(extractedArchive.resolve("texts").resolve("text1.txt")));
+            assertTrue(Files.isDirectory(extractedArchive.resolve("moretexts").resolve("samples2")));
+            assertTrue(Files.isRegularFile(extractedArchive.resolve("moretexts").resolve("samples2").resolve("sample4.txt")));
         }
     }
 
