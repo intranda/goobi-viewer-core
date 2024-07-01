@@ -42,7 +42,6 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.spi.FileTypeDetector;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -339,7 +338,7 @@ public final class FileTools {
             }
         }
     }
-    
+
     /**
      * <p>
      * compressZipFile.
@@ -497,7 +496,6 @@ public final class FileTools {
         return type;
     }
 
-    
     public static String getMimeTypeFromFile(Path path) throws IOException {
         String mimeType = "";
         String fileExtension = path.getFileName().toString();
@@ -505,8 +503,8 @@ public final class FileTools {
             return mimeType;
         }
         fileExtension = fileExtension.substring(fileExtension.lastIndexOf(".") + 1).toLowerCase(); // .tar.gz will not work
-            // first try to detect mimetype from OS map
-            mimeType = Files.probeContentType(path);
+        // first try to detect mimetype from OS map
+        mimeType = Files.probeContentType(path);
         // if this didn't work, try to get it from the internal FileNameMap to resolve the type from the extension
         if (StringUtils.isBlank(mimeType)) {
             mimeType = URLConnection.guessContentTypeFromName(path.getFileName().toString());
@@ -736,5 +734,15 @@ public final class FileTools {
             return path.getParent().resolve(relativeFile);
         }
         return relativeFile;
+    }
+
+    /**
+     * Check if a path is a real descendant of the parent path.
+     * 
+     * @return true if path is a descendant of parent, first resolving any path backtracking with '../' or similar
+     */
+    public static boolean isWithin(Path path, Path parent) {
+        Path normalized = path.toAbsolutePath().normalize();
+        return normalized.startsWith(parent.toAbsolutePath().normalize());
     }
 }
