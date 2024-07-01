@@ -32,8 +32,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -204,7 +202,7 @@ public final class DataFileTools {
             repository = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepositoryFolder);
         }
 
-        return repository.resolve(dataFolderName).resolve(pi);
+        return repository.resolve(dataFolderName).resolve(StringTools.cleanUserGeneratedData(pi));
     }
 
     /**

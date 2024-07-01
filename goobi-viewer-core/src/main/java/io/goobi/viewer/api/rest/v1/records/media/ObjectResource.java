@@ -63,6 +63,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
 import io.goobi.viewer.controller.DataFileTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.object.ObjectInfo;
@@ -216,7 +217,8 @@ public class ObjectResource {
             throws IOException, PresentationException, IndexUnreachableException {
 
         Path mediaDirectory = DataFileTools.getMediaFolder(pi);
-        java.nio.file.Path objectPath = mediaDirectory.resolve(subfolder).resolve(auxfilename);
+        java.nio.file.Path objectPath =
+                mediaDirectory.resolve(StringTools.cleanUserGeneratedData(subfolder)).resolve(StringTools.cleanUserGeneratedData(auxfilename));
         if (!objectPath.toFile().isFile()) {
             throw new FileNotFoundException("File " + objectPath + " not found in file system");
         }
@@ -272,7 +274,9 @@ public class ObjectResource {
             throws IOException, PresentationException, IndexUnreachableException {
 
         Path mediaDirectory = DataFileTools.getMediaFolder(pi);
-        java.nio.file.Path objectPath = mediaDirectory.resolve(subfolder1).resolve(subfolder2).resolve(auxfilename);
+        java.nio.file.Path objectPath = mediaDirectory.resolve(StringTools.cleanUserGeneratedData(subfolder1))
+                .resolve(StringTools.cleanUserGeneratedData(subfolder2))
+                .resolve(StringTools.cleanUserGeneratedData(auxfilename));
         if (!objectPath.toFile().isFile()) {
             throw new FileNotFoundException("File " + objectPath + " not found in file system");
         }
