@@ -82,7 +82,7 @@
 
 								<!-- ALTO (WORK) -->
 								<ui:fragment 
-									rendered="#{displayConditions.matchesRecord('{fileTypes:[ALTO]}', pageTypes:[viewFulltext], accessCondition:PRIV_VIEW_FULLTEXT)}">
+									rendered="#{displayConditions.matchesRecord('{fileTypes:[ALTO], pageTypes:[viewFulltext], accessCondition:PRIV_VIEW_FULLTEXT}')}">
 									<a href="#{activeDocumentBean.viewManager.altoUrlForAllPages}"
 										id="alto"
 										class="badge badge-dark widget-downloads__work-download-alto"
@@ -95,7 +95,7 @@
 
 								<!-- TEI (WORK) -->
 								<ui:fragment
-									rendered="#{displayConditions.matchesRecord('{fileTypes:[TEI, ALTO, FULLTEXT]}', pageTypes:[viewFulltext], accessCondition:PRIV_VIEW_FULLTEXT)}">
+									rendered="#{displayConditions.matchesRecord('{fileTypes:[TEI, ALTO, FULLTEXT], pageTypes:[viewFulltext], accessCondition:PRIV_VIEW_FULLTEXT}')}">
 									<!-- MULTILANGUAGE -->
 									<ui:fragment
 										rendered="#{displayConditions.matchesRecord('{fileTypes:[TEI]}')}">
@@ -128,7 +128,7 @@
 
 								<!-- FULLTEXT (WORK) -->
 								<ui:fragment
-									rendered="#{displayConditions.matchesRecord('{fileTypes:[ALTO, FULLTEXT]}', pageTypes:[viewFulltext], accessCondition:PRIV_VIEW_FULLTEXT)}">
+									rendered="#{displayConditions.matchesRecord('{fileTypes:[ALTO, FULLTEXT], pageTypes:[viewFulltext], accessCondition:PRIV_VIEW_FULLTEXT}')}">
 									<a
 										href="#{activeDocumentBean.viewManager.fulltextUrlForAllPages}"
 										id="textWork"
