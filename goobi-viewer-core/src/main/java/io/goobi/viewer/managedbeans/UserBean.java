@@ -135,7 +135,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>updateSessionTimeoutCounter.</p>
+     * <p>
+     * updateSessionTimeoutCounter.
+     * </p>
      */
     public void updateSessionTimeoutCounter() {
         logger.trace("updateSessionTimeoutCounter");
@@ -143,7 +145,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>getSessionTimeout.</p>
+     * <p>
+     * getSessionTimeout.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -317,14 +321,19 @@ public class UserBean implements Serializable {
         }
         logger.trace("login");
         if (provider != null) {
-            // Set provider so it can be accessed from outsde
-            setAuthenticationProvider(provider);
-            if (redirectUrl == null && provider instanceof HttpHeaderProvider) {
-                this.redirectUrl = buildRedirectUrl();
+            try {
+                // Set provider so it can be accessed from outsde
+                setAuthenticationProvider(provider);
+                if (redirectUrl == null && provider instanceof HttpHeaderProvider) {
+                    this.redirectUrl = buildRedirectUrl();
+                }
+                logger.trace("redirectUrl: {}", redirectUrl);
+                provider.setRedirectUrl(this.redirectUrl);
+                provider.login(email, password).thenAccept(result -> completeLogin(provider, result));
+            } finally {
+                // Reset provider to local so that all fields are displayed after a faild non-local login
+                setAuthenticationProvider(getLocalAuthenticationProvider());
             }
-            logger.trace("redirectUrl: {}", redirectUrl);
-            provider.setRedirectUrl(this.redirectUrl);
-            provider.login(email, password).thenAccept(result -> completeLogin(provider, result));
         }
 
         return null;
@@ -571,7 +580,7 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * Reset session dependend properties after a login or logout
+     * Reset session dependent properties after a login or logout
      */
     private void reset() {
         this.hasAdminBackendAccess = null;
@@ -928,7 +937,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>showAuthenticationProviderSelection.</p>
+     * <p>
+     * showAuthenticationProviderSelection.
+     * </p>
      *
      * @return a boolean
      */
@@ -1045,7 +1056,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>lastName</code>.</p>
+     * <p>
+     * Getter for the field <code>lastName</code>.
+     * </p>
      *
      * @return the lastName
      */
@@ -1054,7 +1067,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>lastName</code>.</p>
+     * <p>
+     * Setter for the field <code>lastName</code>.
+     * </p>
      *
      * @param lastName the lastName to set
      */
@@ -1176,7 +1191,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>hasAdminBackendAccess</code>.</p>
+     * <p>
+     * Setter for the field <code>hasAdminBackendAccess</code>.
+     * </p>
      *
      * @param hasAdminBackendAccess the hasAdminBackendAccess to set
      */
@@ -1273,7 +1290,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>isRequireLoginCaptcha.</p>
+     * <p>
+     * isRequireLoginCaptcha.
+     * </p>
      *
      * @return a boolean
      */
@@ -1292,7 +1311,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>agreeToTermsOfUse.</p>
+     * <p>
+     * agreeToTermsOfUse.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1304,7 +1325,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>rejectTermsOfUse.</p>
+     * <p>
+     * rejectTermsOfUse.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -1316,7 +1339,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>logoutWithMessage.</p>
+     * <p>
+     * logoutWithMessage.
+     * </p>
      *
      * @param messageKey a {@link java.lang.String} object
      * @throws io.goobi.viewer.model.security.authentication.AuthenticationProviderException if any.
@@ -1328,7 +1353,9 @@ public class UserBean implements Serializable {
     }
 
     /**
-     * <p>createBackupOfCurrentUser.</p>
+     * <p>
+     * createBackupOfCurrentUser.
+     * </p>
      */
     public void createBackupOfCurrentUser() {
         if (getUser() != null) {
