@@ -217,6 +217,9 @@ public class ObjectResource {
 
         Path mediaDirectory = DataFileTools.getMediaFolder(pi);
         java.nio.file.Path objectPath = mediaDirectory.resolve(subfolder).resolve(auxfilename);
+        if (!objectPath.toFile().getCanonicalPath().startsWith(mediaDirectory.toFile().getCanonicalPath())) {
+            throw new IOException("File " + objectPath + " is not within the media folder");
+        }
         if (!objectPath.toFile().isFile()) {
             throw new FileNotFoundException("File " + objectPath + " not found in file system");
         }
