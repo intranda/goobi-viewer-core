@@ -54,13 +54,6 @@
 		<main id="archivesContent" class="archives__main">
 			<c:choose>
 				<!-- CONDITION ERROR -->
-				<c:when
-					test="#{archiveBean.databaseState == 'ERROR_NOT_CONFIGURED'}">
-					<div class="archives__error">
-						<span>#{msg.error__archives_database_configuration_missing}</span>
-					</div>
-				</c:when>
-				<!-- CONDITION ERROR -->
 				<c:when test="#{archiveBean.databaseState == 'ERROR_NOT_REACHABLE'}">
 					<div class="archives__error">
 						<span>#{msg.error__archives_database_not_reachable}</span>

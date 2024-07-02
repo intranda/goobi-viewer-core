@@ -32,6 +32,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.archives.SolrEADParser;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.translations.language.Language;
@@ -60,12 +61,11 @@ public class DefaultURLBuilder implements IURLBuilder {
      */
     @Override
     public String generateURL(BrowseElement ele) {
-
-        // For aggregated person search hits, start another search (label contains the person's name in this case)
         String url = "";
         boolean topstruct = ele.isWork() || ele.isAnchor() || ele.isGroup();
         if (ele.getMetadataGroupType() != null) {
             switch (ele.getMetadataGroupType()) {
+                // For aggregated person search hits, start another search (label contains the person's name in this case)
                 case PERSON:
                 case CORPORATION:
                 case LOCATION:
@@ -82,8 +82,13 @@ public class DefaultURLBuilder implements IURLBuilder {
                     break;
             }
         } else if (ele.isCmsPage() && ele.getPi().startsWith("CMS")) {
+            // CMS page
             url = "cms/" + ele.getPi().substring(3) + "/";
+        } else if (ele.isArchive()) {
+            // Archive
+            url = "archives/" + SolrEADParser.DATABASE_NAME + "/" + ele.getPi() + "/";
         } else {
+            // Regular record
             PageType pageType = getPageType(ele);
             if (PageType.viewFulltext.equals(pageType) && ele.isHasTeiFiles()) {
                 // Add language to the URL if record has TEI full-text

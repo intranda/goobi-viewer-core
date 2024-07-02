@@ -971,6 +971,14 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * 
+     * @return true if doctype is ARCHIVE; false otherwise
+     */
+    public boolean isArchive() {
+        return DocType.ARCHIVE.equals(docType);
+    }
+
+    /**
      * @return the cmsPage
      */
     public boolean isCmsPage() {

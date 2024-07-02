@@ -363,6 +363,18 @@ public class Metadata implements Serializable {
     }
 
     /**
+     * 
+     * @return First {@link MetadataValue}
+     */
+    public String getFirstValue() {
+        if (values.isEmpty()) {
+            return values.get(0).getCombinedValue();
+        }
+
+        return null;
+    }
+
+    /**
      * <p>
      * setParamValue.
      * </p>
@@ -675,6 +687,14 @@ public class Metadata implements Serializable {
      */
     public List<MetadataParameter> getParams() {
         return params;
+    }
+
+    /**
+     * 
+     * @return Configured index field names of parameters
+     */
+    public List<String> getParamFieldNames() {
+        return getParams().stream().map(p -> p.getKey()).toList();
     }
 
     /**

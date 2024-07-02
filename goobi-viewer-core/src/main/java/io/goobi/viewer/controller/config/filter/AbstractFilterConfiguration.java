@@ -92,18 +92,18 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
     }
 
     /**
-     * Get the {@link FilterAction}.
+     * Get the {@link FilterAction}
      * 
-     * @return the {@link FilterAction}
+     * @return {@link FilterAction}
      */
     public FilterAction getAction() {
         return action;
     }
 
     /**
-     * Get all {@link #filterConditions}.
+     * Get all {@link #filterConditions}
      * 
-     * @return the {@link #filterConditions}
+     * @return List<AbstractFilterConfiguration>
      */
     public List<AbstractFilterConfiguration> getFilterConditions() {
         return Collections.unmodifiableList(filterConditions);

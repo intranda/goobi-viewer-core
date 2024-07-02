@@ -168,7 +168,8 @@ public class DownloadResource {
     public String putPDFDownloadJob(@Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Identifier of the METS div for a logical section") @PathParam("divId") String logId,
             @Parameter(
-                    description = "whether to use prerendered single page pdf files for pdf creation") @QueryParam("usePdfSource") String usePdfSource,
+                    description = "whether to use prerendered single page pdf"
+                            + " files for pdf creation") @QueryParam("usePdfSource") String usePdfSource,
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email)
             throws DAOException, URISyntaxException, JsonProcessingException {
 
@@ -203,7 +204,7 @@ public class DownloadResource {
         }
 
         // forward to download page
-        String id = DownloadJob.generateDownloadJobId(PDFDownloadJob.LOCAL_TYPE, pi, logId);
+        DownloadJob.generateDownloadJobId(PDFDownloadJob.LOCAL_TYPE, pi, logId);
         URI downloadPageUrl = getDownloadPageUrl(messageId);
         return getForwardToDownloadPageResponse(downloadPageUrl, job);
     }
@@ -264,9 +265,10 @@ public class DownloadResource {
     @DownloadBinding
     public String putPDFDownloadJob(@Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(
-                    description = "whether to use prerendered single page pdf files for pdf creation") @QueryParam("usePdfSource") String usePdfSource,
+                    description = "whether to use prerendered single"
+                            + " page pdf files for pdf creation") @QueryParam("usePdfSource") String usePdfSource,
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email)
-            throws ContentLibException, JsonProcessingException, DAOException, URISyntaxException {
+            throws JsonProcessingException, DAOException, URISyntaxException {
         return putPDFDownloadJob(pi, null, usePdfSource, email);
 
     }

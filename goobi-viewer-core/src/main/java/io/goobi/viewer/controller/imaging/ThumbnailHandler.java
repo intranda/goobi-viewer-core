@@ -832,9 +832,10 @@ public class ThumbnailHandler {
                     ret = getThumbnailPath(PERSON_THUMB).toString();
                 }
                 break;
-            case DOCSTRCT, PAGE:
+            case ARCHIVE, DOCSTRCT, PAGE:
             default:
                 ret = getDocStructImagePath(doc, ret);
+                break;
         }
 
         return ret;

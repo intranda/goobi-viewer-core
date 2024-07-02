@@ -67,6 +67,18 @@ class DataFileToolsTest extends AbstractTest {
         Assertions.assertEquals("src/test/resources/data/viewer/indexed_lido/PPN123.xml",
                 DataFileTools.getSourceFilePath("PPN123.xml", null, SolrConstants.SOURCEDOCFORMAT_LIDO));
     }
+    
+    /**
+     * @see DataFileTools#getSourceFilePath(String,String,String)
+     * @verifies construct EAD file path correctly
+     */
+    @Test
+    void getSourceFilePath_shouldConstructEADFilePathCorrectly() throws Exception {
+        Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_ead/PPN123.xml",
+                DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants.SOURCEDOCFORMAT_EAD));
+        Assertions.assertEquals("src/test/resources/data/viewer/indexed_ead/PPN123.xml",
+                DataFileTools.getSourceFilePath("PPN123.xml", null, SolrConstants.SOURCEDOCFORMAT_EAD));
+    }
 
     /**
      * @see DataFileTools#getSourceFilePath(String,String,String)

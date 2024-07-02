@@ -328,6 +328,15 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getIndexedEadFolder()
+     * @verifies return correct value
+     */
+    @Test
+    void getIndexedEadFolder_shouldReturnCorrectValue() throws Exception {
+        assertEquals("indexed_ead", DataManager.getInstance().getConfiguration().getIndexedEadFolder());
+    }
+
+    /**
      * @see Configuration#getIndexedMetsFolder()
      * @verifies return correct value
      */
@@ -394,6 +403,15 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getMainMetadataForTemplate_shouldReturnDefaultTemplateIfTemplateIsNull() throws Exception {
         assertEquals(6, DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(0, null).size());
+    }
+
+    /**
+     * @see Configuration#getArchiveMetadataForTemplate(String)
+     * @verifies return default template configuration if template not found
+     */
+    @Test
+    void getArchiveMetadataForTemplate_shouldReturnDefaultTemplateConfigurationIfTemplateNotFound() throws Exception {
+        assertEquals(9, DataManager.getInstance().getConfiguration().getArchiveMetadataForTemplate("nonexisting").size());
     }
 
     /**
@@ -632,7 +650,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getMetadataListTypes_shouldReturnAllMetadataListTypesIfPrefixEmpty() throws Exception {
         List<String> result = DataManager.getInstance().getConfiguration().getMetadataListTypes(null);
-        assertEquals(4, result.size());
+        assertEquals(5, result.size());
     }
 
     /**
@@ -1795,7 +1813,7 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("MD_PERSON", result.get(5));
         assertEquals("BOOL_HASIMAGES", result.get(6));
     }
-    
+
     /**
      * @see Configuration#getBooleanFacetFields()
      * @verifies return all values
@@ -2221,7 +2239,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getSearchFilters_shouldReturnAllConfiguredElements() throws Exception {
         List<SearchFilter> result = DataManager.getInstance().getConfiguration().getSearchFilters();
-        assertEquals(6, result.size());
+        assertEquals(7, result.size());
         assertEquals("filter_ALL", result.get(0).getLabel());
         assertEquals("ALL", result.get(0).getField());
         assertTrue(result.get(0).isDefaultFilter());
@@ -3537,5 +3555,23 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void testGetDateFormat() {
         assertEquals("dd/MM/yyyy", DataManager.getInstance().getConfiguration().getStringFormat("date", Locale.ENGLISH).orElse("Not configured"));
+    }
+
+    /**
+     * @see Configuration#isArchivesEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    void isArchivesEnabled_shouldReturnCorrectValue() throws Exception {
+        assertTrue(DataManager.getInstance().getConfiguration().isArchivesEnabled());
+    }
+
+    /**
+     * @see Configuration#getArchivesLazyLoadingThreshold()
+     * @verifies return correct value
+     */
+    @Test
+    void getArchivesLazyLoadingThreshold_shouldReturnCorrectValue() throws Exception {
+        assertEquals(100, DataManager.getInstance().getConfiguration().getArchivesLazyLoadingThreshold());
     }
 }

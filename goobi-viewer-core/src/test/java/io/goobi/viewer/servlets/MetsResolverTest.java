@@ -94,6 +94,25 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see MetsResolver#doGet(HttpServletRequest,HttpServletResponse)
+     * @verifies return EAD file correctly
+     */
+    @Test
+    @Disabled("Enable once test indext contains an EAD record")
+    void doGet_shouldReturnEADFileCorrectly() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setParameter("id", "TODO");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        MetsResolver resolver = new MetsResolver();
+        resolver.doGet(request, response);
+        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        String xml = response.getContentAsString();
+        Document ead = XmlTools.getDocumentFromString(xml, StandardCharsets.UTF_8.name());
+        Assertions.assertNotNull(ead);
+    }
+
+    /**
+     * @see MetsResolver#doGet(HttpServletRequest,HttpServletResponse)
      * @verifies return 404 if record not in index
      */
     @Test

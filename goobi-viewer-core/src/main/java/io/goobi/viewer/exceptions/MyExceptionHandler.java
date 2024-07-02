@@ -147,10 +147,6 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                         || (t instanceof PrettyException && t.getMessage().contains(DAOException.class.getSimpleName()))) {
                     logger.trace("Caused by DAOException");
                     handleError(null, "dao");
-                } else if (t instanceof BaseXException || isCausedByExceptionType(t, BaseXException.class.getName())
-                        || (t instanceof PrettyException && t.getMessage().contains(BaseXException.class.getSimpleName()))) {
-                    logger.trace("Caused by BaseXException");
-                    handleError(null, "basex");
                 } else if (t instanceof ViewerConfigurationException || isCausedByExceptionType(t, ViewerConfigurationException.class.getName())
                         || (t instanceof PrettyException && t.getMessage().contains(ViewerConfigurationException.class.getSimpleName()))) {
                     logger.trace("Caused by ViewerConfigurationException");

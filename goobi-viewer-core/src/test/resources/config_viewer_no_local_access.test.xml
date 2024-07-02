@@ -99,11 +99,6 @@
 		
         <!-- connectorVersion: URL to the version query on the Goobi viewer Connector -->
         <connectorVersion>http://localhost:8081/M2M/oai/tools?action=getVersion</connectorVersion>
-        
-        <basex>
-	        <url>https://basex.example.org/basex/</url>
-	        <defaultDatabase>Example - EAD_FILENAME.XML</defaultDatabase>
-		</basex>
 	</urls>
 
 	<user>

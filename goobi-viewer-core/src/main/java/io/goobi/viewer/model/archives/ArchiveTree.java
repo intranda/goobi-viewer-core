@@ -33,6 +33,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.goobi.viewer.controller.DataManager;
+
 /**
  * Table of contents and associated functionality for a record.
  */
@@ -60,6 +62,7 @@ public class ArchiveTree implements Serializable {
     private ArchiveEntry selectedEntry;
 
     private boolean treeBuilt = false;
+    private boolean treeFullyLoaded = true;
 
     /**
      * <p>
@@ -70,12 +73,37 @@ public class ArchiveTree implements Serializable {
         logger.trace("new EADTree()");
     }
 
+    /**
+     * Cloning constructor.
+     * 
+     * @param orig
+     */
     public ArchiveTree(ArchiveTree orig) {
         this.generate(new ArchiveEntry(orig.getRootElement(), null));
         this.getTreeViewForGroup(DEFAULT_GROUP);
     }
 
+    /**
+     * 
+     * @param rootElement
+     */
+    public void update(ArchiveEntry rootElement) {
+        logger.trace("update: {}", rootElement);
+        generate(rootElement);
+        if (getSelectedEntry() == null) {
+            setSelectedEntry(getRootElement());
+        }
+        // This should happen before the tree is expanded to the selected entry, otherwise the collapse level will be reset
+        getTreeView();
+    }
+
+    /**
+     * Sets the given root entry, generates a new flat list and adds it to entryMap.
+     * 
+     * @param root The root entry to set
+     */
     public void generate(ArchiveEntry root) {
+        logger.trace("generate: {}", root);
         if (root == null) {
             throw new IllegalArgumentException("root may not be null");
         }
@@ -83,7 +111,29 @@ public class ArchiveTree implements Serializable {
         setTrueRootElement(root);
 
         List<ArchiveEntry> tree = root.getAsFlatList(true);
+        for (ArchiveEntry entry : tree) {
+            if (entry.isHasChildren() && !entry.isChildrenLoaded()) {
+                checkTreeFullyLoaded(tree);
+                break;
+            }
+        }
         entryMap.put(DEFAULT_GROUP, tree);
+    }
+
+    /**
+     * Checks whether any nodes in given tree have children that are not yet loaded.
+     * 
+     * @param tree
+     * @should set treeFullyLoaded false if tree incomplete
+     */
+    void checkTreeFullyLoaded(List<ArchiveEntry> tree) {
+        for (ArchiveEntry node : tree) {
+            if (node.isHasChildren() && !node.isChildrenLoaded()) {
+                treeFullyLoaded = false;
+                logger.trace("Tree not fully loaded due to lazy loading.");
+                break;
+            }
+        }
     }
 
     /**
@@ -96,6 +146,7 @@ public class ArchiveTree implements Serializable {
      */
     public List<ArchiveEntry> getViewForGroup(String group) {
         if (entryMap != null) {
+            logger.trace("Tree size: {}", entryMap.get(group).size());
             return entryMap.get(group);
         }
 
@@ -112,6 +163,7 @@ public class ArchiveTree implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<ArchiveEntry> getTreeViewForGroup(String group) {
+        logger.trace("getTreeViewForGroup: {}", group);
         if (!treeBuilt) {
             buildTree(group, DEFAULT_COLLAPSE_LEVEL);
         }
@@ -126,7 +178,7 @@ public class ArchiveTree implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<ArchiveEntry> getFlatView() {
-        // logger.trace("getFlatView"); //NOSONAR Sometimes needed for debugging
+        logger.trace("getFlatView"); //NOSONAR Sometimes needed for debugging
         return getViewForGroup(DEFAULT_GROUP);
     }
 
@@ -138,6 +190,7 @@ public class ArchiveTree implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<ArchiveEntry> getTreeView() {
+        logger.trace("getTreeView");
         return getTreeViewForGroup(DEFAULT_GROUP);
     }
 
@@ -156,13 +209,26 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
+     * 
+     * @param searchActive
+     * @return List<ArchiveEntry>
+     */
+    public List<ArchiveEntry> getVisibleTree(boolean searchActive) {
+        logger.trace("getVisibleTree");
+        return getTreeView().stream()
+                .filter(e -> e.isVisible())
+                .filter(e -> e.isDisplaySearch() || !searchActive)
+                .filter(e -> e.isAccessAllowed())
+                .toList();
+    }
+
+    /**
      *
      * @param group
      * @param collapseLevel
      */
     private void buildTree(String group, int collapseLevel) {
-
-        logger.trace("buildTree");
+        logger.trace("buildTree: {} - {}", group, collapseLevel);
         if (group == null) {
             throw new IllegalArgumentException("group may not be null");
         }
@@ -180,6 +246,7 @@ public class ArchiveTree implements Serializable {
                     if (entry.getHierarchyLevel() > collapseLevel) {
                         entries.get(index - 1).setExpanded(false);
                         entry.setVisible(false);
+                        // logger.trace("Set node invisible: {} (level {})", entry.getLabel(), entry.getHierarchyLevel()); //NOSONAR Debug
                     } else {
                         entries.get(index - 1).setExpanded(true);
                     }
@@ -230,15 +297,25 @@ public class ArchiveTree implements Serializable {
      * @param selectedEntry the selectedEntry to set
      */
     public void setSelectedEntry(ArchiveEntry selectedEntry) {
-        logger.trace("setSelectedEntry: {}", selectedEntry != null ? selectedEntry.getId() : null);
+        logger.trace("setSelectedEntry: {}", selectedEntry != null ? selectedEntry.getLabel() : null);
         this.selectedEntry = selectedEntry;
+        if (selectedEntry != null && !selectedEntry.isMetadataLoaded()) {
+            selectedEntry.loadMetadata();
+        }
     }
 
+    /**
+     * 
+     * @param selectedEntry
+     */
     public void toggleSelectedEntry(ArchiveEntry selectedEntry) {
         if (selectedEntry != null && selectedEntry.equals(this.selectedEntry)) {
             this.selectedEntry = null;
         } else {
             this.selectedEntry = selectedEntry;
+            if (selectedEntry != null && !selectedEntry.isMetadataLoaded()) {
+                selectedEntry.loadMetadata();
+            }
         }
     }
 
@@ -394,7 +471,7 @@ public class ArchiveTree implements Serializable {
             // search in all/some metadata fields of all elements?
 
             // for now: search only labels
-            searchInNode(getRootElement(), searchValue);
+            searchInNode(getRootElement(), searchValue, isTreeFullyLoaded());
 
             // fill flatList with displayable fields
             flatEntryList = getRootElement().getSearchList();
@@ -404,11 +481,20 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     *
+     * Recursively searches for searchValue in the given node and its descendants.
+     * 
      * @param node
-     * @param searchValue
+     * @param searchValue Search terms
+     * @param searchInNotLoadedNodes
      */
-    static void searchInNode(ArchiveEntry node, String searchValue) {
+    void searchInNode(ArchiveEntry node, String searchValue, boolean searchInNotLoadedNodes) {
+        if (searchInNotLoadedNodes) {
+            // Do a Solr search and load subtrees of found nodes
+            if (DataManager.getInstance().getArchiveManager().getEadParser().searchInUnparsedNodes(node, searchValue)) {
+                update(node.getRootNode());
+                logger.trace("New nodes were loaded during the search, updating tree...");
+            }
+        }
         if (node.getId() != null && node.getId().equals(searchValue)) {
             // ID match
             node.markAsFound(true);
@@ -418,13 +504,13 @@ public class ArchiveTree implements Serializable {
         }
         if (node.getSubEntryList() != null) {
             for (ArchiveEntry child : node.getSubEntryList()) {
-                searchInNode(child, searchValue);
+                searchInNode(child, searchValue, false);
             }
         }
     }
 
     /**
-     * Return this node if it has the given identifier or the first of its descendents with the identifier
+     * Return this node if it has the given identifier or the first of its descendants with the identifier
      *
      * @param identifier
      * @param node
@@ -451,5 +537,9 @@ public class ArchiveTree implements Serializable {
     public void resetSearch() {
         trueRootElement.resetFoundList();
         flatEntryList = null;
+    }
+
+    public boolean isTreeFullyLoaded() {
+        return treeFullyLoaded;
     }
 }

@@ -371,7 +371,7 @@ public class MetadataBean {
      * value of MD_ORDER matches the given <code>order</code> value.
      * 
      * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
-     * @param mainFieldName Name metadata field
+     * @param mainFieldName Main metadata field
      * @param language Optional metadata field language
      * @param subFieldName Child metadata field
      * @param order Page number
@@ -400,7 +400,7 @@ public class MetadataBean {
      * value of MD_ORDER matches the given <code>order</code> value.
      * 
      * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
-     * @param mainFieldName Name metadata field
+     * @param mainFieldName Main metadata field
      * @param language Optional metadata field language
      * @param subFieldName Child metadata field
      * @param order Page number
@@ -419,13 +419,13 @@ public class MetadataBean {
      * Returns the first {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code>
      * 
      * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
-     * @param mainFieldName Name metadata field
+     * @param mainFieldName Main metadata field
      * @param language Optional metadata field language
      * @param subFieldName Child metadata field
      * @return First value of subFieldName; null if none found
      */
     public String getFirstMetadataValue(int metadataViewIndex, String mainFieldName, String language, String subFieldName) {
-        List<String> values = getMetadataValues(metadataViewIndex, mainFieldName, language, subFieldName);
+        List<String> values = getMetadataValues(metadataViewIndex, mainFieldName, subFieldName, language);
         if (!values.isEmpty()) {
             return values.get(0);
         }
@@ -437,7 +437,7 @@ public class MetadataBean {
      * Returns a list of {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code>
      * 
      * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
-     * @param mainFieldName Name metadata field
+     * @param mainFieldName Main metadata field
      * @param language Optional metadata field language
      * @param subFieldName Child metadata field
      * @return Metadata values of subFieldName; empty list if none found

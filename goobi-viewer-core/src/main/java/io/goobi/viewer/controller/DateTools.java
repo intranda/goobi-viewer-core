@@ -164,7 +164,7 @@ public final class DateTools {
                 int year = Integer.parseInt(ds);
                 ret.add(LocalDateTime.of(year, 1, 1, 0, 0));
             } catch (NumberFormatException e) {
-                logger.error("Could not parse year: {}", ds);
+                logger.trace("Could not parse year: {}", ds);
             }
         }
 

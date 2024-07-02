@@ -390,8 +390,11 @@ public final class AccessConditionUtils {
                     .append(logId)
                     .append(" +")
                     .append(SolrConstants.DOCTYPE)
-                    .append(':')
+                    .append(":(")
                     .append(DocType.DOCSTRCT.name())
+                    .append(' ')
+                    .append(DocType.ARCHIVE)
+                    .append(')')
                     .toString();
         } else {
             // Top document

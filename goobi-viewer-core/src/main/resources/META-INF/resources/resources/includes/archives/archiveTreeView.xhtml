@@ -15,8 +15,12 @@
 	<!-- A list of  EadEntry object which should be displayed in the tree.
 	Note: all entries in the list are displayed. The list must be filtered for visible elements beforehand-->
 	<c:set var="visibleTree"
-		value="#{archiveTree.treeView.stream().filter(e -> e.visible).filter(e -> !archiveBean.searchActive or e.displaySearch).toList()}"
+		value="#{archiveTree.getVisibleTree(archiveBean.searchActive)}"
 		scope="request" />
+	<!--
+	<c:set var="visibleTree"
+		value="#{archiveTree.treeView.stream().filter(e -> e.visible).filter(e -> !archiveBean.searchActive or e.displaySearch).toList()}"
+		scope="request" /> -->
 
 	<!-- The indentation of each hierarchical level in pixel -->
 	<c:set var="indent" value="#{indent != null ? indent : configurationBean.tocIndentation}" scope="view" />
@@ -52,7 +56,7 @@
 					</div>
 					<nav class="archives-tree__list">
 						<ul>
-							<c:forEach var="entry" items="#{visibleTree}" varStatus="status">
+							<ui:repeat var="entry" value="#{visibleTree}" varStatus="status">
 								<!-- This will break indentation if replaced with a c:if -->
 								<li class="archives-tree__entry #{entry.hasChild == true ? 'parent' : 'child' }"
 									data-id="id_#{entry.id}"
@@ -87,12 +91,12 @@
 												    pt:data-select-entry="#{entry.id}">
 												    <f:ajax render="#{render}" />
 											</h:commandLink>
-											<div class="archives-tree__entry-date">#{entry.getFieldValue('unitdate')}</div>
+											<div class="archives-tree__entry-date">#{entry.unitdate}</div>
 										</div>
 									</div>
 
 								</li>
-							</c:forEach>
+						    </ui:repeat>
 						</ul>
 					</nav>
 				</h:panelGroup>

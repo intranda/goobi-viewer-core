@@ -275,6 +275,7 @@ public class ViewManager implements Serializable {
         if (this.archiveResource != null) {
             return DataManager.getInstance().getArchiveManager().getArchiveHierarchyForIdentifier(this.archiveResource, identifier);
         }
+        logger.trace("No archive resource found for {}", identifier);
         return Collections.emptyList();
     }
 
@@ -4013,15 +4014,15 @@ public class ViewManager implements Serializable {
 
     /**
      *
-     * @return Value of MD_ARCHIVE_ENTRY_ID in the loaded record
+     * @return Value of EAD_NODE_ID in the loaded record
      */
     public String getArchiveEntryIdentifier() {
         if (topStructElement == null) {
             return null;
         }
 
-        // logger.trace("getArchiveEntryIdentifier: {}", topDocument.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID));
-        return topStructElement.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID);
+        // logger.trace("getArchiveEntryIdentifier: {}", topStructElement.getMetadataValue(SolrConstants.EAD_NODE_ID)); //NOSONAR Debug
+        return topStructElement.getMetadataValue(SolrConstants.EAD_NODE_ID);
     }
 
     /**
