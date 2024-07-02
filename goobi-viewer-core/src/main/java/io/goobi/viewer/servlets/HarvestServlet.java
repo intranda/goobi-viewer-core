@@ -476,7 +476,8 @@ public class HarvestServlet extends HttpServlet implements Serializable {
             }
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("Access condition for download not met for '{}'.", StringTools.cleanUserGeneratedData(identifier));
+            logger.debug("Access condition for download not met for '{}'.",
+                    StringTools.cleanUserGeneratedData(identifier)); //NOSONAR Pattern-breaking chars filtered
         }
         try {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
