@@ -696,8 +696,10 @@ public class ViewManager implements Serializable {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws ViewerConfigurationException
      */
-    public String getPageDownloadUrl(final DownloadOption option, PhysicalElement page) throws IndexUnreachableException, DAOException {
+    public String getPageDownloadUrl(final DownloadOption option, PhysicalElement page)
+            throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("getPageDownloadUrl: {}", option);
         DownloadOption useOption = option;
         if (useOption == null || !useOption.isValid()) {
@@ -759,10 +761,16 @@ public class ViewManager implements Serializable {
                 Dimension dim = option.getBoxSizeInPixel();
                 if (dim == DownloadOption.MAX) {
                     Scale scale = new Scale.ScaleToBox(maxSize);
-                    Dimension size = scale.scale(origImageSize);
-                    options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
+                    if (origImageSize != null) {
+                        Dimension size = scale.scale(origImageSize);
+                        options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
+                    } else {
+                        options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), DownloadOption.MAX));
+                    }
                 } else if (dim.width * dim.height == 0 || (maxWidth > 0 && maxWidth < dim.width) || (maxHeight > 0 && maxHeight < dim.height)) {
                     // nothing
+                } else if (origImageSize == null) {
+                    options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), option.getBoxSizeInPixel()));
                 } else {
                     Scale scale = new Scale.ScaleToBox(option.getBoxSizeInPixel());
                     Dimension size = scale.scale(origImageSize);
@@ -781,8 +789,10 @@ public class ViewManager implements Serializable {
      * @return List<DownloadOption>
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
-    public List<DownloadOption> getDownloadOptionsForPage(PhysicalElement page) throws IndexUnreachableException, DAOException {
+    public List<DownloadOption> getDownloadOptionsForPage(PhysicalElement page)
+            throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (page != null && page.isHasImage()) {
             List<DownloadOption> configuredOptions = DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
             String imageFilename = page.getFirstFileName();
@@ -790,8 +800,12 @@ public class ViewManager implements Serializable {
                     page.isAccessPermissionImageZoom() ? DataManager.getInstance().getConfiguration().getViewerMaxImageWidth()
                             : DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth(),
                     DataManager.getInstance().getConfiguration().getViewerMaxImageHeight());
-            Dimension imageSize = new Dimension(page.getImageWidth(), page.getImageHeight());
-            return getDownloadOptionsForImage(configuredOptions, imageSize, maxSize, imageFilename);
+            if (this.imageDeliveryBean.getIiif().isIIIFUrl(page.getFileName())) {
+                return getDownloadOptionsForImage(configuredOptions, null, maxSize, imageFilename);
+            } else {
+                Dimension imageSize = new Dimension(page.getImageWidth(), page.getImageHeight());
+                return getDownloadOptionsForImage(configuredOptions, imageSize, maxSize, imageFilename);
+            }
         }
 
         return Collections.emptyList();

@@ -377,7 +377,6 @@
                             or activeDocumentBean.viewManager.currentPage.displayFulltext)
                         and !activeDocumentBean.viewManager.doublePageMode}">
 
-
 						<ui:fragment
 							rendered="#{navigationHelper.currentView == 'fulltext'
 												and (activeDocumentBean.viewManager.currentPage.altoAvailable
@@ -538,7 +537,8 @@
 
 								<!-- MIRADOR PAGE -->
 								<ui:fragment
-									rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly and navigationHelper.currentView != 'fulltext'}">
+									rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly and navigationHelper.currentView != 'fulltext'
+									and !imageDelivery.iiif.isIIIFUrl(activeDocumentBean.viewManager.currentPage.fileName)}">
 									<a
 										href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifPageManifest}"
 										id="mirador"
