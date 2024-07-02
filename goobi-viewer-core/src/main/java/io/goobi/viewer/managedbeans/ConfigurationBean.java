@@ -968,6 +968,17 @@ public class ConfigurationBean implements Serializable {
     public boolean isShowSearchInItem() {
         return DataManager.getInstance().getConfiguration().isSearchInItemEnabled();
     }
+    
+    /**
+     * <p>
+     * isShowSearchInItemOnlyIfFullTextAvailable.
+     * </p>
+     *
+     * @return a boolean.
+     */
+    public boolean isShowSearchInItemOnlyIfFullTextAvailable() {
+        return DataManager.getInstance().getConfiguration().isSearchInItemOnlyIfFullTextAvailable();
+    }
 
     /**
      * <p>

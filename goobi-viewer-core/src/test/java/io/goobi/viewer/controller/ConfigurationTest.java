@@ -2912,6 +2912,15 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isSearchInItemOnlyIfFullTextAvailable()
+     * @verifies return correct value
+     */
+    @Test
+    void isSearchInItemOnlyIfFullTextAvailable_shouldReturnCorrectValue() throws Exception {
+        assertTrue(DataManager.getInstance().getConfiguration().isSearchInItemOnlyIfFullTextAvailable());
+    }
+
+    /**
      * @see Configuration#isUseReCaptcha()
      * @verifies return correct value
      */

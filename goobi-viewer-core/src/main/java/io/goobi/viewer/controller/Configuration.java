@@ -4950,6 +4950,19 @@ public class Configuration extends AbstractConfiguration {
     public boolean isSearchInItemEnabled() {
         return getLocalBoolean("sidebar.searchInItem[@enabled]", true);
     }
+    
+    /**
+     * <p>
+     * isSearchInItemOnlyIfFullTextAvailable.
+     * </p>
+     *
+     * @should return correct value
+     * @return a boolean.
+     */
+    public boolean isSearchInItemOnlyIfFullTextAvailable() {
+        return getLocalBoolean("sidebar.searchInItem[@onlyIfFullTextAvailable]", false);
+    }
+
 
     /**
      * <p>
