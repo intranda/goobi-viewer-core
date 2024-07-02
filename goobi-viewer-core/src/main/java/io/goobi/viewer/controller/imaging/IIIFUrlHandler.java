@@ -262,7 +262,7 @@ public class IIIFUrlHandler {
     public boolean isIIIFUrl(String url) {
         try {
             URI uri = new URI(url);
-            return uri.getScheme().matches("https?") && uri.getPath().endsWith("/info.json");
+            return uri.getScheme() != null && uri.getScheme().matches("https?") && uri.getPath() != null && uri.getPath().endsWith("/info.json");
         } catch (URISyntaxException e) {
             logger.error("No valid url: " + url);
             return false;
