@@ -33,7 +33,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -45,7 +44,7 @@ class SolrEADParserTest extends AbstractSolrEnabledTest {
     @BeforeEach
     void before() {
         try {
-            eadParser = new SolrEADParser(DataManager.getInstance().getSearchIndex());
+            eadParser = new SolrEADParser();
         } catch (PresentationException | IndexUnreachableException e) {
             Assertions.fail(e.getMessage());
         }

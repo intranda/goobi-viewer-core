@@ -48,7 +48,7 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     @BeforeEach
     void before() {
         try {
-            SolrEADParser tempParser = new SolrEADParser(DataManager.getInstance().getSearchIndex());
+            SolrEADParser tempParser = new SolrEADParser();
             List<ArchiveResource> tempDatabases = tempParser.getPossibleDatabases();
             if (!tempDatabases.isEmpty()) {
                 ArchiveEntry root =
@@ -61,7 +61,10 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
                         .add(new ArchiveResource("database 1", "resource 2", "r2", ZonedDateTime.now().format(ArchiveResource.DATE_TIME_FORMATTER),
                                 "10"));
 
-                eadParser = new SolrEADParser(DataManager.getInstance().getSearchIndex()) {
+                eadParser = new SolrEADParser() {
+
+                    private static final long serialVersionUID = 1L;
+
                     public List<ArchiveResource> getPossibleDatabases() {
                         return possibleDatabases;
                     }

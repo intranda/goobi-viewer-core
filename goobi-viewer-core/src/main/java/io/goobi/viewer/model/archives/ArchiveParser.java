@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.archives;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,6 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jdom2.JDOMException;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -42,24 +44,23 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 
-public abstract class ArchiveParser {
+public abstract class ArchiveParser implements Serializable {
+
+    private static final long serialVersionUID = -7986836324388942249L;
 
     private static final Logger logger = LogManager.getLogger(ArchiveParser.class);
 
-    protected final SolrSearchIndex searchIndex;
-
-    protected Map<String, Entry<String, Boolean>> associatedRecordMap;
+    protected transient Map<String, Entry<String, Boolean>> associatedRecordMap;
 
     /**
      *
      * @param searchIndex
      */
-    protected ArchiveParser(SolrSearchIndex searchIndex) {
-        this.searchIndex = searchIndex;
+    protected ArchiveParser() {
     }
 
     public void updateAssociatedRecordMap() throws PresentationException, IndexUnreachableException {
-        this.associatedRecordMap = getAssociatedRecordPis(this.searchIndex);
+        this.associatedRecordMap = getAssociatedRecordPis(DataManager.getInstance().getSearchIndex());
     }
 
     /**

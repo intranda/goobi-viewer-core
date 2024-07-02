@@ -56,6 +56,8 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class SolrEADParser extends ArchiveParser {
 
+    private static final long serialVersionUID = -434134931986709301L;
+
     private static final Logger logger = LogManager.getLogger(SolrEADParser.class);
 
     private static final String FIELD_ARCHIVE_ENTRY_LEVEL = "MD_ARCHIVE_ENTRY_LEVEL";
@@ -80,8 +82,7 @@ public class SolrEADParser extends ArchiveParser {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public SolrEADParser(SolrSearchIndex searchIndex) throws PresentationException, IndexUnreachableException {
-        super(searchIndex);
+    public SolrEADParser() throws PresentationException, IndexUnreachableException {
         updateAssociatedRecordMap();
     }
 
@@ -152,13 +153,16 @@ public class SolrEADParser extends ArchiveParser {
 
         logger.trace("loadDatabase: {}", database.getResourceId());
         List<String> solrFields = getSolrFields("");
-        SolrDocument topDoc = searchIndex.getFirstDoc(SolrConstants.PI + ":\"" + database.getResourceId() + '"', solrFields);
+        SolrDocument topDoc =
+                DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":\"" + database.getResourceId() + '"', solrFields);
         if (topDoc != null) {
             String query = "+" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name() + " +" + SolrConstants.PI_TOPSTRUCT + ":\""
                     + database.getResourceId() + "\" -" + SolrConstants.PI + ":\"" + database.getResourceId() + '"'; // + SearchHelper.getAllSuffixes();
             logger.trace("archive query: {}", query); //NOSONAR Debug
-            SolrDocumentList archiveDocs = searchIndex.search(query, SolrSearchIndex.MAX_HITS,
-                    Arrays.asList(new StringPair(SolrConstants.IDDOC_PARENT, "asc"), new StringPair(FIELD_ARCHIVE_ORDER, "asc")), solrFields);
+            SolrDocumentList archiveDocs = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(query, SolrSearchIndex.MAX_HITS,
+                            Arrays.asList(new StringPair(SolrConstants.IDDOC_PARENT, "asc"), new StringPair(FIELD_ARCHIVE_ORDER, "asc")), solrFields);
 
             // Add all Solr docs for this archive to map
             for (SolrDocument doc : archiveDocs) {
@@ -396,6 +400,11 @@ public class SolrEADParser extends ArchiveParser {
 
     @Override
     public String getUrl() {
-        return searchIndex.getSolrServerUrl();
+        return DataManager.getInstance().getSearchIndex().getSolrServerUrl();
+    }
+
+    @Override
+    public String toString() {
+        return getUrl();
     }
 }

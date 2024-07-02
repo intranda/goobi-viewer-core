@@ -103,13 +103,12 @@ public class ArchiveManager implements Serializable {
 
     /**
      * 
-     * @param searchIndex
      * @param archiveNodeTypes
      */
-    public ArchiveManager(SolrSearchIndex searchIndex, Map<String, String> archiveNodeTypes) {
+    public ArchiveManager(Map<String, String> archiveNodeTypes) {
         ArchiveParser parser = null;
         try {
-            parser = new SolrEADParser(searchIndex);
+            parser = new SolrEADParser();
             initArchives(parser);
             this.databaseState = DatabaseState.ARCHIVES_LOADED;
         } catch (PresentationException | IndexUnreachableException | IOException | HTTPException e) {
@@ -130,7 +129,7 @@ public class ArchiveManager implements Serializable {
             initArchives(eadParser);
             this.databaseState = DatabaseState.ARCHIVES_LOADED;
         } catch (IOException | HTTPException | PresentationException | IndexUnreachableException e) {
-            logger.error("Failed to retrieve database names from '{}': {}", eadParser.getUrl(), e.toString());
+            logger.error("Failed to retrieve database names from '{}': {}", eadParser, e.toString());
             this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
         }
         this.eadParser = eadParser;
@@ -233,7 +232,6 @@ public class ArchiveManager implements Serializable {
      */
     public NodeType getNodeType(String name) {
         return this.nodeTypes.getOrDefault(name, new NodeType("", ""));
-        // return this.nodeTypes.stream().filter(node -> node.getName().equals(name)).findAny().orElse(new NodeType("", ""));
     }
 
     /**
