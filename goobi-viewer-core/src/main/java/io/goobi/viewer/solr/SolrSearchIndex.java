@@ -1197,6 +1197,11 @@ public class SolrSearchIndex {
      */
     public List<DisplayUserGeneratedContent> getDisplayUserGeneratedContentsForRecord(String pi)
             throws PresentationException, IndexUnreachableException {
+        if (StringUtils.isEmpty(pi)) {
+            logger.warn("Cannot fetch user generated content, no PI value given.");
+            return Collections.emptyList();
+        }
+        
         String query = new StringBuilder().append(SolrConstants.PI_TOPSTRUCT)
                 .append(":")
                 .append(pi)
