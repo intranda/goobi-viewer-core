@@ -32,7 +32,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,6 +39,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -179,7 +179,7 @@ public class TextResourceBuilder {
      */
     public StringPair getAltoDocument(String pi, String fileName) throws PresentationException,
             IndexUnreachableException, ContentNotFoundException {
-        // logger.trace("getAltoDocument: {}/{}", pi, fileName);
+        // logger.trace("getAltoDocument: {}/{}", pi, fileName); //NOSONAR Debug
         java.nio.file.Path file = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getAltoCrowdsourcingFolder(),
                 DataManager.getInstance().getConfiguration().getAltoFolder(), fileName);
 
@@ -193,7 +193,7 @@ public class TextResourceBuilder {
 
         try {
             String charset = FileTools.getCharset(file);
-            // logger.trace(file.toAbsolutePath().toString());
+            // logger.trace(file.toAbsolutePath().toString()); //NOSONAR Debug
             String alto = FileTools.getStringFromFile(file.toFile(), charset != null ? charset : StringTools.DEFAULT_ENCODING);
             return new StringPair(alto, charset);
         } catch (FileNotFoundException e) {
@@ -288,7 +288,7 @@ public class TextResourceBuilder {
                         .stream()
                         .sorted(Comparator.comparing(Map.Entry::getKey))
                         .map(entry -> convert(textConverter, entry.getValue(), entry.getKey().toString()))
-                        .collect(Collectors.toList());
+                        .toList();
 
                 Document xmlDoc = builder.build(header, pages);
                 return DocumentReader.getAsString(xmlDoc, Format.getPrettyFormat());
@@ -463,7 +463,7 @@ public class TextResourceBuilder {
      * @should prioritize plaintext files over alto
      */
     public Map<java.nio.file.Path, String> getFulltextMap(String pi) throws IOException, PresentationException, IndexUnreachableException {
-        Map<java.nio.file.Path, String> ret = new HashMap<>();
+        Map<java.nio.file.Path, String> ret = new TreeMap<>();
         List<java.nio.file.Path> fulltextFiles = getFiles(pi, DataManager.getInstance().getConfiguration().getFulltextCrowdsourcingFolder(),
                 DataManager.getInstance().getConfiguration().getFulltextFolder(), "(i?).*\\.txt");
 
@@ -562,7 +562,7 @@ public class TextResourceBuilder {
             try (Stream<java.nio.file.Path> paths = Files.list(folder)
                     .filter(p -> p.getFileName().toString().toLowerCase().matches(StringUtils.isBlank(filter) ? ".*" : filter))
                     .sorted((p1, p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString()))) {
-                files = paths.collect(Collectors.toList());
+                files = paths.toList();
             }
         }
 
@@ -570,7 +570,7 @@ public class TextResourceBuilder {
             try (Stream<java.nio.file.Path> paths = Files.list(altFolder)
                     .filter(p -> p.getFileName().toString().toLowerCase().matches(StringUtils.isBlank(filter) ? ".*" : filter))
                     .sorted((p1, p2) -> p1.getFileName().toString().compareTo(p2.getFileName().toString()))) {
-                List<java.nio.file.Path> altFiles = paths.collect(Collectors.toList());
+                List<java.nio.file.Path> altFiles = paths.toList();
 
                 files = new ArrayList<>(Stream.of(files, altFiles)
                         .flatMap(List::stream)
@@ -603,7 +603,7 @@ public class TextResourceBuilder {
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(SolrTools::getAsString)
-                .collect(Collectors.toList());
+                .toList();
         for (String name : authors) {
             if (name.contains(",")) {
                 String[] parts = name.split(",");
@@ -669,7 +669,7 @@ public class TextResourceBuilder {
             if (Files.exists(teiPath)) {
                 // This will return the file with the requested language or alternatively the first file in the TEI folder
                 try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
-                    filePaths = teiFiles.filter(path -> path.getFileName().toString().matches(".*_[a-z]{1,3}\\.xml")).collect(Collectors.toList());
+                    filePaths = teiFiles.filter(path -> path.getFileName().toString().matches(".*_[a-z]{1,3}\\.xml")).toList();
                 } catch (IOException e) {
                     logger.error(e.toString(), e);
                 }
@@ -707,7 +707,7 @@ public class TextResourceBuilder {
                 try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
                     filePaths = teiFiles
                             .filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml"))
-                            .collect(Collectors.toList());
+                            .toList();
                 } catch (IOException e) {
                     logger.error(e.toString(), e);
                 }
@@ -771,7 +771,7 @@ public class TextResourceBuilder {
             if (Files.exists(cdmiPath)) {
                 // This will return the file with the requested language or alternatively the first file in the CMDI folder
                 try (Stream<java.nio.file.Path> teiFiles = Files.list(cdmiPath)) {
-                    filePaths = teiFiles.filter(path -> path.getFileName().toString().matches(".*_[a-z]{1,3}\\.xml")).collect(Collectors.toList());
+                    filePaths = teiFiles.filter(path -> path.getFileName().toString().matches(".*_[a-z]{1,3}\\.xml")).toList();
                 } catch (IOException e) {
                     logger.error(e.toString(), e);
                 }
@@ -836,7 +836,7 @@ public class TextResourceBuilder {
                 throw new ContentLibException("Not allowed to create temp file directory " + tempFile.getParentFile());
             }
 
-            FileTools.compressZipFile(files.stream().map(Path::toFile).collect(Collectors.toList()), tempFile, 9);
+            FileTools.compressZipFile(files.stream().map(Path::toFile).toList(), tempFile, 9);
             return out -> {
                 try (FileInputStream in = new FileInputStream(tempFile)) {
                     FileTools.copyStream(out, in);
