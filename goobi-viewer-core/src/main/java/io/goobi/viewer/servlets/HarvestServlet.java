@@ -188,9 +188,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                 }
                 return;
             } else if (!PIValidator.validatePi(identifier)) {
-                if (logger.isDebugEnabled()) {
-                    logger.warn("Identifier is invalid: {}", StringTools.cleanUserGeneratedData(identifier));
-                }
+                logger.warn("Identifier is invalid: {}", StringTools.cleanUserGeneratedData(identifier)); //NOSONAR Pattern-breaking chars filtered
                 try {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "identifier value invalid");
                 } catch (IOException e) {
