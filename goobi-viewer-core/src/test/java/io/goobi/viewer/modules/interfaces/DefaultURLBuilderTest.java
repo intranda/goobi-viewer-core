@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.model.archives.SolrEADParser;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.viewer.PageType;
 
@@ -65,6 +66,17 @@ class DefaultURLBuilderTest extends AbstractDatabaseEnabledTest {
         be.setImageNo(1);
         be.setWork(false);
         Assertions.assertEquals("metadata/PPN123/1/LOG_0000/", builder.generateURL(be));
+    }
+
+    /**
+     * @see DefaultURLBuilder#buildPageUrl(String,int,String,PageType,boolean)
+     * @verifies return archive view url if page type archive
+     */
+    @Test
+    void buildPageUrl_shouldReturnArchiveViewUrlIfPageTypeArchive() throws Exception {
+        IURLBuilder builder = new DefaultURLBuilder();
+        Assertions.assertEquals("archives/" + SolrEADParser.DATABASE_NAME + "/PPN123/",
+                builder.buildPageUrl("PPN123", 1, null, PageType.archive, true));
     }
 
     /**
