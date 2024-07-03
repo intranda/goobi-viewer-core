@@ -201,6 +201,7 @@ public class ArchiveEntry implements Serializable {
         this.displayChildren = orig.displayChildren;
         this.displaySearch = orig.displaySearch;
         this.doc = orig.doc;
+        this.metadataLoaded = orig.metadataLoaded;
         this.childrenFound = orig.childrenFound;
         this.childrenLoaded = orig.childrenLoaded;
     }
@@ -382,6 +383,7 @@ public class ArchiveEntry implements Serializable {
     public void loadMetadata() {
         logger.trace("loadMetadata ({})", label);
         try {
+            // resetMetadata();
             List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getArchiveMetadataForTemplate("");
             // Collect metadata
             if (doc != null && metadataList != null && !metadataList.isEmpty()) {
@@ -442,6 +444,16 @@ public class ArchiveEntry implements Serializable {
             default:
                 break;
         }
+    }
+
+    void resetMetadata() {
+        getIdentityStatementAreaList().clear();
+        getContextAreaList().clear();
+        getContentAndStructureAreaAreaList().clear();
+        getAccessAndUseAreaList().clear();
+        getAlliedMaterialsAreaList().clear();
+        getNotesAreaList().clear();
+        getDescriptionControlAreaList().clear();
     }
 
     /**
