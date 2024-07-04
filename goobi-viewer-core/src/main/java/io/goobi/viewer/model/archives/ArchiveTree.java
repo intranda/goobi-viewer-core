@@ -201,9 +201,7 @@ public class ArchiveTree implements Serializable {
     public List<ArchiveEntry> getVisibleTree(boolean searchActive) {
         logger.trace("getVisibleTree");
         return getTreeView().stream()
-                .filter(e -> e.isVisible())
-                .filter(e -> e.isDisplaySearch() || !searchActive)
-                .filter(e -> e.isAccessAllowed())
+                .filter(e -> e.isVisible() && (e.isDisplaySearch() || !searchActive) && e.isAccessAllowed())
                 .map(e -> {
                     if (!e.isMetadataLoaded()) {
                         e.loadMetadata();

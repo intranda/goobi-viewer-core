@@ -66,13 +66,13 @@ public class ArchiveManager implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(ArchiveManager.class);
 
+    private final ArchiveParser eadParser;
+
     private DatabaseState databaseState = DatabaseState.NOT_INITIALIZED;
 
     private Map<ArchiveResource, ArchiveTree> archives = new HashMap<>();
 
-    private final Map<String, NodeType> nodeTypes;
-
-    private final ArchiveParser eadParser;
+    private Map<String, NodeType> nodeTypes;
 
     public enum DatabaseState {
         /**
@@ -103,9 +103,8 @@ public class ArchiveManager implements Serializable {
 
     /**
      * 
-     * @param archiveNodeTypes
      */
-    public ArchiveManager(Map<String, String> archiveNodeTypes) {
+    public ArchiveManager() {
         ArchiveParser parser = null;
         try {
             parser = new SolrEADParser();
@@ -116,15 +115,14 @@ public class ArchiveManager implements Serializable {
             this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
         }
         this.eadParser = parser;
-        this.nodeTypes = loadNodeTypes(archiveNodeTypes);
+        getUpdatedNodeTypes();
     }
 
     /**
      * 
      * @param eadParser
-     * @param archiveNodeTypes
      */
-    public ArchiveManager(ArchiveParser eadParser, Map<String, String> archiveNodeTypes) {
+    public ArchiveManager(ArchiveParser eadParser) {
         try {
             initArchives(eadParser);
             this.databaseState = DatabaseState.ARCHIVES_LOADED;
@@ -133,7 +131,7 @@ public class ArchiveManager implements Serializable {
             this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
         }
         this.eadParser = eadParser;
-        this.nodeTypes = loadNodeTypes(archiveNodeTypes);
+        getUpdatedNodeTypes();
     }
 
     /**
@@ -498,6 +496,16 @@ public class ArchiveManager implements Serializable {
         ret.update(rootElement);
 
         return ret;
+    }
+
+    /**
+     * Reloads nodeTyps from the config.
+     * 
+     * @return this.nodeTypes
+     */
+    public Map<String, NodeType> getUpdatedNodeTypes() {
+        this.nodeTypes = loadNodeTypes(DataManager.getInstance().getConfiguration().getArchiveNodeTypes());
+        return nodeTypes;
     }
 
     /**

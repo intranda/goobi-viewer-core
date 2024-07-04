@@ -17,7 +17,12 @@
 	<c:set var="visibleTree"
 		value="#{archiveTree.getVisibleTree(archiveBean.searchActive)}"
 		scope="request" />
-	<!--
+
+    <!-- var is not really needed, but a call to update the types from the config is. -->
+    <c:set var="nodeTypes"
+        value="#{archiveBean.getUpdatedNodeTypes()}"
+        scope="request" />
+
 	<c:set var="visibleTree"
 		value="#{archiveTree.treeView.stream().filter(e -> e.visible).filter(e -> !archiveBean.searchActive or e.displaySearch).toList()}"
 		scope="request" /> -->
