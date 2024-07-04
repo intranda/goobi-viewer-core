@@ -91,7 +91,9 @@
 												    pt:data-select-entry="#{entry.id}">
 												    <f:ajax render="#{render}" />
 											</h:commandLink>
-											<div class="archives-tree__entry-date">#{entry.unitdate}</div>
+											<div class="archives-tree__entry-date">
+											    <h:outputText value="#{entry.unitdate}" escape="false" />
+											</div>
 										</div>
 									</div>
 
