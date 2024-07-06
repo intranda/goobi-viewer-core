@@ -104,7 +104,7 @@
 		<httpmime.version>4.5.14</httpmime.version>
 		<icu.version>75.1</icu.version>
 		<inject.version>1</inject.version>
-		<jackson.version>2.17.1</jackson.version>
+		<jackson.version>2.17.2</jackson.version>
 		<jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
 		<jakarta.servlet-api.version>4.0.4</jakarta.servlet-api.version>
 		<javax.annotation.version>1.3.2</javax.annotation.version>
