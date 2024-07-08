@@ -112,6 +112,8 @@ public class NavigationHelper implements Serializable {
 
     @Inject
     private BreadcrumbBean breadcrumbBean;
+    @Inject
+    private CmsBean cmsBean;
 
     /** Constant <code>KEY_CURRENT_VIEW="currentView"</code> */
     protected static final String KEY_CURRENT_VIEW = "currentView";
@@ -267,7 +269,12 @@ public class NavigationHelper implements Serializable {
      * @param cmsPage
      */
     public void setCurrentPage(CMSPage cmsPage) {
-        setCurrentPage(getCMSPageNavigationId(cmsPage), false, true, true);
+        try {
+            setCurrentPage(getCMSPageNavigationId(cmsPage), false, !cmsBean.isRelatedWorkLoaded(), true);
+        } catch (IndexUnreachableException e) {
+            logger.error("Error checking if related work for cmsPage is loaded", e);
+            setCurrentPage(getCMSPageNavigationId(cmsPage), false, true, true);
+        }
     }
 
     /**
