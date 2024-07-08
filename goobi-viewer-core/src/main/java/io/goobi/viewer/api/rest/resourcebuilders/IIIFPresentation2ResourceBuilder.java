@@ -380,8 +380,8 @@ public class IIIFPresentation2ResourceBuilder {
     }
 
     /**
-     * Returns a iiif collection of the given topCollection for the give collection field. The response includes the metadata and subcollections of the
-     * direct child collections. Collections further down the hierarchy may be accessed following the links in the @id properties in the
+     * Returns a iiif collection of the given topCollection for the give collection field. The response includes the metadata and subcollections of
+     * the direct child collections. Collections further down the hierarchy may be accessed following the links in the @id properties in the
      * member-collections Requires passing a language to set the language for all metadata values
      *
      * @param collectionField a {@link java.lang.String} object.

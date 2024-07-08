@@ -120,10 +120,10 @@ public final class AccessConditionUtils {
                 }
                 if (isThumbnail) {
                     return checkAccessPermissionForThumbnail(request, pi, contentFileName);
-                    //                                logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access); //NOSONAR Debug
+                    // logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access); //NOSONAR Debug
                 }
                 return checkAccessPermissionForImage(request, pi, contentFileName);
-            //                                logger.trace("Checked image access: {}/{}: {}", pi, contentFileName, access); //NOSONAR Debug
+            // logger.trace("Checked image access: {}/{}: {}", pi, contentFileName, access); //NOSONAR Debug
             case "text":
             case "ocrdump":
                 return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
@@ -1015,14 +1015,14 @@ public final class AccessConditionUtils {
                     // licenseType.getName(), StringTools.stripPatternBreakingChars(query)); //NOSONAR Debug
                     if (licenseType.isMovingWall()) {
                         // Moving wall license type allow everything if the condition query doesn't match
-                        // logger.trace("License type '{}' is a moving wall type and its condition query doesn't match the record query '{}'. //NOSONAR Debug
+                        // logger.trace("License type '{}' is moving wall and its condition query doesn't match record query '{}'. //NOSONAR Debug
                         // All restrictions lifted.", licenseType.getName(), StringTools.stripPatternBreakingChars(query)); //NOSONAR Debug
                         licenseType.getRestrictionsExpired().put(query, true);
                     } else {
                         continue;
                     }
                 }
-                // logger.trace("LicenseType '{}' applies to resource described by '{}' due to moving wall restrictions.", licenseType.getName(), //NOSONAR Debug
+                // logger.trace("LicenseType '{}' applies to resource '{}' due to moving wall restrictions.", licenseType.getName(), //NOSONAR Debug
                 // StringTools.stripPatternBreakingChars(query)); //NOSONAR Debug
             }
 
