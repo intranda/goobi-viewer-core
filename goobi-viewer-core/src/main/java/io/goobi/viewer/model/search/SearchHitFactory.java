@@ -318,7 +318,7 @@ public class SearchHitFactory {
     List<MetadataWrapper> findAdditionalMetadataFieldsContainingSearchTerms(
             Map<String, List<String>> availableMetadata, Map<String, Set<String>> searchTerms, Set<String> existingMetadataFields, String iddoc,
             String searchHitLabel) {
-        // logger.trace("findAdditionalMetadataFieldsContainingSearchTerms");
+        // logger.trace("findAdditionalMetadataFieldsContainingSearchTerms"); //NOSONAR Logging sometimes needed for debugging
         if (existingMetadataFields == null) {
             throw new IllegalArgumentException("existingMetadataList may not be null");
         }

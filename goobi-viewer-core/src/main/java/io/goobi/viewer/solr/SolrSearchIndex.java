@@ -329,7 +329,7 @@ public class SolrSearchIndex {
         if (filterQueries != null && !filterQueries.isEmpty()) {
             for (String fq : filterQueries) {
                 solrQuery.addFilterQuery(SolrTools.cleanUpQuery(fq));
-                // logger.trace("adding filter query: {}", fq)
+                // logger.trace("adding filter query: {}", fq) //NOSONAR Logging sometimes needed for debugging
             }
         }
         if (params != null && !params.isEmpty()) {
@@ -340,13 +340,13 @@ public class SolrSearchIndex {
         }
 
         try {
-            //             logger.trace("Solr query : {}", solrQuery.getQuery());
-            //             logger.debug("range: {} - {}", first, first + rows);
-            //             logger.debug("facetFields: {}", facetFields);
-            //             logger.debug("fieldList: {}", fieldList);
+            //             logger.trace("Solr query : {}", solrQuery.getQuery()); //NOSONAR Logging sometimes needed for debugging
+            //             logger.debug("range: {} - {}", first, first + rows); //NOSONAR Logging sometimes needed for debugging
+            //             logger.debug("facetFields: {}", facetFields); //NOSONAR Logging sometimes needed for debugging
+            //             logger.debug("fieldList: {}", fieldList); //NOSONAR Logging sometimes needed for debugging
             QueryResponse resp = client.query(solrQuery, queryMethod);
-            //             logger.debug("found: {}", resp.getResults().getNumFound());
-            //             logger.debug("fetched: {}", resp.getResults().size());
+            //             logger.debug("found: {}", resp.getResults().getNumFound()); //NOSONAR Logging sometimes needed for debugging
+            //             logger.debug("fetched: {}", resp.getResults().size()); //NOSONAR Logging sometimes needed for debugging
 
             return resp;
         } catch (SolrServerException e) {
@@ -925,7 +925,7 @@ public class SolrSearchIndex {
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
             boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
-        // logger.trace("searchFacetsAndStatistics: {}", query);
+        // logger.trace("searchFacetsAndStatistics: {}", query); //NOSONAR Logging sometimes needed for debugging
         return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, null, getFieldStatistics);
     }
 
@@ -945,7 +945,7 @@ public class SolrSearchIndex {
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
             Map<String, String> params, boolean getFieldStatistics)
             throws PresentationException, IndexUnreachableException {
-        // logger.trace("searchFacetsAndStatistics: {}", query);
+        // logger.trace("searchFacetsAndStatistics: {}", query); //NOSONAR Logging sometimes needed for debugging
         return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, params, getFieldStatistics);
     }
 
@@ -1105,7 +1105,7 @@ public class SolrSearchIndex {
                 if (!added.contains(n)) {
                     list.add(n);
                     added.add(n);
-                    // logger.trace("added sort field: {}", n);
+                    // logger.trace("added sort field: {}", n); //NOSONAR Logging sometimes needed for debugging
                 }
             }
         }

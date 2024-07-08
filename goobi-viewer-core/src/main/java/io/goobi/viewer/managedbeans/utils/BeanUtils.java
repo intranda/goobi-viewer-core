@@ -97,7 +97,7 @@ public final class BeanUtils {
         try {
             return sb.getRequest();
         } catch (ContextNotActiveException | IllegalStateException e) {
-            // logger.trace(e.getMessage());
+            // logger.trace(e.getMessage()); //NOSONAR Logging sometimes needed for debugging
         }
 
         FacesContext context = FacesContext.getCurrentInstance();

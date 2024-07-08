@@ -49,7 +49,7 @@ public class SessionListener implements HttpSessionListener {
     @Override
     public void sessionCreated(HttpSessionEvent event) {
         //        if (DataManager.getInstance().getSessionMap().put(event.getSession().getId(), new HashMap<>()) == null) {
-        //            logger.trace("Session created: {}", event.getSession().getId());
+        //            logger.trace("Session created: {}", event.getSession().getId()); //NOSONAR Logging sometimes needed for debugging
         //        }
     }
 
@@ -61,7 +61,7 @@ public class SessionListener implements HttpSessionListener {
     public void sessionDestroyed(HttpSessionEvent event) {
         if (DataManager.getInstance().getSessionMap().remove(event.getSession().getId()) != null) {
             String sessionId = event.getSession().getId();
-            // logger.trace("Session destroyed: {}", sessionId);
+            // logger.trace("Session destroyed: {}", sessionId); //NOSONAR Logging sometimes needed for debugging
             DataManager.getInstance().getRecordLockManager().removeLocksForSessionId(sessionId, null);
             if (sessionId.equals(AdminBean.getTranslationGroupsEditorSession())) {
                 AdminBean.setTranslationGroupsEditorSession(null);

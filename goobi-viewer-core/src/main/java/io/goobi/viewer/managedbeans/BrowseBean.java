@@ -881,7 +881,7 @@ public class BrowseBean implements Serializable {
             answer++;
         }
 
-        //        logger.trace(hitsCount + "/" + hitsPerPageLocal + "=" + answer);
+        //        logger.trace(hitsCount + "/" + hitsPerPageLocal + "=" + answer); //NOSONAR Logging sometimes needed for debugging
         return answer;
     }
 

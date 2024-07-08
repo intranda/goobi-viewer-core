@@ -24,12 +24,22 @@ package io.goobi.viewer.managedbeans;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
+import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
 import io.goobi.viewer.model.viewer.LabeledLink;
 import io.goobi.viewer.model.viewer.PageType;
 
@@ -177,4 +187,24 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
         String label = ViewerResourceBundle.getTranslationWithParameters("adminTranslationsEdit", nh.getLocale(), true, "Sammlungsnamen");
         assertEquals(label, third.getName());
     }
+
+    @Test
+    void test_setCmsPageView() throws DAOException, IndexUnreachableException, PresentationException, ViewerConfigurationException {
+        NavigationHelper nh = new NavigationHelper();
+        CMSPageContentManager contentManager = Mockito.mock(CMSPageContentManager.class);
+        CMSTemplateManager templateManager = Mockito.mock(CMSTemplateManager.class);
+        Mockito.when(templateManager.getContentManager()).thenReturn(contentManager);
+        CmsBean cmsBean = new CmsBean(templateManager, nh);
+        nh.setCmsBean(cmsBean);
+        BreadcrumbBean bcb = new BreadcrumbBean();
+        ActiveDocumentBean adb = new ActiveDocumentBean();
+        adb.setNavigationHelper(nh);
+        adb.setCmsBean(cmsBean);
+        CMSPage cms = DataManager.getInstance().getDao().getCMSPage(1);
+        cmsBean.setCurrentPage(cms);
+        nh.setCurrentPage(cms);
+        assertEquals(nh.getCurrentView(), PageType.cmsPage.name());
+        assertEquals(cms.getTitle(Locale.ENGLISH), adb.getTitleBarLabel(Locale.ENGLISH));
+    }
+
 }

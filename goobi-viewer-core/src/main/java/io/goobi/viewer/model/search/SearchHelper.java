@@ -374,10 +374,10 @@ public final class SearchHelper {
         int count = first;
         Map<String, SolrDocumentList> childDocsMap = resp.getExpandedResults();
         for (SolrDocument doc : resp.getResults()) {
-            // logger.trace("result iddoc: {}", doc.getFieldValue(SolrConstants.IDDOC));
+            // logger.trace("result iddoc: {}", doc.getFieldValue(SolrConstants.IDDOC)); //NOSONAR Logging sometimes needed for debugging
 
             // Create main hit
-            // logger.trace("Creating search hit from {}", doc);
+            // logger.trace("Creating search hit from {}", doc); //NOSONAR Logging sometimes needed for debugging
             SearchHit hit = factory.createSearchHit(doc, null, null, null);
             if (keepSolrDoc) {
                 hit.setSolrDoc(doc);
@@ -386,7 +386,7 @@ public final class SearchHelper {
             int populatedChildHits = hit.addCMSPageChildren();
             populatedChildHits += hit.addFulltextChild(doc, locale != null ? locale.getLanguage() : null);
             hit.setHitsPreloaded(populatedChildHits);
-            // logger.trace("Added search hit {}", hit.getBrowseElement().getLabel());
+            // logger.trace("Added search hit {}", hit.getBrowseElement().getLabel()); //NOSONAR Logging sometimes needed for debugging
             // Collect Solr docs of child hits
             String pi = (String) doc.getFieldValue(SolrConstants.PI);
             String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
@@ -570,7 +570,7 @@ public final class SearchHelper {
             sbSuffix.append(getCollectionBlacklistFilterSuffix(SolrConstants.DC));
         }
         String filterQuerySuffix = getFilterQuerySuffix(request, privilege);
-        // logger.trace("filterQuerySuffix: {}", filterQuerySuffix);
+        // logger.trace("filterQuerySuffix: {}", filterQuerySuffix); //NOSONAR Logging sometimes needed for debugging
         if (filterQuerySuffix != null) {
             sbSuffix.append(filterQuerySuffix);
         }
@@ -1057,7 +1057,7 @@ public final class SearchHelper {
      * @return a {@link java.lang.String} object.
      */
     protected static String generateCollectionBlacklistFilterSuffix(String field) {
-        // logger.trace("Generating blacklist suffix for field '{}'...", field);
+        // logger.trace("Generating blacklist suffix for field '{}'...", field); //NOSONAR Logging sometimes needed for debugging
         StringBuilder sbQuery = new StringBuilder();
         List<String> list = DataManager.getInstance().getConfiguration().getCollectionBlacklist(field);
         if (list != null && !list.isEmpty()) {
@@ -1084,7 +1084,7 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public static String getDiscriminatorFieldFilterSuffix(NavigationHelper nh, String discriminatorField) throws IndexUnreachableException {
-        // logger.trace("nh null? {}", nh == null);
+        // logger.trace("nh null? {}", nh == null); //NOSONAR Logging sometimes needed for debugging
         logger.trace("discriminatorField: {}", discriminatorField);
         if (StringUtils.isNotEmpty(discriminatorField) && nh != null) {
             String discriminatorValue = nh.getSubThemeDiscriminatorValue();
@@ -1299,7 +1299,7 @@ public final class SearchHelper {
                     String regex = buildProximitySearchRegexPattern(searchTerm, proximitySearchDistance);
                     if (regex != null) {
                         Matcher m = Pattern.compile(regex).matcher(fulltext.toLowerCase());
-                        // logger.trace(fulltext.toLowerCase());
+                        // logger.trace(fulltext.toLowerCase()); //NOSONAR Logging sometimes needed for debugging
                         int lastIndex = -1;
                         while (m.find()) {
                             // Skip match if it follows right after the last match
@@ -1482,7 +1482,7 @@ public final class SearchHelper {
             FuzzySearchTerm fuzzyTerm = new FuzzySearchTerm(t);
             String term = fuzzyTerm.getTerm();
             // Highlighting single-character terms can take a long time, so skip them
-            if (term.length() < 2) {
+            if (term.length() < 2) {//NOSONAR Logging sometimes needed for debugging
                 continue;
             }
             term = SearchHelper.removeTruncation(term);
@@ -1490,7 +1490,7 @@ public final class SearchHelper {
             String normalizedTerm = normalizeString(term);
             if (contains(normalizedPhrase, normalizedTerm, fuzzyTerm.getMaxDistance())) {
                 highlightedValue = SearchHelper.applyHighlightingToPhrase(highlightedValue, term);
-                // logger.trace("highlighted value: {}", highlightedValue);
+                // logger.trace("highlighted value: {}", highlightedValue);  //NOSONAR Logging sometimes needed for debugging
             }
         }
 
@@ -1558,7 +1558,7 @@ public final class SearchHelper {
         int endIndex = startIndex + term.length();
         String before = phrase.substring(0, startIndex);
         String highlightedTerm = applyHighlightingToTerm(phrase.substring(startIndex, endIndex));
-        // logger.trace("highlighted term: {}", highlightedTerm);
+        // logger.trace("highlighted term: {}", highlightedTerm); //NOSONAR Logging sometimes needed for debugging
         String after = phrase.substring(endIndex);
 
         return sb.append(applyHighlightingToPhrase(before, term)).append(highlightedTerm).append(applyHighlightingToPhrase(after, term)).toString();
@@ -1916,7 +1916,7 @@ public final class SearchHelper {
                     for (Count count : resp.getFacetField(useField).getValues()) {
                         if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith)
                                 && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith)) {
-                            // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}",
+                            // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}", //NOSONAR Logging sometimes needed for debugging
                             // term, compareTerm, sortTerm, bmfc.isTranslate());
                             continue;
                         }
@@ -2042,7 +2042,7 @@ public final class SearchHelper {
      */
     private static void processSolrResult(SolrDocument doc, BrowsingMenuFieldConfig bmfc, String startsWith,
             ConcurrentMap<String, BrowseTerm> terms, boolean aggregateHits, String language) {
-        // logger.trace("processSolrResult thread {}", Thread.currentThread().getId());
+        // logger.trace("processSolrResult thread {}", Thread.currentThread().getId()); //NOSONAR Logging sometimes needed for debugging
         List<String> termList = SolrTools.getMetadataValues(doc, bmfc.getFieldForLanguage(language));
         if (termList.isEmpty()) {
             return;
@@ -2094,7 +2094,7 @@ public final class SearchHelper {
                         DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars()).trim();
             }
             if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith) && !StringUtils.startsWithIgnoreCase(compareTerm, startsWith)) {
-                // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}",
+                // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}", //NOSONAR Logging sometimes needed for debugging
                 // term, compareTerm, sortTerm, bmfc.isTranslate()); //NOSONAR Debug
                 continue;
             }
@@ -2104,7 +2104,7 @@ public final class SearchHelper {
                 synchronized (LOCK) {
                     // Another thread may have added this term by now
                     if (!terms.containsKey(term)) {
-                        // logger.trace("Adding term: {}, compareTerm: {}, sortTerm: {}, translate: {}",
+                        // logger.trace("Adding term: {}, compareTerm: {}, sortTerm: {}, translate: {}", //NOSONAR Logging sometimes needed for debugging
                         // term, compareTerm, sortTerm, bmfc.isTranslate()); //NOSONAR Debug
                         terms.put(term, new BrowseTerm(term, sortTerm, bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(term) : null));
                     }
@@ -2206,7 +2206,7 @@ public final class SearchHelper {
                 if (ret.get(field) == null) {
                     ret.put(field, new HashSet<>());
                 }
-                // logger.trace("term: {}:{}", field, phraseWithoutQuotation);
+                // logger.trace("term: {}:{}", field, phraseWithoutQuotation); //NOSONAR Logging sometimes needed for debugging
                 ret.get(field).add(phraseWithoutQuotation);
             }
             q = q.replace(phrase, "");
@@ -2218,7 +2218,7 @@ public final class SearchHelper {
         String currentField = null;
         for (final String queryPart : querySplit) {
             String s = queryPart.trim();
-            // logger.trace("term: {}", s);
+            // logger.trace("term: {}", s); //NOSONAR Logging sometimes needed for debugging
             // Extract the value part
             if (s.contains(":") && !s.startsWith(":")) {
                 int split = s.indexOf(':');
@@ -2859,7 +2859,7 @@ public final class SearchHelper {
                     term = term.replace("\\*", "*");
                     //unescape fuzzy search token
                     term = term.replaceAll("\\\\~(\\d)", "~$1");
-                    // logger.trace("term: {}", term);
+                    // logger.trace("term: {}", term); //NOSONAR Logging sometimes needed for debugging
                     if (phraseSearch && !quotationMarksApplied) {
                         term = '"' + term + '"';
                     }
@@ -2868,7 +2868,7 @@ public final class SearchHelper {
                     term = term.replace("\\\"", "\""); // unescape quotation marks
                     term = addProximitySearchToken(term, proximitySearchDistance);
                 }
-                // logger.trace("term: {}", term);
+                // logger.trace("term: {}", term); //NOSONAR Logging sometimes needed for debugging
                 sbInner.append(term);
             }
             sbOuter.append(field).append(":");
@@ -2928,7 +2928,7 @@ public final class SearchHelper {
             if (item.getField() == null) {
                 continue;
             }
-            // logger.trace("item field: {}", item.getField());
+            // logger.trace("item field: {}", item.getField()); //NOSONAR Logging sometimes needed for debugging
             // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc
             switch (item.getField()) {
                 case SolrConstants.PI_TOPSTRUCT:
@@ -2974,7 +2974,7 @@ public final class SearchHelper {
     public static List<String> getExpandQueryFieldList(int searchType, SearchFilter searchFilter, SearchQueryGroup queryGroup,
             List<String> additionalFields) {
         List<String> ret = new ArrayList<>();
-        // logger.trace("searchType: {}", searchType);
+        // logger.trace("searchType: {}", searchType); //NOSONAR Logging sometimes needed for debugging
         switch (searchType) {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
                 if (queryGroup != null) {
@@ -3179,7 +3179,7 @@ public final class SearchHelper {
             throw new IllegalArgumentException("rawQuery may not be null");
         }
 
-        // logger.trace("rawQuery: {}", rawQuery);
+        // logger.trace("rawQuery: {}", rawQuery); //NOSONAR Logging sometimes needed for debugging
         StringBuilder sbQuery = new StringBuilder();
         if (SearchAggregationType.AGGREGATE_TO_TOPSTRUCT.equals(aggregationType)) {
             sbQuery.append(AGGREGATION_QUERY_PREFIX);

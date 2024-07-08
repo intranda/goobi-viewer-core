@@ -229,7 +229,7 @@ public class ArchiveEntry implements Serializable {
      * @return List<ArchiveEntry>
      */
     public List<ArchiveEntry> getAsFlatList(boolean ignoreDisplayChildren) {
-        // logger.trace("getAsFlatList");
+        // logger.trace("getAsFlatList"); //NOSONAR Logging sometimes needed for debugging
         List<ArchiveEntry> list = new LinkedList<>();
         list.add(this);
         if ((displayChildren || ignoreDisplayChildren) && subEntryList != null && !subEntryList.isEmpty()) {
@@ -466,7 +466,7 @@ public class ArchiveEntry implements Serializable {
             ret = ret.getParentNode();
         }
 
-        // logger.trace("found root: {}", ret);
+        // logger.trace("found root: {}", ret); //NOSONAR Logging sometimes needed for debugging
         return ret;
     }
 
@@ -530,7 +530,7 @@ public class ArchiveEntry implements Serializable {
      * @return the id
      */
     public String getId() {
-        // logger.trace("getId: {}", id);
+        // logger.trace("getId: {}", id); //NOSONAR Logging sometimes needed for debugging
         return id;
     }
 
@@ -654,7 +654,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     public List<Metadata> getAllAreaLists() {
-        // logger.trace("getAllAreaLists ({})", id);
+        // logger.trace("getAllAreaLists ({})", id); //NOSONAR Logging sometimes needed for debugging
         List<Metadata> ret = new ArrayList<>(getIdentityStatementAreaList().size()
                 + getContextAreaList().size()
                 + getContentAndStructureAreaAreaList().size()
@@ -670,7 +670,7 @@ public class ArchiveEntry implements Serializable {
         ret.addAll(getNotesAreaList());
         ret.addAll(getDescriptionControlAreaList());
 
-        // logger.trace("getAllAreaLists END");
+        // logger.trace("getAllAreaLists END"); //NOSONAR Logging sometimes needed for debugging
         return ret;
     }
 

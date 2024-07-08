@@ -55,17 +55,17 @@ public class UserEndpoint {
 
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) {
-        // logger.trace("onOpen: {}", session.getId());
+        // logger.trace("onOpen: {}", session.getId()); //NOSONAR Logging sometimes needed for debugging
         this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
         if (httpSession != null) {
-            // logger.trace("HTTP session ID: {}", httpSession.getId());
+            // logger.trace("HTTP session ID: {}", httpSession.getId()); //NOSONAR Logging sometimes needed for debugging
             cancelClearTimer(httpSession.getId());
         }
     }
 
     @OnMessage
     public void onMessage(String message) {
-        // logger.trace("onMessage from {}: {}", session.getId(), message);
+        // logger.trace("onMessage from {}: {}", session.getId(), message); //NOSONAR Logging sometimes needed for debugging
         if (httpSession != null) {
             cancelClearTimer(httpSession.getId());
         }
@@ -73,7 +73,7 @@ public class UserEndpoint {
 
     @OnClose
     public void onClose(Session session) {
-        // logger.trace("onClose {}", session.getId());
+        // logger.trace("onClose {}", session.getId()); //NOSONAR Logging sometimes needed for debugging
         if (httpSession != null) {
             delayedRemoveLocksForSessionId(httpSession.getId(), 30000L);
         }
@@ -112,7 +112,7 @@ public class UserEndpoint {
             return;
         }
 
-        // logger.trace("Starting timer for {}", sessionId);
+        // logger.trace("Starting timer for {}", sessionId); //NOSONAR Logging sometimes needed for debugging
         TimerTask task = new TimerTask() {
 
             @Override
@@ -120,7 +120,7 @@ public class UserEndpoint {
                 if (sessionClearTimers.containsKey(sessionId)) {
                     // Remove record locks
                     int count = DataManager.getInstance().getRecordLockManager().removeLocksForSessionId(sessionId, null);
-                    // logger.trace("Removed {} record locks for session '{}'.", count, sessionId);
+                    // logger.trace("Removed {} record locks for session '{}'.", count, sessionId); //NOSONAR Logging sometimes needed for debugging
                     sessionClearTimers.remove(sessionId);
 
                     // Remove translation editing lock

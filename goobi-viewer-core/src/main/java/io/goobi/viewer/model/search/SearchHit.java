@@ -533,7 +533,7 @@ public class SearchHit implements Comparable<SearchHit> {
                 ownerHit = newOwnerHit;
                 ownerHits.put(ownerIddoc, newOwnerHit);
             }
-            // logger.trace("owner doc of {}: {}", childDoc.getFieldValue(SolrConstants.IDDOC),
+            // logger.trace("owner doc of {}: {}", childDoc.getFieldValue(SolrConstants.IDDOC), //NOSONAR Logging sometimes needed for debugging
             // ownerHit.getBrowseElement().getIddoc()); //NOSONAR Sometimes used for debugging
 
             SearchHit childHit =
@@ -591,11 +591,11 @@ public class SearchHit implements Comparable<SearchHit> {
                             StringPair alto = DataFileTools.loadAlto(altoFilename);
                             fulltext = ALTOTools.getFulltext(alto.getOne(), alto.getTwo(), true);
                             List<TagCount> tags = ALTOTools.getNERTags(alto.getOne(), alto.getTwo(), null);
-                            // logger.trace("found {} entity tags", tags.size());
+                            // logger.trace("found {} entity tags", tags.size()); //NOSONAR Logging sometimes needed for debugging
                             String highlightWord = null;
                             for (TagCount tag : tags) {
                                 if (tag.getIdentifier() != null) {
-                                    //logger.trace("tag identifier: {}", tag.getIdentifier());
+                                    //logger.trace("tag identifier: {}", tag.getIdentifier()); //NOSONAR Logging sometimes needed for debugging
                                 }
                                 if (authorityIdentifier.equals(tag.getIdentifier())) {
                                     highlightWord = tag.getValue();

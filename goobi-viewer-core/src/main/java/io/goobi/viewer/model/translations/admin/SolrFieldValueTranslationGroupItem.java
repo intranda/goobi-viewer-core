@@ -60,7 +60,7 @@ public class SolrFieldValueTranslationGroupItem extends TranslationGroupItem {
      */
     @Override
     protected void loadEntries() throws PresentationException, IndexUnreachableException {
-        // logger.trace("loadEntries");
+        // logger.trace("loadEntries"); //NOSONAR Logging sometimes needed for debugging
         QueryResponse qr = DataManager.getInstance()
                 .getSearchIndex()
                 .searchFacetsAndStatistics("*:*", null, Collections.singletonList(key), 1, false);
