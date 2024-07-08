@@ -1067,6 +1067,15 @@
 						</tag>
 					</tags>
 				</configuration>
+				<executions>
+					<execution>
+						<id>check-javadoc</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				 </executions>
 			</plugin>
 			<!-- used for test coverage report in Jenkins -->
 			<plugin>
