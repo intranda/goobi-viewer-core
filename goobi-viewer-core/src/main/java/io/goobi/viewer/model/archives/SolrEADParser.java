@@ -78,7 +78,6 @@ public class SolrEADParser extends ArchiveParser {
 
     /**
      *
-     * @param searchIndex
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -157,8 +156,7 @@ public class SolrEADParser extends ArchiveParser {
                 DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":\"" + database.getResourceId() + '"', solrFields);
         if (topDoc != null) {
             String query = "+" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name() + " +" + SolrConstants.PI_TOPSTRUCT + ":\""
-                    + database.getResourceId() + "\" -" + SolrConstants.PI + ":\"" + database.getResourceId() + '"'; 
-            // + SearchHelper.getAllSuffixes();
+                    + database.getResourceId() + "\" -" + SolrConstants.PI + ":\"" + database.getResourceId() + '"';
             logger.trace("archive query: {}", query); //NOSONAR Debug
             SolrDocumentList archiveDocs = DataManager.getInstance()
                     .getSearchIndex()
