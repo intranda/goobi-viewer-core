@@ -292,7 +292,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws PresentationException .
      */
     private SolrDocument getDocument() throws PresentationException, IndexUnreachableException {
-        // logger.trace("getDocument(): {}", luceneId); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("getDocument(): {}", luceneId); //NOSONAR Debug
         SolrDocument doc = DataManager.getInstance()
                 .getSearchIndex()
                 .getFirstDoc(SolrConstants.IDDOC + ":" + luceneId, null);
@@ -367,7 +367,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getParent() throws IndexUnreachableException {
-        //        logger.trace("getParent"); //NOSONAR Logging sometimes needed for debugging
+        //        logger.trace("getParent"); //NOSONAR Debug
         StructElement parent = null;
         try {
             String parentIddoc = getMetadataValue(SolrConstants.IDDOC_PARENT);
@@ -982,7 +982,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     return SolrTools.getSingleFieldStringValue(pages.get(0), field);
                 }
             } catch (NullPointerException | NumberFormatException e) {
-                // logger.trace(e.getMessage()); //NOSONAR Logging sometimes needed for debugging
+                // logger.trace(e.getMessage()); //NOSONAR Debug
             }
         }
 

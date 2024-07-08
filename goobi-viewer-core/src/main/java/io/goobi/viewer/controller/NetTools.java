@@ -126,7 +126,7 @@ public final class NetTools {
      *         or the error message.
      */
     public static String[] callUrlGET(String url) {
-        // logger.trace("callUrlGET: {}", url); //NOSONAR Sometimes needed for debugging
+        // logger.trace("callUrlGET: {}", url); //NOSONAR Debug
         String[] ret = new String[2];
         try (CloseableHttpClient httpClient = HttpClients.custom().build()) {
             HttpGet httpGet = new HttpGet(url);
@@ -144,7 +144,7 @@ public final class NetTools {
                         ret[1] = response.getStatusLine().getReasonPhrase();
                         break;
                     default:
-                        // logger.warn("Error code: {}", response.getStatusLine().getStatusCode()); //NOSONAR Sometimes needed for debugging
+                        // logger.warn("Error code: {}", response.getStatusLine().getStatusCode()); //NOSONAR Debug
                         ret[1] = response.getStatusLine().getReasonPhrase();
                         break;
                 }
@@ -468,7 +468,7 @@ public final class NetTools {
         props.setProperty("mail.smtp.auth", String.valueOf(auth));
         logger.debug("Connecting to email server {} on port {} via SMTP security {}", smtpServer, String.valueOf(smtpPort),
                 smtpSecurity.toUpperCase());
-        // logger.trace(props.toString()); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace(props.toString()); //NOSONAR Debug
 
         Session session;
         if (auth) {
@@ -557,7 +557,7 @@ public final class NetTools {
             //                Enumeration<String> headerNames = request.getHeaderNames();
             //                while (headerNames.hasMoreElements()) {
             //                    String headerName = headerNames.nextElement();
-            //                    logger.trace("request header '{}':'{}'", headerName, request.getHeader(headerName)); //NOSONAR Logging sometimes needed for debugging
+            //                    logger.trace("request header '{}':'{}'", headerName, request.getHeader(headerName)); //NOSONAR Debug
             //                }
             //            }
 
@@ -576,7 +576,7 @@ public final class NetTools {
             logger.warn("Could not extract remote IP address, using localhost.");
         }
 
-        // logger.trace("Pre-parsed IP address(es): {}", address); //NOSONAR Sometimes needed for debugging
+        // logger.trace("Pre-parsed IP address(es): {}", address); //NOSONAR Debug
         return parseMultipleIpAddresses(address);
     }
 
@@ -602,7 +602,7 @@ public final class NetTools {
             }
         }
 
-        // logger.trace("Parsed IP address: {}", ret); //NOSONAR Sometimes needed for debugging
+        // logger.trace("Parsed IP address: {}", ret); //NOSONAR Debug
         return ret;
     }
 
@@ -658,7 +658,7 @@ public final class NetTools {
      * @return true if given address is a localhost address; false otherwise
      */
     public static boolean isIpAddressLocalhost(String address) {
-        // logger.trace("isIpAddressLocalhost: {}", address); //NOSONAR Sometimes needed for debugging
+        // logger.trace("isIpAddressLocalhost: {}", address); //NOSONAR Debug
         if (address == null) {
             return false;
         }

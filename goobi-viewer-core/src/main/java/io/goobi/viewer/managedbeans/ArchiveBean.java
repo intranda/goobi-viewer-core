@@ -123,7 +123,7 @@ public class ArchiveBean implements Serializable {
      * @return the archiveTree
      */
     public ArchiveTree getArchiveTree() {
-        // logger.trace("getArchiveTree"); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("getArchiveTree"); //NOSONAR Debug
         return archiveTree;
     }
 
@@ -338,7 +338,7 @@ public class ArchiveBean implements Serializable {
      * @return the databaseState
      */
     public DatabaseState getDatabaseState() {
-        // logger.trace("getDatabaseState"); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("getDatabaseState"); //NOSONAR Debug
         if (isDatabaseLoaded()) {
             return DatabaseState.ARCHIVE_TREE_LOADED;
         } else if (archiveManager.isInErrorState()) {

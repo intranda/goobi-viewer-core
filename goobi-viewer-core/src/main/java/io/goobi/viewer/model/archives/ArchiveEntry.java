@@ -229,13 +229,13 @@ public class ArchiveEntry implements Serializable {
      * @return List<ArchiveEntry>
      */
     public List<ArchiveEntry> getAsFlatList(boolean ignoreDisplayChildren) {
-        // logger.trace("getAsFlatList"); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("getAsFlatList"); //NOSONAR Debug
         List<ArchiveEntry> list = new LinkedList<>();
         list.add(this);
         if ((displayChildren || ignoreDisplayChildren) && subEntryList != null && !subEntryList.isEmpty()) {
             for (ArchiveEntry ds : subEntryList) {
                 list.addAll(ds.getAsFlatList(ignoreDisplayChildren));
-                // logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchyLevel()); //NOSONAR Sometimes needed for debugging
+                // logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchyLevel()); //NOSONAR Debug
             }
         }
         return list;
@@ -279,7 +279,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     public void resetFoundList() {
-        // logger.trace("resetFoundList: {}", id); //NOSONAR Sometimes needed for debugging
+        // logger.trace("resetFoundList: {}", id); //NOSONAR Debug
         displaySearch = false;
         searchHit = false;
         if (subEntryList != null) {
@@ -332,7 +332,7 @@ public class ArchiveEntry implements Serializable {
      * Expands this entry and sets all sub-entries visible if their immediate parent is expanded.
      */
     public void expand() {
-        // logger.trace("expand: {}", label); //NOSONAR Sometimes needed for debugging
+        // logger.trace("expand: {}", label); //NOSONAR Debug
         if (!isHasChildren()) {
             return;
         }
@@ -354,7 +354,7 @@ public class ArchiveEntry implements Serializable {
      * Collapses this entry and hides all sub-entries.
      */
     public void collapse() {
-        // logger.trace("collapse: {}", id); //NOSONAR Sometimes needed for debugging
+        // logger.trace("collapse: {}", id); //NOSONAR Debug
         if (!isHasChildren()) {
             return;
         }
@@ -466,7 +466,7 @@ public class ArchiveEntry implements Serializable {
             ret = ret.getParentNode();
         }
 
-        // logger.trace("found root: {}", ret); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("found root: {}", ret); //NOSONAR Debug
         return ret;
     }
 
@@ -530,7 +530,7 @@ public class ArchiveEntry implements Serializable {
      * @return the id
      */
     public String getId() {
-        // logger.trace("getId: {}", id); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("getId: {}", id); //NOSONAR Debug
         return id;
     }
 
@@ -654,7 +654,7 @@ public class ArchiveEntry implements Serializable {
     }
 
     public List<Metadata> getAllAreaLists() {
-        // logger.trace("getAllAreaLists ({})", id); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("getAllAreaLists ({})", id); //NOSONAR Debug
         List<Metadata> ret = new ArrayList<>(getIdentityStatementAreaList().size()
                 + getContextAreaList().size()
                 + getContentAndStructureAreaAreaList().size()
@@ -670,7 +670,7 @@ public class ArchiveEntry implements Serializable {
         ret.addAll(getNotesAreaList());
         ret.addAll(getDescriptionControlAreaList());
 
-        // logger.trace("getAllAreaLists END"); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("getAllAreaLists END"); //NOSONAR Debug
         return ret;
     }
 
@@ -755,7 +755,7 @@ public class ArchiveEntry implements Serializable {
      * @return the identityStatementAreaList
      */
     public List<Metadata> getIdentityStatementAreaList() {
-        // logger.trace("getIdentityStatementAreaList ({})", id); //NOSONAR Sometimes needed for debugging
+        // logger.trace("getIdentityStatementAreaList ({})", id); //NOSONAR Debug
         return identityStatementAreaList;
     }
 
@@ -770,7 +770,7 @@ public class ArchiveEntry implements Serializable {
      * @return the contextAreaList
      */
     public List<Metadata> getContextAreaList() {
-        // logger.trace("getContextAreaList ({})", id); //NOSONAR Sometimes needed for debugging
+        // logger.trace("getContextAreaList ({})", id); //NOSONAR Debug
         return contextAreaList;
     }
 
@@ -785,7 +785,7 @@ public class ArchiveEntry implements Serializable {
      * @return the contentAndStructureAreaAreaList
      */
     public List<Metadata> getContentAndStructureAreaAreaList() {
-        // logger.trace("getContentAndStructureAreaAreaList ({})", id); //NOSONAR Sometimes needed for debugging
+        // logger.trace("getContentAndStructureAreaAreaList ({})", id); //NOSONAR Debug
         return contentAndStructureAreaAreaList;
     }
 
@@ -800,7 +800,7 @@ public class ArchiveEntry implements Serializable {
      * @return the accessAndUseAreaList
      */
     public List<Metadata> getAccessAndUseAreaList() {
-        // logger.trace("getAccessAndUseAreaList ({})", id); //NOSONAR Sometimes needed for debugging
+        // logger.trace("getAccessAndUseAreaList ({})", id); //NOSONAR Debug
         return accessAndUseAreaList;
     }
 
@@ -815,7 +815,7 @@ public class ArchiveEntry implements Serializable {
      * @return the alliedMaterialsAreaList
      */
     public List<Metadata> getAlliedMaterialsAreaList() {
-        // logger.trace("getAlliedMaterialsAreaList ({})", id); //NOSONAR Sometimes needed for debugging
+        // logger.trace("getAlliedMaterialsAreaList ({})", id); //NOSONAR Debug
         return alliedMaterialsAreaList;
     }
 
@@ -830,7 +830,7 @@ public class ArchiveEntry implements Serializable {
      * @return the notesAreaList
      */
     public List<Metadata> getNotesAreaList() {
-        // logger.trace("getNotesAreaList ({})", id); //NOSONAR Sometimes needed for debugging
+        // logger.trace("getNotesAreaList ({})", id); //NOSONAR Debug
         return notesAreaList;
     }
 
@@ -845,7 +845,7 @@ public class ArchiveEntry implements Serializable {
      * @return the descriptionControlAreaList
      */
     public List<Metadata> getDescriptionControlAreaList() {
-        // logger.trace("getDescriptionControlAreaList ({})", id); //NOSONAR Sometimes needed for debugging
+        // logger.trace("getDescriptionControlAreaList ({})", id); //NOSONAR Debug
         return descriptionControlAreaList;
     }
 

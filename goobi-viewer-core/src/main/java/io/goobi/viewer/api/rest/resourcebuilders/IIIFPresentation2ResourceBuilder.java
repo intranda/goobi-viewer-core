@@ -88,7 +88,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class IIIFPresentation2ResourceBuilder {
 
-    private static final Logger logger = LogManager.getLogger(IIIFPresentation2ResourceBuilder.class); //NOSONAR Sometimes used for debugging
+    private static final Logger logger = LogManager.getLogger(IIIFPresentation2ResourceBuilder.class); //NOSONAR Debug
 
     private ManifestBuilder manifestBuilder;
     private StructureBuilder structureBuilder;

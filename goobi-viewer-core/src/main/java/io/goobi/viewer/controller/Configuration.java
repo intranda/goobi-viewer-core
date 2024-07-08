@@ -437,7 +437,7 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<Metadata> getMetadataConfigurationForTemplate(String type, String template, boolean fallbackToDefaultTemplate,
             boolean topstructValueFallbackDefaultValue) {
-        // logger.trace("getMetadataConfigurationForTemplate: {}/{}", type, template); //NOSONAR Sometimes used for debugging
+        // logger.trace("getMetadataConfigurationForTemplate: {}/{}", type, template); //NOSONAR Debug
         if (type == null) {
             throw new IllegalArgumentException("type may not be null");
         }
@@ -1640,7 +1640,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return skip fields that don't match given language
      */
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields(String template, boolean fallbackToDefaultTemplate, String language) {
-        // logger.trace("getAdvancedSearchFields({},{})", template, fallbackToDefaultTemplate); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("getAdvancedSearchFields({},{})", template, fallbackToDefaultTemplate); //NOSONAR Debug
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
         if (templateList == null) {
             return new ArrayList<>();
@@ -1662,7 +1662,7 @@ public class Configuration extends AbstractConfiguration {
                 logger.warn("No advanced search field name defined, skipping.");
                 continue;
             } else if (isLanguageVersionOtherThan(field, language != null ? language : "en")) {
-                // logger.trace("Field {} belongs to different language; skipping", field); //NOSONAR Logging sometimes needed for debugging
+                // logger.trace("Field {} belongs to different language; skipping", field); //NOSONAR Debug
                 continue;
             }
             String label = subElement.getString(XML_PATH_ATTRIBUTE_LABEL, field);
@@ -2455,7 +2455,7 @@ public class Configuration extends AbstractConfiguration {
                             getLocalList(myConfigToUse, null, XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ").addUserToGroup", null);
                     if (addToUserGroupList != null) {
                         provider.setAddUserToGroups(addToUserGroupList);
-                        // logger.trace("{}: add to group: {}", provider.getName(), addToUserGroupList.toString()); //NOSONAR Logging sometimes needed for debugging
+                        // logger.trace("{}: add to group: {}", provider.getName(), addToUserGroupList.toString()); //NOSONAR Debug
                     }
                     providers.add(provider);
                 }
@@ -2901,7 +2901,7 @@ public class Configuration extends AbstractConfiguration {
         String docStructTypes = hc.getString("[@showDocStructs]");
         boolean allowed = hc.getBoolean(".");
         if (!allowed) {
-            // logger.trace("Tree view disabled"); //NOSONAR Logging sometimes needed for debugging
+            // logger.trace("Tree view disabled"); //NOSONAR Debug
             return false;
         }
 

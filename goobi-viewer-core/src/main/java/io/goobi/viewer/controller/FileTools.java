@@ -684,7 +684,7 @@ public final class FileTools {
         String urlStringLocal = urlString;
         if (urlStringLocal.contains(":")) {
             try {
-                // logger.trace("url string: {}", urlString); //NOSONAR Sometimes used for debugging
+                // logger.trace("url string: {}", urlString); //NOSONAR Debug
                 URL url = new URL(urlStringLocal);
                 URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(),
                         url.getQuery(), url.getRef());

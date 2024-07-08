@@ -80,7 +80,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      */
     public EventElement(SolrDocument doc, Locale locale, boolean forSearchHit) throws IndexUnreachableException, PresentationException {
         type = (String) doc.getFieldValue(SolrConstants.EVENTTYPE);
-        // logger.trace("new EventElement: {}", (type == null ? "(no type)" : type)); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("new EventElement: {}", (type == null ? "(no type)" : type)); //NOSONAR Debug
 
         Collection<Object> eventDateValues = doc.getFieldValues(SolrConstants.EVENTDATE);
         if (eventDateValues != null && !eventDateValues.isEmpty()) {
@@ -118,7 +118,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         if (forSearchHit) {
             // Search metadata
             searchHitMetadata = DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(type);
-            // logger.trace("event search hit metadata: {}", searchHitMetadata.size()); //NOSONAR Logging sometimes needed for debugging
+            // logger.trace("event search hit metadata: {}", searchHitMetadata.size()); //NOSONAR Debug
             populateMetadata(searchHitMetadata, doc, locale);
         } else {
             // Main metadata
@@ -183,7 +183,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
             se.setMetadataFields(SolrTools.getFieldValueMap(doc));
             md.populate(se, iddoc, md.getSortFields(), locale);
             //            if (md.getValues() != null && !md.getValues().isEmpty()) {
-            //                logger.trace("{}: {}", md.getLabel(), SolrTools.getFieldValueMap(doc).toString()); //NOSONAR Logging sometimes needed for debugging
+            //                logger.trace("{}: {}", md.getLabel(), SolrTools.getFieldValueMap(doc).toString()); //NOSONAR Debug
             //            }
         }
     }

@@ -881,7 +881,7 @@ public class Metadata implements Serializable {
                 }
             }
             if (values == null && param.getDefaultValue() != null) {
-                // logger.trace("No value found for {} (index {}), using default value '{}'", //NOSONAR Logging sometimes needed for debugging
+                // logger.trace("No value found for {} (index {}), using default value '{}'", //NOSONAR Debug
                 // param.getKey(), indexOfParam, param.getDefaultValue()); //NOSONAR Debug
                 setParamValue(0, indexOfParam, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, null, locale);
                 found = true;

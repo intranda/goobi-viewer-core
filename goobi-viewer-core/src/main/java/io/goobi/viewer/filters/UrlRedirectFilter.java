@@ -76,7 +76,7 @@ public class UrlRedirectFilter implements Filter {
      */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        // logger.trace("doFilter"); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("doFilter"); //NOSONAR Debug
         try {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
 

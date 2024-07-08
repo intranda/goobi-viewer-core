@@ -365,7 +365,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return Navigation outcome
      */
     public String searchSimpleSetFacets(String facetString) {
-        // logger.trace("searchSimpleSetFacets:{}", facetString); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("searchSimpleSetFacets:{}", facetString); //NOSONAR Debug
         facets.resetActiveFacetString();
         facets.setActiveFacetString(facetString);
         return searchSimple(true, false);
@@ -629,7 +629,7 @@ public class SearchBean implements SearchInterface, Serializable {
         Set<String> usedFieldValuePairs = new HashSet<>();
         this.proximitySearchDistance = 0;
         for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
-            // logger.trace("Query item: {}", queryItem.toString()); //NOSONAR Logging sometimes needed for debugging
+            // logger.trace("Query item: {}", queryItem.toString()); //NOSONAR Debug
             if (StringUtils.isEmpty(queryItem.getField()) || StringUtils.isBlank(queryItem.getValue())) {
                 continue;
             }
@@ -642,25 +642,25 @@ public class SearchBean implements SearchInterface, Serializable {
 
             // Generate the hierarchical facet parameter from query items
             if (queryItem.isHierarchical()) {
-                // logger.trace("{} is hierarchical", queryItem.getField()); //NOSONAR Logging sometimes needed for debugging
+                // logger.trace("{} is hierarchical", queryItem.getField()); //NOSONAR Debug
                 // Skip identical hierarchical items
 
                 // Find existing facet items that can be re-purposed for the existing facets
                 boolean skipQueryItem = false;
                 for (IFacetItem facetItem : facets.getActiveFacets()) {
-                    // logger.trace("checking facet item: {}", facetItem.getLink()); //NOSONAR Logging sometimes needed for debugging
+                    // logger.trace("checking facet item: {}", facetItem.getLink()); //NOSONAR Debug
                     if (!facetItem.getField().equals(queryItem.getField())) {
                         continue;
                     }
                     if (usedFieldValuePairs.contains(facetItem.getLink())) {
-                        // logger.trace("facet item already handled: {}", facetItem.getLink()); //NOSONAR Logging sometimes needed for debugging
+                        // logger.trace("facet item already handled: {}", facetItem.getLink()); //NOSONAR Debug
                         continue;
                     }
                     if (!usedFieldValuePairs.contains(queryItem.getField() + ":" + queryItem.getValue())) {
                         facetItem.setLink(queryItem.getField() + ":" + queryItem.getValue());
                         usedFieldValuePairs.add(facetItem.getLink());
                         usedHierarchicalFields.add(queryItem.getField());
-                        // logger.trace("reuse facet item: {}", facetItem); //NOSONAR Logging sometimes needed for debugging
+                        // logger.trace("reuse facet item: {}", facetItem); //NOSONAR Debug
                         skipQueryItem = true;
                         break;
                     }
@@ -669,11 +669,11 @@ public class SearchBean implements SearchInterface, Serializable {
                 if (!skipQueryItem) {
                     String itemQuery =
                             new StringBuilder().append(queryItem.getField()).append(':').append(queryItem.getValue().trim()).toString();
-                    // logger.trace("item query: {}", itemQuery); //NOSONAR Logging sometimes needed for debugging
+                    // logger.trace("item query: {}", itemQuery); //NOSONAR Debug
 
                     // Check whether this combination already exists and skip, if that's the case
                     if (usedFieldValuePairs.contains(itemQuery)) {
-                        // logger.trace("facet item already exists: {}", itemQuery); //NOSONAR Logging sometimes needed for debugging
+                        // logger.trace("facet item already exists: {}", itemQuery); //NOSONAR Debug
                         continue;
                     }
                     usedFieldValuePairs.add(itemQuery);
@@ -1404,7 +1404,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         logger.trace("search string: {}", searchStringInternal);
-        // logger.trace("search terms: {}", searchTerms.toString()); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("search terms: {}", searchTerms.toString()); //NOSONAR Debug
     }
 
     /**
@@ -1415,7 +1415,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     @Override
     public String getExactSearchString() {
-        // logger.trace("getExactSearchString: {}", searchStringInternal); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("getExactSearchString: {}", searchStringInternal); //NOSONAR Debug
         if (searchStringInternal.length() == 0) {
             return "-";
         }
@@ -1424,9 +1424,9 @@ public class SearchBean implements SearchInterface, Serializable {
         try {
             // Escape the query here, otherwise Rewrite will spam warnings into catalina.out
             if (!StringTools.isStringUrlEncoded(ret, URL_ENCODING)) {
-                // logger.trace("url pre-encoding: {}", ret); //NOSONAR Logging sometimes needed for debugging
+                // logger.trace("url pre-encoding: {}", ret); //NOSONAR Debug
                 ret = StringTools.encodeUrl(ret);
-                // logger.trace("url encoded: {}", ret); //NOSONAR Logging sometimes needed for debugging
+                // logger.trace("url encoded: {}", ret); //NOSONAR Debug
             }
         } catch (UnsupportedEncodingException e) {
             logger.error(e.getMessage());
@@ -1535,7 +1535,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /** {@inheritDoc} */
     @Override
     public String getSortString() {
-        // logger.trace("getSortString: {}", searchSortingOption); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("getSortString: {}", searchSortingOption); //NOSONAR Debug
         if (searchSortingOption == null) {
             setSortString("-");
         }
@@ -1700,17 +1700,17 @@ public class SearchBean implements SearchInterface, Serializable {
             if (!facetItem.isHierarchial()) {
                 continue;
             }
-            // logger.trace("facet item: {}", facetItem); //NOSONAR Logging sometimes needed for debugging
+            // logger.trace("facet item: {}", facetItem); //NOSONAR Debug
             // Look up and re-purpose existing query items with the same field first
             boolean matched = false;
             for (SearchQueryItem queryItem : advancedSearchQueryGroup.getQueryItems()) {
                 // field:value pair already exists
                 if (!populatedQueryItems.contains(queryItem) && (queryItem.getField() == null || StringUtils.isEmpty(queryItem.getValue()))) {
                     // Override existing items without a field or with the same field with current facet value
-                    // logger.trace("updating query item: {}", queryItem); //NOSONAR Logging sometimes needed for debugging
+                    // logger.trace("updating query item: {}", queryItem); //NOSONAR Debug
                     queryItem.setField(facetItem.getField());
                     queryItem.setValue(facetItem.getValue());
-                    // logger.trace("updated query item: {}", queryItem); //NOSONAR Logging sometimes needed for debugging
+                    // logger.trace("updated query item: {}", queryItem); //NOSONAR Debug
                     populatedQueryItems.add(queryItem);
                     matched = true;
                     break;
@@ -1724,7 +1724,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 // ...but only if there is no exact field:value pair already among the query items
                 if (!populatedQueryItems.contains(item)) {
                     advancedSearchQueryGroup.getQueryItems().add(item);
-                    // logger.trace("added new item: {}", item); //NOSONAR Logging sometimes needed for debugging
+                    // logger.trace("added new item: {}", item); //NOSONAR Debug
                     populatedQueryItems.add(item);
                 }
             }
@@ -2152,7 +2152,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public List<StringPair> getAdvancedSearchSelectItems(String field, String language, boolean hierarchical)
             throws PresentationException, IndexUnreachableException, DAOException {
-        // logger.trace("getAdvancedSearchSelectItems: {}", field); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("getAdvancedSearchSelectItems: {}", field); //NOSONAR Debug
         if (field == null) {
             throw new IllegalArgumentException("field may not be null.");
         }

@@ -172,7 +172,7 @@ public class SearchHitFactory {
         if (docType == null) {
             docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
         }
-        // logger.trace("docType: {}", docType); //NOSONAR Sometimes used for debugging
+        // logger.trace("docType: {}", docType); //NOSONAR Debug
         HitType hitType = getHitType(overrideType, se, docType);
 
         SearchHit hit = new SearchHit(hitType, browseElement, doc, searchTerms, locale, this);
@@ -318,7 +318,7 @@ public class SearchHitFactory {
     List<MetadataWrapper> findAdditionalMetadataFieldsContainingSearchTerms(
             Map<String, List<String>> availableMetadata, Map<String, Set<String>> searchTerms, Set<String> existingMetadataFields, String iddoc,
             String searchHitLabel) {
-        // logger.trace("findAdditionalMetadataFieldsContainingSearchTerms"); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("findAdditionalMetadataFieldsContainingSearchTerms"); //NOSONAR Debug
         if (existingMetadataFields == null) {
             throw new IllegalArgumentException("existingMetadataList may not be null");
         }

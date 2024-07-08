@@ -112,7 +112,7 @@ public class ContentBean implements Serializable {
      */
     public List<DisplayUserGeneratedContent> getUserGeneratedContentsForDisplay(String pi)
             throws PresentationException, IndexUnreachableException, DAOException {
-        // logger.trace("getUserGeneratedContentsForDisplay"); //NOSONAR Sometimes needed for debugging
+        // logger.trace("getUserGeneratedContentsForDisplay"); //NOSONAR Debug
         if (pi != null && (userGeneratedContentsForDisplay == null || !pi.equals(this.pi))) {
             loadUserGeneratedContentsForDisplay(pi, BeanUtils.getRequest());
         }

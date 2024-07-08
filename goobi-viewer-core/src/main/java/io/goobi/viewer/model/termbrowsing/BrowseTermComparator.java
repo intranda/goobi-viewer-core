@@ -105,7 +105,7 @@ public class BrowseTermComparator implements Comparator<BrowseTerm>, Serializabl
         }
         relevantString2 = normalizeString(relevantString2, DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars());
 
-        // logger.trace("Comparing '{}' to '{}' ({})", relevantString1, relevantString2, locale); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("Comparing '{}' to '{}' ({})", relevantString1, relevantString2, locale); //NOSONAR Debug
         return comparator.compare(relevantString1, relevantString2);
     }
 

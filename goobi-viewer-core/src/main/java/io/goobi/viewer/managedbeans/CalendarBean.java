@@ -794,7 +794,7 @@ public class CalendarBean implements Serializable {
      * Forwards to the URL containing the selected year.
      */
     public void selectYearListener() {
-        // logger.trace("selectYearListener"); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("selectYearListener"); //NOSONAR Debug
         try {
             String url = PrettyUrlTools.getAbsolutePageUrl("pretty:searchcalendar1", getSelectYear());
             FacesContext.getCurrentInstance()
@@ -894,7 +894,7 @@ public class CalendarBean implements Serializable {
             }
             int monthNumber = Integer.parseInt(monthCount.getName().substring(4));
             //            if (monthCount.getCount() > 0) {
-            //                logger.trace("{}: {}", monthCount.getName(), monthCount.getCount()); //NOSONAR Logging sometimes needed for debugging
+            //                logger.trace("{}: {}", monthCount.getName(), monthCount.getCount()); //NOSONAR Debug
             //            }
             switch (monthNumber) {
                 case 1:

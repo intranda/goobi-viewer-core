@@ -165,7 +165,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                     if (defaultLocale == null) {
                         logger.error("Default locale not found. Is faces-config.xml missing in the theme?");
                     }
-                    // logger.trace(defaultLocale.getLanguage()); //NOSONAR Sometimes needed for debugging
+                    // logger.trace(defaultLocale.getLanguage()); //NOSONAR Debug
                 }
                 checkAndLoadResourceBundles(defaultLocale);
             }
@@ -264,7 +264,7 @@ public class ViewerResourceBundle extends ResourceBundle {
         if (file.isFile()) {
             try {
                 URL resourceURL = file.getParentFile().toURI().toURL();
-                // logger.debug("URL: " + file.getParentFile().toURI().toURL()); //NOSONAR Sometimes needed for debugging
+                // logger.debug("URL: " + file.getParentFile().toURI().toURL()); //NOSONAR Debug
                 URLClassLoader urlLoader = new URLClassLoader(new URL[] { resourceURL });
                 return ResourceBundle.getBundle(BUNDLE_NAME, locale, urlLoader);
             } catch (Exception e) {
@@ -406,7 +406,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      */
     public static String getTranslation(final String key, final Locale inLocale, boolean useFallback, boolean returnKeyIfNoneFound,
             boolean reversePriority, boolean cleanup) {
-        //        logger.trace("Translation for: {}", key); //NOSONAR Sometimes needed for debugging
+        //        logger.trace("Translation for: {}", key); //NOSONAR Debug
         Locale locale = checkAndLoadResourceBundles(inLocale); // If locale is null, the return value will be the current locale
         Map<Locale, ResourceBundle> bundles1 = reversePriority ? localBundles : defaultBundles;
         Map<Locale, ResourceBundle> bundles2 = reversePriority ? defaultBundles : localBundles;

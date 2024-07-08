@@ -230,8 +230,8 @@ public class CMSNavigationManager implements Serializable {
      */
     public List<CMSNavigationItem> loadItemsFromDatabase() throws DAOException {
         String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
-        // logger.trace("main theme: {}", mainTheme); //NOSONAR Logging sometimes needed for debugging
-        // logger.trace("associated theme: {}", getAssociatedTheme()); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("main theme: {}", mainTheme); //NOSONAR Debug
+        // logger.trace("associated theme: {}", getAssociatedTheme()); //NOSONAR Debug
         return DataManager.getInstance()
                 .getDao()
                 .getAllTopCMSNavigationItems()
