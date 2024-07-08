@@ -1481,7 +1481,7 @@ public final class SearchHelper {
             FuzzySearchTerm fuzzyTerm = new FuzzySearchTerm(t);
             String term = fuzzyTerm.getTerm();
             // Highlighting single-character terms can take a long time, so skip them
-            if (term.length() < 2) {//NOSONAR Logging sometimes needed for debugging
+            if (term.length() < 2) { //NOSONAR Logging sometimes needed for debugging
                 continue;
             }
             term = SearchHelper.removeTruncation(term);
@@ -1915,7 +1915,7 @@ public final class SearchHelper {
                     for (Count count : resp.getFacetField(useField).getValues()) {
                         if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith)
                                 && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith)) {
-                            // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}", //NOSONAR Logging sometimes needed for debugging
+                            // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}", //NOSONAR Debug
                             // term, compareTerm, sortTerm, bmfc.isTranslate());
                             continue;
                         }
@@ -2103,7 +2103,7 @@ public final class SearchHelper {
                 synchronized (LOCK) {
                     // Another thread may have added this term by now
                     if (!terms.containsKey(term)) {
-                        // logger.trace("Adding term: {}, compareTerm: {}, sortTerm: {}, translate: {}", //NOSONAR Logging sometimes needed for debugging
+                        // logger.trace("Adding term: {}, compareTerm: {}, sortTerm: {}, translate: {}", //NOSONAR Debug
                         // term, compareTerm, sortTerm, bmfc.isTranslate()); //NOSONAR Debug
                         terms.put(term, new BrowseTerm(term, sortTerm, bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(term) : null));
                     }
