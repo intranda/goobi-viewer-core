@@ -22,7 +22,6 @@
 package io.goobi.viewer.model.archives;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -194,20 +193,6 @@ public class ArchiveTree implements Serializable {
         return getTreeViewForGroup(DEFAULT_GROUP);
     }
 
-    public List<ArchiveEntry> getFilteredTreeView(boolean searchActive) {
-        logger.debug("getFilteredTreeView");
-        List<ArchiveEntry> ret = new ArrayList<>();
-
-        for (ArchiveEntry entry : getTreeView()) {
-            if (entry.isVisible() && (!searchActive || entry.isDisplaySearch())) {
-                ret.add(entry);
-            }
-        }
-
-        logger.debug("getFilteredTreeView END");
-        return ret;
-    }
-
     /**
      * 
      * @param searchActive
@@ -216,10 +201,22 @@ public class ArchiveTree implements Serializable {
     public List<ArchiveEntry> getVisibleTree(boolean searchActive) {
         logger.trace("getVisibleTree");
         return getTreeView().stream()
-                .filter(e -> e.isVisible())
-                .filter(e -> e.isDisplaySearch() || !searchActive)
-                .filter(e -> e.isAccessAllowed())
+                .filter(e -> e.isVisible() && (e.isDisplaySearch() || !searchActive) && e.isAccessAllowed())
+                .map(e -> {
+                    if (!e.isMetadataLoaded()) {
+                        e.loadMetadata();
+                    }
+                    return e;
+                })
                 .toList();
+
+        //        ret.forEach(e -> {
+        //            if (!e.isMetadataLoaded()) {
+        //                e.loadMetadata();
+        //            }
+        //        });
+
+        //        return ret;
     }
 
     /**

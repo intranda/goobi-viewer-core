@@ -1058,7 +1058,8 @@
 		<thumbs enabled="false" />
 
         <!-- @enabled: if false, no widget for searching in the currently show record will be displayed. Default is true. -->
-		<searchInItem enabled="false" />
+        <!-- @onlyIfFullTextAvailable: if true, the widget will only be displayed if current record has full-text. Default is false. -->
+		<searchInItem enabled="false" onlyIfFullTextAvailable="true" />
 
         <!-- metadata/@enabled: if false, the bibliographic data view is hidden -->
 		<metadata enabled="false">

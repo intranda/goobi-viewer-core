@@ -81,24 +81,24 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
 
     @Test
     void testGetDatabases() {
-        ArchiveManager archiveManager = new ArchiveManager(eadParser, null);
+        ArchiveManager archiveManager = new ArchiveManager(eadParser);
         assertEquals(2, archiveManager.getDatabases().size());
     }
 
     @Test
     void testGetDatabase() throws Exception {
         {
-            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
+            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
             ArchiveTree tree = archiveManager.getArchiveTree("database 1", "r1");
             assertNotNull(tree);
         }
         {
-            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
+            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
             ArchiveTree tree = archiveManager.getArchiveTree("database 1", "r2");
             assertNotNull(tree);
         }
         {
-            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
+            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
             ArchiveTree tree = archiveManager.getArchiveTree("database 1", "r3");
             assertNull(tree);
         }
@@ -107,7 +107,7 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     @Test
     void testUpdateDatabase() throws Exception {
         {
-            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
+            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
             archiveManager.getArchiveTree("database 1", "r1");
             archiveManager.getArchiveTree("database 1", "r1");
             Mockito.verify(archiveManager, Mockito.times(1)).loadDatabase(Mockito.any(), Mockito.any());
@@ -122,7 +122,7 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
 
     @Test
     void testAddNewArchive() {
-        ArchiveManager archiveManager = new ArchiveManager(eadParser, null);
+        ArchiveManager archiveManager = new ArchiveManager(eadParser);
 
         ArchiveResource newArchive = new ArchiveResource("database 1", "resource 3", "r3",
                 ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10");
@@ -134,7 +134,7 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
 
     @Test
     void testRemoveArchive() {
-        ArchiveManager archiveManager = new ArchiveManager(eadParser, null);
+        ArchiveManager archiveManager = new ArchiveManager(eadParser);
         possibleDatabases.remove(1);
         assertNotNull(archiveManager.getArchive("database 1", "r2"));
         archiveManager.updateArchiveList();

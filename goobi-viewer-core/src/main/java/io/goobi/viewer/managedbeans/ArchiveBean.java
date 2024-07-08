@@ -24,6 +24,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.enterprise.context.SessionScoped;
@@ -88,7 +89,8 @@ public class ArchiveBean implements Serializable {
         logger.trace("initializeArchiveTree: {}", selectedEntryId);
         if (getCurrentArchive() != null) {
             try {
-                this.archiveTree = new ArchiveTree(archiveManager.getArchiveTree(getCurrentDatabase(), getCurrentResource()));
+                // this.archiveTree = new ArchiveTree(archiveManager.getArchiveTree(getCurrentDatabase(), getCurrentResource()));
+                this.archiveTree = archiveManager.getArchiveTree(getCurrentDatabase(), getCurrentResource());
                 this.databaseLoaded = true;
                 this.searchString = "";
                 this.archiveTree.resetSearch();
@@ -429,6 +431,15 @@ public class ArchiveBean implements Serializable {
         }
     }
 
+    public Map<String, NodeType> getUpdatedNodeTypes() {
+        return DataManager.getInstance().getArchiveManager().getUpdatedNodeTypes();
+    }
+
+    /**
+     * 
+     * @param name Node type name
+     * @return NoedType with the given name; null if none found
+     */
     public NodeType getNodeType(String name) {
         return DataManager.getInstance().getArchiveManager().getNodeType(name);
     }

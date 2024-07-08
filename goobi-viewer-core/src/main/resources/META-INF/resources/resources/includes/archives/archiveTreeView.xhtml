@@ -17,10 +17,15 @@
 	<c:set var="visibleTree"
 		value="#{archiveTree.getVisibleTree(archiveBean.searchActive)}"
 		scope="request" />
-	<!--
+
+    <!-- var is not really needed, but a call to update the types from the config is. -->
+    <c:set var="nodeTypes"
+        value="#{archiveBean.getUpdatedNodeTypes()}"
+        scope="request" />
+
 	<c:set var="visibleTree"
 		value="#{archiveTree.treeView.stream().filter(e -> e.visible).filter(e -> !archiveBean.searchActive or e.displaySearch).toList()}"
-		scope="request" /> -->
+		scope="request" />
 
 	<!-- The indentation of each hierarchical level in pixel -->
 	<c:set var="indent" value="#{indent != null ? indent : configurationBean.tocIndentation}" scope="view" />
@@ -79,7 +84,7 @@
 									<!-- TITLE -->
 									<div class="archives-tree__list-expandable-title #{entry.id == archiveTree.selectedEntry.id ? '-archives-selected' : ''} #{entry.searchHit ? '-archives-search-hit':''}">
 										<span class="fa-stack">
-											<i class="#{archiveBean.getNodeType(entry.nodeType).iconClass}" data-level="#{entry.nodeType}"></i>
+											<i class="archives-tree__list-expandable-title-icon #{archiveBean.getNodeType(entry.nodeType).iconClass}" data-level="#{entry.nodeType}"></i>
 										</span>
 										<ui:fragment rendered="#{entry.id == archiveTree.selectedEntry.id}">
 											<a class="archives-tree__selected" name="selected"></a>
@@ -91,7 +96,9 @@
 												    pt:data-select-entry="#{entry.id}">
 												    <f:ajax render="#{render}" />
 											</h:commandLink>
-											<div class="archives-tree__entry-date">#{entry.unitdate}</div>
+											<div class="archives-tree__entry-date">
+											    <h:outputText value="#{entry.unitdate}" escape="false" />
+											</div>
 										</div>
 									</div>
 
@@ -101,7 +108,25 @@
 					</nav>
 				</h:panelGroup>
 			</h:panelGroup>
+			
+			<script>
+			<!--  JUMP TO LAST SAVED FOCUS ELEMENT -->
+			if (sessionStorage.getItem("focusElement") != null) {
+				var lastFocusElement = sessionStorage.getItem("focusElement");
+				var lastFocusElementEscaped = lastFocusElement.replace(/:/g, '\\:');
+				$('#' + lastFocusElementEscaped).focus();
+			}
+			</script>
+			
 		</h:form>
+		
+		<!--  REMEMBER FOCUS AFTER AJAX FUNCTIONALITY -->
+		<script>
+			$(document).on('focus', 'button, a', function() {
+				sessionStorage.setItem("focusElement", (this.id));
+			});
+		</script>
+
 	</div>
 	<div id="AJAXLoader" class="archives-tree__loader"></div>
 </ui:composition>

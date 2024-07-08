@@ -442,13 +442,25 @@ public class Configuration extends AbstractConfiguration {
             throw new IllegalArgumentException("type may not be null");
         }
 
+        List<HierarchicalConfiguration<ImmutableNode>> allMetadataLists = new ArrayList<>();
+
+        // Local lists
         List<HierarchicalConfiguration<ImmutableNode>> metadataLists = getLocalConfigurationsAt("metadata.metadataList");
-        if (metadataLists == null) {
+        if (metadataLists != null) {
+            allMetadataLists.addAll(metadataLists);
+        }
+        // Global lists
+        metadataLists = getLocalConfigurationsAt(getConfig(), null, "metadata.metadataList");
+        if (metadataLists != null) {
+            allMetadataLists.addAll(metadataLists);
+        }
+
+        if (allMetadataLists.isEmpty()) {
             logger.trace("no metadata lists found");
             return new ArrayList<>(); // must be a mutable list!
         }
 
-        for (HierarchicalConfiguration<ImmutableNode> metadataList : metadataLists) {
+        for (HierarchicalConfiguration<ImmutableNode> metadataList : allMetadataLists) {
             if (type.equals(metadataList.getString(XML_PATH_ATTRIBUTE_TYPE))) {
                 List<HierarchicalConfiguration<ImmutableNode>> templateList = metadataList.configurationsAt("template");
                 if (templateList.isEmpty()) {
@@ -4949,6 +4961,18 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isSearchInItemEnabled() {
         return getLocalBoolean("sidebar.searchInItem[@enabled]", true);
+    }
+
+    /**
+     * <p>
+     * isSearchInItemOnlyIfFullTextAvailable.
+     * </p>
+     *
+     * @should return correct value
+     * @return a boolean.
+     */
+    public boolean isSearchInItemOnlyIfFullTextAvailable() {
+        return getLocalBoolean("sidebar.searchInItem[@onlyIfFullTextAvailable]", false);
     }
 
     /**

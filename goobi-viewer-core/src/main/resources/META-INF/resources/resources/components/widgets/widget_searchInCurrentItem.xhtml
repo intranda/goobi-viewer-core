@@ -13,7 +13,8 @@
     <composite:interface />
 
     <composite:implementation>
-        <h:panelGroup rendered="#{configurationBean.showSearchInItem and activeDocumentBean.recordLoaded}">
+        <h:panelGroup
+            rendered="#{configurationBean.showSearchInItem and activeDocumentBean.recordLoaded and (!configurationBean.showSearchInItemOnlyIfFullTextAvailable || activeDocumentBean.viewManager.fulltextAvailableForWork)}">
             <div id="widgetSearchInCurrentItem" class="widget widget-search-in-current-item">
                 <h:form id="searchInCurrentItemForm" styleClass="form-inline" prependId="false">
                     <div class="form-group">

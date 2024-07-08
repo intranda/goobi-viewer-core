@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.solr.common.SolrDocument;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +38,6 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -64,12 +62,12 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
                 Locale.ENGLISH, null, null, null);
         be.addSortFieldsToMetadata(se, Collections.singletonList(new StringPair("SORT_FOO", "bar")), null);
-        Assertions.assertEquals(1, be.getMetadataList().size());
-        Assertions.assertEquals("SORT_FOO", be.getMetadataList().get(0).getLabel());
-        Assertions.assertEquals(1, be.getMetadataList().get(0).getValues().size());
-        Assertions.assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().size());
-        Assertions.assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).size());
-        Assertions.assertEquals("bar", be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).get(0));
+        assertEquals(1, be.getMetadataList().size());
+        assertEquals("SORT_FOO", be.getMetadataList().get(0).getLabel());
+        assertEquals(1, be.getMetadataList().get(0).getValues().size());
+        assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().size());
+        assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).size());
+        assertEquals("bar", be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).get(0));
     }
 
     /**
@@ -84,7 +82,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         BrowseElement be = new BrowseElement(se, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
                 Locale.ENGLISH, null, null, null);
         be.addSortFieldsToMetadata(se, Collections.singletonList(new StringPair("SORT_FOO", "bar")), Collections.singleton("SORT_FOO"));
-        Assertions.assertEquals(0, be.getMetadataList().size());
+        assertEquals(0, be.getMetadataList().size());
     }
 
     /**
@@ -102,12 +100,21 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         be.getMetadataList().add(new Metadata(String.valueOf(se.getLuceneId()), "MD_FOO", "", "old value"));
 
         be.addSortFieldsToMetadata(se, Collections.singletonList(new StringPair("SORT_FOO", "bar")), null);
-        Assertions.assertEquals(1, be.getMetadataList().size());
-        Assertions.assertEquals("MD_FOO", be.getMetadataList().get(0).getLabel());
-        Assertions.assertEquals(1, be.getMetadataList().get(0).getValues().size());
-        Assertions.assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().size());
-        Assertions.assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).size());
-        Assertions.assertEquals("old value", be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).get(0));
+        assertEquals(1, be.getMetadataList().size());
+        assertEquals("MD_FOO", be.getMetadataList().get(0).getLabel());
+        assertEquals(1, be.getMetadataList().get(0).getValues().size());
+        assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().size());
+        assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).size());
+        assertEquals("old value", be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * @see BrowseElement#getMimeTypeFromExtension(String)
+     * @verifies return empty string for unknown file extensions
+     */
+    @Test
+    void getMimeTypeFromExtension_shouldReturnEmptyStringForUnknownFileExtensions() throws Exception {
+        assertEquals("", BrowseElement.getMimeTypeFromExtension("foo.bar"));
     }
 
     /**
@@ -120,7 +127,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         StructElement se = new StructElement();
         se.setDocStructType("Monograph");
         String label = BrowseElement.generateDefaultLabel(se, Locale.GERMAN);
-        Assertions.assertEquals("Monografie", label);
+        assertEquals("Monografie", label);
     }
 
     /**
@@ -130,8 +137,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void getFulltextForHtml_shouldRemoveAnyLineBreaks() throws Exception {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", "foo\nbar", Locale.ENGLISH, null, null);
-        Assertions.assertEquals("foo bar", be.getFulltextForHtml());
-
+        assertEquals("foo bar", be.getFulltextForHtml());
     }
 
     /**
@@ -142,18 +148,17 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     void getFulltextForHtml_shouldRemoveAnyJS() throws Exception {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR",
                 "foo <script type=\"javascript\">\nfunction f {\n alert();\n}\n</script> bar", Locale.ENGLISH, null, null);
-        Assertions.assertEquals("foo  bar", be.getFulltextForHtml());
+        assertEquals("foo  bar", be.getFulltextForHtml());
     }
-    
-    @Test 
+
+    @Test
     void test_createMultiLanguageLabel() throws IndexUnreachableException {
         BrowseElement browseElement = new BrowseElement("PI", 0, "bla", "text", Locale.ENGLISH, "/data/1", "url");
         StructElement structElement = new StructElement(new SolrDocument(Map.of(
-                    SolrConstants.IDDOC, Long.valueOf(12345),
-                    "MD_TITLE_LANG_DE", "Mein Titel",
-                    "MD_TITLE_LANG_EN", "My title",
-                    "MD_TITLE_LANG_FR", "Mon titre"
-                )));
+                SolrConstants.IDDOC, Long.valueOf(12345),
+                "MD_TITLE_LANG_DE", "Mein Titel",
+                "MD_TITLE_LANG_EN", "My title",
+                "MD_TITLE_LANG_FR", "Mon titre")));
         IMetadataValue label = browseElement.createMultiLanguageLabel(structElement);
         assertEquals("Mein Titel", label.getValueOrFallback(Locale.GERMAN));
         assertEquals("My title", label.getValueOrFallback(Locale.ENGLISH));

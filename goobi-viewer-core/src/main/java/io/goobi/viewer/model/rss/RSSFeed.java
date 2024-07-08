@@ -193,11 +193,12 @@ public final class RSSFeed {
         }
 
         for (SolrDocument doc : docs) {
+            String docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
             boolean anchor = doc.containsKey(SolrConstants.ISANCHOR) && ((Boolean) doc.getFieldValue(SolrConstants.ISANCHOR));
             boolean child = !anchor
-                    && (DocType.DOCSTRCT.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.getFieldValue(SolrConstants.LOGID) != null)
+                    && (DocType.DOCSTRCT.name().equals(docType) || doc.getFieldValue(SolrConstants.LOGID) != null)
                     && (!doc.containsKey(SolrConstants.ISWORK) || !((Boolean) doc.getFieldValue(SolrConstants.ISWORK)));
-            boolean page = DocType.PAGE.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.containsKey(SolrConstants.ORDER);
+            boolean page = DocType.PAGE.name().equals(docType) || doc.containsKey(SolrConstants.ORDER);
             SolrDocument topDoc = null;
             SolrDocument ownerDoc = null;
             if (child || page) {
@@ -243,7 +244,8 @@ public final class RSSFeed {
             String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
             String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
             boolean hasMedia = !hasImages && !anchor && BaseMimeType.getByName(mimeType).isMediaType();
-            PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages || hasMedia, false);
+            PageType pageType = DocType.ARCHIVE.name().equals(docType) ? PageType.archive
+                    : PageType.determinePageType(docStructType, mimeType, anchor, hasImages || hasMedia, false);
             int pageNo = getRepresentativePageNumber(doc);
 
             for (String field : FIELDS) {
@@ -474,11 +476,12 @@ public final class RSSFeed {
         }
 
         for (SolrDocument doc : docs) {
+            String docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
             boolean anchor = doc.containsKey(SolrConstants.ISANCHOR) && ((Boolean) doc.getFieldValue(SolrConstants.ISANCHOR));
             boolean child = !anchor
-                    && (DocType.DOCSTRCT.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.getFieldValue(SolrConstants.LOGID) != null)
+                    && (DocType.DOCSTRCT.name().equals(docType) || doc.getFieldValue(SolrConstants.LOGID) != null)
                     && (!doc.containsKey(SolrConstants.ISWORK) || !((Boolean) doc.getFieldValue(SolrConstants.ISWORK)));
-            boolean page = DocType.PAGE.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.containsKey(SolrConstants.ORDER);
+            boolean page = DocType.PAGE.name().equals(docType) || doc.containsKey(SolrConstants.ORDER);
             SolrDocument topDoc = null;
             SolrDocument ownerDoc = null;
             if (child || page) {
@@ -526,7 +529,8 @@ public final class RSSFeed {
             boolean hasImages = SolrTools.isHasImages(doc);
             String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
             String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
-            PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false);
+            PageType pageType = DocType.ARCHIVE.name().equals(docType) ? PageType.archive
+                    : PageType.determinePageType(docStructType, mimeType, anchor, hasImages, false);
             entry.setDocType(ViewerResourceBundle.getTranslation(docStructType, locale));
 
             for (String field : FIELDS) {

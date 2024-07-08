@@ -115,13 +115,16 @@ public class DefaultURLBuilder implements IURLBuilder {
     /**
      * {@inheritDoc}
      * 
+     * @should return archive view url if page type archive
      * @should only add page if not topStruct or page greater than one
      * @should only add logId if not topStruct
      */
     @Override
     public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType, boolean topStruct) {
-        StringBuilder sb = new StringBuilder();
-        String view = pageType.getName();
+        // Archive view
+        if (PageType.archive.equals(pageType)) {
+            return "archives/" + SolrEADParser.DATABASE_NAME + "/" + pi + "/";
+        }
 
         // Check for CMS page as the default view for this record; do not override page-specific URLs
         if (topStruct && StringUtils.isNotEmpty(pi)) {
@@ -136,6 +139,8 @@ public class DefaultURLBuilder implements IURLBuilder {
             }
         }
 
+        StringBuilder sb = new StringBuilder();
+        String view = pageType.getName();
         sb.append(view)
                 .append('/')
                 .append(pi)

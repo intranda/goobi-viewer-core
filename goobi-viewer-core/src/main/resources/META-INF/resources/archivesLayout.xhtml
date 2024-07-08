@@ -9,12 +9,15 @@
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
-
+ 
 
 	<!-- MESSAGES -->
 	<div class="messages">
 		<h:messages id="messages" globalOnly="false" infoClass="alert alert-success" errorClass="alert alert-danger" />
 	</div>
+	
+	<!-- ADMIN TOPBAR FRONTEND -->
+	<viewerComponent:frontEndAdminTopBar />
 
 	<div id="archives" class="archives #{archiveBean.databaseState == 'ARCHIVES_LOADED' ? '-archivesLoaded' : '-archivesNotLoaded'}">
 

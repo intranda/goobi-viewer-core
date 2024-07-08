@@ -367,7 +367,7 @@ public class Metadata implements Serializable {
      * @return First {@link MetadataValue}
      */
     public String getFirstValue() {
-        if (values.isEmpty()) {
+        if (!values.isEmpty()) {
             return values.get(0).getCombinedValue();
         }
 
@@ -858,7 +858,7 @@ public class Metadata implements Serializable {
                     setParamValue(0, indexOfParam, values, param.getKey(), null, null, null, locale);
                 } else {
                     for (String val : values) {
-                        // logger.trace("{}: {}", param.getKey(), mdValue); //NOSONAR Debug
+                        // logger.trace("{}: {}", param.getKey(), val); //NOSONAR Debug
                         if (count >= number && number != -1) {
                             break;
                         }

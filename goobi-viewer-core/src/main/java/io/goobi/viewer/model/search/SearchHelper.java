@@ -740,6 +740,7 @@ public final class SearchHelper {
             if (filterForBlacklist) {
                 sbQuery.append(getCollectionBlacklistFilterSuffix(luceneField));
             }
+            logger.trace("Collection query: {}", sbQuery);
 
             // Iterate over record hits instead of using facets to determine the size of the parent collections
 
@@ -787,11 +788,7 @@ public final class SearchHelper {
                 continue;
             }
 
-            CollectionResult result = ret.get(dc);
-            if (result == null) {
-                result = new CollectionResult(dc);
-                ret.put(dc, result);
-            }
+            CollectionResult result = ret.computeIfAbsent(dc, k -> new CollectionResult(dc));
             result.incrementCount(count.getCount());
 
             if (dc.contains(splittingChar) && !counted.contains(dc)) {
