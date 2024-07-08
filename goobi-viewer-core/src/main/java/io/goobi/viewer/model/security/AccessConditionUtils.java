@@ -120,10 +120,10 @@ public final class AccessConditionUtils {
                 }
                 if (isThumbnail) {
                     return checkAccessPermissionForThumbnail(request, pi, contentFileName);
-                    //                                logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access);
+                    //                                logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access); //NOSONAR Logging sometimes needed for debugging
                 }
                 return checkAccessPermissionForImage(request, pi, contentFileName);
-            //                                logger.trace("Checked image access: {}/{}: {}", pi, contentFileName, access);
+            //                                logger.trace("Checked image access: {}/{}: {}", pi, contentFileName, access); //NOSONAR Logging sometimes needed for debugging
             case "text":
             case "ocrdump":
                 return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
@@ -270,7 +270,7 @@ public final class AccessConditionUtils {
         }
 
         String query = generateAccessCheckQuery(identifier, fileName);
-        // logger.trace("query: {}", query); // Sonar considers this log msg a security issue, so leave it commented out when not needed
+        // logger.trace("query: {}", query); //NOSONAR Sonar considers this log msg a security issue, so leave it commented out when not needed
         try {
             // Collect access conditions required by the page
             Map<String, Set<String>> requiredAccessConditions = new HashMap<>();
@@ -288,7 +288,7 @@ public final class AccessConditionUtils {
                         Set<String> pageAccessConditions = new HashSet<>();
                         for (Object accessCondition : fieldsAccessConddition) {
                             pageAccessConditions.add(accessCondition.toString());
-                            // logger.trace(accessCondition.toString());
+                            // logger.trace(accessCondition.toString()); //NOSONAR Logging sometimes needed for debugging
                         }
                         requiredAccessConditions.put(fileName, pageAccessConditions);
                     }
@@ -374,7 +374,7 @@ public final class AccessConditionUtils {
         String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilegeName + "_" + identifier + "_" + logId;
         AccessPermission ret = (AccessPermission) getSessionPermission(attributeName, request);
         if (ret != null) {
-            // logger.trace("Permission '{}' already in session: {}", attributeName, ret.isGranted());
+            // logger.trace("Permission '{}' already in session: {}", attributeName, ret.isGranted()); //NOSONAR Logging sometimes needed for debugging
             return ret;
         }
 
@@ -771,7 +771,7 @@ public final class AccessConditionUtils {
     @SuppressWarnings("unchecked")
     public static AccessPermission checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpServletRequest request, String pi,
             String contentFileName, String privilegeType) throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap: {}, {}, {}", pi, contentFileName, privilegeType); //NOSONAR Deb
+        // logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap: {}, {}, {}", pi, contentFileName, privilegeType); //NOSONAR Debugging
         if (privilegeType == null) {
             throw new IllegalArgumentException("privilegeType may not be null");
         }
@@ -886,7 +886,7 @@ public final class AccessConditionUtils {
             }
             if (!licenseType.getPrivileges().contains(privilegeName) && !licenseType.isOpenAccess()
                     && !licenseType.isRestrictionsExpired(query)) {
-                // logger.trace("LicenseType '{}' doesn't allow the action '{}' by default.", licenseType.getName(), privilegeName); //NOSONAR D
+                // logger.trace("LicenseType '{}' doesn't allow the action '{}' by default.", licenseType.getName(), privilegeName); //NOSONAR Debugging
                 licenseTypeAllowsPriv = false;
             }
         }
@@ -1008,21 +1008,21 @@ public final class AccessConditionUtils {
                         .append(" -(")
                         .append(SearchHelper.getMovingWallQuery())
                         .append(')');
-                // logger.trace("License relevance query: {}",
+                // logger.trace("License relevance query: {}", //NOSONAR Logging sometimes needed for debugging
                 // StringTools.stripPatternBreakingChars(StringTools.stripPatternBreakingChars(sbQuery.toString()))); //NOSONAR Debug
                 if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
-                    // logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to the moving wall condition.",
+                    // logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to the moving wall condition.", //NOSONAR Logging sometimes needed for debugging
                     // licenseType.getName(), StringTools.stripPatternBreakingChars(query)); //NOSONAR Debug
                     if (licenseType.isMovingWall()) {
                         // Moving wall license type allow everything if the condition query doesn't match
-                        // logger.trace("License type '{}' is a moving wall type and its condition query doesn't match the record query '{}'.
+                        // logger.trace("License type '{}' is a moving wall type and its condition query doesn't match the record query '{}'. //NOSONAR Logging sometimes needed for debugging
                         // All restrictions lifted.", licenseType.getName(), StringTools.stripPatternBreakingChars(query)); //NOSONAR Debug
                         licenseType.getRestrictionsExpired().put(query, true);
                     } else {
                         continue;
                     }
                 }
-                // logger.trace("LicenseType '{}' applies to resource described by '{}' due to moving wall restrictions.", licenseType.getName(),
+                // logger.trace("LicenseType '{}' applies to resource described by '{}' due to moving wall restrictions.", licenseType.getName(), //NOSONAR Logging sometimes needed for debugging
                 // StringTools.stripPatternBreakingChars(query)); //NOSONAR Debug
             }
 

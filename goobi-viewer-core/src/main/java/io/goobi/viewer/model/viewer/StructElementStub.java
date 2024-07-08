@@ -564,7 +564,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * @param sourceDocFormat the sourceDocFormat to set
      */
     public void setSourceDocFormat(String sourceDocFormat) {
-        // logger.trace("setSourceDocFormat: {}", sourceDocFormat);
+        // logger.trace("setSourceDocFormat: {}", sourceDocFormat);  //NOSONAR Logging sometimes needed for debugging
         this.sourceDocFormat = sourceDocFormat;
     }
 

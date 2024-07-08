@@ -321,7 +321,7 @@ public class CMSTemplateManager implements Serializable {
             logger.warn("No cms folder found in {}. This theme is probably not configured to use cms", path);
             return templates;
         }
-        // logger.trace(templateFolder.getAbsolutePath());
+        // logger.trace(templateFolder.getAbsolutePath()); //NOSONAR Logging sometimes needed for debugging
         for (CMSPageTemplate template : templateList) {
             if (templates.get(template.getId()) != null) {
                 throw new IllegalArgumentException("Found two templates with id " + template.getId());

@@ -342,7 +342,7 @@ public class BreadcrumbBean implements Serializable {
      * @param url a {@link java.lang.String} object.
      */
     public void addStaticLinkToBreadcrumb(String linkName, final String url, int linkWeight) {
-        // logger.trace("addStaticLinkToBreadcrumb: {} - {} ({})", linkName, url, linkWeight);
+        // logger.trace("addStaticLinkToBreadcrumb: {} - {} ({})", linkName, url, linkWeight); //NOSONAR Logging sometimes needed for debugging
         if (linkWeight < 0) {
             return;
         }

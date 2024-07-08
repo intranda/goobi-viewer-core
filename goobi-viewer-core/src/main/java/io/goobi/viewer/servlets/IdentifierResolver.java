@@ -208,7 +208,7 @@ public class IdentifierResolver extends HttpServlet {
                         }
                     }
                 } else {
-                    // logger.trace("not found: {}:{}", fieldName, fieldValue);
+                    // logger.trace("not found: {}:{}", fieldName, fieldValue); //NOSONAR Logging sometimes needed for debugging
                     try {
                         redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
                     } catch (IOException | ServletException e) {
@@ -589,7 +589,7 @@ public class IdentifierResolver extends HttpServlet {
                 .getUrlBuilder()
                 .buildPageUrl(topstructPi, order, (String) targetDoc.getFieldValue(SolrConstants.LOGID), pageType, topstruct || anchorOrGroup));
 
-        // logger.trace("Resolved to: {}", sb.toString());
+        // logger.trace("Resolved to: {}", sb.toString()); //NOSONAR Logging sometimes needed for debugging
         return sb.toString();
     }
 }

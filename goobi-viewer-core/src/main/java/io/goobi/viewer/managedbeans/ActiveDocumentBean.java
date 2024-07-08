@@ -544,7 +544,7 @@ public class ActiveDocumentBean implements Serializable {
                         searchBean.increaseCurrentHitIndex();
                     } else if (searchBean.getHitIndexOperand() != 0) {
                         // Reset hit index operand (should only be necessary if the URL was called twice, but the current hit has not changed
-                        // logger.trace("Hit index modifier operand is {}, resetting...", searchBean.getHitIndexOperand());
+                        // logger.trace("Hit index modifier operand is {}, resetting...", searchBean.getHitIndexOperand()); //NOSONAR Logging sometimes needed for debugging
                         searchBean.setHitIndexOperand(0);
                     }
                 }
@@ -1075,7 +1075,7 @@ public class ActiveDocumentBean implements Serializable {
             if (StringUtils.isBlank(localPageType)) {
                 localPageType = PageType.viewObject.name();
             }
-            // logger.trace("current view: {}", localPageType);
+            // logger.trace("current view: {}", localPageType); //NOSONAR Logging sometimes needed for debugging
         }
 
         int[] pages = StringTools.getIntegerRange(pageOrderRange);
@@ -2296,7 +2296,7 @@ public class ActiveDocumentBean implements Serializable {
         }
         if (currentPageType != null && StringUtils.isNotEmpty(currentPageType.getName())) {
             logger.trace("page type: {}", currentPageType);
-            // logger.trace("current url: {}", navigationHelper.getCurrentUrl());
+            // logger.trace("current url: {}", navigationHelper.getCurrentUrl()); //NOSONAR Logging sometimes needed for debugging
 
             int page = viewManager.getCurrentImageOrder();
             String urlRoot = navigationHelper.getApplicationUrl() + currentPageType.getName() + "/" + viewManager.getPi() + "/";

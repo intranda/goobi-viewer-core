@@ -113,7 +113,7 @@ public class SolrEADParser extends ArchiveParser {
             List<String> lastUpdatedList = SolrTools.getMetadataValues(doc, SolrConstants.DATEINDEXED);
             if (!lastUpdatedList.isEmpty()) {
                 lastUpdated = formatDate(Long.parseLong(lastUpdatedList.get(lastUpdatedList.size() - 1)));
-                // logger.trace("Last updated: {}", lastUpdated);
+                // logger.trace("Last updated: {}", lastUpdated); //NOSONAR Logging sometimes needed for debugging
             }
 
             String size = "0";
@@ -199,7 +199,7 @@ public class SolrEADParser extends ArchiveParser {
      */
     public ArchiveEntry loadNode(int order, int hierarchy, SolrDocument doc, Set<String> loadPath, boolean loadChildrenRecursively)
             throws PresentationException, IndexUnreachableException {
-        // logger.trace("loadNode: {}", order);
+        // logger.trace("loadNode: {}", order); //NOSONAR Logging sometimes needed for debugging
         if (doc == null) {
             throw new IllegalArgumentException("doc may not be null");
         }
@@ -345,7 +345,7 @@ public class SolrEADParser extends ArchiveParser {
                 "+" + SolrConstants.PI_TOPSTRUCT + ":\"" + node.getTopstructPi() + "\" +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name()
                         + " +(" + SolrConstants.EAD_NODE_ID + ":\"" + searchValue + "\" " + SolrConstants.TITLE + ":" + searchValue + ")"
                         + SearchHelper.getAllSuffixes();
-        // logger.trace("Unparsed node search query: {}", query);
+        // logger.trace("Unparsed node search query: {}", query); //NOSONAR Logging sometimes needed for debugging
 
         boolean ret = false;
         try {

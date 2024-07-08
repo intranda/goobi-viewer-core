@@ -2652,7 +2652,7 @@ public class ViewManager implements Serializable {
                             .toString());
         }
         double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
-        // logger.trace("{}% of pages have full-text", percentage);
+        // logger.trace("{}% of pages have full-text", percentage); //NOSONAR Logging sometimes needed for debugging
         if (percentage < threshold) {
             return true;
         }
@@ -2880,7 +2880,7 @@ public class ViewManager implements Serializable {
             currentFulltext = StringTools.escapeHtmlChars(currentFulltext);
         }
 
-        // logger.trace(currentFulltext);
+        // logger.trace(currentFulltext); //NOSONAR Logging sometimes needed for debugging
         return currentFulltext;
     }
 
@@ -3339,7 +3339,7 @@ public class ViewManager implements Serializable {
             }
         }
 
-        //		logger.trace("Version history size: {}", versionHistory.size());
+        //		logger.trace("Version history size: {}", versionHistory.size()); //NOSONAR Logging sometimes needed for debugging
         return versionHistory;
     }
 

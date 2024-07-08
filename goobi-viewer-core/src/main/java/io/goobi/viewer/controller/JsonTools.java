@@ -392,7 +392,7 @@ public final class JsonTools {
             }
         }
 
-        // logger.trace("jsonObject of pi " + pi + " : " +jsonObj);
+        // logger.trace("jsonObject of pi " + pi + " : " +jsonObj); //NOSONAR Logging sometimes needed for debugging
         return jsonObj;
     }
 

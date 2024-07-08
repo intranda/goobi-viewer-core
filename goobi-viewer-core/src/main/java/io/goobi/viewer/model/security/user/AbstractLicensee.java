@@ -45,7 +45,7 @@ public abstract class AbstractLicensee implements ILicensee {
     /** {@inheritDoc} */
     @Override
     public AccessPermission hasLicense(String licenseName, String privilegeName, String pi) throws PresentationException, IndexUnreachableException {
-        // logger.trace("hasLicense({},{},{})", licenseName, privilegeName, pi);
+        // logger.trace("hasLicense({},{},{})", licenseName, privilegeName, pi); //NOSONAR Logging sometimes needed for debugging
 
         // No privilege name given
         if (StringUtils.isEmpty(privilegeName)) {

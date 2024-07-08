@@ -468,7 +468,7 @@ public final class NetTools {
         props.setProperty("mail.smtp.auth", String.valueOf(auth));
         logger.debug("Connecting to email server {} on port {} via SMTP security {}", smtpServer, String.valueOf(smtpPort),
                 smtpSecurity.toUpperCase());
-        // logger.trace(props.toString());
+        // logger.trace(props.toString()); //NOSONAR Logging sometimes needed for debugging
 
         Session session;
         if (auth) {
@@ -557,7 +557,7 @@ public final class NetTools {
             //                Enumeration<String> headerNames = request.getHeaderNames();
             //                while (headerNames.hasMoreElements()) {
             //                    String headerName = headerNames.nextElement();
-            //                    logger.trace("request header '{}':'{}'", headerName, request.getHeader(headerName));
+            //                    logger.trace("request header '{}':'{}'", headerName, request.getHeader(headerName)); //NOSONAR Logging sometimes needed for debugging
             //                }
             //            }
 
