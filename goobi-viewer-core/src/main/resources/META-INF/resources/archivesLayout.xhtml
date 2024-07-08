@@ -9,12 +9,15 @@
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
-
+ 
 
 	<!-- MESSAGES -->
 	<div class="messages">
 		<h:messages id="messages" globalOnly="false" infoClass="alert alert-success" errorClass="alert alert-danger" />
 	</div>
+	
+	<!-- ADMIN TOPBAR FRONTEND -->
+	<viewerComponent:frontEndAdminTopBar />
 
 	<div id="archives" class="archives #{archiveBean.databaseState == 'ARCHIVES_LOADED' ? '-archivesLoaded' : '-archivesNotLoaded'}">
 
@@ -53,13 +56,6 @@
 		<!-- ARCHIVES CONTENT -->
 		<main id="archivesContent" class="archives__main">
 			<c:choose>
-				<!-- CONDITION ERROR -->
-				<c:when
-					test="#{archiveBean.databaseState == 'ERROR_NOT_CONFIGURED'}">
-					<div class="archives__error">
-						<span>#{msg.error__archives_database_configuration_missing}</span>
-					</div>
-				</c:when>
 				<!-- CONDITION ERROR -->
 				<c:when test="#{archiveBean.databaseState == 'ERROR_NOT_REACHABLE'}">
 					<div class="archives__error">

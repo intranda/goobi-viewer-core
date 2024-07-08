@@ -20,7 +20,7 @@
             <div id="searchListFacetsWrapper" class="widget-search-facets #{cc.attrs.widget.cssClass}">
                 <h:form id="searchListFacetsForm" prependId="false">
                     <!-- FACETS -->
-                    <c:forEach var="field" items="#{searchBean.facets.allAvailableFacets.entrySet().toArray()}" varStatus="status">
+                    <ui:repeat var="field" value="#{searchBean.facets.allAvailableFacets.entrySet().toArray()}" varStatus="status">
                         <h:panelGroup id="collectionFacetsPanelGroup_#{status.index}"
                             rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and (searchBean.facets.isFacetListSizeSufficient(field.key) or fn:length(searchBean.facets.getActiveFacetsForField(field.key)) > 0)}">
                             
@@ -196,7 +196,7 @@
                                 
                             </div>
                         </h:panelGroup>
-                    </c:forEach>
+                    </ui:repeat>
                 </h:form>
             </div>
         </h:panelGroup>

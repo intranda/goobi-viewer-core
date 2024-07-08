@@ -23,6 +23,7 @@ package io.goobi.viewer.model.administration.configeditor;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 public class FileRecord {
 
@@ -71,6 +72,20 @@ public class FileRecord {
 
     public String getFileType() {
         return fileType;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.file.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj != null && this.getClass().equals(obj.getClass())) {
+            return Objects.equals(this.getFile(), ((FileRecord) obj).getFile());
+        } else {
+            return false;
+        }
     }
 
 }

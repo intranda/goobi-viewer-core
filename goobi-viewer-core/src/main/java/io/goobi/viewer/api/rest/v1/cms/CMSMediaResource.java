@@ -144,7 +144,7 @@ public class CMSMediaResource {
      * @param maxItems
      * @param prioritySlots
      * @param random
-     * @return a {@link io.goobi.viewer.api.rest.v1.cms.CMSMediaResource#MediaList} object.
+     * @return a {@link io.goobi.viewer.model.cms.media.MediaList} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
@@ -180,7 +180,7 @@ public class CMSMediaResource {
      * @param maxItems
      * @param prioritySlots
      * @param random
-     * @return a {@link io.goobi.viewer.api.rest.v1.cms.CMSMediaResource#MediaList} object.
+     * @return a {@link io.goobi.viewer.model.cms.media.MediaList} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
@@ -231,7 +231,7 @@ public class CMSMediaResource {
     @CORSBinding
     public static StreamingOutput getPDFMediaItemContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
-        String decFilename = StringTools.decodeUrl(filename);
+        String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
         Path path = Paths.get(
                 DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder(),
@@ -256,7 +256,7 @@ public class CMSMediaResource {
     @CORSBinding
     public static StreamingOutput getSvgContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
-        String decFilename = StringTools.decodeUrl(filename);
+        String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
         Path path = Paths.get(
                 DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder(),
@@ -281,7 +281,7 @@ public class CMSMediaResource {
     @CORSBinding
     public static StreamingOutput getIcoContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
-        String decFilename = StringTools.decodeUrl(filename);
+        String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
         Path path = Paths.get(
                 DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder(),
@@ -306,7 +306,7 @@ public class CMSMediaResource {
             throws PresentationException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-        Path file = cmsMediaFolder.resolve(StringTools.decodeUrl(filename));
+        Path file = cmsMediaFolder.resolve(StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename)));
         return serveMediaContent("video", file);
     }
 
@@ -316,7 +316,7 @@ public class CMSMediaResource {
             throws PresentationException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-        Path file = cmsMediaFolder.resolve(StringTools.decodeUrl(filename));
+        Path file = cmsMediaFolder.resolve(StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename)));
         return serveMediaContent("audio", file);
     }
 
@@ -335,7 +335,7 @@ public class CMSMediaResource {
     @Produces({ MediaType.TEXT_HTML })
     public static String getMediaItemContent(@PathParam("filename") String filename) throws ContentNotFoundException {
 
-        String decFilename = StringTools.decodeUrl(filename);
+        String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
         decFilename = Paths.get(decFilename).getFileName().toString(); // Make sure filename doesn't inject a path traversal
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
@@ -370,7 +370,8 @@ public class CMSMediaResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response validateUploadMediaFiles(@PathParam("filename") String filename) throws DAOException {
 
-        CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItemByFilename(filename);
+        CMSMediaItem item =
+                DataManager.getInstance().getDao().getCMSMediaItemByFilename(StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename)));
         if (item != null) {
             MediaItem jsonItem = new MediaItem(item, servletRequest);
             return Response.status(Status.OK).entity(jsonItem).build();
@@ -379,7 +380,7 @@ public class CMSMediaResource {
     }
 
     /**
-     * List all uploaded media files
+     * List all uploaded media files.
      *
      * @return List<String> of media file names
      * @throws PresentationException
@@ -416,7 +417,7 @@ public class CMSMediaResource {
     }
 
     /**
-     * May receive a file from a multipart form and saves the file in the cms media folder
+     * May receive a file from a multipart form and saves the file in the cms media folder.
      *
      * @return an ACCEPTED response if the upload was successful, a FORBIDDEN response if no user is registered in the html session or the user does
      *         not have rights to upload media, or a CONFLICT response if a file of the same name already exists in the cms media foler
@@ -441,7 +442,7 @@ public class CMSMediaResource {
         }
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-        Path mediaFile = cmsMediaFolder.resolve(filename);
+        Path mediaFile = cmsMediaFolder.resolve(StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename)));
         try {
             Optional<User> user = getUser();
             if (!user.isPresent()) {

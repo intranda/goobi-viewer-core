@@ -161,17 +161,13 @@ var adminJS = ( function( admin ) {
 								console.log('editor is clean');
 							}
 							this.dirty = false;
-							 $('.admin__overlay-bar').removeClass('-slideIn');
-							 $('.admin__overlay-bar').addClass('-slideOut');
-							 $('.admin__overlay-bar').on('animationend webkitAnimationEnd', function() { 
-							    $('.admin__overlay-bar').removeClass('-slideOut');
-							 });
+							 this.hideOverlayBar();
 						} else {
 							if ( _debug ) {
 							console.log('editor not clean');
 							}
 							this.dirty = true;
-							 $('.admin__overlay-bar').addClass('-slideIn');
+							this.showOverlayBar();
 						}
 						if ( _debug ) {
 							console.log('debounced');
@@ -197,6 +193,29 @@ var adminJS = ( function( admin ) {
 				});
 			
 			},
+		showOverlayBar: function(fixed) {
+			$('.admin__overlay-bar').addClass('-slideIn');
+			if(fixed) {
+				$('.admin__overlay-bar').addClass('-fixed');
+			}
+		},
+		hideOverlayBar: function() {
+			if(!$('.admin__overlay-bar').hasClass("-fixed")) {
+				$('.admin__overlay-bar').removeClass('-slideIn');
+				$('.admin__overlay-bar').addClass('-slideOut');
+				$('.admin__overlay-bar').on('animationend webkitAnimationEnd', function() { 
+					$('.admin__overlay-bar').removeClass('-slideOut');
+				});
+			}
+		},
+		loadBackup: function(data) {
+			console.log("load backup ", data.status);
+			if(data.status === "success") {
+				$(document).ready(() => {						
+					setTimeout(adminJS.configEditor.showOverlayBar(true));
+				})
+			}
+		}
 	}
 	
 	return admin;

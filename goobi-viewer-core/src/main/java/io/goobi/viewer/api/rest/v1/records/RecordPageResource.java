@@ -133,7 +133,8 @@ public class RecordPageResource {
                     + " all resources from files") @QueryParam("mode") String mode,
             @Parameter(
                     description = "Set prefered goobi-viewer view for rendering attribute of canvases. Only valid values is 'fullscreen',"
-                            + " any other value results in default object/image view being referenced.") @QueryParam("preferedView") String preferedView)
+                            + " any other value results in default object/image"
+                            + " view being referenced.") @QueryParam("preferedView") String preferedView)
 
             throws ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException,
             ViewerConfigurationException, DAOException, IllegalRequestException {

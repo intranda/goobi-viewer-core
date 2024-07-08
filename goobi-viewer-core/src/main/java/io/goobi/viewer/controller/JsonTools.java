@@ -190,9 +190,12 @@ public final class JsonTools {
         if (value instanceof String) {
             return value;
         } else if (value instanceof IMetadataValue metadataValue && metadataValue.getNumberOfUniqueTranslations() == 1) {
-            return metadataValue.getValue().orElse("");
+            return metadataValue.getValue().map(v -> escapeHtml(v)).orElse("");
         } else {
             try {
+                if (value instanceof String) {
+                    value = escapeHtml((String) value);
+                }
                 String s = getAsJson(value);
                 if (StringUtils.isBlank(s)) {
                     return null;
@@ -211,6 +214,11 @@ public final class JsonTools {
                 return value.toString();
             }
         }
+    }
+
+    private static String escapeHtml(String s) {
+        return s.replace("'", "&#39;").replace("\"", "&quot;");
+
     }
 
     /**

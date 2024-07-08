@@ -65,6 +65,7 @@ public class PresentationException extends Exception implements Serializable {
      *
      * @param string a {@link java.lang.String} object.
      * @param e a {@link java.lang.Throwable} object.
+     * @param args strings to replace placeholders ('{}') in the string
      */
     public PresentationException(Throwable e, String string, Object... args) {
         super(formatString(string, args), e);

@@ -112,6 +112,8 @@ public class NavigationHelper implements Serializable {
 
     @Inject
     private BreadcrumbBean breadcrumbBean;
+    @Inject
+    private CmsBean cmsBean;
 
     /** Constant <code>KEY_CURRENT_VIEW="currentView"</code> */
     protected static final String KEY_CURRENT_VIEW = "currentView";
@@ -267,7 +269,13 @@ public class NavigationHelper implements Serializable {
      * @param cmsPage
      */
     public void setCurrentPage(CMSPage cmsPage) {
-        setCurrentPage(getCMSPageNavigationId(cmsPage), false, true, true);
+        try {
+            setCurrentPage(getCMSPageNavigationId(cmsPage), false, !cmsBean.isRelatedWorkLoaded(), true);
+            setCurrentView(cmsBean.isRelatedWorkLoaded() ? PageType.cmsPageOfWork.name() : PageType.cmsPage.name());
+        } catch (IndexUnreachableException e) {
+            logger.error("Error checking if related work for cmsPage is loaded", e);
+            setCurrentPage(getCMSPageNavigationId(cmsPage), false, true, true);
+        }
     }
 
     /**
@@ -633,6 +641,7 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.util.Locale} object.
      */
     public Locale getLocale() {
+        // logger.trace("getLocale: {}", locale);
         return locale;
     }
 

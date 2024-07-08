@@ -23,7 +23,9 @@ package io.goobi.viewer.model.viewer.object;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -39,6 +41,7 @@ public class ObjectInfo {
     private List<URI> resources;
     private Point3D center = new Point3D(0, 0, 0);
     private Point3D rotation = new Point3D(0, 0, 0);
+    private Map<URI, Long> resourceSizes = new HashMap<>();
 
     /**
      * <p>
@@ -175,6 +178,14 @@ public class ObjectInfo {
      */
     public void setResources(List<URI> resources) {
         this.resources = resources;
+    }
+
+    public Map<URI, Long> getResourceSizes() {
+        return resourceSizes;
+    }
+
+    public void setSize(URI resourceURI, Long size) {
+        this.resourceSizes.put(resourceURI, size);
     }
 
 }

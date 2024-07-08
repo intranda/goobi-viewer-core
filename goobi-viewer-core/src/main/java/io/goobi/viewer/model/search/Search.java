@@ -179,7 +179,7 @@ public class Search implements Serializable {
 
     /**
      * cloning constructor. Creates a new search in a state as it might be loaded from database, i.e. without any transient fields set. In particular
-     * with empty {@link #hits}
+     * with empty {@link #getHits()}
      *
      * @param blueprint
      */
@@ -576,11 +576,11 @@ public class Search implements Serializable {
         String useExpandQuery = "";
         if (StringUtils.isNotEmpty(expandQuery)) {
             // Search for child hits only if initial search query is not empty (empty query means collection listing)
-            useExpandQuery = expandQuery + subElementQueryFilterSuffix;
+            useExpandQuery = SearchHelper.buildFinalQuery(expandQuery, false, SearchAggregationType.NO_AGGREGATION) + subElementQueryFilterSuffix;
         } else if (!allFilterQueries.isEmpty() && DataManager.getInstance().getConfiguration().isUseFacetsAsExpandQuery()) {
             // If explicitly configured to use facets for expand query to produce child hits
-            useExpandQuery = SearchHelper.buildExpandQueryFromFacets(allFilterQueries,
-                    DataManager.getInstance().getConfiguration().getAllowedFacetsForExpandQuery());
+            useExpandQuery = SearchHelper.buildFinalQuery(SearchHelper.buildExpandQueryFromFacets(allFilterQueries,
+                    DataManager.getInstance().getConfiguration().getAllowedFacetsForExpandQuery()), false, SearchAggregationType.NO_AGGREGATION);
         }
         if (StringUtils.isNotEmpty(useExpandQuery)) {
             logger.trace("Expand query: {}", useExpandQuery);

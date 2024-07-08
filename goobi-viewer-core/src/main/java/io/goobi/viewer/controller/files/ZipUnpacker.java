@@ -33,6 +33,7 @@ import java.util.zip.ZipInputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.exceptions.ArchiveSizeExceededException;
 
 public class ZipUnpacker {
@@ -60,6 +61,9 @@ public class ZipUnpacker {
         long currentArchiveSize = 0;
         while ((entry = zis.getNextEntry()) != null) { //NOSONAR   entry is tested for size while extracting it
             Path entryFile = destination.resolve(entry.getName());
+            if (!FileTools.isWithin(entryFile, destination)) {
+                throw new IOException("Attemping to write illegal entry " + entryFile + ". Not within archive destination " + destination);
+            }
             if (entry.isDirectory()) {
                 logger.trace("Creating directory {}", entryFile);
                 Files.createDirectory(entryFile);

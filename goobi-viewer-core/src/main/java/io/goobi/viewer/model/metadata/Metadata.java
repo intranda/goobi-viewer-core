@@ -363,6 +363,18 @@ public class Metadata implements Serializable {
     }
 
     /**
+     * 
+     * @return First {@link MetadataValue}
+     */
+    public String getFirstValue() {
+        if (!values.isEmpty()) {
+            return values.get(0).getCombinedValue();
+        }
+
+        return null;
+    }
+
+    /**
      * <p>
      * setParamValue.
      * </p>
@@ -678,6 +690,14 @@ public class Metadata implements Serializable {
     }
 
     /**
+     * 
+     * @return Configured index field names of parameters
+     */
+    public List<String> getParamFieldNames() {
+        return getParams().stream().map(p -> p.getKey()).toList();
+    }
+
+    /**
      * <p>
      * hasParam.
      * </p>
@@ -838,7 +858,7 @@ public class Metadata implements Serializable {
                     setParamValue(0, indexOfParam, values, param.getKey(), null, null, null, locale);
                 } else {
                     for (String val : values) {
-                        // logger.trace("{}: {}", param.getKey(), mdValue); //NOSONAR Debug
+                        // logger.trace("{}: {}", param.getKey(), val); //NOSONAR Debug
                         if (count >= number && number != -1) {
                             break;
                         }

@@ -697,12 +697,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (!hasImage) {
             return false;
         }
-        String filename = null;
-        try {
-            filename = FileTools.getFilenameFromPathString(getFileName());
-        } catch (FileNotFoundException e) {
-            //
-        }
+        String filename = getFileName();
         if (StringUtils.isBlank(filename)) {
             return false;
         }

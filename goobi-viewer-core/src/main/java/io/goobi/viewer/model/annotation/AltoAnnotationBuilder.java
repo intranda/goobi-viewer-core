@@ -46,7 +46,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 
 /**
- * Creates an {@link de.intranda.api.iiif.presentation.v2.AnnotationList} of {@link TextualAnnotation}s from the content of an ALTO document.
+ * Creates an {@link de.intranda.api.iiif.presentation.v2.AnnotationList} of {@link TextualResource}s from the content of an ALTO document.
  * Depending on selected granularity, it is either one annotation per page, per TextBlock, per line or per word
  *
  * @author Florian
@@ -150,7 +150,7 @@ public class AltoAnnotationBuilder {
     }
 
     /**
-     * Method to construct alto element id if no id attribute is available
+     * Method to construct alto element id if no id attribute is available.
      *
      * @param e
      * @return {@link String}

@@ -23,7 +23,9 @@ package io.goobi.viewer.model.maps;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -52,6 +54,7 @@ public class GeoMapFeature {
     //This is used to identify the feature with a certain document, specifically a LOGID of a TOC element
     private String documentId = null;
     private Integer pageNo = null;
+    private final Map<String, String> properties = new HashMap<>();
     private List<MetadataContainer> entities = new ArrayList<>();
 
     public GeoMapFeature() {
@@ -171,6 +174,31 @@ public class GeoMapFeature {
     public JSONObject getJsonObject() {
 
         JSONObject object = new JSONObject(this.json);
+        JSONObject jsonProperties = getProperties(object);
+        if (this.title != null && !this.title.isEmpty()) {
+            jsonProperties.put("title", JsonTools.getAsObjectForJson(this.title));
+        }
+        if (this.description != null && !this.description.isEmpty()) {
+            jsonProperties.put("description", JsonTools.getAsObjectForJson(this.description));
+        }
+        this.properties.entrySet().forEach(entry -> jsonProperties.put(entry.getKey(), entry.getValue()));
+        if (StringUtils.isNotBlank(this.link)) {
+            jsonProperties.put("link", this.link);
+        }
+        if (StringUtils.isNotBlank(this.documentId)) {
+            jsonProperties.put("documentId", this.documentId);
+        }
+        if (this.pageNo != null) {
+            jsonProperties.put("page", this.pageNo);
+        }
+        if (!this.entities.isEmpty()) {
+            addEntities(jsonProperties);
+        }
+        jsonProperties.put("count", this.count);
+        return object;
+    }
+
+    public JSONObject getProperties(JSONObject object) {
         JSONObject properties;
         try {
             properties = object.getJSONObject("properties");
@@ -178,26 +206,7 @@ public class GeoMapFeature {
             properties = new JSONObject();
             object.put("properties", properties);
         }
-        if (this.title != null && !this.title.isEmpty()) {
-            properties.put("title", JsonTools.getAsObjectForJson(this.title));
-        }
-        if (this.description != null && !this.description.isEmpty()) {
-            properties.put("description", JsonTools.getAsObjectForJson(this.description));
-        }
-        if (StringUtils.isNotBlank(this.link)) {
-            properties.put("link", this.link);
-        }
-        if (StringUtils.isNotBlank(this.documentId)) {
-            properties.put("documentId", this.documentId);
-        }
-        if (this.pageNo != null) {
-            properties.put("page", this.pageNo);
-        }
-        if (!this.entities.isEmpty()) {
-            addEntities(properties);
-        }
-        properties.put("count", this.count);
-        return object;
+        return properties;
     }
 
     public void addEntities(JSONObject properties) {
@@ -213,7 +222,8 @@ public class GeoMapFeature {
                     List<IMetadataValue> values = entry.getValue();
                     JSONArray array = new JSONArray();
                     for (IMetadataValue value : values) {
-                        array.put(JsonTools.getAsObjectForJson(value));
+                        Object escapedValue = JsonTools.getAsObjectForJson(value);
+                        array.put(escapedValue);
                     }
                     jsonMetadata.put(name, array);
                 }
@@ -258,5 +268,17 @@ public class GeoMapFeature {
 
     private String getIndentifyingString(IMetadataValue md) {
         return md.getValues().stream().map(ValuePair::getValue).distinct().collect(Collectors.joining());
+    }
+
+    public void setProperty(String name, String value) {
+        this.properties.put(name, value);
+    }
+
+    public String getProperty(String name) {
+        return this.properties.getOrDefault(name, "");
+    }
+
+    public Map<String, String> getProperties() {
+        return Collections.unmodifiableMap(properties);
     }
 }

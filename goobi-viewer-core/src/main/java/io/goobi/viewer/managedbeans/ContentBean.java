@@ -172,8 +172,7 @@ public class ContentBean implements Serializable {
                 .getSearchIndex()
                 .getDisplayUserGeneratedContentsForRecord(pi)
                 .stream()
-                .filter(ugc -> ugc.isCrowdsourcingModuleContent())
-                .collect(Collectors.toList());
+                .filter(ugc -> ugc.isCrowdsourcingModuleContent()).toList();
         allContent.addAll(moduleContent);
 
         for (DisplayUserGeneratedContent ugcContent : allContent) {

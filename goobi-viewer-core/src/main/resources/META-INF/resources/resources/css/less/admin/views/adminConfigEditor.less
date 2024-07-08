@@ -165,22 +165,37 @@
 			flex: 0 0 100%;
 			max-width: 100%;
 			padding: .5rem 1rem;
+			padding-left: 1.2rem;
+			padding-right: 0.8rem;
 			border-bottom: 1px solid #ccc;
 			transition: background 0.2s ease;
+			position: relative;
+			// height: 42px;
 			&:last-child {
 				border-bottom: none;
 			}
 			&:hover {
 				background: #f1f2f3;
+				.admin__config-editor-file-selection-single-entry-actions-wrapper {
+					opacity: 1;
+				}
 			}
 			&.-selectedFile {
 				background: @blue;
-				color: white;
-				&:hover,
-				&:focus,
-				&:active,
-				&:active:focus {
+				.admin__config-editor-file-selection-single-entry-action-upload,
+				.admin__config-editor-file-selection-single-entry-action-download {
+					.fa {
+						color: white;
+					}
+				}
+				.admin__config-editor-file-selection-single-entry-button {
 					color: white;
+					&:hover,
+					&:focus,
+					&:active,
+					&:active:focus {
+						color: white;
+					}
 				}
 			}
 			&.-isNotReadable & {
@@ -195,6 +210,28 @@
 				}
 			}
 		}
+		&-file-selection-single-entry-actions-wrapper {
+			display: flex;
+			align-items: center;
+			gap: 2px;
+			opacity: 0;
+			transition: 0.25s ease all;
+		}
+		&-file-selection-single-entry-action-upload {
+			label {
+				padding: 2px 5px;
+				margin: 0;
+				cursor: pointer;
+			}
+		}
+		&-file-selection-single-entry-action-download {
+			margin-top: 2px;
+			a {
+				padding: 2px 5px;
+				display: block;
+				color: #212529;
+			}
+		}
 		&-file-selection-single-entry-button-wrapper {
 			width: 100%;
 			display: flex;
@@ -205,7 +242,7 @@
 			margin-left: auto;
 			display: flex;
 		}
-		&-file-selection-single-entry-button-wrapper-info {
+		&-file-selection-single-entry-button-info {
 			position: relative;
 			.fa-eye, .fa-lock {
 				position: relative;
@@ -229,34 +266,48 @@
 			white-space: nowrap;
 			overflow: hidden;
 			flex-grow: 1;
+			&:hover {
+				color: rgb(33, 37, 41);
+			}
 		}
-		&-backup-single-entry {
+		&-file-selection-single-entry-button-text {
+			font-size: 1.4rem;
+			font-weight: 500;
+		}
+		&-backup-single-entry-wrapper {
 			display: flex;
 			align-items: center;
-			opacity: 1;
 			padding: .5rem 1rem;
-			padding-right: 2rem;
 			border-bottom: 1px solid #ccc;
-			&:last-child {
-				border-bottom: none;
-			}
+			// gap: 10px;
 			&:hover {
 				background: #f1f2f3;
 				.admin__config-editor-backup-single-entry-icon {
 					opacity: 1;
 				}
 			}
+			&:last-child {
+				border-bottom: none;
+			}
+		}
+		&-backup-single-entry {
+
 			&.-noHover {
 				&:hover {
 					background: transparent;
 				}
 			}
 		}
-		&-backup-single-entry-text {
-			max-width: 290px;
+		&-backup-single-entry-button {
+			max-width: unset;
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
+			flex-grow: 1;
+			background: transparent;
+			border: none;
+			text-align: left;
+			padding-right: 10px;
 		}
 		&-backup-single-entry-icon {
 			margin-left: auto;
@@ -308,9 +359,31 @@
 		    background-color: #F2F2F2;
 		    background-image: linear-gradient(top, #FCFCFC, #E0E0E0);
 		}
+		&-status-entry {
+			display: none;
+			left: -10px;
+			top: 9px;
+			position: absolute;
+			width: 20px;
+			border-radius: 999px;
+			background: white;
+			height: 20px;
+			// border: 1px solid #ccc;
+  			align-items: center;
+			&.-show {
+				display: flex;
+			}
+		}
+		&-status-entry-inner {
+			display: flex;
+  			align-items: center;
+  			max-width: 100%;
+		}
 		
 	}
 }
+
+
 
 // CUSTOM OVERRIDES FOR FULLSCREEN
 .CodeMirror-fullscreen {

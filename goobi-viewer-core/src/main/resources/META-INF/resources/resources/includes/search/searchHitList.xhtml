@@ -108,6 +108,13 @@
                                     <ui:param name="browseElement" value="#{hit.browseElement}"></ui:param>
                         	       <ui:param name="showBookmarkIcon" value="#{configurationBean.bookmarksEnabled}"></ui:param>
                                 </ui:include>
+                                
+                                <!-- Related archive entry -->
+                                <ui:fragment rendered="#{hit.altUrl != null}">
+                                    <a href="#{request.contextPath}/#{hit.altUrl}" title="#{hit.altLabel}">
+                                        #{msg.archives__open_in_archive_view} <i class="fa fa-archive"></i>
+                                    </a>
+                                </ui:fragment>
                             </header>
 
                             <!-- CONTENT -->
@@ -134,14 +141,21 @@
                                         <f:param value="#{hit.pageHitCount}" />
                                     </h:outputFormat>
                                     <h:outputFormat rendered="#{hit.eventHitCount > 0}" value="#{msg.searchChildEventHitCount}">
-                                        <h:outputText rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0}" value=", " />
+                                        <h:outputText
+                                           rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0}" value=", " />
                                         <f:param value="#{hit.eventHitCount}" />
                                     </h:outputFormat>
                                     <h:outputFormat rendered="#{hit.ugcHitCount > 0}" value="#{msg.searchChildUgcHitCount}">
                                         <h:outputText
-                                         rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0 or hit.eventHitCount > 0}"
-                                         value=", " />
+                                            rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0 or hit.eventHitCount > 0}"
+                                            value=", " />
                                         <f:param value="#{hit.ugcHitCount}" />
+                                    </h:outputFormat>
+                                    <h:outputFormat rendered="#{hit.archiveHitCount > 0}" value="#{msg.searchChildArchiveHitCount}">
+                                        <h:outputText
+                                            rendered="#{hit.cmsPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0 or hit.eventHitCount > 0 or hit.ugcHitCount > 0}"
+                                            value=", " />
+                                        <f:param value="#{hit.archiveHitCount}" />
                                     </h:outputFormat>
                                 </button>
                                 <o:commandScript name="loadChildHits_#{status.index}" action="#{hit.loadChildHits(configurationBean.searchChildHitsToLoadOnExpand)}" render="childHitGroup" 
@@ -170,6 +184,15 @@
                             						</div>
                            						</ui:fragment>
                             				</div>
+                            				<div>
+                            				    <!-- Related record for archive entry -->
+                                                <!-- TODO proper placement -->
+                                                <ui:fragment rendered="#{childHit.altUrl != null}">
+                                                    <a href="#{request.contextPath}/#{childHit.altUrl}" title="#{childHit.altLabel}">
+                                                        #{msg.archives__open_record} <i class="fa fa-picture-o"></i>
+                                                    </a>
+                                                </ui:fragment>
+                                            </div>
                             				<div class="search-list__struct-child-hits">
                             					<ui:repeat var="grandChildHit" value="#{childHit.children}">                            						
                             						<dl class="dl-horizontal">

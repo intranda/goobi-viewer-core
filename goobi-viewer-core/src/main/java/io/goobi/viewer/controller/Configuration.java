@@ -442,13 +442,25 @@ public class Configuration extends AbstractConfiguration {
             throw new IllegalArgumentException("type may not be null");
         }
 
+        List<HierarchicalConfiguration<ImmutableNode>> allMetadataLists = new ArrayList<>();
+
+        // Local lists
         List<HierarchicalConfiguration<ImmutableNode>> metadataLists = getLocalConfigurationsAt("metadata.metadataList");
-        if (metadataLists == null) {
+        if (metadataLists != null) {
+            allMetadataLists.addAll(metadataLists);
+        }
+        // Global lists
+        metadataLists = getLocalConfigurationsAt(getConfig(), null, "metadata.metadataList");
+        if (metadataLists != null) {
+            allMetadataLists.addAll(metadataLists);
+        }
+
+        if (allMetadataLists.isEmpty()) {
             logger.trace("no metadata lists found");
             return new ArrayList<>(); // must be a mutable list!
         }
 
-        for (HierarchicalConfiguration<ImmutableNode> metadataList : metadataLists) {
+        for (HierarchicalConfiguration<ImmutableNode> metadataList : allMetadataLists) {
             if (type.equals(metadataList.getString(XML_PATH_ATTRIBUTE_TYPE))) {
                 List<HierarchicalConfiguration<ImmutableNode>> templateList = metadataList.configurationsAt("template");
                 if (templateList.isEmpty()) {
@@ -573,6 +585,17 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return getMetadataConfigurationForTemplate("sideBar", template, false, false);
+    }
+
+    /**
+     * Returns the list of configured metadata for the archives.
+     *
+     * @param template Template name (currently not in use)
+     * @return List of configured metadata for configured fields
+     * @should return default template configuration if template not found
+     */
+    public List<Metadata> getArchiveMetadataForTemplate(String template) {
+        return getMetadataConfigurationForTemplate("archive", StringConstants.DEFAULT_NAME, true, false);
     }
 
     /**
@@ -1127,7 +1150,12 @@ public class Configuration extends AbstractConfiguration {
      * @should return all configured elements
      */
     public List<BrowsingMenuFieldConfig> getBrowsingMenuFields() {
-        List<HierarchicalConfiguration<ImmutableNode>> fields = getLocalConfigurationsAt("metadata.browsingMenu.field");
+        List<HierarchicalConfiguration<ImmutableNode>> fields = getLocalConfigurationsAt("metadata.browsingMenu.luceneField");
+        if (fields != null && !fields.isEmpty()) {
+            logger.warn("Old <luceneField> configuration found - please migrate to <field>.");
+        } else {
+            fields = getLocalConfigurationsAt("metadata.browsingMenu.field");
+        }
         if (fields == null) {
             return new ArrayList<>();
         }
@@ -2030,6 +2058,18 @@ public class Configuration extends AbstractConfiguration {
      */
     public String getIndexedLidoFolder() {
         return getLocalString("indexedLidoFolder", "indexed_lido");
+    }
+
+    /**
+     * <p>
+     * getIndexedEadFolder.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getIndexedEadFolder() {
+        return getLocalString("indexedEadFolder", "indexed_ead");
     }
 
     /**
@@ -4925,6 +4965,18 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
+     * isSearchInItemOnlyIfFullTextAvailable.
+     * </p>
+     *
+     * @should return correct value
+     * @return a boolean.
+     */
+    public boolean isSearchInItemOnlyIfFullTextAvailable() {
+        return getLocalBoolean("sidebar.searchInItem[@onlyIfFullTextAvailable]", false);
+    }
+
+    /**
+     * <p>
      * isSearchRisExportEnabled.
      * </p>
      *
@@ -5717,14 +5769,21 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
      * @return Configured value
+     * @should return correct value
      */
-    public String getBaseXUrl() {
-        return getLocalString("urls.basex");
-    }
-
     public boolean isArchivesEnabled() {
         return getLocalBoolean("archives[@enabled]", false);
+    }
+
+    /**
+     * 
+     * @return Configured value
+     * @should return correct value
+     */
+    public int getArchivesLazyLoadingThreshold() {
+        return getLocalInt("archives[@lazyLoadingThreshold]", 100);
     }
 
     public Map<String, String> getArchiveNodeTypes() {
@@ -5735,12 +5794,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return Configured value
+     * 
+     * @return a boolean
      */
-    public HierarchicalConfiguration<ImmutableNode> getArchiveMetadataConfig() {
-        return getLocalConfigurationAt("archives.metadataList");
-    }
-
     public boolean isDisplayUserGeneratedContentBelowImage() {
         return getLocalBoolean("webGuiDisplay.displayUserGeneratedContentBelowImage", false);
     }
@@ -6082,6 +6138,17 @@ public class Configuration extends AbstractConfiguration {
     public String getCreateDeveloperPackageScriptPath() {
         return getLocalString("developer.scripts.createDeveloperPackage",
                 "{config-folder-path}/script_create_package.sh -d viewer -f {base-path} -w /var/www/  -s {solr-url}");
+    }
+
+    public String getMediaTypeHandling(String mimeType) {
+        String defaultDisposition = "attachment";
+        String defaultMimeType = "default";
+        return getLocalConfigurationsAt("viewer.mediaTypes.type").stream()
+                .filter(conf -> conf.getString("[@mimeType]", defaultMimeType).equals(mimeType))
+                .map(conf -> conf.getString("content-disposition", defaultDisposition))
+                .findFirst()
+                .orElse(defaultDisposition);
+
     }
 
 }

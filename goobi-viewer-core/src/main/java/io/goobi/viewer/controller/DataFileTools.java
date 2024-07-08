@@ -32,8 +32,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -204,7 +202,7 @@ public final class DataFileTools {
             repository = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepositoryFolder);
         }
 
-        return repository.resolve(dataFolderName).resolve(pi);
+        return repository.resolve(dataFolderName).resolve(StringTools.cleanUserGeneratedData(pi));
     }
 
     /**
@@ -274,7 +272,7 @@ public final class DataFileTools {
     }
 
     /**
-     * Returns the absolute path to the source (METS/LIDO) file with the given file name.
+     * Returns the absolute path to the source (METS/LIDO/etc.) file with the given file name.
      *
      * @param fileName a {@link java.lang.String} object.
      * @param format a {@link java.lang.String} object.
@@ -297,6 +295,7 @@ public final class DataFileTools {
      * @should construct METS file path correctly
      * @should construct METS_MARC file path correctly
      * @should construct LIDO file path correctly
+     * @should construct EAD file path correctly
      * @should construct DenkXweb file path correctly
      * @should throw IllegalArgumentException if fileName is null
      * @should throw IllegalArgumentException if format is unknown
@@ -313,22 +312,25 @@ public final class DataFileTools {
             case SolrConstants.SOURCEDOCFORMAT_METS:
             case SolrConstants.SOURCEDOCFORMAT_METS_MARC:
             case SolrConstants.SOURCEDOCFORMAT_LIDO:
+            case SolrConstants.SOURCEDOCFORMAT_EAD:
             case SolrConstants.SOURCEDOCFORMAT_DENKXWEB:
             case SolrConstants.SOURCEDOCFORMAT_WORLDVIEWS:
             case SolrConstants.SOURCEDOCFORMAT_DUBLINCORE:
                 break;
             default:
-                throw new IllegalArgumentException("format must be: METS | LIDO | DENKXWEB | DUBLINCORE | WORLDVIEWS");
+                throw new IllegalArgumentException("format must be: METS | LIDO | EAD | DENKXWEB | DUBLINCORE | WORLDVIEWS");
         }
 
         StringBuilder sb = new StringBuilder(getDataRepositoryPath(dataRepository));
         switch (format) {
-            case SolrConstants.SOURCEDOCFORMAT_METS:
-            case SolrConstants.SOURCEDOCFORMAT_METS_MARC:
+            case SolrConstants.SOURCEDOCFORMAT_METS, SolrConstants.SOURCEDOCFORMAT_METS_MARC:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
                 break;
             case SolrConstants.SOURCEDOCFORMAT_LIDO:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedLidoFolder());
+                break;
+            case SolrConstants.SOURCEDOCFORMAT_EAD:
+                sb.append(DataManager.getInstance().getConfiguration().getIndexedEadFolder());
                 break;
             case SolrConstants.SOURCEDOCFORMAT_DENKXWEB:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedDenkxwebFolder());

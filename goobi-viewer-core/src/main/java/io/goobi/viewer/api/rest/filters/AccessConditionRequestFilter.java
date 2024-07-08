@@ -65,7 +65,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 public class AccessConditionRequestFilter implements ContainerRequestFilter {
 
     /**
-     * Privilege name required for accessing a resource
+     * Privilege name required for accessing a resource.
      */
     public static final String REQUIRED_PRIVILEGE = "requiredPrivilege";
 

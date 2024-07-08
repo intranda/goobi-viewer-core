@@ -23,7 +23,6 @@ package io.goobi.viewer.model.urlresolution;
 
 import java.io.Serializable;
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,7 +47,7 @@ import io.goobi.viewer.model.viewer.PageType;
  * <p>
  * The easiest way to create ViewerPath based on a http request is by calling
  * {@link io.goobi.viewer.model.urlresolution.ViewerPathBuilder#createPath(HttpServletRequest)} or
- * {@link io.goobi.viewer.model.urlresolution.ViewerPathBuilder#createPath(String, String, String)}
+ * {@link io.goobi.viewer.model.urlresolution.ViewerPathBuilder#createPath(String, String, String, String)}
  * </p>
  *
  * @author Florian Alpers
@@ -94,7 +93,7 @@ public class ViewerPath implements Serializable {
     /**
      * Creates an empty {@link io.goobi.viewer.model.urlresolution.ViewerPath}. Usually this does not need to be called directly. Instead a ViewerPath
      * should be created by calling {@link io.goobi.viewer.model.urlresolution.ViewerPathBuilder#createPath(HttpServletRequest)} or
-     * {@link io.goobi.viewer.model.urlresolution.ViewerPathBuilder#createPath(String, String, String)}
+     * {@link io.goobi.viewer.model.urlresolution.ViewerPathBuilder#createPath(String, String, String, String)}
      */
     public ViewerPath() {
         applicationUrl = "";
@@ -336,7 +335,7 @@ public class ViewerPath implements Serializable {
      * matches.
      * </p>
      *
-     * @see PageType#matches(Path)
+     * @see PageType#matches(URI)
      * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
      * @return The matching {@link io.goobi.viewer.model.viewer.PageType} or null if no PageType matches
      */

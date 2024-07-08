@@ -23,6 +23,8 @@ package io.goobi.viewer.exceptions;
 
 public class ArchiveConnectionException extends ArchiveException {
 
+    private static final long serialVersionUID = -5274764438841967758L;
+
     public ArchiveConnectionException(String message, String resourceName, String resourceLocation, Throwable e) {
         super(message, resourceName, resourceLocation, e);
     }

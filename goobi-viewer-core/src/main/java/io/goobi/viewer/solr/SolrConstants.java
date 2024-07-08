@@ -35,12 +35,13 @@ public final class SolrConstants {
      */
     public enum DocType {
         ACCESSDENIED,
+        ARCHIVE, // EAD archive
         DOCSTRCT,
         PAGE,
         METADATA, // grouped metadata
         EVENT, // LIDO event
         UGC, // user-generated content
-        GROUP; // convolute
+        GROUP; // convolute/series
 
         /**
          * 
@@ -138,6 +139,8 @@ public final class SolrConstants {
     public static final String DOCTYPE = "DOCTYPE";
     /** Constant <code>DOWNLOAD_URL_EXTERNAL="MD2_DOWNLOAD_URL"</code> */
     public static final String DOWNLOAD_URL_EXTERNAL = "MD2_DOWNLOAD_URL";
+    /** Constant <code>EAD_NODE_ID="EAD_NODE_ID"</code> */
+    public static final String EAD_NODE_ID = "EAD_NODE_ID";
     /** Constant <code>EVENTDATE="EVENTDATE"</code> */
     public static final String EVENTDATE = "EVENTDATE";
     /** Constant <code>EVENTDATESTART="EVENTDATESTART"</code> */
@@ -238,6 +241,8 @@ public final class SolrConstants {
     public static final String PUBLISHER = "MD_PUBLISHER";
     /** Constant <code>RESOURCE="RESOURCE"</code> */
     public static final String RESOURCE = "RESOURCE";
+    /** Constant <code>SEARCHTERMS_ARCHIVE="SEARCHTERMS_ARCHIVE"</code> */
+    public static final String SEARCHTERMS_ARCHIVE = "SEARCHTERMS_ARCHIVE";
     /** Constant <code>SOURCEDOCFORMAT="SOURCEDOCFORMAT"</code> */
     public static final String SOURCEDOCFORMAT = "SOURCEDOCFORMAT";
     /** Constant <code>SUBTITLE="SUBTITLE"</code> */
@@ -246,10 +251,10 @@ public final class SolrConstants {
     public static final String SUPERDEFAULT = "SUPERDEFAULT";
     /** Constant <code>SUPERFULLTEXT="SUPERFULLTEXT"</code> */
     public static final String SUPERFULLTEXT = "SUPERFULLTEXT";
+    /** Constant <code>SUPERSEARCHTERMS_ARCHIVE="SUPERSEARCHTERMS_ARCHIVE"</code> */
+    public static final String SUPERSEARCHTERMS_ARCHIVE = "SUPERSEARCHTERMS_ARCHIVE";
     /** Constant <code>SUPERUGCTERMS="SUPERUGCTERMS"</code> */
     public static final String SUPERUGCTERMS = "SUPERUGCTERMS";
-    /** Constant <code>TECTONICS_ID="MD_ARCHIVE_ENTRY_ID"</code> */
-    public static final String ARCHIVE_ENTRY_ID = "MD_ARCHIVE_ENTRY_ID";
     /** Constant <code>TITLE="MD_TITLE"</code> */
     public static final String TITLE = "MD_TITLE";
     /** Constant <code>THUMBNAIL="THUMBNAIL"</code> */
@@ -299,6 +304,8 @@ public final class SolrConstants {
     /** Constant <code>SOURCEDOCFORMAT_LIDO="LIDO"</code> */
     public static final String SOURCEDOCFORMAT_LIDO = "LIDO";
     /** Constant <code>SOURCEDOCFORMAT_DENKXWEB="DENKXWEB"</code> */
+    /** Constant <code>SOURCEDOCFORMAT_EAD="EAD"</code> */
+    public static final String SOURCEDOCFORMAT_EAD = "EAD";
     public static final String SOURCEDOCFORMAT_DENKXWEB = "DENKXWEB";
     /** Constant <code>SOURCEDOCFORMAT_DUBLINCORE="DUBLINCORE"</code> */
     public static final String SOURCEDOCFORMAT_DUBLINCORE = "DUBLINCORE";

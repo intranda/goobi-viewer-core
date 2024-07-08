@@ -887,7 +887,7 @@ public class SearchFacets implements Serializable {
     /**
      * 
      * @param omitField Field name to not include in the string
-     * @returna {@link java.lang.String} object.
+     * @return {@link java.lang.String} object.
      */
     public String getActiveFacetStringPrefix(String omitField) {
         return getActiveFacetStringPrefix(Collections.singletonList(omitField), true);
@@ -896,6 +896,7 @@ public class SearchFacets implements Serializable {
     /**
      * Returns the value returned by generateFacetPrefix() for regular facets. Returns an empty string instead a hyphen if empty.
      *
+     * @param omitFields Field names to omit from the facet string
      * @param urlEncode
      * @return URL part for currently selected facets; empty string if empty
      */

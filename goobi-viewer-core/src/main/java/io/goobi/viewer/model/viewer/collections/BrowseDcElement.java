@@ -60,7 +60,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     private int displayNumberOfVolumesLevel;
     private BrowseElementInfo info;
     /**
-     * A list of metadata values of a specified SORL field contained in any volumes within the collection. Used to group collections into groups with
+     * A list of metadata values of a specified SOLR field contained in any volumes within the collection. Used to group collections into groups with
      * matching elements in "facetValues"
      */
     private List<String> facetValues = new ArrayList<>();

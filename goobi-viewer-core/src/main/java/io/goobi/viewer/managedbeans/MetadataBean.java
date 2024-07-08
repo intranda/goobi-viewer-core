@@ -85,7 +85,7 @@ public class MetadataBean {
     }
 
     /**
-     * Required setter for ManagedProperty injection
+     * Required setter for ManagedProperty injection.
      *
      * @param activeDocumentBean the activeDocumentBean to set
      */
@@ -146,7 +146,7 @@ public class MetadataBean {
     }
 
     /**
-     * Convenience method for {@link #getMetadataElementList(int) getMetadataElementList(0)}
+     * Convenience method for {@link #getMetadataElementList(int) getMetadataElementList(0)}.
      *
      * @return the first metadata element list
      */
@@ -371,7 +371,7 @@ public class MetadataBean {
      * value of MD_ORDER matches the given <code>order</code> value.
      * 
      * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
-     * @param fieldName Name metadata field
+     * @param mainFieldName Main metadata field
      * @param language Optional metadata field language
      * @param subFieldName Child metadata field
      * @param order Page number
@@ -400,7 +400,7 @@ public class MetadataBean {
      * value of MD_ORDER matches the given <code>order</code> value.
      * 
      * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
-     * @param fieldName Name metadata field
+     * @param mainFieldName Main metadata field
      * @param language Optional metadata field language
      * @param subFieldName Child metadata field
      * @param order Page number
@@ -416,18 +416,16 @@ public class MetadataBean {
     }
 
     /**
-     * Returns the first {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code> where the subfield
-     * value of MD_ORDER matches the given <code>order</code> value.
+     * Returns the first {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code>
      * 
      * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
-     * @param fieldName Name metadata field
+     * @param mainFieldName Main metadata field
      * @param language Optional metadata field language
      * @param subFieldName Child metadata field
-     * @param order Page number
      * @return First value of subFieldName; null if none found
      */
     public String getFirstMetadataValue(int metadataViewIndex, String mainFieldName, String language, String subFieldName) {
-        List<String> values = getMetadataValues(metadataViewIndex, mainFieldName, language, subFieldName);
+        List<String> values = getMetadataValues(metadataViewIndex, mainFieldName, subFieldName, language);
         if (!values.isEmpty()) {
             return values.get(0);
         }
@@ -436,14 +434,12 @@ public class MetadataBean {
     }
 
     /**
-     * Returns a list of {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code> where the subfield
-     * value of MD_ORDER matches the given <code>order</code> value.
+     * Returns a list of {@link String} values for <code>subFieldName</code> of a grouped metadata field <code>mainFieldName</code>
      * 
      * @param metadataViewIndex Index of the requested metadataView where the requested metadata is configured
-     * @param fieldName Name metadata field
+     * @param mainFieldName Main metadata field
      * @param language Optional metadata field language
      * @param subFieldName Child metadata field
-     * @param order Page number
      * @return Metadata values of subFieldName; empty list if none found
      */
     public List<String> getMetadataValues(int metadataViewIndex, String mainFieldName, String subFieldName, String language) {

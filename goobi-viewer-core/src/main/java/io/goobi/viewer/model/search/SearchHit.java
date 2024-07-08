@@ -24,6 +24,7 @@ package io.goobi.viewer.model.search;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -48,6 +49,8 @@ import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.JDOMException;
 import org.jsoup.Jsoup;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -65,6 +68,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.archives.SolrEADParser;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
@@ -75,6 +79,7 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Wrapper class for search hits. Contains the corresponding <code>BrowseElement</code>
@@ -99,7 +104,12 @@ public class SearchHit implements Comparable<SearchHit> {
     private final List<StringPair> foundMetadata = new ArrayList<>();
     /** Metadata for Excel export. */
     private final Map<String, String> exportMetadata = new HashMap<>();
-    private final String url;
+    private String url;
+    /** Secondary URL */
+    private String altUrl;
+    /** Secondary label. */
+    private String altLabel;
+    @JsonIgnore
     private final Locale locale;
     private final List<SearchHit> children = new ArrayList<>();
     private final Map<HitType, Integer> hitTypeCounts = new EnumMap<>(HitType.class);
@@ -228,6 +238,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @should do nothing if searchTerms do not contain key
      * @should do nothing if no cms pages for record found
+     * @return the number of child hits added
      */
     public int addCMSPageChildren() throws DAOException {
         if (searchTerms == null || !searchTerms.containsKey(SolrConstants.CMS_TEXT_ALL)) {
@@ -245,13 +256,12 @@ public class SearchHit implements Comparable<SearchHit> {
             List<String> texts = new ArrayList<>();
             for (PersistentCMSComponent component : page.getPersistentComponents()) {
                 for (CMSContent content : component.getContentItems()) {
-                    if (content instanceof TranslatableCMSContent) {
-                        TranslatableCMSContent trCont = (TranslatableCMSContent) content;
+                    if (content instanceof TranslatableCMSContent trCont) {
                         for (Locale loc : trCont.getText().getLocales()) {
                             texts.add(trCont.getText().getText(loc));
                         }
-                    } else if (content instanceof CMSMediaHolder) {
-                        CMSMediaItem media = ((CMSMediaHolder) content).getMediaItem();
+                    } else if (content instanceof CMSMediaHolder cmsMediaHolder) {
+                        CMSMediaItem media = cmsMediaHolder.getMediaItem();
                         if (media != null && media.isHasExportableText()) {
                             texts.add(CmsMediaBean.getMediaFileAsString(media));
 
@@ -317,6 +327,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @should throw IllegalArgumentException if doc null
      * @should do nothing if searchTerms does not contain fulltext
      * @should do nothing if tei file name not found
+     * @return the number of child hits added
      */
     public int addFulltextChild(SolrDocument doc, final String language)
             throws IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -451,6 +462,39 @@ public class SearchHit implements Comparable<SearchHit> {
                             ownerHits.put(iddoc, childHit);
                             ownerDocs.put(iddoc, childDoc);
                             hitsPopulated++;
+                        }
+                        break;
+                    case ARCHIVE:
+                        // EAD archive
+                        iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
+                        if (!ownerHits.containsKey(iddoc) && DataManager.getInstance().getConfiguration().isArchivesEnabled()) {
+                            SearchHit childHit = factory.createSearchHit(childDoc, null, fulltext, null);
+                            children.add(childHit);
+                            ownerHits.put(iddoc, childHit);
+                            ownerDocs.put(iddoc, childDoc);
+                            hitsPopulated++;
+                            
+                            // Check and add link to related record, if exists
+                            String entryId = SolrTools.getSingleFieldStringValue(childDoc, SolrConstants.EAD_NODE_ID);
+                            if (StringUtils.isNotEmpty(entryId)) {
+                                childHit.url = "archives/" + SolrEADParser.DATABASE_NAME + "/" + pi + "/?selected=" + entryId + "#selected";
+                                SolrDocument relatedRecordDoc =
+                                        DataManager.getInstance()
+                                                .getSearchIndex()
+                                                .getFirstDoc(
+                                                        '+' + SolrConstants.DOCTYPE + ':' + DocType.DOCSTRCT.name() + " +" + SolrConstants.EAD_NODE_ID
+                                                                + ":\"" + entryId + '"',
+                                                        Arrays.asList(SolrConstants.LABEL, SolrConstants.PI_TOPSTRUCT));
+                                if (relatedRecordDoc != null) {
+                                    childHit.setAltUrl(
+                                            "piresolver?id=" + SolrTools.getSingleFieldStringValue(relatedRecordDoc, SolrConstants.PI_TOPSTRUCT));
+                                    childHit.setAltLabel(SolrTools.getSingleFieldStringValue(relatedRecordDoc, SolrConstants.LABEL));
+                                    if (StringUtils.isEmpty(childHit.getAltLabel())) {
+                                        childHit.setAltLabel(SolrTools.getSingleFieldStringValue(relatedRecordDoc, SolrConstants.PI_TOPSTRUCT));
+                                    }
+                                    logger.trace("altUrl: {}", childHit.getAltUrl());
+                                }
+                            }
                         }
                         break;
                     case GROUP:
@@ -861,6 +905,21 @@ public class SearchHit implements Comparable<SearchHit> {
 
     /**
      * <p>
+     * getArchiveHitCount.
+     * </p>
+     *
+     * @return a int.
+     */
+    public int getArchiveHitCount() {
+        if (hitTypeCounts.get(HitType.ARCHIVE) != null) {
+            return hitTypeCounts.get(HitType.ARCHIVE);
+        }
+
+        return 0;
+    }
+
+    /**
+     * <p>
      * Getter for the field <code>foundMetadata</code>.
      * </p>
      *
@@ -883,6 +942,34 @@ public class SearchHit implements Comparable<SearchHit> {
      */
     public String getUrl() {
         return url;
+    }
+
+    /**
+     * @return the altUrl
+     */
+    public String getAltUrl() {
+        return altUrl;
+    }
+
+    /**
+     * @param altUrl the altUrl to set
+     */
+    public void setAltUrl(String altUrl) {
+        this.altUrl = altUrl;
+    }
+
+    /**
+     * @return the altLabel
+     */
+    public String getAltLabel() {
+        return altLabel;
+    }
+
+    /**
+     * @param altLabel the altLabel to set
+     */
+    public void setAltLabel(String altLabel) {
+        this.altLabel = altLabel;
     }
 
     /**

@@ -45,7 +45,7 @@ import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 
 /**
- * Filter for redirecting prettified calls to cmsPages
+ * Filter for redirecting prettified calls to cmsPages.
  * <p>
  * Forwarding is handled by {@link javax.servlet.RequestDispatcher#forward(ServletRequest, ServletResponse)}, so the url displayed to the user doesn't
  * change, but the internal handling of the request is according to the forwarded url
@@ -54,9 +54,9 @@ import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
  * 'prettified' in this context refers to calling CMSPages by either their 'alternative url' or the url of the static page they replace.
  * </p>
  * <p>
- * This filter needs to be placed in the filter chain before the {@link com.ocpsoft.pretty.PrettyFilter PrettyFilter} because the PrettyFilter needs
- * to handle the actual CMSPage mapping (the PrettyFilter won't handle the request if it has been called already for this request, despite the
- * forward)
+ * This filter needs to be placed in the filter chain before the {@link org.ocpsoft.rewrite.servlet.RewriteFilter} because the RewriteFilter
+ * (former PrettyFilter) needs to handle the actual CMSPage mapping (the PrettyFilter won't handle the request if it has been called already for
+ * this request, despite the forward)
  * </p>
  * <p>
  * This filter also stores the called url to the session map using
@@ -121,7 +121,7 @@ public class UrlRedirectFilter implements Filter {
      * Firefox browser tries to precache all urls in links with rel="next" or rel="prefetch". This changes the session state and thus shall not pass
      * Fortunately Firefox marks all precaching-request with a X-Moz : prefetch header
      * (https://developer.mozilla.org/en-US/docs/Web/HTTP/Link_prefetching_FAQ) However this header is not standardized and may change in the future
-     * 
+     *
      * @param httpRequest
      * @return true if X-Moz:prefetch or sec-purpose:prefetch; false otherwise
      */

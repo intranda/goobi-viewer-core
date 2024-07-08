@@ -106,7 +106,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * Adds a new Bookmark with the given pi, LOGID and page number to the current user's bookmark list with the given id Returns 203 if no matching
+     * Adds a new Bookmark with the given pi, LOGID and page number to the current user's bookmark list with the given id. Returns 203 if no matching
      * bookmark list was found or 400 if the Bookmark could not be created (wrong pi/logid/page).
      *
      * @param id a {@link java.lang.Long} object.
@@ -139,7 +139,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * Adds a new Bookmark with the given pi to the current users bookmark list with the given id Returns 203 if no matching bookmark list was found
+     * Adds a new Bookmark with the given pi to the current users bookmark list with the given id. Returns 203 if no matching bookmark list was found
      * or 400 if the Bookmark could not be created (wrong pi).
      *
      * @param id a {@link java.lang.Long} object.
@@ -156,7 +156,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * Removes a Bookmark with the given pi, logid and page number from the current users bookmark list with the given id Returns 203 if no matching
+     * Removes a Bookmark with the given pi, logid and page number from the current users bookmark list with the given id. Returns 203 if no matching
      * bookmark list was found or 400 if the requested Bookmark is invalid (wrong pi/logid/page).
      *
      * @param id a {@link java.lang.Long} object.
@@ -189,7 +189,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * Removes a Bookmark with the given pi from the current users bookmark list with the given id Returns 203 if no matching bookmark list was found
+     * Removes a Bookmark with the given pi from the current users bookmark list with the given id. Returns 203 if no matching bookmark list was found
      * or 400 if the requested Bookmark is invalid (wrong pi).
      *
      * @param id a {@link java.lang.Long} object.
@@ -327,7 +327,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
 
     /**
      * Returns the bookmark list containing the object with the given pi, logid and page number if is contained in any bookmark list of the current
-     * user Otherwise an json object with the property "success:false" is returned.
+     * user. Otherwise an json object with the property "success:false" is returned.
      *
      * @param pi a {@link java.lang.String} object.
      * @param logId a {@link java.lang.String} object.
@@ -354,7 +354,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * Returns the bookmark list containing the object with the given pi if is contained in any bookmark list of the current user Otherwise an json
+     * Returns the bookmark list containing the object with the given pi if is contained in any bookmark list of the current user. Otherwise an json
      * object with the property "success:false" is returned.
      *
      * @param pi a {@link java.lang.String} object.
@@ -368,7 +368,7 @@ public class UserBookmarkResourceBuilder extends AbstractBookmarkResourceBuilder
     }
 
     /**
-     * Counts the items contained in the current user's bookmark list with the given id and returns the number as plain integer If no session store
+     * Counts the items contained in the current user's bookmark list with the given id and returns the number as plain integer. If no session store
      * bookmark list exists, 0 is returned.
      *
      * @param id a {@link java.lang.Long} object.

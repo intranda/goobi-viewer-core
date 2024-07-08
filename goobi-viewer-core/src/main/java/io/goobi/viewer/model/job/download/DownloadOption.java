@@ -158,7 +158,9 @@ public class DownloadOption {
     }
 
     public String getBoxSizeLabel() {
-        if (boxSize != MAX && boxSize != NONE) {
+        if (boxSize == MAX) {
+            return "max";
+        } else if (boxSize != NONE) {
             return boxSize.width + TIMES_SYMBOL + boxSize.height;
         }
         return "";

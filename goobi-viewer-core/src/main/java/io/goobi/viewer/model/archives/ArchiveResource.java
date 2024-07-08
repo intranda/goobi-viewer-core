@@ -25,6 +25,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @author florian
  *
@@ -37,7 +39,10 @@ public class ArchiveResource implements Serializable {
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
     private final String databaseName;
+    /** Displayed name of the resource. */
     private final String resourceName;
+    /** Unique identifier of the resource. */
+    private final String resourceId;
     private final LocalDateTime modifiedDate;
     private final Long size;
 
@@ -45,13 +50,19 @@ public class ArchiveResource implements Serializable {
      * 
      * @param databaseName
      * @param resourceName
+     * @param resourceId
      * @param modifiedDate
      * @param size
      */
-    public ArchiveResource(String databaseName, String resourceName, String modifiedDate, String size) {
+    public ArchiveResource(String databaseName, String resourceName, String resourceId, String modifiedDate, String size) {
         this.databaseName = databaseName;
         this.resourceName = resourceName;
-        this.modifiedDate = LocalDateTime.parse(modifiedDate, DATE_TIME_FORMATTER);
+        this.resourceId = resourceId;
+        if (StringUtils.isNotEmpty(modifiedDate)) {
+            this.modifiedDate = LocalDateTime.parse(modifiedDate, DATE_TIME_FORMATTER);
+        } else {
+            this.modifiedDate = LocalDateTime.of(1970, 1, 1, 0, 0);
+        }
         this.size = Long.parseLong(size);
     }
 
@@ -67,6 +78,13 @@ public class ArchiveResource implements Serializable {
      */
     public String getResourceName() {
         return resourceName;
+    }
+
+    /**
+     * @return the resourceId
+     */
+    public String getResourceId() {
+        return resourceId;
     }
 
     /**
@@ -96,10 +114,6 @@ public class ArchiveResource implements Serializable {
 
     public String getDatabaseId() {
         return getDatabaseName();
-    }
-
-    public String getResourceId() {
-        return resourceName.replaceAll("(?i)\\.xml", "");
     }
 
     @Override

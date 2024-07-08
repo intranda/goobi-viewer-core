@@ -37,7 +37,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
@@ -553,7 +552,8 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void extractSearchTermsFromQuery_shouldAddTitleTermsField() throws Exception {
         Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
-                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello-world\" AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
+                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello-world\""
+                        + " AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
                 null);
         Set<String> terms = result.get(SearchHelper.TITLE_TERMS);
         Assertions.assertNotNull(terms);
@@ -589,7 +589,8 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void extractSearchTermsFromQuery_shouldRemoveProximitySearchTokens() throws Exception {
         Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
-                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello world\"~10 AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
+                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello world\"~10"
+                        + " AND SUPERUGCTERMS:\"comment\" AND NOT(MD_Y:value_not)",
                 null);
         Set<String> terms = result.get(SolrConstants.FULLTEXT);
         Assertions.assertNotNull(terms);
@@ -832,41 +833,51 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#getAllSuffixes(HttpSession,boolean,boolean)
+     * @see SearchHelper#getAllSuffixes(HttpServletRequest,boolean,boolean,boolean,String)
+     * @verifies add archive filter suffix
+     */
+    @Test
+    void getAllSuffixes_shoulAddArchiveFilterSuffix() throws Exception {
+        String suffix = SearchHelper.getAllSuffixes(null, true, false, false, IPrivilegeHolder.PRIV_LIST);
+        Assertions.assertNotNull(suffix);
+        assertTrue(suffix.contains(" -DOCTYPE:ARCHIVE"));
+    }
+
+    /**
+     * @see SearchHelper#getAllSuffixes(HttpServletRequest,boolean,boolean,boolean,String)
      * @verifies add static suffix
      */
     @Test
     void getAllSuffixes_shouldAddStaticSuffix() throws Exception {
-        String suffix = SearchHelper.getAllSuffixes(null, true, false);
+        String suffix = SearchHelper.getAllSuffixes(null, false, true, false, IPrivilegeHolder.PRIV_LIST);
         Assertions.assertNotNull(suffix);
         Assertions.assertTrue(suffix.contains(DataManager.getInstance().getConfiguration().getStaticQuerySuffix()));
     }
 
     /**
-     * @see SearchHelper#getAllSuffixes(HttpServletRequest,boolean,boolean,boolean)
+     * @see SearchHelper#getAllSuffixes(HttpServletRequest,boolean,boolean,boolean,String)
      * @verifies not add static suffix if not requested
      */
     @Test
     void getAllSuffixes_shouldNotAddStaticSuffixIfNotRequested() throws Exception {
-        String suffix = SearchHelper.getAllSuffixes(null, false, false);
+        String suffix = SearchHelper.getAllSuffixes(null, false, false, false, IPrivilegeHolder.PRIV_LIST);
         Assertions.assertNotNull(suffix);
         Assertions.assertFalse(suffix.contains(DataManager.getInstance().getConfiguration().getStaticQuerySuffix()));
     }
 
     /**
-     * @see SearchHelper#getAllSuffixes(HttpSession,boolean,boolean)
+     * @see SearchHelper#getAllSuffixes(HttpServletRequest,boolean,boolean,boolean,String)
      * @verifies add collection blacklist suffix
      */
     @Test
     void getAllSuffixes_shouldAddCollectionBlacklistSuffix() throws Exception {
-
-        String suffix = SearchHelper.getAllSuffixes();
+        String suffix = SearchHelper.getAllSuffixes(null, false, false, true, IPrivilegeHolder.PRIV_LIST);
         Assertions.assertNotNull(suffix);
         Assertions.assertTrue(suffix.contains(" -" + SolrConstants.DC + ":collection1 -" + SolrConstants.DC + ":collection2"));
     }
 
     //    /**
-    //     * @see SearchHelper#getAllSuffixes(HttpSession,boolean,boolean)
+    //     * @see SearchHelper#getAllSuffixes(HttpServletRequest,boolean,boolean,boolean,String)
     //     * @verifies add discriminator value suffix
     //     */
     //    @Test
@@ -1804,13 +1815,15 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void parseSearchQueryGroupFromQuery_shouldParsePhraseSearchQueryCorrectly() throws Exception {
         SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery(
-                "(+(SUPERDEFAULT:\"foo bar\" SUPERFULLTEXT:\"foo bar\" SUPERUGCTERMS:\"foo bar\" DEFAULT:\"foo bar\" FULLTEXT:\"foo bar\" NORMDATATERMS:\"foo bar\" UGCTERMS:\"foo bar\" CMS_TEXT_ALL:\"foo bar\") +(SUPERFULLTEXT:\"bla blüp\" FULLTEXT:\"bla blüp\"))",
+                "(+(SUPERDEFAULT:\"foo bar\" SUPERFULLTEXT:\"foo bar\" SUPERUGCTERMS:\"foo bar\" SUPERSEARCHTERMS_ARCHIVE:\"foo bar\""
+                        + " DEFAULT:\"foo bar\" FULLTEXT:\"foo bar\" NORMDATATERMS:\"foo bar\" UGCTERMS:\"foo bar\" SEARCHTERMS_ARCHIVE:\"foo bar\""
+                        + " CMS_TEXT_ALL:\"foo bar\") +(SUPERFULLTEXT:\"bla blüp\" FULLTEXT:\"bla blüp\"))",
                 null, null, "en");
         Assertions.assertNotNull(group);
         Assertions.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
         Assertions.assertEquals(3, group.getQueryItems().size());
 
-        Assertions.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
+        Assertions.assertEquals(SearchHelper.SEARCH_FILTER_ALL.getField(), group.getQueryItems().get(0).getField());
         Assertions.assertEquals("foo bar", group.getQueryItems().get(0).getValue());
         Assertions.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(0).getOperator());
 
@@ -1826,13 +1839,15 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void parseSearchQueryGroupFromQuery_shouldParseRegularSearchQueryCorrectly() throws Exception {
         SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery(
-                "(+(SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) DEFAULT:(foo bar) FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) CMS_TEXT_ALL:(foo bar)) -(SUPERFULLTEXT:(bla AND blüp) FULLTEXT:(bla AND blüp)))",
+                "(+(SUPERDEFAULT:(foo bar) SUPERFULLTEXT:(foo bar) SUPERUGCTERMS:(foo bar) SUPERSEARCHTERMS_ARCHIVE:(foo bar) DEFAULT:(foo bar)"
+                        + " FULLTEXT:(foo bar) NORMDATATERMS:(foo bar) UGCTERMS:(foo bar) SEARCHTERMS_ARCHIVE:(foo bar) CMS_TEXT_ALL:(foo bar))"
+                        + " -(SUPERFULLTEXT:(bla AND blüp) FULLTEXT:(bla AND blüp)))",
                 null, null, "en");
         Assertions.assertNotNull(group);
         Assertions.assertEquals(SearchQueryGroupOperator.AND, group.getOperator());
         Assertions.assertEquals(3, group.getQueryItems().size());
 
-        Assertions.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
+        Assertions.assertEquals(SearchHelper.SEARCH_FILTER_ALL.getField(), group.getQueryItems().get(0).getField());
         Assertions.assertEquals("foo bar", group.getQueryItems().get(0).getValue());
         Assertions.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(0).getOperator());
 
@@ -1885,12 +1900,15 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void parseSearchQueryGroupFromQuery_shouldParseMixedSearchQueryCorrectly() throws Exception {
         SearchQueryGroup group = SearchHelper.parseSearchQueryGroupFromQuery(
-                "(+(SUPERDEFAULT:\"foo bar\" SUPERFULLTEXT:\"foo bar\" SUPERUGCTERMS:\"foo bar\" DEFAULT:\"foo bar\" FULLTEXT:\"foo bar\" NORMDATATERMS:\"foo bar\" UGCTERMS:\"foo bar\" CMS_TEXT_ALL:\"foo bar\") (SUPERFULLTEXT:(bla AND blüp) FULLTEXT:(bla AND blüp)) +(DOCSTRCT_TOP:\"monograph\") -(MD_YEARPUBLISH:([1900 TO 2000])))",
+                "(+(SUPERDEFAULT:\"foo bar\" SUPERFULLTEXT:\"foo bar\" SUPERUGCTERMS:\"foo bar\" SUPERSEARCHTERMS_ARCHIVE:\"foo bar\""
+                        + " DEFAULT:\"foo bar\" FULLTEXT:\"foo bar\" NORMDATATERMS:\"foo bar\" UGCTERMS:\"foo bar\" SEARCHTERMS_ARCHIVE:\"foo bar\""
+                        + " CMS_TEXT_ALL:\"foo bar\") (SUPERFULLTEXT:(bla AND blüp) FULLTEXT:(bla AND blüp)) +(DOCSTRCT_TOP:\"monograph\")"
+                        + " -(MD_YEARPUBLISH:([1900 TO 2000])))",
                 "DC:varia;;MD_CREATOR:bar;;", null, "en");
         Assertions.assertNotNull(group);
         Assertions.assertEquals(6, group.getQueryItems().size());
 
-        Assertions.assertEquals(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, group.getQueryItems().get(0).getField());
+        Assertions.assertEquals(SearchHelper.SEARCH_FILTER_ALL.getField(), group.getQueryItems().get(0).getField());
         Assertions.assertEquals("foo bar", group.getQueryItems().get(0).getValue());
         Assertions.assertEquals(SearchItemOperator.AND, group.getQueryItems().get(0).getOperator());
 

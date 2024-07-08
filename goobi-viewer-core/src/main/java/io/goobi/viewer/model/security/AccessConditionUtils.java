@@ -392,8 +392,11 @@ public final class AccessConditionUtils {
                     .append(logId)
                     .append(" +")
                     .append(SolrConstants.DOCTYPE)
-                    .append(':')
+                    .append(":(")
                     .append(DocType.DOCSTRCT.name())
+                    .append(' ')
+                    .append(DocType.ARCHIVE)
+                    .append(')')
                     .toString();
         } else {
             // Top document
@@ -1121,8 +1124,9 @@ public final class AccessConditionUtils {
 
     /**
      * 
-     * @param doc
-     * @param privilegeName
+     * @param doc The document containing access condition metadata
+     * @param privilegeName The privilege to check
+     * @param request The request trying to access the resource
      * @return true if granted; false otherwise
      */
     public static boolean isPrivilegeGrantedForDoc(SolrDocument doc, String privilegeName, HttpServletRequest request) {

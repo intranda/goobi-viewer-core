@@ -133,6 +133,7 @@ public final class SearchHelper {
     public static final int SEARCH_TYPE_TERMS = 4;
     /** Constant <code>SEARCH_FILTER_ALL</code> */
     public static final SearchFilter SEARCH_FILTER_ALL = new SearchFilter("filter_ALL", "ALL", false);
+    public static final String SEARCH_FILTER_ALL_FIELD = "ALL";
     public static final String TITLE_TERMS = "_TITLE_TERMS";
     public static final String AGGREGATION_QUERY_PREFIX = "{!join from=PI_TOPSTRUCT to=PI}";
     public static final String BOOSTING_QUERY_TEMPLATE = "(+" + SolrConstants.PI + ":* +" + SolrConstants.TITLE + ":({0}))^20.0";
@@ -480,8 +481,8 @@ public final class SearchHelper {
     }
 
     /**
-     * Return the {@link HitType} matching the {@link io.goobi.viewer.solr.SolrConstants#DOCTYPE} of the given document.
-     * In case the document is of type 'UGC', return the type matching {@link io.goobi.viewer.solr.SolrConstants#UGCTYPE} instead
+     * Return the {@link HitType} matching the {@link io.goobi.viewer.solr.SolrConstants#DOCTYPE} of the given document. In case the document is of
+     * type 'UGC', return the type matching {@link io.goobi.viewer.solr.SolrConstants#UGCTYPE} instead
      *
      * @param doc
      * @return {@link HitType} for doc
@@ -504,17 +505,10 @@ public final class SearchHelper {
     /**
      * Returns all suffixes relevant to search filtering.
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param addStaticQuerySuffix a boolean.
-     * @param addCollectionBlacklistSuffix a boolean.
      * @return a {@link java.lang.String} object.
-     * @should add static suffix
-     * @should not add static suffix if not requested
-     * @should add collection blacklist suffix
-     * @should add discriminator value suffix
      */
-    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix) {
-        return getAllSuffixes(request, addStaticQuerySuffix, addCollectionBlacklistSuffix, IPrivilegeHolder.PRIV_LIST);
+    public static String getAllSuffixes() {
+        return getAllSuffixes(BeanUtils.getRequest(), true, true);
     }
 
     /**
@@ -523,16 +517,48 @@ public final class SearchHelper {
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param addStaticQuerySuffix a boolean.
      * @param addCollectionBlacklistSuffix a boolean.
+     * @return Generated Solr query suffix
+     */
+    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix) {
+        return getAllSuffixes(request, !DataManager.getInstance().getConfiguration().isArchivesEnabled(), addStaticQuerySuffix,
+                addCollectionBlacklistSuffix, IPrivilegeHolder.PRIV_LIST);
+    }
+
+    /**
+     * 
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param addStaticQuerySuffix a boolean.
+     * @param addCollectionBlacklistSuffix a boolean.
      * @param privilege Privilege to check (Connector checks a different privilege)
+     * @return Generated Solr query suffix
+     */
+    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix,
+            String privilege) {
+        return getAllSuffixes(request, !DataManager.getInstance().getConfiguration().isArchivesEnabled(), addStaticQuerySuffix,
+                addCollectionBlacklistSuffix, privilege);
+    }
+
+    /**
+     * Returns all suffixes relevant to search filtering.
+     *
+     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @para addArchiveFilterSuffix
+     * @param addStaticQuerySuffix a boolean.
+     * @param addCollectionBlacklistSuffix a boolean.
+     * @param privilege Privilege to check (Connector checks a different privilege)
+     * @return Generated Solr query suffix
+     * @should add archive filter suffix
      * @should add static suffix
      * @should not add static suffix if not requested
      * @should add collection blacklist suffix
      * @should add discriminator value suffix
-     * @return a {@link java.lang.String} object.
      */
-    public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix,
-            String privilege) {
+    public static String getAllSuffixes(HttpServletRequest request, boolean addArchiveFilterSuffix, boolean addStaticQuerySuffix,
+            boolean addCollectionBlacklistSuffix, String privilege) {
         StringBuilder sbSuffix = new StringBuilder("");
+        if (addArchiveFilterSuffix) {
+            sbSuffix.append(" -").append(SolrConstants.DOCTYPE).append(':').append(DocType.ARCHIVE.toString());
+        }
         if (addStaticQuerySuffix && StringUtils.isNotBlank(DataManager.getInstance().getConfiguration().getStaticQuerySuffix())) {
             String staticSuffix = DataManager.getInstance().getConfiguration().getStaticQuerySuffix();
             if (staticSuffix.charAt(0) != ' ') {
@@ -550,15 +576,6 @@ public final class SearchHelper {
         }
 
         return sbSuffix.toString();
-    }
-
-    /**
-     * Returns all suffixes relevant to search filtering.
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public static String getAllSuffixes() {
-        return getAllSuffixes(BeanUtils.getRequest(), true, true);
     }
 
     /**
@@ -724,6 +741,7 @@ public final class SearchHelper {
             if (filterForBlacklist) {
                 sbQuery.append(getCollectionBlacklistFilterSuffix(luceneField));
             }
+            logger.trace("Collection query: {}", sbQuery);
 
             // Iterate over record hits instead of using facets to determine the size of the parent collections
 
@@ -771,11 +789,7 @@ public final class SearchHelper {
                 continue;
             }
 
-            CollectionResult result = ret.get(dc);
-            if (result == null) {
-                result = new CollectionResult(dc);
-                ret.put(dc, result);
-            }
+            CollectionResult result = ret.computeIfAbsent(dc, k -> new CollectionResult(dc));
             result.incrementCount(count.getCount());
 
             if (dc.contains(splittingChar) && !counted.contains(dc)) {
@@ -1043,7 +1057,7 @@ public final class SearchHelper {
      * @return a {@link java.lang.String} object.
      */
     protected static String generateCollectionBlacklistFilterSuffix(String field) {
-        logger.trace("Generating blacklist suffix for field '{}'...", field);
+        // logger.trace("Generating blacklist suffix for field '{}'...", field);
         StringBuilder sbQuery = new StringBuilder();
         List<String> list = DataManager.getInstance().getConfiguration().getCollectionBlacklist(field);
         if (list != null && !list.isEmpty()) {
@@ -1484,8 +1498,8 @@ public final class SearchHelper {
     }
 
     /**
-     * if maxDistance &lt;= 0, or either phrase or term is blank, simply return {@link StringUtils#contains(phrase, term)}.
-     * Otherwise check if the phrase contains a word which has a Damerau-Levenshtein distance of at most maxDistance to the term
+     * if maxDistance &lt;= 0, or either phrase or term is blank, simply return {@link StringUtils#contains(phrase, term)}. Otherwise check if the
+     * phrase contains a word which has a Damerau-Levenshtein distance of at most maxDistance to the term
      *
      * @param phrase
      * @param term
@@ -2168,14 +2182,24 @@ public final class SearchHelper {
             String phrase = queryCopy.substring(mPhrases.start(), mPhrases.end());
             String[] phraseSplit = phrase.split(":");
             String field = phraseSplit[0];
-            if (SolrConstants.SUPERDEFAULT.equals(field)) {
-                field = SolrConstants.DEFAULT;
-            } else if (SolrConstants.SUPERFULLTEXT.equals(field)) {
-                field = SolrConstants.FULLTEXT;
-            } else if (SolrConstants.SUPERUGCTERMS.equals(field)) {
-                field = SolrConstants.UGCTERMS;
-            } else if (field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
-                field = field.substring(0, field.length() - SolrConstants.SUFFIX_UNTOKENIZED.length());
+            switch (field) {
+                case SolrConstants.SUPERDEFAULT:
+                    field = SolrConstants.DEFAULT;
+                    break;
+                case SolrConstants.SUPERFULLTEXT:
+                    field = SolrConstants.FULLTEXT;
+                    break;
+                case SolrConstants.SUPERUGCTERMS:
+                    field = SolrConstants.UGCTERMS;
+                    break;
+                case SolrConstants.SUPERSEARCHTERMS_ARCHIVE:
+                    field = SolrConstants.SEARCHTERMS_ARCHIVE;
+                    break;
+                default:
+                    if (field.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
+                        field = field.substring(0, field.length() - SolrConstants.SUFFIX_UNTOKENIZED.length());
+                    }
+                    break;
             }
             String phraseWithoutQuotation = phraseSplit[1].replace("\"", "");
             if (phraseWithoutQuotation.length() > 0 && !stopwords.contains(phraseWithoutQuotation)) {
@@ -2211,12 +2235,21 @@ public final class SearchHelper {
                         currentField = currentField.substring(1);
                     }
 
-                    if (SolrConstants.SUPERDEFAULT.equals(currentField)) {
-                        currentField = SolrConstants.DEFAULT;
-                    } else if (SolrConstants.SUPERFULLTEXT.equals(currentField)) {
-                        currentField = SolrConstants.FULLTEXT;
-                    } else if (SolrConstants.SUPERUGCTERMS.equals(currentField)) {
-                        currentField = SolrConstants.UGCTERMS;
+                    switch (currentField) {
+                        case SolrConstants.SUPERDEFAULT:
+                            currentField = SolrConstants.DEFAULT;
+                            break;
+                        case SolrConstants.SUPERFULLTEXT:
+                            currentField = SolrConstants.FULLTEXT;
+                            break;
+                        case SolrConstants.SUPERUGCTERMS:
+                            currentField = SolrConstants.UGCTERMS;
+                            break;
+                        case SolrConstants.SUPERSEARCHTERMS_ARCHIVE:
+                            currentField = SolrConstants.SEARCHTERMS_ARCHIVE;
+                            break;
+                        default:
+                            break;
                     }
                     if (currentField.endsWith(SolrConstants.SUFFIX_UNTOKENIZED)) {
                         currentField = currentField.substring(0, currentField.length() - SolrConstants.SUFFIX_UNTOKENIZED.length());
@@ -2460,19 +2493,21 @@ public final class SearchHelper {
                 ret.getQueryItems().add(item);
             }
             if (fieldNames.contains(SolrConstants.DEFAULT) && fieldNames.contains(SolrConstants.FULLTEXT)
-                    && fieldNames.contains(SolrConstants.NORMDATATERMS)
-                    && fieldNames.contains(SolrConstants.UGCTERMS) && fieldNames.contains(SolrConstants.CMS_TEXT_ALL)) {
+                    && fieldNames.contains(SolrConstants.NORMDATATERMS) && fieldNames.contains(SolrConstants.UGCTERMS)
+                    && fieldNames.contains(SolrConstants.SEARCHTERMS_ARCHIVE) && fieldNames.contains(SolrConstants.CMS_TEXT_ALL)) {
                 // All fields
                 item.setOperator(operator);
-                item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
+                item.setLabel(SearchHelper.SEARCH_FILTER_ALL.getLabel());
+                item.setField(SearchHelper.SEARCH_FILTER_ALL.getField());
                 item.setValue(pairs.get(0).getTwo());
-                logger.trace("added item: {}:{}", SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS, pairs.get(0).getTwo());
+                logger.trace("added item: {}:{}", SearchHelper.SEARCH_FILTER_ALL.getLabel(), pairs.get(0).getTwo());
             } else {
                 for (StringPair pair : pairs) {
                     switch (pair.getOne()) {
                         case SolrConstants.SUPERDEFAULT:
                         case SolrConstants.SUPERFULLTEXT:
                         case SolrConstants.SUPERUGCTERMS:
+                        case SolrConstants.SUPERSEARCHTERMS_ARCHIVE:
                             break;
                         default:
                             item.setOperator(operator);
@@ -2880,7 +2915,8 @@ public final class SearchHelper {
             switch (item.getField()) {
                 case SolrConstants.FULLTEXT:
                 case SolrConstants.UGCTERMS:
-                case SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS:
+                case SolrConstants.SEARCHTERMS_ARCHIVE:
+                case SEARCH_FILTER_ALL_FIELD:
                     orMode = true;
                     break;
                 default:
@@ -2943,7 +2979,7 @@ public final class SearchHelper {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
                 if (queryGroup != null) {
                     for (SearchQueryItem item : queryGroup.getQueryItems()) {
-                        if (SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS.equals(item.getField())) {
+                        if (SEARCH_FILTER_ALL_FIELD.equals(item.getField())) {
                             if (!ret.contains(SolrConstants.DEFAULT)) {
                                 ret.add(SolrConstants.DEFAULT);
                             }
@@ -2956,6 +2992,9 @@ public final class SearchHelper {
                             if (!ret.contains(SolrConstants.UGCTERMS)) {
                                 ret.add(SolrConstants.UGCTERMS);
                             }
+                            if (!ret.contains(SolrConstants.SEARCHTERMS_ARCHIVE)) {
+                                ret.add(SolrConstants.SEARCHTERMS_ARCHIVE);
+                            }
                             if (!ret.contains(SolrConstants.CMS_TEXT_ALL)) {
                                 ret.add(SolrConstants.CMS_TEXT_ALL);
                             }
@@ -2967,6 +3006,10 @@ public final class SearchHelper {
                             ret.add(SolrConstants.FULLTEXT);
                         } else if (SolrConstants.UGCTERMS.equals(item.getField())
                                 || SolrConstants.SUPERUGCTERMS.equals(item.getField()) && !ret.contains(SolrConstants.UGCTERMS)) {
+                            ret.add(SolrConstants.UGCTERMS);
+                        } else if (SolrConstants.SEARCHTERMS_ARCHIVE.equals(item.getField())
+                                || SolrConstants.SUPERSEARCHTERMS_ARCHIVE.equals(item.getField())
+                                        && !ret.contains(SolrConstants.SEARCHTERMS_ARCHIVE)) {
                             ret.add(SolrConstants.UGCTERMS);
                         } else if (SolrConstants.CMS_TEXT_ALL.equals(item.getField()) && !ret.contains(SolrConstants.CMS_TEXT_ALL)) {
                             ret.add(SolrConstants.CMS_TEXT_ALL);
@@ -2992,6 +3035,7 @@ public final class SearchHelper {
                     ret.add(SolrConstants.FULLTEXT);
                     ret.add(SolrConstants.NORMDATATERMS);
                     ret.add(SolrConstants.UGCTERMS);
+                    ret.add(SolrConstants.SEARCHTERMS_ARCHIVE);
                     ret.add(SolrConstants.CMS_TEXT_ALL);
                     ret.add(SolrConstants.CALENDAR_DAY);
                 } else {
@@ -3153,7 +3197,7 @@ public final class SearchHelper {
         }
 
         // Suffixes
-        String suffixes = getAllSuffixes(request, true, true, IPrivilegeHolder.PRIV_LIST);
+        String suffixes = getAllSuffixes(request, true, true);
         if (StringUtils.isNotBlank(suffixes)) {
             sbQuery.append(suffixes);
         }

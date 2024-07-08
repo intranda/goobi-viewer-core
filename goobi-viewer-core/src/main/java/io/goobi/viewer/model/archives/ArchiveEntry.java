@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.archives;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -30,8 +31,25 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
-public class ArchiveEntry {
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.viewer.StructElement;
+
+/**
+ * Single archive tree node.
+ */
+public class ArchiveEntry implements Serializable {
+
+    private static final long serialVersionUID = 8544674817802657532L;
 
     private static final Logger logger = LogManager.getLogger(ArchiveEntry.class);
 
@@ -47,6 +65,10 @@ public class ArchiveEntry {
     private String id;
     // display label
     private String label;
+    // Main record  PI
+    private String topstructPi;
+    // Node LOGID
+    private String logId;
     // node is open/closed
     private boolean displayChildren;
     // node is search hit
@@ -58,15 +80,27 @@ public class ArchiveEntry {
     // true if the validation of all metadata fields was successful
     private boolean valid = true;
 
+    private String associatedRecordPi;
+
     private String descriptionLevel;
+
+    private String unitdate;
+
+    private List<String> accessConditions = new ArrayList<>();
 
     private boolean visible = true;
 
     private boolean expanded = false;
 
-    private String associatedRecordPi;
-
     private boolean containsImage = false;
+
+    private SolrDocument doc;
+
+    private boolean metadataLoaded = false;
+
+    private boolean childrenFound = false;
+
+    private boolean childrenLoaded = false;
 
     /* 1. metadata for Identity Statement Area */
     //    Reference code(s)
@@ -75,21 +109,21 @@ public class ArchiveEntry {
     //    Date(s)
     //    Level of description
     //    Extent and medium of the unit of description (quantity, bulk, or size)
-    private List<ArchiveMetadataField> identityStatementAreaList = new ArrayList<>();
+    private List<Metadata> identityStatementAreaList = new ArrayList<>();
 
     /* 2. Context Area */
     //    Name of creator(s)
     //    Administrative | Biographical history
     //    Archival history
     //    Immediate source of acquisition or transfer
-    private List<ArchiveMetadataField> contextAreaList = new ArrayList<>();
+    private List<Metadata> contextAreaList = new ArrayList<>();
 
     /* 3. Content and Structure Area */
     //    Scope and content
     //    Appraisal, destruction and scheduling information
     //    Accruals
     //    System of arrangement
-    private List<ArchiveMetadataField> contentAndStructureAreaAreaList = new ArrayList<>();
+    private List<Metadata> contentAndStructureAreaAreaList = new ArrayList<>();
 
     /* 4. Condition of Access and Use Area */
     //    Conditions governing access
@@ -97,30 +131,42 @@ public class ArchiveEntry {
     //    Language | Scripts of material
     //    Physical characteristics and technical requirements
     //    Finding aids
-    private List<ArchiveMetadataField> accessAndUseAreaList = new ArrayList<>();
+    private List<Metadata> accessAndUseAreaList = new ArrayList<>();
 
     /* 5. Allied Materials Area */
     //    Existence and location of originals
     //    Existence and location of copies
     //    Related units of description
     //    Publication note
-    private List<ArchiveMetadataField> alliedMaterialsAreaList = new ArrayList<>();
+    private List<Metadata> alliedMaterialsAreaList = new ArrayList<>();
 
     /* 6. Note Area */
     //    Note
-    private List<ArchiveMetadataField> notesAreaList = new ArrayList<>();
+    private List<Metadata> notesAreaList = new ArrayList<>();
 
     /* 7. Description Control Area */
     //    Archivist's Note
     //    Rules or Conventions
     //    Date(s) of descriptions
-    private List<ArchiveMetadataField> descriptionControlAreaList = new ArrayList<>();
+    private List<Metadata> descriptionControlAreaList = new ArrayList<>();
 
-    public ArchiveEntry(Integer order, Integer hierarchy) {
+    /**
+     * 
+     * @param order
+     * @param hierarchy
+     * @param doc
+     */
+    public ArchiveEntry(Integer order, Integer hierarchy, SolrDocument doc) {
         this.orderNumber = order;
         this.hierarchyLevel = hierarchy;
+        this.doc = doc;
     }
 
+    /**
+     * 
+     * @param orig
+     * @param parent
+     */
     public ArchiveEntry(ArchiveEntry orig, ArchiveEntry parent) {
         this.parentNode = parent;
 
@@ -133,6 +179,12 @@ public class ArchiveEntry {
         this.orderNumber = orig.orderNumber;
         this.hierarchyLevel = orig.hierarchyLevel;
         this.descriptionLevel = orig.descriptionLevel;
+
+        this.topstructPi = orig.topstructPi;
+        this.logId = orig.logId;
+        for (String accessCondition : orig.getAccessConditions()) {
+            this.getAccessConditions().add(accessCondition);
+        }
 
         this.subEntryList = orig.subEntryList.stream().map(e -> new ArchiveEntry(e, this)).collect(Collectors.toList());
         this.accessAndUseAreaList = orig.accessAndUseAreaList; //flat copy, because effectively final
@@ -148,6 +200,10 @@ public class ArchiveEntry {
         this.searchHit = orig.searchHit;
         this.displayChildren = orig.displayChildren;
         this.displaySearch = orig.displaySearch;
+        this.doc = orig.doc;
+        this.metadataLoaded = orig.metadataLoaded;
+        this.childrenFound = orig.childrenFound;
+        this.childrenLoaded = orig.childrenLoaded;
     }
 
     public void addSubEntry(ArchiveEntry other) {
@@ -173,84 +229,20 @@ public class ArchiveEntry {
      * @return List<ArchiveEntry>
      */
     public List<ArchiveEntry> getAsFlatList(boolean ignoreDisplayChildren) {
+        // logger.trace("getAsFlatList");
         List<ArchiveEntry> list = new LinkedList<>();
         list.add(this);
         if ((displayChildren || ignoreDisplayChildren) && subEntryList != null && !subEntryList.isEmpty()) {
             for (ArchiveEntry ds : subEntryList) {
                 list.addAll(ds.getAsFlatList(ignoreDisplayChildren));
-                // logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchy()); //NOSONAR Sometimes needed for debugging
+                // logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchyLevel()); //NOSONAR Sometimes needed for debugging
             }
         }
         return list;
     }
 
     public boolean isHasChildren() {
-        return !subEntryList.isEmpty();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        ArchiveEntry other = (ArchiveEntry) obj;
-        if (hierarchyLevel == null) {
-            if (other.hierarchyLevel != null) {
-                return false;
-            }
-        } else if (!hierarchyLevel.equals(other.hierarchyLevel)) {
-            return false;
-        }
-        if (orderNumber == null) {
-            if (other.orderNumber != null) {
-                return false;
-            }
-        } else if (!orderNumber.equals(other.orderNumber)) {
-            return false;
-        }
-        if (label != null && !label.equals(other.getLabel())) {
-            return false;
-        }
-        if (parentNode == null && other.parentNode == null) {
-            return true;
-        }
-        if (parentNode == null && other.parentNode != null) {
-            return false;
-        }
-        if (parentNode != null && other.parentNode == null) {
-            return false;
-        }
-        if (parentNode != null && other.parentNode != null) {
-            if (!parentNode.getOrderNumber().equals(other.parentNode.getOrderNumber())) {
-                return false;
-            }
-            if (!parentNode.getHierarchyLevel().equals(other.parentNode.getHierarchyLevel())) {
-                return false;
-            }
-            if (!parentNode.equals(other.parentNode)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((hierarchyLevel == null) ? 0 : hierarchyLevel.hashCode());
-        result = prime * result + ((orderNumber == null) ? 0 : orderNumber.hashCode());
-        result = prime * result + ((parentNode == null) ? 0 : parentNode.getHierarchyLevel().hashCode());
-        result = prime * result + ((parentNode == null) ? 0 : parentNode.getOrderNumber().hashCode());
-        result = prime * result + ((label == null) ? 0 : label.hashCode());
-        return result;
+        return isChildrenFound() || !subEntryList.isEmpty();
     }
 
     public void updateHierarchy() {
@@ -340,9 +332,18 @@ public class ArchiveEntry {
      * Expands this entry and sets all sub-entries visible if their immediate parent is expanded.
      */
     public void expand() {
-        // logger.trace("expand: {}", id); //NOSONAR Sometimes needed for debugging
+        // logger.trace("expand: {}", label); //NOSONAR Sometimes needed for debugging
         if (!isHasChildren()) {
             return;
+        }
+
+        if (!isChildrenLoaded()) {
+            logger.trace("Loading children for entry: {}", label);
+            try {
+                ((SolrEADParser) DataManager.getInstance().getArchiveManager().getEadParser()).loadChildren(this, null, false);
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.error(e.getMessage());
+            }
         }
 
         setExpanded(true);
@@ -377,6 +378,96 @@ public class ArchiveEntry {
                 sub.setChildrenVisibility(visible);
             }
         }
+    }
+
+    public void loadMetadata() {
+        logger.trace("loadMetadata ({})", label);
+        try {
+            // resetMetadata();
+            List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getArchiveMetadataForTemplate("");
+            // Collect metadata
+            if (doc != null && metadataList != null && !metadataList.isEmpty()) {
+                StructElement se = new StructElement(doc);
+                for (Metadata md : metadataList) {
+                    if (md.populate(se, null, null, null)) {
+                        addMetadataField(md);
+                    }
+                }
+            }
+        } catch (IndexUnreachableException | PresentationException e) {
+            logger.error(e.getMessage());
+        } finally {
+            metadataLoaded = true;
+        }
+    }
+
+    /**
+     * Add the metadata to the configured level.
+     *
+     * @param entry
+     * @param metadata
+     */
+    void addMetadataField(Metadata metadata) {
+        if (metadata == null) {
+            throw new IllegalArgumentException("metadata may not be null");
+        }
+
+        if (StringUtils.isBlank(getLabel()) && metadata.getLabel().equals("unittitle")) {
+            setLabel(metadata.getFirstValue());
+        }
+
+        switch (metadata.getType()) {
+            case 1:
+                getIdentityStatementAreaList().add(metadata);
+                if ("unitdate".equals(metadata.getLabel())) {
+                    this.unitdate = metadata.getFirstValue();
+                }
+                break;
+            case 2:
+                getContextAreaList().add(metadata);
+                break;
+            case 3:
+                getContentAndStructureAreaAreaList().add(metadata);
+                break;
+            case 4:
+                getAccessAndUseAreaList().add(metadata);
+                break;
+            case 5:
+                getAlliedMaterialsAreaList().add(metadata);
+                break;
+            case 6:
+                getNotesAreaList().add(metadata);
+                break;
+            case 7:
+                getDescriptionControlAreaList().add(metadata);
+                break;
+            default:
+                break;
+        }
+    }
+
+    void resetMetadata() {
+        getIdentityStatementAreaList().clear();
+        getContextAreaList().clear();
+        getContentAndStructureAreaAreaList().clear();
+        getAccessAndUseAreaList().clear();
+        getAlliedMaterialsAreaList().clear();
+        getNotesAreaList().clear();
+        getDescriptionControlAreaList().clear();
+    }
+
+    /**
+     * 
+     * @return Root node
+     */
+    public ArchiveEntry getRootNode() {
+        ArchiveEntry ret = this;
+        while (ret.getParentNode() != null) {
+            ret = ret.getParentNode();
+        }
+
+        // logger.trace("found root: {}", ret);
+        return ret;
     }
 
     /**
@@ -439,6 +530,7 @@ public class ArchiveEntry {
      * @return the id
      */
     public String getId() {
+        // logger.trace("getId: {}", id);
         return id;
     }
 
@@ -461,6 +553,34 @@ public class ArchiveEntry {
      */
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    /**
+     * @return the topstructPi
+     */
+    public String getTopstructPi() {
+        return topstructPi;
+    }
+
+    /**
+     * @param topstructPi the topstructPi to set
+     */
+    public void setTopstructPi(String topstructPi) {
+        this.topstructPi = topstructPi;
+    }
+
+    /**
+     * @return the logId
+     */
+    public String getLogId() {
+        return logId;
+    }
+
+    /**
+     * @param logId the logId to set
+     */
+    public void setLogId(String logId) {
+        this.logId = logId;
     }
 
     /**
@@ -533,19 +653,9 @@ public class ArchiveEntry {
         }
     }
 
-    public ArchiveMetadataField getIdentityStatementAreaField(String name) {
-        for (ArchiveMetadataField field : identityStatementAreaList) {
-            if (field.getLabel().equals(name)) {
-                return field;
-            }
-        }
-
-        return null;
-    }
-
-    public List<ArchiveMetadataField> getAllAreaLists() {
-        logger.trace("getAllAreaLists ({})", id);
-        List<ArchiveMetadataField> ret = new ArrayList<>(getIdentityStatementAreaList().size()
+    public List<Metadata> getAllAreaLists() {
+        // logger.trace("getAllAreaLists ({})", id);
+        List<Metadata> ret = new ArrayList<>(getIdentityStatementAreaList().size()
                 + getContextAreaList().size()
                 + getContentAndStructureAreaAreaList().size()
                 + getAccessAndUseAreaList().size()
@@ -560,14 +670,91 @@ public class ArchiveEntry {
         ret.addAll(getNotesAreaList());
         ret.addAll(getDescriptionControlAreaList());
 
-        logger.trace("getAllAreaLists END");
+        // logger.trace("getAllAreaLists END");
         return ret;
+    }
+
+    /**
+     * 
+     * @param index Area list index
+     * @return Appropriate metadata list for the given index
+     */
+    public List<Metadata> getAreaList(int index) {
+        switch (index) {
+            case 0:
+                return getIdentityStatementAreaList();
+            case 1:
+                return getContextAreaList();
+            case 2:
+                return getContentAndStructureAreaAreaList();
+            case 3:
+                return getAccessAndUseAreaList();
+            case 4:
+                return getAlliedMaterialsAreaList();
+            case 5:
+                return getNotesAreaList();
+            case 6:
+                return getDescriptionControlAreaList();
+            default:
+                return Collections.emptyList();
+        }
+    }
+
+    /**
+     * 
+     * @param index Area list index
+     * @return Appropriate message key for the given index
+     */
+    public String getAreaListLabel(int index) {
+        switch (index) {
+            case 0:
+                return "archives__archive_area_identity";
+            case 1:
+                return "archives__archive_area_context";
+            case 2:
+                return "archives__archive_area_content";
+            case 3:
+                return "archives__archive_area_access";
+            case 4:
+                return "archives__archive_area_materials";
+            case 5:
+                return "archives__archive_area_notes";
+            case 6:
+                return "archives__archive_area_descriptionControl";
+            default:
+                return "TODO";
+        }
+    }
+
+    /**
+     * Checks whether access to the given node is allowed due to set access conditions.
+     * 
+     * @return true if access granted; false otherwise
+     */
+    public boolean isAccessAllowed() {
+        if (getAccessConditions().isEmpty()) {
+            // OPENACCESS values are omitted
+            return true;
+        }
+
+        try {
+            boolean ret = AccessConditionUtils
+                    .checkAccessPermissionByIdentifierAndLogId(topstructPi, logId, IPrivilegeHolder.PRIV_LIST, BeanUtils.getRequest())
+                    .isGranted();
+            if (!ret) {
+                logger.trace("Access denied to {}", label);
+            }
+            return ret;
+        } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
+            logger.error(e.getMessage(), e);
+            return false;
+        }
     }
 
     /**
      * @return the identityStatementAreaList
      */
-    public List<ArchiveMetadataField> getIdentityStatementAreaList() {
+    public List<Metadata> getIdentityStatementAreaList() {
         // logger.trace("getIdentityStatementAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return identityStatementAreaList;
     }
@@ -575,14 +762,14 @@ public class ArchiveEntry {
     /**
      * @param identityStatementAreaList the identityStatementAreaList to set
      */
-    public void setIdentityStatementAreaList(List<ArchiveMetadataField> identityStatementAreaList) {
+    public void setIdentityStatementAreaList(List<Metadata> identityStatementAreaList) {
         this.identityStatementAreaList = identityStatementAreaList;
     }
 
     /**
      * @return the contextAreaList
      */
-    public List<ArchiveMetadataField> getContextAreaList() {
+    public List<Metadata> getContextAreaList() {
         // logger.trace("getContextAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return contextAreaList;
     }
@@ -590,14 +777,14 @@ public class ArchiveEntry {
     /**
      * @param contextAreaList the contextAreaList to set
      */
-    public void setContextAreaList(List<ArchiveMetadataField> contextAreaList) {
+    public void setContextAreaList(List<Metadata> contextAreaList) {
         this.contextAreaList = contextAreaList;
     }
 
     /**
      * @return the contentAndStructureAreaAreaList
      */
-    public List<ArchiveMetadataField> getContentAndStructureAreaAreaList() {
+    public List<Metadata> getContentAndStructureAreaAreaList() {
         // logger.trace("getContentAndStructureAreaAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return contentAndStructureAreaAreaList;
     }
@@ -605,14 +792,14 @@ public class ArchiveEntry {
     /**
      * @param contentAndStructureAreaAreaList the contentAndStructureAreaAreaList to set
      */
-    public void setContentAndStructureAreaAreaList(List<ArchiveMetadataField> contentAndStructureAreaAreaList) {
+    public void setContentAndStructureAreaAreaList(List<Metadata> contentAndStructureAreaAreaList) {
         this.contentAndStructureAreaAreaList = contentAndStructureAreaAreaList;
     }
 
     /**
      * @return the accessAndUseAreaList
      */
-    public List<ArchiveMetadataField> getAccessAndUseAreaList() {
+    public List<Metadata> getAccessAndUseAreaList() {
         // logger.trace("getAccessAndUseAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return accessAndUseAreaList;
     }
@@ -620,14 +807,14 @@ public class ArchiveEntry {
     /**
      * @param accessAndUseAreaList the accessAndUseAreaList to set
      */
-    public void setAccessAndUseAreaList(List<ArchiveMetadataField> accessAndUseAreaList) {
+    public void setAccessAndUseAreaList(List<Metadata> accessAndUseAreaList) {
         this.accessAndUseAreaList = accessAndUseAreaList;
     }
 
     /**
      * @return the alliedMaterialsAreaList
      */
-    public List<ArchiveMetadataField> getAlliedMaterialsAreaList() {
+    public List<Metadata> getAlliedMaterialsAreaList() {
         // logger.trace("getAlliedMaterialsAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return alliedMaterialsAreaList;
     }
@@ -635,14 +822,14 @@ public class ArchiveEntry {
     /**
      * @param alliedMaterialsAreaList the alliedMaterialsAreaList to set
      */
-    public void setAlliedMaterialsAreaList(List<ArchiveMetadataField> alliedMaterialsAreaList) {
+    public void setAlliedMaterialsAreaList(List<Metadata> alliedMaterialsAreaList) {
         this.alliedMaterialsAreaList = alliedMaterialsAreaList;
     }
 
     /**
      * @return the notesAreaList
      */
-    public List<ArchiveMetadataField> getNotesAreaList() {
+    public List<Metadata> getNotesAreaList() {
         // logger.trace("getNotesAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return notesAreaList;
     }
@@ -650,14 +837,14 @@ public class ArchiveEntry {
     /**
      * @param notesAreaList the notesAreaList to set
      */
-    public void setNotesAreaList(List<ArchiveMetadataField> notesAreaList) {
+    public void setNotesAreaList(List<Metadata> notesAreaList) {
         this.notesAreaList = notesAreaList;
     }
 
     /**
      * @return the descriptionControlAreaList
      */
-    public List<ArchiveMetadataField> getDescriptionControlAreaList() {
+    public List<Metadata> getDescriptionControlAreaList() {
         // logger.trace("getDescriptionControlAreaList ({})", id); //NOSONAR Sometimes needed for debugging
         return descriptionControlAreaList;
     }
@@ -665,7 +852,7 @@ public class ArchiveEntry {
     /**
      * @param descriptionControlAreaList the descriptionControlAreaList to set
      */
-    public void setDescriptionControlAreaList(List<ArchiveMetadataField> descriptionControlAreaList) {
+    public void setDescriptionControlAreaList(List<Metadata> descriptionControlAreaList) {
         this.descriptionControlAreaList = descriptionControlAreaList;
     }
 
@@ -695,6 +882,27 @@ public class ArchiveEntry {
      */
     public void setDescriptionLevel(String descriptionLevel) {
         this.descriptionLevel = descriptionLevel;
+    }
+
+    /**
+     * @return the unitdate
+     */
+    public String getUnitdate() {
+        return unitdate;
+    }
+
+    /**
+     * @return the accessConditions
+     */
+    public List<String> getAccessConditions() {
+        return accessConditions;
+    }
+
+    /**
+     * @param accessConditions the accessConditions to set
+     */
+    public void setAccessConditions(List<String> accessConditions) {
+        this.accessConditions = accessConditions;
     }
 
     /**
@@ -729,7 +937,7 @@ public class ArchiveEntry {
      * @return the hasChild
      */
     public boolean isHasChild() {
-        return !subEntryList.isEmpty();
+        return isHasChildren();
     }
 
     /**
@@ -767,11 +975,6 @@ public class ArchiveEntry {
         return ancestors;
     }
 
-    @Override
-    public String toString() {
-        return id;
-    }
-
     public boolean isContainsImage() {
         return this.containsImage;
     }
@@ -780,12 +983,124 @@ public class ArchiveEntry {
         this.containsImage = containsImage;
     }
 
+    /**
+     * @return the doc
+     */
+    public SolrDocument getDoc() {
+        return doc;
+    }
+
+    /**
+     * @return the metadataLoaded
+     */
+    public boolean isMetadataLoaded() {
+        return metadataLoaded;
+    }
+
+    /**
+     * @return the childrenFound
+     */
+    public boolean isChildrenFound() {
+        return childrenFound;
+    }
+
+    /**
+     * @param childrenFound the childrenFound to set
+     */
+    public void setChildrenFound(boolean childrenFound) {
+        this.childrenFound = childrenFound;
+    }
+
+    /**
+     * @return the childrenLoaded
+     */
+    public boolean isChildrenLoaded() {
+        return childrenLoaded;
+    }
+
+    /**
+     * @param childrenLoaded the childrenLoaded to set
+     */
+    public void setChildrenLoaded(boolean childrenLoaded) {
+        this.childrenLoaded = childrenLoaded;
+    }
+
     public String getFieldValue(String field) {
         return getAllAreaLists().stream()
                 .filter(entry -> entry.getLabel().equals(field))
-                .map(ArchiveMetadataField::getValue)
+                .map(Metadata::getFirstValue)
                 .filter(StringUtils::isNotBlank)
                 .findAny()
                 .orElse(null);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ArchiveEntry other = (ArchiveEntry) obj;
+        if (hierarchyLevel == null) {
+            if (other.hierarchyLevel != null) {
+                return false;
+            }
+        } else if (!hierarchyLevel.equals(other.hierarchyLevel)) {
+            return false;
+        }
+        if (orderNumber == null) {
+            if (other.orderNumber != null) {
+                return false;
+            }
+        } else if (!orderNumber.equals(other.orderNumber)) {
+            return false;
+        }
+        if (label != null && !label.equals(other.getLabel())) {
+            return false;
+        }
+        if (parentNode == null && other.parentNode == null) {
+            return true;
+        }
+        if (parentNode == null && other.parentNode != null) {
+            return false;
+        }
+        if (parentNode != null && other.parentNode == null) {
+            return false;
+        }
+        if (parentNode != null && other.parentNode != null) {
+            if (!parentNode.getOrderNumber().equals(other.parentNode.getOrderNumber())) {
+                return false;
+            }
+            if (!parentNode.getHierarchyLevel().equals(other.parentNode.getHierarchyLevel())) {
+                return false;
+            }
+            if (!parentNode.equals(other.parentNode)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((hierarchyLevel == null) ? 0 : hierarchyLevel.hashCode());
+        result = prime * result + ((orderNumber == null) ? 0 : orderNumber.hashCode());
+        result = prime * result + ((parentNode == null) ? 0 : parentNode.getHierarchyLevel().hashCode());
+        result = prime * result + ((parentNode == null) ? 0 : parentNode.getOrderNumber().hashCode());
+        result = prime * result + ((label == null) ? 0 : label.hashCode());
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return id;
     }
 }

@@ -56,6 +56,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -127,7 +128,7 @@ public class TempMediaImageResource extends ImageResource {
     }
 
     /**
-     * Delete the file with the given filename in the temp media folder for the given uuid
+     * Delete the file with the given filename in the temp media folder for the given uuid.
      *
      * @param folder
      * @param filename
@@ -143,8 +144,7 @@ public class TempMediaImageResource extends ImageResource {
                         .entity(TempMediaFileResource.errorMessage("No bean found containing record data"))
                         .build();
             }
-
-            Path file = TempMediaFileResource.getTargetDir(folder).resolve(filename);
+            Path file = TempMediaFileResource.getTargetDir(folder).resolve(StringTools.cleanUserGeneratedData(filename));
             if (Files.exists(file)) {
                 try {
                     Files.delete(file);

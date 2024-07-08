@@ -24,6 +24,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.enterprise.context.SessionScoped;
@@ -31,14 +32,16 @@ import javax.faces.context.FacesContext;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.ArchiveConnectionException;
 import io.goobi.viewer.exceptions.ArchiveException;
-import io.goobi.viewer.exceptions.BaseXException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.archives.ArchiveEntry;
 import io.goobi.viewer.model.archives.ArchiveManager;
@@ -78,25 +81,27 @@ public class ArchiveBean implements Serializable {
         this.databaseLoaded = false;
     }
 
-    public void initializeArchiveTree() {
+    public void initializeArchiveTree() throws ArchiveException {
         initializeArchiveTree(null);
     }
 
-    public void initializeArchiveTree(String selectedEntryId) {
-
+    public void initializeArchiveTree(String selectedEntryId) throws ArchiveException {
+        logger.trace("initializeArchiveTree: {}", selectedEntryId);
         if (getCurrentArchive() != null) {
             try {
-                this.archiveTree = new ArchiveTree(archiveManager.getArchiveTree(getCurrentDatabase(), getCurrentResource()));
+                // this.archiveTree = new ArchiveTree(archiveManager.getArchiveTree(getCurrentDatabase(), getCurrentResource()));
+                this.archiveTree = archiveManager.getArchiveTree(getCurrentDatabase(), getCurrentResource());
                 this.databaseLoaded = true;
                 this.searchString = "";
                 this.archiveTree.resetSearch();
                 if (StringUtils.isNotBlank(selectedEntryId)) {
                     this.setSelectedEntryId(selectedEntryId);
                 }
-            } catch (ArchiveException e) {
+            } catch (PresentationException | IllegalStateException | IndexUnreachableException e) {
                 logger.error("Error initializing archive tree: {}", e.getMessage());
                 Messages.error("Error initializing archive tree: " + e.getMessage());
                 this.databaseLoaded = false;
+                throw new ArchiveConnectionException("Error retrieving database {} from {}", getCurrentResource(), getCurrentDatabase());
             }
         }
     }
@@ -116,13 +121,14 @@ public class ArchiveBean implements Serializable {
     /**
      *
      * @return the archiveTree
-     * @throws BaseXException
      */
     public ArchiveTree getArchiveTree() {
+        // logger.trace("getArchiveTree");
         return archiveTree;
     }
 
     public void toggleEntryExpansion(ArchiveEntry entry) {
+        logger.trace("toggleEntryExpansion: {}", entry);
         if (entry.isExpanded()) {
             collapseEntry(entry);
         } else {
@@ -143,7 +149,12 @@ public class ArchiveBean implements Serializable {
             return;
         }
         synchronized (getArchiveTree()) {
+            boolean updateTree = entry.isChildrenFound() && !entry.isChildrenLoaded();
             entry.expand();
+            if (updateTree) {
+                logger.trace("Updating tree");
+                getArchiveTree().update(entry.getRootNode());
+            }
         }
     }
 
@@ -273,7 +284,6 @@ public class ArchiveBean implements Serializable {
      * Setter for the URL parameter. Loads the entry that has the given ID. Loads the tree, if this is a new sessions.
      *
      * @param id Entry ID
-     * @throws BaseXException
      */
     public void setSelectedEntryId(final String id) {
         logger.trace("setSelectedEntryId: {}", id);
@@ -328,6 +338,7 @@ public class ArchiveBean implements Serializable {
      * @return the databaseState
      */
     public DatabaseState getDatabaseState() {
+        // logger.trace("getDatabaseState"); //NOSONAR Debug
         if (isDatabaseLoaded()) {
             return DatabaseState.ARCHIVE_TREE_LOADED;
         } else if (archiveManager.isInErrorState()) {
@@ -386,7 +397,7 @@ public class ArchiveBean implements Serializable {
         return Optional.ofNullable(getCurrentArchive()).map(ArchiveResource::getCombinedId).orElse("");
     }
 
-    public void setArchiveId(String archiveName) {
+    public void setArchiveId(String archiveName) throws ArchiveException {
         ArchiveResource database = this.archiveManager.getArchiveResource(archiveName);
         if (database != null) {
             this.currentDatabase = database.getDatabaseId();
@@ -397,7 +408,7 @@ public class ArchiveBean implements Serializable {
         }
     }
 
-    public void loadDatabaseResource(String databaseId, String resourceId) {
+    public void loadDatabaseResource(String databaseId, String resourceId) throws ArchiveException {
         this.currentDatabase = databaseId;
         this.currentResource = resourceId;
         this.initializeArchiveTree();
@@ -420,11 +431,21 @@ public class ArchiveBean implements Serializable {
         }
     }
 
+    public Map<String, NodeType> getUpdatedNodeTypes() {
+        return DataManager.getInstance().getArchiveManager().getUpdatedNodeTypes();
+    }
+
+    /**
+     * 
+     * @param name Node type name
+     * @return NoedType with the given name; null if none found
+     */
     public NodeType getNodeType(String name) {
         return DataManager.getInstance().getArchiveManager().getNodeType(name);
     }
 
     public void updateArchives() {
+        // logger.trace("updateArchives"); //NOSONAR Debug
         this.archiveManager.updateArchiveList();
 
     }

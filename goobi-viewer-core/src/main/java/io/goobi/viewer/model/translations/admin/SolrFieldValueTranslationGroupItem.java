@@ -55,7 +55,7 @@ public class SolrFieldValueTranslationGroupItem extends TranslationGroupItem {
     }
 
     /**
-     * @see io.goobi.viewer.model.translations.TranslationGroupKey#loadValues()
+     * @see io.goobi.viewer.model.translations.admin.TranslationGroupItem#loadEntries()
      * @should load hierarchical entries correctly
      */
     @Override

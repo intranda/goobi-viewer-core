@@ -857,7 +857,6 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
      * 
      * @param component
      * @param order
-     * @return
      */
     public void setComponentOrder(CMSComponent component, int order) {
         PersistentCMSComponent persistentComponent = component.getPersistentComponent();

@@ -32,27 +32,25 @@ import org.apache.commons.configuration2.tree.ImmutableNode;
 import io.goobi.viewer.model.variables.VariableReplacer;
 
 /**
- * A configurable filter allowing passage to document entities (record, docStruct, page) which satisfy certain conditions The filter itself may
+ * A configurable filter allowing passage to document entities (record, docStruct, page) which satisfy certain conditions. The filter itself may
  * contain condition filters which determine if the filter should be applied to an entity
  */
 public abstract class AbstractFilterConfiguration implements IFilterConfiguration {
 
     /**
-     * Whether the filter should block or pass entities meeting its condition
+     * Whether the filter should block or pass entities meeting its condition.
      */
     protected final FilterAction action;
     /**
      * Additional filters which must be passed in order for this filter to apply. If any filter conditions don't pass, this
-     * #{@link #passes(VariableReplacer)} will always return true
+     * #{@link #applies(VariableReplacer)} will always return false
      */
     protected final List<AbstractFilterConfiguration> filterConditions;
 
     /**
-     * internal constructor
+     * internal constructor.
      * 
      * @param action whether to pass or block matching entities
-     * @param value the value to test
-     * @param matchRegex a regex which must match the value parameter for the filter to match
      */
     protected AbstractFilterConfiguration(FilterAction action) {
         this.action = action;
@@ -60,7 +58,7 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
     }
 
     /**
-     * Create a new filter from a configuration block
+     * Create a new filter from a configuration block.
      * 
      * @param config an xml configuration
      * @throws ConfigurationException if the config is invalid
@@ -73,7 +71,7 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
     }
 
     /**
-     * Test whether all conditions of this filter apply, if any
+     * Test whether all conditions of this filter apply, if any.
      * 
      * @param vr a variable replacer representing the object to test
      * @return true if the {@link #filterConditions} all pass. If they don't the filter should not be applied
@@ -95,6 +93,8 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
 
     /**
      * Get the {@link FilterAction}
+     * 
+     * @return {@link FilterAction}
      */
     public FilterAction getAction() {
         return action;
@@ -102,13 +102,17 @@ public abstract class AbstractFilterConfiguration implements IFilterConfiguratio
 
     /**
      * Get all {@link #filterConditions}
+     * 
+     * @return List<AbstractFilterConfiguration>
      */
     public List<AbstractFilterConfiguration> getFilterConditions() {
         return Collections.unmodifiableList(filterConditions);
     }
 
     /**
-     * return true if {@link #action} is {@link FilterAction#SHOW}
+     * check if matching this filter results in a pass or block
+     * 
+     * @return true if {@link #action} is {@link FilterAction#SHOW}.
      */
     public boolean passesOnMatch() {
         return FilterAction.SHOW == this.action;

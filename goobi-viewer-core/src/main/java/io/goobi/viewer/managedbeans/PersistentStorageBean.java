@@ -105,7 +105,7 @@ public class PersistentStorageBean implements DataStorage, Serializable {
      * @param object the object to store under the given key if the key doesn't exist yet or is older than timeToLiveMinutes
      * @param timeToLive the maximum age in the given time unit the stored object may have to be returned. If it's older, it will be replaced with the
      *            passed object
-     * @param unit  The {@link TemporalUnit} in which the timeToLive parameter is given
+     * @param unit The {@link TemporalUnit} in which the timeToLive parameter is given
      * @return the object stored under the given key if viable, otherwise the given object
      */
     @SuppressWarnings("unchecked")
@@ -118,7 +118,7 @@ public class PersistentStorageBean implements DataStorage, Serializable {
             return object;
         }
     }
-    
+
     /**
      * If the given key exists and the entry is no older than the given timeToLiveMinutes, return the object stored under the key, otherwise store the
      * given object under the given key and return it
@@ -133,12 +133,12 @@ public class PersistentStorageBean implements DataStorage, Serializable {
     public synchronized <T> T getIfRecentOrPut(String key, T object, long timeToLiveMinutes) {
         return getIfRecentOrPut(key, object, timeToLiveMinutes, ChronoUnit.MINUTES);
     }
-    
+
     @SuppressWarnings("unchecked")
     public synchronized <T> Optional<T> getIfRecentOrRemove(String key, long timeToLiveMinutes) {
         return getIfRecentOrRemove(key, timeToLiveMinutes, ChronoUnit.MINUTES);
     }
-    
+
     @SuppressWarnings("unchecked")
     public synchronized <T> Optional<T> getIfRecentOrRemove(String key, long timeToLive, TemporalUnit unit) {
         Instant oldestViable = Instant.now().minus(timeToLive, unit);

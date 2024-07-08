@@ -100,7 +100,7 @@ public class DownloadResource {
     }
 
     /**
-     * Get information about a specific downloadJob
+     * Get information about a specific downloadJob.
      *
      * @param pi The PI of the underlying record
      * @param logId The logId of the underyling docStruct. Is ignored if it matches the regex [-(null)]/i
@@ -128,7 +128,7 @@ public class DownloadResource {
     }
 
     /**
-     * Remove a download job from the database
+     * Remove a download job from the database.
      *
      * @param pi The PI of the underlying record
      * @param logId The logId of the underyling docStruct. Is ignored if it matches the regex [-(null)]/i
@@ -168,7 +168,8 @@ public class DownloadResource {
     public String putPDFDownloadJob(@Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Identifier of the METS div for a logical section") @PathParam("divId") String logId,
             @Parameter(
-                    description = "whether to use prerendered single page pdf files for pdf creation") @QueryParam("usePdfSource") String usePdfSource,
+                    description = "whether to use prerendered single page pdf"
+                            + " files for pdf creation") @QueryParam("usePdfSource") String usePdfSource,
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email)
             throws DAOException, URISyntaxException, JsonProcessingException {
 
@@ -203,13 +204,13 @@ public class DownloadResource {
         }
 
         // forward to download page
-        String id = DownloadJob.generateDownloadJobId(PDFDownloadJob.LOCAL_TYPE, pi, logId);
+        DownloadJob.generateDownloadJobId(PDFDownloadJob.LOCAL_TYPE, pi, logId);
         URI downloadPageUrl = getDownloadPageUrl(messageId);
         return getForwardToDownloadPageResponse(downloadPageUrl, job);
     }
 
     /**
-     * Get information about a specific downloadJob
+     * Get information about a specific downloadJob.
      *
      * @param pi
      * @return A json representation of the {@link io.goobi.viewer.model.job.download.DownloadJob}
@@ -231,7 +232,7 @@ public class DownloadResource {
     }
 
     /**
-     * Remove a download job from the database
+     * Remove a download job from the database.
      *
      * @param pi
      * @return A json object containing the job identifier and wether the job could be deleted
@@ -264,15 +265,16 @@ public class DownloadResource {
     @DownloadBinding
     public String putPDFDownloadJob(@Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(
-                    description = "whether to use prerendered single page pdf files for pdf creation") @QueryParam("usePdfSource") String usePdfSource,
+                    description = "whether to use prerendered single"
+                            + " page pdf files for pdf creation") @QueryParam("usePdfSource") String usePdfSource,
             @Parameter(description = "email to notify on job completion") @QueryParam("email") String email)
-            throws ContentLibException, JsonProcessingException, DAOException, URISyntaxException {
+            throws JsonProcessingException, DAOException, URISyntaxException {
         return putPDFDownloadJob(pi, null, usePdfSource, email);
 
     }
 
     /**
-     * Get information about a specific downloadJob
+     * Get information about a specific downloadJob.
      *
      * @param pi The PI of the underlying record
      * @param logId The logId of the underyling docStruct. Is ignored if it matches the regex [-(null)]/i
@@ -300,7 +302,7 @@ public class DownloadResource {
     }
 
     /**
-     * Remove a download job from the database
+     * Remove a download job from the database.
      *
      * @param pi The PI of the underlying record
      * @param logId The logId of the underyling docStruct. Is ignored if it matches the regex [-(null)]/i
@@ -345,7 +347,7 @@ public class DownloadResource {
     }
 
     /**
-     * Get information about a specific downloadJob
+     * Get information about a specific downloadJob.
      *
      * @param pi
      * @return A json representation of the {@link io.goobi.viewer.model.job.download.DownloadJob}
@@ -367,7 +369,7 @@ public class DownloadResource {
     }
 
     /**
-     * Remove a download job from the database
+     * Remove a download job from the database.
      *
      * @param pi
      * @return A json object containing the job identifier and wether the job could be deleted
@@ -405,7 +407,7 @@ public class DownloadResource {
     }
 
     /**
-     * Get information about all download jobs of a type
+     * Get information about all download jobs of a type.
      *
      * @return An array of json representations of all {@link io.goobi.viewer.model.job.download.DownloadJob}s of the given type
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -420,7 +422,7 @@ public class DownloadResource {
     }
 
     /**
-     * Remove all jobs from the database
+     * Remove all jobs from the database.
      *
      * @return An array of json objects containing the job identifiers and wether the jobs could be deleted
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -448,7 +450,7 @@ public class DownloadResource {
     }
 
     /**
-     * Get information about all download jobs of a type
+     * Get information about all download jobs of a type.
      *
      * @return An array of json representations of all {@link io.goobi.viewer.model.job.download.DownloadJob}s of the given type
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -469,7 +471,7 @@ public class DownloadResource {
     }
 
     /**
-     * Remove all jobs of a type from the database
+     * Remove all jobs of a type from the database.
      *
      * @return An array of json objects containing the job identifiers and wether the jobs could be deleted
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -504,7 +506,7 @@ public class DownloadResource {
     }
 
     /**
-     * Get information about all download jobs of a type
+     * Get information about all download jobs of a type.
      *
      * @return An array of json representations of all {@link io.goobi.viewer.model.job.download.DownloadJob}s of the given type
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -525,7 +527,7 @@ public class DownloadResource {
     }
 
     /**
-     * Remove all jobs of a type from the database
+     * Remove all jobs of a type from the database.
      *
      * @return An array of json objects containing the job identifiers and wether the jobs could be deleted
      * @throws io.goobi.viewer.exceptions.DAOException if any.
