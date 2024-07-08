@@ -152,6 +152,10 @@ public class NavigationHelper implements Serializable {
         theme = DataManager.getInstance().getConfiguration().getTheme();
     }
 
+    public void setCmsBean(CmsBean cmsBean) {
+        this.cmsBean = cmsBean;
+    }
+
     /**
      * <p>
      * init.
@@ -270,8 +274,10 @@ public class NavigationHelper implements Serializable {
      */
     public void setCurrentPage(CMSPage cmsPage) {
         try {
-            setCurrentPage(getCMSPageNavigationId(cmsPage), false, !cmsBean.isRelatedWorkLoaded(), true);
+            //call "setCurrentView" first, because it calls setCurrentPage which needs to be overwritten by the 
+            //call to "setCurrentPage" here
             setCurrentView(cmsBean.isRelatedWorkLoaded() ? PageType.cmsPageOfWork.name() : PageType.cmsPage.name());
+            setCurrentPage(getCMSPageNavigationId(cmsPage), false, !cmsBean.isRelatedWorkLoaded(), true);
         } catch (IndexUnreachableException e) {
             logger.error("Error checking if related work for cmsPage is loaded", e);
             setCurrentPage(getCMSPageNavigationId(cmsPage), false, true, true);
