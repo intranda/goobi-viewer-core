@@ -271,6 +271,7 @@ public class NavigationHelper implements Serializable {
     public void setCurrentPage(CMSPage cmsPage) {
         try {
             setCurrentPage(getCMSPageNavigationId(cmsPage), false, !cmsBean.isRelatedWorkLoaded(), true);
+            setCurrentView(cmsBean.isRelatedWorkLoaded() ? PageType.cmsPageOfWork.name() : PageType.cmsPage.name());
         } catch (IndexUnreachableException e) {
             logger.error("Error checking if related work for cmsPage is loaded", e);
             setCurrentPage(getCMSPageNavigationId(cmsPage), false, true, true);

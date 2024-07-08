@@ -30,7 +30,7 @@
 					class="widget__body #{activeDocumentBean.viewManager.metadataViewOnly or activeDocumentBean.anchor or activeDocumentBean.group or (navigationHelper.currentPage == 'fulltext') or (activeDocumentBean.viewManager.displayContentDownloadMenu) ? '' : 'collapseable'}">
 					<!-- INTRODUCTION TEXT -->
 					<ui:fragment
-						rendered="#{fn:length(msg['widget__downloads__intro_text_object_downloads']) > 0 and navigationHelper.currentPage == 'object' }">
+						rendered="#{fn:length(msg['widget__downloads__intro_text_object_downloads']) > 0 and (navigationHelper.currentPage == 'object' or navigationHelper.currentPage == 'cmsPageOfWork') }">
 						<p id="introductionText" class="widget-downloads__license-text">
 							<h:outputText
 								value="#{msg['widget__downloads__intro_text_object_downloads']}"
@@ -61,7 +61,7 @@
 					</ui:fragment>
 
 					<!-- WORK -->
-					<ui:fragment rendered="#{navigationHelper.currentView == 'object' or navigationHelper.currentView == 'fulltext'}">
+					<ui:fragment rendered="#{navigationHelper.currentView == 'object' or navigationHelper.currentPage == 'cmsPageOfWork' or navigationHelper.currentView == 'fulltext'}">
 
 						<!-- WORK DOWNLOADS -->
 						<div
@@ -210,7 +210,7 @@
 
 							<!-- PDF (WORK) -->
 							<ui:fragment
-								rendered="#{navigationHelper.currentView == 'object' and 
+								rendered="#{(navigationHelper.currentPage == 'object' or navigationHelper.currentPage == 'cmsPageOfWork') and 
                                                  activeDocumentBean.viewManager.externalDownloadUrl == null and 
                                                  !activeDocumentBean.viewManager.filesOnly and 
                                                  activeDocumentBean.viewManager.hasPages and 
@@ -383,6 +383,7 @@
 												or activeDocumentBean.viewManager.currentPage.teiAvailable
 												or activeDocumentBean.viewManager.currentPage.displayFulltext)
 												or navigationHelper.currentView == 'object'
+												or navigationHelper.currentPage == 'cmsPageOfWork'
 												and (!activeDocumentBean.viewManager.bornDigital)}">
 
 							<!-- PAGE DOWNLOADS -->
@@ -394,7 +395,7 @@
 
 								<!-- PDF (PAGE) -->
 								<ui:fragment
-									rendered="#{navigationHelper.currentView == 'object' and
+									rendered="#{(navigationHelper.currentPage == 'object' or navigationHelper.currentPage == 'cmsPageOfWork') and
                                                      activeDocumentBean.viewManager.externalDownloadUrl == null and 
                                                      activeDocumentBean.viewManager.currentPage.accessPermissionPdf}">
 									<a href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
@@ -410,7 +411,7 @@
 								</ui:fragment>
 
 								<ui:fragment
-									rendered="#{navigationHelper.currentView == 'object' and !activeDocumentBean.viewManager.bornDigital}">
+									rendered="#{(navigationHelper.currentPage == 'object' or navigationHelper.currentPage == 'cmsPageOfWork') and !activeDocumentBean.viewManager.bornDigital}">
 
 									<!-- IMAGE (PAGE) GENERATE LINKS FOR EVERY CONFIGURED DOWNLOAD SIZE -->
 									<ui:repeat varStatus="status" var="option"
@@ -566,14 +567,14 @@
 												and (activeDocumentBean.viewManager.currentPage.altoAvailable
 												or activeDocumentBean.viewManager.currentPage.teiAvailable
 												or activeDocumentBean.viewManager.currentPage.displayFulltext)
-												or navigationHelper.currentView == 'object'
+												or (navigationHelper.currentPage == 'object' or navigationHelper.currentPage == 'cmsPageOfWork')
 												and (!activeDocumentBean.viewManager.bornDigital)}">
 
 								<!-- TITLE PAGE RANGE -->
 
 								<!-- PDF (PAGE RANGE) -->
 								<ui:fragment
-									rendered="#{configurationBean.pdfPageRangeEnabled and navigationHelper.currentView == 'object' and
+									rendered="#{configurationBean.pdfPageRangeEnabled and (navigationHelper.currentPage == 'object' or navigationHelper.currentPage == 'cmsPageOfWork') and
                                                      activeDocumentBean.viewManager.externalDownloadUrl == null and 
                                                      activeDocumentBean.viewManager.currentPage.accessPermissionPdf}">
 								<h3 id="titlePageRange"
@@ -635,7 +636,7 @@
 
 					<!-- IMAGE FRAGMENT -->
 					<ui:fragment
-						rendered="#{navigationHelper.currentView == 'object' and activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+						rendered="#{(navigationHelper.currentPage == 'object' or navigationHelper.currentPage == 'cmsPageOfWork') and activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
 						<div
 							class="widget-downloads__image-fragment-wrapper widget__badge-container" data-fragment-link="wrapper">
 
