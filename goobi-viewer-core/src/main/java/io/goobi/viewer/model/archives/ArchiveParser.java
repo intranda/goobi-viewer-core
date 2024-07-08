@@ -52,10 +52,7 @@ public abstract class ArchiveParser implements Serializable {
 
     protected transient Map<String, Entry<String, Boolean>> associatedRecordMap;
 
-    /**
-     *
-     * @param searchIndex
-     */
+    
     protected ArchiveParser() {
     }
 
@@ -66,7 +63,7 @@ public abstract class ArchiveParser implements Serializable {
     /**
      * 
      * @param searchIndex
-     * @return Map<String, Entry<String, Boolean>>
+     * @return Map&lt;String, Entry&lt;String, Boolean&gt;&gt;
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
