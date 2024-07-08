@@ -684,7 +684,7 @@ public final class FileTools {
         String urlStringLocal = urlString;
         if (urlStringLocal.contains(":")) {
             try {
-                // logger.trace("url string: {}", urlString); //NOSONAR Sometimes used for debugging
+                // logger.trace("url string: {}", urlString); //NOSONAR Debug
                 URL url = new URL(urlStringLocal);
                 URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(),
                         url.getQuery(), url.getRef());
@@ -739,6 +739,8 @@ public final class FileTools {
     /**
      * Check if a path is a real descendant of the parent path.
      * 
+     * @param path
+     * @param parent
      * @return true if path is a descendant of parent, first resolving any path backtracking with '../' or similar
      */
     public static boolean isWithin(Path path, Path parent) {

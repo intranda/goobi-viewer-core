@@ -115,13 +115,13 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
      */
     private static void filterForAccessConditions(HttpServletRequest request, String pi, String logid, final String inContentFileName)
             throws ServiceNotAllowedException {
-        // logger.trace("filterForAccessConditions: {}", request.getSession().getId()); //NOSONAR Sometimes needed for debugging
+        // logger.trace("filterForAccessConditions: {}", request.getSession().getId()); //NOSONAR Debug
         String contentFileName = StringTools.decodeUrl(inContentFileName);
         boolean access = false;
         try {
             if (FilterTools.isThumbnail(request)) {
                 access = AccessConditionUtils.checkAccessPermissionForThumbnail(request, pi, contentFileName).isGranted();
-                // logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access); //NOSONAR Sometimes needed for debugging
+                // logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access); //NOSONAR Debug
             } else {
                 String[] privileges = getRequiredPrivileges(request);
                 if (privileges.length == 0) {

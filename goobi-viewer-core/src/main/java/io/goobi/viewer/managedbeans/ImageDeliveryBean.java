@@ -558,7 +558,7 @@ public class ImageDeliveryBean implements Serializable {
         if (staticImagesURI == null) {
             init();
         }
-        // logger.trace("staticImagesURI: {}", staticImagesURI); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("staticImagesURI: {}", staticImagesURI); //NOSONAR Debug
         return staticImagesURI;
     }
 

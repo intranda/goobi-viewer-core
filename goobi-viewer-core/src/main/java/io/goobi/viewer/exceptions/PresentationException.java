@@ -75,9 +75,7 @@ public class PresentationException extends Exception implements Serializable {
         super(formatString(string, args));
     }
 
-    private static String formatString(String string, Object... args) {
-        string = string.replace("{}", "%s");
-        return String.format(string, args);
+    private static String formatString(final String string, Object... args) {
+        return String.format(string.replace("{}", "%s"), args);
     }
-
 }

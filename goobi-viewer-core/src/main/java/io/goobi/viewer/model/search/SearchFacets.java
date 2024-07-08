@@ -357,7 +357,7 @@ public class SearchFacets implements Serializable {
      * @return List<IFacetItem>
      */
     public List<IFacetItem> getAvailableFacetsForField(String field, boolean excludeSelected) {
-        // logger.trace("getAvailableFacetsForField: {}", field); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("getAvailableFacetsForField: {}", field); //NOSONAR Debug
         List<IFacetItem> facetItems = availableFacets.get(field);
         if (facetItems == null) {
             return Collections.emptyList();
@@ -585,7 +585,7 @@ public class SearchFacets implements Serializable {
      * @return true if field is hierarchical; false otherwise
      */
     static boolean isFieldHierarchical(String field) {
-        //        logger.trace("isFieldHierarchical: {} ? {}", field, //NOSONAR Logging sometimes needed for debugging
+        //        logger.trace("isFieldHierarchical: {} ? {}", field, //NOSONAR Debug
         return DataManager.getInstance().getConfiguration().getHierarchicalFacetFields().contains(field);
     }
 

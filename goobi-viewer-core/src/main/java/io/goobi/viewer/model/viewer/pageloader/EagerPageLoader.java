@@ -218,7 +218,7 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
             ret.put(pe.getOrder(), pe);
             if (!pe.isDoubleImage()) {
                 pe.setFlipRectoVerso(flipRectoVerso);
-                // logger.trace("page {} flipped: {}", pe.getOrder(), pe.isFlipRectoVerso()); //NOSONAR Logging sometimes needed for debugging
+                // logger.trace("page {} flipped: {}", pe.getOrder(), pe.isFlipRectoVerso()); //NOSONAR Debug
             }
             if (pe.isDoubleImage()) {
                 flipRectoVerso = !flipRectoVerso;

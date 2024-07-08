@@ -78,7 +78,6 @@ public class SolrEADParser extends ArchiveParser {
 
     /**
      *
-     * @param searchIndex
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -113,7 +112,7 @@ public class SolrEADParser extends ArchiveParser {
             List<String> lastUpdatedList = SolrTools.getMetadataValues(doc, SolrConstants.DATEINDEXED);
             if (!lastUpdatedList.isEmpty()) {
                 lastUpdated = formatDate(Long.parseLong(lastUpdatedList.get(lastUpdatedList.size() - 1)));
-                // logger.trace("Last updated: {}", lastUpdated); //NOSONAR Logging sometimes needed for debugging
+                // logger.trace("Last updated: {}", lastUpdated); //NOSONAR Debug
             }
 
             String size = "0";
@@ -157,7 +156,7 @@ public class SolrEADParser extends ArchiveParser {
                 DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":\"" + database.getResourceId() + '"', solrFields);
         if (topDoc != null) {
             String query = "+" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name() + " +" + SolrConstants.PI_TOPSTRUCT + ":\""
-                    + database.getResourceId() + "\" -" + SolrConstants.PI + ":\"" + database.getResourceId() + '"'; // + SearchHelper.getAllSuffixes();
+                    + database.getResourceId() + "\" -" + SolrConstants.PI + ":\"" + database.getResourceId() + '"';
             logger.trace("archive query: {}", query); //NOSONAR Debug
             SolrDocumentList archiveDocs = DataManager.getInstance()
                     .getSearchIndex()
@@ -199,7 +198,7 @@ public class SolrEADParser extends ArchiveParser {
      */
     public ArchiveEntry loadNode(int order, int hierarchy, SolrDocument doc, Set<String> loadPath, boolean loadChildrenRecursively)
             throws PresentationException, IndexUnreachableException {
-        // logger.trace("loadNode: {}", order); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("loadNode: {}", order); //NOSONAR Debug
         if (doc == null) {
             throw new IllegalArgumentException("doc may not be null");
         }
@@ -345,7 +344,7 @@ public class SolrEADParser extends ArchiveParser {
                 "+" + SolrConstants.PI_TOPSTRUCT + ":\"" + node.getTopstructPi() + "\" +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name()
                         + " +(" + SolrConstants.EAD_NODE_ID + ":\"" + searchValue + "\" " + SolrConstants.TITLE + ":" + searchValue + ")"
                         + SearchHelper.getAllSuffixes();
-        // logger.trace("Unparsed node search query: {}", query); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("Unparsed node search query: {}", query); //NOSONAR Debug
 
         boolean ret = false;
         try {

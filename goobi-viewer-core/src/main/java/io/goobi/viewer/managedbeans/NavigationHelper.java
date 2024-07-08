@@ -306,7 +306,7 @@ public class NavigationHelper implements Serializable {
      * @param resetCurrentDocument a boolean.
      */
     public void setCurrentPage(String currentPage, boolean resetBreadcrubs, boolean resetCurrentDocument) {
-        // logger.trace("setCurrentPage: {}", currentPage); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("setCurrentPage: {}", currentPage); //NOSONAR Debug
         setCurrentPage(currentPage, resetBreadcrubs, resetCurrentDocument, false);
     }
 
@@ -647,7 +647,7 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.util.Locale} object.
      */
     public Locale getLocale() {
-        // logger.trace("getLocale: {}", locale); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("getLocale: {}", locale); //NOSONAR Debug
         return locale;
     }
 

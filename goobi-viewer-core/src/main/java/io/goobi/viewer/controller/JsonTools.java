@@ -183,7 +183,12 @@ public final class JsonTools {
         }
     }
 
-    public static Object getAsObjectForJson(Object value) {
+    /**
+     * 
+     * @param value
+     * @return {@link Object}
+     */
+    public static Object getAsObjectForJson(final Object value) {
         if (value == null) {
             return null;
         }
@@ -192,9 +197,10 @@ public final class JsonTools {
         } else if (value instanceof IMetadataValue metadataValue && metadataValue.getNumberOfUniqueTranslations() == 1) {
             return metadataValue.getValue().map(v -> escapeHtml(v)).orElse("");
         } else {
+            Object val = value;
             try {
-                if (value instanceof String) {
-                    value = escapeHtml((String) value);
+                if (val instanceof String) {
+                    val = escapeHtml((String) val);
                 }
                 String s = getAsJson(value);
                 if (StringUtils.isBlank(s)) {
@@ -211,7 +217,7 @@ public final class JsonTools {
                     return s;
                 }
             } catch (JsonProcessingException e) {
-                return value.toString();
+                return val.toString();
             }
         }
     }
@@ -392,7 +398,7 @@ public final class JsonTools {
             }
         }
 
-        // logger.trace("jsonObject of pi " + pi + " : " +jsonObj); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("jsonObject of pi " + pi + " : " +jsonObj); //NOSONAR Debug
         return jsonObj;
     }
 

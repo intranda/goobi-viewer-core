@@ -746,7 +746,7 @@ public class CmsBean implements Serializable {
      * @param selectedMediaItem a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      */
     public void setSelectedMediaItem(CMSMediaItem selectedMediaItem) {
-        // logger.trace("Set media item to {}", selectedMediaItem.getFileName()); //NOSONAR Logging sometimes needed for debugging
+        // logger.trace("Set media item to {}", selectedMediaItem.getFileName()); //NOSONAR Debug
         this.selectedMediaItem = selectedMediaItem;
     }
 

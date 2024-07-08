@@ -524,7 +524,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         for (String priv : Arrays.asList(PRIVS_RECORD)) {
             if (privileges.contains(priv)) {
                 ret.add(priv);
-                // logger.trace("has priv: {}", priv); //NOSONAR Logging sometimes needed for debugging
+                // logger.trace("has priv: {}", priv); //NOSONAR Debug
             }
         }
 

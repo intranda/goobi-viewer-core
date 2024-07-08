@@ -411,7 +411,7 @@ public class ProcessDataResolver {
      */
     public String loadFulltext(String altoFilePath, String fulltextFilePath, boolean mergeLineBreakWords, HttpServletRequest request)
             throws IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        // logger.trace("loadFulltext: {}/{}", altoFilePath, fulltextFilePath); //NOSONAR Sometimes needed for debugging
+        // logger.trace("loadFulltext: {}/{}", altoFilePath, fulltextFilePath); //NOSONAR Debug
         TextResourceBuilder builder = new TextResourceBuilder();
         if (fulltextFilePath != null) {
             // Plain full-text file
@@ -472,7 +472,7 @@ public class ProcessDataResolver {
         if (altoFilePath == null) {
             return null;
         }
-        // logger.trace("loadAlto: {}", altoFilePath); //NOSONAR Sometimes needed for debugging
+        // logger.trace("loadAlto: {}", altoFilePath); //NOSONAR Debug
 
         String filename = FileTools.getFilenameFromPathString(altoFilePath);
         String pi = FileTools.getBottomFolderFromPathString(altoFilePath);
