@@ -312,7 +312,7 @@ public class SolrEADParser extends ArchiveParser {
     /**
      * 
      * @param iddoc Parent IDDOC
-     * @return Map<String, List<SolrDocument>>
+     * @return Map&lt;String, List&lt;SolrDocument&gt;&gt;
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
