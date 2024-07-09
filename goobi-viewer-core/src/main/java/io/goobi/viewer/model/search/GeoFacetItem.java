@@ -28,9 +28,9 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONException;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.SearchBean;
@@ -44,7 +44,7 @@ import io.goobi.viewer.model.search.FacetItem.FacetType;
 public class GeoFacetItem implements IFacetItem {
 
     private static final Logger logger = LogManager.getLogger(GeoFacetItem.class);
-    public static final GeoCoordinateFeature NO_AREA = new GeoCoordinateFeature(new double[0][2], "", "");
+    public static final GeoCoordinateFeature NO_AREA = new GeoCoordinateFeature(new double[0][2], "", "", 0);
 
     private GeoCoordinateFeature feature = null;
     private String solrField;
@@ -60,7 +60,8 @@ public class GeoFacetItem implements IFacetItem {
         } else if (!orig.feature.hasVertices()) {
             this.feature = NO_AREA;
         } else {
-            this.feature = new GeoCoordinateFeature(orig.getFeature(), orig.getSearchPredicate(), orig.getSearchAreaShape());
+            this.feature =
+                    new GeoCoordinateFeature(orig.getFeature(), orig.getSearchPredicate(), orig.getSearchAreaShape(), orig.getSearchAreaDistError());
         }
     }
 
@@ -90,6 +91,13 @@ public class GeoFacetItem implements IFacetItem {
         return "";
     }
 
+    public double getSearchAreaDistError() {
+        if (this.feature != null) {
+            return this.feature.getDistError();
+        }
+        return 0;
+    }
+
     /**
      * Sets {@link io.goobi.viewer.model.search.GeoCoordinateFeature} and sets the matching search string to the WKT_COORDS facet if available.
      *
@@ -98,7 +106,7 @@ public class GeoFacetItem implements IFacetItem {
     public void setFeature(String feature) {
         try {
             if (StringUtils.isNotBlank(feature)) {
-                this.feature = new GeoCoordinateFeature(feature, getDefaultSearchPredicate(), GeoCoordinateFeature.SHAPE_POLYGON);
+                this.feature = new GeoCoordinateFeature(feature, getDefaultSearchPredicate(), GeoCoordinateFeature.SHAPE_POLYGON, 0);
             } else {
                 this.feature = NO_AREA;
             }
@@ -160,7 +168,7 @@ public class GeoFacetItem implements IFacetItem {
         if (vertices == null || vertices.length == 0) {
             this.feature = NO_AREA;
         } else {
-            this.feature = new GeoCoordinateFeature(vertices, getDefaultSearchPredicate(), GeoCoordinateFeature.SHAPE_POLYGON);
+            this.feature = new GeoCoordinateFeature(vertices, getDefaultSearchPredicate(), GeoCoordinateFeature.SHAPE_POLYGON, 0);
         }
     }
 
@@ -229,7 +237,8 @@ public class GeoFacetItem implements IFacetItem {
     public void setValue(String value) {
         String searchPredicate = GeoCoordinateFeature.getPredicate(value);
         String searchShape = GeoCoordinateFeature.getShape(value);
-        this.feature = new GeoCoordinateFeature(GeoCoordinateFeature.getGeoSearchPoints(value), searchPredicate, searchShape);
+        double searchDistError = GeoCoordinateFeature.getDistError(value);
+        this.feature = new GeoCoordinateFeature(GeoCoordinateFeature.getGeoSearchPoints(value), searchPredicate, searchShape, searchDistError);
     }
 
     private String getDefaultSearchPredicate() {

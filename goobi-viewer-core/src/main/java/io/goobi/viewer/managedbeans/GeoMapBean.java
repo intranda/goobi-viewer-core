@@ -33,7 +33,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.omnifaces.util.Faces;
@@ -85,14 +84,18 @@ public class GeoMapBean implements Serializable, IPolyglott {
     private QuartzBean quartzBean;
 
     /**
-     * <p>Constructor for GeoMapBean.</p>
+     * <p>
+     * Constructor for GeoMapBean.
+     * </p>
      */
     public GeoMapBean() {
         this.selectedLanguage = BeanUtils.getNavigationHelper().getLocale();
     }
 
     /**
-     * <p>Getter for the field <code>currentMap</code>.</p>
+     * <p>
+     * Getter for the field <code>currentMap</code>.
+     * </p>
      *
      * @return the currentMap
      */
@@ -130,7 +133,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>getCurrentMapId.</p>
+     * <p>
+     * getCurrentMapId.
+     * </p>
      *
      * @return ID of the currently loaded map
      */
@@ -194,7 +199,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>deleteMap.</p>
+     * <p>
+     * deleteMap.
+     * </p>
      *
      * @param map a {@link io.goobi.viewer.model.maps.GeoMap} object
      * @throws io.goobi.viewer.exceptions.DAOException
@@ -206,7 +213,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>getEditMapUrl.</p>
+     * <p>
+     * getEditMapUrl.
+     * </p>
      *
      * @param map a {@link io.goobi.viewer.model.maps.GeoMap} object
      * @return Map edit URL
@@ -241,7 +250,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>Getter for the field <code>selectedLanguage</code>.</p>
+     * <p>
+     * Getter for the field <code>selectedLanguage</code>.
+     * </p>
      *
      * @return the selectedLanguage
      */
@@ -250,7 +261,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>Setter for the field <code>selectedLanguage</code>.</p>
+     * <p>
+     * Setter for the field <code>selectedLanguage</code>.
+     * </p>
      *
      * @param selectedLanguage the selectedLanguage to set
      */
@@ -272,7 +285,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>getPossibleMapTypes.</p>
+     * <p>
+     * getPossibleMapTypes.
+     * </p>
      *
      * @return a {@link java.util.Collection} object
      */
@@ -281,7 +296,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>getPossibleMarkers.</p>
+     * <p>
+     * getPossibleMarkers.
+     * </p>
      *
      * @return a {@link java.util.Collection} object
      */
@@ -290,7 +307,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>hasCurrentFeature.</p>
+     * <p>
+     * hasCurrentFeature.
+     * </p>
      *
      * @return a boolean
      */
@@ -299,7 +318,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>isInUse.</p>
+     * <p>
+     * isInUse.
+     * </p>
      *
      * @param map a {@link io.goobi.viewer.model.maps.GeoMap} object
      * @return a boolean
@@ -310,7 +331,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>getEmbeddingCmsPages.</p>
+     * <p>
+     * getEmbeddingCmsPages.
+     * </p>
      *
      * @param map a {@link io.goobi.viewer.model.maps.GeoMap} object
      * @return a {@link java.util.List} object
@@ -321,7 +344,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>isHasMaps.</p>
+     * <p>
+     * isHasMaps.
+     * </p>
      *
      * @return a boolean
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -331,28 +356,32 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>getCoordinateSearchQueryTemplate.</p>
+     * <p>
+     * getCoordinateSearchQueryTemplate.
+     * </p>
      *
      * @param featureSet a {@link io.goobi.viewer.model.maps.SolrFeatureSet} object
      * @return String
      */
     public String getCoordinateSearchQueryTemplate(SolrFeatureSet featureSet) {
         String locationQuery = "WKT_COORDS:\"Intersects(POINT({lng} {lat})) distErrPct=0\"";
-        String filterQuery = featureSet != null ? featureSet.getSolrQuery() : "";
-        String query = locationQuery;
-        if (StringUtils.isNotBlank(filterQuery)) {
-            query = "(" + locationQuery + ") AND (" + filterQuery + ")";
-        }
+        String filterQuery = featureSet != null ? featureSet.getSolrQuery() : "-";
+        //        String query = locationQuery;
+        //        if (StringUtils.isNotBlank(filterQuery)) {
+        //            query = "(" + locationQuery + ") AND (" + filterQuery + ")";
+        //        }
         URL mappedUrl = PrettyContext.getCurrentInstance()
                 .getConfig()
                 .getMappingById("newSearch5")
                 .getPatternParser()
-                .getMappedURL("-", query, "1", "-", "-");
+                .getMappedURL("-", filterQuery, "1", "-", locationQuery);
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
 
     /**
-     * <p>getHeatmapUrl.</p>
+     * <p>
+     * getHeatmapUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -365,7 +394,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>getFeatureUrl.</p>
+     * <p>
+     * getFeatureUrl.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -378,7 +409,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>addFeatureSet.</p>
+     * <p>
+     * addFeatureSet.
+     * </p>
      *
      * @param map a {@link io.goobi.viewer.model.maps.GeoMap} object
      * @param type a {@link java.lang.String} object
@@ -401,7 +434,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>removeFeatureSet.</p>
+     * <p>
+     * removeFeatureSet.
+     * </p>
      *
      * @param map a {@link io.goobi.viewer.model.maps.GeoMap} object
      * @param set a {@link io.goobi.viewer.model.maps.FeatureSet} object
@@ -413,7 +448,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>setCurrentGeoMapType.</p>
+     * <p>
+     * setCurrentGeoMapType.
+     * </p>
      *
      * @param type a {@link io.goobi.viewer.model.maps.GeoMap.GeoMapType} object
      */
@@ -436,7 +473,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>Getter for the field <code>activeFeatureSet</code>.</p>
+     * <p>
+     * Getter for the field <code>activeFeatureSet</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.maps.FeatureSet} object
      */
@@ -445,7 +484,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>Setter for the field <code>activeFeatureSet</code>.</p>
+     * <p>
+     * Setter for the field <code>activeFeatureSet</code>.
+     * </p>
      *
      * @param activeFeatureSet a {@link io.goobi.viewer.model.maps.ManualFeatureSet} object
      */
@@ -454,7 +495,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>getActiveFeatureSetAsString.</p>
+     * <p>
+     * getActiveFeatureSetAsString.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -468,7 +511,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>setActiveFeatureSetAsString.</p>
+     * <p>
+     * setActiveFeatureSetAsString.
+     * </p>
      *
      * @param features a {@link java.lang.String} object
      */
@@ -479,7 +524,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>Setter for the field <code>activeFeatureSet</code>.</p>
+     * <p>
+     * Setter for the field <code>activeFeatureSet</code>.
+     * </p>
      */
     public void setActiveFeatureSet() {
         Integer index = Faces.getRequestParameter("index", Integer.class);
@@ -494,7 +541,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>isActiveFeatureSet.</p>
+     * <p>
+     * isActiveFeatureSet.
+     * </p>
      *
      * @param featureSet a {@link io.goobi.viewer.model.maps.FeatureSet} object
      * @return a boolean
@@ -504,7 +553,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     }
 
     /**
-     * <p>getFromCache.</p>
+     * <p>
+     * getFromCache.
+     * </p>
      *
      * @param geomap a {@link io.goobi.viewer.model.maps.GeoMap} object
      * @return a {@link io.goobi.viewer.model.maps.GeoMap} object
