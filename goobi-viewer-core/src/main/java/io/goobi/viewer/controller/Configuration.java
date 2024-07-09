@@ -6151,4 +6151,14 @@ public class Configuration extends AbstractConfiguration {
 
     }
 
+    public String getMediaTypeRedirectUrl(String mimeType) {
+        String defaultMimeType = "default";
+        return getLocalConfigurationsAt("viewer.mediaTypes.type").stream()
+                .filter(conf -> conf.getString("[@mimeType]", defaultMimeType).equals(mimeType))
+                .map(conf -> conf.getString("redirectHandling", ""))
+                .findFirst()
+                .orElse("");
+
+    }
+
 }
