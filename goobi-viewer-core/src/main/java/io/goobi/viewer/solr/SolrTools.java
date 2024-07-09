@@ -802,7 +802,7 @@ public final class SolrTools {
                     // Skip inverted values
                     if (!StringTools.checkValueEmptyOrInverted(count.getName())) {
                         ret.add(count.getName());
-                        // logger.trace(count.getName()); //NOSONAR Logging sometimes needed for debugging
+                        // logger.trace(count.getName()); //NOSONAR Debug
                     }
                 }
                 return ret;

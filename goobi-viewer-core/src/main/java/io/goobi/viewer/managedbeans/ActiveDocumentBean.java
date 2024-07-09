@@ -544,7 +544,7 @@ public class ActiveDocumentBean implements Serializable {
                         searchBean.increaseCurrentHitIndex();
                     } else if (searchBean.getHitIndexOperand() != 0) {
                         // Reset hit index operand (should only be necessary if the URL was called twice, but the current hit has not changed
-                        // logger.trace("Hit index modifier operand is {}, resetting...", searchBean.getHitIndexOperand());
+                        // logger.trace("Hit index modifier operand is {}, resetting...", searchBean.getHitIndexOperand()); //NOSONAR Debug
                         searchBean.setHitIndexOperand(0);
                     }
                 }
@@ -1075,7 +1075,7 @@ public class ActiveDocumentBean implements Serializable {
             if (StringUtils.isBlank(localPageType)) {
                 localPageType = PageType.viewObject.name();
             }
-            // logger.trace("current view: {}", localPageType);
+            // logger.trace("current view: {}", localPageType); //NOSONAR Debug
         }
 
         int[] pages = StringTools.getIntegerRange(pageOrderRange);
@@ -1092,7 +1092,7 @@ public class ActiveDocumentBean implements Serializable {
         }
 
         String range = page + (page2 != Integer.MAX_VALUE ? "-" + page2 : "");
-        // logger.trace("final range: {}", range); //NOSONAR Sometimes needed for debugging
+        // logger.trace("final range: {}", range); //NOSONAR Debug
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                 .append('/')
                 .append(PageType.getByName(localPageType).getName())
@@ -1212,7 +1212,7 @@ public class ActiveDocumentBean implements Serializable {
      * @should return correct range in double page mode if currently showing one page
      */
     public String getPageUrlRelativeToCurrentPage(int step) throws IndexUnreachableException {
-        // logger.trace("getPageUrl: {}", step); //NOSONAR Sometimes needed for debugging
+        // logger.trace("getPageUrl: {}", step); //NOSONAR Debug
         if (viewManager == null) {
             return getPageUrl(imageToShow);
         }
@@ -1226,7 +1226,7 @@ public class ActiveDocumentBean implements Serializable {
 
         // Current image contains two pages
         if (viewManager.getCurrentPage().isDoubleImage()) {
-            // logger.trace("{} is double page", viewManager.getCurrentPage().getOrder()); //NOSONAR Sometimes needed for debugging
+            // logger.trace("{} is double page", viewManager.getCurrentPage().getOrder()); //NOSONAR Debug
             if (step < 0) {
                 number = viewManager.getCurrentImageOrder() + 2 * step;
             } else {
@@ -1243,11 +1243,11 @@ public class ActiveDocumentBean implements Serializable {
 
         // Only go back one step unit at first
         if (currentLeftPage.isPresent()) {
-            // logger.trace("{} is left page", currentLeftPage.get().getOrder()); //NOSONAR Sometimes needed for debugging
+            // logger.trace("{} is left page", currentLeftPage.get().getOrder()); //NOSONAR Debug
             number = currentLeftPage.get().getOrder() + step;
         } else if (currentRightPage.isPresent()) {
             // If only the right page is present, it's probably the first page - do not add step at this point
-            // logger.trace("{} is right page", currentRightPage.get().getOrder()); //NOSONAR Sometimes needed for debugging
+            // logger.trace("{} is right page", currentRightPage.get().getOrder()); //NOSONAR Debug
             number = currentRightPage.get().getOrder();
         } else {
             number = viewManager.getCurrentImageOrder() + step;
@@ -1266,8 +1266,8 @@ public class ActiveDocumentBean implements Serializable {
             return getPageUrl(String.valueOf(number) + "-" + number);
         }
 
-        // logger.trace("step: {}", step); //NOSONAR Sometimes needed for debugging
-        // logger.trace("Number: {}", number); //NOSONAR Sometimes needed for debugging
+        // logger.trace("step: {}", step); //NOSONAR Debug
+        // logger.trace("Number: {}", number); //NOSONAR Debug
 
         return getPageUrl(number + "-" + (number + 1));
     }
@@ -1347,7 +1347,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public String getPreviousDocstructUrl() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
-        // logger.trace("getPreviousDocstructUrl"); //NOSONAR Sometimes needed for debugging
+        // logger.trace("getPreviousDocstructUrl"); //NOSONAR Debug
         if (viewManager == null) {
             return null;
         }
@@ -1405,7 +1405,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException
      */
     public String getNextDocstructUrl() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
-        // logger.trace("getNextDocstructUrl"); //NOSONAR Sometimes needed for debugging
+        // logger.trace("getNextDocstructUrl"); //NOSONAR Debug
         if (viewManager == null) {
             return "";
         }
@@ -2296,7 +2296,7 @@ public class ActiveDocumentBean implements Serializable {
         }
         if (currentPageType != null && StringUtils.isNotEmpty(currentPageType.getName())) {
             logger.trace("page type: {}", currentPageType);
-            // logger.trace("current url: {}", navigationHelper.getCurrentUrl());
+            // logger.trace("current url: {}", navigationHelper.getCurrentUrl()); //NOSONAR Debug
 
             int page = viewManager.getCurrentImageOrder();
             String urlRoot = navigationHelper.getApplicationUrl() + currentPageType.getName() + "/" + viewManager.getPi() + "/";

@@ -403,10 +403,10 @@ public enum PageType {
         }
 
         if (preferredPageType != null) {
-            // logger.trace("Found preferred page type: {}", preferredPageType.getName());
+            // logger.trace("Found preferred page type: {}", preferredPageType.getName()); //NOSONAR Debug
             return preferredPageType;
         } else if (defaultPageType != null) {
-            // logger.trace("Found default page type: {}", defaultPageType.getName());
+            // logger.trace("Found default page type: {}", defaultPageType.getName()); //NOSONAR Debug
             return defaultPageType;
         }
 
@@ -433,7 +433,7 @@ public enum PageType {
     public static PageType determinePageType(String docStructType, String mimeType, Boolean anchorOrGroup, Boolean hasImages,
             boolean pageResolverUrl) {
         // Determine preferred target for the docstruct
-        //         logger.trace("determinePageType: docstrct: {} / mime type: {} / anchor: {} / images: {} / resolver: {}", docStructType, mimeType,
+        //         logger.trace("determinePageType: docstrct: {} / mime type: {} / anchor: {} / images: {} / resolver: {}", docStructType, mimeType, //NOSONAR Debug
         //                anchorOrGroup, hasImages, pageResolverUrl);
         PageType configuredPageType = PageType.getPageTypeForDocStructType(docStructType);
         if (configuredPageType != null && !pageResolverUrl) {

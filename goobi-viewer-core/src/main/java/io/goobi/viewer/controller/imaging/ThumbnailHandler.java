@@ -794,7 +794,7 @@ public class ThumbnailHandler {
         if (doc == null) {
             return null;
         }
-        // logger.trace("getImagePath: {}", doc.getPi()); //NOSONAR Sometimes needed for debugging
+        // logger.trace("getImagePath: {}", doc.getPi()); //NOSONAR Debug
 
         String thumbnailUrl = null;
         String anchorThumbnailMode = DataManager.getInstance().getConfiguration().getAnchorThumbnailMode();

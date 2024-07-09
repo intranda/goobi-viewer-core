@@ -421,7 +421,7 @@ public class BrowseBean implements Serializable {
                     || DataManager.getInstance().getConfiguration().getSearchResultGroups().isEmpty())
                             ? Collections.singletonList(SearchResultGroup.createDefaultGroup())
                             : DataManager.getInstance().getConfiguration().getSearchResultGroups());
-            // logger.trace("useFilterQuery: {}", useFilterQuery); //NOSONAR Sometimes needed for debugging
+            // logger.trace("useFilterQuery: {}", useFilterQuery); //NOSONAR Debug
 
             // Populate the list of available starting characters with ones that actually exist in the complete terms list
             String browsingMenuFieldForCurrentLanguage = getBrowsingMenuFieldForLanguage(locale.getLanguage());
@@ -881,7 +881,7 @@ public class BrowseBean implements Serializable {
             answer++;
         }
 
-        //        logger.trace(hitsCount + "/" + hitsPerPageLocal + "=" + answer);
+        //        logger.trace(hitsCount + "/" + hitsPerPageLocal + "=" + answer); //NOSONAR Debug
         return answer;
     }
 

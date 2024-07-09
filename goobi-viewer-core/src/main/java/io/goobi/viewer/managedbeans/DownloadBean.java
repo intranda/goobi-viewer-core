@@ -118,7 +118,9 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>getQueuePosition.</p>
+     * <p>
+     * getQueuePosition.
+     * </p>
      *
      * @return a int
      */
@@ -132,7 +134,9 @@ public class DownloadBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>message</code>.</p>
+     * <p>
+     * Getter for the field <code>message</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.controller.mq.ViewerMessage} object
      */
@@ -150,52 +154,50 @@ public class DownloadBean implements Serializable {
      */
     public void downloadFileAction() throws IOException, DownloadException {
         PDFDownloadJob downloadJob =
-                new PDFDownloadJob(this.message.getProperties().get("pi"), this.message.getProperties().get("logId"), LocalDateTime.now(), 0l);
-        if (downloadJob != null) {
-            Path file = downloadJob.getFile();
-            if (file == null) {
-                logger.error("File not found for job ID '{}'.", downloadJob.getIdentifier());
-                throw new DownloadException("downloadErrorNotFound");
-            }
-            String fileName;
-            switch (downloadJob.getType()) {
-                case PDFDownloadJob.LOCAL_TYPE:
-                    fileName = downloadJob.getPi() + (StringUtils.isNotEmpty(downloadJob.getLogId()) ? ("_" + downloadJob.getLogId()) : "") + ".pdf";
-                    break;
-                case EPUBDownloadJob.LOCAL_TYPE:
-                    fileName = downloadJob.getPi() + (StringUtils.isNotEmpty(downloadJob.getLogId()) ? ("_" + downloadJob.getLogId()) : "") + ".epub";
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unsupported job type: " + downloadJob.getType());
-            }
-
-            FacesContext fc = FacesContext.getCurrentInstance();
-            ExternalContext ec = fc.getExternalContext();
-            // Some JSF component library or some Filter might have set some headers in the buffer beforehand.
-            // We want to get rid of them, else it may collide.
-            ec.responseReset();
-            ec.setResponseContentType(downloadJob.getMimeType());
-            ec.setResponseHeader("Content-Length", String.valueOf(Files.size(file)));
-            ec.setResponseHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
-            OutputStream os = ec.getResponseOutputStream();
-            try (FileInputStream fis = new FileInputStream(file.toFile())) {
-                byte[] buffer = new byte[1024];
-                int bytesRead = 0;
-                while ((bytesRead = fis.read(buffer)) != -1) {
-                    os.write(buffer, 0, bytesRead);
-                }
-            } catch (IOException e) {
-                if (GetAction.isClientAbort(e)) {
-                    logger.trace("Download of '{}' aborted: {}", fileName, e.getMessage());
-                    return;
-                }
-                throw e;
-            }
-            // os.flush();
-            // Important! Otherwise JSF will attempt to render the response which obviously
-            // will fail since it's already written with a file and closed.
-            fc.responseComplete();
+                new PDFDownloadJob(this.message.getProperties().get("pi"), this.message.getProperties().get("logId"), LocalDateTime.now(), 0L);
+        Path file = downloadJob.getFile();
+        if (file == null) {
+            logger.error("File not found for job ID '{}'.", downloadJob.getIdentifier());
+            throw new DownloadException("downloadErrorNotFound");
         }
+        String fileName;
+        switch (downloadJob.getType()) {
+            case PDFDownloadJob.LOCAL_TYPE:
+                fileName = downloadJob.getPi() + (StringUtils.isNotEmpty(downloadJob.getLogId()) ? ("_" + downloadJob.getLogId()) : "") + ".pdf";
+                break;
+            case EPUBDownloadJob.LOCAL_TYPE:
+                fileName = downloadJob.getPi() + (StringUtils.isNotEmpty(downloadJob.getLogId()) ? ("_" + downloadJob.getLogId()) : "") + ".epub";
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported job type: " + downloadJob.getType());
+        }
+
+        FacesContext fc = FacesContext.getCurrentInstance();
+        ExternalContext ec = fc.getExternalContext();
+        // Some JSF component library or some Filter might have set some headers in the buffer beforehand.
+        // We want to get rid of them, else it may collide.
+        ec.responseReset();
+        ec.setResponseContentType(downloadJob.getMimeType());
+        ec.setResponseHeader("Content-Length", String.valueOf(Files.size(file)));
+        ec.setResponseHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
+        OutputStream os = ec.getResponseOutputStream();
+        try (FileInputStream fis = new FileInputStream(file.toFile())) {
+            byte[] buffer = new byte[1024];
+            int bytesRead = 0;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+        } catch (IOException e) {
+            if (GetAction.isClientAbort(e)) {
+                logger.trace("Download of '{}' aborted: {}", fileName, e.getMessage());
+                return;
+            }
+            throw e;
+        }
+        // os.flush();
+        // Important! Otherwise JSF will attempt to render the response which obviously
+        // will fail since it's already written with a file and closed.
+        fc.responseComplete();
     }
 
     /**

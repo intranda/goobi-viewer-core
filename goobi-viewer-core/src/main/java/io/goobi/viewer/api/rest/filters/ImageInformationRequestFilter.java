@@ -77,7 +77,7 @@ public class ImageInformationRequestFilter implements ContainerRequestFilter {
         String imageName = (String) servletRequest.getAttribute(FilterTools.ATTRIBUTE_FILENAME);
 
         imageName = StringTools.decodeUrl(imageName);
-        // logger.trace("image: {}", imageName);
+        // logger.trace("image: {}", imageName); //NOSONAR Debug
         if (forwardToCanonicalUrl(pi, imageName, servletRequest, servletResponse)) {
             //if page order is given for image filename, forward to url with correct filename
             return;

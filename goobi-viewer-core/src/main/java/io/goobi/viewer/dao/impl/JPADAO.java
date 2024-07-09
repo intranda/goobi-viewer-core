@@ -5493,7 +5493,7 @@ public class JPADAO implements IDAO {
             if (displayedNotesOnly) {
                 query += " AND a.displayNote = :display";
             }
-            // logger.trace(query);
+            // logger.trace(query); //NOSONAR Debug
             Query q = em.createQuery(query);
             q.setParameter("pi", pi);
             if (displayedNotesOnly) {
@@ -5516,7 +5516,7 @@ public class JPADAO implements IDAO {
             if (displayedNotesOnly) {
                 query += " WHERE a.displayNote = :display";
             }
-            // logger.trace(query);
+            // logger.trace(query); //NOSONAR Debug
             Query q = em.createQuery(query);
             if (displayedNotesOnly) {
                 q.setParameter("display", true);

@@ -137,7 +137,7 @@ public class SitelinkBean implements Serializable {
             }
         }
 
-        // logger.trace("done");
+        // logger.trace("done"); //NOSONAR Debug
         return "";
     }
 

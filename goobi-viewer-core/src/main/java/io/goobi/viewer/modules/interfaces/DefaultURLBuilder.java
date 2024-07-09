@@ -107,7 +107,7 @@ public class DefaultURLBuilder implements IURLBuilder {
             }
         }
 
-        // logger.trace("generateUrl: {}", url);
+        // logger.trace("generateUrl: {}", url); //NOSONAR Debug
         return url;
 
     }

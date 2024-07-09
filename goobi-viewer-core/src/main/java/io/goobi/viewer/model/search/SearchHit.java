@@ -363,7 +363,7 @@ public class SearchHit implements Comparable<SearchHit> {
                 fulltext = TEITools.getTeiFulltext(fulltext);
                 fulltext = Jsoup.parse(fulltext).text();
             }
-            // logger.trace(fulltext); //NOSONAR Sometimes used for debugging
+            // logger.trace(fulltext); //NOSONAR Debug
             List<String> fulltextFragments = fulltext == null ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT),
                     fulltext, DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false, proximitySearchDistance);
 
@@ -379,7 +379,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     count++;
                 }
                 children.add(hit);
-                // logger.trace("Added {} fragments", count); //NOSONAR Sometimes used for debugging
+                // logger.trace("Added {} fragments", count); //NOSONAR Debug
                 int oldCount = hit.getHitTypeCounts().get(HitType.PAGE) != null ? hit.getHitTypeCounts().get(HitType.PAGE) : 0;
                 hitTypeCounts.put(HitType.PAGE, oldCount + count);
                 return count;
@@ -522,7 +522,7 @@ public class SearchHit implements Comparable<SearchHit> {
                 children.add(ownerHit);
                 ownerHits.put(ownerIddoc, ownerHit);
                 ownerDocs.put(ownerIddoc, ownerDoc);
-                logger.trace("owner doc found: {}", ownerDoc.getFieldValue("LOGID")); //NOSONAR Sometimes used for debugging
+                logger.trace("owner doc found: {}", ownerDoc.getFieldValue("LOGID")); //NOSONAR Debug
             }
         }
         if (ownerHit != null) {
@@ -533,8 +533,8 @@ public class SearchHit implements Comparable<SearchHit> {
                 ownerHit = newOwnerHit;
                 ownerHits.put(ownerIddoc, newOwnerHit);
             }
-            // logger.trace("owner doc of {}: {}", childDoc.getFieldValue(SolrConstants.IDDOC),
-            // ownerHit.getBrowseElement().getIddoc()); //NOSONAR Sometimes used for debugging
+            // logger.trace("owner doc of {}: {}", childDoc.getFieldValue(SolrConstants.IDDOC), //NOSONAR Debug
+            // ownerHit.getBrowseElement().getIddoc()); //NOSONAR Debug
 
             SearchHit childHit =
                     factory.createSearchHit(childDoc, ownerDocs.get(ownerIddoc), fulltext,
@@ -591,11 +591,11 @@ public class SearchHit implements Comparable<SearchHit> {
                             StringPair alto = DataFileTools.loadAlto(altoFilename);
                             fulltext = ALTOTools.getFulltext(alto.getOne(), alto.getTwo(), true);
                             List<TagCount> tags = ALTOTools.getNERTags(alto.getOne(), alto.getTwo(), null);
-                            // logger.trace("found {} entity tags", tags.size());
+                            // logger.trace("found {} entity tags", tags.size()); //NOSONAR Debug
                             String highlightWord = null;
                             for (TagCount tag : tags) {
                                 if (tag.getIdentifier() != null) {
-                                    //logger.trace("tag identifier: {}", tag.getIdentifier());
+                                    //logger.trace("tag identifier: {}", tag.getIdentifier()); //NOSONAR Debug
                                 }
                                 if (authorityIdentifier.equals(tag.getIdentifier())) {
                                     highlightWord = tag.getValue();

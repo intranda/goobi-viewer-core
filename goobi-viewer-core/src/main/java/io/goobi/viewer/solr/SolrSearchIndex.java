@@ -302,14 +302,14 @@ public class SolrSearchIndex {
                         sortField.setOne(SolrTools.generateRandomSortField());
                     }
                     solrQuery.addSort(sortField.getOne(), "desc".equals(sortField.getTwo()) ? ORDER.desc : ORDER.asc);
-                    // logger.trace("sort field: {} {}", sortField.getOne(), sortField.getTwo()); //NOSONAR Sometimes needed for debugging
+                    // logger.trace("sort field: {} {}", sortField.getOne(), sortField.getTwo()); //NOSONAR Debug
                 }
             }
         }
         if (facetFields != null && !facetFields.isEmpty()) {
             for (String facetField : facetFields) {
                 if (StringUtils.isNotEmpty(facetField)) {
-                    // logger.trace("facet field: {}", facetField); //NOSONAR Sometimes needed for debugging
+                    // logger.trace("facet field: {}", facetField); //NOSONAR Debug
                     solrQuery.addFacetField(facetField);
                     // TODO only do this once, perhaps?
                     if (StringUtils.isNotEmpty(facetSort)) {
@@ -329,24 +329,24 @@ public class SolrSearchIndex {
         if (filterQueries != null && !filterQueries.isEmpty()) {
             for (String fq : filterQueries) {
                 solrQuery.addFilterQuery(SolrTools.cleanUpQuery(fq));
-                // logger.trace("adding filter query: {}", fq)
+                // logger.trace("adding filter query: {}", fq) //NOSONAR Debug
             }
         }
         if (params != null && !params.isEmpty()) {
             for (Entry<String, String> entry : params.entrySet()) {
                 solrQuery.set(entry.getKey(), entry.getValue());
-                // logger.trace("&{}={}", key, params.get(key)); //NOSONAR Sometimes needed for debugging
+                // logger.trace("&{}={}", key, params.get(key)); //NOSONAR Debug
             }
         }
 
         try {
-            //             logger.trace("Solr query : {}", solrQuery.getQuery());
-            //             logger.debug("range: {} - {}", first, first + rows);
-            //             logger.debug("facetFields: {}", facetFields);
-            //             logger.debug("fieldList: {}", fieldList);
+            //             logger.trace("Solr query : {}", solrQuery.getQuery()); //NOSONAR Debug
+            //             logger.debug("range: {} - {}", first, first + rows); //NOSONAR Debug
+            //             logger.debug("facetFields: {}", facetFields); //NOSONAR Debug
+            //             logger.debug("fieldList: {}", fieldList); //NOSONAR Debug
             QueryResponse resp = client.query(solrQuery, queryMethod);
-            //             logger.debug("found: {}", resp.getResults().getNumFound());
-            //             logger.debug("fetched: {}", resp.getResults().size());
+            //             logger.debug("found: {}", resp.getResults().getNumFound()); //NOSONAR Debug
+            //             logger.debug("fetched: {}", resp.getResults().size()); //NOSONAR Debug
 
             return resp;
         } catch (SolrServerException e) {
@@ -391,7 +391,7 @@ public class SolrSearchIndex {
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, List<String> fieldList,
             List<String> filterQueries, Map<String, String> params) throws PresentationException, IndexUnreachableException {
-        // logger.trace("search: {}", query); //NOSONAR Sometimes needed for debugging
+        // logger.trace("search: {}", query); //NOSONAR Debug
         return search(query, first, rows, sortFields, facetFields, null, fieldList, filterQueries, params);
     }
 
@@ -412,7 +412,7 @@ public class SolrSearchIndex {
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, List<String> fieldList)
             throws PresentationException, IndexUnreachableException {
-        //        logger.trace("search: {}", query); //NOSONAR Sometimes needed for debugging
+        //        logger.trace("search: {}", query); //NOSONAR Debug
         return search(query, first, rows, sortFields, facetFields, fieldList, null, null);
     }
 
@@ -431,7 +431,7 @@ public class SolrSearchIndex {
      */
     public SolrDocumentList search(String query, int rows, List<StringPair> sortFields, List<String> fieldList)
             throws PresentationException, IndexUnreachableException {
-        //        logger.trace("search: {}", query); //NOSONAR Sometimes needed for debugging
+        //        logger.trace("search: {}", query); //NOSONAR Debug
         return search(query, 0, rows, sortFields, null, fieldList).getResults();
     }
 
@@ -445,7 +445,7 @@ public class SolrSearchIndex {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public SolrDocumentList search(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
-        //        logger.trace("search: {}", query); //NOSONAR Sometimes needed for debugging
+        //        logger.trace("search: {}", query); //NOSONAR Debug
         return search(query, 0, MAX_HITS, null, null, fieldList).getResults();
     }
 
@@ -458,7 +458,7 @@ public class SolrSearchIndex {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public SolrDocumentList search(String query) throws PresentationException, IndexUnreachableException {
-        //        logger.trace("search: {}", query); //NOSONAR Sometimes needed for debugging
+        //        logger.trace("search: {}", query); //NOSONAR Debug
         return search(query, 0, MAX_HITS, null, null, null).getResults();
     }
 
@@ -489,7 +489,7 @@ public class SolrSearchIndex {
      */
     public SolrDocument getFirstDoc(String query, List<String> fieldList, List<StringPair> sortFields)
             throws PresentationException, IndexUnreachableException {
-        // logger.trace("getFirstDoc: {}", query); //NOSONAR Sometimes needed for debugging
+        // logger.trace("getFirstDoc: {}", query); //NOSONAR Debug
         SolrDocumentList hits = search(SolrTools.cleanUpQuery(query), 0, 1, sortFields, null, fieldList).getResults();
         if (hits.getNumFound() > 0) {
             return hits.get(0);
@@ -509,7 +509,7 @@ public class SolrSearchIndex {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public SolrDocumentList getDocs(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
-        // logger.trace("getDocs: {}", query); //NOSONAR Sometimes needed for debugging
+        // logger.trace("getDocs: {}", query); //NOSONAR Debug
         SolrDocumentList hits = search(SolrTools.cleanUpQuery(query), fieldList);
         if (hits.getNumFound() > 0) {
             return hits;
@@ -554,7 +554,7 @@ public class SolrSearchIndex {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public SolrDocument getDocumentByPI(String pi) throws IndexUnreachableException, PresentationException {
-        // logger.trace("getDocumentByIddoc: {}", iddoc); //NOSONAR Sometimes needed for debugging
+        // logger.trace("getDocumentByIddoc: {}", iddoc); //NOSONAR Debug
         SolrDocument ret = null;
         SolrDocumentList hits =
                 search(new StringBuilder(SolrConstants.PI).append(':').append(SolrTools.cleanUpQuery(pi)).toString(), 0, 1, null, null, null)
@@ -569,7 +569,7 @@ public class SolrSearchIndex {
     public SolrDocument getDocumentByPIAndLogId(String pi, String divId) throws IndexUnreachableException, PresentationException {
         SolrDocument ret = null;
         if (StringUtils.isNoneBlank(pi, divId)) {
-            // logger.trace("getDocumentByIddoc: {}", iddoc); //NOSONAR Sometimes needed for debugging
+            // logger.trace("getDocumentByIddoc: {}", iddoc); //NOSONAR Debug
             String query = SolrConstants.PI_TOPSTRUCT + ":" + pi + SolrConstants.SOLR_QUERY_AND + SolrConstants.LOGID + ":" + divId;
             SolrDocumentList hits = search(query, 0, 1, null, null, null).getResults();
             if (hits != null && !hits.isEmpty()) {
@@ -685,7 +685,7 @@ public class SolrSearchIndex {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public long getIddocFromIdentifier(String identifier) throws PresentationException, IndexUnreachableException {
-        // logger.trace("getIddocFromIdentifier: {}", identifier); //NOSONAR Sometimes needed for debugging
+        // logger.trace("getIddocFromIdentifier: {}", identifier); //NOSONAR Debug
         SolrDocumentList docs = search(new StringBuilder(SolrConstants.PI).append(':').append(SolrTools.cleanUpQuery(identifier)).toString(), 1, null,
                 Collections.singletonList(SolrConstants.IDDOC));
         if (!docs.isEmpty()) {
@@ -871,7 +871,7 @@ public class SolrSearchIndex {
      * @throws IndexUnreachableException
      */
     private String findDataRepository(String pi) throws PresentationException, IndexUnreachableException {
-        // logger.trace("findDataRepository: {}", pi); //NOSONAR Sometimes needed for debugging
+        // logger.trace("findDataRepository: {}", pi); //NOSONAR Debug
         if (StringUtils.isEmpty(pi)) {
             throw new IllegalArgumentException("pi may not be null or empty");
         }
@@ -925,7 +925,7 @@ public class SolrSearchIndex {
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
             boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
-        // logger.trace("searchFacetsAndStatistics: {}", query);
+        // logger.trace("searchFacetsAndStatistics: {}", query); //NOSONAR Debug
         return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, null, getFieldStatistics);
     }
 
@@ -945,7 +945,7 @@ public class SolrSearchIndex {
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
             Map<String, String> params, boolean getFieldStatistics)
             throws PresentationException, IndexUnreachableException {
-        // logger.trace("searchFacetsAndStatistics: {}", query);
+        // logger.trace("searchFacetsAndStatistics: {}", query); //NOSONAR Debug
         return searchFacetsAndStatistics(query, filterQueries, facetFields, facetMinCount, null, params, getFieldStatistics);
     }
 
@@ -968,7 +968,7 @@ public class SolrSearchIndex {
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
             String facetPrefix, Map<String, String> params, boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
-        // logger.trace("searchFacetsAndStatistics: {}", query); //NOSONAR Sometimes needed for debugging
+        // logger.trace("searchFacetsAndStatistics: {}", query); //NOSONAR Debug
         SolrQuery solrQuery = new SolrQuery(SolrTools.cleanUpQuery(query));
         solrQuery.setStart(0);
         solrQuery.setRows(0);
@@ -996,7 +996,7 @@ public class SolrSearchIndex {
         if (params != null && !params.isEmpty()) {
             for (Entry<String, String> entry : params.entrySet()) {
                 solrQuery.set(entry.getKey(), entry.getValue());
-                // logger.trace("&{}={}", key, params.get(key)); //NOSONAR Sometimes needed for debugging
+                // logger.trace("&{}={}", key, params.get(key)); //NOSONAR Debug
             }
         }
 
@@ -1105,7 +1105,7 @@ public class SolrSearchIndex {
                 if (!added.contains(n)) {
                     list.add(n);
                     added.add(n);
-                    // logger.trace("added sort field: {}", n);
+                    // logger.trace("added sort field: {}", n); //NOSONAR Debug
                 }
             }
         }
@@ -1329,7 +1329,7 @@ public class SolrSearchIndex {
             }
             sbValueQuery.append(')');
 
-            // logger.trace("label query: {}{}", queryRoot, sbValueQuery.toString()); //NOSONAR Sometimes needed for debugging
+            // logger.trace("label query: {}{}", queryRoot, sbValueQuery.toString()); //NOSONAR Debug
 
             SolrDocumentList result = search(SolrTools.cleanUpQuery(queryRoot + sbValueQuery.toString()), Arrays.asList(fields));
             for (SolrDocument doc : result) {

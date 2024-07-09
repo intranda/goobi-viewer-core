@@ -123,7 +123,7 @@ public class ArchiveBean implements Serializable {
      * @return the archiveTree
      */
     public ArchiveTree getArchiveTree() {
-        // logger.trace("getArchiveTree");
+        // logger.trace("getArchiveTree"); //NOSONAR Debug
         return archiveTree;
     }
 

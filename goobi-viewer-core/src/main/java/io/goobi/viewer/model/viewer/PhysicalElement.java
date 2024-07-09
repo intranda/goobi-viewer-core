@@ -724,7 +724,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return the doubleImage
      */
     public boolean isDoubleImage() {
-        // logger.trace("isDoubleImage: {}", doubleImage);
+        // logger.trace("isDoubleImage: {}", doubleImage); //NOSONAR Debug
         return doubleImage;
     }
 

@@ -177,7 +177,7 @@ public class ArchiveTree implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<ArchiveEntry> getFlatView() {
-        logger.trace("getFlatView"); //NOSONAR Sometimes needed for debugging
+        logger.trace("getFlatView"); //NOSONAR Debug
         return getViewForGroup(DEFAULT_GROUP);
     }
 
@@ -286,7 +286,7 @@ public class ArchiveTree implements Serializable {
      * @return the selectedEntry
      */
     public ArchiveEntry getSelectedEntry() {
-        // logger.trace("getSelectedEntry"); //NOSONAR Sometimes needed for debugging
+        // logger.trace("getSelectedEntry"); //NOSONAR Debug
         return selectedEntry;
     }
 

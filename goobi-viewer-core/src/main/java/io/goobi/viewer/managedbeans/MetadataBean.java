@@ -105,7 +105,7 @@ public class MetadataBean {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String loadMetadata(int index, Locale locale) throws IndexUnreachableException, DAOException {
-        // logger.trace("loadMetadata({})", index);
+        // logger.trace("loadMetadata({})", index); //NOSONAR Debug
         if (activeDocumentBean == null) {
             return "viewMetadata";
         }
@@ -163,7 +163,7 @@ public class MetadataBean {
      * @return the metadataElementList
      */
     public List<MetadataElement> getMetadataElementList(int index) {
-        // logger.trace("getMetadataElementList({})", index); //NOSONAR Sometimes needed for debugging
+        // logger.trace("getMetadataElementList({})", index); //NOSONAR Debug
         Locale locale = BeanUtils.getLocale();
 
         if (metadataElementMap.get(index) == null || !Objects.equals(locale, this.currentMetadataLocale)) {

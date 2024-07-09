@@ -55,7 +55,7 @@ import io.goobi.viewer.model.toc.TOCElement;
  */
 public class TocWriter {
 
-    private static final Logger logger = LogManager.getLogger(TocWriter.class); //NOSONAR Sometimes used for debugging
+    private static final Logger logger = LogManager.getLogger(TocWriter.class); //NOSONAR Debug
 
     private static final int DEFAULT_LEVEL_INDENT = 20;
     private static final int TITLE_MARGIN = 30;

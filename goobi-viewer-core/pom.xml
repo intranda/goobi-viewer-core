@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>24.06-SNAPSHOT</version>
+	<version>24.07-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Goobi viewer - Core</name>
@@ -1067,6 +1067,15 @@
 						</tag>
 					</tags>
 				</configuration>
+				<executions>
+					<execution>
+						<id>check-javadoc</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				 </executions>
 			</plugin>
 			<!-- used for test coverage report in Jenkins -->
 			<plugin>

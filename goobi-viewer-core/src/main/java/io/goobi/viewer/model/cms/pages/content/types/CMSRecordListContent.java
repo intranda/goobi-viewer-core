@@ -60,7 +60,7 @@ import jakarta.persistence.Transient;
 @DiscriminatorValue("recordlist")
 public class CMSRecordListContent extends CMSContent implements PagedCMSContent {
 
-    private static final Logger logger = LogManager.getLogger(CMSRecordListContent.class); //NOSONAR Sometimes the logger is needed for debugging
+    private static final Logger logger = LogManager.getLogger(CMSRecordListContent.class); //NOSONAR Debug
 
     private static final String COMPONENT_NAME = "searchhitlist";
 
