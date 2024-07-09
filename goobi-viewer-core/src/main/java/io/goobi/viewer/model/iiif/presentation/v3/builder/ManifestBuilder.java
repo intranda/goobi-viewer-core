@@ -41,7 +41,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
@@ -125,8 +124,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * @throws ViewerConfigurationException
      */
     public IPresentationModelElement3 build(String pi, HttpServletRequest request)
-            throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException, DAOException,
-            ViewerConfigurationException {
+            throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException, DAOException {
 
         List<StructElement> documents = this.dataRetriever.getDocumentWithChildren(pi);
 
@@ -147,7 +145,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     public IPresentationModelElement build(String pi, Integer pageNo, HttpServletRequest servletRequest) throws PresentationException,
-            IndexUnreachableException, ViewerConfigurationException, ContentLibException, URISyntaxException, DAOException {
+            IndexUnreachableException, ContentLibException, URISyntaxException, DAOException {
         StructElement mainDocument = this.dataRetriever.getDocument(pi);
 
         AbstractPresentationModelElement3 manifest = generateManifest(mainDocument, Optional.ofNullable(pageNo));
@@ -206,12 +204,8 @@ public class ManifestBuilder extends AbstractBuilder {
     /**
      * @param childDocuments
      * @param manifest
-     * @throws URISyntaxException
-     * @throws ViewerConfigurationException
-     * @throws IndexUnreachableException
      */
-    private void addVolumes(List<StructElement> childDocuments, Collection3 manifest)
-            throws IndexUnreachableException, ViewerConfigurationException {
+    private void addVolumes(List<StructElement> childDocuments, Collection3 manifest) {
         for (StructElement volume : childDocuments) {
             try {
                 IPresentationModelElement child = generateManifest(volume, Optional.empty());
@@ -249,12 +243,9 @@ public class ManifestBuilder extends AbstractBuilder {
      *
      * @param ele a {@link io.goobi.viewer.model.viewer.StructElement} object.
      * @return a {@link de.intranda.api.iiif.presentation.IPresentationModelElement} object.
-     * @throws IndexUnreachableException
      * @throws PresentationException
-     * @throws ViewerConfigurationException
      */
-    private AbstractPresentationModelElement3 generateManifest(StructElement ele, Optional<Integer> pageNo)
-            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
+    private AbstractPresentationModelElement3 generateManifest(StructElement ele, Optional<Integer> pageNo) throws PresentationException {
 
         final AbstractPresentationModelElement3 manifest;
 
@@ -350,7 +341,7 @@ public class ManifestBuilder extends AbstractBuilder {
                     }
                 })
                 .ifPresentOrElse(
-                        (page) -> addRelatedResources(manifest, ele, page),
+                        page -> addRelatedResources(manifest, ele, page),
                         () -> addRelatedResources(manifest, ele));
 
         return manifest;
@@ -592,7 +583,7 @@ public class ManifestBuilder extends AbstractBuilder {
                         }
                         return cmsPageLink.getResource(uri);
                     })
-                    .collect(Collectors.toList());
+                    .toList();
         } catch (Exception e) {
             logger.warn(e.toString());
             return Collections.emptyList();

@@ -42,7 +42,8 @@ public class ThemeLink {
         legal("admin__themes__footer_legal__label", "admin__themes__footer_legal__help"),
         privacy("admin__themes__footer_privacy__label", "admin__themes__footer_privacy__help");
 
-        private String labelKey, helpKey;
+        private String labelKey;
+        private String helpKey;
 
         private InternalService(String labelKey, String helpKey) {
             this.labelKey = labelKey;
@@ -70,7 +71,9 @@ public class ThemeLink {
         facebook("admin__themes__social_media_facebook__label", "admin__themes__social_media_facebook__help"),
         instagram("admin__themes__social_media_instagram__label", "admin__themes__social_media_instagram__help");
 
-        private String labelKey, helpKey;
+        private String labelKey;
+
+        private String helpKey;
 
         private SocialMediaService(String labelKey, String helpKey) {
             this.labelKey = labelKey;
