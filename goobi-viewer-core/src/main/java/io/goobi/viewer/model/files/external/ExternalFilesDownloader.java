@@ -40,7 +40,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -143,9 +142,8 @@ public class ExternalFilesDownloader {
                 throw new IOException(
                         "Aborted extraction of archive at " + uri + " because of maximum archive size violation: " + e.getMessage());
             }
-        } else {
-            throw new IOException("No file resource found at " + uri);
         }
+        throw new IOException("No file resource found at " + uri);
     }
 
     public Path downloadHttpResource(URI uri) throws IOException {
@@ -190,13 +188,13 @@ public class ExternalFilesDownloader {
         }
     }
 
-    private Path writeFile(Path entryFile, InputStream zis) throws IOException {
+    private static Path writeFile(Path entryFile, InputStream zis) throws IOException {
         Files.deleteIfExists(entryFile);
         Files.copy(zis, entryFile);
         return entryFile;
     }
 
-    private String getFilename(URI uri, CloseableHttpResponse response) {
+    private static String getFilename(URI uri, CloseableHttpResponse response) {
         String header = Optional.ofNullable(response).map(r -> r.getFirstHeader("content-disposition")).map(Header::getValue).orElse("");
         if (StringUtils.isNotBlank(header) && header.contains("filename=")) {
             Matcher matcher = Pattern.compile("filename=(.+?)(;|$)").matcher(header);
@@ -208,7 +206,7 @@ public class ExternalFilesDownloader {
 
     }
 
-    private Path prepareNewFolder(Path destination) throws IOException {
+    private static Path prepareNewFolder(Path destination) throws IOException {
         Path path = destination.getParent().resolve(FilenameUtils.getBaseName(destination.getFileName().toString()));
         if (Files.exists(path)) {
             FileUtils.deleteDirectory(path.toFile());
@@ -221,7 +219,7 @@ public class ExternalFilesDownloader {
         return HttpClients.custom().build();
     }
 
-    private static CloseableHttpResponse createHttpHeadResponse(CloseableHttpClient client, URI uri) throws ClientProtocolException, IOException {
+    private static CloseableHttpResponse createHttpHeadResponse(CloseableHttpClient client, URI uri) throws IOException {
         HttpHead request = new HttpHead(uri);
         RequestConfig config = RequestConfig.custom()
                 .setConnectionRequestTimeout(HEAD_REQUEST_TIMEOUT_MILLIS)
@@ -232,7 +230,7 @@ public class ExternalFilesDownloader {
         return client.execute(request);
     }
 
-    private static CloseableHttpResponse createHttpGetResponse(CloseableHttpClient client, URI uri) throws ClientProtocolException, IOException {
+    private static CloseableHttpResponse createHttpGetResponse(CloseableHttpClient client, URI uri) throws IOException {
         HttpGet request = new HttpGet(uri);
         RequestConfig config = RequestConfig.custom()
                 .setConnectionRequestTimeout(REQUEST_TIMEOUT_MILLIS)

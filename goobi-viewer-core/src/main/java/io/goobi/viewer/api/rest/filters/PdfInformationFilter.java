@@ -57,13 +57,8 @@ public class PdfInformationFilter implements ContainerResponseFilter {
     public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
 
         Object content = response.getEntity();
-
-        if (content != null && content instanceof PdfInformation) {
-            PdfInformation info = (PdfInformation) content;
-            if (info.getDiv() != null) {
-                info.setDiv(ViewerResourceBundle.getTranslation(info.getDiv(), null));
-            }
+        if (content instanceof PdfInformation info && info.getDiv() != null) {
+            info.setDiv(ViewerResourceBundle.getTranslation(info.getDiv(), null));
         }
     }
-
 }

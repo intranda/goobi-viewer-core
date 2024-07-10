@@ -35,13 +35,13 @@ import io.goobi.viewer.exceptions.DAOException;
 class ClientApplicationTest extends AbstractDatabaseEnabledTest {
 
     IDAO dao;
-    
+
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         dao = DataManager.getInstance().getDao();
     }
-    
+
     @Test
     void testSave() throws DAOException {
         ClientApplication client = new ClientApplication();
@@ -53,7 +53,7 @@ class ClientApplicationTest extends AbstractDatabaseEnabledTest {
         
         ClientApplication loadedClient = dao.getClientApplication(id);
         assertNotNull(loadedClient);
-        assertEquals(loadedClient.getClientIdentifier(), "abcd"); 
+        assertEquals("abcd", loadedClient.getClientIdentifier()); 
         
         LocalDateTime updated = LocalDateTime.of(1, 2, 3, 4, 5);
         

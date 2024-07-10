@@ -195,7 +195,7 @@ public class AdminConfigEditorBean implements Serializable {
                     if (uploadedRecord != null) {
                         this.createBackup(uploadedRecord);
                         if (uploadedRecord.equals(currentFileRecord)) {
-                            this.selectFileAndShowBackups(uploadedRecord, uploadedRecord.isWritable());
+                            this.selectFileAndShowBackups(uploadedRecord.isWritable());
                         }
 
                     }
@@ -596,13 +596,13 @@ public class AdminConfigEditorBean implements Serializable {
         return "";
     }
 
-    public void createBackup(FileRecord record) throws IOException {
-        String newBackupFolderPath = backupsPath + record.getFileName().replaceFirst("[.][^.]+$", "");
+    public void createBackup(FileRecord rec) throws IOException {
+        String newBackupFolderPath = backupsPath + rec.getFileName().replaceFirst("[.][^.]+$", "");
         File newBackupFolder = new File(newBackupFolderPath);
         if (!newBackupFolder.exists()) {
             newBackupFolder.mkdir();
         }
-        createBackup(newBackupFolderPath, record.getFileName(), Files.readString(record.getFile()));
+        createBackup(newBackupFolderPath, rec.getFileName(), Files.readString(rec.getFile()));
         refreshBackups(newBackupFolder);
     }
 
@@ -724,10 +724,6 @@ public class AdminConfigEditorBean implements Serializable {
      * @param writable a boolean
      */
     public void selectFileAndShowBackups(boolean writable) {
-        this.selectFileAndShowBackups(filesListing.getFileRecordsModel().getRowData(), writable);
-    }
-
-    public void selectFileAndShowBackups(FileRecord record, boolean writable) {
 
         currentFileRecord = filesListing.getFileRecordsModel().getRowData();
         fullCurrentConfigFileType = ".".concat(currentFileRecord.getFileType());
@@ -861,7 +857,7 @@ public class AdminConfigEditorBean implements Serializable {
         String decodedFileName = URLDecoder.decode(filename, StandardCharsets.UTF_8);
         return filesListing.getFileRecords()
                 .stream()
-                .filter(record -> record.getFileName().equals(decodedFileName))
+                .filter(rec -> rec.getFileName().equals(decodedFileName))
                 .findAny()
                 .orElse(null);
     }

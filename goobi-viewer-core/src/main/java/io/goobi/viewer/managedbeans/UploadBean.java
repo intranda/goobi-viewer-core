@@ -40,7 +40,9 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.job.upload.UploadJob;
 
 /**
- * <p>UploadBean class.</p>
+ * <p>
+ * UploadBean class.
+ * </p>
  */
 @Named
 @ViewScoped
@@ -49,7 +51,7 @@ public class UploadBean implements Serializable {
     private static final long serialVersionUID = -766868003675598285L;
 
     /** Logger for this class. */
-    private static final Logger logger = LogManager.getLogger(UserBean.class);
+    private static final Logger logger = LogManager.getLogger(UploadBean.class);
 
     private static final int DEFAULT_ROWS_PER_PAGE = 15;
 
@@ -71,11 +73,9 @@ public class UploadBean implements Serializable {
 
     /**
      * Initialize all campaigns as lazily loaded list
-     *
-     * @throws io.goobi.viewer.exceptions.DAOException
      */
     @PostConstruct
-    public void init() throws DAOException {
+    public void init() {
         if (lazyModelUploadJobs == null) {
             lazyModelUploadJobs = new TableDataProvider<>(new TableDataSource<UploadJob>() {
 
@@ -113,7 +113,9 @@ public class UploadBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>lazyModelUploadJobs</code>.</p>
+     * <p>
+     * Getter for the field <code>lazyModelUploadJobs</code>.
+     * </p>
      *
      * @return the lazyModelUploadJobs
      */
@@ -122,7 +124,9 @@ public class UploadBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentUploadJob</code>.</p>
+     * <p>
+     * Getter for the field <code>currentUploadJob</code>.
+     * </p>
      *
      * @return the currentUploadJob
      */
@@ -134,7 +138,9 @@ public class UploadBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentUploadJob</code>.</p>
+     * <p>
+     * Setter for the field <code>currentUploadJob</code>.
+     * </p>
      *
      * @param currentUploadJob the currentUploadJob to set
      */
@@ -169,13 +175,7 @@ public class UploadBean implements Serializable {
             currentUploadJob.createProcess();
             currentUploadJob.uploadFiles();
             Messages.info("user__upload_content_success_msg");
-        } catch (UploadException e) {
-            logger.error(e.getMessage());
-            Messages.error(e.getMessage());
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-            Messages.error(e.getMessage());
-        } catch (HTTPException e) {
+        } catch (HTTPException | IOException | UploadException e) {
             logger.error(e.getMessage());
             Messages.error(e.getMessage());
         } finally {

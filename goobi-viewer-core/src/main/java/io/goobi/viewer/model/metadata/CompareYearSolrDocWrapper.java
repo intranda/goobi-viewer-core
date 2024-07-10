@@ -101,10 +101,8 @@ public class CompareYearSolrDocWrapper implements Comparable<CompareYearSolrDocW
             return false;
         }
         CompareYearSolrDocWrapper other = (CompareYearSolrDocWrapper) obj;
-        if (year != other.year) {
-            return false;
-        }
-        return true;
+
+        return year == other.year;
     }
 
     /**

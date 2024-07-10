@@ -266,7 +266,7 @@ public class RecordResource {
         Path path = Paths.get(filePath);
 
         if (Files.isRegularFile(path)) {
-            return (out) -> {
+            return out -> {
                 try (FileInputStream in = new FileInputStream(path.toFile())) {
                     FileTools.copyStream(out, in);
                 } catch (IOException e) {

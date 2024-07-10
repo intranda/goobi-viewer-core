@@ -46,7 +46,7 @@ import io.goobi.viewer.model.administration.legal.TermsOfUse;
 public class TermsOfUseBean implements Serializable {
 
     private static final long serialVersionUID = 5425114972697440546L;
-    private static final Logger logger = LogManager.getLogger(TermsOfUseEditBean.class);
+    private static final Logger logger = LogManager.getLogger(TermsOfUseBean.class);
 
     private final Optional<TermsOfUse> termsOfUse = getTermsOfUseIfActiveAndAccessible();
 
@@ -61,7 +61,9 @@ public class TermsOfUseBean implements Serializable {
     }
 
     /**
-     * <p>isTermsOfUseActive.</p>
+     * <p>
+     * isTermsOfUseActive.
+     * </p>
      *
      * @return a boolean
      */
@@ -70,7 +72,9 @@ public class TermsOfUseBean implements Serializable {
     }
 
     /**
-     * <p>getTitle.</p>
+     * <p>
+     * getTitle.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -82,7 +86,9 @@ public class TermsOfUseBean implements Serializable {
     }
 
     /**
-     * <p>getDescription.</p>
+     * <p>
+     * getDescription.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      */

@@ -25,6 +25,8 @@ import javax.faces.model.SelectItem;
 
 public class SelectPageItem extends SelectItem {
 
+    private static final long serialVersionUID = -7384015705477411687L;
+
     private boolean doublePageMode = false;
 
     /**
@@ -43,19 +45,13 @@ public class SelectPageItem extends SelectItem {
     }
 
     @Override
-    public String getLabel() {
-        // TODO Auto-generated method stub
-        return super.getLabel();
-    }
-
-    @Override
     public Object getValue() {
         String value = super.getValue().toString();
         if (doublePageMode) {
             return value + "-" + value;
-        } else {
-            return value;
         }
+
+        return value;
     }
 
 }
