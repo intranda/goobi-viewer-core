@@ -774,9 +774,25 @@ public class Metadata implements Serializable {
     }
 
     /**
+     * 
+     * @param se
+     * @param ownerIddoc
+     * @param sortFields
+     * @param locale
+     * @return  a boolean.
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public boolean populate(StructElement se, String ownerIddoc, List<StringPair> sortFields, Locale locale)
+            throws IndexUnreachableException, PresentationException {
+        return populate(se, null, ownerIddoc, sortFields, locale);
+    }
+
+    /**
      * Populates the parameters of the given metadata with values from the given StructElement.
      *
      * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param anchorSe Optional anchor {@link StructElement}
      * @param ownerIddoc IDDOC of the owner document (either docstruct or parent metadata)
      * @param sortFields
      * @param locale a {@link java.util.Locale} object.
@@ -785,7 +801,7 @@ public class Metadata implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @should use default value of no value found
      */
-    public boolean populate(StructElement se, String ownerIddoc, List<StringPair> sortFields, Locale locale)
+    public boolean populate(StructElement se, StructElement anchorSe, String ownerIddoc, List<StringPair> sortFields, Locale locale)
             throws IndexUnreachableException, PresentationException {
         if (se == null) {
             return false;
@@ -834,10 +850,20 @@ public class Metadata implements Serializable {
             if (MetadataParameterType.TOPSTRUCTFIELD.equals(param.getType()) && se.getTopStruct() != null) {
                 // Topstruct values as the first choice
                 values = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
+            } else if (MetadataParameterType.ANCHORFIELD.equals(param.getType())) {
+                // Use anchor value, if the parameter has the type "anchorfield"
+                if (anchorSe != null) {
+                    values = getMetadata(anchorSe.getTopStruct().getMetadataFields(), param.getKey(), locale);
+                } else {
+                    // Add empty parameter if there is no anchor
+                    setParamValue(0, getParams().indexOf(param), Collections.singletonList(""), null, null, null, null, locale);
+                    continue;
+                }
             } else {
                 // Own values
                 values = getMetadata(se.getMetadataFields(), param.getKey(), locale);
             }
+
             if (values == null && se.getTopStruct() != null && param.isTopstructValueFallback()) {
                 // Topstruct values as a fallback
                 values = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
