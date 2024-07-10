@@ -145,6 +145,9 @@ public class ViewManager implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(ViewManager.class);
 
+    private static final String STYLE_CLASS_WORD_SEPARATOR = "_";
+    private static final int MAX_STYLECLASS_LENGTH = 100;
+
     private ImageDeliveryBean imageDeliveryBean;
 
     /** IDDOC of the top level document. */
@@ -4217,4 +4220,15 @@ public class ViewManager implements Serializable {
     public StructElement getAnchorStructElement() {
         return anchorStructElement;
     }
+
+    public String getCssClass() throws IndexUnreachableException {
+        VariableReplacer vr =
+                new VariableReplacer(this);
+        String template = DataManager.getInstance().getConfiguration().getRecordViewStyleClass();
+        String value = vr.replace(template).stream().findAny().orElse("");
+        value = StringTools.convertToSingleWord(value, MAX_STYLECLASS_LENGTH, STYLE_CLASS_WORD_SEPARATOR).toLowerCase();
+
+        return value;
+    }
+
 }
