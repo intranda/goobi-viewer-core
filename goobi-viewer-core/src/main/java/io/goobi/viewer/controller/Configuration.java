@@ -3462,7 +3462,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isGeneratePdfInTaskManager.
+     * isGeneratePdfInMessageQueue.
      * </p>
      *
      * @should return correct value
@@ -6145,7 +6145,7 @@ public class Configuration extends AbstractConfiguration {
         String defaultMimeType = "default";
         return getLocalConfigurationsAt("viewer.mediaTypes.type").stream()
                 .filter(conf -> conf.getString("[@mimeType]", defaultMimeType).equals(mimeType))
-                .map(conf -> conf.getString("content-disposition", defaultDisposition))
+                .map(conf -> conf.getString("contentDisposition", defaultDisposition))
                 .findFirst()
                 .orElse(defaultDisposition);
 
