@@ -90,6 +90,7 @@ io.goobi.viewer.model.crowdsourcing.questions
 io.goobi.viewer.model.email
 io.goobi.viewer.model.export
 io.goobi.viewer.model.files.external
+io.goobi.viewer.model.files.upload
 io.goobi.viewer.model.glossary
 io.goobi.viewer.model.iiif.discovery
 io.goobi.viewer.model.iiif.presentation.v2.builder
