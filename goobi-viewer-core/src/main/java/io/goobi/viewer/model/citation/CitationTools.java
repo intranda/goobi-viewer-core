@@ -104,9 +104,9 @@ public final class CitationTools {
                 query = "+" + SolrConstants.IDDOC + ":" + viewManager.getCurrentStructElement().getLuceneId();
                 break;
             case IMAGE:
+                int order = viewManager.getCurrentImageOrder() > 0 ? viewManager.getCurrentImageOrder() : 1;
                 query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + viewManager.getPi() + " +" + SolrConstants.ORDER + ":"
-                        + viewManager.getCurrentImageOrder() + " +" + SolrConstants.DOCTYPE
-                        + ":" + DocType.PAGE.name();
+                        + order + " +" + SolrConstants.DOCTYPE + ":" + DocType.PAGE.name();
                 break;
             default:
                 break;
