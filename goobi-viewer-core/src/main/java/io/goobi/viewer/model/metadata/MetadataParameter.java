@@ -60,6 +60,7 @@ public class MetadataParameter implements Serializable {
         FIELD("field"),
         TRANSLATEDFIELD("translatedfield"),
         DATEFIELD("datefield"),
+        IDENTIFIER("identifier"),
         WIKIFIELD("wikifield"),
         WIKIPERSONFIELD("wikipersonfield"),
         LINK_MAPS("linkMaps"),
