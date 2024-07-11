@@ -779,7 +779,7 @@ public class Metadata implements Serializable {
      * @param ownerIddoc
      * @param sortFields
      * @param locale
-     * @return  a boolean.
+     * @return a boolean.
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -848,7 +848,7 @@ public class Metadata implements Serializable {
             // logger.trace("{} ({})", param.toString(), indexOfParam); //NOSONAR Debug
             List<String> values = null;
             if (MetadataParameterType.TOPSTRUCTFIELD.equals(param.getType()) && se.getTopStruct() != null) {
-                // Topstruct values as the first choice
+                // Use topstruct value, if the parameter has the type "topstructfield"
                 values = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
             } else if (MetadataParameterType.ANCHORFIELD.equals(param.getType())) {
                 // Use anchor value, if the parameter has the type "anchorfield"

@@ -394,6 +394,8 @@ public class BrowseElement implements Serializable {
 
         for (Metadata md : metadataList) {
             md.populate(structElement, anchorStructElement, String.valueOf(structElement.getLuceneId()), md.getSortFields(), locale);
+            // TODO Truncation of long strings
+            // TODO Highlighting
 
             //            for (MetadataParameter param : md.getParams()) {
             //                StructElement elementToUse = structElement;
