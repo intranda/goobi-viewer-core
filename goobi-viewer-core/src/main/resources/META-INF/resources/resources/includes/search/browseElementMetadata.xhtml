@@ -17,119 +17,132 @@
                             
                     <h:outputText value="#{msg[browseElementMetadata.label]}: " escape="false" styleClass="search-list__hit-text-label" />
                                 
-                    <div class="search-list__hit-text">                               
+                    <div class="search-list__hit-text">    
+                                               
                         <!-- grouped="true" -->
                         <h:panelGroup rendered="#{browseElementMetadata.group}">
 
                             <!-- Single label for all values, each value is a single string -->
                             <h:panelGroup rendered="#{browseElementMetadata.singleString}">
-                                <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
-                                    <ui:param name="metadata" value="#{browseElementMetadata}" />
-                                </ui:include>
+                            
+                                <!-- STANDARD STRUCTURE -->
+                                <ui:fragment rendered="#{browseElementMetadata.separator == null}">
+                                    <ui:repeat value="#{browseElementMetadata.values}" var="val">
+                                        <dd>
+                                            <!-- Metadata value -->
+                                            <h:panelGroup rendered="#{browseElementMetadata.singleString}">
+                                                <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}" escape="false">
+                                                </h:outputFormat>
+                                            </h:panelGroup>
+                                        </dd>
+                                    </ui:repeat>
+                                </ui:fragment>
+                    
+                                <!-- STANDARD WITH SEPARATOR -->
+                                <ui:fragment rendered="#{browseElementMetadata.separator != null}">
+                                    <dd>
+                                        <ui:repeat value="#{browseElementMetadata.values}" var="val">
+                                            <span class="metadata__element-wrapper-single-custom">
+                                                <!-- Metadata value -->
+                                                <h:panelGroup rendered="#{browseElementMetadata.singleString}">
+                                                    <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}" escape="false">
+                                                    </h:outputFormat>
+                                                    <span class="metadata__element-wrapper-single-custom-separator">#{browseElementMetadata.separator}</span>
+                                                </h:panelGroup>               
+                                            </span>
+                                        </ui:repeat>
+                                    </dd>
+                                </ui:fragment>
                             </h:panelGroup>
 
                             <!-- Each value has a label column and a value column -->
 							<h:panelGroup rendered="#{!browseElementMetadata.singleString}">
-								<ui:repeat value="#{browseElementMetadata.values}" var="val">
+								<ui:repeat value="#{browseElementMetadata.values}" var="val"> all blank: #{val.allParamValuesBlank}
 									<ui:fragment rendered="#{!val.allParamValuesBlank}">
-										<div
-											class="metadata__elements metadata__elements-level-#{metadata.indentation} metadata__grouped-wrapper">
-
+										<div class="metadata__elements metadata__elements-level-#{metadata.indentation} metadata__grouped-wrapper">
 											<div class="metadata__element-wrapper">
 												<div class="metadata__element-level-#{metadata.indentation}">
-													<dl
-														class="dl-horizontal metadata__element-dl metadata__key-value-pairs-list">
+													<dl class="dl-horizontal metadata__element-dl metadata__key-value-pairs-list">
 														<!-- Metadata value -->
-														<ui:repeat
-															value="#{metadataBean.range(0, browseElementMetadata.paramCount)}"
-															var="ind0">#{ind0}
+														<ui:repeat value="#{metadataBean.range(0, browseElementMetadata.paramCount)}" var="ind0">
                                                             <ui:fragment rendered="#{!val.isParamValueBlank(ind0)}">
 																<dt>
-																	<h:outputText
-																		value="#{val.getParamLabelWithColon(ind0)}"
-																		escape="false" />
+																	<h:outputText value="#{val.getParamLabelWithColon(ind0)}" escape="false" />
 																</dt>
 																<dd>
-																	<h:outputText value="#{val.getComboValueShort(ind0)}"
-																		escape="false" />
+																	<h:outputText value="#{val.getComboValueShort(ind0)}" escape="false" />
 																</dd>
 															</ui:fragment>
 														</ui:repeat>
 													</dl>
 												</div>
 											</div>
-
 										</div>
-
 									</ui:fragment>
-
 								</ui:repeat>
 							</h:panelGroup>
 
 						</h:panelGroup>
 
-                                    <!-- grouped="false" -->
-                                    <h:panelGroup layout="block" rendered="#{!browseElementMetadata.group}">
-                                            <h:outputText value="#{msg[browseElementMetadata.label]}: " escape="false" styleClass="search-list__hit-text-label" />
-                                            <span class ="metadata__element-wrapper-single-custom-wrapper search-list__hit-text-value">
-                                            <ui:repeat value="#{browseElementMetadata.values}" var="val">
-                                                <dd>
-                                                    <!-- Custom separator -->
-                                                    <ui:fragment rendered="#{browseElementMetadata.separator != null and status.index gt 0}">
-                                                        <span class="metadata__element-wrapper-single-custom-separator">#{browseElementMetadata.separator}</span>
-                                                    </ui:fragment>
-                                                    <span class="metadata__element-value">
-                                                        <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
-                                                        </h:outputFormat>
-                                                    </span>
-                                                </dd>
-                                            </ui:repeat>
-                                            </span>
-                                    </h:panelGroup>
+                        <!-- grouped="false" -->
+                        <h:panelGroup layout="block" rendered="#{!browseElementMetadata.group}">
+                            <h:outputText value="#{msg[browseElementMetadata.label]}: " escape="false" styleClass="search-list__hit-text-label" />
+                            <span class ="metadata__element-wrapper-single-custom-wrapper search-list__hit-text-value">
+                                <ui:repeat value="#{browseElementMetadata.values}" var="val">
+                                    <dd>
+                                        <!-- Custom separator -->
+                                        <ui:fragment rendered="#{browseElementMetadata.separator != null and status.index gt 0}">
+                                            <span class="metadata__element-wrapper-single-custom-separator">#{browseElementMetadata.separator}</span>
+                                        </ui:fragment>
+                                        <span class="metadata__element-value">
+                                            <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false" />
+                                        </span>
+                                    </dd>
+                                </ui:repeat>
+                            </span>
+                        </h:panelGroup>
                                 
-                                </div>
-                            </h:panelGroup>
-                        </ui:repeat>
                     </div>
-                </ui:fragment>
+                </h:panelGroup>
+            </ui:repeat>
+        </div>
+    </ui:fragment>
                     
-                <!-- SECONDARY METADATA (ONLY FOR TILE VIEW) -->
-                <ui:fragment rendered="#{not empty browseElement.secondaryMetadataListForCurrentLocale}">
-                    <div class="search-list__hit-metadata-second">
-                        <ui:repeat value="#{browseElement.secondaryMetadataListForCurrentLocale}" var="browseElementMetadata">
-                            <h:panelGroup rendered="#{!browseElementMetadata.blank}">
-                                <div class="search-list__hit-text">
-                                    <h:outputText value="#{msg[browseElementMetadata.label]}: " escape="false" styleClass="search-list__hit-text-label" />
+    <!-- SECONDARY METADATA (ONLY FOR TILE VIEW) -->
+    <ui:fragment rendered="#{not empty browseElement.secondaryMetadataListForCurrentLocale}">
+        <div class="search-list__hit-metadata-second">
+            <ui:repeat value="#{browseElement.secondaryMetadataListForCurrentLocale}" var="browseElementMetadata">
+                <h:panelGroup rendered="#{!browseElementMetadata.blank}">
+                    <div class="search-list__hit-text">
+                        <h:outputText value="#{msg[browseElementMetadata.label]}: " escape="false" styleClass="search-list__hit-text-label" />
                                 
-                                    <!-- Default multivalue separator (new line) -->
-                                    <ui:fragment rendered="#{browseElementMetadata.separator == null}">
-                                        <ui:repeat var="val" value="#{browseElementMetadata.values}" varStatus="status">
-                                            <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false" styleClass="search-list__hit-text-value">
-                                            </h:outputFormat>
-                                        </ui:repeat>
-                                    </ui:fragment>
+                        <!-- Default multivalue separator (new line) -->
+                        <ui:fragment rendered="#{browseElementMetadata.separator == null}">
+                            <ui:repeat var="val" value="#{browseElementMetadata.values}" varStatus="status">
+                                <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false" styleClass="search-list__hit-text-value" />
+                            </ui:repeat>
+                        </ui:fragment>
                                 
-                                    <!-- Custom multivalue separator-->
+                        <!-- Custom multivalue separator-->
+                        <ui:fragment rendered="#{browseElementMetadata.separator != null}">
+                            <span class="metadata__element-wrapper-single-custom-wrapper search-list__hit-text-value">
+                                <ui:repeat var="val" value="#{browseElementMetadata.values}" varStatus="status">
                                     <ui:fragment rendered="#{browseElementMetadata.separator != null}">
-                                        <span class="metadata__element-wrapper-single-custom-wrapper search-list__hit-text-value">
-                                            <ui:repeat var="val" value="#{browseElementMetadata.values}" varStatus="status">
-                                                <ui:fragment rendered="#{browseElementMetadata.separator != null}">
-                                                    <ui:fragment rendered="#{status.index gt 0}">
-                                                        <span class="metadata__element-wrapper-single-custom-separator">#{browseElementMetadata.separator}</span>
-                                                    </ui:fragment>
-                                                    <span class="metadata__element-wrapper-single-custom">
-                                                        <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
-                                                        </h:outputFormat>
-                                                    </span>
-                                                </ui:fragment>
-                                            </ui:repeat>
+                                        <ui:fragment rendered="#{status.index gt 0}">
+                                            <span class="metadata__element-wrapper-single-custom-separator">#{browseElementMetadata.separator}</span>
+                                        </ui:fragment>
+                                        <span class="metadata__element-wrapper-single-custom">
+                                            <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false" />
                                         </span>
                                     </ui:fragment>
-                                </div>
-                            </h:panelGroup>
-                        </ui:repeat>
+                                </ui:repeat>
+                            </span>
+                        </ui:fragment>
                     </div>
-                </ui:fragment>
+                </h:panelGroup>
+            </ui:repeat>
+        </div>
+    </ui:fragment>
 
                 <!-- FULLTEXT -->
                 <h:panelGroup rendered="#{browseElement.fulltext != null and browseElement.fulltext != ''}">
