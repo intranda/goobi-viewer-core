@@ -87,6 +87,26 @@ const depsPathsJS = [
     flatten: true,
     dest:`${jsLibsDir}hcsticky/`
   },
+  
+  { // jszip 
+    expand: true,
+    cwd: nodeModules,
+    src:  [
+      'jszip/dist/jszip.min.js', 
+    ],
+    flatten: true,
+    dest:`${jsLibsDir}jszip/`
+  },
+  
+  { // epubjs 
+    expand: true,
+    cwd: nodeModules,
+    src:  [
+      'epubjs/dist/epub.min.js', 
+    ],
+    flatten: true,
+    dest:`${jsLibsDir}epubjs/`
+  },
 
   { // jQuery
     expand: true,
