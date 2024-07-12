@@ -458,7 +458,8 @@ public class MetadataBean {
     }
 
     public List<Integer> range(int start, int end) {
-        List<Integer> ret = new ArrayList(end - start);
+        logger.trace("range: {} - {}", start, end);
+        List<Integer> ret = new ArrayList<>(end - start);
         for (int i = start; i < end; ++i) {
             ret.add(i);
         }
