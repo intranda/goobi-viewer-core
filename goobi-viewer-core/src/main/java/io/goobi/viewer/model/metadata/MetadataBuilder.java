@@ -43,11 +43,16 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.StringConstants;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.translations.IPolyglott;
 
 public class MetadataBuilder {
+
+    private static final String IDENTIFIER_WHITESPACE_REPLACEMENT = "_";
+
+    private static final int IDENTIFIER_MAX_LENGTH = 1000;
 
     private static final Logger logger = LogManager.getLogger(MetadataBuilder.class);
 
@@ -114,6 +119,10 @@ public class MetadataBuilder {
                     break;
                 case DATEFIELD:
                     value = getDateFieldValue(param, keyValue, altKeyValue);
+                    break;
+                case IDENTIFIER:
+                    value = getFieldValue(param, keyValue, altKeyValue);
+                    value.mapEach(s -> StringTools.convertToSingleWord(s, IDENTIFIER_MAX_LENGTH, IDENTIFIER_WHITESPACE_REPLACEMENT).toLowerCase());
                     break;
                 default:
                     value = Optional.ofNullable(metadata.get(param.getKey()))

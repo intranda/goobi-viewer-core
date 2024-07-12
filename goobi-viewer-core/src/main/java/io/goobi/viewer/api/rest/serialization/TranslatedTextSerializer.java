@@ -21,14 +21,7 @@
  */
 package io.goobi.viewer.api.rest.serialization;
 
-import java.io.IOException;
-
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.SerializerProvider;
-
 import de.intranda.api.serializer.WebAnnotationMetadataValueSerializer;
-import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 
 /**
@@ -39,11 +32,6 @@ import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
  *
  */
 public class TranslatedTextSerializer extends WebAnnotationMetadataValueSerializer {
-
-    @Override
-    public void serialize(IMetadataValue element, JsonGenerator generator, SerializerProvider provicer) throws IOException, JsonProcessingException {
-        super.serialize(element, generator, provicer);
-    }
 
     /**
      * Always assume all translations are unique to write full translation info.

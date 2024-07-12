@@ -440,6 +440,14 @@
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 
+	<!-- EPUB -->
+	<url-mapping id="epub">
+		<pattern value="/epub/" />
+		<view-id value="/viewEpub.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+	</url-mapping>
+
 	<!-- MIRADOR -->
 	<url-mapping id="mirador0">
 		<pattern value="/mirador/" />

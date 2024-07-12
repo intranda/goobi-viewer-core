@@ -52,7 +52,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -145,6 +144,9 @@ public class ViewManager implements Serializable {
     private static final long serialVersionUID = -7776362205876306849L;
 
     private static final Logger logger = LogManager.getLogger(ViewManager.class);
+
+    private static final String STYLE_CLASS_WORD_SEPARATOR = "_";
+    private static final int MAX_STYLECLASS_LENGTH = 100;
 
     private ImageDeliveryBean imageDeliveryBean;
 
@@ -803,10 +805,9 @@ public class ViewManager implements Serializable {
                     DataManager.getInstance().getConfiguration().getViewerMaxImageHeight());
             if (this.imageDeliveryBean.getIiif().isIIIFUrl(page.getFileName())) {
                 return getDownloadOptionsForImage(configuredOptions, null, maxSize, imageFilename);
-            } else {
-                Dimension imageSize = new Dimension(page.getImageWidth(), page.getImageHeight());
-                return getDownloadOptionsForImage(configuredOptions, imageSize, maxSize, imageFilename);
             }
+            Dimension imageSize = new Dimension(page.getImageWidth(), page.getImageHeight());
+            return getDownloadOptionsForImage(configuredOptions, imageSize, maxSize, imageFilename);
         }
 
         return Collections.emptyList();
@@ -1433,7 +1434,7 @@ public class ViewManager implements Serializable {
             throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
         int newImageOrder = 1;
         if (currentImageOrderString != null && currentImageOrderString.contains("-")) {
-            String[] orderSplit = currentImageOrderString.split("[-]");
+            String[] orderSplit = currentImageOrderString.split("-");
             newImageOrder = StringTools.parseInt(orderSplit[0]).orElse(1);
         } else {
             newImageOrder = StringTools.parseInt(currentImageOrderString).orElse(1);
@@ -2653,11 +2654,8 @@ public class ViewManager implements Serializable {
         }
         double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
         // logger.trace("{}% of pages have full-text", percentage); //NOSONAR Debug
-        if (percentage < threshold) {
-            return true;
-        }
 
-        return false;
+        return percentage < threshold;
     }
 
     /**
@@ -2969,7 +2967,7 @@ public class ViewManager implements Serializable {
                 if (!displayFilters.isEmpty()) {
                     filenames = filenames.filter(filename -> displayFilters.stream().allMatch(filter -> filter.passes(filename, vr)));
                 }
-                downloadFilenames = filenames.collect(Collectors.toList());
+                downloadFilenames = filenames.toList();
             }
         }
 
@@ -3011,7 +3009,7 @@ public class ViewManager implements Serializable {
                 .sorted(comparator)
                 .map(this::getLinkToDownloadFile)
                 .filter(link -> link != LabeledLink.EMPTY)
-                .collect(Collectors.toList());
+                .toList();
 
     }
 
@@ -3602,9 +3600,9 @@ public class ViewManager implements Serializable {
         String filename = String.format("%s_%s_%s.pdf", this.pi, this.firstPdfPage, this.lastPdfPage);
         try (PipedInputStream in = new PipedInputStream(); OutputStream out = new PipedOutputStream(in)) {
             String firstPageName =
-                    Optional.ofNullable(this.firstPdfPage).flatMap(i -> this.getPage(i)).map(PhysicalElement::getFileName).orElse(null);
+                    Optional.ofNullable(this.firstPdfPage).flatMap(this::getPage).map(PhysicalElement::getFileName).orElse(null);
             String lastPageName =
-                    Optional.ofNullable(this.lastPdfPage).flatMap(i -> this.getPage(i)).map(PhysicalElement::getFileName).orElse(null);
+                    Optional.ofNullable(this.lastPdfPage).flatMap(this::getPage).map(PhysicalElement::getFileName).orElse(null);
 
             SinglePdfRequest request = new SinglePdfRequest(Map.of(
                     "imageSource", DataFileTools.getMediaFolder(this.pi).toAbsolutePath().toString(),
@@ -4101,7 +4099,7 @@ public class ViewManager implements Serializable {
                 lastPage++;
             }
         }
-        return IntStream.range(firstPage, lastPage + 1).boxed().collect(Collectors.toList());
+        return IntStream.range(firstPage, lastPage + 1).boxed().toList();
     }
 
     /**
@@ -4200,7 +4198,7 @@ public class ViewManager implements Serializable {
                 .map(path -> Paths.get(path).getFileName().toString())
                 .map(filename -> this.getPageLoader().findPageForFilename(filename))
                 .filter(p -> p != null)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<String> getExternalResourceUrls() throws IndexUnreachableException {
@@ -4215,11 +4213,22 @@ public class ViewManager implements Serializable {
         VariableReplacer vr = new VariableReplacer(this);
         return urlTemplates.stream()
                 .flatMap(templ -> vr.replace(templ).stream())
-                .filter(url -> ExternalFilesDownloader.resourceExists(url))
+                .filter(ExternalFilesDownloader::resourceExists)
                 .toList();
     }
 
     public StructElement getAnchorStructElement() {
         return anchorStructElement;
     }
+
+    public String getCssClass() throws IndexUnreachableException {
+        VariableReplacer vr =
+                new VariableReplacer(this);
+        String template = DataManager.getInstance().getConfiguration().getRecordViewStyleClass();
+        String value = vr.replace(template).stream().findAny().orElse("");
+        value = StringTools.convertToSingleWord(value, MAX_STYLECLASS_LENGTH, STYLE_CLASS_WORD_SEPARATOR).toLowerCase();
+
+        return value;
+    }
+
 }

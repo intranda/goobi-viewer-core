@@ -75,19 +75,19 @@ public abstract class AbstractSearchParser {
      * @return a {@link java.lang.String} object.
      */
     public static String getSucceedingText(String text, int hitEndIndex, int maxLength) {
-        String after = "";
         int index = hitEndIndex;
-        while (index < text.length() && after.length() < maxLength) {
+        StringBuilder sbAfter = new StringBuilder();
+        while (index < text.length() && sbAfter.length() < maxLength) {
             String c = Character.toString(text.charAt(index));
-            after = after + c;
+            sbAfter.append(c);
             index++;
             while (index < text.length() && !StringUtils.isWhitespace(c)) {
                 c = Character.toString(text.charAt(index));
-                after = after + c;
+                sbAfter.append(c);
                 index++;
             }
         }
-        return after;
+        return sbAfter.toString();
     }
 
     /**

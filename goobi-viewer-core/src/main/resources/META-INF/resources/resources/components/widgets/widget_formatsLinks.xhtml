@@ -38,144 +38,145 @@
 
                     <!-- FORMATS -->
 
-                    <div class="widget-format-links__work-downloads widget__badge-container">
-                    	<h3 id="titleFormats" class="widget-format-links__subtitle widget__badge-container-heading">#{msg.widget__formatlinks_formats}</h3>
-                         
-                    
-                        <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionDownloadMetadata}">           
-                        
-                            <!-- METS -->
-                            <ui:fragment
-                                rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS' or activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS_MARC'}">
-                                <a 
-                                    href="#{activeDocumentBean.viewManager.metsResolverUrl}"
-                                    id="lidomets" 
-                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
-                                    title="#{msg.metadata_dl_mets}"
-                                    data-toggle="tooltip"
-                                    data-placement="top"
-                                    data-trigger="hover"
-                                    target="_blank" rel="nofollow noopener"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadMetsButtonLabel}"> 
-                                    #{msg.downloadMetsButtonLabel}
-                                </a>
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.anchorMetsResolverUrl != null}">
-                                <a 
-                                    href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
-                                    id="metsanchor" 
-                                    class="badge badge-dark widget-format-links__work-download-mets-anchor" 
-                                    title="#{msg.metadata_dl_metsAnchor}"
-                                    data-toggle="tooltip"
-                                    data-placement="top"
-                                    data-trigger="hover"
-                                    target="_blank" rel="nofollow noopener"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadAnchorMetsButtonLabel}"> 
-                                    #{msg.downloadAnchorMetsButtonLabel}
-                                </a>
-                            </ui:fragment>
-                            </ui:fragment>
-                        
-                            <!-- LIDO -->
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'LIDO'}">
-                                <a 
-                                    href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
-                                    id="lidomets" 
-                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
-                                    title="#{msg.metadata_dl_lido}"
-                                    data-toggle="tooltip"
-                                    data-placement="top"
-                                    data-trigger="hover"
-                                    target="_blank" rel="nofollow noopener"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadLidoButtonLabel}"> 
-                                    #{msg.downloadLidoButtonLabel}
-                                </a>
-                            </ui:fragment>
-                            
-                            <!-- DENKXWEB -->
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'DENKXWEB'}">
-                                <a 
-                                    href="#{activeDocumentBean.viewManager.denkxwebResolverUrl}"
-                                    id="denkxweb"
-                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
-                                    title="#{msg.metadata_dl_denkxweb}"
-                                    data-toggle="tooltip"
-                                    data-placement="top"
-                                    data-trigger="hover"
-                                    target="_blank" rel="nofollow noopener"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadDenkxwebButtonLabel}"> 
-                                    #{msg.downloadDenkxwebButtonLabel}
-                                </a>
-                            </ui:fragment>
-     
-                            <!-- DUBLINCORE -->
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'DUBLINCORE'}">
-                                <a 
-                                    href="#{activeDocumentBean.viewManager.dublinCoreResolverUrl}"
-                                    id="dublincorexml"
-                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
-                                    title="#{msg.metadata_dl_dublincore}"
-                                    data-toggle="tooltip"
-                                    data-placement="top"
-                                    data-trigger="hover"
-                                    target="_blank" rel="nofollow noopener"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadDublinCoreButtonLabel}"> 
-                                    #{msg.downloadDublinCoreButtonLabel}
-                                </a>
-                            </ui:fragment>
-
-                            <!-- MARCXML -->
-                            <ui:fragment
-                                rendered="#{activeDocumentBean.viewManager.oaiMarcUrl != null and (activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS' or activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS_MARC')}">
-                                <a
-                                    id="marc"
-                                    href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
-                                    class="badge badge-dark widget-format-links__work-download-oai-marc"
-                                    title="#{msg.metadata_dl_marc}"
-                                    data-toggle="tooltip"
-                                    data-placement="top"
-                                    data-trigger="hover"
-                                    target="_blank" rel="nofollow noopener"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.marcLink}">
-                                    #{msg.marcLink}
-                                </a>
-                            </ui:fragment>
-                        
-                            <!-- OAI DC -->
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.oaiDcUrl != null}">
-                                <a
-                                    id="dc"
-                                    href="#{activeDocumentBean.viewManager.oaiDcUrl}"
-                                    class="badge badge-dark widget-format-links__work-download-oai-dc"
-                                    title="#{msg.metadata_dl_dublinCore}"
-                                    data-toggle="tooltip"
-                                    data-placement="top"
-                                    data-trigger="hover"
-                                    target="_blank" rel="nofollow noopener"
-                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.dcLink}"> 
-                                    #{msg.dcLink} 
-                                </a>
-                            </ui:fragment>
-                        
-                        </ui:fragment>
-                        
-                        <!-- IIIF MANIFEST -->
-                        <ui:fragment
-                            rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionGenerateIiifManifest and !activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage}">
-                            <button 
-                                id="iiifManifest"
-                                class="badge badge-dark widget-format-links__work-download-iiif" 
-                                data-copy-value="#{imageDelivery.iiifManifest}" 
-                                data-copy-done-msg="#{msg.copyUrlDone}"
-                                title="#{msg.copyUrl}"
-                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.iiif}"
-                                tabindex="0"> 
-                                #{msg.iiif}
-                            </button> 
-                        </ui:fragment>      
-    
-                      
-                    </div>
+					<ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionDownloadMetadata
+					or (activeDocumentBean.viewManager.topStructElement.accessPermissionGenerateIiifManifest and !activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage)}">
+	                    <div class="widget-format-links__work-downloads widget__badge-container">
+	                    	<h3 id="titleFormats" class="widget-format-links__subtitle widget__badge-container-heading">#{msg.widget__formatlinks_formats}</h3>
+	                         
+	                    
+	                        <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
+	                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionDownloadMetadata}">           
+	                            <!-- METS -->
+	                            <ui:fragment
+	                                rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS' or activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS_MARC'}">
+	                                <a 
+	                                    href="#{activeDocumentBean.viewManager.metsResolverUrl}"
+	                                    id="lidomets" 
+	                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
+	                                    title="#{msg.metadata_dl_mets}"
+	                                    data-toggle="tooltip"
+	                                    data-placement="top"
+	                                    data-trigger="hover"
+	                                    target="_blank" rel="nofollow noopener"
+	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadMetsButtonLabel}"> 
+	                                    #{msg.downloadMetsButtonLabel}
+	                                </a>
+	                            <ui:fragment rendered="#{activeDocumentBean.viewManager.anchorMetsResolverUrl != null}">
+	                                <a 
+	                                    href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
+	                                    id="metsanchor" 
+	                                    class="badge badge-dark widget-format-links__work-download-mets-anchor" 
+	                                    title="#{msg.metadata_dl_metsAnchor}"
+	                                    data-toggle="tooltip"
+	                                    data-placement="top"
+	                                    data-trigger="hover"
+	                                    target="_blank" rel="nofollow noopener"
+	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadAnchorMetsButtonLabel}"> 
+	                                    #{msg.downloadAnchorMetsButtonLabel}
+	                                </a>
+	                            </ui:fragment>
+	                            </ui:fragment>
+	                        
+	                            <!-- LIDO -->
+	                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'LIDO'}">
+	                                <a 
+	                                    href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
+	                                    id="lidomets" 
+	                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
+	                                    title="#{msg.metadata_dl_lido}"
+	                                    data-toggle="tooltip"
+	                                    data-placement="top"
+	                                    data-trigger="hover"
+	                                    target="_blank" rel="nofollow noopener"
+	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadLidoButtonLabel}"> 
+	                                    #{msg.downloadLidoButtonLabel}
+	                                </a>
+	                            </ui:fragment>
+	                            
+	                            <!-- DENKXWEB -->
+	                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'DENKXWEB'}">
+	                                <a 
+	                                    href="#{activeDocumentBean.viewManager.denkxwebResolverUrl}"
+	                                    id="denkxweb"
+	                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
+	                                    title="#{msg.metadata_dl_denkxweb}"
+	                                    data-toggle="tooltip"
+	                                    data-placement="top"
+	                                    data-trigger="hover"
+	                                    target="_blank" rel="nofollow noopener"
+	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadDenkxwebButtonLabel}"> 
+	                                    #{msg.downloadDenkxwebButtonLabel}
+	                                </a>
+	                            </ui:fragment>
+	     
+	                            <!-- DUBLINCORE -->
+	                            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'DUBLINCORE'}">
+	                                <a 
+	                                    href="#{activeDocumentBean.viewManager.dublinCoreResolverUrl}"
+	                                    id="dublincorexml"
+	                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
+	                                    title="#{msg.metadata_dl_dublincore}"
+	                                    data-toggle="tooltip"
+	                                    data-placement="top"
+	                                    data-trigger="hover"
+	                                    target="_blank" rel="nofollow noopener"
+	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadDublinCoreButtonLabel}"> 
+	                                    #{msg.downloadDublinCoreButtonLabel}
+	                                </a>
+	                            </ui:fragment>
+	
+	                            <!-- MARCXML -->
+	                            <ui:fragment
+	                                rendered="#{activeDocumentBean.viewManager.oaiMarcUrl != null and (activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS' or activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS_MARC')}">
+	                                <a
+	                                    id="marc"
+	                                    href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
+	                                    class="badge badge-dark widget-format-links__work-download-oai-marc"
+	                                    title="#{msg.metadata_dl_marc}"
+	                                    data-toggle="tooltip"
+	                                    data-placement="top"
+	                                    data-trigger="hover"
+	                                    target="_blank" rel="nofollow noopener"
+	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.marcLink}">
+	                                    #{msg.marcLink}
+	                                </a>
+	                            </ui:fragment>
+	                        
+	                            <!-- OAI DC -->
+	                            <ui:fragment rendered="#{activeDocumentBean.viewManager.oaiDcUrl != null}">
+	                                <a
+	                                    id="dc"
+	                                    href="#{activeDocumentBean.viewManager.oaiDcUrl}"
+	                                    class="badge badge-dark widget-format-links__work-download-oai-dc"
+	                                    title="#{msg.metadata_dl_dublinCore}"
+	                                    data-toggle="tooltip"
+	                                    data-placement="top"
+	                                    data-trigger="hover"
+	                                    target="_blank" rel="nofollow noopener"
+	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.dcLink}"> 
+	                                    #{msg.dcLink} 
+	                                </a>
+	                            </ui:fragment>
+	                        
+	                        </ui:fragment>
+	                        
+	                        <!-- IIIF MANIFEST -->
+	                        <ui:fragment
+	                            rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionGenerateIiifManifest and !activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage}">
+	                            <button 
+	                                id="iiifManifest"
+	                                class="badge badge-dark widget-format-links__work-download-iiif" 
+	                                data-copy-value="#{imageDelivery.iiifManifest}" 
+	                                data-copy-done-msg="#{msg.copyUrlDone}"
+	                                title="#{msg.copyUrl}"
+	                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.iiif}"
+	                                tabindex="0"> 
+	                                #{msg.iiif}
+	                            </button> 
+	                        </ui:fragment>      
+	    
+	                    </div>
+                    </ui:fragment>
                      
                     <!-- LINKS -->
                    	<!-- ONLY RENDER IF OPAC, DFG OR MIRADOR AVAILABLE -->

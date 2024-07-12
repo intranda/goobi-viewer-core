@@ -695,6 +695,8 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
                 case "MD_FOO_LANG_ES":
                     es = true;
                     break;
+                default:
+                    break;
             }
         }
         Assertions.assertTrue(en);
@@ -809,7 +811,8 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         // Simulate search execution via the quick search widget
         searchBean.setInvisibleSearchString("1234xyz");
         searchBean.searchSimple(true, false);
-        searchBean.setExactSearchString(searchBean.getExactSearchString()); // TODO The double escaping that breaks the search cannot be reproduced with way, unfortunately - this test always passes
+        // TODO The double escaping that breaks the search cannot be reproduced with way, unfortunately - this test always passes
+        searchBean.setExactSearchString(searchBean.getExactSearchString());
         searchBean.search();
 
         assertEquals(0, searchBean.getCurrentSearch().getHitsCount());

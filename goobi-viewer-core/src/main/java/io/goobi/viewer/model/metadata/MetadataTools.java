@@ -243,8 +243,8 @@ public final class MetadataTools {
 
         // citation_author
         if (structElement.getMetadataValue(FIELD_MD_CREATOR) != null) {
-            for (Object fieldValue : structElement.getMetadataValues(FIELD_MD_CREATOR)) {
-                String value = StringEscapeUtils.escapeHtml4((String) fieldValue);
+            for (String fieldValue : structElement.getMetadataValues(FIELD_MD_CREATOR)) {
+                String value = StringEscapeUtils.escapeHtml4(fieldValue);
                 result.append("\r\n<meta name=\"citation_author\" content=\"").append(value).append(XML_TAG_CLOSE);
             }
         }
@@ -582,7 +582,7 @@ public final class MetadataTools {
         if (type == null) {
             return null;
         }
-        
+
         String ret = null;
         if (type.length() == 3) {
             switch (type.substring(0, 2)) {

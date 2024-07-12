@@ -3462,7 +3462,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isGeneratePdfInTaskManager.
+     * isGeneratePdfInMessageQueue.
      * </p>
      *
      * @should return correct value
@@ -6145,10 +6145,28 @@ public class Configuration extends AbstractConfiguration {
         String defaultMimeType = "default";
         return getLocalConfigurationsAt("viewer.mediaTypes.type").stream()
                 .filter(conf -> conf.getString("[@mimeType]", defaultMimeType).equals(mimeType))
-                .map(conf -> conf.getString("content-disposition", defaultDisposition))
+                .map(conf -> conf.getString("contentDisposition", defaultDisposition))
                 .findFirst()
                 .orElse(defaultDisposition);
 
+    }
+
+    public String getMediaTypeRedirectUrl(String mimeType) {
+        String defaultMimeType = "default";
+        return getLocalConfigurationsAt("viewer.mediaTypes.type").stream()
+                .filter(conf -> conf.getString("[@mimeType]", defaultMimeType).equals(mimeType))
+                .map(conf -> conf.getString("redirectHandling", ""))
+                .findFirst()
+                .orElse("");
+
+    }
+
+    public String getSearchHitStyleClass() {
+        return getLocalString("search.hitStyleClass", "docstructtype__{record.DOCSTRCT}");
+    }
+
+    public String getRecordViewStyleClass() {
+        return getLocalString("viewer.viewStyleClass", "docstructtype__{record.DOCSTRCT}");
     }
 
 }

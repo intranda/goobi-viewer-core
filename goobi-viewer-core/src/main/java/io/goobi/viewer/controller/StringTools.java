@@ -804,7 +804,7 @@ public final class StringTools {
                     secondMinus = true;
                     range = range.replace("--", "-");
                 }
-                String[] split = range.split("[-]");
+                String[] split = range.split("-");
                 page = Integer.valueOf(split[0]);
                 page2 = Integer.valueOf(split[1]);
                 if (firstMinus) {
