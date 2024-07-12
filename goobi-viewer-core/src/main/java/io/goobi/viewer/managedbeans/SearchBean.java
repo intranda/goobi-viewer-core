@@ -2654,6 +2654,11 @@ public class SearchBean implements SearchInterface, Serializable {
                                     return false;
                                 } finally {
                                     facesContext.responseComplete();
+                                    try {
+                                        wb.close();
+                                    } catch (IOException e) {
+                                        logger.error(e.getMessage());
+                                    }
                                 }
                             }
                         };
