@@ -60,9 +60,9 @@ public class ExcelExport {
         }
     }
 
-    public void close() {
+    public void close() throws IOException {
         if (workbook != null) {
-            workbook.dispose();
+            workbook.close();
         }
     }
 
