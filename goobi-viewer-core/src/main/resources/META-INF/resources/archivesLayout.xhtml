@@ -103,7 +103,7 @@
 													value="#{archiveBean.archiveId}">
 													<f:selectItem itemLabel="#{msg.select}" itemValue=""
 														noSelectionOption="true" />
-													<f:selectItems value="#{archiveBean.databases}"
+													<f:selectItems value="#{archiveBean.filteredDatabases}"
 														var="database" itemValue="#{database.combinedId}"
 														itemLabel="#{database.combinedName}"></f:selectItems>
 												</h:selectOneMenu>
