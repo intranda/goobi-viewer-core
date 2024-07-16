@@ -163,7 +163,7 @@ public class ArchiveManager implements Serializable {
             ArchiveResource cachedResource =
                     cachedDatabases.keySet().stream().filter(res -> res.getCombinedId().equals(db.getCombinedId())).findAny().orElse(null);
             ArchiveTree cachedTree = cachedResource != null ? cachedDatabases.get(cachedResource) : null;
-            if (cachedTree == null || cachedResource == null) {
+            if (cachedTree == null) {
                 logger.trace("Archive {} is not yet loaded.", db.getResourceName());
                 this.archives.put(db, null);
                 updated = true;

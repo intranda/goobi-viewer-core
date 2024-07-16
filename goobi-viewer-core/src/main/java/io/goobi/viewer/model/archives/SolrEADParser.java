@@ -66,7 +66,7 @@ public class SolrEADParser extends ArchiveParser {
     public static final String DATABASE_NAME = "EAD";
 
     private static final List<String> SOLR_FIELDS_DATABASES =
-            Arrays.asList(SolrConstants.DATEINDEXED, SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE);
+            Arrays.asList(SolrConstants.ACCESSCONDITION, SolrConstants.DATEINDEXED, SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE);
     private static final String[] SOLR_FIELDS_ENTRIES = { SolrConstants.ACCESSCONDITION, SolrConstants.EAD_NODE_ID, SolrConstants.IDDOC,
             SolrConstants.IDDOC_PARENT, FIELD_ARCHIVE_ENTRY_LEVEL, SolrConstants.LOGID, SolrConstants.PI_TOPSTRUCT, SolrConstants.TITLE };
 
@@ -105,7 +105,7 @@ public class SolrEADParser extends ArchiveParser {
             String resourceIdentifier = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
             String resourceName = SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE);
             if (resourceName == null) {
-                logger.warn("Indexed archive tree is missing field: {}. Using PI instead.", SolrConstants.TITLE);
+                logger.warn("Indexed archive tree '{}' is missing field: {}. Using PI instead.", resourceIdentifier, SolrConstants.TITLE);
                 resourceName = resourceIdentifier;
             }
             String lastUpdated = null;
@@ -118,6 +118,13 @@ public class SolrEADParser extends ArchiveParser {
             String size = "0";
             ArchiveResource eadResource = new ArchiveResource(dbName, resourceName, resourceIdentifier, lastUpdated, size);
             ret.add(eadResource);
+
+            for (String accessCondition : SolrTools.getMetadataValues(doc, SolrConstants.ACCESSCONDITION)) {
+                if (!SolrConstants.OPEN_ACCESS_VALUE.equals(accessCondition)) {
+                    eadResource.getAccessConditions().add(accessCondition);
+                    logger.trace("Archive {} has access condition: {}", eadResource.getResourceName(), accessCondition);
+                }
+            }
         }
 
         return ret;

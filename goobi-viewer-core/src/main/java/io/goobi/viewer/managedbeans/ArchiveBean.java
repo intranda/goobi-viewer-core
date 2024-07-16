@@ -23,6 +23,7 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,12 +41,17 @@ import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.ArchiveConnectionException;
 import io.goobi.viewer.exceptions.ArchiveException;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.archives.ArchiveEntry;
 import io.goobi.viewer.model.archives.ArchiveManager;
 import io.goobi.viewer.model.archives.ArchiveManager.DatabaseState;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.archives.ArchiveResource;
 import io.goobi.viewer.model.archives.ArchiveTree;
 import io.goobi.viewer.model.archives.NodeType;
@@ -387,6 +393,34 @@ public class ArchiveBean implements Serializable {
 
     public List<ArchiveResource> getDatabases() {
         return archiveManager.getDatabases();
+    }
+
+    /**
+     * 
+     * @return Available databases, filtered by user access
+     */
+    public List<ArchiveResource> getFilteredDatabases() {
+        List<ArchiveResource> ret = new ArrayList<>();
+        for (ArchiveResource resource : archiveManager.getDatabases()) {
+            if (resource.getAccessConditions().isEmpty()) {
+                ret.add(resource);
+            } else {
+                try {
+                    if (AccessConditionUtils
+                            .checkAccessPermissionByIdentifierAndLogId(resource.getResourceId(), null, IPrivilegeHolder.PRIV_LIST,
+                                    BeanUtils.getRequest())
+                            .isGranted()) {
+                        ret.add(resource);
+                    } else {
+                        logger.trace("Archive hidden: {}", resource.getResourceId());
+                    }
+                } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        }
+
+        return ret;
     }
 
     public int getNumArchives() {

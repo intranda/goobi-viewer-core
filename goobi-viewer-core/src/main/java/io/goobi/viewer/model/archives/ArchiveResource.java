@@ -24,6 +24,8 @@ package io.goobi.viewer.model.archives;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -45,6 +47,8 @@ public class ArchiveResource implements Serializable {
     private final String resourceId;
     private final LocalDateTime modifiedDate;
     private final Long size;
+    /** Access conditions of the root element (excluding OPENACCESS) */
+    private final List<String> accessConditions = new ArrayList<>();
 
     /**
      * 
@@ -99,6 +103,13 @@ public class ArchiveResource implements Serializable {
      */
     public Long getSize() {
         return size;
+    }
+
+    /**
+     * @return the accessConditions
+     */
+    public List<String> getAccessConditions() {
+        return accessConditions;
     }
 
     /**
