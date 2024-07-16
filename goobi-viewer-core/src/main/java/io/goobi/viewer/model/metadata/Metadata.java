@@ -785,7 +785,7 @@ public class Metadata implements Serializable {
      */
     public boolean populate(StructElement se, String ownerIddoc, List<StringPair> sortFields, Locale locale)
             throws IndexUnreachableException, PresentationException {
-        return populate(se, null, ownerIddoc, sortFields, locale);
+        return populate(se, null, ownerIddoc, sortFields, null, 0, locale);
     }
 
     /**
@@ -795,14 +795,15 @@ public class Metadata implements Serializable {
      * @param anchorSe Optional anchor {@link StructElement}
      * @param ownerIddoc IDDOC of the owner document (either docstruct or parent metadata)
      * @param sortFields
+     * @param truncateLength
      * @param locale a {@link java.util.Locale} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @should use default value of no value found
      */
-    public boolean populate(StructElement se, StructElement anchorSe, String ownerIddoc, List<StringPair> sortFields, Locale locale)
-            throws IndexUnreachableException, PresentationException {
+    public boolean populate(StructElement se, StructElement anchorSe, String ownerIddoc, List<StringPair> sortFields,
+            Map<String, Set<String>> searchTerms, int truncateLength, Locale locale) throws IndexUnreachableException, PresentationException {
         if (se == null) {
             return false;
         }
@@ -901,6 +902,23 @@ public class Metadata implements Serializable {
                                 continue;
                             }
                         }
+
+                        // Truncate long values
+                        if (truncateLength > 0 && value.length() > truncateLength) {
+                            value = new StringBuilder(value.substring(0, truncateLength - 3)).append("...").toString();
+                        }
+                        // Add highlighting
+                        if (searchTerms != null) {
+                            if (searchTerms.get(getLabel()) != null) {
+                                value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(getLabel()));
+                            } else if (getLabel().startsWith("MD_SHELFMARK") && searchTerms.get("MD_SHELFMARKSEARCH") != null) {
+                                value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get("MD_SHELFMARKSEARCH"));
+                            }
+                            if (searchTerms.get(SolrConstants.DEFAULT) != null) {
+                                value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.DEFAULT));
+                            }
+                        }
+
                         setParamValue(count, indexOfParam, Collections.singletonList(value), param.getKey(), null, null, null, locale);
                         count++;
                     }
