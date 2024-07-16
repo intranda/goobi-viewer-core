@@ -391,6 +391,12 @@ public class ArchiveBean implements Serializable {
         return archiveManager.getArchive(currentDatabase, currentResource);
     }
 
+    /**
+     * 
+     * @return List<ArchiveResource>
+     * @deprecated Use getFilteredDatabases()
+     */
+    @Deprecated(since = "2024.06")
     public List<ArchiveResource> getDatabases() {
         return archiveManager.getDatabases();
     }
@@ -424,7 +430,7 @@ public class ArchiveBean implements Serializable {
     }
 
     public int getNumArchives() {
-        return getDatabases().size();
+        return getFilteredDatabases().size();
     }
 
     public String getArchiveId() {
