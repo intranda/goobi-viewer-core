@@ -6161,4 +6161,12 @@ public class Configuration extends AbstractConfiguration {
 
     }
 
+    public String getSearchHitStyleClass() {
+        return getLocalString("search.hitStyleClass", "docstructtype__{record.DOCSTRCT}");
+    }
+
+    public String getRecordViewStyleClass() {
+        return getLocalString("viewer.viewStyleClass", "docstructtype__{record.DOCSTRCT}");
+    }
+
 }

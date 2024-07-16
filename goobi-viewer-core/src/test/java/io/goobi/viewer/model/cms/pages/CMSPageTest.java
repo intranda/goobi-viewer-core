@@ -105,9 +105,10 @@ class CMSPageTest extends AbstractDatabaseEnabledTest {
      * @verifies create doc correctly
      */
     @Test
-    void exportAsXml_shouldCreateDocCorrectly() throws Exception {
+    void exportAsXml_shouldCreateDocCorrectly() {
         CMSPage page = new CMSPage();
         page.getTitleTranslations().setValue("Title", Locale.ENGLISH);
+        page.getTitleTranslations().setValue("Titel", Locale.GERMAN);
         page.addCategory(new CMSCategory("foo"));
         page.addCategory(new CMSCategory("bar"));
 
@@ -120,7 +121,13 @@ class CMSPageTest extends AbstractDatabaseEnabledTest {
         Document doc = page.exportAsXml();
         assertNotNull(doc);
         assertEquals("cmsPage", doc.getRootElement().getName());
-        assertEquals("Title", doc.getRootElement().getChildText("title"));
+        List<Element> eleListTitle = doc.getRootElement().getChildren("title");
+        assertNotNull(eleListTitle);
+        assertEquals(2, eleListTitle.size());
+        assertEquals("Title", eleListTitle.get(0).getText());
+        assertEquals("en", eleListTitle.get(0).getAttributeValue("lang"));
+        assertEquals("Titel", eleListTitle.get(1).getText());
+        assertEquals("de", eleListTitle.get(1).getAttributeValue("lang"));
 
         assertNotNull(doc.getRootElement().getChildText("categories"));
         List<Element> eleListCategory = doc.getRootElement().getChild("categories").getChildren("category");

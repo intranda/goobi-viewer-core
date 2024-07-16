@@ -23,10 +23,6 @@
         value="#{archiveBean.getUpdatedNodeTypes()}"
         scope="request" />
 
-	<c:set var="visibleTree"
-		value="#{archiveTree.treeView.stream().filter(e -> e.visible).filter(e -> !archiveBean.searchActive or e.displaySearch).toList()}"
-		scope="request" />
-
 	<!-- The indentation of each hierarchical level in pixel -->
 	<c:set var="indent" value="#{indent != null ? indent : configurationBean.tocIndentation}" scope="view" />
 

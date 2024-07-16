@@ -125,7 +125,7 @@
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20240303</json.version>
-		<jsoup.version>1.17.2</jsoup.version>
+		<jsoup.version>1.18.1</jsoup.version>
 		<junit.version>5.10.3</junit.version>
 		<mariadb-java-client.version>3.4.0</mariadb-java-client.version>
 		<mockito.version>5.12.0</mockito.version>
@@ -967,7 +967,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.3.0</version>
+				<version>3.3.1</version>
 				<configuration>
 					<skipTests>${skipTests}</skipTests>
 					<excludes>

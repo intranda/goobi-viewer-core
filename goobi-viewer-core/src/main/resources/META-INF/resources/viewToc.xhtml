@@ -455,6 +455,8 @@
         	<widgetComponent:widget_formatsLinks />
 		</ui:fragment>
 		
+		<widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
+		
         <ui:fragment rendered="#{(activeDocumentBean.anchor or activeDocumentBean.group)}">
         	<widgetComponent:widget_citation /> 
 		</ui:fragment>
@@ -480,7 +482,6 @@
 		        popoverClass="record_geomap_popover"
 		        highlightDocumentId="#{activeDocumentBean.logid}"/>
         </ui:fragment>
-<!-- 		<widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" /> -->
 
 <!--         <widgetComponent:widget_relatedGroups /> -->
 

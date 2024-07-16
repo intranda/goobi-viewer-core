@@ -109,12 +109,12 @@
                         	       <ui:param name="showBookmarkIcon" value="#{configurationBean.bookmarksEnabled}"></ui:param>
                                 </ui:include>
                                 
-                                <!-- Related archive entry -->
+                                <!-- Related archive entry --> 
                                 <ui:fragment rendered="#{hit.altUrl != null}">
-                                    <a href="#{request.contextPath}/#{hit.altUrl}" title="#{hit.altLabel}">
+                                    <a class="search-list__hit-archive-link" href="#{request.contextPath}/#{hit.altUrl}" title="#{hit.altLabel}">
                                         #{msg.archives__open_in_archive_view} <i class="fa fa-archive"></i>
                                     </a>
-                                </ui:fragment>
+                                </ui:fragment> 
                             </header>
 
                             <!-- CONTENT -->

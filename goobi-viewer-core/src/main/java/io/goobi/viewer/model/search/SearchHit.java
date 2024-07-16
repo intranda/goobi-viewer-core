@@ -59,6 +59,7 @@ import io.goobi.viewer.api.rest.model.ner.TagCount;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.TEITools;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -76,6 +77,7 @@ import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.TranslatableCMSContent;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
@@ -85,6 +87,9 @@ import io.goobi.viewer.solr.SolrTools;
  * Wrapper class for search hits. Contains the corresponding <code>BrowseElement</code>
  */
 public class SearchHit implements Comparable<SearchHit> {
+
+    private static final String STYLE_CLASS_WORD_SEPARATOR = "_";
+    private static final int MAX_STYLECLASS_LENGTH = 100;
 
     private static final Logger logger = LogManager.getLogger(SearchHit.class);
 
@@ -473,7 +478,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             ownerHits.put(iddoc, childHit);
                             ownerDocs.put(iddoc, childDoc);
                             hitsPopulated++;
-                            
+
                             // Check and add link to related record, if exists
                             String entryId = SolrTools.getSingleFieldStringValue(childDoc, SolrConstants.EAD_NODE_ID);
                             if (StringUtils.isNotEmpty(entryId)) {
@@ -1008,12 +1013,13 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     public String getCssClass() {
-        String docStructType = this.getBrowseElement().getDocStructType();
-        if (StringUtils.isNotBlank(docStructType)) {
-            return "docstructtype__" + docStructType;
-        }
+        VariableReplacer vr =
+                new VariableReplacer(this.browseElement.getStructElements().stream().findFirst().orElse(this.browseElement.getBottomStructElement()));
+        String template = DataManager.getInstance().getConfiguration().getSearchHitStyleClass();
+        String value = vr.replace(template).stream().findAny().orElse("");
+        value = StringTools.convertToSingleWord(value, MAX_STYLECLASS_LENGTH, STYLE_CLASS_WORD_SEPARATOR).toLowerCase();
 
-        return "";
+        return value;
     }
 
     /* (non-Javadoc)
