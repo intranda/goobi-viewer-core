@@ -837,7 +837,7 @@ public class Metadata implements Serializable {
                 // In this case save time by skipping this field.
                 return false;
             }
-            return populateGroup(se, ownerIddoc, sortFields, locale);
+            return populateGroup(se, ownerIddoc, sortFields, searchTerms, truncateLength, locale);
         }
 
         // Regular, atomic metadata
@@ -958,11 +958,14 @@ public class Metadata implements Serializable {
      * @param se {@link StructElement}
      * @param ownerIddoc Owner IDDOC (either docstruct or parent metadata)
      * @param sortFields Optional field/order pairs for sorting
+     * @param searchTerms
+     * @param truncateLength
      * @param locale
      * @return true if successful; false otherwise
      * @throws IndexUnreachableException
      */
-    boolean populateGroup(StructElement se, String ownerIddoc, List<StringPair> sortFields, Locale locale) throws IndexUnreachableException {
+    boolean populateGroup(StructElement se, String ownerIddoc, List<StringPair> sortFields, Map<String, Set<String>> searchTerms, int truncateLength,
+            Locale locale) throws IndexUnreachableException {
         if (ownerIddoc == null) {
             return false;
         }
@@ -1024,6 +1027,23 @@ public class Metadata implements Serializable {
                                 }
                                 logger.trace("conditional value added: {}", value);
                             }
+
+                            // Truncate long values
+                            if (truncateLength > 0 && value.length() > truncateLength) {
+                                value = new StringBuilder(value.substring(0, truncateLength - 3)).append("...").toString();
+                            }
+                            // Add highlighting
+                            if (searchTerms != null) {
+                                if (searchTerms.get(getLabel()) != null) {
+                                    value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(getLabel()));
+                                } else if (getLabel().startsWith("MD_SHELFMARK") && searchTerms.get("MD_SHELFMARKSEARCH") != null) {
+                                    value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get("MD_SHELFMARKSEARCH"));
+                                }
+                                if (searchTerms.get(SolrConstants.DEFAULT) != null) {
+                                    value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.DEFAULT));
+                                }
+                            }
+
                             paramValues.add(value);
                         }
                         if (param.getKey().startsWith(NormDataImporter.FIELD_URI) && doc.getFieldValue(FIELD_NORM_TYPE) != null) {
