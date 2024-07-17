@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.faces.context.FacesContext;
@@ -1853,5 +1854,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     @Override
     public String toString() {
         return String.format("%s %s (%s)", getPi(), getOrder(), getOrderLabel());
+    }
+
+    public String getFileMimeType() {
+
+        return Optional.ofNullable(getFileName())
+                .map(ImageFileFormat::getImageFileFormatFromFileExtension)
+                .map(ImageFileFormat::getMimeType)
+                .orElse("");
     }
 }
