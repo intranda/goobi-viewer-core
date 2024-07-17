@@ -331,7 +331,7 @@
                             <!-- IIIF MANIFEST FULL RECORD -->
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage and navigationHelper.currentView != 'fulltext'}">
 	                           <button 
-                                   id="iiifManifest"
+                                   id="iiifManifestRecord"
                                    class="badge badge-dark widget-usage__work-download-iiif" 
 	                               data-copy-value="#{imageDelivery.iiifManifest}" 
 	                               data-copy-done-msg="#{msg.copyUrlDone}"
@@ -533,7 +533,7 @@
 									activeDocumentBean.viewManager.pageLoader.numPages gt 1 and
 									activeDocumentBean.viewManager.currentPage.displayImage and 
 									navigationHelper.currentView != 'fulltext'}">
-									<button id="iiifManifest"
+									<button id="iiifManifestPage"
 										class="badge badge-dark widget-usage__page-download-iiif"
 										data-copy-value="#{imageDelivery.iiifPageManifest}"
 										data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
