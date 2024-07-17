@@ -86,7 +86,6 @@
 
                         <!-- grouped="false" -->
                         <h:panelGroup layout="block" rendered="#{!browseElementMetadata.group}">
-                            <h:outputText value="#{msg[browseElementMetadata.label]}: " escape="false" styleClass="search-list__hit-text-label" />
                             <span class ="metadata__element-wrapper-single-custom-wrapper search-list__hit-text-value">
                                 <ui:repeat value="#{browseElementMetadata.values}" var="val">
                                     <dd>
