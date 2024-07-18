@@ -47,6 +47,7 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.viewer.StructElement;
 
 public class MetadataBuilder {
 
@@ -67,6 +68,10 @@ public class MetadataBuilder {
      * @param doc
      */
     public MetadataBuilder(SolrDocument doc) {
+        this(MetadataContainer.createMetadataEntity(doc));
+    }
+
+    public MetadataBuilder(StructElement doc) {
         this(MetadataContainer.createMetadataEntity(doc));
     }
 

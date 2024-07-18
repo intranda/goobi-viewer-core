@@ -331,7 +331,7 @@
                             <!-- IIIF MANIFEST FULL RECORD -->
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage and navigationHelper.currentView != 'fulltext'}">
 	                           <button 
-                                   id="iiifManifest"
+                                   id="iiifManifestRecord"
                                    class="badge badge-dark widget-usage__work-download-iiif" 
 	                               data-copy-value="#{imageDelivery.iiifManifest}" 
 	                               data-copy-done-msg="#{msg.copyUrlDone}"
@@ -397,7 +397,9 @@
 								<ui:fragment
 									rendered="#{(navigationHelper.currentPage == 'object' or navigationHelper.currentPage == 'cmsPageOfWork') and
                                                      activeDocumentBean.viewManager.externalDownloadUrl == null and 
-                                                     activeDocumentBean.viewManager.currentPage.accessPermissionPdf}">
+                                                     activeDocumentBean.viewManager.currentPage.accessPermissionPdf and
+                                                     activeDocumentBean.viewManager.pageLoader.numPages gt 1 and
+                                                     activeDocumentBean.viewManager.currentPage.fileMimeType.startsWith('image')}">
 									<a href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
 										id="pdfPage"
 										class="badge badge-dark widget-downloads__page-download-pdf"
@@ -527,8 +529,11 @@
 								</ui:fragment>
 								<!-- IIIF MANIFEST PAGE -->
 								<ui:fragment
-									rendered="#{!activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage and navigationHelper.currentView != 'fulltext'}">
-									<button id="iiifManifest"
+									rendered="#{!activeDocumentBean.viewManager.bornDigital and 
+									activeDocumentBean.viewManager.pageLoader.numPages gt 1 and
+									activeDocumentBean.viewManager.currentPage.displayImage and 
+									navigationHelper.currentView != 'fulltext'}">
+									<button id="iiifManifestPage"
 										class="badge badge-dark widget-usage__page-download-iiif"
 										data-copy-value="#{imageDelivery.iiifPageManifest}"
 										data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
@@ -538,8 +543,10 @@
 
 								<!-- MIRADOR PAGE -->
 								<ui:fragment
-									rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly and navigationHelper.currentView != 'fulltext'
-									and !imageDelivery.iiif.isIIIFUrl(activeDocumentBean.viewManager.currentPage.fileName)}">
+									rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and 
+									!activeDocumentBean.viewManager.filesOnly and navigationHelper.currentView != 'fulltext' and 
+									activeDocumentBean.viewManager.pageLoader.numPages gt 1 and
+									!imageDelivery.iiif.isIIIFUrl(activeDocumentBean.viewManager.currentPage.fileName)}">
 									<a
 										href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifPageManifest}"
 										id="mirador"

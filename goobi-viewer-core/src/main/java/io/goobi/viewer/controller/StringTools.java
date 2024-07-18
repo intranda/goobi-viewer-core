@@ -361,8 +361,9 @@ public final class StringTools {
     }
 
     /**
-     * Escapes the given string. Uses {@link org.apache.commons.lang3.StringEscapeUtils#escapeHtml4(String)} and additionally converts all line
-     * breaks (\r\n, \r, \n) to html line breaks ({@code <br/> })
+     * Escapes the given string. Uses {@link org.apache.commons.lang3.StringEscapeUtils#escapeHtml4(String)} and additionally converts all line breaks
+     * (\r\n, \r, \n) to html line breaks ({@code <br/>
+     *  })
      *
      * @param text the text to escape
      * @return the escaped string
@@ -853,7 +854,8 @@ public final class StringTools {
     }
 
     public static String convertToSingleWord(String text, int maxLength, String whitespaceReplacement) {
-        String replaced = text
+        String replaced = Optional.ofNullable(text)
+                .orElse("")
                 .replaceAll("\\s", whitespaceReplacement)
                 .replaceAll("[^a-zA-Z0-9" + whitespaceReplacement + "]", "");
         if (replaced.length() > maxLength) {
