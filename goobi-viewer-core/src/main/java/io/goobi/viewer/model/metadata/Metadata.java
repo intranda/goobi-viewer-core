@@ -988,7 +988,7 @@ public class Metadata implements Serializable {
                         setParamValue(count, i, paramValues, relatedDocuments, param.getKey(), null, options, groupType, locale);
                     } else if (param.getDefaultValue() != null) {
                         logger.debug("No value found for {}, using default value", param.getKey());
-                        setParamValue(0, i, Collections.singletonList(param.getDefaultValue()), relatedDocuments, param.getKey(), null, null,
+                        setParamValue(count, i, Collections.singletonList(param.getDefaultValue()), relatedDocuments, param.getKey(), null, null,
                                 groupType, locale);
                         found = true;
                     } else {
