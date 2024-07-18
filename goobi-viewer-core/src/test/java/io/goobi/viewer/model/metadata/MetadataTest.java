@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -33,7 +32,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
@@ -41,7 +40,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 
-class MetadataTest extends AbstractTest {
+class MetadataTest extends AbstractSolrEnabledTest {
 
     /**
      * @see Metadata#filterMetadata(List,Locale)
