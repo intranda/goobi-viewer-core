@@ -49,6 +49,7 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     void before() {
         try {
             SolrEADParser tempParser = new SolrEADParser();
+            tempParser.updateAssociatedRecordMap();
             List<ArchiveResource> tempDatabases = tempParser.getPossibleDatabases();
             if (!tempDatabases.isEmpty()) {
                 ArchiveEntry root =
