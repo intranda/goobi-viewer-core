@@ -76,15 +76,6 @@ public class SolrEADParser extends ArchiveParser {
     private Map<String, ArchiveEntry> loadedNodeMap = new HashMap<>();
 
     /**
-     *
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     */
-    public SolrEADParser() throws PresentationException, IndexUnreachableException {
-        updateAssociatedRecordMap();
-    }
-
-    /**
      * Get the database names.
      *
      * @return List<ArchiveResource>

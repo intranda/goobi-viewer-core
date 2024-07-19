@@ -108,6 +108,7 @@ public class ArchiveManager implements Serializable {
         ArchiveParser parser = null;
         try {
             parser = new SolrEADParser();
+            parser.updateAssociatedRecordMap();
             initArchives(parser);
             this.databaseState = DatabaseState.ARCHIVES_LOADED;
         } catch (PresentationException | IndexUnreachableException | IOException | HTTPException e) {
@@ -119,10 +120,11 @@ public class ArchiveManager implements Serializable {
     }
 
     /**
+     * Constructor for unit tests.
      * 
      * @param eadParser
      */
-    public ArchiveManager(ArchiveParser eadParser) {
+    ArchiveManager(ArchiveParser eadParser) {
         try {
             initArchives(eadParser);
             this.databaseState = DatabaseState.ARCHIVES_LOADED;

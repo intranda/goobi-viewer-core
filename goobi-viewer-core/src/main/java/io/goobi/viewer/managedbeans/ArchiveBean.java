@@ -346,6 +346,7 @@ public class ArchiveBean implements Serializable {
         if (isDatabaseLoaded()) {
             return DatabaseState.ARCHIVE_TREE_LOADED;
         } else if (archiveManager.isInErrorState()) {
+            logger.trace("archive error state");
             return archiveManager.getDatabaseState();
         } else {
             archiveManager.updateArchiveList();
