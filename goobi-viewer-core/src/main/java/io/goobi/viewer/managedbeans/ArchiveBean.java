@@ -67,7 +67,6 @@ public class ArchiveBean implements Serializable {
     private String searchString;
     private boolean databaseLoaded = false;
     private ArchiveTree archiveTree = null;
-    private String currentDatabase;
     private String currentResource;
     private final ArchiveManager archiveManager;
 
@@ -80,7 +79,6 @@ public class ArchiveBean implements Serializable {
     }
 
     public void reset() {
-        this.currentDatabase = "";
         this.currentResource = "";
         this.searchString = "";
         this.archiveTree = null;
@@ -96,7 +94,7 @@ public class ArchiveBean implements Serializable {
         if (getCurrentArchive() != null) {
             try {
                 // this.archiveTree = new ArchiveTree(archiveManager.getArchiveTree(getCurrentDatabase(), getCurrentResource()));
-                this.archiveTree = archiveManager.getArchiveTree(getCurrentDatabase(), getCurrentResource());
+                this.archiveTree = archiveManager.getArchiveTree(getCurrentResource());
                 this.databaseLoaded = true;
                 this.searchString = "";
                 this.archiveTree.resetSearch();
@@ -107,7 +105,7 @@ public class ArchiveBean implements Serializable {
                 logger.error("Error initializing archive tree: {}", e.getMessage());
                 Messages.error("Error initializing archive tree: " + e.getMessage());
                 this.databaseLoaded = false;
-                throw new ArchiveConnectionException("Error retrieving database {} from {}", getCurrentResource(), getCurrentDatabase());
+                throw new ArchiveConnectionException("Error retrieving database {} from {}", getCurrentResource());
             }
         }
     }
@@ -360,24 +358,10 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * @return the currentDatabase
-     */
-    public String getCurrentDatabase() {
-        return currentDatabase;
-    }
-
-    /**
      * @return the currentResource
      */
     public String getCurrentResource() {
         return currentResource;
-    }
-
-    /**
-     * @param currentDatabase the currentDatabase to set
-     */
-    public void setCurrentDatabase(String currentDatabase) {
-        this.currentDatabase = currentDatabase;
     }
 
     /**
@@ -388,7 +372,7 @@ public class ArchiveBean implements Serializable {
     }
 
     public ArchiveResource getCurrentArchive() {
-        return archiveManager.getArchive(currentDatabase, currentResource);
+        return archiveManager.getArchive(currentResource);
     }
 
     /**
@@ -434,13 +418,12 @@ public class ArchiveBean implements Serializable {
     }
 
     public String getArchiveId() {
-        return Optional.ofNullable(getCurrentArchive()).map(ArchiveResource::getCombinedId).orElse("");
+        return Optional.ofNullable(getCurrentArchive()).map(ArchiveResource::getResourceId).orElse("");
     }
 
     public void setArchiveId(String archiveName) throws ArchiveException {
         ArchiveResource database = this.archiveManager.getArchiveResource(archiveName);
         if (database != null) {
-            this.currentDatabase = database.getDatabaseId();
             this.currentResource = database.getResourceId();
             this.initializeArchiveTree();
         } else {
@@ -448,8 +431,7 @@ public class ArchiveBean implements Serializable {
         }
     }
 
-    public void loadDatabaseResource(String databaseId, String resourceId) throws ArchiveException {
-        this.currentDatabase = databaseId;
+    public void loadDatabaseResource(String resourceId) throws ArchiveException {
         this.currentResource = resourceId;
         this.initializeArchiveTree();
     }
@@ -460,7 +442,7 @@ public class ArchiveBean implements Serializable {
     public void redirectToOnlyDatabase() {
         if (!this.databaseLoaded) {
             this.archiveManager.getOnlyDatabaseResource().ifPresent(resource -> {
-                String url = PrettyUrlTools.getAbsolutePageUrl("archives2", resource.getDatabaseId(), resource.getResourceId());
+                String url = PrettyUrlTools.getAbsolutePageUrl("archives2", resource.getResourceId());
                 logger.trace(url);
                 try {
                     FacesContext.getCurrentInstance().getExternalContext().redirect(url);

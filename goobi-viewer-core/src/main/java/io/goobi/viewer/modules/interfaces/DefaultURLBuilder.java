@@ -32,7 +32,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.archives.SolrEADParser;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.translations.language.Language;
@@ -86,7 +85,7 @@ public class DefaultURLBuilder implements IURLBuilder {
             url = "cms/" + ele.getPi().substring(3) + "/";
         } else if (ele.isArchive()) {
             // Archive
-            url = "archives/" + SolrEADParser.DATABASE_NAME + "/" + ele.getPi() + "/";
+            url = "archives/" + ele.getPi() + "/";
         } else {
             // Regular record
             PageType pageType = getPageType(ele);
@@ -123,7 +122,7 @@ public class DefaultURLBuilder implements IURLBuilder {
     public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType, boolean topStruct) {
         // Archive view
         if (PageType.archive.equals(pageType)) {
-            return "archives/" + SolrEADParser.DATABASE_NAME + "/" + pi + "/";
+            return "archives/" + pi + "/";
         }
 
         // Check for CMS page as the default view for this record; do not override page-specific URLs

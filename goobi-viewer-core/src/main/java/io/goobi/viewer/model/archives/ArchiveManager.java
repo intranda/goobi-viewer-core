@@ -161,7 +161,7 @@ public class ArchiveManager implements Serializable {
                 continue;
             }
             ArchiveResource cachedResource =
-                    cachedDatabases.keySet().stream().filter(res -> res.getCombinedId().equals(db.getCombinedId())).findAny().orElse(null);
+                    cachedDatabases.keySet().stream().filter(res -> res.getResourceId().equals(db.getResourceId())).findAny().orElse(null);
             ArchiveTree cachedTree = cachedResource != null ? cachedDatabases.get(cachedResource) : null;
             if (cachedTree == null) {
                 logger.trace("Archive {} is not yet loaded.", db.getResourceName());
@@ -202,7 +202,6 @@ public class ArchiveManager implements Serializable {
 
     /**
      * 
-     * @param archiveId
      * @param resourceId
      * @return {@link ArchiveTree}
      * @throws IllegalStateException
@@ -210,10 +209,9 @@ public class ArchiveManager implements Serializable {
      * @throws IndexUnreachableException
      * @should load ArchiveTree correctly
      */
-    public ArchiveTree getArchiveTree(String archiveId, String resourceId)
-            throws IllegalStateException, PresentationException, IndexUnreachableException {
-        logger.trace("getArchiveTree: {}", archiveId);
-        ArchiveResource resource = getArchive(archiveId, resourceId);
+    public ArchiveTree getArchiveTree(String resourceId) throws IllegalStateException, PresentationException, IndexUnreachableException {
+        logger.trace("getArchiveTree: {}", resourceId);
+        ArchiveResource resource = getArchive(resourceId);
         this.initializeArchiveTree(resource);
         return this.archives.get(resource);
     }
@@ -224,7 +222,7 @@ public class ArchiveManager implements Serializable {
      * @return ArchiveResource
      */
     public ArchiveResource getArchiveResource(String archiveName) {
-        return this.archives.keySet().stream().filter(db -> db.getCombinedId().equals(archiveName)).findAny().orElse(null);
+        return this.archives.keySet().stream().filter(db -> db.getResourceId().equals(archiveName)).findAny().orElse(null);
     }
 
     /**
@@ -274,8 +272,7 @@ public class ArchiveManager implements Serializable {
             return "archives/";
         }
 
-        return "archives/{database}/{filename}/?selected={identifier}#selected"
-                .replace("{database}", resource.getDatabaseId())
+        return "archives/{filename}/?selected={identifier}#selected"
                 .replace("{filename}", resource.getResourceId())
                 .replace("{identifier}", entryIdentifier);
     }
@@ -290,7 +287,7 @@ public class ArchiveManager implements Serializable {
      */
     public List<ArchiveResource> getDatabases() {
         List<ArchiveResource> databases = new ArrayList<>(this.archives.keySet());
-        databases.sort((db1, db2) -> db1.getCombinedName().compareTo(db2.getCombinedName()));
+        databases.sort((db1, db2) -> db1.toString().compareTo(db2.toString()));
         return databases;
     }
 
@@ -363,13 +360,11 @@ public class ArchiveManager implements Serializable {
         return Collections.emptyList();
     }
 
-    public ArchiveResource getArchive(String databaseId, String resourceId) {
-        logger.trace("getArchive: {}, {}", databaseId, resourceId);
-        if (StringUtils.isNoneBlank(databaseId, resourceId)) {
+    public ArchiveResource getArchive(String resourceId) {
+        logger.trace("getArchive: {}", resourceId);
+        if (StringUtils.isNotBlank(resourceId)) {
             return this.archives.keySet()
                     .stream()
-                    // .peek(a -> System.out.println("Archive " + a.getDatabaseId() + " - " + a.getResourceId()))
-                    .filter(a -> a.getDatabaseId().equals(databaseId))
                     .filter(a -> a.getResourceId().equals(resourceId))
                     .findAny()
                     .orElse(null);
@@ -393,7 +388,7 @@ public class ArchiveManager implements Serializable {
                         Collections.singletonList(SolrConstants.PI_TOPSTRUCT));
         if (doc != null) {
             String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
-            return getArchive(SolrEADParser.DATABASE_NAME, pi);
+            return getArchive(pi);
         }
 
         return null;
@@ -430,10 +425,10 @@ public class ArchiveManager implements Serializable {
                 }
             } catch (IOException | HTTPException e) {
                 this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
-                throw new ArchiveConnectionException("Error retrieving database {} from {}", resource.getCombinedName(), eadParser.getUrl(), e);
+                throw new ArchiveConnectionException("Error retrieving database {} from {}", resource.toString(), e);
             } catch (JDOMException e) {
                 this.databaseState = DatabaseState.ERROR_INVALID_FORMAT;
-                throw new ArchiveParseException("Error reading database {} from {}", resource.getCombinedName(), eadParser.getUrl(), e);
+                throw new ArchiveParseException("Error reading database {} from {}", resource.toString(), e);
             }
         }
     }
@@ -451,11 +446,11 @@ public class ArchiveManager implements Serializable {
         try {
             List<ArchiveResource> resources = this.eadParser.getPossibleDatabases();
             ArchiveResource externalResource =
-                    resources.stream().filter(extResource -> extResource.getCombinedId().equals(resource.getCombinedId())).findAny().orElse(null);
+                    resources.stream().filter(extResource -> extResource.getResourceId().equals(resource.getResourceId())).findAny().orElse(null);
             if (externalResource != null) {
                 return externalResource.getModifiedDate().isAfter(resource.getModifiedDate());
             }
-            throw new PresentationException("Resource " + resource.getCombinedName() + " not found on server " + this.eadParser.getUrl());
+            throw new PresentationException("Resource " + resource.toString() + " not found on server " + this.eadParser.getUrl());
         } catch (HTTPException e) {
             throw new IOException("Solr server cannot be reached: " + e.toString());
         }
@@ -477,11 +472,11 @@ public class ArchiveManager implements Serializable {
             throws IllegalStateException, IOException, HTTPException, JDOMException, PresentationException, IndexUnreachableException {
         ArchiveEntry rootElement = eadParser.loadDatabase(archive, DataManager.getInstance().getConfiguration().getArchivesLazyLoadingThreshold());
         if (rootElement != null) {
-            logger.info("Loaded EAD database: {}", archive.getCombinedName());
+            logger.info("Loaded EAD database: {}", archive);
             return loadTree(rootElement);
         }
 
-        logger.error("Failed to load EAD database: {}", archive.getCombinedName());
+        logger.error("Failed to load EAD database: {}", archive);
         return null;
     }
 

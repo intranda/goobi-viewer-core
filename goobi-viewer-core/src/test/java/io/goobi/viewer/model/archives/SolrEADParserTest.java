@@ -60,7 +60,6 @@ class SolrEADParserTest extends AbstractSolrEnabledTest {
         assertNotNull(resources);
         assertEquals(1, resources.size());
         ArchiveResource resource = resources.get(0);
-        assertEquals(SolrEADParser.DATABASE_NAME, resource.getDatabaseName());
         assertEquals("Akte_Koch_-_Humboldt_Universitaet", resource.getResourceId());
         assertEquals("Koch, Robert", resource.getResourceName());
         assertEquals(0, resource.getSize());

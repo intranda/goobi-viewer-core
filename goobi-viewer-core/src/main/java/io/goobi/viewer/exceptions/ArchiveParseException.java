@@ -23,12 +23,13 @@ package io.goobi.viewer.exceptions;
 
 public class ArchiveParseException extends ArchiveException {
 
-    public ArchiveParseException(String message, String resourceName, String resourceLocation, Throwable e) {
-        super(message, resourceName, resourceLocation, e);
+    private static final long serialVersionUID = -8622251494945435687L;
+
+    public ArchiveParseException(String message, String resourceName, Throwable e) {
+        super(message, resourceName, e);
     }
 
-    public ArchiveParseException(String message, String resourceName, String resourceLocation) {
-        super(message, resourceName, resourceLocation);
+    public ArchiveParseException(String message, String resourceName) {
+        super(message, resourceName);
     }
-
 }
