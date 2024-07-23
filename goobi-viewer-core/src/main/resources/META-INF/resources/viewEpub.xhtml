@@ -8,7 +8,7 @@
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-	template="/resources/themes/#{navigationHelper.theme}/templateBlank.html">
+	template="/resources/themes/#{navigationHelper.theme}/templateBlankUnstyled.html">
 
 	<ui:define name="metadata">
 		<f:metadata>
@@ -30,63 +30,168 @@
 
 
 	<ui:define name="content">
+		<div class="view-epub">
+			<!-- CONTROLS WRAPPER -->
+			<div class="view-epub__controls-wrapper">
+				<!-- TOC AS DROPDOWN - JUMP TO SECTION NOT WORKING FOR EVERY BOOK RIGHT NOW -->
+				<!-- <select id="toc"></select> -->
 
-		<style>
-.container-epub {
-/* 	background: white; */
-	width: 90vw;
-	height: 90vh;
-	margin-left: 5vh;
-/* 	border: 5px solid black; */
-}
+				<!-- PREV BUTTON - WITH LTR/RTL SCRIPT -->
+				<button id="prev" class="btn btn--default view-epub__controls-button" title="#{msg.previousHit}" data-toggle="tooltip"
+					data-placement="top" aria-label="#{msg.previousHit}"
+					onclick="rendition.prev()">
+					<i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+				</button>
+				<!-- NEXT BUTTON - WITH LTR/RTL SCRIPT -->
+				<button id="next" class="btn btn--default view-epub__controls-button" title="#{msg.nextHit}" data-toggle="tooltip"
+					data-placement="top" aria-label="#{msg.nextHit}"
+					onclick="rendition.next()">
+					<i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+				</button>
+			</div>
 
-.controls {
-	display: flex;
-	justify-content: center;
-	height: 5vh;
-	padding: 10px;
-	gap: 20px;
-}
-
-.controls button {
-	width: 50px;
-}
-</style>
-
-		<div class="controls">
-			<button title="#{msg.previousHit}" data-toggle="tooltip"
-				data-placement="top" aria-label="#{msg.previousHit}"
-				onclick="rendition.prev()">
-				<i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
-			</button>
-			<button title="#{msg.nextHit}" data-toggle="tooltip"
-				data-placement="top" aria-label="#{msg.nextHit}"
-				onclick="rendition.next()">
-				<i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
-			</button>
+			<!-- RENDERED VIEW IN THIS CONTAINER -->
+			<div class="view-epub__container" id="epubContainer"></div>
 		</div>
 
-		<div class="container-epub" id="container"></div>
-
-
-
 		<script>
-			console.log("load epub")
+			// console.log("load epub");
+		
+		    var params = URLSearchParams &amp;&amp; new URLSearchParams(document.location.search.substring(1));
+		    var url = params &amp;&amp; params.get("url") &amp;&amp; decodeURIComponent(params.get("url"));
+		    var currentSectionIndex = (params &amp;&amp; params.get("loc")) ? params.get("loc") : undefined;
+		
 			let epubUrl = new URLSearchParams(location.search).get("url");
-			console.log("epubUrl", epubUrl);
-			if(epubUrl) {
-				var book = ePub(epubUrl);
-				console.log("epub", book);
-				var rendition = book.renderTo("container", {manager: "continuous",
-			        flow: "paginated", width: "100%", height: "100%"});
-				rendition.display()
-				.then(e => {
-					console.log("displaying ", e)
-				})
-			}
+		
+			var book = ePub(epubUrl);
+			// console.log("epub", book);
+			var rendition = book.renderTo("epubContainer", {manager: "continuous",
+		        flow: "paginated", width: "100%", height: "100%"});
+			rendition.display()
+			.then(e => {
+				// console.log("displaying ", e)
+			})
+		    
+		    rendition.display(currentSectionIndex);
+		
+		    book.ready.then(() => {
+		
+		      var next = document.getElementById("next");
+		
+		      next.addEventListener("click", function(e){
+		        book.package.metadata.direction === "rtl" ? rendition.prev() : rendition.next();
+		        e.preventDefault();
+		      }, false);
+		
+		      var prev = document.getElementById("prev");
+		      prev.addEventListener("click", function(e){
+		        book.package.metadata.direction === "rtl" ? rendition.next() : rendition.prev();
+		        e.preventDefault();
+		      }, false);
+		
+		      var keyListener = function(e){
+		
+		        // Left Key
+		        if ((e.keyCode || e.which) == 37) {
+		          book.package.metadata.direction === "rtl" ? rendition.next() : rendition.prev();
+		        }
+		
+		        // Right Key
+		        if ((e.keyCode || e.which) == 39) {
+		          book.package.metadata.direction === "rtl" ? rendition.prev() : rendition.next();
+		        }
+		
+		      };
+		
+		      rendition.on("keyup", keyListener);
+		      document.addEventListener("keyup", keyListener, false);
+		
+		    })
+		
+		    var title = document.getElementById("title");
+		
+// 		    rendition.on("rendered", function(section){
+// 		      var current = book.navigation &amp;&amp; book.navigation.get(section.href);
+		
+// 		      if (current) {
+// 		        var $select = document.getElementById("toc");
+// 		        var $selected = $select.querySelector("option[selected]");
+// 		        if ($selected) {
+// 		          $selected.removeAttribute("selected");
+// 		        }
+		
+// 		        var $options = $select.querySelectorAll("option");
+// 		        for (var i = 0; i &lt; $options.length; ++i) {
+// 		          let selected = $options[i].getAttribute("ref") === current.href;
+// 		          if (selected) {
+// 		            $options[i].setAttribute("selected", "");
+// 		          }
+// 		        }
+// 		      }
+		
+// 		    });
+		
+// 		    rendition.on("relocated", function(location){
+// 		      console.log(location);
+		
+// 		      var next = book.package.metadata.direction === "rtl" ?  document.getElementById("prev") : document.getElementById("next");
+// 		      var prev = book.package.metadata.direction === "rtl" ?  document.getElementById("next") : document.getElementById("prev");
+		
+// 		      if (location.atEnd) {
+// 		        next.style.visibility = "hidden";
+// 		      } else {
+// 		        next.style.visibility = "visible";
+// 		      }
+		
+// 		      if (location.atStart) {
+// 		        prev.style.visibility = "hidden";
+// 		      } else {
+// 		        prev.style.visibility = "visible";
+// 		      }
+		
+// 		    });
+		
+		    rendition.on("layout", function(layout) {
+		      let viewer = document.getElementById("viewer");
+		
+		      if (layout.spread) {
+		        viewer.classList.remove('single');
+		      } else {
+		        viewer.classList.add('single');
+		      }
+		    });
+		
+		    window.addEventListener("unload", function () {
+		      console.log("unloading");
+		      this.book.destroy();
+		    });
+		
+// 		    book.loaded.navigation.then(function(toc){
+// 					var $select = document.getElementById("toc"),
+// 							docfrag = document.createDocumentFragment();
+		
+// 					toc.forEach(function(chapter) {
+// 						var option = document.createElement("option");
+// 						option.textContent = chapter.label;
+// 						option.setAttribute("ref", chapter.href);
+		
+// 						docfrag.appendChild(option);
+// 					});
+		
+// 					$select.appendChild(docfrag);
+		
+// 					$select.onchange = function(){
+// 							var index = $select.selectedIndex,
+// 									url = $select.options[index].getAttribute("ref");
+// 							rendition.display(url);
+// 							return false;
+// 					};
+		
+// 				});
+
+		// INIT BOOSTRAP FEATURES FOR TOOLTIPS
+		viewerJS.helper.initBsFeatures();
 		
 		</script>
-
 	</ui:define>
-
 </ui:composition>

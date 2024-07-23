@@ -1,0 +1,54 @@
+/* ==============================================================
+   View epub
+   style declarations for viewEpub.xhtml
+   ==============================================================*/
+/* VIEW EPUB */
+/* BLOCK */
+.view-epub {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	&__controls-wrapper {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		gap: 10px;
+		height: 60px;
+		margin-top: 15px;
+	}
+	&__controls-button {
+		max-height: 40px;
+	}
+	&__container {
+		width: 100vw;
+		height: calc(~"100vh - 75px");
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+	.view-epub {
+		&__controls-wrapper {
+			height: 30px;
+			margin-top: 15px;
+		}
+		&__controls-button {
+			max-height: 30px;
+			padding: 0 5px;
+		}
+		&__container {
+			height: calc(~"100vh - 45px");
+		}
+	}
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+	
+}
