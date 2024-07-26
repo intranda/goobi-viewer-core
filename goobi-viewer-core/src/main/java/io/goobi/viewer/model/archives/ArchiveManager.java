@@ -40,11 +40,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.jdom2.JDOMException;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.ArchiveConnectionException;
-import io.goobi.viewer.exceptions.ArchiveParseException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -90,15 +88,7 @@ public class ArchiveManager implements Serializable {
         /**
          * url call not returned
          */
-        ERROR_NOT_REACHABLE,
-        /**
-         * State only applicable to a single database if loading the database failed because the server answer could not be interpreted
-         */
-        ERROR_INVALID_FORMAT,
-        /**
-         * State indicating that a database could not be parsed due to errors in the configuration for building the tree entries
-         */
-        ERROR_INVALID_CONFIGURATION;
+        ERROR_NOT_REACHABLE;
     }
 
     /**
@@ -428,9 +418,6 @@ public class ArchiveManager implements Serializable {
             } catch (IOException | HTTPException e) {
                 this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
                 throw new ArchiveConnectionException("Error retrieving database {} from {}", resource.toString(), e);
-            } catch (JDOMException e) {
-                this.databaseState = DatabaseState.ERROR_INVALID_FORMAT;
-                throw new ArchiveParseException("Error reading database {} from {}", resource.toString(), e);
             }
         }
     }
@@ -466,12 +453,11 @@ public class ArchiveManager implements Serializable {
      * @throws IllegalStateException
      * @throws IOException
      * @throws HTTPException
-     * @throws JDOMException
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
     ArchiveTree loadDatabase(ArchiveParser eadParser, ArchiveResource archive)
-            throws IllegalStateException, IOException, HTTPException, JDOMException, PresentationException, IndexUnreachableException {
+            throws IllegalStateException, IOException, HTTPException, PresentationException, IndexUnreachableException {
         ArchiveEntry rootElement = eadParser.loadDatabase(archive, DataManager.getInstance().getConfiguration().getArchivesLazyLoadingThreshold());
         if (rootElement != null) {
             logger.info("Loaded EAD database: {}", archive);
@@ -545,9 +531,7 @@ public class ArchiveManager implements Serializable {
     }
 
     public boolean isInErrorState() {
-        return this.databaseState == DatabaseState.ERROR_INVALID_CONFIGURATION
-                || this.databaseState == DatabaseState.ERROR_INVALID_FORMAT
-                || this.databaseState == DatabaseState.ERROR_NOT_REACHABLE;
+        return this.databaseState == DatabaseState.ERROR_NOT_REACHABLE;
     }
 
     /**

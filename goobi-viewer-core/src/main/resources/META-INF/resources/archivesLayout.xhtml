@@ -59,20 +59,7 @@
 				<!-- CONDITION ERROR -->
 				<c:when test="#{archiveBean.databaseState == 'ERROR_NOT_REACHABLE'}">
 					<div class="archives__error">
-						<span>#{msg.error__archives_database_not_reachable}</span>
-					</div>
-				</c:when>
-				<!-- CONDITION ERROR -->
-				<c:when
-					test="#{archiveBean.databaseState == 'ERROR_INVALID_FORMAT'}">
-					<div class="archives__error">
-						<span>#{msg.error__archives_failed_to_read_database}</span>
-					</div>
-				</c:when>
-				<c:when
-					test="#{archiveBean.databaseState == 'ERROR_INVALID_CONFIGURATION'}">
-					<div class="archives__error">
-						<span>#{msg.error__archives_failed_to_read_archive_configuration}</span>
+						<span>#{msg.errIndexUnreachableMsg}</span>
 					</div>
 				</c:when>
 				
