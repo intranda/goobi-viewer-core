@@ -35,12 +35,8 @@ import io.goobi.viewer.solr.SolrTools;
 class ActivityCollectionBuiderTest extends AbstractSolrEnabledTest {
 
     /**
-     * Test method for
-     * {@link io.goobi.viewer.model.iiif.search.SearchResultConverter#getAnnotationsFromFulltext(java.lang.String, java.lang.String, java.lang.Integer, java.lang.String, long, int, int)}.
-     */
-    /**
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      * @see ActivityCollectionBuider#getDocs(Long,Long)
      * @verifies only return topstructs
      */
