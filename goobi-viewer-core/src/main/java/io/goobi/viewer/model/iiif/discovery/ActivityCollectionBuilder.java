@@ -31,7 +31,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -304,7 +303,16 @@ public class ActivityCollectionBuilder {
         return new ArrayList<>();
     }
 
-    private static SolrDocumentList getDocs(Long startDate, Long endDate) throws PresentationException, IndexUnreachableException {
+    /**
+     * 
+     * @param startDate
+     * @param endDate
+     * @return {@link SolrDocumentList}
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should only return topstructs
+     */
+    static SolrDocumentList getDocs(Long startDate, Long endDate) throws PresentationException, IndexUnreachableException {
         String query = QUERY_ISWORK;
         query += SearchHelper.getAllSuffixes();
         if (startDate != null && endDate != null) {
