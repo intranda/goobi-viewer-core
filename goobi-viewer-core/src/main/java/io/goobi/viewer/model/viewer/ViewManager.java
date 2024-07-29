@@ -748,8 +748,8 @@ public class ViewManager implements Serializable {
         int maxHeight;
         Dimension maxSize;
         if (origImageSize != null && origImageSize.height * origImageSize.width > 0) {
-            maxWidth = Math.min(origImageSize.width, configuredMaxSize.width);
-            maxHeight = Math.min(origImageSize.height, configuredMaxSize.height);
+            maxWidth = configuredMaxSize.width > 0 ? Math.min(origImageSize.width, configuredMaxSize.width) : origImageSize.width;
+            maxHeight = configuredMaxSize.height > 0 ? Math.min(origImageSize.height, configuredMaxSize.height) : origImageSize.height;
             maxSize = new Dimension(maxWidth, maxHeight);
         } else {
             maxWidth = configuredMaxSize.width;
@@ -762,7 +762,7 @@ public class ViewManager implements Serializable {
                 Dimension dim = option.getBoxSizeInPixel();
                 if (dim == DownloadOption.MAX) {
                     Scale scale = new Scale.ScaleToBox(maxSize);
-                    if (origImageSize != null) {
+                    if (origImageSize != null && (origImageSize.height > maxHeight || origImageSize.width > maxWidth)) {
                         Dimension size = scale.scale(origImageSize);
                         options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
                     } else {
@@ -796,7 +796,7 @@ public class ViewManager implements Serializable {
             throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (page != null && page.isHasImage()) {
             List<DownloadOption> configuredOptions = DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
-            String imageFilename = page.getFirstFileName();
+            String imageFilename = page.getFileName();
             Dimension maxSize = new Dimension(
                     page.isAccessPermissionImageZoom() ? DataManager.getInstance().getConfiguration().getViewerMaxImageWidth()
                             : DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth(),

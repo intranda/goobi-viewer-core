@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import io.goobi.viewer.controller.DataManager;
 
 /**
@@ -137,6 +138,10 @@ public class DownloadOption {
      */
     public Dimension getBoxSizeInPixel() {
         return boxSize;
+    }
+
+    public String getExtension() {
+        return ImageFileFormat.getImageFileFormatFromFileExtension(getFormat()).getFileExtension();
     }
 
     /**

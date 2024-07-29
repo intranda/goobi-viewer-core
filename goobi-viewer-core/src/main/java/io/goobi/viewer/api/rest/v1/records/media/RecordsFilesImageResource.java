@@ -105,6 +105,7 @@ public class RecordsFilesImageResource extends ImageResource {
         } else {
             request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_VIEW_IMAGES);
         }
+
         String requestUrl = request.getRequestURI();
         String baseImageUrl = RECORDS_FILES_IMAGE.replace("{pi}", pi).replace("{filename}", filename);
         int baseStartIndex = requestUrl.indexOf(baseImageUrl);
