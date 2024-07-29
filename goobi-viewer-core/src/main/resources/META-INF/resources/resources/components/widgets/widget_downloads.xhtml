@@ -418,14 +418,13 @@
 									<!-- IMAGE (PAGE) GENERATE LINKS FOR EVERY CONFIGURED DOWNLOAD SIZE -->
 									<ui:repeat varStatus="status" var="option"
 										value="#{activeDocumentBean.viewManager.getDownloadOptionsForPage(activeDocumentBean.viewManager.currentPage)}">
-
 										<h:outputLink id="downloadImageSizeLink"
 											styleClass="badge badge-dark widget-downloads__page-download-image-size-link"
 											title="#{navigationHelper.getTranslationWithParamsUnescaped(msg.widget__downloads__download_image_size, option.format,option.boxSizeLabel)}"
 											pt:data-toggle="tooltip" target="_blank"
 											rel="nofollow noopener" aria-label="#{msg.downloadButton}"
 											value="#{activeDocumentBean.viewManager.getPageDownloadUrl(option, activeDocumentBean.viewManager.currentPage)}"
-											pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}">
+											pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}.#{option.extension}">
 											<span
 												class="widget-downloads__download-image-size-radio-label">#{msg.image}</span>
 											<span
