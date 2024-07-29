@@ -23,6 +23,7 @@ package io.goobi.viewer.model.job.download;
 
 import java.awt.Dimension;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -140,8 +141,16 @@ public class DownloadOption {
         return boxSize;
     }
 
-    public String getExtension() {
-        return ImageFileFormat.getImageFileFormatFromFileExtension(getFormat()).getFileExtension();
+    public String getExtension(String filename) {
+        if (StringUtils.isBlank(getFormat()) || getFormat().equalsIgnoreCase("master")) {
+            return Optional.ofNullable(ImageFileFormat.getImageFileFormatFromFileExtension(filename))
+                    .map(ImageFileFormat::getFileExtension)
+                    .orElse("");
+        } else {
+            return Optional.ofNullable(ImageFileFormat.getImageFileFormatFromFileExtension(getFormat()))
+                    .map(ImageFileFormat::getFileExtension)
+                    .orElse("");
+        }
     }
 
     /**

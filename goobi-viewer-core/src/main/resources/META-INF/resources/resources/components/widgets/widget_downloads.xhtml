@@ -424,7 +424,7 @@
 											pt:data-toggle="tooltip" target="_blank"
 											rel="nofollow noopener" aria-label="#{msg.downloadButton}"
 											value="#{activeDocumentBean.viewManager.getPageDownloadUrl(option, activeDocumentBean.viewManager.currentPage)}"
-											pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}.#{option.extension}">
+											pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}.#{option.getExtension(activeDocumentBean.viewManager.currentPage.fileName)}">
 											<span
 												class="widget-downloads__download-image-size-radio-label">#{msg.image}</span>
 											<span

@@ -2647,6 +2647,14 @@ public class ActiveDocumentBean implements Serializable {
         return DownloadOption.getByLabel(selectedDownloadOptionLabel);
     }
 
+    public DownloadOption getSelectedDownloadOptionOrDefault() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
+        return Optional.ofNullable(getSelectedDownloadOption())
+                .orElse(getViewManager().getDownloadOptionsForPage(getViewManager().getCurrentPage())
+                        .stream()
+                        .findFirst()
+                        .orElse(new DownloadOption()));
+    }
+
     /**
      * <p>
      * Getter for the field <code>selectedDownloadOptionLabel</code>.
