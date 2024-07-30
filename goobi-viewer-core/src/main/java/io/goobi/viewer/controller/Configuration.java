@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -81,6 +82,7 @@ import io.goobi.viewer.model.maps.GeoMapMarker.MarkerType;
 import io.goobi.viewer.model.maps.View;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
+import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
@@ -437,18 +439,30 @@ public class Configuration extends AbstractConfiguration {
      */
     public List<Metadata> getMetadataConfigurationForTemplate(String type, String template, boolean fallbackToDefaultTemplate,
             boolean topstructValueFallbackDefaultValue) {
-        // logger.trace("getMetadataConfigurationForTemplate: {}/{}", type, template); //NOSONAR Sometimes used for debugging
+        // logger.trace("getMetadataConfigurationForTemplate: {}/{}", type, template); //NOSONAR Debug
         if (type == null) {
             throw new IllegalArgumentException("type may not be null");
         }
 
+        List<HierarchicalConfiguration<ImmutableNode>> allMetadataLists = new ArrayList<>();
+
+        // Local lists
         List<HierarchicalConfiguration<ImmutableNode>> metadataLists = getLocalConfigurationsAt("metadata.metadataList");
-        if (metadataLists == null) {
+        if (metadataLists != null) {
+            allMetadataLists.addAll(metadataLists);
+        }
+        // Global lists
+        metadataLists = getLocalConfigurationsAt(getConfig(), null, "metadata.metadataList");
+        if (metadataLists != null) {
+            allMetadataLists.addAll(metadataLists);
+        }
+
+        if (allMetadataLists.isEmpty()) {
             logger.trace("no metadata lists found");
             return new ArrayList<>(); // must be a mutable list!
         }
 
-        for (HierarchicalConfiguration<ImmutableNode> metadataList : metadataLists) {
+        for (HierarchicalConfiguration<ImmutableNode> metadataList : allMetadataLists) {
             if (type.equals(metadataList.getString(XML_PATH_ATTRIBUTE_TYPE))) {
                 List<HierarchicalConfiguration<ImmutableNode>> templateList = metadataList.configurationsAt("template");
                 if (templateList.isEmpty()) {
@@ -573,6 +587,17 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return getMetadataConfigurationForTemplate("sideBar", template, false, false);
+    }
+
+    /**
+     * Returns the list of configured metadata for the archives.
+     *
+     * @param template Template name (currently not in use)
+     * @return List of configured metadata for configured fields
+     * @should return default template configuration if template not found
+     */
+    public List<Metadata> getArchiveMetadataForTemplate(String template) {
+        return getMetadataConfigurationForTemplate("archive", StringConstants.DEFAULT_NAME, true, false);
     }
 
     /**
@@ -773,6 +798,18 @@ public class Configuration extends AbstractConfiguration {
         return getMetadataForTemplate(template, templateList, true, false);
     }
 
+    public Metadata getGeoMapFeatureConfiguration(String option, String template) {
+        Metadata defaultMd =
+                new Metadata(SolrConstants.LABEL, "{LABEL}",
+                        List.of(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey(SolrConstants.LABEL)));
+        return getGeomapFeatureConfigurations(option).entrySet()
+                .stream()
+                .filter(entry -> entry.getKey().equals(template))
+                .map(Entry::getValue)
+                .findAny()
+                .orElse(getGeomapFeatureConfigurations(option).getOrDefault("_DEFAULT", defaultMd));
+    }
+
     public Map<String, Metadata> getGeomapFeatureConfigurations(String option) {
         if (StringUtils.isBlank(option)) {
             return Collections.emptyMap();
@@ -848,7 +885,10 @@ public class Configuration extends AbstractConfiguration {
             return featureSetConfigs.stream().map(FeatureSetConfiguration::new).collect(Collectors.toList());
         }
 
-        return Collections.emptyList();
+        FeatureSetConfiguration config = new FeatureSetConfiguration("docStruct", "MD_TITLE",
+                DataManager.getInstance().getConfiguration().getRecordGeomapMarker(templateName, ""), "", "LABEL", Collections.emptyList());
+
+        return List.of(config);
     }
 
     private static Map<String, Metadata> loadGeomapLabelConfigurations(List<HierarchicalConfiguration<ImmutableNode>> templateList) {
@@ -1127,7 +1167,12 @@ public class Configuration extends AbstractConfiguration {
      * @should return all configured elements
      */
     public List<BrowsingMenuFieldConfig> getBrowsingMenuFields() {
-        List<HierarchicalConfiguration<ImmutableNode>> fields = getLocalConfigurationsAt("metadata.browsingMenu.field");
+        List<HierarchicalConfiguration<ImmutableNode>> fields = getLocalConfigurationsAt("metadata.browsingMenu.luceneField");
+        if (fields != null && !fields.isEmpty()) {
+            logger.warn("Old <luceneField> configuration found - please migrate to <field>.");
+        } else {
+            fields = getLocalConfigurationsAt("metadata.browsingMenu.field");
+        }
         if (fields == null) {
             return new ArrayList<>();
         }
@@ -1612,7 +1657,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return skip fields that don't match given language
      */
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields(String template, boolean fallbackToDefaultTemplate, String language) {
-        // logger.trace("getAdvancedSearchFields({},{})", template, fallbackToDefaultTemplate);
+        // logger.trace("getAdvancedSearchFields({},{})", template, fallbackToDefaultTemplate); //NOSONAR Debug
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
         if (templateList == null) {
             return new ArrayList<>();
@@ -1634,7 +1679,7 @@ public class Configuration extends AbstractConfiguration {
                 logger.warn("No advanced search field name defined, skipping.");
                 continue;
             } else if (isLanguageVersionOtherThan(field, language != null ? language : "en")) {
-                // logger.trace("Field {} belongs to different language; skipping", field);
+                // logger.trace("Field {} belongs to different language; skipping", field); //NOSONAR Debug
                 continue;
             }
             String label = subElement.getString(XML_PATH_ATTRIBUTE_LABEL, field);
@@ -2034,6 +2079,18 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
+     * getIndexedEadFolder.
+     * </p>
+     *
+     * @should return correct value
+     * @return a {@link java.lang.String} object.
+     */
+    public String getIndexedEadFolder() {
+        return getLocalString("indexedEadFolder", "indexed_ead");
+    }
+
+    /**
+     * <p>
      * getIndexedDenkxwebFolder.
      * </p>
      *
@@ -2415,7 +2472,7 @@ public class Configuration extends AbstractConfiguration {
                             getLocalList(myConfigToUse, null, XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ").addUserToGroup", null);
                     if (addToUserGroupList != null) {
                         provider.setAddUserToGroups(addToUserGroupList);
-                        // logger.trace("{}: add to group: {}", provider.getName(), addToUserGroupList.toString());
+                        // logger.trace("{}: add to group: {}", provider.getName(), addToUserGroupList.toString()); //NOSONAR Debug
                     }
                     providers.add(provider);
                 }
@@ -2861,7 +2918,7 @@ public class Configuration extends AbstractConfiguration {
         String docStructTypes = hc.getString("[@showDocStructs]");
         boolean allowed = hc.getBoolean(".");
         if (!allowed) {
-            // logger.trace("Tree view disabled");
+            // logger.trace("Tree view disabled"); //NOSONAR Debug
             return false;
         }
 
@@ -3422,7 +3479,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isGeneratePdfInTaskManager.
+     * isGeneratePdfInMessageQueue.
      * </p>
      *
      * @should return correct value
@@ -4925,6 +4982,18 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
+     * isSearchInItemOnlyIfFullTextAvailable.
+     * </p>
+     *
+     * @should return correct value
+     * @return a boolean.
+     */
+    public boolean isSearchInItemOnlyIfFullTextAvailable() {
+        return getLocalBoolean("sidebar.searchInItem[@onlyIfFullTextAvailable]", false);
+    }
+
+    /**
+     * <p>
      * isSearchRisExportEnabled.
      * </p>
      *
@@ -5717,14 +5786,21 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
      * @return Configured value
+     * @should return correct value
      */
-    public String getBaseXUrl() {
-        return getLocalString("urls.basex");
-    }
-
     public boolean isArchivesEnabled() {
         return getLocalBoolean("archives[@enabled]", false);
+    }
+
+    /**
+     * 
+     * @return Configured value
+     * @should return correct value
+     */
+    public int getArchivesLazyLoadingThreshold() {
+        return getLocalInt("archives[@lazyLoadingThreshold]", 100);
     }
 
     public Map<String, String> getArchiveNodeTypes() {
@@ -5735,12 +5811,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return Configured value
+     * 
+     * @return a boolean
      */
-    public HierarchicalConfiguration<ImmutableNode> getArchiveMetadataConfig() {
-        return getLocalConfigurationAt("archives.metadataList");
-    }
-
     public boolean isDisplayUserGeneratedContentBelowImage() {
         return getLocalBoolean("webGuiDisplay.displayUserGeneratedContentBelowImage", false);
     }
@@ -6089,10 +6162,28 @@ public class Configuration extends AbstractConfiguration {
         String defaultMimeType = "default";
         return getLocalConfigurationsAt("viewer.mediaTypes.type").stream()
                 .filter(conf -> conf.getString("[@mimeType]", defaultMimeType).equals(mimeType))
-                .map(conf -> conf.getString("content-disposition", defaultDisposition))
+                .map(conf -> conf.getString("contentDisposition", defaultDisposition))
                 .findFirst()
                 .orElse(defaultDisposition);
 
+    }
+
+    public String getMediaTypeRedirectUrl(String mimeType) {
+        String defaultMimeType = "default";
+        return getLocalConfigurationsAt("viewer.mediaTypes.type").stream()
+                .filter(conf -> conf.getString("[@mimeType]", defaultMimeType).equals(mimeType))
+                .map(conf -> conf.getString("redirectHandling", ""))
+                .findFirst()
+                .orElse("");
+
+    }
+
+    public String getSearchHitStyleClass() {
+        return getLocalString("search.hitStyleClass", "docstructtype__{record.DOCSTRCT}");
+    }
+
+    public String getRecordViewStyleClass() {
+        return getLocalString("viewer.viewStyleClass", "docstructtype__{record.DOCSTRCT}");
     }
 
 }

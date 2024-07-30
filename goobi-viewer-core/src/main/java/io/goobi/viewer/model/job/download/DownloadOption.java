@@ -23,9 +23,11 @@ package io.goobi.viewer.model.job.download;
 
 import java.awt.Dimension;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import io.goobi.viewer.controller.DataManager;
 
 /**
@@ -139,6 +141,18 @@ public class DownloadOption {
         return boxSize;
     }
 
+    public String getExtension(String filename) {
+        if (StringUtils.isBlank(getFormat()) || getFormat().equalsIgnoreCase("master")) {
+            return Optional.ofNullable(ImageFileFormat.getImageFileFormatFromFileExtension(filename))
+                    .map(ImageFileFormat::getFileExtension)
+                    .orElse("");
+        } else {
+            return Optional.ofNullable(ImageFileFormat.getImageFileFormatFromFileExtension(getFormat()))
+                    .map(ImageFileFormat::getFileExtension)
+                    .orElse("");
+        }
+    }
+
     /**
      * @param boxSizeInPixel the boxSizeInPixel to set
      * @return this
@@ -158,7 +172,9 @@ public class DownloadOption {
     }
 
     public String getBoxSizeLabel() {
-        if (boxSize != MAX && boxSize != NONE) {
+        if (boxSize == MAX) {
+            return "max";
+        } else if (boxSize != NONE) {
             return boxSize.width + TIMES_SYMBOL + boxSize.height;
         }
         return "";

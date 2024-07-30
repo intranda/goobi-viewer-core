@@ -255,7 +255,7 @@ public class UserAvatarResource extends ImageResource {
             logger.trace("Unable to get user: No user found in session store UserBean instance");
             return Optional.empty();
         }
-        // logger.trace("Found user {}", user);
+        // logger.trace("Found user {}", user); //NOSONAR Debug
         return Optional.of(user);
     }
 

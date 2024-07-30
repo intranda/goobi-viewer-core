@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.faces.context.FacesContext;
@@ -697,12 +698,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (!hasImage) {
             return false;
         }
-        String filename = null;
-        try {
-            filename = FileTools.getFilenameFromPathString(getFileName());
-        } catch (FileNotFoundException e) {
-            //
-        }
+        String filename = getFileName();
         if (StringUtils.isBlank(filename)) {
             return false;
         }
@@ -729,7 +725,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return the doubleImage
      */
     public boolean isDoubleImage() {
-        // logger.trace("isDoubleImage: {}", doubleImage);
+        // logger.trace("isDoubleImage: {}", doubleImage); //NOSONAR Debug
         return doubleImage;
     }
 
@@ -1858,5 +1854,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     @Override
     public String toString() {
         return String.format("%s %s (%s)", getPi(), getOrder(), getOrderLabel());
+    }
+
+    public String getFileMimeType() {
+
+        return Optional.ofNullable(getFileName())
+                .map(ImageFileFormat::getImageFileFormatFromFileExtension)
+                .map(ImageFileFormat::getMimeType)
+                .orElse("");
     }
 }

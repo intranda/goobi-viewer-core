@@ -77,7 +77,7 @@ public final class SolrTools {
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(SolrTools.class);
 
-    private static final int MIN_SCHEMA_VERSION = 20230110;
+    private static final int MIN_SCHEMA_VERSION = 20240625;
     private static final String SCHEMA_VERSION_PREFIX = "goobi_viewer-";
 
     private static final String MULTILANGUAGE_FIELD_REGEX = "(\\w+)_LANG_(\\w{2,3})";
@@ -156,8 +156,8 @@ public final class SolrTools {
      * @return Boolean
      */
     public static Boolean getAsBoolean(Object fieldValue) {
-        if (fieldValue instanceof Boolean) {
-            return (Boolean) fieldValue;
+        if (fieldValue instanceof Boolean bool) {
+            return bool;
         } else if (fieldValue != null) {
             return Boolean.parseBoolean(getAsString(fieldValue));
         } else {
@@ -176,8 +176,8 @@ public final class SolrTools {
         if (fieldValue == null) {
             return null;
         }
-        if (fieldValue instanceof String) {
-            return (String) fieldValue;
+        if (fieldValue instanceof String s) {
+            return s;
         } else if (fieldValue instanceof List) {
             StringBuilder sb = new StringBuilder();
             List<Object> list = (List<Object>) fieldValue;
@@ -197,16 +197,42 @@ public final class SolrTools {
      *
      * @param fieldValue a {@link java.lang.Object} object.
      * @return a {@link java.lang.Integer} object.
+     * @should return int value correctly
+     * @should parse int from string correctly
      */
     public static Integer getAsInt(Object fieldValue) {
         if (fieldValue == null) {
             return null;
         }
-        if (fieldValue instanceof Integer) {
-            return (Integer) fieldValue;
+        if (fieldValue instanceof Integer integer) {
+            return integer;
         }
         try {
             return Integer.parseInt(fieldValue.toString());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+    
+    /**
+     * <p>
+     * getAsLong.
+     * </p>
+     *
+     * @param fieldValue a {@link java.lang.Object} object.
+     * @return a {@link java.lang.Long} object.
+     * @should return long value correctly
+     * @should parse long from string correctly
+     */
+    public static Long getAsLong(Object fieldValue) {
+        if (fieldValue == null) {
+            return null;
+        }
+        if (fieldValue instanceof Long l) {
+            return l;
+        }
+        try {
+            return Long.parseLong(fieldValue.toString());
         } catch (NumberFormatException e) {
             return null;
         }
@@ -269,6 +295,20 @@ public final class SolrTools {
 
     /**
      * <p>
+     * getSingleFieldLongValue.
+     * </p>
+     *
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object.
+     * @param field a {@link java.lang.String} object.
+     * @return a {@link java.lang.Long} object.
+     */
+    public static Long getSingleFieldLongValue(SolrDocument doc, String field) {
+        Object val = getSingleFieldValue(doc, field);
+        return SolrTools.getAsLong(val);
+    }
+
+    /**
+     * <p>
      * getSingleFieldBooleanValue.
      * </p>
      *
@@ -280,10 +320,10 @@ public final class SolrTools {
         Object val = getSingleFieldValue(doc, field);
         if (val == null) {
             return false;
-        } else if (val instanceof Boolean) {
-            return (Boolean) val;
-        } else if (val instanceof String) {
-            return Boolean.valueOf((String) val);
+        } else if (val instanceof Boolean bool) {
+            return bool;
+        } else if (val instanceof String s) {
+            return Boolean.valueOf(s);
         } else {
             return false;
         }
@@ -309,8 +349,8 @@ public final class SolrTools {
 
         List<String> ret = new ArrayList<>(values.size());
         for (Object value : values) {
-            if (value instanceof String) {
-                ret.add((String) value);
+            if (value instanceof String s) {
+                ret.add(s);
             } else {
                 ret.add(String.valueOf(value));
             }
@@ -762,7 +802,7 @@ public final class SolrTools {
                     // Skip inverted values
                     if (!StringTools.checkValueEmptyOrInverted(count.getName())) {
                         ret.add(count.getName());
-                        // logger.trace(count.getName()); //NOSONAR Logging sometimes needed for debugging
+                        // logger.trace(count.getName()); //NOSONAR Debug
                     }
                 }
                 return ret;
@@ -967,7 +1007,7 @@ public final class SolrTools {
      */
     public static Map<String, List<IMetadataValue>> getTranslatedMetadata(SolrDocument doc, Map<String, List<IMetadataValue>> metadata,
             Locale documentLocale, Function<String, Boolean> fieldNameFilter) {
-        List<String> fieldNames = doc.getFieldNames().stream().filter(fieldNameFilter::apply).collect(Collectors.toList());
+        List<String> fieldNames = doc.getFieldNames().stream().filter(fieldNameFilter::apply).toList();
         String docType = SolrTools.getBaseFieldName(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL));
 
         for (String fieldName : fieldNames) {

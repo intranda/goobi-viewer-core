@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.model.metadata;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -85,12 +84,12 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
         ComplexMetadataContainer container = ComplexMetadataContainer.loadMetadataDocuments(pi, searchIndex);
         return loadRelationships(searchIndex, recordFields, container);
     }
-    
+
     public static RelationshipMetadataContainer loadRelationships(ComplexMetadataContainer container)
             throws PresentationException, IndexUnreachableException {
         return loadRelationships(container, DataManager.getInstance().getSearchIndex());
     }
-    
+
     public static RelationshipMetadataContainer loadRelationships(ComplexMetadataContainer container, SolrSearchIndex searchIndex)
             throws PresentationException, IndexUnreachableException {
         return loadRelationships(searchIndex, RELATED_RECORD_METADATA_FIELDS, container);
@@ -208,19 +207,6 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
             return stream.limit(limit)
                     .collect(Collectors.toList());
         }
-    }
-
-    /**
-     * Get all metadata documents with a certain {@link ComplexMetadata#field}
-     * 
-     * @param fieldName The metadata field for which to return metadata documents. If empty, all metadata documents will be returned
-     * @return A stream of Metadata documents
-     */
-    private Stream<ComplexMetadata> getAllMetadataByField(String fieldName) {
-        return this.metadataMap.values()
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(md -> StringUtils.isBlank(fieldName) ? true : fieldName.equals(md.getField()));
     }
 
     @Override

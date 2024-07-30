@@ -26,122 +26,131 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.IOException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.jdom2.Document;
-import org.jdom2.JDOMException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.XmlTools;
-import io.goobi.viewer.exceptions.ArchiveException;
-import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 
-class ArchiveManagerTest extends AbstractTest{
+class ArchiveManagerTest extends AbstractSolrEnabledTest {
 
-    BasexEADParser eadParser;
+    SolrEADParser eadParser;
     List<ArchiveResource> possibleDatabases;
 
     @BeforeEach
     void before() {
         try {
-            Document doc = XmlTools.readXmlFile("src/test/resources/data/EAD_Export_Tektonik.XML");
-            BasexEADParser tempParser = new BasexEADParser(null, null);
-            ArchiveEntry root = tempParser.readConfiguration(DataManager.getInstance().getConfiguration().getArchiveMetadataConfig())
-                    .parseEadFile(doc);
+            SolrEADParser tempParser = new SolrEADParser();
+            tempParser.updateAssociatedRecordMap();
+            List<ArchiveResource> tempDatabases = tempParser.getPossibleDatabases();
+            if (!tempDatabases.isEmpty()) {
+                ArchiveEntry root =
+                        tempParser.loadDatabase(tempDatabases.get(0), DataManager.getInstance().getConfiguration().getArchivesLazyLoadingThreshold());
 
-            possibleDatabases = new ArrayList<>();
-            possibleDatabases.add(new ArchiveResource("database 1", "resource 1", ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
-            possibleDatabases.add(new ArchiveResource("database 1", "resource 2", ZonedDateTime.now().format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
+                possibleDatabases = new ArrayList<>();
+                possibleDatabases.add(new ArchiveResource("resource 1", "r1",
+                        ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
+                possibleDatabases
+                        .add(new ArchiveResource("resource 2", "r2", ZonedDateTime.now().format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
 
-            eadParser = new BasexEADParser(null, null) {
-                public List<ArchiveResource> getPossibleDatabases() {
-                    return possibleDatabases;
-                }
+                eadParser = new SolrEADParser() {
 
-                public ArchiveEntry loadDatabase(ArchiveResource database) {
-                    return root;
-                }
-            };
+                    private static final long serialVersionUID = 1L;
 
-        } catch (IOException | JDOMException | PresentationException | IndexUnreachableException | ConfigurationException e) {
+                    public List<ArchiveResource> getPossibleDatabases() {
+                        return possibleDatabases;
+                    }
+
+                    public ArchiveEntry loadDatabase(ArchiveResource database, int lazyLoadingThreshold) {
+                        return root;
+                    }
+                };
+            }
+        } catch (PresentationException | IndexUnreachableException e) {
             fail(e.toString());
         }
     }
 
     @Test
     void testGetDatabases() {
-        ArchiveManager archiveManager = new ArchiveManager(eadParser, null);
+        ArchiveManager archiveManager = new ArchiveManager(eadParser);
         assertEquals(2, archiveManager.getDatabases().size());
     }
 
     @Test
-    void testGetDatabase() throws ArchiveException {
+    void testGetDatabase() throws Exception {
         {
-            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
-            ArchiveTree tree = archiveManager.getArchiveTree("database 1", "resource 1");
+            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
+            ArchiveTree tree = archiveManager.getArchiveTree("r1");
             assertNotNull(tree);
         }
         {
-            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
-            ArchiveTree tree = archiveManager.getArchiveTree("database 1", "resource 2");
+            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
+            ArchiveTree tree = archiveManager.getArchiveTree("r2");
             assertNotNull(tree);
         }
         {
-            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
-            ArchiveTree tree = archiveManager.getArchiveTree("database 1", "resource 3");
+            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
+            ArchiveTree tree = archiveManager.getArchiveTree("r3");
             assertNull(tree);
         }
     }
 
     @Test
-    void testUpdateDatabase() throws IllegalStateException, ConfigurationException, IOException, HTTPException, JDOMException, ArchiveException {
+    void testUpdateDatabase() throws Exception {
         {
-            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
-            archiveManager.getArchiveTree("database 1", "resource 1");
-            archiveManager.getArchiveTree("database 1", "resource 1");
+            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
+            archiveManager.getArchiveTree("r1");
+            archiveManager.getArchiveTree("r1");
             Mockito.verify(archiveManager, Mockito.times(1)).loadDatabase(Mockito.any(), Mockito.any());
         }
         {
-//            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
-//            archiveManager.getArchiveTree("database 1", "resource 2");
-//            archiveManager.getArchiveTree("database 1", "resource 2");
-//            Mockito.verify(archiveManager, Mockito.times(2)).loadDatabase(Mockito.any(), Mockito.any());
+            //            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
+            //            archiveManager.getArchiveTree("database 1", "resource 2");
+            //            archiveManager.getArchiveTree("database 1", "resource 2");
+            //            Mockito.verify(archiveManager, Mockito.times(2)).loadDatabase(Mockito.any(), Mockito.any());
         }
     }
 
     @Test
     void testAddNewArchive() {
-        ArchiveManager archiveManager = new ArchiveManager(eadParser, null);
+        ArchiveManager archiveManager = new ArchiveManager(eadParser);
 
-        ArchiveResource newArchive = new ArchiveResource("database 1", "resource 3", ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10");
+        ArchiveResource newArchive = new ArchiveResource("resource 3", "r3",
+                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10");
         possibleDatabases.add(newArchive);
-        assertNull(archiveManager.getArchive("database 1", "resource 3"));
+        assertNull(archiveManager.getArchive("r3"));
         archiveManager.updateArchiveList();
-        assertNotNull(archiveManager.getArchive("database 1", "resource 3"));
-
+        assertNotNull(archiveManager.getArchive("r3"));
     }
 
     @Test
     void testRemoveArchive() {
-        ArchiveManager archiveManager = new ArchiveManager(eadParser, null);
+        ArchiveManager archiveManager = new ArchiveManager(eadParser);
         possibleDatabases.remove(1);
-        assertNotNull(archiveManager.getArchive("database 1", "resource 2"));
+        assertNotNull(archiveManager.getArchive("r2"));
         archiveManager.updateArchiveList();
-        assertNull(archiveManager.getArchive("database 1", "resource 2"));
-
+        assertNull(archiveManager.getArchive("r2"));
     }
 
-
+    /**
+     * @see ArchiveManager#loadTree(ArchiveEntry)
+     * @verifies load tree correctly
+     */
+    @Test
+    void loadTree_shouldLoadTreeCorrectly() throws Exception {
+        ArchiveEntry entry =
+                eadParser.loadDatabase(possibleDatabases.get(0), DataManager.getInstance().getConfiguration().getArchivesLazyLoadingThreshold());
+        assertNotNull(entry);
+        ArchiveTree tree = ArchiveManager.loadTree(entry);
+        assertNotNull(tree);
+    }
 }

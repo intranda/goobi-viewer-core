@@ -125,6 +125,8 @@ public class CmsBean implements Serializable {
     private transient CmsMediaBean cmsMediaBean;
     @Inject
     private transient CMSTemplateManager templateManager;
+    @Inject
+    private transient ActiveDocumentBean adb;
 
     private TableDataProvider<CMSPage> lazyModelPages;
     /** The page currently open for viewing */
@@ -572,11 +574,9 @@ public class CmsBean implements Serializable {
      */
     public boolean isRelatedWorkLoaded() throws IndexUnreachableException {
         if (getCurrentPage() != null && StringUtils.isNotBlank(getCurrentPage().getRelatedPI())) {
-            ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-            if (adb != null && StringUtils.isNotBlank(adb.getPersistentIdentifier())
-                    && adb.getPersistentIdentifier().equals(getCurrentPage().getRelatedPI())) {
-                return true;
-            }
+            String loadedIdentifier = this.getCurrentWorkPi();
+            String pagePi = getCurrentPage().getRelatedPI();
+            return StringUtils.isNoneBlank(loadedIdentifier, pagePi) && loadedIdentifier.equals(pagePi);
         }
         return false;
     }
@@ -746,7 +746,7 @@ public class CmsBean implements Serializable {
      * @param selectedMediaItem a {@link io.goobi.viewer.model.cms.media.CMSMediaItem} object.
      */
     public void setSelectedMediaItem(CMSMediaItem selectedMediaItem) {
-        // logger.trace("Set media item to {}", selectedMediaItem.getFileName());
+        // logger.trace("Set media item to {}", selectedMediaItem.getFileName()); //NOSONAR Debug
         this.selectedMediaItem = selectedMediaItem;
     }
 
@@ -1503,11 +1503,13 @@ public class CmsBean implements Serializable {
         if (this.solrGroupFields == null) {
             this.solrGroupFields = Stream.concat(
                     DataManager.getInstance()
-                    .getSearchIndex()
-                    .getAllFieldNames().stream(), 
+                            .getSearchIndex()
+                            .getAllFieldNames()
+                            .stream(),
                     DataManager.getInstance()
-                    .getSearchIndex()
-                    .getAllBooleanFieldNames().stream())
+                            .getSearchIndex()
+                            .getAllBooleanFieldNames()
+                            .stream())
                     .filter(field -> !field.startsWith("SORT_") && !field.startsWith("FACET_") && !field.endsWith("_UNTOKENIZED")
                             && !field.matches(".*_LANG_\\w{2,3}"))
                     .collect(Collectors.toList());

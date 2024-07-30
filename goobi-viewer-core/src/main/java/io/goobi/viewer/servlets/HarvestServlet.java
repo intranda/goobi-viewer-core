@@ -51,6 +51,7 @@ import org.json.JSONObject;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.model.cms.pages.CMSPage;
@@ -187,7 +188,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                 }
                 return;
             } else if (!PIValidator.validatePi(identifier)) {
-                logger.warn("Identifier is invalid: {}", identifier);
+                logger.warn("Identifier is invalid: {}", StringTools.cleanUserGeneratedData(identifier)); //NOSONAR Pattern-breaking chars filtered
                 try {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "identifier value invalid");
                 } catch (IOException e) {
@@ -474,7 +475,10 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                     return;
             }
         }
-        logger.debug("Access condition for download not met for '{}'.", identifier);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Access condition for download not met for '{}'.", //NOSONAR Pattern-breaking chars filtered
+                    StringTools.cleanUserGeneratedData(identifier)); //NOSONAR Pattern-breaking chars filtered
+        }
         try {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
         } catch (IOException e) {

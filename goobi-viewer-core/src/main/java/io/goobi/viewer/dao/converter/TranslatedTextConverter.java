@@ -71,7 +71,7 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
                             .entrySet()
                             .stream()
                             .collect(Collectors.toMap(e -> e.getKey().getLanguage(), e -> StringEscapeUtils.escapeHtml4(e.getValue())));
-                    MultiLanguageMetadataValue v = new MultiLanguageMetadataValue(map);
+                    new MultiLanguageMetadataValue(map);
                     return mapper.writeValueAsString(attribute);
                 } catch (JsonProcessingException e1) {
                     throw new IllegalArgumentException("Cannot convert " + attribute + " to String");
@@ -113,7 +113,7 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
         if (this.configuredLocales == null) {
             try {
                 this.configuredLocales = IPolyglott.getLocalesStatic();
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 //too early?
                 return Collections.emptyList();
             }
@@ -122,7 +122,6 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
     }
 
     private Collection<String> getConfiguredLanguages() {
-        return getConfiguredLocales().stream().map(Locale::getLanguage).collect(Collectors.toList());
+        return getConfiguredLocales().stream().map(Locale::getLanguage).toList();
     }
-
 }

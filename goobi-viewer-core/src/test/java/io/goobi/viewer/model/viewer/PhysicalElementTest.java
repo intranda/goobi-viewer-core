@@ -148,7 +148,7 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
     void getImageFilepath_shouldReturnImageIfBaseMimeTypeNotFound() throws Exception {
         Assertions.assertEquals("001.tif", new PhysicalElementBuilder().setMimeType("image/tiff").setFilePath("001.tif").build().getImageFilepath());
     }
-
+    
     /**
      * @see PhysicalElement#getImageFilepath()
      * @verifies return tiff if available
@@ -158,7 +158,7 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("001.tif",
                 new PhysicalElementBuilder().setMimeType("audio/mpeg").setFilePath("001.mp3").build().setFilePathTiff("001.tif").getImageFilepath());
     }
-
+    
     /**
      * @see PhysicalElement#getImageFilepath()
      * @verifies return jpeg if available

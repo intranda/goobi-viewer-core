@@ -189,6 +189,7 @@ public class RecordFileResource {
     @GET
     @javax.ws.rs.Path(RECORDS_FILES_MEDIA)
     @Operation(tags = { "records" }, summary = "Get media files of record")
+    @CORSBinding
     @MediaResourceBinding
     public Response getMediaFile(
             @Parameter(description = "Media file name") @PathParam("filename") String filename)

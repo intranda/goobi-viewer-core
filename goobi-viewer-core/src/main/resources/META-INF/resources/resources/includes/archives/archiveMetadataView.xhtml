@@ -15,104 +15,97 @@
 	<div class="archives__object-info">
 		<div class="archives__object-metadata">
 			<!-- METADATA -->
-			<!-- Replacing these with c:forEach will result in get*List() being called for each iteration -->
 			<div class="archives__object-title">#{archiveEntry.label}</div>
+			
+			<!-- Replacing these with c:forEach will result in get*List() being called for each iteration -->			
+			<ui:repeat begin="0" end="6" var="index">
+			
 			<!-- Identity statement metadata -->
-			<c:if
-				test="#{archiveEntry.identityStatementAreaList.stream().filter(field -> field.filled).count() > 0}">
-				<div class="archives__object-block-label">#{msg.archives__archive_area_identity}</div>
-				<ui:repeat var="field"
-					value="#{archiveEntry.identityStatementAreaList}">
-					<h:panelGroup layout="block"
-						styleClass="archives__object-metadata-entry"
-						rendered="#{field.filled}">
-						<div class="archives__object-field-name">#{msg[field.label]}:</div>
-						<div class="archives__object-field-value">#{field.value}</div>
-					</h:panelGroup>
+			<ui:fragment rendered="#{archiveEntry.getAreaList(index).stream().filter(metadata -> !metadata.blank).count() > 0}">
+				<div class="archives__object-block-label">#{msg['archives__archive_area_'.concat(index)]}</div>
+				<ui:repeat var="metadata" value="#{archiveEntry.getAreaList(index)}">
+
+                    <!-- grouped="true" -->
+                    <h:panelGroup rendered="#{metadata.group}">
+
+                        <!-- Single label for all values, each value is a single string -->
+                        <h:panelGroup rendered="#{metadata.singleString}">
+                            <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
+                                <ui:param name="metadata" value="#{metadata}" />
+                            </ui:include>
+                        </h:panelGroup>
+
+                        <!-- Each value has a label column and a value column -->
+                        <h:panelGroup rendered="#{!metadata.singleString}">
+                            <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+                                <ui:param name="metadata" value="#{metadata}" />
+                            </ui:include>
+                        </h:panelGroup>
+
+                    </h:panelGroup>
+
+                    <!-- grouped="false" -->
+                    <h:panelGroup styleClass="metadata__ungrouped-wrapper" layout="block" rendered="#{!metadata.group}">
+                        <dl class="dl-horizontal metadata__element-dl metadata__element-ungrouped">
+                            <dt title="#{metadata.label}">
+                                <h:outputText value="#{msg[metadata.label]}:" escape="false" />
+                            </dt>
+                            <ui:repeat value="#{metadata.values}" var="val">
+                                 <dd>
+                                     <span class="metadata__element-value">
+                                         <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
+                                         </h:outputFormat>
+                                     </span>
+                                </dd>
+                            </ui:repeat>
+                        </dl>
+                    </h:panelGroup>
+                    
 				</ui:repeat>
-			</c:if>
-			<!-- Context metadata -->
-			<c:if
-				test="#{archiveEntry.contextAreaList.stream().filter(field -> field.filled).count() > 0}">
-				<div class="archives__object-block-label">#{msg.archives__archive_area_context}</div>
-				<ui:repeat var="field"
-					value="#{archiveEntry.contextAreaList}">
-					<h:panelGroup layout="block"
-						styleClass="archives__object-metadata-entry"
-						rendered="#{field.filled}">
-						<div class="archives__object-field-name">#{msg[field.label]}:</div>
-						<div class="archives__object-field-value">#{field.value}</div>
-					</h:panelGroup>
-				</ui:repeat>
-			</c:if>
-			<!-- Content and structure metadata -->
-			<c:if
-				test="#{archiveEntry.contentAndStructureAreaAreaList.stream().filter(field -> field.filled).count() > 0}">
-				<div class="archives__object-block-label">#{msg.archives__archive_area_content}</div>
-				<ui:repeat var="field"
-					value="#{archiveEntry.contentAndStructureAreaAreaList}">
-					<h:panelGroup layout="block"
-						styleClass="archives__object-metadata-entry"
-						rendered="#{field.filled}">
-						<div class="archives__object-field-name">#{msg[field.label]}:</div>
-						<div class="archives__object-field-value">#{field.value}</div>
-					</h:panelGroup>
-				</ui:repeat>
-			</c:if>
-			<!-- Access and terms of usage metadata -->
-			<c:if
-				test="#{archiveEntry.accessAndUseAreaList.stream().filter(field -> field.filled).count() > 0}">
-				<div class="archives__object-block-label">#{msg.archives__archive_area_access}</div>
-				<ui:repeat var="field"
-					value="#{archiveEntry.accessAndUseAreaList}">
-					<h:panelGroup layout="block"
-						styleClass="archives__object-metadata-entry"
-						rendered="#{field.filled}">
-						<div class="archives__object-field-name">#{msg[field.label]}:</div>
-						<div class="archives__object-field-value">#{field.value}</div>
-					</h:panelGroup>
-				</ui:repeat>
-			</c:if>
-			<!-- Related matarials metadata -->
-			<c:if
-				test="#{archiveEntry.alliedMaterialsAreaList.stream().filter(field -> field.filled).count() > 0}">
-				<div class="archives__object-block-label">#{msg.archives__archive_area_materials}</div>
-				<ui:repeat var="field"
-					value="#{archiveEntry.alliedMaterialsAreaList}">
-					<h:panelGroup layout="block"
-						styleClass="archives__object-metadata-entry"
-						rendered="#{field.filled}">
-						<div class="archives__object-field-name">#{msg[field.label]}:</div>
-						<div class="archives__object-field-value">#{field.value}</div>
-					</h:panelGroup>
-				</ui:repeat>
-			</c:if>
-			<!-- Notes metadata -->
-			<c:if
-				test="#{archiveEntry.notesAreaList.stream().filter(field -> field.filled).count() > 0}">
-				<div class="archives__object-block-label">#{msg.archives__archive_area_notes}</div>
-				<ui:repeat var="field"
-					value="#{archiveEntry.notesAreaList}">
-					<h:panelGroup layout="block"
-						styleClass="archives__object-metadata-entry"
-						rendered="#{field.filled}">
-						<div class="archives__object-field-name">#{msg[field.label]}:</div>
-						<div class="archives__object-field-value">#{field.value}</div>
-					</h:panelGroup>
-				</ui:repeat>
-			</c:if>
+			</ui:fragment>
+			
+			</ui:repeat>
+			
 			<!-- Description control metadata -->
 			<c:if
 				test="#{archiveEntry.descriptionControlAreaList.stream().filter(field -> field.filled).count() > 0}">
 				<div class="archives__object-block-label">#{msg.archives__archive_area_descriptionControl}</div>
-				<ui:repeat var="field"
-					value="#{archiveEntry.descriptionControlAreaList}">
-					<h:panelGroup layout="block"
-						styleClass="archives__object-metadata-entry"
-						rendered="#{field.filled}">
-						<div class="archives__object-field-name">#{msg[field.label]}:</div>
-						<div class="archives__object-field-value">#{field.value}</div>
-					</h:panelGroup>
+				<ui:repeat var="metadata" value="#{archiveEntry.descriptionControlAreaList}">
+                    <!-- grouped="true" -->
+                    <h:panelGroup rendered="#{metadata.group}">
+
+                        <!-- Single label for all values, each value is a single string -->
+                        <h:panelGroup rendered="#{metadata.singleString}">
+                            <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
+                                <ui:param name="metadata" value="#{metadata}" />
+                            </ui:include>
+                        </h:panelGroup>
+
+                        <!-- Each value has a label column and a value column -->
+                        <h:panelGroup rendered="#{!metadata.singleString}">
+                            <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+                                <ui:param name="metadata" value="#{metadata}" />
+                            </ui:include>
+                        </h:panelGroup>
+
+                    </h:panelGroup>
+
+                    <!-- grouped="false" -->
+                    <h:panelGroup styleClass="metadata__ungrouped-wrapper" layout="block" rendered="#{!metadata.group}">
+                        <dl class="dl-horizontal metadata__element-dl metadata__element-ungrouped">
+                            <dt title="#{metadata.label}">
+                                <h:outputText value="#{msg[metadata.label]}:" escape="false" />
+                            </dt>
+                            <ui:repeat value="#{metadata.values}" var="val">
+                                 <dd>
+                                     <span class="metadata__element-value">
+                                         <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
+                                         </h:outputFormat>
+                                     </span>
+                                </dd>
+                            </ui:repeat>
+                        </dl>
+                    </h:panelGroup>
 				</ui:repeat>
 			</c:if>
 		</div>

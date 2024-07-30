@@ -36,10 +36,12 @@
 							<div class="archives__select-database-dropdown-element">
 			                    <h:form>
 			                    <div class="custom-control custom-control--select archives__select-database-dropdown-element-select">
-				                    <h:selectOneMenu value="#{archiveBean.archiveId}" styleClass="archives__select-database-dropdown" onchange="$(this).next().click()">
-										<f:selectItems value="#{archiveBean.databases}" var="database" itemValue="#{database.combinedId}" itemLabel="#{database.combinedName}" ></f:selectItems>
+				                    <h:selectOneMenu value="#{archiveBean.archiveId}"
+				                        styleClass="archives__select-database-dropdown" onchange="$(this).next().click()">
+										<f:selectItems value="#{archiveBean.filteredDatabases}" var="database"
+										    itemValue="#{database.combinedId}" itemLabel="#{database.combinedName}" ></f:selectItems>
 									</h:selectOneMenu>
-									<h:commandButton styleClass="d-none" action="pretty:archives2"></h:commandButton>
+									<h:commandButton styleClass="d-none" action="pretty:archives1"></h:commandButton>
 									</div>
 			                    </h:form>
 		                    </div>
@@ -75,29 +77,30 @@
 					</h:panelGroup>
 				</div>
 
-				<!-- RIGHT SIDE -->
-				<div class="archives__right-side">
-  				<!-- HIERARCHY OF THE CURRENT NODE -->
-                 <h:panelGroup layout="block" id="hierarchyGroup" styleClass="archives__text-tree">
-                     <ui:repeat var="entry"
-                         value="#{archiveBean.getArchiveHierarchyForIdentifier(archiveBean.displayEntry.id)}">
-                         <!-- TODO proper level tag -->
-                         <!-- TODO bold via CSS -->
-                         <div class="archives__text-tree-entry">
-                          <div class="archives__text-tree-level">
-                          	<h:outputText rendered="#{entry.descriptionLevel != null}" value="#{msg[entry.descriptionLevel]}:" />
-                          </div>
-                          	<span class="archives__text-tree-value">#{entry.label}</span>
-                          </div>
-                     </ui:repeat>
-                 </h:panelGroup>
-                 <h:panelGroup layout="block" id="metadataGroup">
-					<ui:include src="/resources/includes/archives/archiveMetadataView.xhtml">
-						<ui:param name="archiveEntry" value="#{archiveBean.displayEntry}"/>
-					</ui:include>
-                 </h:panelGroup>
-				</div>
-			</div>
+                <!-- RIGHT SIDE -->
+                <div class="archives__right-side">
+                    <!-- HIERARCHY OF THE CURRENT NODE -->
+                    <ui:fragment rendered="#{archiveBean.displayEntry.accessAllowed}">
+                        <h:panelGroup layout="block" id="hierarchyGroup" styleClass="archives__text-tree">
+                            <ui:repeat var="entry" value="#{archiveBean.getArchiveHierarchyForIdentifier(archiveBean.displayEntry.id)}">
+                                <!-- TODO proper level tag -->
+                                <!-- TODO bold via CSS -->
+                                <div class="archives__text-tree-entry">
+                                    <div class="archives__text-tree-level">
+                                        <h:outputText rendered="#{entry.descriptionLevel != null}" value="#{msg[entry.descriptionLevel]}:" />
+                                    </div>
+                                    <span class="archives__text-tree-value">#{entry.label}</span>
+                                </div>
+                            </ui:repeat>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" id="metadataGroup">
+                            <ui:include src="/resources/includes/archives/archiveMetadataView.xhtml">
+                                <ui:param name="archiveEntry" value="#{archiveBean.displayEntry}"/>
+                            </ui:include>
+                        </h:panelGroup>
+                    </ui:fragment>
+                </div>
+            </div>
         </f:view>
     </ui:define>
 

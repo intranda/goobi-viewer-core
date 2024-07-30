@@ -809,7 +809,7 @@ public final class StringTools {
                     secondMinus = true;
                     range = range.replace("--", "-");
                 }
-                String[] split = range.split("[-]");
+                String[] split = range.split("-");
                 page = Integer.valueOf(split[0]);
                 page2 = Integer.valueOf(split[1]);
                 if (firstMinus) {
@@ -858,7 +858,8 @@ public final class StringTools {
     }
 
     public static String convertToSingleWord(String text, int maxLength, String whitespaceReplacement) {
-        String replaced = text
+        String replaced = Optional.ofNullable(text)
+                .orElse("")
                 .replaceAll("\\s", whitespaceReplacement)
                 .replaceAll("[^a-zA-Z0-9" + whitespaceReplacement + "]", "");
         if (replaced.length() > maxLength) {

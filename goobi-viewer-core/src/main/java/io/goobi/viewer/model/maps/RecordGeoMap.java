@@ -37,6 +37,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 import de.intranda.api.annotation.wa.TypedResource;
+import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.controller.model.FeatureSetConfiguration;
@@ -49,6 +50,8 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
+import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.metadata.MetadataBuilder;
 import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
@@ -111,7 +114,10 @@ public class RecordGeoMap {
     private GeoMap createMap() {
         GeoMap map = new GeoMap();
 
-        RecordGeoMap.createDocStructFeatureSet(map, mainStruct);
+        //        RecordGeoMap.createDocStructFeatureSet(map, mainStruct);
+        this.featureSetConfigs.stream()
+                .filter(config -> "docStruct".equals(config.getType()))
+                .forEach(config -> createDocStructFeatureSet(map, mainStruct, config));
         this.featureSetConfigs.stream()
                 .filter(config -> "relation".equals(config.getType()))
                 .forEach(config -> createRelatedDocumentFeatureSet(map, relatedDocuments, config));
@@ -163,7 +169,8 @@ public class RecordGeoMap {
             String field = query.substring(0, query.indexOf(":"));
             String value = query.substring(query.indexOf(":") + 1);
             if (StringUtils.isNoneBlank(field, value)) {
-                return container.getFirstValue(field).equalsIgnoreCase(value);
+                String fieldValue = container.getFirstValue(field);
+                return fieldValue.equalsIgnoreCase(value);
             }
             return false;
         } else {
@@ -181,14 +188,27 @@ public class RecordGeoMap {
         geoMap.addFeatureSet(featureSet);
     }
 
-    private static void createDocStructFeatureSet(GeoMap geoMap, StructElement docStruct) {
-        SolrFeatureSet featureSet = new SolrFeatureSet();
-        featureSet.setName(createLabel(docStruct));
-        featureSet.setMarkerTitleField("MD_TITLE");
-        featureSet.setSolrQuery(String.format("+PI_TOPSTRUCT:%s +DOCTYPE:DOCSTRCT", docStruct.getPi()));
-        featureSet.setAggregateResults(false);
-        featureSet.setMarker(DataManager.getInstance().getConfiguration().getRecordGeomapMarker(docStruct.getDocStructType(), ""));
-        geoMap.addFeatureSet(featureSet);
+    private static void createDocStructFeatureSet(GeoMap geoMap, StructElement docStruct, FeatureSetConfiguration config) {
+        if (matchesQuery(MetadataContainer.createMetadataEntity(docStruct), config.getQuery())) {
+            ManualFeatureSet featureSet = new ManualFeatureSet();
+            featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), true)));
+            featureSet.setMarker(config.getMarker());
+
+            List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
+            List<String> coordinateValues = coordinateFields.stream()
+                    .flatMap(field -> docStruct.getMetadataValues(field).stream())
+                    .filter(StringUtils::isNotBlank)
+                    .toList();
+            List<GeoMapFeature> features = GeoCoordinateConverter.getFeatures(coordinateValues);
+
+            Metadata labelConfig =
+                    DataManager.getInstance().getConfiguration().getGeoMapFeatureConfiguration(config.getLabelConfig(), docStruct.getDocStructType());
+            IMetadataValue label = new MetadataBuilder(docStruct).build(labelConfig);
+            features.forEach(f -> f.setTitle(label));
+            featureSet.setFeatures(features.stream().map(GeoMapFeature::getJsonObject).map(JSONObject::toString).toList());
+
+            geoMap.addFeatureSet(featureSet);
+        }
     }
 
     private void createAnnotationFeatureSet(GeoMap geoMap, String pi, FeatureSetConfiguration config) {

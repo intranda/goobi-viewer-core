@@ -356,7 +356,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    void testGetPageDownloadUrl() throws IndexUnreachableException, DAOException, PresentationException {
+    void testGetPageDownloadUrl() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
 
         String pi = "PPN123";
         String docstructType = "Catalogue";

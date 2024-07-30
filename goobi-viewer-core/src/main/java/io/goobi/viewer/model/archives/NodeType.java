@@ -21,14 +21,15 @@
  */
 package io.goobi.viewer.model.archives;
 
-import java.util.stream.Stream;
-
+import java.io.Serializable;
 
 /**
  * @author florian
  *
  */
-public class NodeType {
+public class NodeType implements Serializable {
+
+    private static final long serialVersionUID = 3716038748824985126L;
 
     private final String name;
     private final String iconClass;
@@ -45,5 +46,4 @@ public class NodeType {
     public String getIconClass() {
         return this.iconClass;
     }
-
 }

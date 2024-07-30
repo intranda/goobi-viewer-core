@@ -99,7 +99,7 @@ public class RssResolver extends HttpServlet {
         if (request.getParameterMap().get(PARAM_FILTERQUERY) != null && request.getParameterMap().get(PARAM_FILTERQUERY).length > 0) {
             filterQuery = request.getParameterMap().get(PARAM_FILTERQUERY)[0];
         }
-        // logger.trace("RSS request filter query: {}", filterQuery);
+        // logger.trace("RSS request filter query: {}", filterQuery); //NOSONAR Debug
 
         Long bookshelfId = null;
         if (request.getParameterMap().get("bookshelfId") != null) {
@@ -135,7 +135,7 @@ public class RssResolver extends HttpServlet {
                 }
             }
 
-            // logger.trace("RSS query: {}", query);
+            // logger.trace("RSS query: {}", query); //NOSONAR Debug
             if (StringUtils.isNotEmpty(query)) {
                 SyndFeedOutput output = new SyndFeedOutput();
                 output.output(

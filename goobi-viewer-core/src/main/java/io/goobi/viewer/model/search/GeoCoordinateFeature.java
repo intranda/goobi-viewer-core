@@ -27,11 +27,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 /**
  * @author florian
@@ -42,11 +43,12 @@ public class GeoCoordinateFeature {
     private static final Logger logger = LogManager.getLogger(GeoCoordinateFeature.class);
 
     private static final String REGEX_GEOCOORDS_SEARCH_STRING =
-            "(IsWithin|Intersects|Contains|IsDisjointTo)\\((\\w+)\\(\\(([\\s\\d\\-.,]+)\\)\\)\\)"; //NOSONAR backtracking save
+            "(IsWithin|Intersects|Contains|IsDisjointTo)\\((\\w+)\\(\\(?([\\s\\d\\-.,]+)\\)?\\)\\)(?:\\s*distErrPct=([\\d\\-.,]+))?"; //NOSONAR backtracking save
 
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_RELATION = 1;
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE = 2;
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_POINTS = 3;
+    private static final int REGEX_GEOCOORDS_SEARCH_GROUP_DIST_ERROR = 4;
 
     public static final String RELATION_PREDICATE_ISWITHIN = "ISWITHIN";
     public static final String RELATION_PREDICATE_INTERSECTS = "INTERSECTS";
@@ -58,11 +60,13 @@ public class GeoCoordinateFeature {
     private final JSONObject feature;
     private final String predicate;
     private final String shape;
+    private final double distError;
 
-    public GeoCoordinateFeature(String featureString, String predicate, String shape) throws JSONException {
+    public GeoCoordinateFeature(String featureString, String predicate, String shape, double distError) throws JSONException {
         this.feature = new JSONObject(featureString);
         this.predicate = predicate;
         this.shape = shape;
+        this.distError = distError;
     }
 
     /**
@@ -72,7 +76,7 @@ public class GeoCoordinateFeature {
      * @param predicate
      * @param shape
      */
-    public GeoCoordinateFeature(double[][] points, String predicate, String shape) {
+    public GeoCoordinateFeature(double[][] points, String predicate, String shape, double distError) {
         JSONObject json = new JSONObject();
         json.put("type", shape);
         JSONArray vertices = new JSONArray();
@@ -85,6 +89,7 @@ public class GeoCoordinateFeature {
         this.feature = json;
         this.predicate = predicate;
         this.shape = shape;
+        this.distError = distError;
 
     }
 
@@ -111,11 +116,20 @@ public class GeoCoordinateFeature {
         double[][] points = getVertices();
         String pointString = Arrays.stream(points).map(p -> Double.toString(p[1]) + " " + Double.toString(p[0])).collect(Collectors.joining(", "));
 
-        String template = "$P($S(($V)))";
-        return template
-                .replace("$P", this.predicate)
-                .replace("$S", this.shape)
-                .replace("$V", pointString);
+        if ("POINT".equalsIgnoreCase(this.shape)) {
+            String template = "$P($S($V)) distErrPct=$E";
+            return template
+                    .replace("$P", this.predicate)
+                    .replace("$S", this.shape)
+                    .replace("$V", pointString)
+                    .replace("$E", Double.toString(this.distError));
+        } else {
+            String template = "$P($S(($V)))";
+            return template
+                    .replace("$P", this.predicate)
+                    .replace("$S", this.shape)
+                    .replace("$V", pointString);
+        }
 
     }
 
@@ -135,6 +149,22 @@ public class GeoCoordinateFeature {
             return matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE);
         }
         return SHAPE_POLYGON;
+    }
+
+    public static double getDistError(String searchString) {
+        Matcher matcher = Pattern.compile(REGEX_GEOCOORDS_SEARCH_STRING, Pattern.CASE_INSENSITIVE).matcher(searchString);
+
+        try {
+            if (matcher.find()) {
+                String distErrorString = matcher.group(REGEX_GEOCOORDS_SEARCH_GROUP_DIST_ERROR);
+                if (StringUtils.isNotBlank(distErrorString)) {
+                    return Double.parseDouble(distErrorString);
+                }
+            }
+        } catch (NumberFormatException e) {
+            logger.error("Error parsing \"distErrPct\" from searchString: {}", e.toString());
+        }
+        return 0;
     }
 
     public static double[][] getGeoSearchPoints(String searchString) {
@@ -198,4 +228,9 @@ public class GeoCoordinateFeature {
     public int hashCode() {
         return this.feature.hashCode();
     }
+
+    public double getDistError() {
+        return distError;
+    }
+
 }

@@ -273,6 +273,9 @@
 	&__hit-header {
 		
 	}
+	&__hit-archive-link {
+		
+	}
 	&__hit-number-wrapper {
         border-radius: 50%;
         color: white;
@@ -319,6 +322,10 @@
 				padding-bottom: 0;
 			}
 		}
+	}
+	&__no-thumb-bookmark-wrapper {
+		position: relative;
+		height: 25px;
 	}
 	&__no-thumb-bookmark {
 		position: absolute;
@@ -504,6 +511,7 @@
 		}
 	}
 	&__hit-text-area {
+		width: 100%;
 		max-width: 100%;
 		min-width: 160px;
 	}
@@ -732,6 +740,11 @@
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
 	.search-list {
+		&__hit-title {
+			&.-noThumbnail {
+				padding-right: 0;
+			}
+		}
 		&__hit-thumbnail {
 			width: auto;
 		}
@@ -747,13 +760,18 @@
 @media screen and (max-width: @xSmallBreakpoint) {
 	.search-list {
 		&__hit-text {
+			flex-direction: column;
 			margin-bottom: 5px;
 		}
 		&__hit-text-label {
 			width: 100%;
+			max-width: 100%;
+			flex: 0 0 100%;
 		}
 		&__hit-text-value {
 			margin: 0;
+			flex: 0 0 100%;
+			max-width: 100%;
 		}
 		&__hit-thumbnail {
 			text-align: center;

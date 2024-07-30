@@ -33,7 +33,7 @@
 					
 					<!-- INTRODUCTION TEXT -->
 					<ui:fragment
-						rendered="#{fn:length(msg['widget__downloads__intro_text_object_downloads-a']) > 0 and navigationHelper.currentPage == 'object' }">
+						rendered="#{fn:length(msg['widget__downloads__intro_text_object_downloads']) > 0 and (navigationHelper.currentPage == 'object' or navigationHelper.currentPage == 'cmsPageOfWork') }">
 						<p id="introductionText" class="widget-downloads__license-text">
 							<h:outputText
 								value="#{msg['widget__downloads__intro_text_object_downloads']}"
@@ -69,6 +69,7 @@
 					</ui:fragment>
 
 					<!-- WORK -->
+					<ui:fragment rendered="#{navigationHelper.currentView == 'object' or navigationHelper.currentPage == 'cmsPageOfWork' or navigationHelper.currentView == 'fulltext'}">
 
 						<!-- WORK DOWNLOADS -->
 						<div jsf:id="recordDownloads" rendered="#{displayConditions.getTag('recordDownloads').getChildCount('widget-element') > 0}"
@@ -211,7 +212,7 @@
 
 							<!-- PDF (WORK) -->
 							<ui:fragment
-								rendered="#{navigationHelper.currentView == 'object' and 
+								rendered="#{(navigationHelper.currentPage == 'object' or navigationHelper.currentPage == 'cmsPageOfWork') and 
                                                  activeDocumentBean.viewManager.externalDownloadUrl == null and 
                                                  !activeDocumentBean.viewManager.filesOnly and 
                                                  activeDocumentBean.viewManager.hasPages and 
@@ -327,36 +328,41 @@
 								</ui:fragment>
 							</ui:fragment>
 
-							<!-- WORK IIIF-RELIANT FUNCTIONS (GENERATE_IIIF_MANIFEST CHECK) -->
-							<ui:fragment
-								rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionGenerateIiifManifest}">
-
-								<!-- IIIF MANIFEST FULL RECORD -->
-								<ui:fragment
-									rendered="#{!activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage and navigationHelper.currentView != 'fulltext'}">
-									<button id="iiifManifest"
-										class="badge badge-dark widget-usage__work-download-iiif"
-										data-copy-value="#{imageDelivery.iiifManifest}"
-										data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
-										aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.iiif}"
-										tabindex="0">#{msg.iiif}</button>
-								</ui:fragment>
-
-								<!-- MIRADOR FULL RECORD -->
-								<ui:fragment
-									rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly and navigationHelper.currentView != 'fulltext'}">
-									<a
-										href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifManifest}&amp;page=1"
-										id="mirador"
-										class="badge badge-dark widget-usage__work-link-mirador-viewer"
-										title="#{msg.action__view_in_mirador__tooltip}"
-										data-toggle="tooltip" data-placement="top"
-										data-trigger="hover" target="_blank" rel="nofollow noopener"
-										aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.action__view_in_mirador}">
-										#{msg.action__view_in_mirador} </a>
-								</ui:fragment>
-
-							</ui:fragment>
+                        <!-- WORK IIIF-RELIANT FUNCTIONS (GENERATE_IIIF_MANIFEST CHECK) -->
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionGenerateIiifManifest}">   
+                        
+                            <!-- IIIF MANIFEST FULL RECORD -->
+                            <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage and navigationHelper.currentView != 'fulltext'}">
+	                           <button 
+                                   id="iiifManifestRecord"
+                                   class="badge badge-dark widget-usage__work-download-iiif" 
+	                               data-copy-value="#{imageDelivery.iiifManifest}" 
+	                               data-copy-done-msg="#{msg.copyUrlDone}"
+                                   title="#{msg.copyUrl}"
+                                   aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.iiif}"
+                                   tabindex="0"> 
+	                               #{msg.iiif}
+	                           </button>
+	                       </ui:fragment>      
+	                    
+                            <!-- MIRADOR FULL RECORD -->
+                            <ui:fragment
+                                rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly and navigationHelper.currentView != 'fulltext'}">                     
+                                    <a
+                                        href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifManifest}&amp;page=1" 
+                                        id="mirador" 
+                                        class="badge badge-dark widget-usage__work-link-mirador-viewer" 
+                                        title="#{msg.action__view_in_mirador__tooltip}"
+										data-toggle="tooltip"
+										data-placement="top"
+										data-trigger="hover"
+                                        target="_blank" rel="nofollow noopener"
+                                        aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.action__view_in_mirador}"> 
+                                        #{msg.action__view_in_mirador}
+                                    </a> 
+                            </ui:fragment>
+                        
+                        </ui:fragment>
 
 						</div>
 
@@ -373,13 +379,13 @@
                             or activeDocumentBean.viewManager.currentPage.displayFulltext)
                         and !activeDocumentBean.viewManager.doublePageMode}">
 
-
 						<ui:fragment
 							rendered="#{navigationHelper.currentView == 'fulltext'
 												and (activeDocumentBean.viewManager.currentPage.altoAvailable
 												or activeDocumentBean.viewManager.currentPage.teiAvailable
 												or activeDocumentBean.viewManager.currentPage.displayFulltext)
 												or navigationHelper.currentView == 'object'
+												or navigationHelper.currentPage == 'cmsPageOfWork'
 												and (!activeDocumentBean.viewManager.bornDigital)}">
 
 							<!-- PAGE DOWNLOADS -->
@@ -391,9 +397,11 @@
 
 								<!-- PDF (PAGE) -->
 								<ui:fragment
-									rendered="#{navigationHelper.currentView == 'object' and
+									rendered="#{(navigationHelper.currentPage == 'object' or navigationHelper.currentPage == 'cmsPageOfWork') and
                                                      activeDocumentBean.viewManager.externalDownloadUrl == null and 
-                                                     activeDocumentBean.viewManager.currentPage.accessPermissionPdf}">
+                                                     activeDocumentBean.viewManager.currentPage.accessPermissionPdf and
+                                                     activeDocumentBean.viewManager.pageLoader.numPages gt 1 and
+                                                     activeDocumentBean.viewManager.currentPage.fileMimeType.startsWith('image')}">
 									<a href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
 										id="pdfPage"
 										class="badge badge-dark widget-downloads__page-download-pdf"
@@ -407,19 +415,18 @@
 								</ui:fragment>
 
 								<ui:fragment
-									rendered="#{navigationHelper.currentView == 'object' and !activeDocumentBean.viewManager.bornDigital}">
+									rendered="#{(navigationHelper.currentPage == 'object' or navigationHelper.currentPage == 'cmsPageOfWork') and !activeDocumentBean.viewManager.bornDigital}">
 
 									<!-- IMAGE (PAGE) GENERATE LINKS FOR EVERY CONFIGURED DOWNLOAD SIZE -->
 									<ui:repeat varStatus="status" var="option"
 										value="#{activeDocumentBean.viewManager.getDownloadOptionsForPage(activeDocumentBean.viewManager.currentPage)}">
-
 										<h:outputLink id="downloadImageSizeLink"
 											styleClass="badge badge-dark widget-downloads__page-download-image-size-link"
 											title="#{navigationHelper.getTranslationWithParamsUnescaped(msg.widget__downloads__download_image_size, option.format,option.boxSizeLabel)}"
 											pt:data-toggle="tooltip" target="_blank"
 											rel="nofollow noopener" aria-label="#{msg.downloadButton}"
 											value="#{activeDocumentBean.viewManager.getPageDownloadUrl(option, activeDocumentBean.viewManager.currentPage)}"
-											pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}">
+											pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}.#{option.getExtension(activeDocumentBean.viewManager.currentPage.fileName)}">
 											<span
 												class="widget-downloads__download-image-size-radio-label">#{msg.image}</span>
 											<span
@@ -523,8 +530,11 @@
 								</ui:fragment>
 								<!-- IIIF MANIFEST PAGE -->
 								<ui:fragment
-									rendered="#{!activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage and navigationHelper.currentView != 'fulltext'}">
-									<button id="iiifManifest"
+									rendered="#{!activeDocumentBean.viewManager.bornDigital and 
+									activeDocumentBean.viewManager.pageLoader.numPages gt 1 and
+									activeDocumentBean.viewManager.currentPage.displayImage and 
+									navigationHelper.currentView != 'fulltext'}">
+									<button id="iiifManifestPage"
 										class="badge badge-dark widget-usage__page-download-iiif"
 										data-copy-value="#{imageDelivery.iiifPageManifest}"
 										data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
@@ -534,7 +544,10 @@
 
 								<!-- MIRADOR PAGE -->
 								<ui:fragment
-									rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly and navigationHelper.currentView != 'fulltext'}">
+									rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and 
+									!activeDocumentBean.viewManager.filesOnly and navigationHelper.currentView != 'fulltext' and 
+									activeDocumentBean.viewManager.pageLoader.numPages gt 1 and
+									!imageDelivery.iiif.isIIIFUrl(activeDocumentBean.viewManager.currentPage.fileName)}">
 									<a
 										href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifPageManifest}"
 										id="mirador"
@@ -562,14 +575,14 @@
 												and (activeDocumentBean.viewManager.currentPage.altoAvailable
 												or activeDocumentBean.viewManager.currentPage.teiAvailable
 												or activeDocumentBean.viewManager.currentPage.displayFulltext)
-												or navigationHelper.currentView == 'object'
+												or (navigationHelper.currentPage == 'object' or navigationHelper.currentPage == 'cmsPageOfWork')
 												and (!activeDocumentBean.viewManager.bornDigital)}">
 
 								<!-- TITLE PAGE RANGE -->
 
 								<!-- PDF (PAGE RANGE) -->
 								<ui:fragment
-									rendered="#{configurationBean.pdfPageRangeEnabled and navigationHelper.currentView == 'object' and
+									rendered="#{configurationBean.pdfPageRangeEnabled and (navigationHelper.currentPage == 'object' or navigationHelper.currentPage == 'cmsPageOfWork') and
                                                      activeDocumentBean.viewManager.externalDownloadUrl == null and 
                                                      activeDocumentBean.viewManager.currentPage.accessPermissionPdf}">
 									<h3 id="titlePageRange"
@@ -639,7 +652,7 @@
 
 					<!-- IMAGE FRAGMENT -->
 					<ui:fragment
-						rendered="#{navigationHelper.currentView == 'object' and activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+						rendered="#{(navigationHelper.currentPage == 'object' or navigationHelper.currentPage == 'cmsPageOfWork') and activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
 						<div
 							class="widget-downloads__image-fragment-wrapper widget__badge-container"
 							data-fragment-link="wrapper">

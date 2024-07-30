@@ -134,7 +134,7 @@ public class PdfHandler {
 
     private String escapeURI(String uri) {
         try {
-            // logger.trace("Encoding param: {}", replacement); //NOSONAR Sometimes needed for debugging
+            // logger.trace("Encoding param: {}", replacement); //NOSONAR Debug
             return URLEncoder.encode(uri, StringTools.DEFAULT_ENCODING);
         } catch (UnsupportedEncodingException e) {
             return uri;

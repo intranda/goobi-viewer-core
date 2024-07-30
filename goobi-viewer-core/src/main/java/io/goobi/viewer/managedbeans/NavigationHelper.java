@@ -112,6 +112,8 @@ public class NavigationHelper implements Serializable {
 
     @Inject
     private BreadcrumbBean breadcrumbBean;
+    @Inject
+    private CmsBean cmsBean;
 
     /** Constant <code>KEY_CURRENT_VIEW="currentView"</code> */
     protected static final String KEY_CURRENT_VIEW = "currentView";
@@ -148,6 +150,10 @@ public class NavigationHelper implements Serializable {
      */
     public NavigationHelper() {
         theme = DataManager.getInstance().getConfiguration().getTheme();
+    }
+
+    public void setCmsBean(CmsBean cmsBean) {
+        this.cmsBean = cmsBean;
     }
 
     /**
@@ -267,7 +273,15 @@ public class NavigationHelper implements Serializable {
      * @param cmsPage
      */
     public void setCurrentPage(CMSPage cmsPage) {
-        setCurrentPage(getCMSPageNavigationId(cmsPage), false, true, true);
+        try {
+            //call "setCurrentView" first, because it calls setCurrentPage which needs to be overwritten by the 
+            //call to "setCurrentPage" here
+            setCurrentView(cmsBean.isRelatedWorkLoaded() ? PageType.cmsPageOfWork.name() : PageType.cmsPage.name());
+            setCurrentPage(getCMSPageNavigationId(cmsPage), false, !cmsBean.isRelatedWorkLoaded(), true);
+        } catch (IndexUnreachableException e) {
+            logger.error("Error checking if related work for cmsPage is loaded", e);
+            setCurrentPage(getCMSPageNavigationId(cmsPage), false, true, true);
+        }
     }
 
     /**
@@ -292,7 +306,7 @@ public class NavigationHelper implements Serializable {
      * @param resetCurrentDocument a boolean.
      */
     public void setCurrentPage(String currentPage, boolean resetBreadcrubs, boolean resetCurrentDocument) {
-        // logger.trace("setCurrentPage: {}", currentPage);
+        // logger.trace("setCurrentPage: {}", currentPage); //NOSONAR Debug
         setCurrentPage(currentPage, resetBreadcrubs, resetCurrentDocument, false);
     }
 
@@ -633,6 +647,7 @@ public class NavigationHelper implements Serializable {
      * @return a {@link java.util.Locale} object.
      */
     public Locale getLocale() {
+        // logger.trace("getLocale: {}", locale); //NOSONAR Debug
         return locale;
     }
 

@@ -101,9 +101,8 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
     public boolean passes(String value, VariableReplacer vr) {
         if (this.applies(vr)) {
             return this.test(value, vr);
-        } else {
-            return true;
         }
+        return true;
     }
 
     /**
@@ -140,9 +139,9 @@ public final class PassedValueFilter extends AbstractFilterConfiguration {
     }
 
     /**
-     * Get the {@link #matchRegex}.
+     * Get get {@link #matchRegex}
      * 
-     * @return the {@link #matchRegex}
+     * @return the matchRegex
      */
     public String getMatchRegex() {
         return matchRegex;

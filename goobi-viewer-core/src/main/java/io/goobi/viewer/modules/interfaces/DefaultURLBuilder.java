@@ -60,12 +60,11 @@ public class DefaultURLBuilder implements IURLBuilder {
      */
     @Override
     public String generateURL(BrowseElement ele) {
-
-        // For aggregated person search hits, start another search (label contains the person's name in this case)
         String url = "";
         boolean topstruct = ele.isWork() || ele.isAnchor() || ele.isGroup();
         if (ele.getMetadataGroupType() != null) {
             switch (ele.getMetadataGroupType()) {
+                // For aggregated person search hits, start another search (label contains the person's name in this case)
                 case PERSON:
                 case CORPORATION:
                 case LOCATION:
@@ -82,8 +81,13 @@ public class DefaultURLBuilder implements IURLBuilder {
                     break;
             }
         } else if (ele.isCmsPage() && ele.getPi().startsWith("CMS")) {
+            // CMS page
             url = "cms/" + ele.getPi().substring(3) + "/";
+        } else if (ele.isArchive()) {
+            // Archive
+            url = "archives/" + ele.getPi() + "/";
         } else {
+            // Regular record
             PageType pageType = getPageType(ele);
             if (PageType.viewFulltext.equals(pageType) && ele.isHasTeiFiles()) {
                 // Add language to the URL if record has TEI full-text
@@ -102,7 +106,7 @@ public class DefaultURLBuilder implements IURLBuilder {
             }
         }
 
-        // logger.trace("generateUrl: {}", url);
+        // logger.trace("generateUrl: {}", url); //NOSONAR Debug
         return url;
 
     }
@@ -110,13 +114,16 @@ public class DefaultURLBuilder implements IURLBuilder {
     /**
      * {@inheritDoc}
      * 
+     * @should return archive view url if page type archive
      * @should only add page if not topStruct or page greater than one
      * @should only add logId if not topStruct
      */
     @Override
     public String buildPageUrl(String pi, int imageNo, String logId, PageType pageType, boolean topStruct) {
-        StringBuilder sb = new StringBuilder();
-        String view = pageType.getName();
+        // Archive view
+        if (PageType.archive.equals(pageType)) {
+            return "archives/" + pi + "/";
+        }
 
         // Check for CMS page as the default view for this record; do not override page-specific URLs
         if (topStruct && StringUtils.isNotEmpty(pi)) {
@@ -131,6 +138,8 @@ public class DefaultURLBuilder implements IURLBuilder {
             }
         }
 
+        StringBuilder sb = new StringBuilder();
+        String view = pageType.getName();
         sb.append(view)
                 .append('/')
                 .append(pi)

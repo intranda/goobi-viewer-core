@@ -13,15 +13,16 @@
 	<!-- viewerHome: root path of (usually) all viewer data -->
 	<viewerHome>src/test/resources/data/viewer/</viewerHome>
 	<!-- dataRepositoriesHome: root folder for data repositories -->
-	<dataRepositoriesHome>src/test/resources/data/viewer/data/
-	</dataRepositoriesHome>
-	<!-- indexedMetsFolder: contains indexed mets files (used by the METS resolver) -->
+	<dataRepositoriesHome>src/test/resources/data/viewer/data/</dataRepositoriesHome>
+	<!-- indexedMetsFolder: contains indexed METS files-->
 	<indexedMetsFolder>indexed_mets</indexedMetsFolder>
-	<!-- indexedLidoFolder: contains indexed lido files (used by the LIDO resolver) -->
+	<!-- indexedLidoFolder: contains indexed LIDO files -->
 	<indexedLidoFolder>indexed_lido</indexedLidoFolder>
-    <!-- indexedDenkxwebFolder: contains indexed DenkXweb files (used by the DenkXweb resolver) -->
+    <!-- indexedEadFolder: contains indexed EAD files -->
+    <indexedEadFolder>indexed_ead</indexedEadFolder>
+    <!-- indexedDenkxwebFolder: contains indexed DenkXweb files -->
     <indexedDenkxwebFolder>indexed_denkxweb</indexedDenkxwebFolder>
-    <!-- indexedDublinCoreFolder: contains indexed DublinCore files (used by the DublinCore resolver) -->
+    <!-- indexedDublinCoreFolder: contains indexed DublinCore files -->
     <indexedDublinCoreFolder>indexed_dublincore</indexedDublinCoreFolder>
 	<!-- mediaFolder: contains media files that are displayed in the intranda 
 		viewer (images, audio, video) -->
@@ -97,8 +98,6 @@
         <taskManager>taskmanager_url/</taskManager>
 
 		<download>https://viewer.goobi.io/download/</download>
-        
-        <basex>https://basex.example.org/basex/</basex>
 	</urls>
 
 	<user>
@@ -418,6 +417,7 @@
             <filter>filter_FULLTEXT</filter>
             <filter>filter_NORMDATATERMS</filter>
             <filter>filter_UGCTERMS</filter>
+            <filter>filter_SEARCHTERMS_ARCHIVE</filter>
             <filter>filter_CMS_TEXT_ALL</filter>
 		</filters>
 		<!-- @enabled: if false, the option to sort search hits is hidden (since 2.0) -->
@@ -800,6 +800,38 @@
                 </metadata>
             </template>
         </metadataList>
+        
+        <metadataList type="archive">
+            <template name="_DEFAULT">
+                <metadata label="MD_SHELFMARK" type="1">
+                    <param key="MD_UNITID" type="field" />
+                </metadata>
+                <metadata label="Number" type="1">
+                    <param key="MD_UNITID_NUMBER" type="field" />
+                </metadata>
+                <metadata label="Shelfmark" type="1">
+                    <param key="MD_SHELFMARK" type="field" />
+                </metadata>
+                <metadata label="unitdate" type="1">
+                    <param key="MD_DATECREATED" type="field" />
+                </metadata>
+                <metadata label="physdesc" type="1">
+                    <param key="MD_PHYSICALDESCRIPTIONEXTENT" type="field" />
+                </metadata>
+                <metadata label="origination" type="2">
+                    <param key="MD_PROVENIENCE" type="field" />
+                </metadata>
+                <metadata label="role" type="2">
+                    <param key="MD_ODD_HEAD" type="field" />
+                </metadata>
+                <metadata label="person" type="2">
+                    <param key="MD_ODD_P" type="field" />
+                </metadata>
+                <metadata label="oddnote" type="6">
+                    <param key="MD_ODD" type="field" />
+                </metadata>
+            </template>
+        </metadataList>
 		
         <!-- normdataList: List of NORM_ fields to display in the norm data pop-up box -->
         <normdataList>
@@ -1026,7 +1058,8 @@
 		<thumbs enabled="false" />
 
         <!-- @enabled: if false, no widget for searching in the currently show record will be displayed. Default is true. -->
-		<searchInItem enabled="false" />
+        <!-- @onlyIfFullTextAvailable: if true, the widget will only be displayed if current record has full-text. Default is false. -->
+		<searchInItem enabled="false" onlyIfFullTextAvailable="true" />
 
         <!-- metadata/@enabled: if false, the bibliographic data view is hidden -->
 		<metadata enabled="false">
@@ -1425,58 +1458,7 @@
       </record>
 	</maps>
 
-    <archives enabled="true">
-
-        <metadataList>
-            <!-- internal fields, not visible on the UI -->
-            <!-- <metadata xpath="./ead:eadheader[@countryencoding='iso3166-1'][@dateencoding='iso8601'][@langencoding='iso639-2b'][@repositoryencoding='iso15511'][@scriptencoding='iso15924']/ead:eadid/@mainagencycode" xpathType="attribute" label="mainagencycode" type="1"  visible="false"/> -->
-            <!-- <metadata xpath="./ead:eadheader/ead:profiledesc/ead:creation/@normal" xpathType="attribute" label="normalcreationdate" type="1"  visible="false"/> -->
-            <!-- <metadata xpath="./ead:eadheader/ead:profiledesc/ead:creation" xpathType="element" label="creationdate" type="1"  visible="false"/> -->
-            <!-- <metadata xpath="./ead:eadheader/ead:filedesc/ead:titlestmt/ead:titleproper" xpathType="element" label="titlestmt" type="1"  visible="false"/> -->
-            <!-- Identity Statement Area -->
-            <metadata xpath="./ead:control/ead:maintenanceagency/ead:agencycode" xpathType="element" label="agencycode" type="1" />
-            <metadata xpath="./ead:eadheader/ead:eadid" xpathType="element" label="eadid" type="1"  />
-            <metadata xpath="./ead:control/ead:recordid" xpathType="element" label="recordid" type="1" />
-            <metadata xpath="(./ead:archdesc/ead:did/ead:unitid[not(@type)] | ./ead:did/ead:unitid[not(@type)])[1]" xpathType="element" label="MD_SHELFMARK" type="1" />
-            <metadata xpath="./ead:did/ead:unitid[@type='Vorl. Nr.']" xpathType="element" label="Number" type="1"  />
-            <metadata xpath="./ead:did/ead:unitid[@type='Altsignatur']" xpathType="element" label="Shelfmark" type="1" />
-            <metadata xpath="(./ead:archdesc/ead:did/ead:unittitle | ./ead:did/ead:unittitle)[1]" xpathType="element" label="unittitle" type="1"  />
-            <metadata xpath="(./ead:archdesc/ead:did/ead:unitdate | ./ead:did/ead:unitdate)[1]" xpathType="element" label="unitdate" type="1" />
-            <metadata xpath="(./ead:archdesc/ead:did/ead:unitdatestructured | ./ead:did/ead:unitdatestructured)[1]" xpathType="element" label="unitdatestructured" type="1" />
-            <!-- <metadata xpath="(./ead:archdesc/@level | ./@level)[1]" xpathType="attribute" label="descriptionLevel" type="1"  visible="false"/> -->
-            <metadata xpath="(./ead:archdesc/ead:did/ead:physdesc | ./ead:did/ead:physdesc)[1]" xpathType="element" label="physdesc" type="1" />
-            <metadata xpath="(./ead:archdesc/ead:did/ead:physdescstructured | ./ead:did/ead:physdescstructured)[1]" xpathType="element" label="physdescstructured" type="1" />
-            <!-- Context Area -->
-            <metadata xpath="(./ead:archdesc/ead:did/ead:origination | ./ead:did/ead:origination)[1]" xpathType="element" label="origination" type="2" />
-            <metadata xpath="(./ead:archdesc/ead:odd/ead:head | ./ead:odd/ead:head)[1]" xpathType="element" label="role" type="2" />
-            <metadata xpath="(./ead:archdesc/ead:odd/ead:p | ./ead:odd/ead:p)[1]" xpathType="element" label="person" type="2" />
-            <metadata xpath="(./ead:archdesc/ead:dsc/ead:bioghist | ./ead:dsc/ead:bioghist)[1]" xpathType="element" label="bioghist" type="2"  />
-            <metadata xpath="(./ead:archdesc/ead:dsc/ead:custodhist | ./ead:dsc/ead:custodhist)[1]" xpathType="element" label="custodhist" type="2" />
-            <metadata xpath="(./ead:archdesc/ead:dsc/ead:acqinfo | ./ead:dsc/ead:acqinfo)[1]" xpathType="element" label="acqinfo" type="2" />
-            <!-- Content and Structure Area -->
-            <metadata xpath="(./ead:archdesc/ead:dsc/ead:scopecontent | ./ead:dsc/ead:scopecontent)[1]" xpathType="element" label="scopecontent" type="3" />
-            <metadata xpath="(./ead:archdesc/ead:dsc/ead:appraisal | ./ead:dsc/ead:appraisal)[1]" xpathType="element" label="appraisal" type="3" />
-            <metadata xpath="(./ead:archdesc/ead:dsc/ead:accruals | ./ead:dsc/ead:accruals)[1]" xpathType="element" label="accruals" type="3" />
-            <metadata xpath="(./ead:archdesc/ead:dsc/ead:arrangement | ./ead:dsc/ead:arrangement)[1]" xpathType="element" label="arrangement" type="3" />
-            <!-- Condition of Access and Use Area -->
-            <metadata xpath="(./ead:archdesc/ead:dsc/ead:accessrestrict | ./ead:dsc/ead:accessrestrict)[1]" xpathType="element" label="accessrestrict" type="4" />
-            <metadata xpath="(./ead:archdesc/ead:dsc/ead:userestrict | ./ead:dsc/ead:userestrict)[1]" xpathType="element" label="userestrict" type="4" />
-            <metadata xpath="(./ead:archdesc/ead:did/ead:langmaterial[@label='Language']/ead:language | ./ead:did/ead:langmaterial[@label='Language']/ead:language)[1]" xpathType="element" label="langmaterial" type="4" />
-            <metadata xpath="(./ead:archdesc/ead:did/ead:langmaterial[@label='font'] | ./ead:did/ead:langmaterial[@label='font'])[1]" xpathType="element" label="font" type="4" />
-            <metadata xpath="(./ead:archdesc/ead:dsc/ead:phystech | ./ead:dsc/ead:phystech)[1]" xpathType="element" label="phystech" type="4" />
-            <metadata xpath="(./ead:archdesc/ead:dsc/ead:otherfindaid | ./ead:dsc/ead:otherfindaid)[1]" xpathType="element" label="otherfindaid" type="4" />
-            <!-- Allied Materials Area -->
-            <metadata xpath="(./ead:archdesc/ead:dsc/ead:originalsloc | ./ead:dsc/ead:originalsloc)[1]" xpathType="element" label="originalsloc" type="5" />
-            <metadata xpath="(./ead:archdesc/ead:dsc/ead:altformavail | ./ead:dsc/ead:altformavail)[1]" xpathType="element" label="altformavail" type="5" />
-            <metadata xpath="(./ead:archdesc/ead:dsc/ead:relatedmaterial/ead:separatedmaterial | ./ead:dsc/ead:relatedmaterial/ead:separatedmaterial)[1]" xpathType="element" label="separatedmaterial" type="5" />
-            <metadata xpath="(./ead:archdesc/ead:dsc/ead:bibliography | ./ead:dsc/ead:bibliography)[1]" xpathType="element" label="bibliography" type="5" />
-            <!-- Note Area -->
-            <metadata xpath="(./ead:archdesc/ead:did/ead:didnote | ./ead:did/ead:didnote)[1]" xpathType="element" label="didnote" type="6" />
-            <metadata xpath="(./ead:archdesc/ead:dsc/ead:odd | ./ead:dsc/ead:odd)[1]" xpathType="element" label="oddnote" type="6"  />
-            <!-- Description Control Area -->
-            <metadata xpath="./ead:control/ead:conventiondeclaration" xpathType="element" label="conventiondeclaration" type="7" />
-        </metadataList>
-
+    <archives enabled="true" lazyLoadingThreshold="100">
         <nodeTypes>
 			<node name="collection" icon="fa fa-folder-open-o" />
             <node name="folder" icon="fa fa-folder-open-o" />

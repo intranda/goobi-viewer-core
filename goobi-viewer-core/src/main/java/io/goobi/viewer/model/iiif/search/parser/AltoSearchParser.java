@@ -122,7 +122,7 @@ public class AltoSearchParser extends AbstractSearchParser {
      * @return a {@link java.util.List} object.
      */
     public List<Line> getLines(AltoDocument doc) {
-        return doc.getAllPagesAsList().stream().flatMap(p -> p.getAllLinesAsList().stream()).collect(Collectors.toList());
+        return doc.getAllPagesAsList().stream().flatMap(p -> p.getAllLinesAsList().stream()).toList();
     }
 
     /**
@@ -137,7 +137,7 @@ public class AltoSearchParser extends AbstractSearchParser {
         return doc.getAllPagesAsList()
                 .stream()
                 .flatMap(p -> p.getAllWordsAsList().stream().filter(Word.class::isInstance).map(w -> (Word) w))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -218,8 +218,8 @@ public class AltoSearchParser extends AbstractSearchParser {
         String before = "";
         Child sibling = w.getPreviousSibling();
         while (sibling != null && before.length() < maxLength) {
-            if (sibling instanceof Word) {
-                before = ((Word) sibling).getSubsContent() + " " + before;
+            if (sibling instanceof Word word) {
+                before = word.getSubsContent() + " " + before;
             }
             sibling = sibling.getPreviousSibling();
         }
@@ -239,8 +239,8 @@ public class AltoSearchParser extends AbstractSearchParser {
         Child sibling = w.getNextSibling();
         StringBuilder sb = new StringBuilder();
         while (sibling != null && sb.length() < maxLength) {
-            if (sibling instanceof Word) {
-                sb.append(' ').append(((Word) sibling).getSubsContent());
+            if (sibling instanceof Word word) {
+                sb.append(' ').append(word.getSubsContent());
             }
             sibling = sibling.getNextSibling();
         }

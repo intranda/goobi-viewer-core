@@ -34,8 +34,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.iiif.IIIFUrlResolver;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
@@ -257,6 +257,16 @@ public class IIIFUrlHandler {
      */
     public AbstractApiUrlManager getUrlManager() {
         return urls;
+    }
+
+    public boolean isIIIFUrl(String url) {
+        try {
+            URI uri = new URI(url);
+            return uri.getScheme() != null && uri.getScheme().matches("https?") && uri.getPath() != null && uri.getPath().endsWith("/info.json");
+        } catch (URISyntaxException e) {
+            logger.error("No valid url: " + url);
+            return false;
+        }
     }
 
 }

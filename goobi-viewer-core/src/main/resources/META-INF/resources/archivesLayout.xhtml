@@ -9,12 +9,15 @@
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
-
+ 
 
 	<!-- MESSAGES -->
 	<div class="messages">
 		<h:messages id="messages" globalOnly="false" infoClass="alert alert-success" errorClass="alert alert-danger" />
 	</div>
+	
+	<!-- ADMIN TOPBAR FRONTEND -->
+	<viewerComponent:frontEndAdminTopBar />
 
 	<div id="archives" class="archives #{archiveBean.databaseState == 'ARCHIVES_LOADED' ? '-archivesLoaded' : '-archivesNotLoaded'}">
 
@@ -54,29 +57,9 @@
 		<main id="archivesContent" class="archives__main">
 			<c:choose>
 				<!-- CONDITION ERROR -->
-				<c:when
-					test="#{archiveBean.databaseState == 'ERROR_NOT_CONFIGURED'}">
-					<div class="archives__error">
-						<span>#{msg.error__archives_database_configuration_missing}</span>
-					</div>
-				</c:when>
-				<!-- CONDITION ERROR -->
 				<c:when test="#{archiveBean.databaseState == 'ERROR_NOT_REACHABLE'}">
 					<div class="archives__error">
-						<span>#{msg.error__archives_database_not_reachable}</span>
-					</div>
-				</c:when>
-				<!-- CONDITION ERROR -->
-				<c:when
-					test="#{archiveBean.databaseState == 'ERROR_INVALID_FORMAT'}">
-					<div class="archives__error">
-						<span>#{msg.error__archives_failed_to_read_database}</span>
-					</div>
-				</c:when>
-				<c:when
-					test="#{archiveBean.databaseState == 'ERROR_INVALID_CONFIGURATION'}">
-					<div class="archives__error">
-						<span>#{msg.error__archives_failed_to_read_archive_configuration}</span>
+						<span>#{msg.errIndexUnreachableMsg}</span>
 					</div>
 				</c:when>
 				
@@ -107,7 +90,7 @@
 													value="#{archiveBean.archiveId}">
 													<f:selectItem itemLabel="#{msg.select}" itemValue=""
 														noSelectionOption="true" />
-													<f:selectItems value="#{archiveBean.databases}"
+													<f:selectItems value="#{archiveBean.filteredDatabases}"
 														var="database" itemValue="#{database.combinedId}"
 														itemLabel="#{database.combinedName}"></f:selectItems>
 												</h:selectOneMenu>
@@ -117,7 +100,7 @@
 												<div class="col-sm-12 d-flex justify-content-end">
 													<h:commandButton
 														styleClass="btn btn--full archives__modal-select-database-confirm"
-														value="#{msg.apply}" action="pretty:archives2"></h:commandButton>
+														value="#{msg.apply}" action="pretty:archives1"></h:commandButton>
 												</div>
 											</div>
 										</h:form>

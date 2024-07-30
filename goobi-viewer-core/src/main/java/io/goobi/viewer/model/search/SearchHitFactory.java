@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.search;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -110,8 +111,6 @@ public class SearchHitFactory {
      * @return a {@link io.goobi.viewer.model.search.SearchHit} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should add export fields correctly
      */
     public SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, String fulltext, HitType overrideType)
@@ -172,7 +171,7 @@ public class SearchHitFactory {
         if (docType == null) {
             docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
         }
-        // logger.trace("docType: {}", docType); //NOSONAR Sometimes used for debugging
+        // logger.trace("docType: {}", docType); //NOSONAR Debug
         HitType hitType = getHitType(overrideType, se, docType);
 
         SearchHit hit = new SearchHit(hitType, browseElement, doc, searchTerms, locale, this);
@@ -199,6 +198,29 @@ public class SearchHitFactory {
                 }
             }
         }
+
+        // Check and add link to archive entry, if exists
+        String entryId = SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID);
+        if (StringUtils.isNotEmpty(entryId) && HitType.DOCSTRCT.equals(hitType)) {
+            // Related record link 
+            SolrDocument relatedRecordDoc =
+                    DataManager.getInstance()
+                            .getSearchIndex()
+                            .getFirstDoc(
+                                    '+' + SolrConstants.DOCTYPE + ':' + DocType.ARCHIVE.name() + " +" + SolrConstants.EAD_NODE_ID
+                                            + ":\"" + entryId + '"',
+                                    Arrays.asList(SolrConstants.LABEL, SolrConstants.PI_TOPSTRUCT));
+            if (relatedRecordDoc != null) {
+                hit.setAltUrl("archives/"
+                        + SolrTools.getSingleFieldStringValue(relatedRecordDoc, SolrConstants.PI_TOPSTRUCT) + "/?selected=" + entryId + "#selected");
+                hit.setAltLabel(SolrTools.getSingleFieldStringValue(relatedRecordDoc, SolrConstants.LABEL));
+                if (StringUtils.isEmpty(hit.getAltLabel())) {
+                    hit.setAltLabel(SolrTools.getSingleFieldStringValue(relatedRecordDoc, SolrConstants.PI_TOPSTRUCT));
+                }
+                logger.trace("altUrl (related archive entry): {}", hit.getAltUrl());
+            }
+        }
+
         return hit;
     }
 
@@ -295,7 +317,7 @@ public class SearchHitFactory {
     List<MetadataWrapper> findAdditionalMetadataFieldsContainingSearchTerms(
             Map<String, List<String>> availableMetadata, Map<String, Set<String>> searchTerms, Set<String> existingMetadataFields, String iddoc,
             String searchHitLabel) {
-        // logger.trace("findAdditionalMetadataFieldsContainingSearchTerms");
+        // logger.trace("findAdditionalMetadataFieldsContainingSearchTerms"); //NOSONAR Debug
         if (existingMetadataFields == null) {
             throw new IllegalArgumentException("existingMetadataList may not be null");
         }
@@ -321,6 +343,7 @@ public class SearchHitFactory {
             switch (entry.getKey()) {
                 case SolrConstants.DEFAULT:
                 case SolrConstants.NORMDATATERMS:
+                case SolrConstants.SEARCHTERMS_ARCHIVE:
                     // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
                     for (String docFieldName : availableMetadata.keySet()) {
                         // Skip fields that are in the ignore list

@@ -596,11 +596,15 @@ public class BrowseElement implements Serializable {
     /**
      * @param filename
      * @return Mime type for the given filename
+     * @should return empty string for unknown file extensions
      */
-    private static String getMimeTypeFromExtension(String filename) {
+    static String getMimeTypeFromExtension(String filename) {
         try {
             URL fileUrl = new URL(filename);
-            return ImageFileFormat.getImageFileFormatFromFileExtension(fileUrl.getPath()).getMimeType();
+            ImageFileFormat format = ImageFileFormat.getImageFileFormatFromFileExtension(fileUrl.getPath());
+            if (format != null) {
+                return format.getMimeType();
+            }
         } catch (MalformedURLException e) {
             logger.warn(e.getMessage());
         }
@@ -968,6 +972,14 @@ public class BrowseElement implements Serializable {
      */
     public boolean isGroup() {
         return DocType.GROUP.equals(docType);
+    }
+
+    /**
+     * 
+     * @return true if doctype is ARCHIVE; false otherwise
+     */
+    public boolean isArchive() {
+        return DocType.ARCHIVE.equals(docType);
     }
 
     /**

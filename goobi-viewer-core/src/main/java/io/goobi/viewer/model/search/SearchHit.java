@@ -24,6 +24,7 @@ package io.goobi.viewer.model.search;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -48,6 +49,8 @@ import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.JDOMException;
 import org.jsoup.Jsoup;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
@@ -56,6 +59,7 @@ import io.goobi.viewer.api.rest.model.ner.TagCount;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.TEITools;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
@@ -72,14 +76,19 @@ import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.TranslatableCMSContent;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Wrapper class for search hits. Contains the corresponding <code>BrowseElement</code>
  */
 public class SearchHit implements Comparable<SearchHit> {
+
+    private static final String STYLE_CLASS_WORD_SEPARATOR = "_";
+    private static final int MAX_STYLECLASS_LENGTH = 100;
 
     private static final Logger logger = LogManager.getLogger(SearchHit.class);
 
@@ -99,7 +108,12 @@ public class SearchHit implements Comparable<SearchHit> {
     private final List<StringPair> foundMetadata = new ArrayList<>();
     /** Metadata for Excel export. */
     private final Map<String, String> exportMetadata = new HashMap<>();
-    private final String url;
+    private String url;
+    /** Secondary URL */
+    private String altUrl;
+    /** Secondary label. */
+    private String altLabel;
+    @JsonIgnore
     private final Locale locale;
     private final List<SearchHit> children = new ArrayList<>();
     private final Map<HitType, Integer> hitTypeCounts = new EnumMap<>(HitType.class);
@@ -246,13 +260,12 @@ public class SearchHit implements Comparable<SearchHit> {
             List<String> texts = new ArrayList<>();
             for (PersistentCMSComponent component : page.getPersistentComponents()) {
                 for (CMSContent content : component.getContentItems()) {
-                    if (content instanceof TranslatableCMSContent) {
-                        TranslatableCMSContent trCont = (TranslatableCMSContent) content;
+                    if (content instanceof TranslatableCMSContent trCont) {
                         for (Locale loc : trCont.getText().getLocales()) {
                             texts.add(trCont.getText().getText(loc));
                         }
-                    } else if (content instanceof CMSMediaHolder) {
-                        CMSMediaItem media = ((CMSMediaHolder) content).getMediaItem();
+                    } else if (content instanceof CMSMediaHolder cmsMediaHolder) {
+                        CMSMediaItem media = cmsMediaHolder.getMediaItem();
                         if (media != null && media.isHasExportableText()) {
                             texts.add(CmsMediaBean.getMediaFileAsString(media));
 
@@ -354,7 +367,7 @@ public class SearchHit implements Comparable<SearchHit> {
                 fulltext = TEITools.getTeiFulltext(fulltext);
                 fulltext = Jsoup.parse(fulltext).text();
             }
-            // logger.trace(fulltext); //NOSONAR Sometimes used for debugging
+            // logger.trace(fulltext); //NOSONAR Debug
             List<String> fulltextFragments = fulltext == null ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT),
                     fulltext, DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false, proximitySearchDistance);
 
@@ -370,7 +383,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     count++;
                 }
                 children.add(hit);
-                // logger.trace("Added {} fragments", count); //NOSONAR Sometimes used for debugging
+                // logger.trace("Added {} fragments", count); //NOSONAR Debug
                 int oldCount = hit.getHitTypeCounts().get(HitType.PAGE) != null ? hit.getHitTypeCounts().get(HitType.PAGE) : 0;
                 hitTypeCounts.put(HitType.PAGE, oldCount + count);
                 return count;
@@ -455,6 +468,39 @@ public class SearchHit implements Comparable<SearchHit> {
                             hitsPopulated++;
                         }
                         break;
+                    case ARCHIVE:
+                        // EAD archive
+                        iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
+                        if (!ownerHits.containsKey(iddoc) && DataManager.getInstance().getConfiguration().isArchivesEnabled()) {
+                            SearchHit childHit = factory.createSearchHit(childDoc, null, fulltext, null);
+                            children.add(childHit);
+                            ownerHits.put(iddoc, childHit);
+                            ownerDocs.put(iddoc, childDoc);
+                            hitsPopulated++;
+
+                            // Check and add link to related record, if exists
+                            String entryId = SolrTools.getSingleFieldStringValue(childDoc, SolrConstants.EAD_NODE_ID);
+                            if (StringUtils.isNotEmpty(entryId)) {
+                                childHit.url = "archives/" + pi + "/?selected=" + entryId + "#selected";
+                                SolrDocument relatedRecordDoc =
+                                        DataManager.getInstance()
+                                                .getSearchIndex()
+                                                .getFirstDoc(
+                                                        '+' + SolrConstants.DOCTYPE + ':' + DocType.DOCSTRCT.name() + " +" + SolrConstants.EAD_NODE_ID
+                                                                + ":\"" + entryId + '"',
+                                                        Arrays.asList(SolrConstants.LABEL, SolrConstants.PI_TOPSTRUCT));
+                                if (relatedRecordDoc != null) {
+                                    childHit.setAltUrl(
+                                            "piresolver?id=" + SolrTools.getSingleFieldStringValue(relatedRecordDoc, SolrConstants.PI_TOPSTRUCT));
+                                    childHit.setAltLabel(SolrTools.getSingleFieldStringValue(relatedRecordDoc, SolrConstants.LABEL));
+                                    if (StringUtils.isEmpty(childHit.getAltLabel())) {
+                                        childHit.setAltLabel(SolrTools.getSingleFieldStringValue(relatedRecordDoc, SolrConstants.PI_TOPSTRUCT));
+                                    }
+                                    logger.trace("altUrl: {}", childHit.getAltUrl());
+                                }
+                            }
+                        }
+                        break;
                     case GROUP:
                     default:
                         break;
@@ -480,7 +526,7 @@ public class SearchHit implements Comparable<SearchHit> {
                 children.add(ownerHit);
                 ownerHits.put(ownerIddoc, ownerHit);
                 ownerDocs.put(ownerIddoc, ownerDoc);
-                logger.trace("owner doc found: {}", ownerDoc.getFieldValue("LOGID")); //NOSONAR Sometimes used for debugging
+                logger.trace("owner doc found: {}", ownerDoc.getFieldValue("LOGID")); //NOSONAR Debug
             }
         }
         if (ownerHit != null) {
@@ -491,8 +537,8 @@ public class SearchHit implements Comparable<SearchHit> {
                 ownerHit = newOwnerHit;
                 ownerHits.put(ownerIddoc, newOwnerHit);
             }
-            // logger.trace("owner doc of {}: {}", childDoc.getFieldValue(SolrConstants.IDDOC),
-            // ownerHit.getBrowseElement().getIddoc()); //NOSONAR Sometimes used for debugging
+            // logger.trace("owner doc of {}: {}", childDoc.getFieldValue(SolrConstants.IDDOC), //NOSONAR Debug
+            // ownerHit.getBrowseElement().getIddoc()); //NOSONAR Debug
 
             SearchHit childHit =
                     factory.createSearchHit(childDoc, ownerDocs.get(ownerIddoc), fulltext,
@@ -549,11 +595,11 @@ public class SearchHit implements Comparable<SearchHit> {
                             StringPair alto = DataFileTools.loadAlto(altoFilename);
                             fulltext = ALTOTools.getFulltext(alto.getOne(), alto.getTwo(), true);
                             List<TagCount> tags = ALTOTools.getNERTags(alto.getOne(), alto.getTwo(), null);
-                            // logger.trace("found {} entity tags", tags.size());
+                            // logger.trace("found {} entity tags", tags.size()); //NOSONAR Debug
                             String highlightWord = null;
                             for (TagCount tag : tags) {
                                 if (tag.getIdentifier() != null) {
-                                    //logger.trace("tag identifier: {}", tag.getIdentifier());
+                                    //logger.trace("tag identifier: {}", tag.getIdentifier()); //NOSONAR Debug
                                 }
                                 if (authorityIdentifier.equals(tag.getIdentifier())) {
                                     highlightWord = tag.getValue();
@@ -863,6 +909,21 @@ public class SearchHit implements Comparable<SearchHit> {
 
     /**
      * <p>
+     * getArchiveHitCount.
+     * </p>
+     *
+     * @return a int.
+     */
+    public int getArchiveHitCount() {
+        if (hitTypeCounts.get(HitType.ARCHIVE) != null) {
+            return hitTypeCounts.get(HitType.ARCHIVE);
+        }
+
+        return 0;
+    }
+
+    /**
+     * <p>
      * Getter for the field <code>foundMetadata</code>.
      * </p>
      *
@@ -885,6 +946,34 @@ public class SearchHit implements Comparable<SearchHit> {
      */
     public String getUrl() {
         return url;
+    }
+
+    /**
+     * @return the altUrl
+     */
+    public String getAltUrl() {
+        return altUrl;
+    }
+
+    /**
+     * @param altUrl the altUrl to set
+     */
+    public void setAltUrl(String altUrl) {
+        this.altUrl = altUrl;
+    }
+
+    /**
+     * @return the altLabel
+     */
+    public String getAltLabel() {
+        return altLabel;
+    }
+
+    /**
+     * @param altLabel the altLabel to set
+     */
+    public void setAltLabel(String altLabel) {
+        this.altLabel = altLabel;
     }
 
     /**
@@ -923,12 +1012,13 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     public String getCssClass() {
-        String docStructType = this.getBrowseElement().getDocStructType();
-        if (StringUtils.isNotBlank(docStructType)) {
-            return "docstructtype__" + docStructType;
-        }
+        VariableReplacer vr =
+                new VariableReplacer(this.browseElement.getStructElements().stream().findFirst().orElse(this.browseElement.getBottomStructElement()));
+        String template = DataManager.getInstance().getConfiguration().getSearchHitStyleClass();
+        String value = vr.replace(template).stream().findAny().orElse("");
+        value = StringTools.convertToSingleWord(value, MAX_STYLECLASS_LENGTH, STYLE_CLASS_WORD_SEPARATOR).toLowerCase();
 
-        return "";
+        return value;
     }
 
     /* (non-Javadoc)

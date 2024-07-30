@@ -157,7 +157,7 @@ public class UserBean implements Serializable {
         long inactiveMillis = System.currentTimeMillis() - lastActityTimestamp;
         logger.trace("inactiveMillis: {}", inactiveMillis);
         int maxInactiveSeconds = BeanUtils.getSession().getMaxInactiveInterval();
-        // logger.trace("maxInactiveSeconds: {}", maxInactiveSeconds);
+        // logger.trace("maxInactiveSeconds: {}", maxInactiveSeconds); //NOSONAR Debug
         long timeoutMillis = maxInactiveSeconds * 1000 - inactiveMillis;
         logger.trace("timeoutMillis: {}", timeoutMillis);
         LocalTime timeout = LocalTime.ofSecondOfDay(timeoutMillis / 1000);

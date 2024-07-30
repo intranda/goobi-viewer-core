@@ -52,7 +52,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -148,6 +147,9 @@ public class ViewManager implements Serializable {
     private static final long serialVersionUID = -7776362205876306849L;
 
     private static final Logger logger = LogManager.getLogger(ViewManager.class);
+
+    private static final String STYLE_CLASS_WORD_SEPARATOR = "_";
+    private static final int MAX_STYLECLASS_LENGTH = 100;
 
     private ImageDeliveryBean imageDeliveryBean;
 
@@ -278,6 +280,7 @@ public class ViewManager implements Serializable {
         if (this.archiveResource != null) {
             return DataManager.getInstance().getArchiveManager().getArchiveHierarchyForIdentifier(this.archiveResource, identifier);
         }
+        logger.trace("No archive resource found for {}", identifier);
         return Collections.emptyList();
     }
 
@@ -699,8 +702,10 @@ public class ViewManager implements Serializable {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws ViewerConfigurationException
      */
-    public String getPageDownloadUrl(final DownloadOption option, PhysicalElement page) throws IndexUnreachableException, DAOException {
+    public String getPageDownloadUrl(final DownloadOption option, PhysicalElement page)
+            throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("getPageDownloadUrl: {}", option);
         DownloadOption useOption = option;
         if (useOption == null || !useOption.isValid()) {
@@ -748,8 +753,8 @@ public class ViewManager implements Serializable {
         int maxHeight;
         Dimension maxSize;
         if (origImageSize != null && origImageSize.height * origImageSize.width > 0) {
-            maxWidth = Math.min(origImageSize.width, configuredMaxSize.width);
-            maxHeight = Math.min(origImageSize.height, configuredMaxSize.height);
+            maxWidth = configuredMaxSize.width > 0 ? Math.min(origImageSize.width, configuredMaxSize.width) : origImageSize.width;
+            maxHeight = configuredMaxSize.height > 0 ? Math.min(origImageSize.height, configuredMaxSize.height) : origImageSize.height;
             maxSize = new Dimension(maxWidth, maxHeight);
         } else {
             maxWidth = configuredMaxSize.width;
@@ -762,10 +767,16 @@ public class ViewManager implements Serializable {
                 Dimension dim = option.getBoxSizeInPixel();
                 if (dim == DownloadOption.MAX) {
                     Scale scale = new Scale.ScaleToBox(maxSize);
-                    Dimension size = scale.scale(origImageSize);
-                    options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
+                    if (origImageSize != null && (origImageSize.height > maxHeight || origImageSize.width > maxWidth)) {
+                        Dimension size = scale.scale(origImageSize);
+                        options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), size));
+                    } else {
+                        options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), DownloadOption.MAX));
+                    }
                 } else if (dim.width * dim.height == 0 || (maxWidth > 0 && maxWidth < dim.width) || (maxHeight > 0 && maxHeight < dim.height)) {
                     // nothing
+                } else if (origImageSize == null) {
+                    options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), option.getBoxSizeInPixel()));
                 } else {
                     Scale scale = new Scale.ScaleToBox(option.getBoxSizeInPixel());
                     Dimension size = scale.scale(origImageSize);
@@ -784,15 +795,20 @@ public class ViewManager implements Serializable {
      * @return List<DownloadOption>
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
-    public List<DownloadOption> getDownloadOptionsForPage(PhysicalElement page) throws IndexUnreachableException, DAOException {
+    public List<DownloadOption> getDownloadOptionsForPage(PhysicalElement page)
+            throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (page != null && page.isHasImage()) {
             List<DownloadOption> configuredOptions = DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
-            String imageFilename = page.getFirstFileName();
+            String imageFilename = page.getFileName();
             Dimension maxSize = new Dimension(
                     page.isAccessPermissionImageZoom() ? DataManager.getInstance().getConfiguration().getViewerMaxImageWidth()
                             : DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth(),
                     DataManager.getInstance().getConfiguration().getViewerMaxImageHeight());
+            if (this.imageDeliveryBean.getIiif().isIIIFUrl(page.getFileName())) {
+                return getDownloadOptionsForImage(configuredOptions, null, maxSize, imageFilename);
+            }
             Dimension imageSize = new Dimension(page.getImageWidth(), page.getImageHeight());
             return getDownloadOptionsForImage(configuredOptions, imageSize, maxSize, imageFilename);
         }
@@ -1421,7 +1437,7 @@ public class ViewManager implements Serializable {
             throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
         int newImageOrder = 1;
         if (currentImageOrderString != null && currentImageOrderString.contains("-")) {
-            String[] orderSplit = currentImageOrderString.split("[-]");
+            String[] orderSplit = currentImageOrderString.split("-");
             newImageOrder = StringTools.parseInt(orderSplit[0]).orElse(1);
         } else {
             newImageOrder = StringTools.parseInt(currentImageOrderString).orElse(1);
@@ -2629,12 +2645,9 @@ public class ViewManager implements Serializable {
             pagesWithFulltext = getPageCountWithFulltext();
         }
         double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
-        // logger.trace("{}% of pages have full-text", percentage);
-        if (percentage < threshold) {
-            return true;
-        }
+        // logger.trace("{}% of pages have full-text", percentage); //NOSONAR Debug
 
-        return false;
+        return percentage < threshold;
     }
 
     public long getPageCountWithFulltext() throws IndexUnreachableException, PresentationException {
@@ -2907,7 +2920,7 @@ public class ViewManager implements Serializable {
             currentFulltext = StringTools.escapeHtmlChars(currentFulltext);
         }
 
-        // logger.trace(currentFulltext);
+        // logger.trace(currentFulltext); //NOSONAR Debug
         return currentFulltext;
     }
 
@@ -2996,7 +3009,7 @@ public class ViewManager implements Serializable {
                 if (!displayFilters.isEmpty()) {
                     filenames = filenames.filter(filename -> displayFilters.stream().allMatch(filter -> filter.passes(filename, vr)));
                 }
-                downloadFilenames = filenames.collect(Collectors.toList());
+                downloadFilenames = filenames.toList();
             }
         }
 
@@ -3038,7 +3051,7 @@ public class ViewManager implements Serializable {
                 .sorted(comparator)
                 .map(this::getLinkToDownloadFile)
                 .filter(link -> link != LabeledLink.EMPTY)
-                .collect(Collectors.toList());
+                .toList();
 
     }
 
@@ -3366,7 +3379,7 @@ public class ViewManager implements Serializable {
             }
         }
 
-        //		logger.trace("Version history size: {}", versionHistory.size());
+        //		logger.trace("Version history size: {}", versionHistory.size()); //NOSONAR Debug
         return versionHistory;
     }
 
@@ -3629,9 +3642,9 @@ public class ViewManager implements Serializable {
         String filename = String.format("%s_%s_%s.pdf", this.pi, this.firstPdfPage, this.lastPdfPage);
         try (PipedInputStream in = new PipedInputStream(); OutputStream out = new PipedOutputStream(in)) {
             String firstPageName =
-                    Optional.ofNullable(this.firstPdfPage).flatMap(i -> this.getPage(i)).map(PhysicalElement::getFileName).orElse(null);
+                    Optional.ofNullable(this.firstPdfPage).flatMap(this::getPage).map(PhysicalElement::getFileName).orElse(null);
             String lastPageName =
-                    Optional.ofNullable(this.lastPdfPage).flatMap(i -> this.getPage(i)).map(PhysicalElement::getFileName).orElse(null);
+                    Optional.ofNullable(this.lastPdfPage).flatMap(this::getPage).map(PhysicalElement::getFileName).orElse(null);
 
             SinglePdfRequest request = new SinglePdfRequest(Map.of(
                     "imageSource", DataFileTools.getMediaFolder(this.pi).toAbsolutePath().toString(),
@@ -4041,15 +4054,15 @@ public class ViewManager implements Serializable {
 
     /**
      *
-     * @return Value of MD_ARCHIVE_ENTRY_ID in the loaded record
+     * @return Value of EAD_NODE_ID in the loaded record
      */
     public String getArchiveEntryIdentifier() {
         if (topStructElement == null) {
             return null;
         }
 
-        // logger.trace("getArchiveEntryIdentifier: {}", topDocument.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID));
-        return topStructElement.getMetadataValue(SolrConstants.ARCHIVE_ENTRY_ID);
+        // logger.trace("getArchiveEntryIdentifier: {}", topStructElement.getMetadataValue(SolrConstants.EAD_NODE_ID)); //NOSONAR Debug
+        return topStructElement.getMetadataValue(SolrConstants.EAD_NODE_ID);
     }
 
     /**
@@ -4128,7 +4141,7 @@ public class ViewManager implements Serializable {
                 lastPage++;
             }
         }
-        return IntStream.range(firstPage, lastPage + 1).boxed().collect(Collectors.toList());
+        return IntStream.range(firstPage, lastPage + 1).boxed().toList();
     }
 
     /**
@@ -4227,7 +4240,7 @@ public class ViewManager implements Serializable {
                 .map(path -> Paths.get(path).getFileName().toString())
                 .map(filename -> this.getPageLoader().findPageForFilename(filename))
                 .filter(p -> p != null)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<String> getExternalResourceUrls() throws IndexUnreachableException {
@@ -4242,11 +4255,22 @@ public class ViewManager implements Serializable {
         VariableReplacer vr = new VariableReplacer(this);
         return urlTemplates.stream()
                 .flatMap(templ -> vr.replace(templ).stream())
-                .filter(url -> ExternalFilesDownloader.resourceExists(url))
+                .filter(ExternalFilesDownloader::resourceExists)
                 .toList();
     }
 
     public StructElement getAnchorStructElement() {
         return anchorStructElement;
     }
+
+    public String getCssClass() throws IndexUnreachableException {
+        VariableReplacer vr =
+                new VariableReplacer(this);
+        String template = DataManager.getInstance().getConfiguration().getRecordViewStyleClass();
+        String value = vr.replace(template).stream().findAny().orElse("");
+        value = StringTools.convertToSingleWord(value, MAX_STYLECLASS_LENGTH, STYLE_CLASS_WORD_SEPARATOR).toLowerCase();
+
+        return value;
+    }
+
 }

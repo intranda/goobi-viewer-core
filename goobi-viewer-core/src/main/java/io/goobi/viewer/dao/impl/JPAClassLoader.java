@@ -190,7 +190,7 @@ public class JPAClassLoader extends ClassLoader {
     /** {@inheritDoc} */
     @Override
     public Enumeration<URL> getResources(final String name) throws IOException {
-        // logger.trace("getResources: {}", name);
+        // logger.trace("getResources: {}", name); //NOSONAR Debug
         if (PERSISTENCE_XML.equals(name)) {
             if (newUrl == null) {
                 try {
@@ -199,7 +199,7 @@ public class JPAClassLoader extends ClassLoader {
                         throw new DAOException("Core persistence.xml");
                     }
                     Document docMerged = scanPersistenceXML(coreFileUrl.get(0), findModulePersistenceXMLs());
-                    // logger.trace("persistence.xml\n{}", new XMLOutputter().outputString(docMerged));
+                    // logger.trace("persistence.xml\n{}", new XMLOutputter().outputString(docMerged)); //NOSONAR Debug
 
                     // The base directory must be empty since Hibernate will scan it searching for classes.
                     final File file = new File(System.getProperty("java.io.tmpdir") + "/viewer/" + PERSISTENCE_XML);

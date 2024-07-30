@@ -70,7 +70,6 @@ public class FacetItem implements Serializable, IFacetItem {
     private String value2;
     private String link;
     private String label;
-    private String translatedLabel;
     private long count;
     private boolean group;
     private final boolean hierarchial;
@@ -110,8 +109,6 @@ public class FacetItem implements Serializable, IFacetItem {
         this.label = label;
         this.hierarchial = hierarchical;
         setLink(link.trim());
-        this.translatedLabel = DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels(field)
-                ? ViewerResourceBundle.getTranslation(this.label, BeanUtils.getLocale()) : this.label;
     }
 
     /**
@@ -134,8 +131,6 @@ public class FacetItem implements Serializable, IFacetItem {
     private FacetItem(String field, String link, String label, long count, boolean hierarchical) {
         this.field = field;
         this.label = label;
-        this.translatedLabel = DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels(field)
-                ? ViewerResourceBundle.getTranslation(label, BeanUtils.getLocale()) : label;
         this.count = count;
         this.hierarchial = hierarchical;
         setLink(link.trim());
@@ -237,7 +232,7 @@ public class FacetItem implements Serializable, IFacetItem {
      */
     public static List<IFacetItem> generateFilterLinkList(List<IFacetItem> existingFacetsItems, String field, Map<String, Long> values,
             boolean hierarchical, int groupToLength, Locale locale, Map<String, String> labelMap) {
-        // logger.trace("generateFilterLinkList: {}", field);
+        // logger.trace("generateFilterLinkList: {}", field); //NOSONAR Debug
         List<String> priorityValues = DataManager.getInstance().getConfiguration().getPriorityValuesForFacetField(field);
         Map<String, FacetItem> priorityValueMap = new HashMap<>(priorityValues.size());
 
@@ -698,19 +693,21 @@ public class FacetItem implements Serializable, IFacetItem {
      */
     @Override
     public String getTranslatedLabel() {
-        return translatedLabel;
+        if (DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels(field)) {
+            return ViewerResourceBundle.getTranslation(label, BeanUtils.getLocale());
+        }
+
+        return label;
     }
 
     /**
-     * <p>
-     * Setter for the field <code>translatedLabel</code>.
-     * </p>
+     * Dummy setter to fulfill the interface contract.
      *
      * @param translatedLabel the translatedLabel to set
      */
     @Override
     public void setTranslatedLabel(String translatedLabel) {
-        this.translatedLabel = translatedLabel;
+        // Do nothing
     }
 
     /**
@@ -771,7 +768,7 @@ public class FacetItem implements Serializable, IFacetItem {
     public boolean isHierarchial() {
         return hierarchial;
     }
-    
+
     @Override
     public boolean isBooleanType() {
         return DataManager.getInstance().getConfiguration().getBooleanFacetFields().contains(field);
