@@ -109,7 +109,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /** Constant <code>defaultVideoHeight=240</code>. */
     private static final int DEFAULT_VIDEO_HEIGHT = 240;
 
-    private static List<String> watermarkTextConfiguration;
+    private List<String> watermarkTextConfiguration;
 
     private final transient Object lock = new Object();
 
@@ -1541,10 +1541,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             AccessPermission access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
                     IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
             // logger.trace("Born digital access for page {} is granted: {}", order, access.isGranted()); //NOSONAR Debug
-            //            if (bornDigitalDownloadTicketRequired == null) {
             bornDigitalDownloadTicketRequired = access.isTicketRequired();
             // logger.trace("Ticket required for page {}: {}", order, access.isTicketRequired()); //NOSONAR Debug
-            //            }
             return access.isGranted();
         }
         logger.trace("FacesContext not found");
@@ -1560,9 +1558,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws DAOException
      */
     public boolean isBornDigitalDownloadTicketRequired() throws IndexUnreachableException, DAOException {
-        //                if (bornDigitalDownloadTicketRequired == null) {
         isAccessPermissionBornDigital();
-        //                }
         // logger.trace("isBornDigitalDownloadTicketRequired: {}", bornDigitalDownloadTicketRequired); //NOSONAR Debug
 
         // If license requires a download ticket, check agent session for loaded ticket
@@ -1630,7 +1626,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         List<CrowdsourcingAnnotation> comments =
                 DataManager.getInstance().getDao().getAnnotationsForTarget(this.pi, this.order, Motivation.COMMENTING);
         Collections.sort(comments, (c1, c2) -> c1.getDateCreated().compareTo(c2.getDateCreated()));
-        //        Collections.reverse(comments);
         return comments;
     }
 

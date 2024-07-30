@@ -125,9 +125,6 @@ public class TOCElement implements Serializable {
                         .buildPageUrl(topStructPi, pageNo != null ? Integer.valueOf(pageNo) : 1, logId, pageType, false);
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -139,9 +136,6 @@ public class TOCElement implements Serializable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -194,10 +188,6 @@ public class TOCElement implements Serializable {
 
     }
 
-    private String getFooterId() {
-        return this.footerId;
-    }
-
     /**
      * Checks whether the current user has permissions to download a PDFs for this element.
      *
@@ -229,7 +219,7 @@ public class TOCElement implements Serializable {
      */
     public String getThumbnailUrl(int width, int height) {
 
-        String url = new String(thumbnailUrl);
+        String url = thumbnailUrl;
         if (StringUtils.isNotBlank(url)) {
             Scale scale = new Scale.ScaleToBox(width, height);
             try {
@@ -410,9 +400,9 @@ public class TOCElement implements Serializable {
             return urlPrefix + urlSuffix;
         }
 
-        PageType pageType = PageType.getByName(viewType);
-        if (pageType != null) {
-            switch (pageType) {
+        PageType pType = PageType.getByName(viewType);
+        if (pType != null) {
+            switch (pType) {
                 case viewFullscreen:
                     if (PageType.viewObject.equals(this.pageType) || PageType.viewImage.equals(this.pageType)) {
                         return urlPrefix + DataManager.getInstance()
