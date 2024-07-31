@@ -106,7 +106,6 @@ public class RisResourceBuilder {
                 throw new ContentLibException("Could not create RIS temp file " + tempFile.toAbsolutePath().toString());
             }
         }
-
         return out -> {
             try (FileInputStream in = new FileInputStream(tempFile.toFile())) {
                 FileTools.copyStream(out, in);
@@ -115,6 +114,9 @@ public class RisResourceBuilder {
             } finally {
                 out.flush();
                 out.close();
+                if (Files.exists(tempFile)) {
+                    FileUtils.deleteQuietly(tempFile.toFile());
+                }
             }
         };
     }
