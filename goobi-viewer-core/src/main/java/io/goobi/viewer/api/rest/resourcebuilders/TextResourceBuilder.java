@@ -138,9 +138,18 @@ public class TextResourceBuilder {
             tempFiles.add(tempFile.toPath());
         }
         tempFiles.sort((f1, f2) -> f1.getFileName().toString().compareTo(f2.getFileName().toString()));
-        return writeZipFile(tempFiles, filename);
-        //        }
-        //        return writeZipFile(files, filename);
+        try {
+            return writeZipFile(tempFiles, filename);
+        } finally {
+            tempFiles.forEach(file -> {
+                try {
+                    Files.deleteIfExists(file);
+                } catch (IOException e) {
+                    logger.error("Error deleting temporary file {}", file);
+                }
+            });
+            Files.deleteIfExists(tempFolder.toPath());
+        }
 
     }
 
