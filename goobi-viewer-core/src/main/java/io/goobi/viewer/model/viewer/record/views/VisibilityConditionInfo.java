@@ -24,6 +24,7 @@ package io.goobi.viewer.model.viewer.record.views;
 import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.goobi.viewer.controller.JsonTools;
@@ -32,6 +33,7 @@ import io.goobi.viewer.controller.JsonTools;
  * Interchange class to pass visibility conditions from the jsf fronend to a backing bean. Takes a pseudo-json object to create a
  * {@link VisibilityCondition} instance
  */
+@JsonIgnoreProperties
 public class VisibilityConditionInfo {
     private List<String> fileTypes;
     private String sourceFormat;

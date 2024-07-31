@@ -138,6 +138,7 @@ public class TextResourceBuilder {
             tempFiles.add(tempFile.toPath());
         }
         tempFiles.sort((f1, f2) -> f1.getFileName().toString().compareTo(f2.getFileName().toString()));
+
         return writeZipFile(tempFiles, filename);
         //        }
         //        return writeZipFile(files, filename);

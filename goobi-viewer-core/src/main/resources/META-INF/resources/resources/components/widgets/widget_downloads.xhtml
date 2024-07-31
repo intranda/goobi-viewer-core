@@ -52,8 +52,6 @@
 					</ui:fragment>
 
 					<!-- ADDITIONAL FILES TEXT -->
-					<ui:fragment
-						rendered="#{activeDocumentBean.viewManager.displayContentDownloadMenu}">
 
 						<!-- INTRODUCTION TEXT ADDITIONAL FILES -->
 						<ui:fragment
@@ -66,13 +64,11 @@
 							</p>
 						</ui:fragment>
 
-					</ui:fragment>
 
 					<!-- WORK -->
-					<ui:fragment rendered="#{navigationHelper.currentView == 'object' or navigationHelper.currentPage == 'cmsPageOfWork' or navigationHelper.currentView == 'fulltext'}">
 
 						<!-- WORK DOWNLOADS -->
-						<div jsf:id="recordDownloads" rendered="#{displayConditions.getTag('recordDownloads').getChildCount('widget-element') > 0}"
+						<h:panelGroup id="recordDownloads" rendered="#{displayConditions.getTag('recordDownloads').getChildCount('widget-element') > 0}"
 							class="widget-downloads__work-downloads widget__badge-container">
 
 							<h3 id="titleWork"
@@ -83,7 +79,7 @@
 
 								<!-- ALTO (WORK) -->
 								<ui:fragment 
-									rendered="#{displayConditions.matchesRecord('{fileTypes:[ALTO], pageTypes:[viewFulltext], accessCondition:PRIV_VIEW_FULLTEXT}')}">
+									rendered="#{displayConditions.matchRecord('{requiredFileTypes:[ALTO], pageTypes:[viewFulltext], accessCondition:PRIV_VIEW_FULLTEXT}')}">
 									<a href="#{activeDocumentBean.viewManager.altoUrlForAllPages}"
 										id="alto"
 										class="badge badge-dark widget-downloads__work-download-alto"
@@ -95,11 +91,9 @@
 								</ui:fragment>
 
 								<!-- TEI (WORK) -->
-								<ui:fragment
-									rendered="#{displayConditions.matchesRecord('{fileTypes:[TEI, ALTO, FULLTEXT], pageTypes:[viewFulltext], accessCondition:PRIV_VIEW_FULLTEXT}')}">
 									<!-- MULTILANGUAGE -->
 									<ui:fragment
-										rendered="#{displayConditions.matchesRecord('{fileTypes:[TEI]}')}">
+										rendered="#{displayConditions.matchRecord('{requiredFileTypes:[TEI]}')}">
 										<ui:repeat var="lang"
 											value="#{textBean.getRecordLanguages(activeDocumentBean.viewManager.topStructElement)}">
 											<a
@@ -115,7 +109,7 @@
 									</ui:fragment>
 									<!-- SINGLE LANGUAGE -->
 									<ui:fragment
-										rendered="#{displayConditions.matchesRecord('{fileTypes:![TEI]}')}">
+										rendered="#{displayConditions.matchRecord('{requiredFileTypes:![TEI]}')}">
 										<a href="#{activeDocumentBean.viewManager.teiUrlForAllPages}"
 											id="teiWork"
 											class="badge badge-dark widget-downloads__work-download-tei"
@@ -125,11 +119,10 @@
 											aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.TEI}">
 											#{msg.TEI} </a>
 									</ui:fragment>
-								</ui:fragment>
 
 								<!-- FULLTEXT (WORK) -->
 								<ui:fragment
-									rendered="#{displayConditions.matchesRecord('{fileTypes:[ALTO, FULLTEXT], pageTypes:[viewFulltext], accessCondition:PRIV_VIEW_FULLTEXT}')}">
+									rendered="#{displayConditions.matchRecord('{requiredFileTypes:[ALTO, TEXT], pageTypes:[viewFulltext], accessCondition:PRIV_VIEW_FULLTEXT}')}">
 									<a
 										href="#{activeDocumentBean.viewManager.fulltextUrlForAllPages}"
 										id="textWork"
@@ -142,7 +135,6 @@
 								</ui:fragment>
 
                         <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionDownloadMetadata}">           
                         
 	                            <!-- METS -->
 	                            <ui:fragment
@@ -208,17 +200,7 @@
 	                            </ui:fragment>
 	                            
 	                            
-                            </ui:fragment>
-
 							<!-- PDF (WORK) -->
-							<ui:fragment
-								rendered="#{(navigationHelper.currentPage == 'object' or navigationHelper.currentPage == 'cmsPageOfWork') and 
-                                                 activeDocumentBean.viewManager.externalDownloadUrl == null and 
-                                                 !activeDocumentBean.viewManager.filesOnly and 
-                                                 activeDocumentBean.viewManager.hasPages and 
-                                                 activeDocumentBean.accessPermissionPdf}">
-								<ui:fragment
-									rendered="#{!configurationBean.generatePdfInMessageQueue}">
 									<c:set scope="request" var="hasPrerenderedPagePdfs"
 										value="#{activeDocumentBean.viewManager.hasPrerenderedPagePdfs()}" />
 									<ui:fragment rendered="#{hasPrerenderedPagePdfs}">
@@ -257,7 +239,6 @@
 											#{msg.label__pdf_download}
 										</a>
 									</ui:fragment>
-								</ui:fragment>
 								<ui:fragment
 									rendered="#{configurationBean.generatePdfInMessageQueue}">
 									<a href="#" id="pdfWork"
@@ -273,8 +254,6 @@
 										#{msg.label__pdf_download}
 									</a>
 								</ui:fragment>
-
-							</ui:fragment> 	
 							
 	                        <!-- External download link -->
 	                        <ui:fragment rendered="#{activeDocumentBean.viewManager.externalDownloadUrl != null}">
@@ -308,8 +287,6 @@
 							</ui:fragment>
 
 							<!-- TOC -->
-							<ui:fragment
-								rendered="#{activeDocumentBean.accessPermissionPdf or activeDocumentBean.accessPermissionEpub or configurationBean.docHierarchyPdfEnabled}">
 								<ui:fragment
 									rendered="#{configurationBean.docHierarchyPdfEnabled}">
 									<h:form class="d-inline-flex" id="titleBodyForm"
@@ -326,10 +303,8 @@
 										</h:commandLink>
 									</h:form>
 								</ui:fragment>
-							</ui:fragment>
 
                         <!-- WORK IIIF-RELIANT FUNCTIONS (GENERATE_IIIF_MANIFEST CHECK) -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.accessPermissionGenerateIiifManifest}">   
                         
                             <!-- IIIF MANIFEST FULL RECORD -->
                             <ui:fragment rendered="#{!activeDocumentBean.viewManager.bornDigital and activeDocumentBean.viewManager.currentPage.displayImage and navigationHelper.currentView != 'fulltext'}">
@@ -362,31 +337,9 @@
                                     </a> 
                             </ui:fragment>
                         
-                        </ui:fragment>
-
-						</div>
-
-
+						</h:panelGroup>
 
 					<!-- PAGE -->
-					<ui:fragment
-						rendered="#{!activeDocumentBean.viewManager.bornDigital 
-                        and activeDocumentBean.viewManager.currentPage.displayImage 
-                        and (activeDocumentBean.viewManager.currentPage.accessPermissionPdf 
-                            or activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload 
-                            or activeDocumentBean.viewManager.currentPage.altoAvailable 
-                            or activeDocumentBean.viewManager.currentPage.teiAvailable 
-                            or activeDocumentBean.viewManager.currentPage.displayFulltext)
-                        and !activeDocumentBean.viewManager.doublePageMode}">
-
-						<ui:fragment
-							rendered="#{navigationHelper.currentView == 'fulltext'
-												and (activeDocumentBean.viewManager.currentPage.altoAvailable
-												or activeDocumentBean.viewManager.currentPage.teiAvailable
-												or activeDocumentBean.viewManager.currentPage.displayFulltext)
-												or navigationHelper.currentView == 'object'
-												or navigationHelper.currentPage == 'cmsPageOfWork'
-												and (!activeDocumentBean.viewManager.bornDigital)}">
 
 							<!-- PAGE DOWNLOADS -->
 							<div
@@ -442,48 +395,7 @@
 									</ui:repeat>
 
 								</ui:fragment>
-
-
-
-								<!-- 							<ui:fragment -->
-								<!-- 								rendered="#{navigationHelper.currentView == 'object' and !activeDocumentBean.viewManager.bornDigital}"> -->
-
-								<!-- 								IMAGE -->
-								<!-- 								<ui:fragment -->
-								<!-- 									rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload and configurationBean.displaySidebarWidgetUsagePageDownloadOptions}"> -->
-								<!-- 									<h:commandButton id="downloadImageButton" -->
-								<!-- 										class="badge badge-dark widget-downloads__page-download-jpeg" -->
-								<!-- 										target="_blank" rel="nofollow noopener" -->
-								<!-- 										value="#{msg.imageLink}" -->
-								<!-- 										action="#{activeDocumentBean.toggleDownloadImageModal}" -->
-								<!-- 										immediate="true" title="#{msg.label__img_download_image}" -->
-								<!-- 										aria-label="#{msg.image}: #{msg.imageLink}"> -->
-								<!-- 										<f:passThroughAttribute name="data-toggle" value="tooltip" /> -->
-								<!-- 										<f:passThroughAttribute name="data-placement" value="top" /> -->
-								<!-- 										<f:passThroughAttribute name="data-trigger" value="hover" /> -->
-								<!-- 										<f:passThroughAttribute name="data-popover-element" -->
-								<!-- 											value="#downloadImagePopover" /> -->
-								<!-- 										<f:passThroughAttribute name="data-popover-dismiss" -->
-								<!-- 											value="click-outside" /> -->
-								<!-- 										<f:passThroughAttribute name="data-popover-placement" -->
-								<!-- 											value="bottom" /> -->
-								<!-- 									</h:commandButton> -->
-
-								<script>
-									//                                     // FOCUS POPOVER AUTOMATICALLY - WCAG GUIDELINES - DIRTY FIX
-									//                                     $('[data-popover-element="#downloadImagePopover"]').on('click', function () {
-									//                                         setTimeout(function() { $('#downloadSelectSizes_0').focus()}, 50);
-									//                                     });
-								</script>
-
-								<!-- 								</ui:fragment> -->
-
-								<!-- 							</ui:fragment> -->
-
 								<!-- PAGE FULLTEXT FORMATS (VIEW_FULLTEXT CHECK) -->
-								<ui:fragment
-									rendered="#{navigationHelper.currentView == 'fulltext' and activeDocumentBean.viewManager.currentPage.accessPermissionFulltext}">
-
 									<!-- ALTO (PAGE) -->
 									<ui:fragment
 										rendered="#{activeDocumentBean.viewManager.currentPage.altoAvailable}">
@@ -497,8 +409,6 @@
 											#{msg.downloadAltoPageButtonLabel} </a>
 									</ui:fragment>
 
-									<ui:fragment
-										rendered="#{!activeDocumentBean.viewManager.bornDigital}">
 										<!-- TEI (PAGE) -->
 										<ui:fragment
 											rendered="#{activeDocumentBean.viewManager.currentPage.teiAvailable}">
@@ -523,11 +433,9 @@
 												aria-label="#{msg.image}: #{msg.fulltext}">
 												#{msg.fulltext} </a>
 										</ui:fragment>
-									</ui:fragment>
 
 									<!-- PURL -->
 
-								</ui:fragment>
 								<!-- IIIF MANIFEST PAGE -->
 								<ui:fragment
 									rendered="#{!activeDocumentBean.viewManager.bornDigital and 
@@ -559,24 +467,10 @@
 										#{msg.action__view_in_mirador} </a>
 								</ui:fragment>
 							</div>
-						</ui:fragment>
-
-					</ui:fragment>
 
 					<!-- PAGE RANGE DOWNLOADS -->
-					<ui:fragment
-						rendered="#{!activeDocumentBean.viewManager.bornDigital and configurationBean.pdfPageRangeEnabled}">
-
 						<div
 							class="widget-downloads__page-range-downloads widget__badge-container">
-
-							<ui:fragment
-								rendered="#{navigationHelper.currentView == 'fulltext'
-												and (activeDocumentBean.viewManager.currentPage.altoAvailable
-												or activeDocumentBean.viewManager.currentPage.teiAvailable
-												or activeDocumentBean.viewManager.currentPage.displayFulltext)
-												or (navigationHelper.currentPage == 'object' or navigationHelper.currentPage == 'cmsPageOfWork')
-												and (!activeDocumentBean.viewManager.bornDigital)}">
 
 								<!-- TITLE PAGE RANGE -->
 
@@ -645,10 +539,7 @@
 
 								</ui:fragment>
 
-							</ui:fragment>
-
 						</div>
-					</ui:fragment>
 
 					<!-- IMAGE FRAGMENT -->
 					<ui:fragment
@@ -705,6 +596,7 @@
 
 
 				</div>
+				
 				<!--  Handling page range download buttons and inputs -->
 				<script>
 					$('[data-target="showPageRangeDownload"]')

@@ -12,15 +12,10 @@
 	</ui:define>
 
 	<composite:interface>
-		<composite:attribute name="pageType" required="false" default=""/>
 	</composite:interface>
 
 	<composite:implementation>
-	    <ui:fragment
-	        rendered="#{activeDocumentBean.recordLoaded and !activeDocumentBean.viewManager.metadataViewOnly and not activeDocumentBean.anchor and not activeDocumentBean.group}">
-		<div id="widgetViews" class="widget">
-			<h:form id="widgetViewsForm">
-				<h2 >#{msg.view}</h2>
+		<h:form>
 				<ul>
 					<!-- Object -->
 					<h:panelGroup rendered="#{activeDocumentBean.viewManager.displayObjectViewLink}">
@@ -172,7 +167,6 @@
                     </h:panelGroup>
 				</ul>
 			</h:form>
-		</div>
-		</ui:fragment>
+
 	</composite:implementation>
 </ui:composition>
