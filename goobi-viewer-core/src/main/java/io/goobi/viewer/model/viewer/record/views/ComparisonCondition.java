@@ -22,9 +22,9 @@ public class ComparisonCondition<T extends Number> extends Condition<T> {
         }
     }
 
-    public static Condition of(String number) {
+    public static ComparisonCondition<?> of(String number) {
         if (StringUtils.isBlank(number) || !number.matches("!?[\\d.]+")) {
-            return Condition.NONE;
+            return new ComparisonCondition<Integer>(null, true);
         }
         boolean matchIfLarger = !number.startsWith("!");
         if (number.contains(".")) {

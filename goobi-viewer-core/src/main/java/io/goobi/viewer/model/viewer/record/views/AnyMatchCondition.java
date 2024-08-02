@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.viewer.record.views;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -32,7 +33,7 @@ public class AnyMatchCondition<T> extends Condition<Collection<T>> {
 
     public static <T> AnyMatchCondition<T> of(Collection<T> value, boolean matchIfEqual) {
         if (value == null || value.isEmpty()) {
-            return (AnyMatchCondition<T>) Condition.NONE;
+            return new AnyMatchCondition<T>(Collections.emptyList(), true);
         } else {
             return new AnyMatchCondition<T>(value, matchIfEqual);
         }
@@ -50,6 +51,15 @@ public class AnyMatchCondition<T> extends Condition<Collection<T>> {
         } else {
             return !CollectionUtils.containsAny(this.getValue(), testValue);
         }
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return getValue().isEmpty();
+    }
+
+    public static AnyMatchCondition<? extends Object> none() {
+        return new AnyMatchCondition<Object>(Collections.emptyList(), true);
     }
 
 }

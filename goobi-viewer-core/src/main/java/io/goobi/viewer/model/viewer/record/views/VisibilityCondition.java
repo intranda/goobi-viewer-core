@@ -46,14 +46,21 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class VisibilityCondition {
 
-    private final AnyMatchCondition fileTypes;
-    private final Condition sourceFormat;
-    private final Condition mimeType;
-    private final Condition accessCondition;
-    private final Condition views;
-    private final Condition docTypes;
-    private final Condition numPages;
-    private final Condition tocSize;
+    private final AnyMatchCondition<FileType> fileTypes;
+
+    private final AnyMatchCondition<String> sourceFormat;
+
+    private final AnyMatchCondition<BaseMimeType> mimeType;
+
+    private final Condition<String> accessCondition;
+
+    private final AnyMatchCondition<PageType> views;
+
+    private final AnyMatchCondition<String> docTypes;
+
+    private final ComparisonCondition<Integer> numPages;
+
+    private final ComparisonCondition<Integer> tocSize;
 
     public VisibilityCondition(VisibilityConditionInfo info) {
         this(
@@ -68,24 +75,33 @@ public class VisibilityCondition {
                 new AnyMatchCondition<String>(
                         info.getSourceFormat().stream().filter(s -> !s.equals("!")).collect(Collectors.toList()),
                         !info.getSourceFormat().contains("!")),
-                new Condition<BaseMimeType>(BaseMimeType.getByName(getValue(info.getBaseMimeType())), !isNegated(info.getBaseMimeType())),
+                new AnyMatchCondition<BaseMimeType>(
+                        info.getBaseMimeType()
+                                .stream()
+                                .filter(s -> !s.equals("!"))
+                                .map(BaseMimeType::getByName)
+                                .filter(type -> type != BaseMimeType.NONE)
+                                .toList(),
+                        !info.getDocTypes().contains("!")),
                 new Condition<String>(getValue(info.getAccessCondition()), !isNegated(info.getAccessCondition())),
                 new AnyMatchCondition<PageType>(
-                        info.getPageTypes().stream().filter(s -> !s.equals("!")).map(PageType::getByName).collect(Collectors.toList()),
+                        info.getPageTypes().stream().filter(s -> !s.equals("!")).map(PageType::getByName).toList(),
                         !info.getPageTypes().contains("!")),
-                new AnyMatchCondition<String>(info.getDocTypes().stream().filter(s -> !s.equals("!")).collect(Collectors.toList()),
+                new AnyMatchCondition<String>(
+                        info.getDocTypes().stream().filter(s -> !s.equals("!")).toList(),
                         !info.getDocTypes().contains("!")),
                 ComparisonCondition.of(info.getNumPages()),
                 ComparisonCondition.of(info.getTocSize()));
     }
 
-    public VisibilityCondition(AnyMatchCondition<FileType> fileTypes, AnyMatchCondition<String> sourceFormat, Condition<BaseMimeType> mimeType,
-            Condition<String> accessCondition, AnyMatchCondition<PageType> views, AnyMatchCondition<String> docTypes, Condition numPages,
-            Condition tocSize) {
+    public VisibilityCondition(AnyMatchCondition<FileType> fileTypes, AnyMatchCondition<String> sourceFormat,
+            AnyMatchCondition<BaseMimeType> mimeType,
+            Condition<String> accessCondition, AnyMatchCondition<PageType> views, AnyMatchCondition<String> docTypes, ComparisonCondition numPages,
+            ComparisonCondition tocSize) {
         this.fileTypes = fileTypes;
         this.sourceFormat = sourceFormat;
-        this.mimeType = mimeType.getValue() == null || mimeType.getValue() == BaseMimeType.NONE ? Condition.NONE : mimeType;
-        this.accessCondition = StringUtils.isBlank(accessCondition.getValue()) ? Condition.NONE : accessCondition;
+        this.mimeType = mimeType;
+        this.accessCondition = StringUtils.isBlank(accessCondition.getValue()) ? Condition.none() : accessCondition;
         this.views = views;
         this.docTypes = docTypes;
         this.numPages = numPages;
@@ -104,7 +120,6 @@ public class VisibilityCondition {
         return StringUtils.isNotBlank(string) && string.startsWith("!");
     }
 
-    @SuppressWarnings("unchecked")
     public boolean matchesRecord(PageType pageType, ViewManager viewManager, HttpServletRequest request, RecordPropertyCache properties)
             throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException {
 
@@ -129,7 +144,7 @@ public class VisibilityCondition {
         return checkAccess(viewManager, request, properties)
                 && this.fileTypes.matches(existingFileTypes)
                 && this.sourceFormat.matches(List.of(viewManager.getTopStructElement().getSourceDocFormat()))
-                && this.mimeType.matches(baseMimeType)
+                && this.mimeType.matches(List.of(baseMimeType))
                 && this.views.matches(List.of(pageType))
                 && this.docTypes.matches(docTypes)
                 && this.numPages.matches(viewManager.getPageLoader().getNumPages())
@@ -138,7 +153,7 @@ public class VisibilityCondition {
 
     public boolean checkAccess(ViewManager viewManager, HttpServletRequest request, RecordPropertyCache properties)
             throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException {
-        if (this.accessCondition != Condition.NONE) {
+        if (!this.accessCondition.isEmpty()) {
             AccessPermission accessPermission = properties.getPermissionForRecord(viewManager, this.accessCondition.getValue().toString(), request);
             return this.accessCondition.isMatchIfEqual() ? accessPermission.isGranted() : !accessPermission.isGranted();
         }
@@ -152,13 +167,13 @@ public class VisibilityCondition {
         BaseMimeType baseMimeType = page.getBaseMimeType();
         return checkAccess(page, request, properties)
                 && this.fileTypes.matches(existingFileTypes)
-                && this.mimeType.matches(baseMimeType)
+                && this.mimeType.matches(List.of(baseMimeType))
                 && this.views.matches(List.of(pageType));
     }
 
     public boolean checkAccess(PhysicalElement page, HttpServletRequest request, RecordPropertyCache properties)
             throws IndexUnreachableException, DAOException, PresentationException, RecordNotFoundException {
-        if (this.accessCondition != Condition.NONE) {
+        if (!this.accessCondition.isEmpty()) {
             AccessPermission access = properties.getPermissionForPage(page, this.accessCondition.getValue().toString(), request);
             return this.accessCondition.isMatchIfEqual() ? access.isGranted() : !access.isGranted();
         } else {
@@ -166,35 +181,35 @@ public class VisibilityCondition {
         }
     }
 
-    public Condition getAccessCondition() {
+    public Condition<String> getAccessCondition() {
         return accessCondition;
     }
 
-    public AnyMatchCondition getFileTypes() {
+    public AnyMatchCondition<FileType> getFileTypes() {
         return fileTypes;
     }
 
-    public Condition getDocTypes() {
+    public AnyMatchCondition<String> getDocTypes() {
         return docTypes;
     }
 
-    public Condition getMimeType() {
+    public AnyMatchCondition<BaseMimeType> getMimeType() {
         return mimeType;
     }
 
-    public Condition getNumPages() {
+    public ComparisonCondition<Integer> getNumPages() {
         return numPages;
     }
 
-    public Condition getSourceFormat() {
+    public AnyMatchCondition<String> getSourceFormat() {
         return sourceFormat;
     }
 
-    public Condition getTocSize() {
+    public ComparisonCondition<Integer> getTocSize() {
         return tocSize;
     }
 
-    public Condition getViews() {
+    public AnyMatchCondition<PageType> getViews() {
         return views;
     }
 

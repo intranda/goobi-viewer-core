@@ -37,7 +37,7 @@ import io.goobi.viewer.controller.JsonTools;
 public class VisibilityConditionInfo {
     private List<String> fileTypes;
     private List<String> sourceFormat;
-    private String baseMimeType;
+    private List<String> baseMimeType;
     private String accessCondition;
     private List<String> pageTypes;
     private List<String> docTypes;
@@ -52,11 +52,11 @@ public class VisibilityConditionInfo {
         this.fileTypes = fileTypes;
     }
 
-    public String getBaseMimeType() {
-        return baseMimeType == null ? "" : baseMimeType;
+    public List<String> getBaseMimeType() {
+        return baseMimeType == null ? Collections.emptyList() : baseMimeType;
     }
 
-    public void setBaseMimeType(String baseMimeType) {
+    public void setBaseMimeType(List<String> baseMimeType) {
         this.baseMimeType = baseMimeType;
     }
 

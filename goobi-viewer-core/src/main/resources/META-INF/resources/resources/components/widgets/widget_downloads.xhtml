@@ -110,7 +110,6 @@
 										aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.TEI}">
 										#{msg.TEI} </a>
 								</ui:fragment>
-
 								<!-- FULLTEXT (WORK) -->
 								<ui:fragment visibilty-class="widget-element"
 									rendered="#{displayConditions.matchRecord('{requiredFileTypes:[ALTO, TEXT], pageTypes:[viewFulltext], accessCondition:VIEW_FULLTEXT}')}">
@@ -361,9 +360,9 @@
 										#{msg.label__pdf_download}
 									</a>
 								</ui:fragment>
+								
 								<ui:fragment visibilty-class="widget-element" 
-                           			rendered="#{activeDocumentBean.viewManager.getDownloadOptionsForPage(activeDocumentBean.viewManager.currentPage).size() > 0 and displayConditions.matchPage('{pageTypes:[viewObject, cmsPage], requiredFileTypes:[IMAGE], accessCondition:DOWNLOAD_IMAGES}')}">
-
+                           			rendered="#{activeDocumentBean.viewManager.getDownloadOptionsForPage(activeDocumentBean.viewManager.currentPage).size() > 0 and displayConditions.matchPage('{pageTypes:[viewObject, cmsPage], baseMimeType:[image], accessCondition:DOWNLOAD_IMAGES}')}">
 									<!-- IMAGE (PAGE) GENERATE LINKS FOR EVERY CONFIGURED DOWNLOAD SIZE -->
 									<ui:repeat varStatus="status" var="option"
 										value="#{activeDocumentBean.viewManager.getDownloadOptionsForPage(activeDocumentBean.viewManager.currentPage)}">
@@ -423,7 +422,7 @@
 
 								<!-- IIIF MANIFEST PAGE -->
 								<ui:fragment visibilty-class="widget-element" 
-                           			rendered="#{displayConditions.matchPage('{pageTypes:![viewFulltext], numPages:2, requiredFileTypes:[IMAGE], accessCondition:VIEW_IMAGES}')}">
+                           			rendered="#{displayConditions.matchPage('{pageTypes:![viewFulltext], numPages:2, baseMimeType:[image], accessCondition:VIEW_IMAGES}')}">
 									<button id="iiifManifestPage"
 										class="badge badge-dark widget-usage__page-download-iiif"
 										data-copy-value="#{imageDelivery.iiifPageManifest}"
@@ -434,8 +433,7 @@
 
 								<!-- MIRADOR PAGE -->
 								<ui:fragment visibilty-class="widget-element"
-									rendered="#{displayConditions.matchPage('{pageTypes:![viewFulltext], numPages:2, requiredFileTypes:[IMAGE], accessCondition:VIEW_IMAGES}') and
-									!imageDelivery.iiif.isIIIFUrl(activeDocumentBean.viewManager.currentPage.fileName)}">
+									rendered="#{displayConditions.matchPage('{pageTypes:![viewFulltext], numPages:2, requiredFileTypes:[IMAGE], accessCondition:VIEW_IMAGES}')}">
 									<a
 										href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifPageManifest}"
 										id="mirador"

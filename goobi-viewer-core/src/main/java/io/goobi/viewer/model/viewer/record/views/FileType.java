@@ -21,18 +21,19 @@
  */
 package io.goobi.viewer.model.viewer.record.views;
 
+import java.net.FileNameMap;
+import java.net.URLConnection;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -103,40 +104,54 @@ public enum FileType {
 
     public static Collection<FileType> containedFiletypes(PhysicalElement page)
             throws IndexUnreachableException, DAOException, RecordNotFoundException {
+
         Set<FileType> types = new HashSet<>();
+        Map<String, String> filenames = page.getFileNames();
 
-        String mimeType = page.getMimeType();
-        BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
-
-        if (BaseMimeType.AUDIO.equals(baseMimeType)) {
-            types.add(FileType.AUDIO);
-        }
-        if (BaseMimeType.VIDEO.equals(baseMimeType)) {
-            types.add(FileType.VIDEO);
-        }
-        if (BaseMimeType.IMAGE.equals(baseMimeType)) {
-            types.add(FileType.IMAGE);
-        }
-        if (BaseMimeType.MODEL.equals(baseMimeType)) {
-            types.add(FileType.MODEL);
-        }
-        if ("application/pdf".equals(mimeType)) {
-            types.add(FileType.PDF);
-        }
-        if ("application/epub+zip".equals(mimeType)) {
-            types.add(FileType.EPUB);
-        }
-        if (StringUtils.isNotBlank(page.getAltoFileName())) {
-            types.add(FileType.ALTO);
-        }
-        if (StringUtils.isNotBlank(page.getFulltextFileName())) {
-            types.add(FileType.TEXT);
-        }
-        if (!new TextResourceBuilder().getTEIFiles(page.getPi()).isEmpty()) {
-            types.add(FileType.TEI);
+        FileNameMap fileNameMap = URLConnection.getFileNameMap();
+        for (Entry<String, String> entry : filenames.entrySet()) {
+            String fileType = entry.getKey();
+            String filename = entry.getValue();
+            String mimeType = fileNameMap.getContentTypeFor(filename);
+            if ("application/pdf".equals(mimeType)) {
+                types.add(FileType.PDF);
+            } else if ("application/epub+zip".equals(mimeType)) {
+                types.add(FileType.EPUB);
+            } else if ("text/xml".equals(mimeType) || "application/xml".equals(mimeType)) {
+                if ("alto".equalsIgnoreCase(fileType)) {
+                    types.add(FileType.ALTO);
+                } else {
+                    types.add(FileType.TEI);
+                }
+            } else if ("text/plain".equals(mimeType)) {
+                types.add(FileType.TEXT);
+            } else if (fileType.startsWith("object") || fileType.startsWith("model")) {
+                types.add(FileType.MODEL);
+            } else if ("jpeg".equalsIgnoreCase(fileType)) {
+                //pages with external urls also get a "jpeg" filename, even though there is not actual jpeg file
+                //to ignore these, only add jpeg file if FILENAME_JPEG == FILENAME in the PAGE document in solr
+                boolean actualFile = filename.equals(page.getFileName());
+                if (actualFile) {
+                    types.add(IMAGE);
+                }
+            } else {
+                FileType type = FileType.fromMimeType(mimeType);
+                if (type != null) {
+                    types.add(type);
+                }
+            }
         }
 
         return types;
+    }
+
+    public static FileType fromMimeType(String mimeType) {
+        BaseMimeType baseType = BaseMimeType.getByName(mimeType);
+        try {
+            return FileType.valueOf(baseType.name());
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
 }

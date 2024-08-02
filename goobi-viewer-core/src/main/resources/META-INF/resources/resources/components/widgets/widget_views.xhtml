@@ -36,7 +36,7 @@
 					<ul  class="widget__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
 						<!-- Object -->
 						<h:panelGroup  visibilty-class="widget-element"
-							rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, requiredFileTypes:[IMAGE, AUDIO, VIDEO, MODEL]}')}">
+							rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, baseMimeType:[image, video, audio, model]}')}">
 							<li
 								class="#{navigationHelper.currentPage == 'object' ? 'active' : ''}">
 								<h:outputLink

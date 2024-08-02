@@ -5,7 +5,7 @@ import java.io.IOException;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.StringTools;
 
-public class JsonStringConverter<T> {
+public final class JsonStringConverter<T> {
 
     private static final String JSON_KEY_REGEX = "(?<=[{,]\\s*)(\\w+)(?=\\s*:\\s*)";
     private static final String JSON_STRING_VALUE_REGEX = "(?<=:)[^\\[\\],\"']+(?=[,}])";
@@ -22,8 +22,8 @@ public class JsonStringConverter<T> {
         this.type = type;
     }
 
-    private String addQuotes(String json) {
-        json = StringTools.replaceAllMatches(json, JSON_KEY_REGEX, m -> "\"" + m.get(0).trim() + "\"");
+    private String addQuotes(String input) {
+        String json = StringTools.replaceAllMatches(input, JSON_KEY_REGEX, m -> "\"" + m.get(0).trim() + "\"");
         json = StringTools.replaceAllMatches(json, JSON_STRING_VALUE_REGEX, m -> "\"" + m.get(0).trim() + "\"");
         json = StringTools.replaceAllMatches(json, JSON_ARRAY_ELEMENT_REGEX, m -> "\"" + m.get(0).trim() + "\"");
         json = StringTools.replaceAllMatches(json, JSON_BOOLEAN_VALUE_REGEX, m -> m.get(1).trim());

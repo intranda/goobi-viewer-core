@@ -33,19 +33,12 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class Condition<T> {
 
-    @SuppressWarnings("rawtypes")
-    public static final Condition NONE = new Condition(null, true);
-
     private final T value;
     private final boolean matchIfEqual;
 
-    public static <T> boolean isNone(Condition<T> condition) {
-        return condition == null || condition == NONE;
-    }
-
     public static <T> Condition<T> of(T value, boolean matchIfEqual) {
         if (value == null || StringUtils.isBlank(value.toString())) {
-            return NONE;
+            return new Condition<T>(null, true);
         } else {
             return new Condition<T>(value, matchIfEqual);
         }
@@ -57,7 +50,7 @@ public class Condition<T> {
     }
 
     public boolean matches(T testValue) {
-        if (this == NONE) {
+        if (this.isEmpty()) {
             return true;
         }
         if (matchIfEqual) {
@@ -77,10 +70,18 @@ public class Condition<T> {
 
     @Override
     public String toString() {
-        if (this == Condition.NONE) {
+        if (this.isEmpty()) {
             return "NONE";
         }
         return String.valueOf(this.value) + ": " + this.matchIfEqual;
+    }
+
+    public boolean isEmpty() {
+        return value == null || value.toString().isBlank();
+    }
+
+    public static Condition none() {
+        return new Condition<Object>(null, true);
     }
 
 }
