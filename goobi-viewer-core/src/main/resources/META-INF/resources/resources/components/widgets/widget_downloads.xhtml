@@ -13,9 +13,6 @@
 	</composite:interface>
 
 	<composite:implementation>
-
-		<div>children: #{displayConditions.getTag(cc.clientId).getChildCount('widget-element')}</div>
-			<div>display: #{displayConditions.matchRecord('{pageTypes:[viewObject, viewFulltext, cmsPage]}')}</div>
 			
 			<div jsf:id="widgetDownloads" class="widget widget-downloads" rendered="#{displayConditions.getTag('widgetDownloads').getChildCount('widget-element') > 0}">
 
@@ -200,7 +197,6 @@
 							<!-- PDF (WORK) -->
 							<c:set scope="request" var="hasPrerenderedPagePdfs"
 								value="#{activeDocumentBean.viewManager.hasPrerenderedPagePdfs()}" />
-								<div>pdf: #{displayConditions.matchRecord('{baseMimeType:simages}')}</div>
 							<ui:fragment
 	                            rendered="#{displayConditions.matchRecord('{requiredFileTypes:[IMAGE], pageTypes:[viewObject], accessCondition:DOWNLOAD_PDF}')}">
 								<ui:fragment visibilty-class="widget-element"  rendered="#{!configurationBean.generatePdfInMessageQueue and hasPrerenderedPagePdfs}">
@@ -353,7 +349,7 @@
 
 								<!-- PDF (PAGE) -->
 								 <ui:fragment visibilty-class="widget-element" 
-                           			rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and displayConditions.matchPage('{pageTypes:[viewObject, cmsPage], requiredFileTypes:[IMAGE], accessCondition:DOWNLOAD_PAGE_PDF}')}">
+                           			rendered="#{displayConditions.matchPage('{pageTypes:[viewObject, cmsPage], requiredFileTypes:[IMAGE], accessCondition:DOWNLOAD_PAGE_PDF}')}">
 									<a href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
 										id="pdfPage"
 										class="badge badge-dark widget-downloads__page-download-pdf"
@@ -466,8 +462,8 @@
 									<div class="widget-downloads__page-range-downloads-box"
 										data-target="pageRangeDownload">							
 
-										<div rendered="#{activeDocumentBean.viewManager.externalDownloadUrl == null and configurationBean.pdfPageRangeEnabled and 
-										displayConditions.matchRecord('{pageTypes:[viewObject, cmsPage], accessCondition:DOWNLOAD_PDF}')}"
+										<div rendered="#{configurationBean.pdfPageRangeEnabled and 
+										displayConditions.matchRecord('{pageTypes:[viewObject, cmsPage], requiredFileTypes:[IMAGE], accessCondition:DOWNLOAD_PDF}')}"
 										jsf:id="pdfRangeDownloads" visibilty-class="widget-element"
 										class="widget-downloads__page-range-downloads-inner">
 										
