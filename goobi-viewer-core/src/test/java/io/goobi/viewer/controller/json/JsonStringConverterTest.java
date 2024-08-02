@@ -13,7 +13,7 @@ class JsonStringConverterTest {
             + "accessCondition:PRIV_DOWNLOAD_PDF,"
             + "pageTypes:[viewObject,viewFullscreen],"
             + "docTypes:[!,group, anchor],\n"
-            + "hasPages:true}";
+            + "numPages:2}";
 
     @Test
     void test() throws IOException {

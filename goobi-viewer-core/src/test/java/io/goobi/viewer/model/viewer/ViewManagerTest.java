@@ -395,7 +395,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
         DownloadOption masterOption = options.stream().filter(o -> o.getFormat().equalsIgnoreCase("tiff")).findFirst().orElse(null);
         assertNotNull(masterOption);
-        assertEquals(imageSize, masterOption.getBoxSizeInPixel());
+        assertEquals(DownloadOption.MAX, masterOption.getBoxSizeInPixel());
 
         DownloadOption thumbOption = options.stream().filter(o -> o.getFormat().equalsIgnoreCase("jpg")).findFirst().orElse(null);
         assertNotNull(thumbOption);
