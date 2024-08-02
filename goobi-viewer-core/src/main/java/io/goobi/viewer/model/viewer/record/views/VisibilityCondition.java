@@ -126,14 +126,14 @@ public class VisibilityCondition {
         Collection<FileType> existingFileTypes = properties.getFileTypesForRecord(viewManager);
 
         BaseMimeType baseMimeType = BaseMimeType.getByName(viewManager.getTopStructElement().getMetadataValue(SolrConstants.MIMETYPE));
-        return checkAccess(viewManager, request, properties) &&
-                this.fileTypes.matches(existingFileTypes) &&
-                this.sourceFormat.matches(List.of(viewManager.getTopStructElement().getSourceDocFormat())) &&
-                this.mimeType.matches(baseMimeType) &&
-                this.views.matches(List.of(pageType)) &&
-                this.docTypes.matches(docTypes) &&
-                this.numPages.matches(viewManager.getPageLoader().getNumPages()) &&
-                this.tocSize.matches(viewManager.getToc().getTocElements().size());
+        return checkAccess(viewManager, request, properties)
+                && this.fileTypes.matches(existingFileTypes)
+                && this.sourceFormat.matches(List.of(viewManager.getTopStructElement().getSourceDocFormat()))
+                && this.mimeType.matches(baseMimeType)
+                && this.views.matches(List.of(pageType))
+                && this.docTypes.matches(docTypes)
+                && this.numPages.matches(viewManager.getPageLoader().getNumPages())
+                && this.tocSize.matches(viewManager.getToc().getTocElements().size());
     }
 
     public boolean checkAccess(ViewManager viewManager, HttpServletRequest request, RecordPropertyCache properties)
@@ -150,10 +150,10 @@ public class VisibilityCondition {
 
         Collection<FileType> existingFileTypes = properties.getFileTypesForPage(page);
         BaseMimeType baseMimeType = page.getBaseMimeType();
-        return checkAccess(page, request, properties) &&
-                this.fileTypes.matches(existingFileTypes) &&
-                this.mimeType.matches(baseMimeType) &&
-                this.views.matches(List.of(pageType));
+        return checkAccess(page, request, properties)
+                && this.fileTypes.matches(existingFileTypes)
+                && this.mimeType.matches(baseMimeType)
+                && this.views.matches(List.of(pageType));
     }
 
     public boolean checkAccess(PhysicalElement page, HttpServletRequest request, RecordPropertyCache properties)
