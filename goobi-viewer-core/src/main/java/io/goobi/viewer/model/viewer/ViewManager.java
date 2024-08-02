@@ -2829,10 +2829,11 @@ public class ViewManager implements Serializable {
                         .append(SolrConstants.FILENAME)
                         .append(":*")
                         .toString(), List.of(SolrConstants.FILENAME));
-        return pageDocs.stream()
+        return Optional.ofNullable(pageDocs)
+                .orElse(Collections.emptyList())
+                .stream()
                 .map(doc -> doc.getFieldValue(SolrConstants.FILENAME))
                 .map(Object::toString)
-
                 .collect(Collectors.toMap(
                         filename -> getMimetype((String) filename),
                         filename -> List.of(filename),

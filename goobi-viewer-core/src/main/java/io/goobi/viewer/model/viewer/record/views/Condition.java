@@ -77,6 +77,9 @@ public class Condition<T> {
 
     @Override
     public String toString() {
+        if (this == Condition.NONE) {
+            return "NONE";
+        }
         return String.valueOf(this.value) + ": " + this.matchIfEqual;
     }
 

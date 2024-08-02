@@ -13,12 +13,14 @@
 	<composite:interface>
 		<composite:attribute name="collapsible" required="false"
 			type="java.lang.Boolean" default="true" />
-			<composite:attribute name="widgetTitle" required="true" />
+		<composite:attribute name="widgetTitle" required="true" />
 	</composite:interface>
 
 	<composite:implementation>
-		<div class="widget">
-
+		<div>children: #{displayConditions.getTag(cc.clientId).getChildCount('widget-element')}</div>
+	
+		<div class="widget #{cc.attrs.styleClass}" jsf:id="#{cc.clientId}">
+		
 			<div class="widget__topbar">
 				<h2 role="button" class="widget__title #{cc.attrs.collapsible ? 'collapseable' : ''}">
 					<span>#{cc.attrs.widgetTitle}</span> 
@@ -27,7 +29,6 @@
 			</div>
 
 			<div class="widget__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
-
 				<composite:insertChildren ></composite:insertChildren>
 
 			</div>

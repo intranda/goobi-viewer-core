@@ -9,10 +9,7 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
-
-	<widgetComponent:sidebar_widget collapsible="false" widgetTitle="#{msg.view}">
-		<widgetComponent:widget_views/>
-	</widgetComponent:sidebar_widget>
+	<widgetComponent:widget_views id="widgetViews" collapsible="false" widgetTitle="#{msg.view}" />
 
 
 	<ui:fragment
@@ -49,23 +46,26 @@
 
 	<widgetComponent:widget_downloads />
 
-	<widgetComponent:widget_citation />
+<!-- 	<widgetComponent:widget_citation /> -->
 
-	<widgetComponent:widget_relatedGroups />
+<!-- 	<widgetComponent:widget_relatedGroups /> -->
 
-	<widgetComponent:widget_toc
-		visible="#{configurationBean.sidebarTocWidgetVisible}" />
+<!-- 	<widgetComponent:widget_toc -->
+<!-- 		visible="#{configurationBean.sidebarTocWidgetVisible}" /> -->
 
-	<!--         <widgetComponent:widget_additionalFiles /> -->
 
-	<widgetComponent:widget_versionHistory />
+<!-- 	<widgetComponent:widget_versionHistory /> -->
 
-	<c:forEach var="module" items="#{configurationBean.modules}">
-		<c:forEach var="contribution" items="#{module.sidebarContributions}">
-			<ui:include src="/#{contribution}" />
-		</c:forEach>
-	</c:forEach>
+<!-- 	<c:forEach var="module" items="#{configurationBean.modules}"> -->
+<!-- 		<c:forEach var="contribution" items="#{module.sidebarContributions}"> -->
+<!-- 			<ui:include src="/#{contribution}" /> -->
+<!-- 		</c:forEach> -->
+<!-- 	</c:forEach> -->
 
 	<widgetComponent:widget_userInteractions />
+
+	<script>
+        viewerJS.clipboard.init();
+    </script>
 
 </ui:composition>

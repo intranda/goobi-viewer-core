@@ -20,6 +20,8 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.record.views.RecordPropertyCache;
 import io.goobi.viewer.model.viewer.record.views.VisibilityCondition;
 import io.goobi.viewer.model.viewer.record.views.VisibilityConditionInfo;
 
@@ -35,23 +37,32 @@ public class DisplayConditions implements Serializable {
     @Inject
     private HttpServletRequest httpRequest;
 
+    private final RecordPropertyCache propertyCache = new RecordPropertyCache();
+
     public boolean matchRecord(String json)
             throws IOException, IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException {
         json = json.replaceAll(":\\s*!\\[", ":[!,");
         VisibilityConditionInfo info = JsonStringConverter.of(VisibilityConditionInfo.class).convert(json);
         VisibilityCondition condition = new VisibilityCondition(info);
-        return condition.matchesRecord(navigationHelper.getCurrentPageType(), activeDocumentBean.getViewManager(), httpRequest);
+        return condition.matchesRecord(getPageType(), activeDocumentBean.getViewManager(), httpRequest, propertyCache);
     }
 
-    public boolean matchPage(String json) throws IOException, IndexUnreachableException, DAOException, RecordNotFoundException {
-        json = json.replaceAll(":\\s*![", ":[!,");
+    public boolean matchPage(String json)
+            throws IOException, IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException {
+        json = json.replaceAll(":\\s*!\\[", ":[!,");
         VisibilityConditionInfo info = JsonStringConverter.of(VisibilityConditionInfo.class).convert(json);
         VisibilityCondition condition = new VisibilityCondition(info);
-        return condition.matchesPage(navigationHelper.getCurrentPageType(), activeDocumentBean.getViewManager().getCurrentPage(), httpRequest);
+        return condition.matchesPage(getPageType(), activeDocumentBean.getViewManager().getCurrentPage(), httpRequest,
+                propertyCache);
     }
 
     public UIComponentHelper getTag(String id) {
-        return UIComponentHelper.getCurrentComponent().getChild(id);
+        UIComponentHelper tag = UIComponentHelper.getCurrentComponent().getChild(id);
+        if (tag == null) {
+            return UIComponentHelper.getCurrentComponent();
+        } else {
+            return tag;
+        }
     }
 
     public static class UIComponentHelper {
@@ -73,9 +84,13 @@ public class DisplayConditions implements Serializable {
         public Long getChildCount(String visibilityClass) {
             return getDescendants(this.component)
                     .stream()
-                    .filter(child -> child.isRendered())
                     .filter(child -> StringUtils.isNotBlank(visibilityClass) ? hasVisibilityTag(child, visibilityClass) : true)
+                    .filter(child -> isRendered(child))
                     .count();
+        }
+
+        private boolean isRendered(UIComponent child) {
+            return child.isRendered();
         }
 
         public UIComponentHelper getChild(String id) {
@@ -106,12 +121,16 @@ public class DisplayConditions implements Serializable {
             if (styles instanceof Collection) {
                 return ((Collection) styles).contains(visibilityClass);
             } else if (styles != null) {
-                return styles.toString().contains(visibilityClass);
+                return styles.toString().equals(visibilityClass);
             } else {
                 return false;
             }
         }
 
+    }
+
+    public PageType getPageType() {
+        return navigationHelper.isCmsPage() ? PageType.cmsPage : navigationHelper.getCurrentPageType();
     }
 
 }

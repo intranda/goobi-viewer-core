@@ -36,12 +36,13 @@ import io.goobi.viewer.controller.JsonTools;
 @JsonIgnoreProperties
 public class VisibilityConditionInfo {
     private List<String> fileTypes;
-    private String sourceFormat;
+    private List<String> sourceFormat;
     private String baseMimeType;
     private String accessCondition;
     private List<String> pageTypes;
     private List<String> docTypes;
-    private Boolean hasPages;
+    private String numPages;
+    private String tocSize;
 
     public List<String> getRequiredFileTypes() {
         return fileTypes == null ? Collections.emptyList() : fileTypes;
@@ -75,12 +76,12 @@ public class VisibilityConditionInfo {
         this.pageTypes = pageTypes;
     }
 
-    public Boolean getHasPages() {
-        return hasPages;
+    public String getNumPages() {
+        return numPages;
     }
 
-    public void setHasPages(Boolean hasPages) {
-        this.hasPages = hasPages;
+    public void setNumPages(String numPages) {
+        this.numPages = numPages;
     }
 
     public List<String> getDocTypes() {
@@ -91,12 +92,20 @@ public class VisibilityConditionInfo {
         this.docTypes = docTypes;
     }
 
-    public String getSourceFormat() {
-        return sourceFormat;
+    public List<String> getSourceFormat() {
+        return sourceFormat == null ? Collections.emptyList() : sourceFormat;
     }
 
-    public void setSourceFormat(String sourceFormat) {
+    public void setSourceFormat(List<String> sourceFormat) {
         this.sourceFormat = sourceFormat;
+    }
+
+    public void setTocSize(String tocSize) {
+        this.tocSize = tocSize;
+    }
+
+    public String getTocSize() {
+        return tocSize;
     }
 
     @Override
