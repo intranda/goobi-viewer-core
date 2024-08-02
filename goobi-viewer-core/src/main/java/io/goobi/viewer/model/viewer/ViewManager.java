@@ -1389,7 +1389,6 @@ public class ViewManager implements Serializable {
         if (pageLoader == null) {
             return;
         }
-
         int useOrder = currentImageOrder;
         if (useOrder < pageLoader.getFirstPageOrder()) {
             useOrder = pageLoader.getFirstPageOrder();

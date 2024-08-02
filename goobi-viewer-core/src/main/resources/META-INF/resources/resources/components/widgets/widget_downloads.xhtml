@@ -10,16 +10,15 @@
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
 
 	<composite:interface>
+	    	<composite:attribute name="collapsible" required="false" default="#{displayConditions.getTag('widgetDownloadsBody').getChildCount('widget-element') > 7}" />
 	</composite:interface>
 
 	<composite:implementation>
-			
 			<div jsf:id="widgetDownloads" class="widget widget-downloads" rendered="#{displayConditions.getTag('widgetDownloads').getChildCount('widget-element') > 0}">
-
 				<div class="widget-downloads__topbar">
 					<!-- WIDGET TITLE -->
 					<h2 tabindex="0" role="button"
-						class="widget__title widget-downloads__title #{displayConditions.getTag('widgetDownloadsBody').getChildCount('widget-element') > 5  ? '' : 'collapseable'}">
+						class="widget__title widget-downloads__title #{cc.attrs.collapsible  ? 'collapseable' : ''}">
 						<span>#{msg.downloads}</span> <i class="fa fa-angle-down"
 							aria-hidden="true"></i>
 					</h2>
@@ -27,7 +26,7 @@
 
 				<!-- WIDGET BODY -->
 				<div jsf:id="widgetDownloadsBody"
-					class="widget__body #{displayConditions.getTag('widgetDownloadsBody').getChildCount('widget-element') > 5 ? 'collapseable' : ''}">
+					class="widget__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
 					<!-- INTRODUCTION TEXT -->
 					<ui:fragment visibilty-class="widget-element"
 						rendered="#{fn:length(msg['widget__downloads__intro_text_object_downloads']) > 0 and displayConditions.matchRecord('{pageTypes:[viewObject, cmsPage]}') }">

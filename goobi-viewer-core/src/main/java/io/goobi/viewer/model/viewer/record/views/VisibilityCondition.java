@@ -137,6 +137,9 @@ public class VisibilityCondition {
         if (viewManager.getTopStructElement().isWork()) {
             docTypes.add("record");
         }
+        if (viewManager.getTopStructElementIddoc() != viewManager.getCurrentStructElementIddoc()) {
+            docTypes.add("subStruct");
+        }
 
         Collection<FileType> existingFileTypes = properties.getFileTypesForRecord(viewManager);
 
