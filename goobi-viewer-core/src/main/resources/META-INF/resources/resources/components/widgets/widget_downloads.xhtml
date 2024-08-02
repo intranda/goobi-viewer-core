@@ -448,8 +448,6 @@
 								</ui:fragment>
 							</div>
 
-							<div>record: #{displayConditions.getTag('pageRangeDownloads').getChildCount('widget-element')}</div>
-							<div>mets: #{displayConditions.matchRecord('{pageTypes:![viewFulltext]}')}</div>
 							<!-- PAGE RANGE DOWNLOADS -->
 							<div jsf:id="pageRangeDownloads"
 							rendered="#{displayConditions.getTag('pageRangeDownloads').getChildCount('widget-element') > 0}"
@@ -544,8 +542,7 @@
 						</div>
 
 						<!-- INTEGRATED WIDGET ADDITIONAL FILES -->
-						<ui:fragment
-							rendered="#{activeDocumentBean.viewManager.displayContentDownloadMenu}">
+						<ui:fragment rendered="#{activeDocumentBean.viewManager.displayContentDownloadMenu}">
 							<div id="widgetAdditionalFiles"
 								class="widget-downloads__additional-files-wrapper">
 								<h:form id="widgetAdditionalFilesForm">
@@ -553,10 +550,10 @@
 										class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget_additionalFiles}</h3>
 		
 									<ul class="widget-downloads__additional-files-list">
-										<ui:repeat
+										<ui:repeat varStatus="status"
 											value="#{activeDocumentBean.viewManager.contentDownloadLinksForWork}"
 											var="link">
-											<li><h:outputLink value="#{link.url}" target="_blank">
+											<li jsf:id="additionalFileLink_#{status.index}"><h:outputLink value="#{link.url}" target="_blank">
 												#{link.name}
 											</h:outputLink></li>
 										</ui:repeat>
@@ -564,32 +561,24 @@
 								</h:form>
 							</div>
 						</ui:fragment>
-
-
-
-				</div>
+						
+				</div> <!-- END BODY -->
 				
 				<!--  Handling page range download buttons and inputs -->
 				<script>
 					$('[data-target="showPageRangeDownload"]')
-							.on(
-									"click",
-									function() {
-										$(this).hide();
-										$('[data-target="pageRangeDownload"]')
-												.show();
-										$('[data-target="pageRangeDownload"]')
-												.addClass('-active');
-										$(
-												'.widget-downloads__page-range-downloads-inputs-wrapper')
-												.slideDown('fast');
-	
-									});
+						.on("click",
+							function() {
+								$(this).hide();
+								$('[data-target="pageRangeDownload"]')
+									.show();
+								$('[data-target="pageRangeDownload"]')
+									.addClass('-active');
+								$('.widget-downloads__page-range-downloads-inputs-wrapper')
+								.slideDown('fast');
+						});
 				</script>
-			</div>
-
-
-
+			</div> <!-- END WIDGET -->
 
 	</composite:implementation>
 </ui:composition>
