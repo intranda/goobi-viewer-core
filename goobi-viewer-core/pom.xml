@@ -1153,6 +1153,7 @@
 							<maxAllowedViolations>${checkstyle.max.violations}</maxAllowedViolations>
 							<violationSeverity>warning</violationSeverity>
 							<configLocation>checkstyle.xml</configLocation>
+							<inputEncoding>UTF-8</inputEncoding>
 						</configuration>
 						<goals>
 							<goal>check</goal>
