@@ -36,7 +36,7 @@
 					<ul  class="widget__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
 						<!-- Object -->
 						<h:panelGroup  visibilty-class="widget-element"
-							rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, baseMimeType:[image, video, audio, model]}')}">
+							rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, mimeType[image, video, audio, model]}')}">
 							<li
 								class="#{navigationHelper.currentPage == 'object' ? 'active' : ''}">
 								<h:outputLink
@@ -81,7 +81,7 @@
 
 						<!-- Thumbnails -->
 						<h:panelGroup visibilty-class="widget-element"
-							rendered="#{configurationBean.sidebarThumbsLinkVisible and displayConditions.matchRecord('{numPages:2, requiredFileTypes:[IMAGE, AUDIO, VIDEO, MODEL]}')}">
+							rendered="#{configurationBean.sidebarThumbsLinkVisible and displayConditions.matchRecord('{numPages:2, contentType:[IMAGE, AUDIO, VIDEO, MODEL]}')}">
 							<li
 								class="#{navigationHelper.currentPage == 'thumbs' ? 'active' : ''}">
 								<h:outputLink 
@@ -95,7 +95,7 @@
 
 						<!-- Metadata -->
 						<h:panelGroup
-							rendered="#{configurationBean.sidebarMetadataLinkVisible and displayConditions.matchRecord('{docTypes: ![group]}')}">
+							rendered="#{configurationBean.sidebarMetadataLinkVisible and displayConditions.matchRecord('{docType:: ![group]}')}">
 							<ui:repeat var="metadataView" varStatus="status"
 								value="#{metadataBean.metadataViews}">
 								<h:panelGroup 
@@ -118,7 +118,7 @@
 
 						<!-- Full-text -->
 						<h:panelGroup visibilty-class="widget-element"
-							rendered="#{configurationBean.sidebarFulltextLinkVisible and displayConditions.matchPage('{requiredFileTypes:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
+							rendered="#{configurationBean.sidebarFulltextLinkVisible and displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
 							<li
 								class="#{navigationHelper.currentPage == 'fulltext' ? 'active' : ''}">
 								<h:outputLink 
@@ -132,7 +132,7 @@
 
 						<!-- TEI full-text -->
 						<h:panelGroup visibilty-class="widget-element"
-							rendered="#{configurationBean.sidebarFulltextLinkVisible and displayConditions.matchRecord('{requiredFileTypes:[TEI], accessCondition: VIEW_FULLTEXT}')}">
+							rendered="#{configurationBean.sidebarFulltextLinkVisible and displayConditions.matchRecord('{contentType:[TEI], accessCondition: VIEW_FULLTEXT}')}">
 							<ui:repeat var="lang"
 								value="#{textBean.getRecordLanguages(activeDocumentBean.viewManager.topStructElement)}">
 								<li

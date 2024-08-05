@@ -12,7 +12,7 @@ class VisibilityConditionTest {
     @Test
     void testReadCondition() {
         VisibilityConditionInfo info = new VisibilityConditionInfo();
-        info.setBaseMimeType(List.of("image"));
+        info.setMimeType(List.of("image"));
         VisibilityCondition cond = new VisibilityCondition(info);
         Assertions.assertTrue(cond.getMimeType().matches(List.of(BaseMimeType.IMAGE)));
     }
@@ -20,7 +20,7 @@ class VisibilityConditionTest {
     @Test
     void testFileTypeCondition() {
         VisibilityConditionInfo info = new VisibilityConditionInfo();
-        info.setRequiredFileTypes(List.of("IMAGE"));
+        info.setContentType(List.of("IMAGE"));
         VisibilityCondition cond = new VisibilityCondition(info);
         Assertions.assertTrue(cond.getFileTypes().matches(List.of(FileType.IMAGE)));
         Assertions.assertFalse(cond.getFileTypes().matches(List.of(FileType.EPUB)));
@@ -29,7 +29,7 @@ class VisibilityConditionTest {
     @Test
     void testReadUnknownCondition() {
         VisibilityConditionInfo info = new VisibilityConditionInfo();
-        info.setBaseMimeType(List.of("images"));
+        info.setMimeType(List.of("images"));
         VisibilityCondition cond = new VisibilityCondition(info);
         Assertions.assertFalse(cond.getMimeType().matches(List.of(BaseMimeType.IMAGE)));
     }

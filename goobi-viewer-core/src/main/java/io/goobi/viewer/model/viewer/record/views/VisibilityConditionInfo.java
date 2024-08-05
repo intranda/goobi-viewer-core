@@ -44,19 +44,19 @@ public class VisibilityConditionInfo {
     private String numPages;
     private String tocSize;
 
-    public List<String> getRequiredFileTypes() {
+    public List<String> getContentType() {
         return fileTypes == null ? Collections.emptyList() : fileTypes;
     }
 
-    public void setRequiredFileTypes(List<String> fileTypes) {
+    public void setContentType(List<String> fileTypes) {
         this.fileTypes = fileTypes;
     }
 
-    public List<String> getBaseMimeType() {
+    public List<String> getMimeType() {
         return baseMimeType == null ? Collections.emptyList() : baseMimeType;
     }
 
-    public void setBaseMimeType(List<String> baseMimeType) {
+    public void setMimeType(List<String> baseMimeType) {
         this.baseMimeType = baseMimeType;
     }
 
@@ -68,11 +68,11 @@ public class VisibilityConditionInfo {
         this.accessCondition = accessCondition;
     }
 
-    public List<String> getPageTypes() {
+    public List<String> getPageType() {
         return pageTypes == null ? Collections.emptyList() : pageTypes;
     }
 
-    public void setPageTypes(List<String> pageTypes) {
+    public void setPageType(List<String> pageTypes) {
         this.pageTypes = pageTypes;
     }
 
@@ -84,11 +84,11 @@ public class VisibilityConditionInfo {
         this.numPages = numPages;
     }
 
-    public List<String> getDocTypes() {
+    public List<String> getDocType() {
         return docTypes == null ? Collections.emptyList() : docTypes;
     }
 
-    public void setDocTypes(List<String> docTypes) {
+    public void setDocType(List<String> docTypes) {
         this.docTypes = docTypes;
     }
 

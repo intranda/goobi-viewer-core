@@ -18,8 +18,8 @@ class JsonStringConverterTest {
     @Test
     void test() throws IOException {
         VisibilityConditionInfo info = JsonStringConverter.of(VisibilityConditionInfo.class).convert(json);
-        Assertions.assertEquals(1, info.getRequiredFileTypes().size());
-        Assertions.assertEquals("IMAGE", info.getRequiredFileTypes().get(0));
+        Assertions.assertEquals(1, info.getContentType().size());
+        Assertions.assertEquals("IMAGE", info.getContentType().get(0));
     }
 
 }

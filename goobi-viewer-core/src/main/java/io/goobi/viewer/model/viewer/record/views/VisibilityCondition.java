@@ -65,31 +65,31 @@ public class VisibilityCondition {
     public VisibilityCondition(VisibilityConditionInfo info) {
         this(
                 new AnyMatchCondition<FileType>(
-                        info.getRequiredFileTypes()
+                        info.getContentType()
                                 .stream()
                                 .filter(s -> !s.equals("!"))
                                 .map(String::toUpperCase)
                                 .map(FileType::valueOf)
                                 .collect(Collectors.toList()),
-                        !info.getRequiredFileTypes().contains("!")),
+                        !info.getContentType().contains("!")),
                 new AnyMatchCondition<String>(
                         info.getSourceFormat().stream().filter(s -> !s.equals("!")).collect(Collectors.toList()),
                         !info.getSourceFormat().contains("!")),
                 new AnyMatchCondition<BaseMimeType>(
-                        info.getBaseMimeType()
+                        info.getMimeType()
                                 .stream()
                                 .filter(s -> !s.equals("!"))
                                 .map(BaseMimeType::getByName)
                                 .filter(type -> type != BaseMimeType.NONE)
                                 .toList(),
-                        !info.getDocTypes().contains("!")),
+                        !info.getDocType().contains("!")),
                 new Condition<String>(getValue(info.getAccessCondition()), !isNegated(info.getAccessCondition())),
                 new AnyMatchCondition<PageType>(
-                        info.getPageTypes().stream().filter(s -> !s.equals("!")).map(PageType::getByName).toList(),
-                        !info.getPageTypes().contains("!")),
+                        info.getPageType().stream().filter(s -> !s.equals("!")).map(PageType::getByName).toList(),
+                        !info.getPageType().contains("!")),
                 new AnyMatchCondition<String>(
-                        info.getDocTypes().stream().filter(s -> !s.equals("!")).toList(),
-                        !info.getDocTypes().contains("!")),
+                        info.getDocType().stream().filter(s -> !s.equals("!")).toList(),
+                        !info.getDocType().contains("!")),
                 ComparisonCondition.of(info.getNumPages()),
                 ComparisonCondition.of(info.getTocSize()));
     }
