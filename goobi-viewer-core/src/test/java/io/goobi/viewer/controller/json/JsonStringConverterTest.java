@@ -9,10 +9,10 @@ import io.goobi.viewer.model.viewer.record.views.VisibilityConditionInfo;
 
 class JsonStringConverterTest {
 
-    String json = "{requiredFileTypes:[IMAGE],"
+    String json = "{contentType:[IMAGE],"
             + "accessCondition:PRIV_DOWNLOAD_PDF,"
-            + "pageTypes:[viewObject,viewFullscreen],"
-            + "docTypes:[!,group, anchor],\n"
+            + "pageType:[viewObject,viewFullscreen],"
+            + "docType:[!,group, anchor],\n"
             + "numPages:2}";
 
     @Test
