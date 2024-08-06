@@ -15,20 +15,17 @@
 		<composite:attribute name="rtl" required="false" default="false" />
 	</composite:interface>
 
-    <composite:implementation>
-        <nav id="alphabeticPaginator" class="alphabetic-paginator #{cc.attrs.rtl ? '-rtl' : '-ltr'}" aria-label="#{msg.sortBy}">
-            <h:form id="alphabeticPaginatorForm" prependId="false">
-                <ul>
-                    <ui:repeat value="#{cc.attrs.filters}" var="filter">
-                        <li class="#{cc.attrs.currentStringFilter == filter ? 'active' : ''}">
-                            <h:outputLink value="#{cc.attrs.baseUrl}/{0}/1/">
-                                <h:outputText value="#{filterName}" />
-                                <f:param name="filterName" value="#{filter}" />
-                            </h:outputLink>
-                        </li>
-                    </ui:repeat>
-                </ul>
-            </h:form>
-        </nav>
-    </composite:implementation>
+	<composite:implementation>
+		<nav id="alphabeticPaginator" class="alphabetic-paginator #{cc.attrs.rtl ? '-rtl' : '-ltr'}" aria-label="#{msg.sortBy}">
+			<h:form id="alphabeticPaginatorForm" prependId="false">
+				<ul>
+					<ui:repeat value="#{cc.attrs.filters}" var="filter">
+						<li class="#{cc.attrs.currentStringFilter == filter ? 'active' : ''}">
+							<a href="#{cc.attrs.baseUrl}#{filter}/1/">#{filter}</a>
+						</li>
+					</ui:repeat>
+				</ul>
+			</h:form>
+		</nav>
+	</composite:implementation>
 </ui:composition>
