@@ -21,7 +21,7 @@
 				<ul>
 					<ui:repeat value="#{cc.attrs.filters}" var="filter">
 						<li class="#{cc.attrs.currentStringFilter == filter ? 'active' : ''}">
-							<a href="#{cc.attrs.baseUrl}#{filter}/1/">#{filter}</a>
+							<a href="#{cc.attrs.baseUrl}#{navigationHelper.urlEncode(filter)}/1/">#{filter}</a>
 						</li>
 					</ui:repeat>
 				</ul>
