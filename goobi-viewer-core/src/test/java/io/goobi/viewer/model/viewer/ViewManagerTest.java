@@ -29,6 +29,7 @@ import java.awt.Dimension;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,8 +41,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
-import com.ctc.wstx.shaded.msv_core.util.Uri;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
@@ -475,7 +474,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
         PhysicalElement page = Mockito.mock(PhysicalElement.class);
         Mockito.when(page.getFirstFileName()).thenReturn(pageFilename);
-        if (Uri.isAbsolute(pageFilename) || Path.of(pageFilename).isAbsolute()) {
+        if (URI.create(pageFilename).isAbsolute() || Path.of(pageFilename).isAbsolute()) {
             Mockito.when(page.getFilepath()).thenReturn(pageFilename);
         } else {
             Mockito.when(page.getFilepath()).thenReturn(pi + "/" + pageFilename);
