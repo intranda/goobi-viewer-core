@@ -19,7 +19,7 @@
         <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsage}">
             <div id="widgetCitation" class="widget widget-citation">
 
-	            <div class="widget-citation__topbar">
+	            <div class="widget-citation__topbar widget__topbar">
 	                <!-- WIDGET TITLE -->
 					<h2
 						tabindex="0"
@@ -50,7 +50,7 @@
                             <c:forEach var="link" items="#{activeDocumentBean.viewManager.getSidebarWidgetUsageCitationLinksForLevel('record')}">
                                     
                                 <ui:fragment rendered="#{link.type.name() == 'URL' and link.value != null}">
-                                    <button type="button" visibilty-class="widget-element"
+                                    <button type="button" visibility-class="widget-element"
                                     	jsf:id="citeLinkUrl"
                                         class="badge badge-dark"
                                         data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
@@ -60,7 +60,7 @@
                                 </ui:fragment>
                                      
                                 <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
-                                    <button type="button" visibilty-class="widget-element"
+                                    <button type="button" visibility-class="widget-element"
                                     	jsf:id="citeLinkInternal"
                                         class="badge badge-dark"
                                         data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
@@ -76,7 +76,7 @@
 						<ui:fragment 
                             rendered="#{displayConditions.matchRecord('{docType:![group]}')}">
                             <a href="#{configurationBean.restApiUrlV1}records/#{activeDocumentBean.persistentIdentifier}/ris/"
-                                jsf:id="ris" visibilty-class="widget-element"
+                                jsf:id="ris" visibility-class="widget-element"
                                 class="badge badge-dark widget-citation__work-download-ris" 
                                 title="#{msg.risLinkTopstruct}"
                                 data-toggle="tooltip"
@@ -103,7 +103,7 @@
                             and displayConditions.matchRecord('{docType:[record], numPages:1}')}">
                                 <c:forEach var="link" varStatus="index" items="#{activeDocumentBean.viewManager.getSidebarWidgetUsageCitationLinksForLevel('image')}">
                                     <ui:fragment rendered="#{link.type.name() == 'URL' and link.value != null}">
-                                        <button type="button" visibilty-class="widget-element"
+                                        <button type="button" visibility-class="widget-element"
                                         	jsf:id="citeLinkUrn#{index.count}"
                                             class="badge badge-dark"
                                             data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
@@ -112,7 +112,7 @@
                                              #{msg[link.label]}</button>
                                     </ui:fragment>
                                     <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
-                                        <button type="button" visibilty-class="widget-element"
+                                        <button type="button" visibility-class="widget-element"
                                         	jsf:id="citeLinkUrnPage"
                                             class="badge badge-dark"
                                             data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"

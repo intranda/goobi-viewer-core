@@ -5,20 +5,19 @@
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" >
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" >
 
     <composite:interface>
     	    	<composite:attribute name="collapsible" required="false" default="#{displayConditions.getTag('widgetFormatsLinksBody').getChildCount('widget-element') > 7}" />
     </composite:interface>
-
+    
     <composite:implementation>
-        <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsage and displayConditions.getTag('widgetFormatsLinksBody').getChildCount('widget-element') > 0}">
-            <div id="widgetFormatLinks" class="widget widget-format-links">
+            <div jsf:id="widgetFormatLinks" class="widget widget-format-links" rendered="#{displayConditions.getTag('widgetFormatLinks').getChildCount('widget-element') > 0}">
 
-	            <div class="widget-format-links__topbar">
+	            <div class="widget-format-links__topbar widget__topbar">
 	                <!-- WIDGET TITLE -->
 					<h2
 						tabindex="0"
@@ -30,24 +29,23 @@
 				</div>
 
                 <!-- WIDGET BODY -->
-				<div jsf:id="widgetFormatsLinksBody" class="widget__body #{cc.attrs.collapsible ? 'collapseable' : '' }">
+				<div jsf:id="widgetFormatsLinksBody" class="widget__body #{cc.attrs.collapsible ? 'collapseable' : '' }" >
                     <!-- INTRODUCTION TEXT -->
                     <ui:fragment rendered="#{fn:length(msg['widget__formatlinks_intro_text']) > 0}">
                         <p id="introductionText" class="widget-format-links__license-text">
                             <h:outputText value="#{msg['widget__formatlinks_intro_text']}" escape="false" />
                         </p>
                     </ui:fragment>
-
+                    
                     <!-- FORMATS -->
-
-					<ui:fragment rendered="#{displayConditions.getTag('widgetSectionFormats').getChildCount('widget-element') > 0}">
-					 	<div jsf:id="widgetSectionFormats" class="widget-format-links__work-downloads widget__badge-container">
+					 	<div jsf:id="widgetSectionFormats" rendered="#{displayConditions.getTag('widgetSectionFormats').getChildCount('widget-element') > 0}"
+					 	class="widget-format-links__work-downloads widget__badge-container" >
 	                    	<h3 id="titleFormats" class="widget-format-links__subtitle widget__badge-container-heading">#{msg.widget__formatlinks_formats}</h3>
 	                         
 	                    
 	                        <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->     
 	                            <!-- METS -->
-	                            <ui:fragment rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata], accessPermission:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
+	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen], accessCondition:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.metsResolverUrl}"
 	                                    id="lidomets" 
@@ -61,7 +59,7 @@
 	                                    #{msg.downloadMetsButtonLabel}
 	                                </a> 
 	                            </ui:fragment>
-	                            <ui:fragment rendered="#{displayConditions.matchRecord('{docType:[volume], pageType:[viewMetadata], accessPermission:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
+	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:[volume], pageType:[viewMetadata, viewFullscreen], accessCondition:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
 	                                    id="metsanchor" 
@@ -77,7 +75,7 @@
 	                            </ui:fragment>
 	                        
 	                            <!-- LIDO -->
-	                            <ui:fragment rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata], accessPermission:DOWNLOAD_METADATA, sourceFormat:[LIDO]}')}">
+	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen], accessCondition:DOWNLOAD_METADATA, sourceFormat:[LIDO]}')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
 	                                    id="lidomets" 
@@ -93,7 +91,7 @@
 	                            </ui:fragment>
 	                            
 	                            <!-- DENKXWEB -->
-	                            <ui:fragment rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata], accessPermission:DOWNLOAD_METADATA, sourceFormat:[DENKXWEB]}')}">
+	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen], accessCondition:DOWNLOAD_METADATA, sourceFormat:[DENKXWEB]}')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.denkxwebResolverUrl}"
 	                                    id="denkxweb"
@@ -109,7 +107,7 @@
 	                            </ui:fragment>
 	     
 	                            <!-- DUBLINCORE -->
-	                            <ui:fragment rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata], accessPermission:DOWNLOAD_METADATA, sourceFormat:[DUBLINCORE]}')}">
+	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen], accessCondition:DOWNLOAD_METADATA, sourceFormat:[DUBLINCORE]}')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.dublinCoreResolverUrl}"
 	                                    id="dublincorexml"
@@ -125,7 +123,7 @@
 	                            </ui:fragment>
 	
 	                            <!-- MARCXML -->
-	                            <ui:fragment rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata], accessPermission:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
+	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen], accessCondition:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
 	                                <a
 	                                    id="marc"
 	                                    href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
@@ -141,7 +139,7 @@
 	                            </ui:fragment>
 	                        
 	                            <!-- OAI DC -->
-	                            <ui:fragment rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata], accessPermission:DOWNLOAD_METADATA}')}">
+	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen], accessCondition:DOWNLOAD_METADATA}')}">
 	                                <a
 	                                    id="dc"
 	                                    href="#{activeDocumentBean.viewManager.oaiDcUrl}"
@@ -157,7 +155,7 @@
 	                            </ui:fragment>
 	                        	                        
 	                        <!-- IIIF MANIFEST -->
-	                        <ui:fragment rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata], accessPermission:GENERATE_IIIF_MANIFEST, mimeType:![application], numPages:1}')}">
+	                        <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen], accessCondition:GENERATE_IIIF_MANIFEST, mimeType:![application], numPages:1}')}">
 	                           <button 
 	                                id="iiifManifest"
 	                                class="badge badge-dark widget-format-links__work-download-iiif" 
@@ -171,19 +169,16 @@
 	                        </ui:fragment>      
 	    
 	                    </div>
-                    </ui:fragment>
                      
                     <!-- LINKS -->
                    	<!-- ONLY RENDER IF OPAC, DFG OR MIRADOR AVAILABLE -->
-                   	<ui:fragment rendered="#{displayConditions.getTag('widgetSectionLinks').getChildCount('widget-element') > 0}">
-
-	                    <div jsf:id="widgetSectionLinks" class="widget-format-links__work-downloads widget__badge-container"> 
+	                    <div jsf:id="widgetSectionLinks" class="widget-format-links__work-downloads widget__badge-container" rendered="#{displayConditions.getTag('widgetSectionLinks').getChildCount('widget-element') > 0}"> 
 	
 	                    	<h3 id="titleLinks" class="widget-format-links__subtitle widget__badge-container-heading">#{msg.links}</h3>
 	
 	                    	
 	                        <!-- OPAC -->
-	                        <ui:fragment rendered="#{activeDocumentBean.viewManager.opacUrl != null}">
+	                        <ui:fragment visibility-class="widget-element" rendered="#{activeDocumentBean.viewManager.opacUrl != null}">
 	                            <a href="#{activeDocumentBean.viewManager.opacUrl}"
 	                                id="opac"
 	                                class="badge badge-dark widget-format-links__work-link-opac" 
@@ -198,7 +193,7 @@
 	                        </ui:fragment>
 	                        
 	                        <!-- DFG Viewer -->
-	                        <ui:fragment rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages
+	                        <ui:fragment visibility-class="widget-element" rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages
 	                            and activeDocumentBean.viewManager.linkForDFGViewer != null and !activeDocumentBean.viewManager.bornDigital}">
 	                           <a 
 	                                href="#{activeDocumentBean.viewManager.linkForDFGViewer}"
@@ -215,7 +210,7 @@
 	                        </ui:fragment>
 	                        
 	                        <!-- MIRADOR -->
-	                        <ui:fragment
+	                        <ui:fragment visibility-class="widget-element"
 	                            rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">                     
 	                                <a
 	                                    href="#{request.contextPath}/mirador/?pi=#{activeDocumentBean.persistentIdentifier}&amp;page=1" 
@@ -232,8 +227,6 @@
 	                        </ui:fragment>
 	                        
 	                    </div>
-                    </ui:fragment>
-
                 </div>
             </div>
 		             
@@ -242,6 +235,5 @@
                 viewerJS.clipboard.init();
             </script>
 
-        </ui:fragment>
     </composite:implementation>
 </ui:composition>

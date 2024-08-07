@@ -35,7 +35,7 @@
 				<h:form>
 					<ul  class="widget__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
 						<!-- Object -->
-						<h:panelGroup  visibilty-class="widget-element"
+						<h:panelGroup  visibility-class="widget-element"
 							rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, mimeType: [image, video, audio, model]}')}">
 							<li
 								class="#{navigationHelper.currentPage == 'object' ? 'active' : ''}">
@@ -50,7 +50,7 @@
 						</h:panelGroup>
 
 						<!-- Calendar -->
-						<h:panelGroup visibilty-class="widget-element"
+						<h:panelGroup visibility-class="widget-element"
 							rendered="#{configurationBean.sidebarCalendarLinkVisible and activeDocumentBean.viewManager.calendarView.display}">
 							<li
 								class="#{navigationHelper.currentPage == 'calendar' ? 'active' : ''}">
@@ -63,7 +63,7 @@
 							</li>
 						</h:panelGroup>
 						<!-- TOC -->
-						<h:panelGroup visibilty-class="widget-element"
+						<h:panelGroup visibility-class="widget-element"
 							rendered="#{configurationBean.sidebarTocWidgetVisible and displayConditions.matchRecord('{tocSize: 2}')}">
 							<li
 								class="#{navigationHelper.currentPage == 'toc' ? 'active' : ''}">
@@ -80,7 +80,7 @@
 						</h:panelGroup>
 
 						<!-- Thumbnails -->
-						<h:panelGroup visibilty-class="widget-element"
+						<h:panelGroup visibility-class="widget-element"
 							rendered="#{configurationBean.sidebarThumbsLinkVisible and displayConditions.matchRecord('{numPages:2, contentType:[IMAGE, AUDIO, VIDEO, MODEL]}')}">
 							<li
 								class="#{navigationHelper.currentPage == 'thumbs' ? 'active' : ''}">
@@ -100,7 +100,7 @@
 								value="#{metadataBean.metadataViews}">
 								<h:panelGroup 
 									rendered="#{metadataView.isVisible(activeDocumentBean.viewManager.topStructElement)}">
-									<li jsf:id="metadata_view_link_#{status.index}" visibilty-class="widget-element"
+									<li jsf:id="metadata_view_link_#{status.index}" visibility-class="widget-element"
 										class="#{navigationHelper.currentPage == 'metadata'.concat(metadataView.url) ? 'active' : ''}">
 										<h:outputLink
 											value="#{navigationHelper.metadataActiveUrl}#{metadataView.url}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
@@ -117,7 +117,7 @@
 						</h:panelGroup>
 
 						<!-- Full-text -->
-						<h:panelGroup visibilty-class="widget-element"
+						<h:panelGroup visibility-class="widget-element"
 							rendered="#{configurationBean.sidebarFulltextLinkVisible and displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
 							<li
 								class="#{navigationHelper.currentPage == 'fulltext' ? 'active' : ''}">
@@ -131,7 +131,7 @@
 						</h:panelGroup>
 
 						<!-- TEI full-text -->
-						<h:panelGroup visibilty-class="widget-element"
+						<h:panelGroup visibility-class="widget-element"
 							rendered="#{configurationBean.sidebarFulltextLinkVisible and displayConditions.matchRecord('{contentType:[TEI], accessCondition: VIEW_FULLTEXT}')}">
 							<ui:repeat var="lang"
 								value="#{textBean.getRecordLanguages(activeDocumentBean.viewManager.topStructElement)}">
@@ -148,7 +148,7 @@
 						</h:panelGroup>
 
 						<!-- External full-text URL -->
-						<h:panelGroup visibilty-class="widget-element"
+						<h:panelGroup visibility-class="widget-element"
 							rendered="#{activeDocumentBean.viewManager.displayExternalFulltextLink}">
 							<li><h:outputLink 
 									value="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue('MD_LOCATION_URL_EXTERNALFULLTEXT')}"
@@ -160,7 +160,7 @@
 						</h:panelGroup>
 
 						<!-- NER -->
-						<h:panelGroup visibilty-class="widget-element"
+						<h:panelGroup visibility-class="widget-element"
 							rendered="#{activeDocumentBean.viewManager.displayNerViewLink}">
 							<li
 								class="#{navigationHelper.currentPage == 'nerfacetting' ? 'active' : ''}">
@@ -174,7 +174,7 @@
 						</h:panelGroup>
 
 						<!-- EXTERNAL URL -->
-						<h:panelGroup visibilty-class="widget-element"
+						<h:panelGroup visibility-class="widget-element"
 							rendered="#{activeDocumentBean.viewManager.displayExternalResolverLink}">
 							<li><a 
 								href="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER')}"
@@ -184,7 +184,7 @@
 						</h:panelGroup>
 
 						<!-- OPAC URL -->
-						<h:panelGroup visibilty-class="widget-element"
+						<h:panelGroup visibility-class="widget-element"
 							rendered="#{configurationBean.sidebarOpacLinkVisible and activeDocumentBean.viewManager.opacUrl != null}">
 							<li><h:outputLink 
 									value="#{activeDocumentBean.viewManager.opacUrl}"
@@ -202,7 +202,7 @@
 								value="#{cmsBean.getRelatedPages(activeDocumentBean.viewManager.pi)}">
 								<ui:fragment 
 									rendered="#{relatedPage.published || cmsBean.mayEdit(relatedPage)}">
-									<li jsf:id="cms_page_link_#{status.index}" visibilty-class="widget-element"
+									<li jsf:id="cms_page_link_#{status.index}" visibility-class="widget-element"
 										class="#{cc.attrs.pageName != '' and cc.attrs.pageName == relatedPage.title ? 'active' : ''} #{relatedPage.published ? '' : 'unpublished'}">
 										<h:outputLink 
 											value="#{relatedPage.pageUrl}">

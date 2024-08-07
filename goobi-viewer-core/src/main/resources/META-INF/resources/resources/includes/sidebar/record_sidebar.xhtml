@@ -9,7 +9,8 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
-	<widgetComponent:widget_views id="widgetViews" collapsible="false" widgetTitle="#{msg.view}" />
+	<widgetComponent:widget_views id="widgetViews" collapsible="false"
+		widgetTitle="#{msg.view}" />
 
 
 	<ui:fragment
@@ -44,21 +45,23 @@
 	<widgetComponent:widget_recordNotes
 		notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
 
-<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata]}')}">
-	<widgetComponent:widget_downloads />
+	<ui:fragment
+		rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata]}')}">
+		<widgetComponent:widget_downloads />
 
-	<widgetComponent:widget_citation />
-</ui:fragment>
-	
-<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: [viewMetadata]}')}">
-	<widgetComponent:widget_formatsLinks />
-</ui:fragment>
-	
+		<widgetComponent:widget_citation />
 
-	<widgetComponent:widget_relatedGroups />
+		<widgetComponent:widget_relatedGroups />
 
-	<widgetComponent:widget_toc
-		visible="#{configurationBean.sidebarTocWidgetVisible}" />
+		<widgetComponent:widget_toc
+			visible="#{configurationBean.sidebarTocWidgetVisible}" />
+	</ui:fragment>
+
+	<ui:fragment
+		rendered="#{displayConditions.matchRecord('{pageType: [viewMetadata]}')}">
+		<widgetComponent:widget_formatsLinks />
+	</ui:fragment>
+
 
 
 	<widgetComponent:widget_versionHistory />
@@ -72,7 +75,7 @@
 	<widgetComponent:widget_userInteractions />
 
 	<script>
-        viewerJS.clipboard.init();
-    </script>
+		viewerJS.clipboard.init();
+	</script>
 
 </ui:composition>

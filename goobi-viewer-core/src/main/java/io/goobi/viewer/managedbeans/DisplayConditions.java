@@ -345,7 +345,8 @@ public class DisplayConditions implements Serializable {
         }
 
         private boolean hasVisibilityTag(UIComponent c, String visibilityClass) {
-            Object styles = c.getAttributes().get("visibilty-class");
+            Object styles = c.getAttributes().get("visibility-class");
+            System.out.println(c.getClientId() + ": visibility-class = " + styles);
             if (styles instanceof Collection) {
                 return ((Collection) styles).contains(visibilityClass);
             } else if (styles != null) {

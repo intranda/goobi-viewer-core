@@ -15,7 +15,7 @@
 
 	<composite:implementation>
 			<div jsf:id="widgetDownloads" class="widget widget-downloads" rendered="#{displayConditions.getTag('widgetDownloads').getChildCount('widget-element') > 0}">
-				<div class="widget-downloads__topbar">
+				<div class="widget-downloads__topbar widget__topbar">
 					<!-- WIDGET TITLE -->
 					<h2 tabindex="0" role="button"
 						class="widget__title widget-downloads__title #{cc.attrs.collapsible  ? 'collapseable' : ''}">
@@ -28,7 +28,7 @@
 				<div jsf:id="widgetDownloadsBody"
 					class="widget__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
 					<!-- INTRODUCTION TEXT -->
-					<ui:fragment visibilty-class="widget-element"
+					<ui:fragment visibility-class="widget-element"
 						rendered="#{fn:length(msg['widget__downloads__intro_text_object_downloads']) > 0 and displayConditions.matchRecord('{pageType:[viewObject, cmsPage]}') }">
 						<p id="introductionText" class="widget-downloads__license-text">
 							<h:outputText 
@@ -37,7 +37,7 @@
 						</p>
 					</ui:fragment>
 					<!-- INTRODUCTION TEXT DOWNLOADS GENERAL -->
-					<ui:fragment visibilty-class="widget-element"
+					<ui:fragment visibility-class="widget-element"
 						rendered="#{fn:length(msg['widget__downloads__intro_text_text_formats']) > 0 and displayConditions.matchRecord('{pageType:[viewFulltext]}') }">
 						<p id="introductionText" class="widget-downloads__license-text">
 							<h:outputText
@@ -47,7 +47,7 @@
 					</ui:fragment>
 
 					<!-- INTRODUCTION TEXT ADDITIONAL FILES -->
-					<ui:fragment visibilty-class="widget-element"
+					<ui:fragment visibility-class="widget-element"
 						rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_DOWNLOAD']) > 0}">
 						<p id="introductionText"
 							class="widget-downloads__additional-files-text">
@@ -59,7 +59,7 @@
 
 					<!-- WORK -->
 						<!-- WORK DOWNLOADS -->
-						<h:panelGroup id="recordDownloads" rendered="#{displayConditions.getTag('recordDownloads').getChildCount('widget-element') > 0}"
+						<div jsf:id="recordDownloads" rendered="#{displayConditions.getTag('recordDownloads').getChildCount('widget-element') > 0}"
 							class="widget-downloads__work-downloads widget__badge-container">
 
 							<h3 id="titleWork"
@@ -68,8 +68,8 @@
 							<!-- WORK FULLTEXT FORMATS (VIEW_FULLTEXT not checked here because each method already has access permission checks) -->
 							
 							<!-- ALTO (WORK) -->
-								<ui:fragment visibilty-class="widget-element"
-									rendered="#{displayConditions.matchRecord('{contentType:[ALTO], pageType:[viewFulltext], accessCondition:VIEW_FULLTEXT}')}">
+								<ui:fragment visibility-class="widget-element"
+									rendered="#{displayConditions.matchRecord('{contentType:[ALTO], pageType:[viewFulltext, viewFullscreen], accessCondition:VIEW_FULLTEXT}')}">
 									<a href="#{activeDocumentBean.viewManager.altoUrlForAllPages}"
 										id="alto"
 										class="badge badge-dark widget-downloads__work-download-alto"
@@ -82,8 +82,8 @@
 
 								<!-- TEI (WORK) -->
 								<!-- MULTILANGUAGE -->
-								<ui:fragment visibilty-class="widget-element"
-									rendered="#{displayConditions.matchRecord('{contentType:[TEI], pageType:[viewFulltext], accessCondition:VIEW_FULLTEXT}')}">
+								<ui:fragment visibility-class="widget-element"
+									rendered="#{displayConditions.matchRecord('{contentType:[TEI], pageType:[viewFulltext, viewFullscreen], accessCondition:VIEW_FULLTEXT}')}">
 									<ui:repeat var="lang"
 										value="#{textBean.getRecordLanguages(activeDocumentBean.viewManager.topStructElement)}">
 										<a
@@ -98,8 +98,8 @@
 									</ui:repeat>
 								</ui:fragment>
 								<!-- SINGLE LANGUAGE -->
-								<ui:fragment visibilty-class="widget-element"
-									rendered="#{displayConditions.matchRecord('{contentType:![TEI], pageType:[viewFulltext], accessCondition:VIEW_FULLTEXT}')}">
+								<ui:fragment visibility-class="widget-element"
+									rendered="#{displayConditions.matchRecord('{contentType:![TEI], pageType:[viewFulltext, viewFullscreen], accessCondition:VIEW_FULLTEXT}')}">
 									<a href="#{activeDocumentBean.viewManager.teiUrlForAllPages}"
 										id="teiWork"
 										class="badge badge-dark widget-downloads__work-download-tei"
@@ -110,8 +110,8 @@
 										#{msg.TEI} </a>
 								</ui:fragment>
 								<!-- FULLTEXT (WORK) -->
-								<ui:fragment visibilty-class="widget-element"
-									rendered="#{displayConditions.matchRecord('{contentType:[ALTO, TEXT], pageType:[viewFulltext], accessCondition:VIEW_FULLTEXT}')}">
+								<ui:fragment visibility-class="widget-element"
+									rendered="#{displayConditions.matchRecord('{contentType:[ALTO, TEXT], pageType:[viewFulltext, viewFullscreen], accessCondition:VIEW_FULLTEXT}')}">
 									<a
 										href="#{activeDocumentBean.viewManager.fulltextUrlForAllPages}"
 										id="textWork"
@@ -126,8 +126,8 @@
                         <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
                         
 	                            <!-- METS -->
-	                            <ui:fragment visibilty-class="widget-element" 
-	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], pageType:![viewFulltext]}')}">
+	                            <ui:fragment visibility-class="widget-element" 
+	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], pageType:![viewFulltext, viewFullscreen]}')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.metsResolverUrl}"
 	                                    id="lidomets" 
@@ -141,8 +141,8 @@
 	                                    #{msg.downloadMetsButtonLabel}
 	                                </a>
 	                            </ui:fragment>
-	                            <ui:fragment visibilty-class="widget-element" 
-	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], pageType:![viewFulltext], docType: [volume]}')}">
+	                            <ui:fragment visibility-class="widget-element" 
+	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], pageType:![viewFulltext, viewFullscreen], docType: [volume]}')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
 	                                    id="metsanchor" 
@@ -158,7 +158,7 @@
 	                            </ui:fragment>
 	                            
 	                            <!-- LIDO -->
-	                            <ui:fragment visibilty-class="widget-element" 
+	                            <ui:fragment visibility-class="widget-element" 
 	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[LIDO], pageType:![viewFulltext]}')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
@@ -175,8 +175,8 @@
 	                            </ui:fragment>
 	                            
 	                            <!-- DUBLINCORE -->
-	                            <ui:fragment visibilty-class="widget-element" 
-	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[DUBLINCORE], pageType:![viewFulltext]}')}">
+	                            <ui:fragment visibility-class="widget-element" 
+	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[DUBLINCORE], pageType:![viewFulltext, viewFullscreen]}')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.dublinCoreResolverUrl}"
 	                                    id="dublincorexml"
@@ -196,8 +196,8 @@
 							<c:set scope="request" var="hasPrerenderedPagePdfs"
 								value="#{activeDocumentBean.viewManager.hasPrerenderedPagePdfs()}" />
 							<ui:fragment
-	                            rendered="#{displayConditions.matchRecord('{contentType:[IMAGE], pageType:[viewObject], accessCondition:DOWNLOAD_PDF}')}">
-								<ui:fragment visibilty-class="widget-element"  rendered="#{!configurationBean.generatePdfInMessageQueue and hasPrerenderedPagePdfs}">
+	                            rendered="#{displayConditions.matchRecord('{contentType:[IMAGE], pageType:[viewObject, viewFullscreen], accessCondition:DOWNLOAD_PDF}')}">
+								<ui:fragment visibility-class="widget-element"  rendered="#{!configurationBean.generatePdfInMessageQueue and hasPrerenderedPagePdfs}">
 									<a
 										href="#{activeDocumentBean.viewManager.getPdfDownloadLink([['usePdfSource', 'true']])}"
 										id="pdfWork-small"
@@ -221,7 +221,7 @@
 										#{msg.label__pdf_download} (#{msg.label__pdf_download_full})
 									</a>
 								</ui:fragment>
-								<ui:fragment visibilty-class="widget-element"  rendered="#{!configurationBean.generatePdfInMessageQueue and !hasPrerenderedPagePdfs}">
+								<ui:fragment visibility-class="widget-element"  rendered="#{!configurationBean.generatePdfInMessageQueue and !hasPrerenderedPagePdfs}">
 									<a href="#{activeDocumentBean.viewManager.pdfDownloadLink}"
 										id="pdfWork"
 										class="badge badge-dark widget-downloads__work-download-pdf"
@@ -234,7 +234,7 @@
 									</a>
 								</ui:fragment>
 								
-								<ui:fragment visibilty-class="widget-element" 
+								<ui:fragment visibility-class="widget-element" 
 									rendered="#{configurationBean.generatePdfInMessageQueue}">
 									<a href="#" id="pdfWork"
 										class="badge badge-dark widget-downloads__work-download-pdf download-modal"
@@ -253,7 +253,7 @@
 							</ui:fragment>
 							
 	                        <!-- External download link -->
-	                        <ui:fragment visibilty-class="widget-element" rendered="#{activeDocumentBean.viewManager.externalDownloadUrl != null}">
+	                        <ui:fragment visibility-class="widget-element" rendered="#{activeDocumentBean.viewManager.externalDownloadUrl != null}">
 	                            <a
 	                                href="#{activeDocumentBean.viewManager.externalDownloadUrl}"
 	                                id="externalDownloadWork" 
@@ -270,7 +270,7 @@
 	                        </ui:fragment>
 
 							<!-- EPUB -->
-							<ui:fragment visibilty-class="widget-element" 
+							<ui:fragment visibility-class="widget-element" 
 								rendered="#{activeDocumentBean.accessPermissionEpub}">
 								<a href="#"
 									class="badge badge-dark widget-downloads__work-download-epub download-modal-widget"
@@ -284,7 +284,7 @@
 							</ui:fragment>
 
 							<!-- TOC -->
-							<ui:fragment visibilty-class="widget-element" 
+							<ui:fragment visibility-class="widget-element" 
 								rendered="#{configurationBean.docHierarchyPdfEnabled}">
 								<h:form class="d-inline-flex" id="titleBodyForm"
 									prependId="false">
@@ -303,8 +303,8 @@
 
                         <!-- WORK IIIF-RELIANT FUNCTIONS (GENERATE_IIIF_MANIFEST CHECK) -->
                            <!-- IIIF MANIFEST FULL RECORD -->
-                           <ui:fragment visibilty-class="widget-element" 
-                           	rendered="#{displayConditions.matchRecord('{numPages:1, mimeType:![application], pageType:![viewFulltext], accessCondition:GENERATE_IIIF_MANIFEST}')}">
+                           <ui:fragment visibility-class="widget-element" 
+                           	rendered="#{displayConditions.matchRecord('{numPages:1, mimeType:![application], pageType:![viewFulltext, viewFullscreen], accessCondition:GENERATE_IIIF_MANIFEST}')}">
 	                           <button 
 	                                  id="iiifManifestRecord"
 	                                  class="badge badge-dark widget-usage__work-download-iiif" 
@@ -318,7 +318,7 @@
 	                       </ui:fragment>      
 	                    
                             <!-- MIRADOR FULL RECORD -->
-                            <ui:fragment visibilty-class="widget-element" 
+                            <ui:fragment visibility-class="widget-element" 
                            	rendered="#{displayConditions.matchRecord('{pageType:![viewFulltext], contentType:[IMAGE], accessCondition:VIEW_IMAGES}')}">
                                     <a
                                         href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifManifest}&amp;page=1" 
@@ -334,7 +334,7 @@
                                     </a> 
                             </ui:fragment>
                         
-						</h:panelGroup>
+						</div>
 
 					<!-- PAGE -->
 
@@ -346,8 +346,8 @@
 									class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget__downloads__this_page}</h3>
 
 								<!-- PDF (PAGE) -->
-								 <ui:fragment visibilty-class="widget-element" 
-                           			rendered="#{displayConditions.matchPage('{pageType:[viewObject, cmsPage], contentType:[IMAGE], accessCondition:DOWNLOAD_PAGE_PDF}')}">
+								 <ui:fragment visibility-class="widget-element" 
+                           			rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen, cmsPage], contentType:[IMAGE], accessCondition:DOWNLOAD_PAGE_PDF}')}">
 									<a href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
 										id="pdfPage"
 										class="badge badge-dark widget-downloads__page-download-pdf"
@@ -360,7 +360,7 @@
 									</a>
 								</ui:fragment>
 								
-								<ui:fragment visibilty-class="widget-element" 
+								<ui:fragment visibility-class="widget-element" 
                            			rendered="#{activeDocumentBean.viewManager.getDownloadOptionsForPage(activeDocumentBean.viewManager.currentPage).size() > 0 and displayConditions.matchPage('{pageType:[viewObject, cmsPage], mimeType: [image], accessCondition:DOWNLOAD_IMAGES}')}">
 									<!-- IMAGE (PAGE) GENERATE LINKS FOR EVERY CONFIGURED DOWNLOAD SIZE -->
 									<ui:repeat varStatus="status" var="option"
@@ -382,8 +382,8 @@
 																
 								<!-- PAGE FULLTEXT FORMATS (VIEW_FULLTEXT CHECK) -->
 								<!-- ALTO (PAGE) -->
-								<ui:fragment visibilty-class="widget-element" 
-                           			rendered="#{displayConditions.matchPage('{pageType:[viewFulltext], contentType:[ALTO], accessCondition:VIEW_FULLTEXT}')}">
+								<ui:fragment visibility-class="widget-element" 
+                           			rendered="#{displayConditions.matchPage('{pageType:[viewFulltext, viewFullscreen], contentType:[ALTO], accessCondition:VIEW_FULLTEXT}')}">
 									<a href="#{activeDocumentBean.viewManager.altoUrl}"
 										id="altoPage"
 										class="badge badge-dark widget-downloads__page-download-alto"
@@ -395,8 +395,8 @@
 								</ui:fragment>
 
 										<!-- TEI (PAGE) -->
-								<ui:fragment visibilty-class="widget-element" 
-                           			rendered="#{displayConditions.matchPage('{pageType:[viewFulltext], contentType:[ALTO, TEXT], accessCondition:VIEW_FULLTEXT}')}">
+								<ui:fragment visibility-class="widget-element" 
+                           			rendered="#{displayConditions.matchPage('{pageType:[viewFulltext, viewFullscreen], contentType:[ALTO, TEXT], accessCondition:VIEW_FULLTEXT}')}">
 									<a href="#{activeDocumentBean.viewManager.teiUrl}"
 										id="teiPage"
 										class="badge badge-dark widget-downloads__page-download-tei"
@@ -407,8 +407,8 @@
 								</ui:fragment>
 
 								<!-- FULLTEXT (PAGE) -->
-								<ui:fragment visibilty-class="widget-element" 
-                           			rendered="#{displayConditions.matchPage('{pageType:[viewFulltext], contentType:[ALTO, TEXT], accessCondition:VIEW_FULLTEXT}')}">
+								<ui:fragment visibility-class="widget-element" 
+                           			rendered="#{displayConditions.matchPage('{pageType:[viewFulltext, viewFullscreen], contentType:[ALTO, TEXT], accessCondition:VIEW_FULLTEXT}')}">
 									<a href="#{activeDocumentBean.viewManager.fulltextUrl}"
 										id="textPage"
 										class="badge badge-dark widget-downloads__page-download-fulltext"
@@ -420,8 +420,8 @@
 								</ui:fragment>
 
 								<!-- IIIF MANIFEST PAGE -->
-								<ui:fragment visibilty-class="widget-element" 
-                           			rendered="#{displayConditions.matchPage('{pageType:![viewFulltext], numPages:2, mimeType: [image], accessCondition:VIEW_IMAGES}')}">
+								<ui:fragment visibility-class="widget-element" 
+                           			rendered="#{displayConditions.matchPage('{pageType:![viewFulltext, viewFullscreen], numPages:2, mimeType: [image], accessCondition:VIEW_IMAGES}')}">
 									<button id="iiifManifestPage"
 										class="badge badge-dark widget-usage__page-download-iiif"
 										data-copy-value="#{imageDelivery.iiifPageManifest}"
@@ -431,8 +431,8 @@
 								</ui:fragment>
 
 								<!-- MIRADOR PAGE -->
-								<ui:fragment visibilty-class="widget-element"
-									rendered="#{displayConditions.matchPage('{pageType:![viewFulltext], numPages:2, contentType:[IMAGE], accessCondition:VIEW_IMAGES}')}">
+								<ui:fragment visibility-class="widget-element"
+									rendered="#{displayConditions.matchPage('{pageType:![viewFulltext, viewFullscreen], numPages:2, contentType:[IMAGE], accessCondition:VIEW_IMAGES}')}">
 									<a
 										href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifPageManifest}"
 										id="mirador"
@@ -459,7 +459,7 @@
 
 										<div rendered="#{configurationBean.pdfPageRangeEnabled and 
 										displayConditions.matchRecord('{pageType:[viewObject, cmsPage], contentType:[IMAGE], accessCondition:DOWNLOAD_PDF}')}"
-										jsf:id="pdfRangeDownloads" visibilty-class="widget-element"
+										jsf:id="pdfRangeDownloads" visibility-class="widget-element"
 										class="widget-downloads__page-range-downloads-inner">
 										
 											<h:form id="pdfPageRangeDownloadForm">
