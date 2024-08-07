@@ -36,7 +36,7 @@
 					<ul  class="widget__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
 						<!-- Object -->
 						<h:panelGroup  visibilty-class="widget-element"
-							rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, mimeType[image, video, audio, model]}')}">
+							rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, mimeType: [image, video, audio, model]}')}">
 							<li
 								class="#{navigationHelper.currentPage == 'object' ? 'active' : ''}">
 								<h:outputLink
@@ -95,7 +95,7 @@
 
 						<!-- Metadata -->
 						<h:panelGroup
-							rendered="#{configurationBean.sidebarMetadataLinkVisible and displayConditions.matchRecord('{docType:: ![group]}')}">
+							rendered="#{configurationBean.sidebarMetadataLinkVisible and displayConditions.matchRecord('{docType: ![group]}')}">
 							<ui:repeat var="metadataView" varStatus="status"
 								value="#{metadataBean.metadataViews}">
 								<h:panelGroup 

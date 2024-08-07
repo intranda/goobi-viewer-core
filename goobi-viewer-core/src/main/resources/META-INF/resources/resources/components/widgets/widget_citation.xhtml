@@ -46,7 +46,7 @@
 
                         <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
                         <ui:fragment 
-                            rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks and displayConditions.matchRecord('{docType::[record, anchor]}')}">
+                            rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks and displayConditions.matchRecord('{docType:[record, anchor]}')}">
                             <c:forEach var="link" items="#{activeDocumentBean.viewManager.getSidebarWidgetUsageCitationLinksForLevel('record')}">
                                     
                                 <ui:fragment rendered="#{link.type.name() == 'URL' and link.value != null}">
@@ -74,7 +74,7 @@
 
                         <!-- RIS (topstruct) -->
 						<ui:fragment 
-                            rendered="#{displayConditions.matchRecord('{docType::![group]}')}">
+                            rendered="#{displayConditions.matchRecord('{docType:![group]}')}">
                             <a href="#{configurationBean.restApiUrlV1}records/#{activeDocumentBean.persistentIdentifier}/ris/"
                                 jsf:id="ris" visibilty-class="widget-element"
                                 class="badge badge-dark widget-citation__work-download-ris" 
@@ -100,7 +100,7 @@
                             <h3 id="titleImage" class="widget-citation__subtitle widget__badge-container-heading">#{msg.widget__citation__this_page}</h3>
 
 							<ui:fragment  rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks and !activeDocumentBean.viewManager.doublePageMode 
-                            and displayConditions.matchRecord('{docType::[record], numPages:1}')}">
+                            and displayConditions.matchRecord('{docType:[record], numPages:1}')}">
                                 <c:forEach var="link" varStatus="index" items="#{activeDocumentBean.viewManager.getSidebarWidgetUsageCitationLinksForLevel('image')}">
                                     <ui:fragment rendered="#{link.type.name() == 'URL' and link.value != null}">
                                         <button type="button" visibilty-class="widget-element"

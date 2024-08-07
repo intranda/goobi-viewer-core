@@ -130,7 +130,7 @@ public class DisplayConditions implements Serializable {
      * <li>
      * <dl>
      * <dt>sourceFormat</dt>
-     * <dd><i>Possible values:</i> An array of one or more of the following: METS, LIDO, DC, METS_MARC</dd>
+     * <dd><i>Possible values:</i> An array of one or more of the following: METS, LIDO, DUBLINCORE, METS_MARC, DENKXWEB</dd>
      * <dd><i>Description:</i> The source metadata format of the current record. This condition returns true if the format is within the given
      * list.</dd>
      * </dl>

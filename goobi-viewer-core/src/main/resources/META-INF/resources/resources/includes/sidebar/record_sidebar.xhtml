@@ -44,9 +44,16 @@
 	<widgetComponent:widget_recordNotes
 		notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
 
+<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata]}')}">
 	<widgetComponent:widget_downloads />
 
 	<widgetComponent:widget_citation />
+</ui:fragment>
+	
+<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: [viewMetadata]}')}">
+	<widgetComponent:widget_formatsLinks />
+</ui:fragment>
+	
 
 	<widgetComponent:widget_relatedGroups />
 

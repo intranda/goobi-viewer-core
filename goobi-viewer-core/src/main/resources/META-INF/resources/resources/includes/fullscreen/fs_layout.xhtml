@@ -44,7 +44,7 @@
                 </h:panelGroup>
 
                 <!-- VIEW 3D OBJECT -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'object' or activeDocumentBean.viewManager.currentPage.baseMimeType == 'model'}">
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'object' or activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'model'}">
                     <ui:insert name="viewObject3d">
                         <ui:include src="/resources/includes/object/object3d.xhtml" />
                     </ui:insert>
@@ -260,7 +260,7 @@
                         </h3>
 
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
-                            <widgetComponent:widget_usage />
+                            <widgetComponent:widget_downloads />
                         </div>
                     </div>
                     
