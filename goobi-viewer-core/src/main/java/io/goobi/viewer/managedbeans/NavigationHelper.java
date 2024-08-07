@@ -1379,7 +1379,7 @@ public class NavigationHelper implements Serializable {
             if (cmsPage != null && cmsPage.hasSearchFunctionality()) {
                 return StringTools.removeTrailingSlashes(cmsPage.getPageUrl());
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error(e.toString(), e);
         }
 

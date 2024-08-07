@@ -299,7 +299,7 @@ public class AnnotationBean implements Serializable {
             // Important! Otherwise JSF will attempt to render the response which obviously
             // will fail since it's already written with a file and closed.
         } finally {
-            //
+            // empty block...
         }
     }
 

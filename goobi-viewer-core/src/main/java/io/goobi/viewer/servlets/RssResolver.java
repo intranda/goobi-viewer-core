@@ -148,6 +148,7 @@ public class RssResolver extends HttpServlet {
             }
         } catch (IOException e) {
             if (GetAction.isClientAbort(e)) {
+                logger.trace("let them");
                 //let them
             } else {
                 logger.error(e.getMessage(), e);
