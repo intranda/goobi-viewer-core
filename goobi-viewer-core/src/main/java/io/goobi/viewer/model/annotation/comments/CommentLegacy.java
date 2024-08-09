@@ -153,10 +153,6 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
      */
     public static boolean sendEmailNotifications(CommentLegacy comment, String oldText, Locale locale) {
         List<String> addresses = new ArrayList<>(); // Static configured list of email addresses is no longer available
-        if (addresses == null || addresses.isEmpty()) {
-            return false;
-        }
-
         String subject = null;
         String body = null;
         if (StringUtils.isEmpty(oldText)) {
@@ -219,7 +215,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
         if (text != null) {
             String cleanText = StringTools.stripJS(text);
             if (cleanText.length() < text.length()) {
-                logger.warn("User {} attempted to add a script block into a comment for {}, page {}, which was removed:\n{}", pi, page, text);
+                logger.warn("User attempted to add a script block into a comment for {}, page {}, which was removed:\n{}", pi, page, text);
                 text = cleanText;
             }
         }
@@ -405,7 +401,6 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     }
 
     public String getLinkToRecord() {
-        return PrettyUrlTools.getRecordURI(this.pi, Optional.ofNullable(this.page).map(i -> i.toString()).orElse(""), null, PageType.viewObject);
+        return PrettyUrlTools.getRecordURI(this.pi, Optional.ofNullable(this.page).map(Object::toString).orElse(""), null, PageType.viewObject);
     }
-
 }

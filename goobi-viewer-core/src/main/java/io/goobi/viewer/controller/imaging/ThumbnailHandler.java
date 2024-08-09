@@ -383,7 +383,7 @@ public class ThumbnailHandler {
 
     public static ImageFileFormat getImageFileFormat(PhysicalElement page, String format) {
         if ("MASTER".equalsIgnoreCase(format)) {
-            return ImageFileFormat.getImageFileFormatFromFileExtension(page.getFileNameExtension());
+            return ImageFileFormat.getImageFileFormatFromMimeType(page.getMimeType());
         }
         ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(format);
         if (iff == null) {
@@ -638,7 +638,7 @@ public class ThumbnailHandler {
      * @param page a {)@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      */
     public String getFullImageUrl(PhysicalElement page) {
-        return getFullImageUrl(page, Scale.MAX);
+        return getFullImageUrl(page, Scale.MAX, "MASTER");
     }
 
     /**
@@ -650,13 +650,13 @@ public class ThumbnailHandler {
      * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getFullImageUrl(PhysicalElement page, Scale scale) {
+    public String getFullImageUrl(PhysicalElement page, Scale scale, String formatString) {
 
         String path = getImagePath(page);
         if (path == null) {
             return "";
         }
-        ImageFileFormat format = getImageFileFormat(page, path);
+        ImageFileFormat format = getImageFileFormat(page, formatString);
         if (format == null) {
             logger.warn("Format not recognized for: {}", path);
             return "";

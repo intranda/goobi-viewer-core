@@ -28,7 +28,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -362,10 +364,32 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         String docstructType = "Catalogue";
         String filename = "00000001.tif";
 
-        ViewManager viewManager = createViewManager(pi, docstructType, filename);
+        ViewManager viewManager = createViewManager(pi, docstructType, filename, "image/tiff");
 
         String baseUrl = DataManager.getInstance().getRestApiManager().getContentApiUrl()
                 + "records/" + pi + "/files/images/" + filename;
+
+        DownloadOption maxSizeTiff = new DownloadOption("Master", "master", "max");
+        String masterTiffUrl = baseUrl + "/full/max/0/default.tif";
+        assertEquals(masterTiffUrl, viewManager.getPageDownloadUrl(maxSizeTiff, viewManager.getCurrentPage()).replaceAll("\\?.*", "")); //ignore query params
+
+        DownloadOption scaledJpeg = new DownloadOption("Thumbnail", "jpg", new Dimension(800, 1200));
+        String thumbnailUrl = baseUrl + "/full/!800,1200/0/default.jpg";
+        assertEquals(thumbnailUrl, viewManager.getPageDownloadUrl(scaledJpeg, viewManager.getCurrentPage()).replaceAll("\\?.*", "")); //ignore query params
+
+    }
+
+    @Test
+    void testGetPageDownloadUrlExternalResource()
+            throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
+
+        String pi = "PPN123";
+        String docstructType = "Catalogue";
+        String filename = "https://example.com/iiif/00000001/info.json";
+
+        ViewManager viewManager = createViewManager(pi, docstructType, filename, "image/tiff");
+
+        String baseUrl = "https://example.com/iiif/00000001";
 
         DownloadOption maxSizeTiff = new DownloadOption("Master", "master", "max");
         String masterTiffUrl = baseUrl + "/full/max/0/default.tif";
@@ -443,16 +467,20 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         }
     }
 
-    private static ViewManager createViewManager(String pi, String docstructType, String pageFilename)
+    private static ViewManager createViewManager(String pi, String docstructType, String pageFilename, String mimeType)
             throws IndexUnreachableException, PresentationException {
         StructElement se = new StructElement(123L);
         se.setDocStructType(docstructType);
         se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
         PhysicalElement page = Mockito.mock(PhysicalElement.class);
         Mockito.when(page.getFirstFileName()).thenReturn(pageFilename);
-        Mockito.when(page.getFilepath()).thenReturn(pi + "/" + pageFilename);
-        Mockito.when(page.getMimeType()).thenReturn("image/tiff");
-        Mockito.when(page.getBaseMimeType()).thenReturn(BaseMimeType.IMAGE);
+        if (URI.create(pageFilename).isAbsolute() || Path.of(pageFilename).isAbsolute()) {
+            Mockito.when(page.getFilepath()).thenReturn(pageFilename);
+        } else {
+            Mockito.when(page.getFilepath()).thenReturn(pi + "/" + pageFilename);
+        }
+        Mockito.when(page.getMimeType()).thenReturn(mimeType);
+        Mockito.when(page.getBaseMimeType()).thenReturn(BaseMimeType.getByName(mimeType));
 
         IPageLoader pageLoader = Mockito.mock(EagerPageLoader.class);
         Mockito.when(pageLoader.getPage(Mockito.anyInt())).thenReturn(page);

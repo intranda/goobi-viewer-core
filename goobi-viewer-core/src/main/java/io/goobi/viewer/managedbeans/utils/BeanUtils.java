@@ -121,7 +121,9 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>getSession.</p>
+     * <p>
+     * getSession.
+     * </p>
      *
      * @return HttpSession from current request
      */
@@ -199,12 +201,14 @@ public final class BeanUtils {
         if (context != null && context.getExternalContext() != null) {
             return (ServletContext) context.getExternalContext().getContext();
         }
-        
+
         return null;
     }
 
     /**
-     * <p>getInitialLocale.</p>
+     * <p>
+     * getInitialLocale.
+     * </p>
      *
      * @return Currently selected or default {@link java.util.Locale}
      */
@@ -353,7 +357,9 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>getCollectionViewBean.</p>
+     * <p>
+     * getCollectionViewBean.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.CollectionViewBean} object
      */
@@ -373,7 +379,9 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>getPersistentStorageBean.</p>
+     * <p>
+     * getPersistentStorageBean.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.PersistentStorageBean} object
      */
@@ -393,7 +401,9 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>getBookmarkBean.</p>
+     * <p>
+     * getBookmarkBean.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.BookmarkBean} object
      */
@@ -402,7 +412,9 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>getCreateRecordBean.</p>
+     * <p>
+     * getCreateRecordBean.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.CreateRecordBean} object
      */
@@ -488,7 +500,9 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>getSessionBean.</p>
+     * <p>
+     * getSessionBean.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.SessionBean} object
      */
@@ -570,7 +584,9 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>getBeanFromRequest.</p>
+     * <p>
+     * getBeanFromRequest.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object
      * @param beanName a {@link java.lang.String} object
@@ -621,7 +637,9 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>findInstanceInSessionAttributes.</p>
+     * <p>
+     * findInstanceInSessionAttributes.
+     * </p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object
      * @param clazz a {@link java.lang.Class} object
@@ -636,8 +654,8 @@ public final class BeanUtils {
             Object attributeValue = request.getSession().getAttribute(attributeName);
             if (attributeValue != null && attributeValue.getClass().equals(clazz)) {
                 return Optional.of(attributeValue).map(o -> (T) o);
-            } else if (attributeValue instanceof SerializableContextualInstance) {
-                Object instance = ((SerializableContextualInstance) attributeValue).getInstance();
+            } else if (attributeValue instanceof SerializableContextualInstance serializableContextualInstance) {
+                Object instance = serializableContextualInstance.getInstance();
                 if (instance != null && instance.getClass().equals(clazz)) {
                     return Optional.of(instance).map(o -> (T) o);
                 }
@@ -663,7 +681,9 @@ public final class BeanUtils {
     }
 
     /**
-     * <p>getManagedBeanValue.</p>
+     * <p>
+     * getManagedBeanValue.
+     * </p>
      *
      * @param expr a {@link java.lang.String} object
      * @return a {@link java.lang.Object} object

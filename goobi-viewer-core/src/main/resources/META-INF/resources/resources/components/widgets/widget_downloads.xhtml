@@ -445,6 +445,24 @@
 								</ui:fragment>
 							</div>
 
+
+							<div id="mediaDownloads">
+							
+							<ui:fragment visibility-class="widget-element"
+									rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen], contentType:[AUDIO], accessCondition:VIEW_AUDIO}')}">
+									<a
+										href="#{request.contextPath}/api/v1/records/#{activeDocument.pi}/files/media/#{activeDocumentBean.viewManager.currentPage.fileNames.get('audio')}"
+										id="downloadAudio"
+										class="badge badge-dark widget-usage__page-link-mirador-viewer"
+										title="#{msg.action__view_in_mirador__tooltip}"
+										data-toggle="tooltip" data-placement="top"
+										data-trigger="hover" target="_blank" rel="nofollow noopener"
+										aria-label="#{msg.image}: #{msg.action__view_in_mirador}">
+										#{msg.action__download_audio} </a>
+								</ui:fragment>
+							
+							</div>
+
 							<!-- PAGE RANGE DOWNLOADS -->
 							<div jsf:id="pageRangeDownloads"
 							rendered="#{displayConditions.getTag('pageRangeDownloads').getChildCount('widget-element') > 0}"
