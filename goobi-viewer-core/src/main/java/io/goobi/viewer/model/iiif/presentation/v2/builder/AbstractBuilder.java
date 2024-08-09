@@ -234,7 +234,7 @@ public abstract class AbstractBuilder {
     public String getMetsResolverUrl(StructElement ele) {
         try {
             return urls.getApplicationUrl() + "/metsresolver?id=" + ele.getPi();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             logger.error("Could not get METS resolver URL for {}.", ele.getLuceneId());
             Messages.error("errGetCurrUrl");
         }
@@ -252,7 +252,7 @@ public abstract class AbstractBuilder {
     public String getLidoResolverUrl(StructElement ele) {
         try {
             return urls.getApplicationUrl() + "/lidoresolver?id=" + ele.getPi();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             logger.error("Could not get LIDO resolver URL for {}.", ele.getLuceneId());
             Messages.error("errGetCurrUrl");
         }

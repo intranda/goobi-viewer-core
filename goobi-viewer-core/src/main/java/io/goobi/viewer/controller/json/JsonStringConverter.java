@@ -31,9 +31,9 @@ public final class JsonStringConverter<T> {
     }
 
     public T convert(String json) throws IOException {
-        json = json.replace("`", "\"").replaceAll("\\s+", " ");
-        json = addQuotes(json);
-        T object = JsonTools.getAsObject(json, type);
+        String convertedJson = json.replace("`", "\"").replaceAll("\\s+", " ");
+        convertedJson = addQuotes(convertedJson);
+        T object = JsonTools.getAsObject(convertedJson, type);
         return object;
     }
 

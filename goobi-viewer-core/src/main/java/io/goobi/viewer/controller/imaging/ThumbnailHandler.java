@@ -648,6 +648,7 @@ public class ThumbnailHandler {
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
+     * @param formatString file extension for the desired format. May also be 'master' to indicate that the format of the original file should be used
      * @return a {@link java.lang.String} object.
      */
     public String getFullImageUrl(PhysicalElement page, Scale scale, String formatString) {

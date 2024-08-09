@@ -30,8 +30,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.ocpsoft.pretty.PrettyContext;
 
@@ -83,8 +83,6 @@ public final class ViewHistory {
                     if (oCurrentPath.isPresent()) {
                         //viewer page url
                         setCurrentView(oCurrentPath.get(), session);
-                    } else {
-                        //some other url
                     }
                 }
             }

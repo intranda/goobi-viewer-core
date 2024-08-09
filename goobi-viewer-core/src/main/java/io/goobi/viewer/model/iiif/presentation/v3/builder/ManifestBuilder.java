@@ -584,7 +584,7 @@ public class ManifestBuilder extends AbstractBuilder {
                         return cmsPageLink.getResource(uri);
                     })
                     .toList();
-        } catch (Exception e) {
+        } catch (DAOException e) {
             logger.warn(e.toString());
             return Collections.emptyList();
         }

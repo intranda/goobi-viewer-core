@@ -226,7 +226,7 @@ public class ManifestBuilder extends AbstractBuilder {
                             logger.error("Unable to retrieve viewer url for {}", ele);
                         }
                     });
-        } catch (Exception e) {
+        } catch (DAOException e) {
             logger.warn(e.toString());
         }
     }

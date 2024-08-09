@@ -41,7 +41,7 @@ import io.goobi.viewer.controller.DateTools;
  * Version class.
  * </p>
  */
-public class Version {
+public final class Version {
     /** Constant <code>APPLICATION_NAME</code> */
     public static final String APPLICATION_NAME;
     /** Constant <code>VERSION</code> */
