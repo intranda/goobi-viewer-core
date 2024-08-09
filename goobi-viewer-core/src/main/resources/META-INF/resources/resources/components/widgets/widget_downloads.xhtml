@@ -48,7 +48,7 @@
 
 					<!-- INTRODUCTION TEXT ADDITIONAL FILES -->
 					<ui:fragment visibility-class="widget-element"
-						rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_DOWNLOAD']) > 0}">
+						rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_DOWNLOAD']) > 0 and activeDocumentBean.viewManager.displayContentDownloadMenu}">
 						<p id="introductionText"
 							class="widget-downloads__additional-files-text">
 							<h:outputText

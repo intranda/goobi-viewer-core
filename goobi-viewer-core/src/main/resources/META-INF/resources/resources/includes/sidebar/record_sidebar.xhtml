@@ -12,56 +12,63 @@
 	<widgetComponent:widget_views id="widgetViews" collapsible="false"
 		widgetTitle="#{msg.view}" />
 
+	<ui:fragmend
+		rendered="#{displayConditions.matchRecord('{pageType: ![viewThumbs]}')}">
+		<ui:fragment
+			rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}">
+			<widgetComponent:widget_copyrightInfo />
+		</ui:fragment>
 
-	<ui:fragment
-		rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}">
-		<widgetComponent:widget_copyrightInfo />
-	</ui:fragment>
+		<ui:fragment
+			rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata]}')}">
+			<widgetComponent:widget_searchInCurrentItem />
+		</ui:fragment>
 
-	<widgetComponent:widget_searchInCurrentItem />
+		<widgetComponent:widget_statistics_usage />
 
-	<widgetComponent:widget_statistics_usage />
+		<widgetComponent:widget_archives />
 
-	<widgetComponent:widget_archives />
+		<widgetComponent:widget_nerFacetting />
 
-	<widgetComponent:widget_nerFacetting />
+		<widgetComponent:widget_searchResultNavigation />
 
-	<widgetComponent:widget_searchResultNavigation />
+		<ui:fragment
+			rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata]}')}">
+			<widgetComponent:widget_metadata />
+		</ui:fragment>
 
-	<widgetComponent:widget_metadata />
+		<ui:fragment rendered="#{activeDocumentBean.geoMap.hasFeatures()}">
+			<widgetComponent:widget_geoMap geoMap="#{activeDocumentBean.geoMap}"
+				title="#{msg.NORM_LOCATION}" allowFullscreen="false"
+				linkToSearch="false" showAnnotations="true" popoverOnHover="true"
+				popoverClass="record_geomap_popover"
+				highlightDocumentId="#{activeDocumentBean.logid}"
+				currentPageNo="#{activeDocumentBean.viewManager.currentImageOrder}"
+				featureClickHandling="openSearch" />
+		</ui:fragment>
 
-	<ui:fragment rendered="#{activeDocumentBean.geoMap.hasFeatures()}">
-		<widgetComponent:widget_geoMap geoMap="#{activeDocumentBean.geoMap}"
-			title="#{msg.NORM_LOCATION}" allowFullscreen="false"
-			linkToSearch="false" showAnnotations="true" popoverOnHover="true"
-			popoverClass="record_geomap_popover"
-			highlightDocumentId="#{activeDocumentBean.logid}"
-			currentPageNo="#{activeDocumentBean.viewManager.currentImageOrder}"
-			featureClickHandling="openSearch" />
-	</ui:fragment>
+		<widgetComponent:widget_annotations />
 
-	<widgetComponent:widget_annotations />
+		<widgetComponent:widget_recordNotes
+			notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
 
-	<widgetComponent:widget_recordNotes
-		notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
+		<ui:fragment
+			rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata]}')}">
+			<widgetComponent:widget_downloads />
 
-	<ui:fragment
-		rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata]}')}">
-		<widgetComponent:widget_downloads />
+			<widgetComponent:widget_citation />
 
-		<widgetComponent:widget_citation />
+			<widgetComponent:widget_relatedGroups />
 
-		<widgetComponent:widget_relatedGroups />
+			<widgetComponent:widget_toc
+				visible="#{configurationBean.sidebarTocWidgetVisible}" />
+		</ui:fragment>
 
-		<widgetComponent:widget_toc
-			visible="#{configurationBean.sidebarTocWidgetVisible}" />
-	</ui:fragment>
-
-	<ui:fragment
-		rendered="#{displayConditions.matchRecord('{pageType: [viewMetadata]}')}">
-		<widgetComponent:widget_formatsLinks />
-	</ui:fragment>
-
+		<ui:fragment
+			rendered="#{displayConditions.matchRecord('{pageType: [viewMetadata]}')}">
+			<widgetComponent:widget_formatsLinks />
+		</ui:fragment>
+	</ui:fragmend>
 
 
 	<widgetComponent:widget_versionHistory />
