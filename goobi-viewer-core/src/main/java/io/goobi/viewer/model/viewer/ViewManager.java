@@ -2815,7 +2815,7 @@ public class ViewManager implements Serializable {
         return pagesWithAlto >= threshold;
     }
 
-    public Map getFilenamesByMimeType() throws IndexUnreachableException, PresentationException {
+    public Map<String, List<String>> getFilenamesByMimeType() throws IndexUnreachableException, PresentationException {
         List<SolrDocument> pageDocs = DataManager.getInstance()
                 .getSearchIndex()
                 .getDocs(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
@@ -2836,7 +2836,7 @@ public class ViewManager implements Serializable {
                 .collect(Collectors.toMap(
                         filename -> getMimetype((String) filename),
                         filename -> List.of(filename),
-                        (set1, set2) -> new ArrayList<>(CollectionUtils.union((List) set1, (List) set2))));
+                        (set1, set2) -> new ArrayList<>(CollectionUtils.union((List<? extends String>) set1, (List<? extends String>) set2))));
     }
 
     public String getMimetype(String filename) {

@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.model.viewer.record.views;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -91,19 +90,19 @@ public class VisibilityCondition {
                 new AnyMatchCondition<String>(
                         info.getDocType().stream().filter(s -> !s.equals("!")).toList(),
                         !info.getDocType().contains("!")),
-                ComparisonCondition.of(info.getNumPages()),
-                ComparisonCondition.of(info.getTocSize()));
+                ComparisonCondition.ofInteger(info.getNumPages()),
+                ComparisonCondition.ofInteger(info.getTocSize()));
     }
 
     public VisibilityCondition(AnyMatchCondition<FileType> fileTypes, AnyMatchCondition<String> sourceFormat,
             AnyMatchCondition<BaseMimeType> mimeType,
-            Condition<String> accessCondition, AnyMatchCondition<PageType> views, AnyMatchCondition<String> docTypes, ComparisonCondition numPages,
-            ComparisonCondition tocSize) {
-        URI.create("SADAs");
+            Condition<String> accessCondition, AnyMatchCondition<PageType> views, AnyMatchCondition<String> docTypes,
+            ComparisonCondition<Integer> numPages,
+            ComparisonCondition<Integer> tocSize) {
         this.fileTypes = fileTypes;
         this.sourceFormat = sourceFormat;
         this.mimeType = mimeType;
-        this.accessCondition = StringUtils.isBlank(accessCondition.getValue()) ? Condition.none() : accessCondition;
+        this.accessCondition = accessCondition;
         this.views = views;
         this.docTypes = docTypes;
         this.numPages = numPages;
