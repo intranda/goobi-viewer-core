@@ -573,6 +573,11 @@ public class UserBean implements Serializable {
                         .ifPresentOrElse(SessionBean::cleanSessionObjects, () -> {
                             throw new IllegalStateException("Cannot access sessionBean to cleanSessionObjects");
                         });
+
+                BeanUtils.getBeanFromRequest(request, "displayConditions", DisplayConditions.class)
+                        .ifPresentOrElse(DisplayConditions::clearCache, () -> {
+                            throw new IllegalStateException("Cannot access displayConditions to clear display conditions cache");
+                        });
             } catch (Exception e) {
                 logger.warn(e.getMessage());
             }

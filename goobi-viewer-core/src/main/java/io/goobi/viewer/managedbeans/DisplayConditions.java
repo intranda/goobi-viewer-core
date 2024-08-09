@@ -71,7 +71,7 @@ public class DisplayConditions implements Serializable {
     @Inject
     private HttpServletRequest httpRequest;
 
-    private final RecordPropertyCache propertyCache = new RecordPropertyCache();
+    private RecordPropertyCache propertyCache = new RecordPropertyCache();
 
     /**
      * Called with a string in form of a modified json object. The object may not contain any quotation marks and values may be preceded by a '!'
@@ -355,6 +355,10 @@ public class DisplayConditions implements Serializable {
             }
         }
 
+    }
+
+    public void clearCache() {
+        propertyCache = new RecordPropertyCache();
     }
 
 }
