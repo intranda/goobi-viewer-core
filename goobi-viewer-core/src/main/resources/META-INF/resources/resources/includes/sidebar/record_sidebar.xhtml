@@ -12,7 +12,7 @@
 	<widgetComponent:widget_views id="widgetViews" collapsible="false"
 		widgetTitle="#{msg.view}" />
 
-	<ui:fragmend
+	<ui:fragment
 		rendered="#{displayConditions.matchRecord('{pageType: ![viewThumbs]}')}">
 		<ui:fragment
 			rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}">
@@ -68,7 +68,7 @@
 			rendered="#{displayConditions.matchRecord('{pageType: [viewMetadata]}')}">
 			<widgetComponent:widget_formatsLinks />
 		</ui:fragment>
-	</ui:fragmend>
+	</ui:fragment>
 
 
 	<widgetComponent:widget_versionHistory />
