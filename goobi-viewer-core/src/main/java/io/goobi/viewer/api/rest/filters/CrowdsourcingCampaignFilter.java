@@ -43,6 +43,7 @@ import io.goobi.viewer.api.rest.bindings.CrowdsourcingCampaignBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.CrowdsourcingBean;
+import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.user.User;
@@ -97,11 +98,6 @@ public class CrowdsourcingCampaignFilter implements ContainerRequestFilter {
      * @return Optional<User>
      */
     private static Optional<User> getUser() {
-        try {
-            return Optional.ofNullable(BeanUtils.getUserBean().getUser());
-        } catch (Exception e) {
-            logger.error("Unable to get current user from session: {}", e.getMessage());
-            return Optional.empty();
-        }
+        return Optional.ofNullable(BeanUtils.getUserBean()).map(UserBean::getUser);
     }
 }
