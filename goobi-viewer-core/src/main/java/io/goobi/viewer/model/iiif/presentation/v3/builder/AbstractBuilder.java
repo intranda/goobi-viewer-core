@@ -241,7 +241,7 @@ public abstract class AbstractBuilder {
     public String getViewUrl(PhysicalElement ele, PageType pageType) {
         try {
             return urls.getApplicationUrl() + "/" + pageType.getName() + ele.getPurlPart();
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             logger.error("Could not get METS resolver URL for page {} + in {}.", ele.getOrder(), ele.getPi());
             Messages.error("errGetCurrUrl");
         }
