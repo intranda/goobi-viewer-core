@@ -30,7 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
-import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -41,7 +41,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
  * @author florian
  *
  */
-class IIIFPresentationResourceBuilderTest extends AbstractSolrEnabledTest {
+public class IIIFPresentationResourceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private IIIFPresentation2ResourceBuilder testee;
 
