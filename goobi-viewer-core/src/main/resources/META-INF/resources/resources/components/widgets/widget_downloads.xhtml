@@ -285,7 +285,7 @@
 
 							<!-- TOC -->
 							<ui:fragment visibility-class="widget-element" 
-								rendered="#{configurationBean.docHierarchyPdfEnabled}">
+								rendered="#{configurationBean.docHierarchyPdfEnabled and displayConditions.matchRecord('{tocSize: 2}')}">
 								<h:form class="d-inline-flex" id="titleBodyForm"
 									prependId="false">
 									<h:commandLink id="tocDownload"
