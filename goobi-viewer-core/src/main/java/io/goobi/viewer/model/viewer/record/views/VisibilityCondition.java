@@ -168,6 +168,10 @@ public class VisibilityCondition {
     public boolean matchesPage(PageType pageType, PhysicalElement page, HttpServletRequest request, RecordPropertyCache properties)
             throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException {
 
+        if (page == null) {
+            return false;
+        }
+
         Collection<FileType> existingFileTypes = properties.getFileTypesForPage(page);
         BaseMimeType baseMimeType = page.getBaseMimeType();
         return checkAccess(page, request, properties)
