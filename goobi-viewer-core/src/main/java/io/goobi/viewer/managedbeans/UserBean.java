@@ -563,20 +563,20 @@ public class UserBean implements Serializable {
             try {
                 BeanUtils.getBeanFromRequest(request, "collectionViewBean", CollectionViewBean.class)
                         .ifPresentOrElse(CollectionViewBean::invalidate, () -> {
-                            throw new IllegalStateException("Cannot access collectionViewBean to invalidate");
+                            logger.error("Cannot access collectionViewBean to invalidate");
                         });
                 BeanUtils.getBeanFromRequest(request, "activeDocumentBean", ActiveDocumentBean.class)
                         .ifPresentOrElse(ActiveDocumentBean::resetAccess, () -> {
-                            throw new IllegalStateException("Cannot access activeDocumentBean to resetAccess");
+                            logger.error("Cannot access activeDocumentBean to resetAccess");
                         });
                 BeanUtils.getBeanFromRequest(request, "sessionBean", SessionBean.class)
                         .ifPresentOrElse(SessionBean::cleanSessionObjects, () -> {
-                            throw new IllegalStateException("Cannot access sessionBean to cleanSessionObjects");
+                            logger.error("Cannot access sessionBean to cleanSessionObjects");
                         });
 
                 BeanUtils.getBeanFromRequest(request, "displayConditions", DisplayConditions.class)
                         .ifPresentOrElse(DisplayConditions::clearCache, () -> {
-                            throw new IllegalStateException("Cannot access displayConditions to clear display conditions cache");
+                            logger.error("Cannot access displayConditions to clear display conditions cache");
                         });
             } catch (Exception e) {
                 logger.warn(e.getMessage());
