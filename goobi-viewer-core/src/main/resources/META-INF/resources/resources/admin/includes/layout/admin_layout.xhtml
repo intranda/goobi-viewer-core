@@ -46,7 +46,7 @@
     		<!-- ADD SOMETHING NEW -->
     		<ui:fragment rendered="#{userBean.user.superuser}">
     		<div class="admin__topbar-backend-add -dropdown">
-	    		<i class="fa fa-plus" aria-hidden="true"></i><span>#{msg.admin__new}</span>
+	    		<i class="fa fa-plus" aria-hidden="true"></i><span class="admin__topbar-backend-add-text">#{msg.admin__new}</span>
 	   			<ul class="admin__topbar-backend-dropdown">
 	    			<li><a href="#{request.contextPath}/admin/cms/pages/templates/" target="_self">#{msg.page}</a></li>
 	    			<li><a href="#{request.contextPath}/admin/users/new/" target="_self">#{msg.admin__user}</a></li>
@@ -60,6 +60,19 @@
 
 			<!-- RIGHT AREA TOPBAR -->
 			<div class="admin__topbar-backend-right">
+				
+				<!-- WARNING IF MSG QUEUE STOPPED IRREGULARLY -->
+	            <h:panelGroup styleClass="admin__topbar-queue-warning-wrapper" layout="block" id="msgQueueStoppedWithError">
+<!-- 	                <ui:fragment rendered="#{userBean.admin and messageQueueBean.paused}"> -->
+									<a class="admin__topbar-queue-warning-link" href="#{request.contextPath}/admin/tasks">
+										<div class="admin__topbar-queue-warning-icon-wrapper">
+											<div class="admin__topbar-queue-warning-icon"><i class="fa fa-exclamation" aria-hidden="true"></i></div>
+										</div>
+										<div class="admin__topbar-queue-warning-text">#{msg.admin__msg_queue__stopped_with_error}</div>
+									</a>
+<!-- 					</ui:fragment> -->
+				</h:panelGroup>
+			
 
 	            <div class="admin__topbar-frontend-hotfolder">
 	            	<!-- COUNT FILES PROCESSING -->
@@ -67,8 +80,8 @@
                     <ui:fragment rendered="#{userBean.admin and adminBean.hotfolderFileCount > 0}">
 						<div class="admin__topbar-frontend-hotfolder-files-action">
 						    <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>
-						    <span>#{adminBean.hotfolderFileCount}</span> <span>#{msg.admin__files_in_hotfolder}...</span>
-						</div>
+						    <span class="admin__topbar-hotfolder-files-action-count">#{adminBean.hotfolderFileCount}</span> <span class="admin__topbar-hotfolder-files-action-text">#{msg.admin__files_in_hotfolder}...</span>
+						</div> 
 					</ui:fragment>
 					</h:panelGroup>
 <!-- 					<f:websocket channel="hotfolderFileCount" scope="view"> -->
@@ -81,7 +94,7 @@
 	            <!-- CHANGE LANGUAGE -->
 				<ui:fragment rendered="#{fn:length(navigationHelper.supportedLanguages) > 1}">
 					<div class="admin__topbar-backend-language -dropdown">
-						<i class="fa fa-globe" aria-hidden="true"></i><span>#{msg.MD_LANGUAGE}</span>
+						<i class="fa fa-globe" aria-hidden="true"></i><span class="admin__topbar-backend-language-text">#{msg.MD_LANGUAGE}</span>
 						<h:form id="changeLocalForm1" prependId="false">
 			                <ul class="admin__topbar-backend-dropdown">
 			                    <ui:repeat var="lang" value="#{navigationHelper.supportedLanguages}">
