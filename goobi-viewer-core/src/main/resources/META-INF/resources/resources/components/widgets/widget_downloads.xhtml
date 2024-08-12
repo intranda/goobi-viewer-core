@@ -337,7 +337,6 @@
 						</div>
 
 					<!-- PAGE -->
-
 							<!-- PAGE DOWNLOADS -->
 							<div jsf:id="pageDownloads" rendered="#{displayConditions.getTag('pageDownloads').getChildCount('widget-element') > 0}"
 							class="widget-downloads__page-downloads widget__badge-container">
@@ -447,11 +446,10 @@
 
 
 							<div id="mediaDownloads">
-							
 							<ui:fragment visibility-class="widget-element"
-									rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen], contentType:[AUDIO], accessCondition:VIEW_AUDIO}')}">
+									rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen], contentType:[AUDIO], accessCondition:DOWNLOAD_IMAGES}')}">
 									<a
-										href="#{request.contextPath}/api/v1/records/#{activeDocument.pi}/files/media/#{activeDocumentBean.viewManager.currentPage.fileNames.get('audio')}"
+										href="#{request.contextPath}/api/v1/records/#{activeDocumentBean.viewManager.pi}/files/media/#{activeDocumentBean.viewManager.currentPage.getFileForType('AUDIO')}"
 										id="downloadAudio"
 										class="badge badge-dark widget-usage__page-link-mirador-viewer"
 										title="#{msg.action__view_in_mirador__tooltip}"
@@ -459,7 +457,33 @@
 										data-trigger="hover" target="_blank" rel="nofollow noopener"
 										aria-label="#{msg.image}: #{msg.action__view_in_mirador}">
 										#{msg.action__download_audio} </a>
-								</ui:fragment>
+							</ui:fragment>
+							
+							<ui:fragment visibility-class="widget-element"
+									rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen], contentType:[VIDEO], accessCondition:DOWNLOAD_IMAGES}')}">
+									<a
+										href="#{request.contextPath}/api/v1/records/#{activeDocumentBean.viewManager.pi}/files/media/#{activeDocumentBean.viewManager.currentPage.getFileForType('VIDEO')}"
+										id="downloadAudio"
+										class="badge badge-dark widget-usage__page-link-mirador-viewer"
+										title="#{msg.action__view_in_mirador__tooltip}"
+										data-toggle="tooltip" data-placement="top"
+										data-trigger="hover" target="_blank" rel="nofollow noopener"
+										aria-label="#{msg.image}: #{msg.action__view_in_mirador}">
+										#{msg.action__download_video} </a>
+							</ui:fragment>
+							
+							<ui:fragment visibility-class="widget-element"
+									rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen], contentType:[MODEL], accessCondition:DOWNLOAD_IMAGES}')}">
+									<a
+										href="#{request.contextPath}/api/v1/records/#{activeDocumentBean.viewManager.pi}/files/media/#{activeDocumentBean.viewManager.currentPage.getFileForType('MODEL')}"
+										id="downloadAudio"
+										class="badge badge-dark widget-usage__page-link-mirador-viewer"
+										title="#{msg.action__view_in_mirador__tooltip}"
+										data-toggle="tooltip" data-placement="top"
+										data-trigger="hover" target="_blank" rel="nofollow noopener"
+										aria-label="#{msg.image}: #{msg.action__view_in_mirador}">
+										#{msg.action__download_model} </a>
+							</ui:fragment>
 							
 							</div>
 

@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -80,6 +81,7 @@ import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
+import io.goobi.viewer.model.viewer.record.views.FileType;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
@@ -330,6 +332,16 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 logger.error("Page {} of record '{}' has unsupported mime-type: {}", orderLabel, pi, baseMimeType);
                 return "";
         }
+    }
+
+    public Map<FileType, String> getFileTypes() {
+        Collection<String> filenames = new HashSet<String>(getFileNames().values());
+        filenames.add(getFileName());
+        return FileType.sortByFileType(filenames);
+    }
+
+    public String getFileForType(String type) {
+        return getFileTypes().get(FileType.valueOf(type.toUpperCase()));
     }
 
     /**

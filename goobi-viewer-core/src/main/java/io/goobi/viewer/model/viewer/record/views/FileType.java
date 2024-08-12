@@ -23,14 +23,19 @@ package io.goobi.viewer.model.viewer.record.views;
 
 import java.net.FileNameMap;
 import java.net.URLConnection;
+import java.nio.file.Path;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.compress.utils.FileNameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -58,6 +63,7 @@ public enum FileType {
     EPUB;
 
     private static final Logger logger = LogManager.getLogger(FileType.class);
+    private static final FileNameMap filenameMap = URLConnection.getFileNameMap();
 
     public static Collection<FileType> containedFiletypes(ViewManager viewManager) throws IndexUnreachableException, PresentationException {
         Set<FileType> types = new HashSet<>();
@@ -102,17 +108,43 @@ public enum FileType {
         return types;
     }
 
+    public static Map<FileType, String> sortByFileType(Collection<String> filenames) {
+        Map<FileType, String> types = new HashMap<>();
+
+        for (String filename : filenames) {
+            String mimeType = getContentTypeFor(filename);
+            FileType type = FileType.fromMimeType(Optional.ofNullable(mimeType).orElse(""));
+            if (type != null) {
+                types.put(type, filename);
+            }
+        }
+        return types;
+    }
+
+    public static String getContentTypeFor(String filename) {
+        if (StringUtils.isBlank(filename)) {
+            return "";
+        }
+        String suffix = FileNameUtils.getExtension(Path.of(filename));
+        if (StringUtils.isBlank(suffix)) {
+            return "";
+        }
+        if (suffix.matches("(?i)obj|gltf|glb|ply|stl|fbx")) {
+            return "model/" + suffix.toLowerCase();
+        }
+        return filenameMap.getContentTypeFor(filename);
+    }
+
     public static Collection<FileType> containedFiletypes(PhysicalElement page)
             throws IndexUnreachableException, DAOException, RecordNotFoundException {
 
         Set<FileType> types = new HashSet<>();
         Map<String, String> filenames = page.getFileNames();
-
-        FileNameMap fileNameMap = URLConnection.getFileNameMap();
+        filenames.put(page.getMimeType(), page.getFileName());
         for (Entry<String, String> entry : filenames.entrySet()) {
             String fileType = entry.getKey();
             String filename = entry.getValue();
-            String mimeType = fileNameMap.getContentTypeFor(filename);
+            String mimeType = getContentTypeFor(filename);
             if ("application/pdf".equals(mimeType)) {
                 types.add(FileType.PDF);
             } else if ("application/epub+zip".equals(mimeType)) {
