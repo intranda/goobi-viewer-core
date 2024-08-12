@@ -23,7 +23,6 @@ package io.goobi.viewer.model.viewer.record.views;
 
 import java.net.FileNameMap;
 import java.net.URLConnection;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,7 +33,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.compress.utils.FileNameUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -125,7 +124,7 @@ public enum FileType {
         if (StringUtils.isBlank(filename)) {
             return "";
         }
-        String suffix = FileNameUtils.getExtension(Path.of(filename));
+        String suffix = FilenameUtils.getExtension(filename);
         if (StringUtils.isBlank(suffix)) {
             return "";
         }
