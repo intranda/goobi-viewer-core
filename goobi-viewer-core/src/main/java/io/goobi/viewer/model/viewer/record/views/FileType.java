@@ -139,37 +139,39 @@ public enum FileType {
             throws IndexUnreachableException, DAOException, RecordNotFoundException {
 
         Set<FileType> types = new HashSet<>();
-        Map<String, String> filenames = page.getFileNames();
+        Map<String, String> filenames = new HashMap<String, String>(page.getFileNames());
         filenames.put(page.getMimeType(), page.getFileName());
         for (Entry<String, String> entry : filenames.entrySet()) {
             String fileType = entry.getKey();
             String filename = entry.getValue();
-            String mimeType = getContentTypeFor(filename);
-            if ("application/pdf".equals(mimeType)) {
-                types.add(FileType.PDF);
-            } else if ("application/epub+zip".equals(mimeType)) {
-                types.add(FileType.EPUB);
-            } else if ("text/xml".equals(mimeType) || "application/xml".equals(mimeType)) {
-                if ("alto".equalsIgnoreCase(fileType)) {
-                    types.add(FileType.ALTO);
+            if (StringUtils.isNoneEmpty(fileType, filename)) {
+                String mimeType = getContentTypeFor(filename);
+                if ("application/pdf".equals(mimeType)) {
+                    types.add(FileType.PDF);
+                } else if ("application/epub+zip".equals(mimeType)) {
+                    types.add(FileType.EPUB);
+                } else if ("text/xml".equals(mimeType) || "application/xml".equals(mimeType)) {
+                    if ("alto".equalsIgnoreCase(fileType)) {
+                        types.add(FileType.ALTO);
+                    } else {
+                        types.add(FileType.TEI);
+                    }
+                } else if ("text/plain".equals(mimeType)) {
+                    types.add(FileType.TEXT);
+                } else if (fileType.startsWith("object") || fileType.startsWith("model")) {
+                    types.add(FileType.MODEL);
+                } else if ("jpeg".equalsIgnoreCase(fileType)) {
+                    //pages with external urls also get a "jpeg" filename, even though there is not actual jpeg file
+                    //to ignore these, only add jpeg file if FILENAME_JPEG == FILENAME in the PAGE document in solr
+                    boolean actualFile = filename.equals(page.getFileName());
+                    if (actualFile) {
+                        types.add(IMAGE);
+                    }
                 } else {
-                    types.add(FileType.TEI);
-                }
-            } else if ("text/plain".equals(mimeType)) {
-                types.add(FileType.TEXT);
-            } else if (fileType.startsWith("object") || fileType.startsWith("model")) {
-                types.add(FileType.MODEL);
-            } else if ("jpeg".equalsIgnoreCase(fileType)) {
-                //pages with external urls also get a "jpeg" filename, even though there is not actual jpeg file
-                //to ignore these, only add jpeg file if FILENAME_JPEG == FILENAME in the PAGE document in solr
-                boolean actualFile = filename.equals(page.getFileName());
-                if (actualFile) {
-                    types.add(IMAGE);
-                }
-            } else {
-                FileType type = FileType.fromMimeType(mimeType);
-                if (type != null) {
-                    types.add(type);
+                    FileType type = FileType.fromMimeType(mimeType);
+                    if (type != null) {
+                        types.add(type);
+                    }
                 }
             }
         }
