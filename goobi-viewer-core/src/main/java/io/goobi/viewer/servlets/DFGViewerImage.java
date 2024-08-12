@@ -23,6 +23,7 @@ package io.goobi.viewer.servlets;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -33,8 +34,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotImplementedException;
@@ -45,6 +46,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
@@ -87,13 +89,13 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
         String widthString = path.getName(1).toString();
         String rotation = path.getName(2).toString();
 
-
+        String idUrl = URLEncoder.encode(id, StringTools.DEFAULT_ENCODING);
 
         String baseUri = DataManager.getInstance()
                 .getRestApiManager()
                 .getContentApiManager()
-                .map(urls -> urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(pi, id).build())
-                .orElse(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/" + pi + "/" + id);
+                .map(urls -> urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(pi, idUrl).build())
+                .orElse(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/" + pi + "/" + idUrl);
 
         try {
             Scale scale = parseScale(widthString);
@@ -119,7 +121,9 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
     }
 
     /**
-     * <p>parseScale.</p>
+     * <p>
+     * parseScale.
+     * </p>
      *
      * @param widthString a {@link java.lang.String} object
      * @return a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object
@@ -127,7 +131,7 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotImplementedException if any.
      */
     public Scale parseScale(String widthString) throws IllegalRequestException, ServiceNotImplementedException {
-        try {            
+        try {
             Scale scale;
             if (StringUtils.isNumeric(widthString)) {
                 scale = new Scale.ScaleToWidth(Integer.parseInt(widthString));
