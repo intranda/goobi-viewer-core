@@ -14,7 +14,8 @@
 	</composite:interface>
 
 	<composite:implementation>
-			<div jsf:id="widgetDownloads" class="widget widget-downloads" rendered="#{displayConditions.getTag('widgetDownloads').getChildCount('widget-element') > 0}">
+			<div id="widgetDownloads" class="widget widget-downloads" rendered="#{displayConditions.getTag('widgetDownloads').getChildCount('widget-element') > 0}"
+			data-numChildren="#{displayConditions.getTag('widgetDownloadsBody').getChildCount('widget-element')}">
 				<div class="widget-downloads__topbar widget__topbar">
 					<!-- WIDGET TITLE -->
 					<h2 tabindex="0" role="button"
@@ -25,7 +26,7 @@
 				</div>
 
 				<!-- WIDGET BODY -->
-				<div jsf:id="widgetDownloadsBody"
+				<div id="widgetDownloadsBody"
 					class="widget__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
 					<!-- INTRODUCTION TEXT -->
 					<ui:fragment visibility-class="widget-element"

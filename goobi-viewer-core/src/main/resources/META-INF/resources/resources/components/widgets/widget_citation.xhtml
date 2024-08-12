@@ -17,7 +17,7 @@
     <composite:implementation>
         
         <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsage}">
-            <div id="widgetCitation" class="widget widget-citation">
+            <div id="widgetCitation" class="widget widget-citation" data-numChildren="#{displayConditions.getTag('widgetCitationsBody').getChildCount('widget-element')}">
 
 	            <div class="widget-citation__topbar widget__topbar">
 	                <!-- WIDGET TITLE -->
@@ -31,7 +31,7 @@
 				</div>
 
                 <!-- WIDGET BODY -->
-				<div jsf:id="widgetCitationsBody" class="widget__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
+				<div id="widgetCitationsBody" class="widget__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
                     <!-- INTRODUCTION TEXT -->
                     <ui:fragment rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_CITATION']) > 0}">
                         <p id="introductionText" class="widget-citation__license-text">
