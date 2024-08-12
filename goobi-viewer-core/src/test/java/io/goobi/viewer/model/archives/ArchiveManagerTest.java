@@ -49,17 +49,17 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     void before() {
         try {
             SolrEADParser tempParser = new SolrEADParser();
+            tempParser.updateAssociatedRecordMap();
             List<ArchiveResource> tempDatabases = tempParser.getPossibleDatabases();
             if (!tempDatabases.isEmpty()) {
                 ArchiveEntry root =
                         tempParser.loadDatabase(tempDatabases.get(0), DataManager.getInstance().getConfiguration().getArchivesLazyLoadingThreshold());
 
                 possibleDatabases = new ArrayList<>();
-                possibleDatabases.add(new ArchiveResource("database 1", "resource 1", "r1",
+                possibleDatabases.add(new ArchiveResource("resource 1", "r1",
                         ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
                 possibleDatabases
-                        .add(new ArchiveResource("database 1", "resource 2", "r2", ZonedDateTime.now().format(ArchiveResource.DATE_TIME_FORMATTER),
-                                "10"));
+                        .add(new ArchiveResource("resource 2", "r2", ZonedDateTime.now().format(ArchiveResource.DATE_TIME_FORMATTER), "10"));
 
                 eadParser = new SolrEADParser() {
 
@@ -89,17 +89,17 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     void testGetDatabase() throws Exception {
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
-            ArchiveTree tree = archiveManager.getArchiveTree("database 1", "r1");
+            ArchiveTree tree = archiveManager.getArchiveTree("r1");
             assertNotNull(tree);
         }
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
-            ArchiveTree tree = archiveManager.getArchiveTree("database 1", "r2");
+            ArchiveTree tree = archiveManager.getArchiveTree("r2");
             assertNotNull(tree);
         }
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
-            ArchiveTree tree = archiveManager.getArchiveTree("database 1", "r3");
+            ArchiveTree tree = archiveManager.getArchiveTree("r3");
             assertNull(tree);
         }
     }
@@ -108,8 +108,8 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     void testUpdateDatabase() throws Exception {
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
-            archiveManager.getArchiveTree("database 1", "r1");
-            archiveManager.getArchiveTree("database 1", "r1");
+            archiveManager.getArchiveTree("r1");
+            archiveManager.getArchiveTree("r1");
             Mockito.verify(archiveManager, Mockito.times(1)).loadDatabase(Mockito.any(), Mockito.any());
         }
         {
@@ -124,21 +124,21 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     void testAddNewArchive() {
         ArchiveManager archiveManager = new ArchiveManager(eadParser);
 
-        ArchiveResource newArchive = new ArchiveResource("database 1", "resource 3", "r3",
+        ArchiveResource newArchive = new ArchiveResource("resource 3", "r3",
                 ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10");
         possibleDatabases.add(newArchive);
-        assertNull(archiveManager.getArchive("database 1", "r3"));
+        assertNull(archiveManager.getArchive("r3"));
         archiveManager.updateArchiveList();
-        assertNotNull(archiveManager.getArchive("database 1", "r3"));
+        assertNotNull(archiveManager.getArchive("r3"));
     }
 
     @Test
     void testRemoveArchive() {
         ArchiveManager archiveManager = new ArchiveManager(eadParser);
         possibleDatabases.remove(1);
-        assertNotNull(archiveManager.getArchive("database 1", "r2"));
+        assertNotNull(archiveManager.getArchive("r2"));
         archiveManager.updateArchiveList();
-        assertNull(archiveManager.getArchive("database 1", "r2"));
+        assertNull(archiveManager.getArchive("r2"));
     }
 
     /**

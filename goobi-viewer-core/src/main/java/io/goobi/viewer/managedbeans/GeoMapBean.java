@@ -186,9 +186,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
     @Deprecated(forRemoval = true)
     private void updateGeoMapUpdateTask() {
         Object o = BeanUtils.getServletContext().getAttribute(QuartzListener.QUARTZ_LISTENER_CONTEXT_ATTRIBUTE);
-        if (o instanceof QuartzListener) {
+        if (o instanceof QuartzListener quartzListener) {
             try {
-                ((QuartzListener) o).restartTimedJobs();
+                quartzListener.restartTimedJobs();
                 if (this.quartzBean != null) {
                     this.quartzBean.reset();
                 }
@@ -532,8 +532,8 @@ public class GeoMapBean implements Serializable, IPolyglott {
         Integer index = Faces.getRequestParameter("index", Integer.class);
         if (this.currentMap != null && index != null && index >= 0 && index < this.currentMap.getFeatureSets().size()) {
             FeatureSet newActiveSet = this.currentMap.getFeatureSets().get(index);
-            if (newActiveSet instanceof ManualFeatureSet) {
-                setActiveFeatureSet((ManualFeatureSet) newActiveSet);
+            if (newActiveSet instanceof ManualFeatureSet manualFeatureSet) {
+                setActiveFeatureSet(manualFeatureSet);
             }
         } else {
             setActiveFeatureSet(null);

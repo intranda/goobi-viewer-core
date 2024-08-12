@@ -140,15 +140,15 @@ class ThumbnailHandlerTest extends AbstractTest {
                 .setDataRepository(null)
                 .build();
 
-        String urlMax = handler.getFullImageUrl(page, Scale.MAX);
+        String urlMax = handler.getFullImageUrl(page, Scale.MAX, "MASTER");
         Assertions.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/max/0/default.tif",
                 urlMax);
 
-        String urlBox = handler.getFullImageUrl(page, new Scale.ScaleToBox(1500, 1500));
+        String urlBox = handler.getFullImageUrl(page, new Scale.ScaleToBox(1500, 1500), "MASTER");
         Assertions.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/!1500,1500/0/default.tif",
                 urlBox);
 
-        String urlFraction = handler.getFullImageUrl(page, new Scale.ScaleToFraction(0.5));
+        String urlFraction = handler.getFullImageUrl(page, new Scale.ScaleToFraction(0.5), "MASTER");
         Assertions.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/pct:50/0/default.tif",
                 urlFraction);
     }
@@ -238,7 +238,8 @@ class ThumbnailHandlerTest extends AbstractTest {
         StructElement doc = new StructElement(1, solrDoc);
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
-        Assertions.assertEquals("/api/v1/images/external/http:U002FU002FexternalU002FiiifU002FimageU002F00000001.tif/full/!200,300/0/default.jpg", url);
+        Assertions.assertEquals("/api/v1/images/external/http:U002FU002FexternalU002FiiifU002FimageU002F00000001.tif/full/!200,300/0/default.jpg",
+                url);
     }
 
     @Test
@@ -361,7 +362,7 @@ class ThumbnailHandlerTest extends AbstractTest {
     void getSize_shouldReturnMaxIfBothZero() throws Exception {
         Assertions.assertEquals("max", ThumbnailHandler.getSize(0, 0));
     }
-    
+
     @Test
     void getSize_shouldReturnMaxIfBothNull() throws Exception {
         Assertions.assertEquals("max", ThumbnailHandler.getSize(null, null));

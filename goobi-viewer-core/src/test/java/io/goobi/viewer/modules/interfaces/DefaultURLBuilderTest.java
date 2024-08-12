@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
-import io.goobi.viewer.model.archives.SolrEADParser;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.viewer.PageType;
 
@@ -38,7 +37,7 @@ class DefaultURLBuilderTest extends AbstractDatabaseEnabledTest {
      * @verifies only add page if not topStruct or page greater than one
      */
     @Test
-    void generateURL_shouldOnlyAddPageIfNotTopStructOrPageGreaterThanOne() throws Exception {
+    void generateURL_shouldOnlyAddPageIfNotTopStructOrPageGreaterThanOne() {
         BrowseElement be = new BrowseElement("PPN123", 1, "Title", null, Locale.ENGLISH, null, null);
         be.setWork(true);
         IURLBuilder builder = new DefaultURLBuilder();
@@ -55,7 +54,7 @@ class DefaultURLBuilderTest extends AbstractDatabaseEnabledTest {
      * @verifies only add logId if not topStruct
      */
     @Test
-    void generateURL_shouldOnlyAddLogIdIfNotTopStruct() throws Exception {
+    void generateURL_shouldOnlyAddLogIdIfNotTopStruct() {
         BrowseElement be = new BrowseElement("PPN123", 1, "Title", null, Locale.ENGLISH, null, null);
         be.setWork(true);
         be.setLogId("LOG_0000");
@@ -73,10 +72,9 @@ class DefaultURLBuilderTest extends AbstractDatabaseEnabledTest {
      * @verifies return archive view url if page type archive
      */
     @Test
-    void buildPageUrl_shouldReturnArchiveViewUrlIfPageTypeArchive() throws Exception {
+    void buildPageUrl_shouldReturnArchiveViewUrlIfPageTypeArchive() {
         IURLBuilder builder = new DefaultURLBuilder();
-        Assertions.assertEquals("archives/" + SolrEADParser.DATABASE_NAME + "/PPN123/",
-                builder.buildPageUrl("PPN123", 1, null, PageType.archive, true));
+        Assertions.assertEquals("archives/PPN123/", builder.buildPageUrl("PPN123", 1, null, PageType.archive, true));
     }
 
     /**
@@ -84,7 +82,7 @@ class DefaultURLBuilderTest extends AbstractDatabaseEnabledTest {
      * @verifies only add page if not topStruct or page greater than one
      */
     @Test
-    void buildPageUrl_shouldOnlyAddPageIfNotTopStructOrPageGreaterThanOne() throws Exception {
+    void buildPageUrl_shouldOnlyAddPageIfNotTopStructOrPageGreaterThanOne() {
         IURLBuilder builder = new DefaultURLBuilder();
         Assertions.assertEquals("object/PPN123/", builder.buildPageUrl("PPN123", 1, null, PageType.viewObject, true));
         Assertions.assertEquals("object/PPN123/2/", builder.buildPageUrl("PPN123", 2, null, PageType.viewObject, true));
@@ -96,7 +94,7 @@ class DefaultURLBuilderTest extends AbstractDatabaseEnabledTest {
      * @verifies only add logId if not topStruct
      */
     @Test
-    void buildPageUrl_shouldOnlyAddLogIdIfNotTopStruct() throws Exception {
+    void buildPageUrl_shouldOnlyAddLogIdIfNotTopStruct() {
         IURLBuilder builder = new DefaultURLBuilder();
         Assertions.assertEquals("object/PPN123/", builder.buildPageUrl("PPN123", 1, "LOG_0000", PageType.viewObject, true));
         Assertions.assertEquals("object/PPN123/2/", builder.buildPageUrl("PPN123", 2, "LOG_0000", PageType.viewObject, true));

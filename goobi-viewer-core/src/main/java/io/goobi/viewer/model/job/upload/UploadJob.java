@@ -255,10 +255,14 @@ public class UploadJob implements Serializable {
         for (Part file : getFiles()) {
             String fileName = Servlets.getSubmittedFileName(file);
             Path tempFile = Paths.get(tempFolder.toAbsolutePath().toString(), fileName);
-            long bytes = Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
-            if (bytes > 0) {
-                logger.trace("Temp file: {}", tempFile.toAbsolutePath());
-                uploadFile(tempFile.toFile());
+            try {
+                long bytes = Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
+                if (bytes > 0) {
+                    logger.trace("Temp file: {}", tempFile.toAbsolutePath());
+                    uploadFile(tempFile.toFile());
+                }
+            } finally {
+                Files.deleteIfExists(tempFile);
             }
         }
     }

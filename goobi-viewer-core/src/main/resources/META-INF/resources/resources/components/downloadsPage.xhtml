@@ -228,7 +228,7 @@
 												pt:data-triggerjs="downloadImageButtonTrigger"
 												title="#{msg.downloadButton}" target="_blank"
 												rel="nofollow noopener" aria-label="#{msg.downloadButton}"
-												value="#{activeDocumentBean.viewManager.getPageDownloadUrl(activeDocumentBean.selectedDownloadOption, activeDocumentBean.viewManager.currentPage)}" pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}">
+												value="#{activeDocumentBean.viewManager.getPageDownloadUrl(activeDocumentBean.selectedDownloadOption, activeDocumentBean.viewManager.currentPage)}" pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}.#{activeDocumentBean.selectedDownloadOptionOrDefault.getExtension(activeDocumentBean.viewManager.currentPage.fileName)}">
 				                                             #{msg.downloadButton}
 				                            </h:outputLink>
 				                            <div class="small-button-loader__icon -top-right" data-target="buttonLoader"></div>

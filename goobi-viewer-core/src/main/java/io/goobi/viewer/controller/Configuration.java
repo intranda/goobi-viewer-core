@@ -799,7 +799,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     public Metadata getGeoMapFeatureConfiguration(String option, String template) {
-        Metadata defaultMd = new Metadata("LABEL", "{LABEL}", List.of(new MetadataParameter(MetadataParameterType.FIELD, "LABEL")));
+        Metadata defaultMd =
+                new Metadata(SolrConstants.LABEL, "{LABEL}",
+                        List.of(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey(SolrConstants.LABEL)));
         return getGeomapFeatureConfigurations(option).entrySet()
                 .stream()
                 .filter(entry -> entry.getKey().equals(template))

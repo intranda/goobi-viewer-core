@@ -128,20 +128,6 @@ public class MetadataParameter implements Serializable {
     private boolean removeHighlighting = false;
     private List<MetadataReplaceRule> replaceRules = Collections.emptyList();
 
-    public MetadataParameter() {
-
-    }
-
-    public MetadataParameter(MetadataParameterType type, String key) {
-        this.type = type;
-        this.key = key;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {

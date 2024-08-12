@@ -40,7 +40,6 @@ public class ArchiveResource implements Serializable {
     private static final String DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
-    private final String databaseName;
     /** Displayed name of the resource. */
     private final String resourceName;
     /** Unique identifier of the resource. */
@@ -52,14 +51,12 @@ public class ArchiveResource implements Serializable {
 
     /**
      * 
-     * @param databaseName
      * @param resourceName
      * @param resourceId
      * @param modifiedDate
      * @param size
      */
-    public ArchiveResource(String databaseName, String resourceName, String resourceId, String modifiedDate, String size) {
-        this.databaseName = databaseName;
+    public ArchiveResource(String resourceName, String resourceId, String modifiedDate, String size) {
         this.resourceName = resourceName;
         this.resourceId = resourceId;
         if (StringUtils.isNotEmpty(modifiedDate)) {
@@ -68,13 +65,6 @@ public class ArchiveResource implements Serializable {
             this.modifiedDate = LocalDateTime.of(1970, 1, 1, 0, 0);
         }
         this.size = Long.parseLong(size);
-    }
-
-    /**
-     * @return the databaseName
-     */
-    public String getDatabaseName() {
-        return databaseName;
     }
 
     /**
@@ -115,20 +105,18 @@ public class ArchiveResource implements Serializable {
     /**
      * @return Combination of databaseName and resourceName
      */
+    @Deprecated
     public String getCombinedName() {
-        return databaseName + " - " + resourceName.replaceAll("(?i)\\.xml", "");
+        return resourceName.replaceAll("(?i)\\.xml", "");
     }
 
+    @Deprecated
     public String getCombinedId() {
-        return getDatabaseId() + " - " + getResourceId();
-    }
-
-    public String getDatabaseId() {
-        return getDatabaseName();
+        return getResourceId();
     }
 
     @Override
     public String toString() {
-        return getCombinedName();
+        return resourceName.replaceAll("(?i)\\.xml", "");
     }
 }

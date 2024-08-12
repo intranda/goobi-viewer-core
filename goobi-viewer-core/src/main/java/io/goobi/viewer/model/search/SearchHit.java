@@ -69,7 +69,6 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.archives.SolrEADParser;
 import io.goobi.viewer.model.cms.media.CMSMediaHolder;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
@@ -482,7 +481,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             // Check and add link to related record, if exists
                             String entryId = SolrTools.getSingleFieldStringValue(childDoc, SolrConstants.EAD_NODE_ID);
                             if (StringUtils.isNotEmpty(entryId)) {
-                                childHit.url = "archives/" + SolrEADParser.DATABASE_NAME + "/" + pi + "/?selected=" + entryId + "#selected";
+                                childHit.url = "archives/" + pi + "/?selected=" + entryId + "#selected";
                                 SolrDocument relatedRecordDoc =
                                         DataManager.getInstance()
                                                 .getSearchIndex()

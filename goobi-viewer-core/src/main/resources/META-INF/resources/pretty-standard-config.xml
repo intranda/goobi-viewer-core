@@ -102,8 +102,8 @@
         <view-id value="/archivesContent.xhtml" />
         <action onPostback="false">#{archiveBean.reset()}</action>
     </url-mapping>
-    <url-mapping id="archives2">
-        <pattern value="/archives/#{archiveBean.currentDatabase}/#{archiveBean.currentResource}/" />
+    <url-mapping id="archives1">
+        <pattern value="/archives/#{archiveBean.currentResource}/" />
         <view-id value="/archivesContent.xhtml" />
         <query-param onPostback="false" name="selected">#{selectedEntryId}</query-param>
         <action onPostback="false">#{archiveBean.initializeArchiveTree(selectedEntryId)}</action>

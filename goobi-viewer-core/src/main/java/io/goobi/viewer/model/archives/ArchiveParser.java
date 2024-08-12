@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jdom2.JDOMException;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -52,7 +51,6 @@ public abstract class ArchiveParser implements Serializable {
 
     protected transient Map<String, Entry<String, Boolean>> associatedRecordMap;
 
-    
     protected ArchiveParser() {
     }
 
@@ -103,11 +101,10 @@ public abstract class ArchiveParser implements Serializable {
      * @throws IllegalStateException
      * @throws IndexUnreachableException
      * @throws IOException
-     * @throws JDOMException
      * @throws PresentationException
      */
     public abstract ArchiveEntry loadDatabase(ArchiveResource database, int lazyLoadingThreshold)
-            throws PresentationException, IndexUnreachableException, IllegalStateException, IOException, HTTPException, JDOMException;
+            throws PresentationException, IndexUnreachableException, IllegalStateException, IOException, HTTPException;
 
     public static String getIdForName(String name) {
         return name.replaceAll("(?i)\\.xml", "");

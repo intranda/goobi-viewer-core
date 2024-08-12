@@ -63,7 +63,6 @@ public class SolrEADParser extends ArchiveParser {
     private static final String FIELD_ARCHIVE_ENTRY_LEVEL = "MD_ARCHIVE_ENTRY_LEVEL";
     private static final String FIELD_ARCHIVE_ENTRY_OTHERLEVEL = "MD_ARCHIVE_ENTRY_OTHERLEVEL";
     private static final String FIELD_ARCHIVE_ORDER = "SORTNUM_ARCHIVE_ORDER";
-    public static final String DATABASE_NAME = "EAD";
 
     private static final List<String> SOLR_FIELDS_DATABASES =
             Arrays.asList(SolrConstants.ACCESSCONDITION, SolrConstants.DATEINDEXED, SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE);
@@ -75,15 +74,6 @@ public class SolrEADParser extends ArchiveParser {
     private Map<String, String> parentIddocMap = new HashMap<>();
     /** Map of IDDOCs and loaded ArchiveEntry nodes */
     private Map<String, ArchiveEntry> loadedNodeMap = new HashMap<>();
-
-    /**
-     *
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     */
-    public SolrEADParser() throws PresentationException, IndexUnreachableException {
-        updateAssociatedRecordMap();
-    }
 
     /**
      * Get the database names.
@@ -100,7 +90,6 @@ public class SolrEADParser extends ArchiveParser {
                 .search("+" + SolrConstants.PI + ":* +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name(), SOLR_FIELDS_DATABASES);
 
         List<ArchiveResource> ret = new ArrayList<>();
-        String dbName = DATABASE_NAME;
         for (SolrDocument doc : docs) {
             String resourceIdentifier = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
             String resourceName = SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE);
@@ -116,7 +105,7 @@ public class SolrEADParser extends ArchiveParser {
             }
 
             String size = "0";
-            ArchiveResource eadResource = new ArchiveResource(dbName, resourceName, resourceIdentifier, lastUpdated, size);
+            ArchiveResource eadResource = new ArchiveResource(resourceName, resourceIdentifier, lastUpdated, size);
             ret.add(eadResource);
 
             for (String accessCondition : SolrTools.getMetadataValues(doc, SolrConstants.ACCESSCONDITION)) {

@@ -31,7 +31,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -63,8 +62,8 @@ public class ActivityCollectionBuilder {
 
     private static final String[] SOLR_FIELDS = { SolrConstants.PI, SolrConstants.DATEUPDATED, SolrConstants.DATECREATED, SolrConstants.DATEDELETED };
     private static final String[] FACET_FIELDS = { SolrConstants.DATEUPDATED, SolrConstants.DATECREATED };
-    
-    private static final String QUERY_ISWORK = "ISWORK:true";
+
+    private static final String QUERY_ISWORK = "+" + SolrConstants.ISWORK + ":true";
 
     private final int activitiesPerPage = DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage();
     private Integer numActivities = null;
@@ -214,7 +213,6 @@ public class ActivityCollectionBuilder {
     private List<Activity> buildItems(SolrDocumentList docs, Long startDate, Long endDate) {
         List<Activity> activities = new ArrayList<>();
         for (SolrDocument doc : docs) {
-
             List<Long> updates = doc.getFieldValues(SolrConstants.DATEUPDATED)
                     .stream()
                     .map(o -> (Long) o)
@@ -226,7 +224,7 @@ public class ActivityCollectionBuilder {
             if (doc.containsKey(SolrConstants.DATEDELETED)) {
                 deleted = (Long) doc.getFieldValue(SolrConstants.DATEDELETED);
             }
-            if (created >= startDate && created <= endDate) {
+            if (created != null && created >= startDate && created <= endDate) {
                 Activity createActivity = new Activity();
                 createActivity.setEndTime(DateTools.getLocalDateTimeFromMillis(created, false));
                 createActivity.setType(ActivityType.CREATE);
@@ -256,9 +254,9 @@ public class ActivityCollectionBuilder {
 
     private static int getNumberOfActivities(LocalDateTime startDate) throws PresentationException, IndexUnreachableException {
         String query = QUERY_ISWORK;
-        query += " " + SearchHelper.getAllSuffixes();
+        query += SearchHelper.getAllSuffixes();
         if (startDate != null) {
-            query += " AND (DATEUPDATED:[" + startDate + " TO*] OR DATECREATED:[" + startDate + " TO *])";
+            query += " +(DATEUPDATED:[" + startDate + " TO*] DATECREATED:[" + startDate + " TO *])";
         }
         QueryResponse qr = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, null, Arrays.asList(FACET_FIELDS), 1, false);
         if (qr != null) {
@@ -281,14 +279,14 @@ public class ActivityCollectionBuilder {
      * @throws IndexUnreachableException
      */
     private static List<Long> getActivities(LocalDateTime startDate, int first, int last) throws PresentationException, IndexUnreachableException {
-        return getActivities(startDate).stream().skip(first).limit((long) last - first + 1).collect(Collectors.toList());
+        return getActivities(startDate).stream().skip(first).limit((long) last - first + 1).toList();
     }
 
     private static List<Long> getActivities(LocalDateTime startDate) throws PresentationException, IndexUnreachableException {
         String query = QUERY_ISWORK;
-        query += " " + SearchHelper.getAllSuffixes();
+        query += SearchHelper.getAllSuffixes();
         if (startDate != null) {
-            query += " AND (DATEUPDATED:[" + startDate + " TO *] OR DATECREATED:[" + startDate + " TO *])";
+            query += " +(DATEUPDATED:[" + startDate + " TO *] DATECREATED:[" + startDate + " TO *])";
         }
         QueryResponse qr = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, null, Arrays.asList(FACET_FIELDS), 1, false);
         if (qr != null) {
@@ -299,19 +297,28 @@ public class ActivityCollectionBuilder {
                     .distinct()
                     .map(Long::parseLong)
                     .sorted()
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         return new ArrayList<>();
     }
 
-    private static SolrDocumentList getDocs(Long startDate, Long endDate) throws PresentationException, IndexUnreachableException {
+    /**
+     * 
+     * @param startDate
+     * @param endDate
+     * @return {@link SolrDocumentList}
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should only return topstructs
+     */
+    static SolrDocumentList getDocs(Long startDate, Long endDate) throws PresentationException, IndexUnreachableException {
         String query = QUERY_ISWORK;
-        query += " " + SearchHelper.getAllSuffixes();
+        query += SearchHelper.getAllSuffixes();
         if (startDate != null && endDate != null) {
-            query = "(" + query + ") AND (DATEUPDATED:[" + startDate + " TO " + endDate + "] OR DATECREATED:[" + startDate + " TO " + endDate + "])";
+            query = "+(" + query + ") +(DATEUPDATED:[" + startDate + " TO " + endDate + "] DATECREATED:[" + startDate + " TO " + endDate + "])";
         }
+
         return DataManager.getInstance().getSearchIndex().search(query, Integer.MAX_VALUE, null, Arrays.asList(SOLR_FIELDS));
     }
-
 }

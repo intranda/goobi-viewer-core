@@ -49,7 +49,6 @@ import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.archives.SolrEADParser;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataWrapper;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -212,7 +211,7 @@ public class SearchHitFactory {
                                             + ":\"" + entryId + '"',
                                     Arrays.asList(SolrConstants.LABEL, SolrConstants.PI_TOPSTRUCT));
             if (relatedRecordDoc != null) {
-                hit.setAltUrl("archives/" + SolrEADParser.DATABASE_NAME + "/"
+                hit.setAltUrl("archives/"
                         + SolrTools.getSingleFieldStringValue(relatedRecordDoc, SolrConstants.PI_TOPSTRUCT) + "/?selected=" + entryId + "#selected");
                 hit.setAltLabel(SolrTools.getSingleFieldStringValue(relatedRecordDoc, SolrConstants.LABEL));
                 if (StringUtils.isEmpty(hit.getAltLabel())) {

@@ -96,14 +96,14 @@ public class UserGroupBean implements Serializable {
             if (ub.getUser().getUserGroupOwnerships().contains(currentOwnUserGroup)) {
                 DataManager.getInstance().getDao().updateUserGroup(currentOwnUserGroup);
                 Messages.info("updatedSuccessfully");
-                logger.debug("Bookshelf '" + currentOwnUserGroup.getName() + "' updated.");
+                logger.debug("Bookshelf '{}' updated.", currentOwnUserGroup.getName());
                 return;
             }
             currentOwnUserGroup.setOwner(ub.getUser());
             if (DataManager.getInstance().getDao().addUserGroup(currentOwnUserGroup)) {
                 resetCurrentUserGroupAction();
                 Messages.info("savedSuccessfully");
-                logger.debug("Bookshelf '" + currentOwnUserGroup.getName() + "' added.");
+                logger.debug("Bookshelf '{}' added.", currentOwnUserGroup.getName());
                 return;
             }
         }
@@ -122,7 +122,7 @@ public class UserGroupBean implements Serializable {
             logger.debug(currentOwnUserGroup.getName());
             if (DataManager.getInstance().getDao().deleteUserGroup(currentOwnUserGroup)) {
                 Messages.info("deletedSuccessfully");
-                logger.debug("UserGroup '" + currentOwnUserGroup.getName() + "' deleted.");
+                logger.debug("UserGroup '{}' deleted.", currentOwnUserGroup.getName());
             }
         }
         resetCurrentUserGroupAction();
@@ -158,11 +158,11 @@ public class UserGroupBean implements Serializable {
     public void saveMembershipAction() throws DAOException {
         currentRole = new Role();
         UserBean ub = BeanUtils.getUserBean();
-        if (ub != null && ub.getUser() != null && currentOwnUserGroup != null && currentMember != null && currentRole != null) {
+        if (ub != null && ub.getUser() != null && currentOwnUserGroup != null && currentMember != null) {
             try {
                 if (currentOwnUserGroup.addMember(currentMember, currentRole)) {
                     Messages.info("userGroup_memberAddSuccess");
-                    logger.debug("'" + currentMember.getEmail() + "' added to user group '" + currentOwnUserGroup.getName() + "'.");
+                    logger.debug("'{}' added to user group '{}'.", currentMember.getEmail(), currentOwnUserGroup.getName());
                 } else {
                     Messages.error("userGroup_memberAddFailure");
                 }
@@ -183,7 +183,7 @@ public class UserGroupBean implements Serializable {
         if (ub != null && ub.getUser() != null && currentMember != null) {
             if (currentOwnUserGroup.removeMember(currentMember)) {
                 Messages.info("userGroup_memberRemoveSuccess");
-                logger.debug("'" + currentMember.getEmail() + "' removed fromuser group '" + currentOwnUserGroup.getName() + "'.");
+                logger.debug("'{}' removed fromuser group '{}'.", currentMember.getEmail(), currentOwnUserGroup.getName());
             } else {
                 Messages.error("userGroup_memberRemoveFailure");
             }
