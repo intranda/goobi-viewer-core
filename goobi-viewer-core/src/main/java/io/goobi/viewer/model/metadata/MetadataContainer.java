@@ -33,12 +33,14 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.GeoCoordinateConverter;
+import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -281,6 +283,18 @@ public class MetadataContainer {
                 .filter(e -> childDocFieldNameFilter.test(e.getKey()))
                 .toList();
         allChildDocValues.forEach(e -> entity.addAll(e.getKey(), e.getValue(), true));
+        return entity;
+    }
+
+    public static MetadataContainer createMetadataEntity(StructElement doc) {
+        Map<String, List<IMetadataValue>> translatedMetadata = doc.getMetadataFields()
+                .keySet()
+                .stream()
+                .collect(
+                        Collectors.toMap(field -> field.replaceAll("_UNTOKENIZED$", ""), field -> List.of(doc.getMultiLanguageMetadataValue(field)),
+                                ListUtils::union));
+        MetadataContainer entity =
+                new MetadataContainer(doc.getMetadataValue(SolrConstants.IDDOC), doc.getMultiLanguageDisplayLabel(), translatedMetadata);
         return entity;
     }
 

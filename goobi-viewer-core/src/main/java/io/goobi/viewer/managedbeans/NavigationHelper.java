@@ -136,7 +136,7 @@ public class NavigationHelper implements Serializable {
     private Locale locale = Locale.ENGLISH;
 
     /** Map for setting any navigation status variables. Replaces currentView, etc. */
-    protected Map<String, String> statusMap = new HashMap<>();
+    Map<String, String> statusMap = new HashMap<>();
 
     private final String theme;
 
@@ -1045,7 +1045,6 @@ public class NavigationHelper implements Serializable {
                 // in discriminatorField
                 subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getTopStructElement().getMetadataValue(discriminatorField);
             } else if (isCmsPage()) {
-                CmsBean cmsBean = BeanUtils.getCmsBean();
                 if (cmsBean != null && cmsBean.getCurrentPage() != null) {
                     subThemeDiscriminatorValue = cmsBean.getCurrentPage().getSubThemeDiscriminatorValue();
                 }
@@ -1379,7 +1378,7 @@ public class NavigationHelper implements Serializable {
             if (cmsPage != null && cmsPage.hasSearchFunctionality()) {
                 return StringTools.removeTrailingSlashes(cmsPage.getPageUrl());
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error(e.toString(), e);
         }
 
@@ -2081,7 +2080,7 @@ public class NavigationHelper implements Serializable {
     }
 
     public List<Integer> getRange(long from, long to) {
-        return IntStream.range((int) from, (int) to + 1).boxed().collect(Collectors.toList());
+        return IntStream.range((int) from, (int) to + 1).boxed().toList();
     }
 
     public String getAsId(String text) {

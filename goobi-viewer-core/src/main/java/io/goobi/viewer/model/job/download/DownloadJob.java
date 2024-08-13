@@ -241,6 +241,7 @@ public abstract class DownloadJob implements Serializable {
                 downloadJob.getObservers().add(useEmail);
             }
             if (downloadJob.status.equals(JobStatus.WAITING)) {
+                logger.trace("keep waiting");
                 //keep waiting
             } else if (downloadJob.getFile() != null && downloadJob.getFile().toFile().exists()) {
                 //not waiting and file exists -> file has been created

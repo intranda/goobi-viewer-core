@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.metadata;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,13 +32,15 @@ import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
+import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 
-class MetadataTest extends AbstractTest {
+class MetadataTest extends AbstractSolrEnabledTest {
 
     /**
      * @see Metadata#filterMetadata(List,Locale)
@@ -49,8 +53,8 @@ class MetadataTest extends AbstractTest {
         metadataList.add(new Metadata("", "MD_TITLE_LANG_EN", "", "foo"));
         metadataList.add(new Metadata("", "MD_TITLE", "", "bar"));
         List<Metadata> filteredList = Metadata.filterMetadata(metadataList, "en", null);
-        Assertions.assertEquals(1, filteredList.size());
-        Assertions.assertEquals("MD_TITLE_LANG_EN", filteredList.get(0).getLabel());
+        assertEquals(1, filteredList.size());
+        assertEquals("MD_TITLE_LANG_EN", filteredList.get(0).getLabel());
     }
 
     /**
@@ -63,8 +67,8 @@ class MetadataTest extends AbstractTest {
         metadataList.add(new Metadata("", "MD_TITLE_LANG_DE", "", "foo"));
         metadataList.add(new Metadata("", "MD_TITLE", "", "bar"));
         List<Metadata> filteredList = Metadata.filterMetadata(metadataList, "en", null);
-        Assertions.assertEquals(1, filteredList.size());
-        Assertions.assertEquals("MD_TITLE", filteredList.get(0).getLabel());
+        assertEquals(1, filteredList.size());
+        assertEquals("MD_TITLE", filteredList.get(0).getLabel());
     }
 
     /**
@@ -79,10 +83,10 @@ class MetadataTest extends AbstractTest {
         metadataList.add(new Metadata("", SolrConstants.PI, "", "PPN123"));
         metadataList.add(new Metadata("", "MD_DESCRIPTION_LANG_EN", "", "foo"));
         List<Metadata> filteredList = Metadata.filterMetadata(metadataList, "en", null);
-        Assertions.assertEquals(3, filteredList.size());
-        Assertions.assertEquals("MD_TITLE_LANG_EN", filteredList.get(0).getLabel());
-        Assertions.assertEquals(SolrConstants.PI, filteredList.get(1).getLabel());
-        Assertions.assertEquals("MD_DESCRIPTION_LANG_EN", filteredList.get(2).getLabel());
+        assertEquals(3, filteredList.size());
+        assertEquals("MD_TITLE_LANG_EN", filteredList.get(0).getLabel());
+        assertEquals(SolrConstants.PI, filteredList.get(1).getLabel());
+        assertEquals("MD_DESCRIPTION_LANG_EN", filteredList.get(2).getLabel());
     }
 
     /**
@@ -97,8 +101,8 @@ class MetadataTest extends AbstractTest {
         metadataList.add(new Metadata("", SolrConstants.PI, "", "PPN123"));
         metadataList.add(new Metadata("", "MD_DESCRIPTION_LANG_EN", "", "foo"));
         List<Metadata> filteredList = Metadata.filterMetadata(metadataList, "en", "MD_DESCRIPTION");
-        Assertions.assertEquals(1, filteredList.size());
-        Assertions.assertEquals("MD_DESCRIPTION_LANG_EN", filteredList.get(0).getLabel());
+        assertEquals(1, filteredList.size());
+        assertEquals("MD_DESCRIPTION_LANG_EN", filteredList.get(0).getLabel());
     }
 
     /**
@@ -109,14 +113,14 @@ class MetadataTest extends AbstractTest {
     void buildHierarchicalValue_shouldBuildValueCorrectly() throws Exception {
         {
             String value = Metadata.buildHierarchicalValue("DC", "a.b", null, "http://localhost:8080/");
-            Assertions.assertEquals(
+            assertEquals(
                     "<a href=\"http://localhost:8080/browse/-/1/-/DC:a/\">a</a> > <a href=\"http://localhost:8080/browse/-/1/-/DC:a.b/\">a.b</a>",
                     value);
         }
         {
             // No root URL
             String value = Metadata.buildHierarchicalValue("DC", "a.b.c.d", null, null);
-            Assertions.assertEquals("a > a.b > a.b.c > a.b.c.d", value);
+            assertEquals("a > a.b > a.b.c > a.b.c.d", value);
         }
     }
 
@@ -127,7 +131,7 @@ class MetadataTest extends AbstractTest {
     @Test
     void buildHierarchicalValue_shouldAddConfiguredCollectionSortField() throws Exception {
         String value = Metadata.buildHierarchicalValue("DC", "collection1", null, "http://localhost:8080/");
-        Assertions.assertEquals("<a href=\"http://localhost:8080/browse/-/1/SORT_TITLE/DC:collection1/\">collection1</a>", value);
+        assertEquals("<a href=\"http://localhost:8080/browse/-/1/SORT_TITLE/DC:collection1/\">collection1</a>", value);
     }
 
     /**
@@ -137,7 +141,7 @@ class MetadataTest extends AbstractTest {
     @Test
     void isBlank_shouldReturnTrueIfAllParamValuesAreEmpty() throws Exception {
         Metadata metadata = new Metadata("", "MD_FIELD", "", "");
-        Assertions.assertEquals(1, metadata.getValues().size());
+        assertEquals(1, metadata.getValues().size());
         Assertions.assertTrue(metadata.isBlank(null));
     }
 
@@ -148,7 +152,7 @@ class MetadataTest extends AbstractTest {
     @Test
     void isBlank_shouldReturnFalseIfAtLeastOneParamValueIsNotEmpty() throws Exception {
         Metadata metadata = new Metadata("", "MD_FIELD", "", "val");
-        Assertions.assertEquals(1, metadata.getValues().size());
+        assertEquals(1, metadata.getValues().size());
         Assertions.assertFalse(metadata.isBlank(null));
     }
 
@@ -163,7 +167,7 @@ class MetadataTest extends AbstractTest {
         String[] values = new String[] { "val1", "val2" };
         metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
         metadata.setParamValue(1, 0, Arrays.asList(values), "", null, null, null, null);
-        Assertions.assertEquals(2, metadata.getValues().size());
+        assertEquals(2, metadata.getValues().size());
         metadata.getValues().get(0).setOwnerIddoc("123");
         metadata.getValues().get(1).setOwnerIddoc("456");
 
@@ -175,13 +179,13 @@ class MetadataTest extends AbstractTest {
      * @verifies return true if at least one value has same ownerIddoc
      */
     @Test
-    void isBlank_shouldReturnTrueIfAtLeastOneValueHasSameOwnerIddoc() throws Exception {
+    void isBlank_shouldReturnTrueIfAtLeastOneValueHasSameOwnerIddoc() {
         Metadata metadata = new Metadata("", "MD_FIELD", "", null);
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
         String[] values = new String[] { "val1", "val2" };
         metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
         metadata.setParamValue(1, 0, Arrays.asList(values), "", null, null, null, null);
-        Assertions.assertEquals(2, metadata.getValues().size());
+        assertEquals(2, metadata.getValues().size());
         metadata.getValues().get(0).setOwnerIddoc("123");
         metadata.getValues().get(1).setOwnerIddoc("456");
 
@@ -189,20 +193,62 @@ class MetadataTest extends AbstractTest {
     }
 
     /**
+     * @throws IndexUnreachableException
+     * @see Metadata#populateGroup(StructElement,String,List<StringPair>,Locale)
+     * @verifies populate group correctly
+     */
+    @Test
+    void populateGroup_shouldPopulateGroupCorrectly() throws IndexUnreachableException {
+        Metadata metadata = new Metadata("", "MD_CREATOR", "{1}{3}", null);
+        metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_VALUE"));
+        metadata.getParams()
+                .add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_LIFEPERIOD").setPrefix(" (").setSuffix(")"));
+
+        StructElement se = new StructElement();
+        Assertions.assertTrue(metadata.populateGroup(se, "1687786575170", null, Locale.ENGLISH));
+        assertEquals("Weheren, Bartholdt", metadata.getValues().get(0).getComboValueShort(0));
+        assertEquals(" (1569)", metadata.getValues().get(0).getComboValueShort(1));
+    }
+
+    /**
+     * @throws IndexUnreachableException
+     * @see Metadata#populateGroup(StructElement,String,List<StringPair>,Locale)
+     * @verifies apply default value if none found
+     */
+    @Test
+    void populateGroup_shouldApplyDefaultValueIfNoneFound() throws IndexUnreachableException {
+        Metadata metadata = new Metadata("", "MD_PLACEPUBLISH", "{1}{3}", null);
+        metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_VALUE"));
+        metadata.getParams()
+                .add(new MetadataParameter().setType(MetadataParameterType.FIELD)
+                        .setKey("NORM_LOCATION")
+                        .setPrefix(" (")
+                        .setSuffix(")")
+                        .setDefaultValue("???"));
+
+        StructElement se = new StructElement();
+        Assertions.assertTrue(metadata.populateGroup(se, "1687786563840", null, Locale.ENGLISH));
+        assertEquals("Stuttgart", metadata.getValues().get(0).getComboValueShort(0));
+        assertEquals(" (???)", metadata.getValues().get(0).getComboValueShort(1));
+        assertEquals("G&ouml;ttingen", metadata.getValues().get(1).getComboValueShort(0));
+        assertEquals(" (G&ouml;ttingen)", metadata.getValues().get(1).getComboValueShort(1));
+    }
+
+    /**
      * @see Metadata#setParamValue(int,int,List,String,String,Map,Locale)
      * @verifies add multivalued param values correctly
      */
     @Test
-    void setParamValue_shouldAddMultivaluedParamValuesCorrectly() throws Exception {
+    void setParamValue_shouldAddMultivaluedParamValuesCorrectly() {
         Metadata metadata = new Metadata("", "MD_FIELD", "", null);
         String[] values = new String[] { "val1", "val2" };
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setPrefix("pre_").setSuffix("_suf"));
         metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
-        Assertions.assertEquals(1, metadata.getValues().size());
-        Assertions.assertEquals(1, metadata.getValues().get(0).getParamValues().size());
-        Assertions.assertEquals(2, metadata.getValues().get(0).getParamValues().get(0).size());
-        Assertions.assertEquals("val1", metadata.getValues().get(0).getParamValues().get(0).get(0));
-        Assertions.assertEquals("val2", metadata.getValues().get(0).getParamValues().get(0).get(1));
+        assertEquals(1, metadata.getValues().size());
+        assertEquals(1, metadata.getValues().get(0).getParamValues().size());
+        assertEquals(2, metadata.getValues().get(0).getParamValues().get(0).size());
+        assertEquals("val1", metadata.getValues().get(0).getParamValues().get(0).get(0));
+        assertEquals("val2", metadata.getValues().get(0).getParamValues().get(0).get(1));
     }
 
     /**
@@ -210,13 +256,13 @@ class MetadataTest extends AbstractTest {
      * @verifies set group type correctly
      */
     @Test
-    void setParamValue_shouldSetGroupTypeCorrectly() throws Exception {
+    void setParamValue_shouldSetGroupTypeCorrectly() {
         Metadata metadata = new Metadata("", "MD_FIELD", "", null);
         String[] values = new String[] { "val1", "val2" };
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setPrefix("pre_").setSuffix("_suf"));
         metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, MetadataGroupType.CORPORATION.name(), null);
-        Assertions.assertEquals(1, metadata.getValues().size());
-        Assertions.assertEquals(MetadataGroupType.CORPORATION.name(), metadata.getValues().get(0).getGroupTypeForUrl());
+        assertEquals(1, metadata.getValues().size());
+        assertEquals(MetadataGroupType.CORPORATION.name(), metadata.getValues().get(0).getGroupTypeForUrl());
     }
 
     /**
@@ -224,17 +270,17 @@ class MetadataTest extends AbstractTest {
      * @verifies return all values if ownerIddoc null
      */
     @Test
-    void getValuesForOwner_shouldReturnAllValuesIfOwnerIddocNull() throws Exception {
+    void getValuesForOwner_shouldReturnAllValuesIfOwnerIddocNull() {
         Metadata metadata = new Metadata("", "MD_FIELD", "", null);
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
         String[] values = new String[] { "val1", "val2" };
         metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
         metadata.setParamValue(1, 0, Arrays.asList(values), "", null, null, null, null);
-        Assertions.assertEquals(2, metadata.getValues().size());
+        assertEquals(2, metadata.getValues().size());
         metadata.getValues().get(0).setOwnerIddoc("123");
         metadata.getValues().get(1).setOwnerIddoc("456");
 
-        Assertions.assertEquals(2, metadata.getValuesForOwner(null).size());
+        assertEquals(2, metadata.getValuesForOwner(null).size());
     }
 
     /**
@@ -242,19 +288,19 @@ class MetadataTest extends AbstractTest {
      * @verifies return only values for the given ownerIddoc
      */
     @Test
-    void getValuesForOwner_shouldReturnOnlyValuesForTheGivenOwnerIddoc() throws Exception {
+    void getValuesForOwner_shouldReturnOnlyValuesForTheGivenOwnerIddoc() {
         Metadata metadata = new Metadata("", "MD_FIELD", "", null);
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
         String[] values = new String[] { "val1", "val2" };
         metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
         metadata.setParamValue(1, 0, Arrays.asList(values), "", null, null, null, null);
-        Assertions.assertEquals(2, metadata.getValues().size());
+        assertEquals(2, metadata.getValues().size());
         metadata.getValues().get(0).setOwnerIddoc("123");
         metadata.getValues().get(1).setOwnerIddoc("456");
 
         List<MetadataValue> mdValues = metadata.getValuesForOwner("456");
-        Assertions.assertEquals(1, mdValues.size());
-        Assertions.assertEquals("456", mdValues.get(0).getOwnerIddoc());
+        assertEquals(1, mdValues.size());
+        assertEquals("456", mdValues.get(0).getOwnerIddoc());
     }
 
     /**
@@ -262,14 +308,14 @@ class MetadataTest extends AbstractTest {
      * @verifies return placeholders for every parameter for group metadata if masterValue empty
      */
     @Test
-    void getMasterValue_shouldReturnPlaceholdersForEveryParameterForGroupMetadataIfMasterValueEmpty() throws Exception {
+    void getMasterValue_shouldReturnPlaceholdersForEveryParameterForGroupMetadataIfMasterValueEmpty() {
         List<MetadataParameter> params = new ArrayList<>(3);
         params.add(new MetadataParameter());
         params.add(new MetadataParameter());
         params.add(new MetadataParameter());
         params.add(new MetadataParameter());
         params.add(new MetadataParameter());
-        Assertions.assertEquals("{1}{3}{5}{7}{9}", new Metadata("foo", null, params).setGroup(true).getMasterValue());
+        assertEquals("{1}{3}{5}{7}{9}", new Metadata("foo", null, params).setGroup(true).getMasterValue());
     }
 
     /**
@@ -277,8 +323,8 @@ class MetadataTest extends AbstractTest {
      * @verifies return single placeholder for non group metadata if masterValue empty
      */
     @Test
-    void getMasterValue_shouldReturnSinglePlaceholderForNonGroupMetadataIfMasterValueEmpty() throws Exception {
-        Assertions.assertEquals("{0}", new Metadata().getMasterValue());
+    void getMasterValue_shouldReturnSinglePlaceholderForNonGroupMetadataIfMasterValueEmpty() {
+        assertEquals("{0}", new Metadata().getMasterValue());
 
     }
 }

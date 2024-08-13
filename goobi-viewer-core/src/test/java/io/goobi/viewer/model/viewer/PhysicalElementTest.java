@@ -120,15 +120,15 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void getBaseMimeType_shouldReturnCorrectBaseMimeType() throws Exception {
-        Assertions.assertEquals(BaseMimeType.IMAGE.getName(), new PhysicalElementBuilder().setMimeType("image/tiff").build().getBaseMimeType());
-        Assertions.assertEquals(BaseMimeType.AUDIO.getName(), new PhysicalElementBuilder().setMimeType("audio/mpeg3").build().getBaseMimeType());
-        Assertions.assertEquals(BaseMimeType.VIDEO.getName(), new PhysicalElementBuilder().setMimeType("video/webm").build().getBaseMimeType());
-        Assertions.assertEquals(BaseMimeType.APPLICATION.getName(),
+        Assertions.assertEquals(BaseMimeType.IMAGE, new PhysicalElementBuilder().setMimeType("image/tiff").build().getBaseMimeType());
+        Assertions.assertEquals(BaseMimeType.AUDIO, new PhysicalElementBuilder().setMimeType("audio/mpeg3").build().getBaseMimeType());
+        Assertions.assertEquals(BaseMimeType.VIDEO, new PhysicalElementBuilder().setMimeType("video/webm").build().getBaseMimeType());
+        Assertions.assertEquals(BaseMimeType.APPLICATION,
                 new PhysicalElementBuilder().setMimeType("application/pdf").build().getBaseMimeType());
-        Assertions.assertEquals(BaseMimeType.SANDBOXED_HTML.getName(),
+        Assertions.assertEquals(BaseMimeType.SANDBOXED_HTML,
                 new PhysicalElementBuilder().setMimeType("text/html").build().getBaseMimeType());
-        Assertions.assertEquals(BaseMimeType.MODEL.getName(), new PhysicalElementBuilder().setMimeType("model/gltf+json").build().getBaseMimeType());
-        Assertions.assertEquals(BaseMimeType.MODEL.getName(), new PhysicalElementBuilder().setMimeType("model/object").build().getBaseMimeType());
+        Assertions.assertEquals(BaseMimeType.MODEL, new PhysicalElementBuilder().setMimeType("model/gltf+json").build().getBaseMimeType());
+        Assertions.assertEquals(BaseMimeType.MODEL, new PhysicalElementBuilder().setMimeType("model/object").build().getBaseMimeType());
     }
 
     /**
@@ -137,7 +137,7 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void getBaseMimeType_shouldReturnImageIfBaseMimeTypeNotFound() throws Exception {
-        Assertions.assertEquals(BaseMimeType.IMAGE.getName(), new PhysicalElementBuilder().setMimeType("foo/bar").build().getBaseMimeType());
+        Assertions.assertEquals(BaseMimeType.IMAGE, new PhysicalElementBuilder().setMimeType("foo/bar").build().getBaseMimeType());
     }
 
     /**

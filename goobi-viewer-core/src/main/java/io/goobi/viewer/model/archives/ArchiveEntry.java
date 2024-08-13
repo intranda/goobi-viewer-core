@@ -701,32 +701,6 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * 
-     * @param index Area list index
-     * @return Appropriate message key for the given index
-     */
-    public String getAreaListLabel(int index) {
-        switch (index) {
-            case 0:
-                return "archives__archive_area_identity";
-            case 1:
-                return "archives__archive_area_context";
-            case 2:
-                return "archives__archive_area_content";
-            case 3:
-                return "archives__archive_area_access";
-            case 4:
-                return "archives__archive_area_materials";
-            case 5:
-                return "archives__archive_area_notes";
-            case 6:
-                return "archives__archive_area_descriptionControl";
-            default:
-                return "TODO";
-        }
-    }
-
-    /**
      * Checks whether access to the given node is allowed due to set access conditions.
      * 
      * @return true if access granted; false otherwise

@@ -785,6 +785,10 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         return getMetadataFields().containsKey(SolrConstants.FILENAME_TEI);
     }
 
+    public boolean isHasTei() {
+        return getMetadataFields().keySet().stream().anyMatch(k -> k.startsWith(SolrConstants.FILENAME_TEI));
+    }
+
     /**
      * Returns a stub representation of this object that only contains simple members to conserve memory.
      *

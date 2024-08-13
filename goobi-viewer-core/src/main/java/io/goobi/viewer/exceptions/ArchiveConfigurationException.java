@@ -23,11 +23,13 @@ package io.goobi.viewer.exceptions;
 
 public class ArchiveConfigurationException extends ArchiveException {
 
-    public ArchiveConfigurationException(String message, String resourceName, String resourceLocation, Throwable e) {
-        super(message, resourceName, resourceLocation, e);
+    private static final long serialVersionUID = -3620709090979144147L;
+
+    public ArchiveConfigurationException(String message, String resourceName, Throwable e) {
+        super(message, resourceName, e);
     }
 
-    public ArchiveConfigurationException(String message, String resourceName, String resourceLocation) {
-        super(message, resourceName, resourceLocation);
+    public ArchiveConfigurationException(String message, String resourceName) {
+        super(message, resourceName);
     }
 }

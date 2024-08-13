@@ -77,6 +77,7 @@ public final class JsonTools {
         mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
         mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
         mapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
+
     }
 
     public static final String KEY_MESSAGE = "message";

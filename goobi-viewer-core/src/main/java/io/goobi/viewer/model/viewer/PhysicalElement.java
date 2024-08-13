@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -80,6 +81,7 @@ import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
+import io.goobi.viewer.model.viewer.record.views.FileType;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
@@ -109,7 +111,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /** Constant <code>defaultVideoHeight=240</code>. */
     private static final int DEFAULT_VIDEO_HEIGHT = 240;
 
-    private static List<String> watermarkTextConfiguration;
+    private List<String> watermarkTextConfiguration;
 
     private final transient Object lock = new Object();
 
@@ -332,6 +334,16 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
     }
 
+    public Map<FileType, String> getFileTypes() {
+        Collection<String> filenames = new HashSet<String>(getFileNames().values());
+        filenames.add(getFileName());
+        return FileType.sortByFileType(filenames);
+    }
+
+    public String getFileForType(String type) {
+        return getFileTypes().get(FileType.valueOf(type.toUpperCase()));
+    }
+
     /**
      * <p>
      * getSandboxedUrl.
@@ -451,7 +463,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @should return jpeg if availabel
      */
     public String getImageFilepath() {
-        if (!BaseMimeType.IMAGE.name().equals(getBaseMimeType())) {
+        if (!BaseMimeType.IMAGE.equals(getBaseMimeType())) {
             if (filePathTiff != null) {
                 return filePathTiff;
             }
@@ -614,12 +626,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @should return correct base mime type
      * @should return image if base mime type not found
      */
-    public String getBaseMimeType() {
+    public BaseMimeType getBaseMimeType() {
         BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
         if (BaseMimeType.UNKNOWN.equals(baseMimeType)) {
-            return BaseMimeType.IMAGE.getName();
+            return BaseMimeType.IMAGE;
         }
-        return baseMimeType.getName();
+        return baseMimeType;
     }
 
     /**
@@ -1214,7 +1226,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         String url;
         try {
-            url = BeanUtils.getImageDeliveryBean().getMedia().getMediaUrl(getBaseMimeType(), format, pi, getFileNameForFormat(format));
+            url = BeanUtils.getImageDeliveryBean().getMedia().getMediaUrl(getBaseMimeType().getName(), format, pi, getFileNameForFormat(format));
         } catch (IllegalRequestException e) {
             throw new IllegalStateException("media type must be either audio or video, but is " + getBaseMimeType());
         }
@@ -1541,10 +1553,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             AccessPermission access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, fileName,
                     IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
             // logger.trace("Born digital access for page {} is granted: {}", order, access.isGranted()); //NOSONAR Debug
-            //            if (bornDigitalDownloadTicketRequired == null) {
             bornDigitalDownloadTicketRequired = access.isTicketRequired();
             // logger.trace("Ticket required for page {}: {}", order, access.isTicketRequired()); //NOSONAR Debug
-            //            }
             return access.isGranted();
         }
         logger.trace("FacesContext not found");
@@ -1560,9 +1570,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws DAOException
      */
     public boolean isBornDigitalDownloadTicketRequired() throws IndexUnreachableException, DAOException {
-        //                if (bornDigitalDownloadTicketRequired == null) {
         isAccessPermissionBornDigital();
-        //                }
         // logger.trace("isBornDigitalDownloadTicketRequired: {}", bornDigitalDownloadTicketRequired); //NOSONAR Debug
 
         // If license requires a download ticket, check agent session for loaded ticket
@@ -1630,7 +1638,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         List<CrowdsourcingAnnotation> comments =
                 DataManager.getInstance().getDao().getAnnotationsForTarget(this.pi, this.order, Motivation.COMMENTING);
         Collections.sort(comments, (c1, c2) -> c1.getDateCreated().compareTo(c2.getDateCreated()));
-        //        Collections.reverse(comments);
         return comments;
     }
 

@@ -1702,7 +1702,7 @@ public class CmsBean implements Serializable {
      */
     public boolean mayEdit(CMSPage page) throws DAOException, PresentationException, IndexUnreachableException {
 
-        if (userBean.getUser() != null) {
+        if (userBean.getUser() != null && page != null) {
             synchronized (editablePages) {
                 Boolean mayEdit = editablePages.get(page.getId());
                 if (mayEdit == null) {

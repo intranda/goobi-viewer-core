@@ -117,8 +117,6 @@ import jakarta.persistence.Transient;
 @Table(name = "cms_pages")
 public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Serializable {
 
-    private static final String HTML_GROUP = "htmlGroup";
-
     private static final long serialVersionUID = -3601192218326197746L;
 
     /** Logger for this class. */
@@ -1195,7 +1193,13 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public Document exportAsXml() {
         Document doc = new Document();
         doc.setRootElement(new Element("cmsPage").setAttribute("id", "CMS" + getId()));
-        doc.getRootElement().addContent(new Element("title").setText(getTitle()));
+        for (Locale locale : getLocales()) {
+            String t = this.title.getValue(locale).orElse("");
+            if (StringUtils.isNotEmpty(t)) {
+                doc.getRootElement().addContent(new Element("title").setText(t).setAttribute("lang", locale.getLanguage()));
+            }
+        }
+        // doc.getRootElement().addContent(new Element("title").setText(getTitle()));
 
         // Categories
         Element eleCategories = new Element("categories");

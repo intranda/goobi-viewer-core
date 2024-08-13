@@ -30,6 +30,8 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -42,6 +44,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.exception.DimensionMismatchException;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jdom2.JDOMException;
@@ -384,7 +387,7 @@ public class SequenceBuilder extends AbstractBuilder {
         if (target.equals(LinkingTarget.ALTO) && StringUtils.isBlank(page.getAltoFileName())) {
             return null;
         }
-        if (target.equals(LinkingTarget.PDF) && !(BaseMimeType.IMAGE.getName().equals(page.getBaseMimeType()))) {
+        if (target.equals(LinkingTarget.PDF) && !(BaseMimeType.IMAGE.equals(page.getBaseMimeType()))) {
             return null;
         }
 
@@ -394,10 +397,14 @@ public class SequenceBuilder extends AbstractBuilder {
                 uri = URI.create(getViewUrl(page, getPreferedView()));
                 break;
             case ALTO:
-                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_ALTO).params(page.getPi(), page.getFileName("xml")).buildURI();
+                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_ALTO)
+                        .params(page.getPi(), URLEncoder.encode(page.getFileName("xml"), StandardCharsets.UTF_8))
+                        .buildURI();
                 break;
             case PLAINTEXT:
-                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(page.getPi(), page.getFileName("txt")).buildURI();
+                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT)
+                        .params(page.getPi(), URLEncoder.encode(page.getFileName("txt"), StandardCharsets.UTF_8))
+                        .buildURI();
                 break;
             case PDF:
                 uri = URI.create(imageDelivery.getPdf().getPdfUrl(null, page));

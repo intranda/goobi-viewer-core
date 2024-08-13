@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -81,6 +82,7 @@ import io.goobi.viewer.model.maps.GeoMapMarker.MarkerType;
 import io.goobi.viewer.model.maps.View;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
+import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
@@ -796,6 +798,18 @@ public class Configuration extends AbstractConfiguration {
         return getMetadataForTemplate(template, templateList, true, false);
     }
 
+    public Metadata getGeoMapFeatureConfiguration(String option, String template) {
+        Metadata defaultMd =
+                new Metadata(SolrConstants.LABEL, "{LABEL}",
+                        List.of(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey(SolrConstants.LABEL)));
+        return getGeomapFeatureConfigurations(option).entrySet()
+                .stream()
+                .filter(entry -> entry.getKey().equals(template))
+                .map(Entry::getValue)
+                .findAny()
+                .orElse(getGeomapFeatureConfigurations(option).getOrDefault("_DEFAULT", defaultMd));
+    }
+
     public Map<String, Metadata> getGeomapFeatureConfigurations(String option) {
         if (StringUtils.isBlank(option)) {
             return Collections.emptyMap();
@@ -871,7 +885,10 @@ public class Configuration extends AbstractConfiguration {
             return featureSetConfigs.stream().map(FeatureSetConfiguration::new).collect(Collectors.toList());
         }
 
-        return Collections.emptyList();
+        FeatureSetConfiguration config = new FeatureSetConfiguration("docStruct", "MD_TITLE",
+                DataManager.getInstance().getConfiguration().getRecordGeomapMarker(templateName, ""), "", "LABEL", Collections.emptyList());
+
+        return List.of(config);
     }
 
     private static Map<String, Metadata> loadGeomapLabelConfigurations(List<HierarchicalConfiguration<ImmutableNode>> templateList) {
@@ -6149,6 +6166,24 @@ public class Configuration extends AbstractConfiguration {
                 .findFirst()
                 .orElse(defaultDisposition);
 
+    }
+
+    public String getMediaTypeRedirectUrl(String mimeType) {
+        String defaultMimeType = "default";
+        return getLocalConfigurationsAt("viewer.mediaTypes.type").stream()
+                .filter(conf -> conf.getString("[@mimeType]", defaultMimeType).equals(mimeType))
+                .map(conf -> conf.getString("redirectHandling", ""))
+                .findFirst()
+                .orElse("");
+
+    }
+
+    public String getSearchHitStyleClass() {
+        return getLocalString("search.hitStyleClass", "docstructtype__{record.DOCSTRCT}");
+    }
+
+    public String getRecordViewStyleClass() {
+        return getLocalString("viewer.viewStyleClass", "docstructtype__{record.DOCSTRCT}");
     }
 
 }

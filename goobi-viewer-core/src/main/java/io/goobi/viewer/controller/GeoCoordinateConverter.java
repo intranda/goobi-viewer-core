@@ -372,7 +372,19 @@ public class GeoCoordinateConverter {
         return new SimpleMetadataValue("");
     }
 
-    private static List<GeoMapFeature> getFeatures(List<String> points) {
+    /**
+     * Generate a list of {@link GeoMapFeature geoMapFeatures} from a list of metadata values which may represent geographic coordinates. The
+     * coordinate strings may take one of three forms:
+     * <ul>
+     * <li>Point: 'x y'</li>
+     * <li>Polygon: 'POLYGON((x1 y1, x2 y2,...))'</li>
+     * <li>Geojon: a json object following the geojson format</li>
+     * </ul>
+     *
+     * @param points A list of strings that represent two-dimensional coordinates or an array of such.
+     * @return The coordinates in form of {@link GeoMapFeature geoMapFeatures}
+     */
+    public static List<GeoMapFeature> getFeatures(List<String> points) {
         List<GeoMapFeature> docFeatures = new ArrayList<>();
         for (String point : points) {
             try {

@@ -3,8 +3,7 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
-    
-    xmlns:fn="http://java.sun.com/jsp/jstl/functions"   
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
@@ -12,11 +11,11 @@
 	<ui:define name="metadata">
 		<f:metadata />
 	</ui:define>
-	
+
 	<composite:interface />
 
 	<composite:implementation>
- 
+
 		<!-- CUSTOM SIDEBAR -->
 		<c:if test="#{!cmsPage.useDefaultSidebar}">
 			<h:panelGroup binding="#{cmsSidebarWidgetsBean.sidebarGroup}"></h:panelGroup>
@@ -24,72 +23,22 @@
 
 		<!-- DEFAULT SIDEBAR -->
 		<c:if test="#{cmsPage.useDefaultSidebar}">
-			
+
 			<!-- GLOBAL -->
 			<c:if test="#{!cmsBean.relatedWorkLoaded}">
 				<c:if test="#{browseBean.browsingMenuEnabled}">
 					<widgetComponent:widget_browsing />
 				</c:if>
-	
+
 			</c:if>
-			
+
 			<!-- WORK -->
 			<c:if test="#{cmsBean.relatedWorkLoaded}">
-	
-				<widgetComponent:widget_views pageName="#{cmsPage.title}" />
-				
-		        <widgetComponent:widget_searchInCurrentItem />
-		
-		        <widgetComponent:widget_statistics_usage />
-		
-		        <widgetComponent:widget_archives />
-		
-		        <widgetComponent:widget_nerFacetting />
-		
-		        <widgetComponent:widget_searchResultNavigation />
-		
-		        <widgetComponent:widget_metadata />
-		        
-				<ui:fragment rendered="#{activeDocumentBean.geoMap.hasFeatures()}">
-			        <widgetComponent:widget_geoMap 
-				        geoMap="#{activeDocumentBean.geoMap}" 
-				        title="#{msg.NORM_LOCATION}" 
-				        allowFullscreen="false" 
-				        linkToSearch="false" 
-				        showAnnotations="true"
-				        popoverOnHover="true"
-				        popoverClass="record_geomap_popover"
-				        highlightDocumentId="#{activeDocumentBean.logid}"
-				        currentPageNo="#{activeDocumentBean.viewManager.currentImageOrder}"
-				        featureClickHandling="openSearch"/>
-		        </ui:fragment>
-		
-		        <widgetComponent:widget_annotations />
-		        
-		        <widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
-		
-		        <widgetComponent:widget_downloads />
-		         
-		        <widgetComponent:widget_citation />
-		
-		        <widgetComponent:widget_relatedGroups />
-		
-		        <widgetComponent:widget_toc visible="#{configurationBean.sidebarTocWidgetVisible}" />
-		
-		<!--         <widgetComponent:widget_additionalFiles /> -->
-		
-		        <widgetComponent:widget_versionHistory />
-		
-		        <c:forEach var="module" items="#{configurationBean.modules}">
-		            <c:forEach var="contribution" items="#{module.sidebarContributions}">
-		                <ui:include src="/#{contribution}" />
-		            </c:forEach>
-		        </c:forEach>
-		
-		        <widgetComponent:widget_userInteractions />
-	
+
+				<viewerComponent:record_sidebar/>
+
 			</c:if>
-			
+
 		</c:if>
 
 

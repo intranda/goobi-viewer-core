@@ -22,14 +22,8 @@
 			
 			<!-- Identity statement metadata -->
 			<ui:fragment rendered="#{archiveEntry.getAreaList(index).stream().filter(metadata -> !metadata.blank).count() > 0}">
-				<div class="archives__object-block-label">#{msg[archiveEntry.getAreaListLabel(index)]}</div>
+				<div class="archives__object-block-label">#{msg['archives__archive_area_'.concat(index)]}</div>
 				<ui:repeat var="metadata" value="#{archiveEntry.getAreaList(index)}">
-<!--                    <h:panelGroup layout="block" -->
-<!--                        styleClass="archives__object-metadata-entry" -->
-<!--                        rendered="#{field.filled}"> -->
-<!--                        <div class="archives__object-field-name">#{msg[field.label]}:</div> -->
-<!--                        <div class="archives__object-field-value">#{field.value}</div> -->
-<!--                    </h:panelGroup> -->
 
                     <!-- grouped="true" -->
                     <h:panelGroup rendered="#{metadata.group}">

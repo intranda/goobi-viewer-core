@@ -102,8 +102,8 @@
         <view-id value="/archivesContent.xhtml" />
         <action onPostback="false">#{archiveBean.reset()}</action>
     </url-mapping>
-    <url-mapping id="archives2">
-        <pattern value="/archives/#{archiveBean.currentDatabase}/#{archiveBean.currentResource}/" />
+    <url-mapping id="archives1">
+        <pattern value="/archives/#{archiveBean.currentResource}/" />
         <view-id value="/archivesContent.xhtml" />
         <query-param onPostback="false" name="selected">#{selectedEntryId}</query-param>
         <action onPostback="false">#{archiveBean.initializeArchiveTree(selectedEntryId)}</action>
@@ -438,6 +438,14 @@
 		<pattern value="/object/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewObject.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+
+	<!-- EPUB -->
+	<url-mapping id="epub">
+		<pattern value="/epub/" />
+		<view-id value="/viewEpub.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
 
 	<!-- MIRADOR -->

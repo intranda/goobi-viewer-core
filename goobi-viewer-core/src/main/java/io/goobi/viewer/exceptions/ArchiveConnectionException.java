@@ -25,12 +25,11 @@ public class ArchiveConnectionException extends ArchiveException {
 
     private static final long serialVersionUID = -5274764438841967758L;
 
-    public ArchiveConnectionException(String message, String resourceName, String resourceLocation, Throwable e) {
-        super(message, resourceName, resourceLocation, e);
+    public ArchiveConnectionException(String message, String resourceName, Throwable e) {
+        super(message, resourceName, e);
     }
 
-    public ArchiveConnectionException(String message, String resourceName, String resourceLocation) {
-        super(message, resourceName, resourceLocation);
+    public ArchiveConnectionException(String message, String resourceName) {
+        super(message, resourceName);
     }
-
 }

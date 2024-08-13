@@ -24,11 +24,9 @@ package io.goobi.viewer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,7 +41,7 @@ import io.goobi.viewer.controller.DateTools;
  * Version class.
  * </p>
  */
-public class Version {
+public final class Version {
     /** Constant <code>APPLICATION_NAME</code> */
     public static final String APPLICATION_NAME;
     /** Constant <code>VERSION</code> */
@@ -68,6 +66,9 @@ public class Version {
         }
     }
 
+    private Version() {
+    }
+
     private static String getManifestStringFromJar() {
         Class clazz = Version.class;
         String className = clazz.getSimpleName() + ".class";
@@ -81,14 +82,13 @@ public class Version {
         }
         try (InputStream inputStream = new URL(manifestPath).openStream()) {
             StringWriter writer = new StringWriter();
-            IOUtils.copy(inputStream, writer, "utf-8");
+            IOUtils.copy(inputStream, writer, StandardCharsets.UTF_8.name());
             String manifestString = writer.toString();
             value = manifestString;
-        } catch (MalformedURLException e) {
-            return null;
         } catch (IOException e) {
             return null;
         }
+
         return value;
     }
 
@@ -107,26 +107,6 @@ public class Version {
         }
 
         return "?";
-    }
-
-    /**
-     * <p>
-     * convertDate.
-     * </p>
-     *
-     * @param inputString a {@link java.lang.String} object.
-     * @param inputPattern a {@link java.lang.String} object.
-     * @param outputPattern a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
-     */
-    @Deprecated
-    public static String convertDate(String inputString, String inputPattern, String outputPattern) {
-        DateTimeFormatter in = DateTimeFormatter.ofPattern(inputPattern);
-        DateTimeFormatter out = DateTimeFormatter.ofPattern(outputPattern);
-
-        TemporalAccessor time = in.parse(inputString);
-        String formatted = out.format(time);
-        return formatted;
     }
 
     /**

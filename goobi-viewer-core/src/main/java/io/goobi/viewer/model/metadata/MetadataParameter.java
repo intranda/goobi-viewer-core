@@ -60,6 +60,7 @@ public class MetadataParameter implements Serializable {
         FIELD("field"),
         TRANSLATEDFIELD("translatedfield"),
         DATEFIELD("datefield"),
+        IDENTIFIER("identifier"),
         WIKIFIELD("wikifield"),
         WIKIPERSONFIELD("wikipersonfield"),
         LINK_MAPS("linkMaps"),
@@ -127,11 +128,6 @@ public class MetadataParameter implements Serializable {
     private boolean removeHighlighting = false;
     private List<MetadataReplaceRule> replaceRules = Collections.emptyList();
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {

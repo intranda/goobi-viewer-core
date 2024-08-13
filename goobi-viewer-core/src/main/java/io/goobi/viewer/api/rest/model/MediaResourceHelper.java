@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.model.variables.VariableReplacer;
 
 public class MediaResourceHelper {
 
@@ -21,6 +22,22 @@ public class MediaResourceHelper {
 
     public MediaResourceHelper(Configuration config) {
         this.config = config;
+    }
+
+    public boolean shouldRedirect(String filename) throws IOException {
+        String mimeType = Files.probeContentType(Path.of(filename));
+        String contentDisposition = config.getMediaTypeHandling(mimeType);
+        return "redirect".equals(contentDisposition);
+    }
+
+    public String getRedirectUrl(String pi, String filename) throws IOException {
+        String mimeType = Files.probeContentType(Path.of(filename));
+        String urlTemplate = config.getMediaTypeRedirectUrl(mimeType);
+        VariableReplacer vr = new VariableReplacer(config);
+        vr.addReplacement("pi", pi);
+        vr.addReplacement("filename", filename);
+        String url = vr.replace(urlTemplate).stream().findFirst().orElse(urlTemplate);
+        return url;
     }
 
     public String setContentHeaders(HttpServletResponse servletResponse, String filename, Path path) throws IOException {
@@ -42,4 +59,5 @@ public class MediaResourceHelper {
         }
         return mimeType;
     }
+
 }

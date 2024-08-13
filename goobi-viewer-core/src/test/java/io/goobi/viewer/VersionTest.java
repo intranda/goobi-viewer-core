@@ -35,7 +35,7 @@ class VersionTest {
      * @verifies extract fields correctly
      */
     @Test
-    public void getInfo_shouldExtractFieldsCorrectly() throws Exception {
+    void getInfo_shouldExtractFieldsCorrectly() throws Exception {
         Assertions.assertEquals("20.01", Version.getInfo("Public-Version", MANIFEST));
         Assertions.assertEquals("Apache Maven", Version.getInfo("Created-By", MANIFEST));
         Assertions.assertEquals("2020-01-15 18:30", Version.getInfo("Implementation-Build-Date", MANIFEST));

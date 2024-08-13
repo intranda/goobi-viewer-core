@@ -2644,9 +2644,9 @@ public class SearchBean implements SearchInterface, Serializable {
 
                             @Override
                             public Boolean call() {
+                                ExcelExport export = new ExcelExport();
                                 try {
                                     logger.debug("Writing Excel...");
-                                    ExcelExport export = new ExcelExport();
                                     export.setWorkbook(wb);
                                     return export.writeToResponse(facesContext.getExternalContext().getResponseOutputStream());
                                 } catch (IOException e) {
@@ -2654,6 +2654,11 @@ public class SearchBean implements SearchInterface, Serializable {
                                     return false;
                                 } finally {
                                     facesContext.responseComplete();
+                                    try {
+                                        export.close();
+                                    } catch (IOException e) {
+                                        logger.error(e.getMessage());
+                                    }
                                 }
                             }
                         };

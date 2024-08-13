@@ -34,8 +34,6 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DateTools;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
 
 class SolrEADParserTest extends AbstractSolrEnabledTest {
 
@@ -43,11 +41,7 @@ class SolrEADParserTest extends AbstractSolrEnabledTest {
 
     @BeforeEach
     void before() {
-        try {
-            eadParser = new SolrEADParser();
-        } catch (PresentationException | IndexUnreachableException e) {
-            Assertions.fail(e.getMessage());
-        }
+        eadParser = new SolrEADParser();
     }
 
     /**
@@ -60,7 +54,6 @@ class SolrEADParserTest extends AbstractSolrEnabledTest {
         assertNotNull(resources);
         assertEquals(1, resources.size());
         ArchiveResource resource = resources.get(0);
-        assertEquals(SolrEADParser.DATABASE_NAME, resource.getDatabaseName());
         assertEquals("Akte_Koch_-_Humboldt_Universitaet", resource.getResourceId());
         assertEquals("Koch, Robert", resource.getResourceName());
         assertEquals(0, resource.getSize());

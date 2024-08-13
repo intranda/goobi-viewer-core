@@ -61,6 +61,7 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -78,6 +79,8 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetPdfAction;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.SinglePdfRequest;
+import de.unigoettingen.sub.commons.util.MimeType;
+import de.unigoettingen.sub.commons.util.MimeType.UnknownMimeTypeException;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
@@ -145,6 +148,9 @@ public class ViewManager implements Serializable {
     private static final long serialVersionUID = -7776362205876306849L;
 
     private static final Logger logger = LogManager.getLogger(ViewManager.class);
+
+    private static final String STYLE_CLASS_WORD_SEPARATOR = "_";
+    private static final int MAX_STYLECLASS_LENGTH = 100;
 
     private ImageDeliveryBean imageDeliveryBean;
 
@@ -599,7 +605,7 @@ public class ViewManager implements Serializable {
         if (pageType == null) {
             pageType = PageType.viewObject;
         }
-        StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getFullImageUrl(page, scale));
+        StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getFullImageUrl(page, scale, "MASTER"));
         logger.trace("Master image URL: {}", sb);
         try {
             if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, page.getImageType()) > 0) {
@@ -803,10 +809,9 @@ public class ViewManager implements Serializable {
                     DataManager.getInstance().getConfiguration().getViewerMaxImageHeight());
             if (this.imageDeliveryBean.getIiif().isIIIFUrl(page.getFileName())) {
                 return getDownloadOptionsForImage(configuredOptions, null, maxSize, imageFilename);
-            } else {
-                Dimension imageSize = new Dimension(page.getImageWidth(), page.getImageHeight());
-                return getDownloadOptionsForImage(configuredOptions, imageSize, maxSize, imageFilename);
             }
+            Dimension imageSize = new Dimension(page.getImageWidth(), page.getImageHeight());
+            return getDownloadOptionsForImage(configuredOptions, imageSize, maxSize, imageFilename);
         }
 
         return Collections.emptyList();
@@ -1384,7 +1389,6 @@ public class ViewManager implements Serializable {
         if (pageLoader == null) {
             return;
         }
-
         int useOrder = currentImageOrder;
         if (useOrder < pageLoader.getFirstPageOrder()) {
             useOrder = pageLoader.getFirstPageOrder();
@@ -1433,7 +1437,7 @@ public class ViewManager implements Serializable {
             throws IndexUnreachableException, PresentationException, IDDOCNotFoundException {
         int newImageOrder = 1;
         if (currentImageOrderString != null && currentImageOrderString.contains("-")) {
-            String[] orderSplit = currentImageOrderString.split("[-]");
+            String[] orderSplit = currentImageOrderString.split("-");
             newImageOrder = StringTools.parseInt(orderSplit[0]).orElse(1);
         } else {
             newImageOrder = StringTools.parseInt(currentImageOrderString).orElse(1);
@@ -2638,26 +2642,27 @@ public class ViewManager implements Serializable {
             return true;
         }
         if (pagesWithFulltext == null) {
-            pagesWithFulltext = DataManager.getInstance()
-                    .getSearchIndex()
-                    .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
-                            .append(':')
-                            .append(pi)
-                            .append(" +")
-                            .append(SolrConstants.DOCTYPE)
-                            .append(":PAGE")
-                            .append(" +")
-                            .append(SolrConstants.FULLTEXTAVAILABLE)
-                            .append(":true")
-                            .toString());
+            pagesWithFulltext = getPageCountWithFulltext();
         }
         double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
         // logger.trace("{}% of pages have full-text", percentage); //NOSONAR Debug
-        if (percentage < threshold) {
-            return true;
-        }
 
-        return false;
+        return percentage < threshold;
+    }
+
+    public long getPageCountWithFulltext() throws IndexUnreachableException, PresentationException {
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                        .append(':')
+                        .append(pi)
+                        .append(" +")
+                        .append(SolrConstants.DOCTYPE)
+                        .append(":PAGE")
+                        .append(" +")
+                        .append(SolrConstants.FULLTEXTAVAILABLE)
+                        .append(":true")
+                        .toString());
     }
 
     /**
@@ -2802,23 +2807,59 @@ public class ViewManager implements Serializable {
         }
         if (pagesWithAlto == null) {
 
-            pagesWithAlto = DataManager.getInstance()
-                    .getSearchIndex()
-                    .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
-                            .append(':')
-                            .append(pi)
-                            .append(" +")
-                            .append(SolrConstants.DOCTYPE)
-                            .append(":PAGE")
-                            .append(" +")
-                            .append(SolrConstants.FILENAME_ALTO)
-                            .append(":*")
-                            .toString());
+            pagesWithAlto = getPageCountWithAlto();
             logger.trace("{} of pages have full-text", pagesWithAlto);
         }
         int threshold = 1; // TODO ???
 
         return pagesWithAlto >= threshold;
+    }
+
+    public Map<String, List<String>> getFilenamesByMimeType() throws IndexUnreachableException, PresentationException {
+        List<SolrDocument> pageDocs = DataManager.getInstance()
+                .getSearchIndex()
+                .getDocs(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                        .append(':')
+                        .append(pi)
+                        .append(" +")
+                        .append(SolrConstants.DOCTYPE)
+                        .append(":PAGE")
+                        .append(" +")
+                        .append(SolrConstants.FILENAME)
+                        .append(":*")
+                        .toString(), List.of(SolrConstants.FILENAME));
+        return Optional.ofNullable(pageDocs)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(doc -> doc.getFieldValue(SolrConstants.FILENAME))
+                .map(Object::toString)
+                .collect(Collectors.toMap(
+                        filename -> getMimetype((String) filename),
+                        filename -> List.of(filename),
+                        (set1, set2) -> new ArrayList<>(CollectionUtils.union((List<? extends String>) set1, (List<? extends String>) set2))));
+    }
+
+    public String getMimetype(String filename) {
+        try {
+            return MimeType.getMimeTypeFromExtension(filename);
+        } catch (UnknownMimeTypeException e) {
+            return "unknown";
+        }
+    }
+
+    public Long getPageCountWithAlto() throws IndexUnreachableException, PresentationException {
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                        .append(':')
+                        .append(pi)
+                        .append(" +")
+                        .append(SolrConstants.DOCTYPE)
+                        .append(":PAGE")
+                        .append(" +")
+                        .append(SolrConstants.FILENAME_ALTO)
+                        .append(":*")
+                        .toString());
     }
 
     /**
@@ -2969,7 +3010,7 @@ public class ViewManager implements Serializable {
                 if (!displayFilters.isEmpty()) {
                     filenames = filenames.filter(filename -> displayFilters.stream().allMatch(filter -> filter.passes(filename, vr)));
                 }
-                downloadFilenames = filenames.collect(Collectors.toList());
+                downloadFilenames = filenames.toList();
             }
         }
 
@@ -3011,7 +3052,7 @@ public class ViewManager implements Serializable {
                 .sorted(comparator)
                 .map(this::getLinkToDownloadFile)
                 .filter(link -> link != LabeledLink.EMPTY)
-                .collect(Collectors.toList());
+                .toList();
 
     }
 
@@ -3602,9 +3643,9 @@ public class ViewManager implements Serializable {
         String filename = String.format("%s_%s_%s.pdf", this.pi, this.firstPdfPage, this.lastPdfPage);
         try (PipedInputStream in = new PipedInputStream(); OutputStream out = new PipedOutputStream(in)) {
             String firstPageName =
-                    Optional.ofNullable(this.firstPdfPage).flatMap(i -> this.getPage(i)).map(PhysicalElement::getFileName).orElse(null);
+                    Optional.ofNullable(this.firstPdfPage).flatMap(this::getPage).map(PhysicalElement::getFileName).orElse(null);
             String lastPageName =
-                    Optional.ofNullable(this.lastPdfPage).flatMap(i -> this.getPage(i)).map(PhysicalElement::getFileName).orElse(null);
+                    Optional.ofNullable(this.lastPdfPage).flatMap(this::getPage).map(PhysicalElement::getFileName).orElse(null);
 
             SinglePdfRequest request = new SinglePdfRequest(Map.of(
                     "imageSource", DataFileTools.getMediaFolder(this.pi).toAbsolutePath().toString(),
@@ -4101,7 +4142,7 @@ public class ViewManager implements Serializable {
                 lastPage++;
             }
         }
-        return IntStream.range(firstPage, lastPage + 1).boxed().collect(Collectors.toList());
+        return IntStream.range(firstPage, lastPage + 1).boxed().toList();
     }
 
     /**
@@ -4132,12 +4173,14 @@ public class ViewManager implements Serializable {
      * 
      * @return copyrightIndicatorStatuses
      * @should return correct statuses
-     * @should return open status if no statuses found
+     * @should return locked status if no statuses found
      */
     public List<CopyrightIndicatorStatus> getCopyrightIndicatorStatuses() {
+        logger.trace("getCopyrightIndicatorStatuses");
         if (copyrightIndicatorStatuses == null) {
             copyrightIndicatorStatuses = new ArrayList<>();
             String field = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusField();
+            StringBuilder sbUnconfiguredAccessConditions = new StringBuilder();
             if (StringUtils.isNotEmpty(field)) {
                 List<String> values = topStructElement.getMetadataValues(field);
                 if (!values.isEmpty()) {
@@ -4145,13 +4188,19 @@ public class ViewManager implements Serializable {
                         CopyrightIndicatorStatus status = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue(value);
                         if (status != null) {
                             copyrightIndicatorStatuses.add(status);
+                        } else {
+                            if (sbUnconfiguredAccessConditions.length() > 0) {
+                                sbUnconfiguredAccessConditions.append(", ");
+                            }
+                            sbUnconfiguredAccessConditions.append(value);
                         }
                     }
                 }
             }
             // Default
             if (copyrightIndicatorStatuses.isEmpty()) {
-                copyrightIndicatorStatuses.add(new CopyrightIndicatorStatus(Status.OPEN, "COPYRIGHT_STATUS_OPEN"));
+                // If no statuses are configured for existing values, set to locked and add all values to the description
+                copyrightIndicatorStatuses.add(new CopyrightIndicatorStatus(Status.LOCKED, sbUnconfiguredAccessConditions.toString()));
             }
         }
 
@@ -4200,7 +4249,7 @@ public class ViewManager implements Serializable {
                 .map(path -> Paths.get(path).getFileName().toString())
                 .map(filename -> this.getPageLoader().findPageForFilename(filename))
                 .filter(p -> p != null)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<String> getExternalResourceUrls() throws IndexUnreachableException {
@@ -4215,11 +4264,22 @@ public class ViewManager implements Serializable {
         VariableReplacer vr = new VariableReplacer(this);
         return urlTemplates.stream()
                 .flatMap(templ -> vr.replace(templ).stream())
-                .filter(url -> ExternalFilesDownloader.resourceExists(url))
+                .filter(ExternalFilesDownloader::resourceExists)
                 .toList();
     }
 
     public StructElement getAnchorStructElement() {
         return anchorStructElement;
     }
+
+    public String getCssClass() throws IndexUnreachableException {
+        VariableReplacer vr =
+                new VariableReplacer(this);
+        String template = DataManager.getInstance().getConfiguration().getRecordViewStyleClass();
+        String value = vr.replace(template).stream().findAny().orElse("");
+        value = StringTools.convertToSingleWord(value, MAX_STYLECLASS_LENGTH, STYLE_CLASS_WORD_SEPARATOR).toLowerCase();
+
+        return value;
+    }
+
 }

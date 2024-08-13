@@ -29,21 +29,19 @@ public abstract class ArchiveException extends PresentationException {
      * 
      * @param message
      * @param resourceName
-     * @param resourceLocation
      * @param e
      */
-    protected ArchiveException(String message, String resourceName, String resourceLocation, Throwable e) {
-        super(createMessage(message, resourceName, resourceLocation), e);
+    protected ArchiveException(String message, String resourceName, Throwable e) {
+        super(createMessage(message, resourceName), e);
     }
 
     /**
      * 
      * @param message
      * @param resourceName
-     * @param resourceLocation
      */
-    protected ArchiveException(String message, String resourceName, String resourceLocation) {
-        super(createMessage(message, resourceName, resourceLocation));
+    protected ArchiveException(String message, String resourceName) {
+        super(createMessage(message, resourceName));
     }
 
     /**

@@ -917,6 +917,8 @@ public class Metadata implements Serializable {
      * @param locale
      * @return true if successful; false otherwise
      * @throws IndexUnreachableException
+     * @should populate group correctly
+     * @should apply default value if none found
      */
     boolean populateGroup(StructElement se, String ownerIddoc, List<StringPair> sortFields, Locale locale) throws IndexUnreachableException {
         if (ownerIddoc == null) {
@@ -987,7 +989,7 @@ public class Metadata implements Serializable {
                         }
                         setParamValue(count, i, paramValues, relatedDocuments, param.getKey(), null, options, groupType, locale);
                     } else if (param.getDefaultValue() != null) {
-                        logger.debug("No value found for {}, using default value", param.getKey());
+                        logger.trace("No value found for {}, using default value", param.getKey());
                         setParamValue(count, i, Collections.singletonList(param.getDefaultValue()), relatedDocuments, param.getKey(), null, null,
                                 groupType, locale);
                         found = true;

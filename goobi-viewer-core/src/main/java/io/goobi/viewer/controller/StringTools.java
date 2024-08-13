@@ -44,8 +44,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -361,8 +365,9 @@ public final class StringTools {
     }
 
     /**
-     * Escapes the given string. Uses {@link org.apache.commons.lang3.StringEscapeUtils#escapeHtml4(String)} and additionally converts all line
-     * breaks (\r\n, \r, \n) to html line breaks ({@code <br/> })
+     * Escapes the given string. Uses {@link org.apache.commons.lang3.StringEscapeUtils#escapeHtml4(String)} and additionally converts all line breaks
+     * (\r\n, \r, \n) to html line breaks ({@code <br/>
+     *  })
      *
      * @param text the text to escape
      * @return the escaped string
@@ -804,7 +809,7 @@ public final class StringTools {
                     secondMinus = true;
                     range = range.replace("--", "-");
                 }
-                String[] split = range.split("[-]");
+                String[] split = range.split("-");
                 page = Integer.valueOf(split[0]);
                 page2 = Integer.valueOf(split[1]);
                 if (firstMinus) {
@@ -853,12 +858,29 @@ public final class StringTools {
     }
 
     public static String convertToSingleWord(String text, int maxLength, String whitespaceReplacement) {
-        String replaced = text
+        String replaced = Optional.ofNullable(text)
+                .orElse("")
                 .replaceAll("\\s", whitespaceReplacement)
                 .replaceAll("[^a-zA-Z0-9" + whitespaceReplacement + "]", "");
         if (replaced.length() > maxLength) {
             return replaced.substring(0, maxLength);
         }
         return replaced;
+    }
+
+    public static String replaceAllMatches(String string, String matchRegex, Function<List<String>, String> replacer) {
+        Matcher matcher = Pattern.compile(matchRegex).matcher(string);
+        StringBuffer buffer = new StringBuffer(string);
+        List<MatchResult> results = matcher.results().collect(Collectors.toList());
+        Collections.reverse(results);
+        results.forEach(result -> {
+            String s = result.group();
+            String s1 = result.group(0);
+            int groupCount = result.groupCount();
+            List<String> groups = IntStream.range(0, result.groupCount() + 1).mapToObj(i -> result.group(i)).collect(Collectors.toList());
+            String replacement = replacer.apply(groups);
+            buffer.replace(result.start(), result.end(), replacement);
+        });
+        return buffer.toString();
     }
 }

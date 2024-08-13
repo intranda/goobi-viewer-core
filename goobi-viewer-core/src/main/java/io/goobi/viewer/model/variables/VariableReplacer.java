@@ -58,7 +58,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.model.viewer.PhysicalElement;
-import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.StructElementStub;
 import io.goobi.viewer.model.viewer.ViewManager;
 
 public class VariableReplacer {
@@ -74,7 +74,8 @@ public class VariableReplacer {
                 viewManager.getCurrentStructElement(), viewManager.getCurrentPage());
     }
 
-    public VariableReplacer(Configuration config, StructElement anchor, StructElement topStruct, StructElement structElement, PhysicalElement page) {
+    public VariableReplacer(Configuration config, StructElementStub anchor, StructElementStub topStruct, StructElementStub structElement,
+            PhysicalElement page) {
         Map<String, List<String>> configValues = readMappingsFromConfig(config);
         Map<String, List<String>> anchorValues = readMappingsFromStructElement(anchor);
         Map<String, List<String>> recordValues = readMappingsFromStructElement(topStruct);
@@ -99,7 +100,7 @@ public class VariableReplacer {
         this(configuration, null, null, null, null);
     }
 
-    public VariableReplacer(StructElement struct) {
+    public VariableReplacer(StructElementStub struct) {
         this(DataManager.getInstance().getConfiguration(), null, struct, null, null);
     }
 
@@ -192,7 +193,7 @@ public class VariableReplacer {
         Map<String, List<String>> temp = new HashMap<>();
         if (page != null) {
             temp.put(MIME_TYPE, List.of(page.getMimeType()));
-            temp.put(BASE_MIME_TYPE, List.of(page.getBaseMimeType()));
+            temp.put(BASE_MIME_TYPE, List.of(page.getBaseMimeType().name()));
             temp.put(ORDER, List.of(Integer.toString(page.getOrder())));
             temp.put(ORDER_LABEL, List.of(page.getOrderLabel()));
             temp.put(FILENAME, List.of(page.getFileName()));
@@ -201,7 +202,7 @@ public class VariableReplacer {
         return temp;
     }
 
-    private static Map<String, List<String>> readMappingsFromStructElement(StructElement docStruct) {
+    private static Map<String, List<String>> readMappingsFromStructElement(StructElementStub docStruct) {
         if (docStruct != null) {
             return new HashMap<>(docStruct.getMetadataFields());
         } else {
@@ -219,6 +220,11 @@ public class VariableReplacer {
         temp.put(REST_API_URL, List.of(config.getRestApiUrl()));
         temp.put(VIEWER_URL, List.of(config.getViewerBaseUrl()));
         return temp;
+    }
+
+    public void addReplacement(String var, String value) {
+        Map<String, List<String>> map = this.replacementsMap.putIfAbsent("custom", new HashMap<>());
+        map.put(var, List.of(value));
     }
 
 }
