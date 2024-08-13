@@ -4130,7 +4130,7 @@ public class ViewManager implements Serializable {
      * 
      * @return copyrightIndicatorStatuses
      * @should return correct statuses
-     * @should return open status if no statuses found
+     * @should return locked status if no statuses found
      */
     public List<CopyrightIndicatorStatus> getCopyrightIndicatorStatuses() {
         logger.trace("getCopyrightIndicatorStatuses");

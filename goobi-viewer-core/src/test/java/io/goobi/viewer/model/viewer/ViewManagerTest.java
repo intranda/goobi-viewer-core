@@ -666,6 +666,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     void getCopyrightIndicatorStatusName_shouldReturnOpenStatusIfNoRestrictiveStatusesFound() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
         Assertions.assertNotNull(se);
+        se.metadataFields.put("MD_ACCESSCONDITION", Arrays.asList("Freier Zugang"));
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
 
         Assertions.assertEquals(Status.OPEN.name(), viewManager.getCopyrightIndicatorStatusName());
@@ -688,17 +689,17 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see ViewManager#getCopyrightIndicatorStatuses()
-     * @verifies return open status if no statuses found
+     * @verifies return locked status if no statuses found
      */
     @Test
-    void getCopyrightIndicatorStatuses_shouldReturnOpenStatusIfNoStatusesFound() throws Exception {
+    void getCopyrightIndicatorStatuses_shouldReturnLockedStatusIfNoStatusesFound() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
         Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
 
         List<CopyrightIndicatorStatus> result = viewManager.getCopyrightIndicatorStatuses();
         assertEquals(1, result.size());
-        assertEquals(Status.OPEN, result.get(0).getStatus());
+        assertEquals(Status.LOCKED, result.get(0).getStatus());
     }
 
     /**
