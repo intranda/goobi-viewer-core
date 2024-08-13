@@ -4133,9 +4133,11 @@ public class ViewManager implements Serializable {
      * @should return open status if no statuses found
      */
     public List<CopyrightIndicatorStatus> getCopyrightIndicatorStatuses() {
+        logger.trace("getCopyrightIndicatorStatuses");
         if (copyrightIndicatorStatuses == null) {
             copyrightIndicatorStatuses = new ArrayList<>();
             String field = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusField();
+            StringBuilder sbUnconfiguredAccessConditions = new StringBuilder();
             if (StringUtils.isNotEmpty(field)) {
                 List<String> values = topStructElement.getMetadataValues(field);
                 if (!values.isEmpty()) {
@@ -4143,13 +4145,19 @@ public class ViewManager implements Serializable {
                         CopyrightIndicatorStatus status = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue(value);
                         if (status != null) {
                             copyrightIndicatorStatuses.add(status);
+                        } else {
+                            if (sbUnconfiguredAccessConditions.length() > 0) {
+                                sbUnconfiguredAccessConditions.append(", ");
+                            }
+                            sbUnconfiguredAccessConditions.append(value);
                         }
                     }
                 }
             }
             // Default
             if (copyrightIndicatorStatuses.isEmpty()) {
-                copyrightIndicatorStatuses.add(new CopyrightIndicatorStatus(Status.OPEN, "COPYRIGHT_STATUS_OPEN"));
+                // If no statuses are configured for existing values, set to locked and add all values to the description
+                copyrightIndicatorStatuses.add(new CopyrightIndicatorStatus(Status.LOCKED, sbUnconfiguredAccessConditions.toString()));
             }
         }
 
