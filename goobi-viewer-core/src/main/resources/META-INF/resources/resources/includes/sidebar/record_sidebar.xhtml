@@ -12,15 +12,14 @@
 	<widgetComponent:widget_views id="widgetViews" collapsible="false"
 		widgetTitle="#{msg.view}" />
 
-	<ui:fragment
-		rendered="#{displayConditions.matchRecord('{pageType: ![viewThumbs]}')}">
+	<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: ![viewThumbs]}')}">
 		<ui:fragment
 			rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}">
 			<widgetComponent:widget_copyrightInfo />
 		</ui:fragment>
 
 		<ui:fragment
-			rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata]}')}">
+			rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc]}')}">
 			<widgetComponent:widget_searchInCurrentItem />
 		</ui:fragment>
 
@@ -53,7 +52,7 @@
 			notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
 
 		<ui:fragment
-			rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata]}')}">
+			rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc, viewFulltext]}')}">
 			<widgetComponent:widget_downloads />
 
 			<widgetComponent:widget_citation />
