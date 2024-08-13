@@ -172,7 +172,7 @@
 <!--                         </div> -->
 <!--                     </ui:fragment> -->
 
-					<c:if test="#{(!configurationBean.displayUserGeneratedContentBelowImage) and (!contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).isEmpty())}">
+					<c:if test="#{!configurationBean.displayUserGeneratedContentBelowImage and not empty contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).stream().filter(content -> !content.isEmpty() and content.type != 'GEOLOCATION').toList()}">
 	                <!-- ANNOTATIONS -->
 	                    <div id="panel-9" class="fullscreen__view-sidebar-accordeon-panel fs-annotations">
 	                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
@@ -260,7 +260,7 @@
                         </h3>
 
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
-                            <widgetComponent:widget_downloads />
+                            <widgetComponent:widget_downloads collapsible="false" />
                         </div>
                     </div>
                     
@@ -270,7 +270,7 @@
                         </h3>
 
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
-                             <widgetComponent:widget_formatsLinks />
+                             <widgetComponent:widget_formatsLinks collapsible="false"/>
                         </div>
                     </div>
                     
@@ -280,7 +280,7 @@
                         </h3>
 
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
-                            <widgetComponent:widget_citation />
+                            <widgetComponent:widget_citation collapsible="false"/>
                         </div>
                     </div>
                     
