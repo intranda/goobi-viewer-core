@@ -127,11 +127,15 @@ public class VisibilityCondition {
     public boolean matchesRecord(PageType pageType, ViewManager viewManager, HttpServletRequest request, RecordPropertyCache properties)
             throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException {
 
+        if (viewManager == null || viewManager.getTopStructElement() == null) {
+            return false;
+        }
+
         List<String> docTypes = new ArrayList<>();
-        Optional.ofNullable(viewManager)
-                .map(ViewManager::getTopStructElement)
-                .map(StructElement::getDocStructType)
-                .ifPresent(type -> docTypes.add(type));
+
+        if (viewManager.getTopStructElement() != null && StringUtils.isNotBlank(viewManager.getTopStructElement().getDocStructType())) {
+            docTypes.add(viewManager.getTopStructElement().getDocStructType());
+        }
         if (viewManager.getTopStructElement().isGroup()) {
             docTypes.add("group");
         } else if (viewManager.getTopStructElement().isGroupMember()) {

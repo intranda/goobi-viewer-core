@@ -89,15 +89,15 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
         String widthString = path.getName(1).toString();
         String rotation = path.getName(2).toString();
 
-        String idUrl = URLEncoder.encode(id, StringTools.DEFAULT_ENCODING);
-
-        String baseUri = DataManager.getInstance()
-                .getRestApiManager()
-                .getContentApiManager()
-                .map(urls -> urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(pi, idUrl).build())
-                .orElse(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/" + pi + "/" + idUrl);
-
         try {
+            String idUrl = URLEncoder.encode(id, StringTools.DEFAULT_ENCODING);
+
+            String baseUri = DataManager.getInstance()
+                    .getRestApiManager()
+                    .getContentApiManager()
+                    .map(urls -> urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(pi, idUrl).build())
+                    .orElse(DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/" + pi + "/" + idUrl);
+
             Scale scale = parseScale(widthString);
             String format = FilenameUtils.getExtension(path.getName(3).toString());
             String uri = BeanUtils.getImageDeliveryBean()
