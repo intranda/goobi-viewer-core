@@ -151,26 +151,26 @@
                         </div>
                     </ui:fragment>
 
-                    <!-- KARTE -->
-<!--                     <ui:fragment rendered="#{activeDocumentBean.mapWidget.geoMapId > -1}"> -->
-<!--                         <div id="panel-11" class="fullscreen__view-sidebar-accordeon-panel fs-fulltext"> -->
-<!--                             <h3 class="fullscreen__view-sidebar-accordeon-panel-title"> -->
-<!--                                 <span>#{msg.geomap}</span> -->
-<!--                             </h3> -->
-
-<!-- 								<ui:fragment rendered="#{activeDocumentBean.geoMap.hasFeatures()}"> -->
-<!-- 							        <widgetComponent:widget_geoMap  -->
-<!-- 								        geoMap="#{activeDocumentBean.geoMap}"  -->
-<!-- 								        title="#{msg.NORM_LOCATION}"  -->
-<!-- 								        allowFullscreen="false"  -->
-<!-- 								        linkToSearch="false"  -->
-<!-- 								        showAnnotations="true" -->
-<!-- 								        popoverOnHover="true" -->
-<!-- 								        popoverClass="record_geomap_popover" -->
-<!-- 								        highlightDocumentId="#{activeDocumentBean.logid}"/> -->
-<!-- 						        </ui:fragment> -->
-<!--                         </div> -->
-<!--                     </ui:fragment> -->
+                    <!-- GEOMAP -->
+                    <!-- NOT SHOWN BECAUSE OF RENDERING PROBLEMS WHEN MAP PANEL IS NOT OPENED AT PAGE LOAD -->
+                    <ui:fragment rendered="#{false and activeDocumentBean.geoMap.hasFeatures()}">
+                        <div id="panel-11" class="fullscreen__view-sidebar-accordeon-panel fs-location">
+                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+                                <span>#{msg.NORM_LOCATION}</span>
+                            </h3>
+							<div class="fullscreen__view-sidebar-accordeon-panel-body in">
+							        <widgetComponent:widget_geoMap 
+								        geoMap="#{activeDocumentBean.geoMap}" 
+								        title="" 
+								        allowFullscreen="false" 
+								        linkToSearch="false" 
+								        showAnnotations="true"
+								        popoverOnHover="true"
+								        popoverClass="record_geomap_popover"
+								        highlightDocumentId="#{activeDocumentBean.logid}"/>
+								        </div>
+                        </div>
+                    </ui:fragment>
 
 					<c:if test="#{!configurationBean.displayUserGeneratedContentBelowImage and not empty contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).stream().filter(content -> !content.isEmpty() and content.type != 'GEOLOCATION').toList()}">
 	                <!-- ANNOTATIONS -->
