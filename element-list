@@ -44,6 +44,7 @@ io.goobi.viewer.controller
 io.goobi.viewer.controller.config.filter
 io.goobi.viewer.controller.files
 io.goobi.viewer.controller.imaging
+io.goobi.viewer.controller.json
 io.goobi.viewer.controller.model
 io.goobi.viewer.controller.mq
 io.goobi.viewer.controller.shell
@@ -134,6 +135,7 @@ io.goobi.viewer.model.viewer
 io.goobi.viewer.model.viewer.collections
 io.goobi.viewer.model.viewer.object
 io.goobi.viewer.model.viewer.pageloader
+io.goobi.viewer.model.viewer.record.views
 io.goobi.viewer.model.viewer.themes
 io.goobi.viewer.model.xml
 io.goobi.viewer.modules
