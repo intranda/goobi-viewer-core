@@ -49,9 +49,9 @@
                             rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks and displayConditions.matchRecord('{docType:[record, anchor]}')}">
                             <c:forEach var="link" items="#{activeDocumentBean.viewManager.getSidebarWidgetUsageCitationLinksForLevel('record')}">
                                     
-                                <ui:fragment rendered="#{link.type.name() == 'URL' and link.value != null}">
-                                    <button type="button" visibility-class="widget-element"
-                                    	jsf:id="citeLinkUrl"
+                                <ui:fragment rendered="#{link.type.name() == 'URL' and link.value != null}" visibility-class="widget-element">
+                                    <button type="button" 
+                                    	id="citeLinkUrl"
                                         class="badge badge-dark"
                                         data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
                                         data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
@@ -59,9 +59,9 @@
                                         #{msg[link.label]}</button>
                                 </ui:fragment>
                                      
-                                <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
+                                <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}" visibility-class="widget-element">
                                     <button type="button" visibility-class="widget-element"
-                                    	jsf:id="citeLinkInternal"
+                                    	id="citeLinkInternal"
                                         class="badge badge-dark"
                                         data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
                                         data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
@@ -73,10 +73,10 @@
                         </ui:fragment>      
 
                         <!-- RIS (topstruct) -->
-						<ui:fragment 
+						<ui:fragment  visibility-class="widget-element"
                             rendered="#{displayConditions.matchRecord('{docType:![group]}')}">
                             <a href="#{configurationBean.restApiUrlV1}records/#{activeDocumentBean.persistentIdentifier}/ris/"
-                                jsf:id="ris" visibility-class="widget-element"
+                                id="ris"
                                 class="badge badge-dark widget-citation__work-download-ris" 
                                 title="#{msg.risLinkTopstruct}"
                                 data-toggle="tooltip"
@@ -92,28 +92,27 @@
 
 
                     <!-- PAGE -->
-                    <ui:fragment>
-
                         <!-- PAGE DOWNLOADS -->
-                        <div class="widget-citation__page-downloads widget__badge-container">
+                        <div jsf:id="pageCitations" class="widget-citation__page-downloads widget__badge-container" 
+                        rendered="#{displayConditions.getTag('pageCitations').getChildCount('widget-element') > 0}">
                         
                             <h3 id="titleImage" class="widget-citation__subtitle widget__badge-container-heading">#{msg.widget__citation__this_page}</h3>
 
 							<ui:fragment  rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks and !activeDocumentBean.viewManager.doublePageMode 
                             and displayConditions.matchRecord('{docType:[record], numPages:1}')}">
                                 <c:forEach var="link" varStatus="index" items="#{activeDocumentBean.viewManager.getSidebarWidgetUsageCitationLinksForLevel('image')}">
-                                    <ui:fragment rendered="#{link.type.name() == 'URL' and link.value != null}">
-                                        <button type="button" visibility-class="widget-element"
-                                        	jsf:id="citeLinkUrn#{index.count}"
+                                    <ui:fragment rendered="#{link.type.name() == 'URL' and link.value != null}" visibility-class="widget-element">
+                                        <button type="button" 
+                                        	id="citeLinkUrn#{index.count}"
                                             class="badge badge-dark"
                                             data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
                                             data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
                                             aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
                                              #{msg[link.label]}</button>
                                     </ui:fragment>
-                                    <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}">
-                                        <button type="button" visibility-class="widget-element"
-                                        	jsf:id="citeLinkUrnPage"
+                                    <ui:fragment rendered="#{link.type.name() == 'INTERNAL'}" visibility-class="widget-element">
+                                        <button type="button"
+                                        	id="citeLinkUrnPage"
                                             class="badge badge-dark"
                                             data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
                                             data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
@@ -124,15 +123,16 @@
                             </ui:fragment>
                             
                         </div>
-                        
-                    </ui:fragment>
-		
+                        		
 		            <!-- ACTIVATE CLIPBOARD (TOOLTIPS + COPY URL)  -->
 		            <script>
 		                viewerJS.clipboard.init();
 		            </script>
                     
-					<viewerComponent:downloadsCitations showCiteLinksButton="false"/>
+					<viewerComponent:downloadsCitations visibility-class="widget-element" 
+					rendered="#{(configurationBean.displaySidebarWidgetUsageCitationLinks and cc.attrs.showCiteLinksButton)
+					or (configurationBean.displaySidebarWidgetUsageCitationRecommendation and fn:length(activeDocumentBean.viewManager.citationStringHtml) > 0)}"
+					showCiteLinksButton="false"/>
  
                 </div>
             </div>

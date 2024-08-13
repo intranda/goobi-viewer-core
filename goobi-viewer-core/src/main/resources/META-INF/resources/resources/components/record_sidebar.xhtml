@@ -27,11 +27,11 @@
 
 				<widgetComponent:widget_archives />
 
-				<widgetComponent:widget_nerFacetting />
+				<widgetComponent:widget_nerFacetting rendered="#{displayConditions.matchRecord('{pageType: [viewObject]}')}"/>
 
 				<widgetComponent:widget_searchResultNavigation />
 
-				<widgetComponent:widget_metadata  rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata]}')}"/>
+				<widgetComponent:widget_metadata  rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc]}')}"/>
 
 				<widgetComponent:widget_geoMap
 					rendered="#{activeDocumentBean.geoMap.hasFeatures()}"
@@ -61,10 +61,14 @@
 						
 				</ui:fragment>
 
-				<widgetComponent:widget_formatsLinks  rendered="#{displayConditions.matchRecord('{pageType: [viewMetadata]}')}"/>
+
+				<widgetComponent:widget_formatsLinks rendered="#{
+				displayConditions.matchRecord('{pageType: [viewMetadata]}') or 
+				displayConditions.matchRecord('{pageType: [viewToc], docType:[anchor]}')}"/>
+				
+				<widgetComponent:widget_citation  rendered="#{displayConditions.matchRecord('{pageType: [viewMetadata, viewToc], docType:[anchor]}')}"/>
 					
 			</ui:fragment>
-
 
 			<widgetComponent:widget_versionHistory />
 

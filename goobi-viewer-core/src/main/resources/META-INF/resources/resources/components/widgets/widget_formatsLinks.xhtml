@@ -45,7 +45,7 @@
 	                    
 	                        <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->     
 	                            <!-- METS -->
-	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen], accessCondition:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
+	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.metsResolverUrl}"
 	                                    id="lidomets" 
@@ -59,7 +59,7 @@
 	                                    #{msg.downloadMetsButtonLabel}
 	                                </a> 
 	                            </ui:fragment>
-	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:[volume], pageType:[viewMetadata, viewFullscreen], accessCondition:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
+	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:[volume], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
 	                                    id="metsanchor" 
@@ -75,7 +75,7 @@
 	                            </ui:fragment>
 	                        
 	                            <!-- LIDO -->
-	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen], accessCondition:DOWNLOAD_METADATA, sourceFormat:[LIDO]}')}">
+	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[LIDO]}')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
 	                                    id="lidomets" 
@@ -91,7 +91,7 @@
 	                            </ui:fragment>
 	                            
 	                            <!-- DENKXWEB -->
-	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen], accessCondition:DOWNLOAD_METADATA, sourceFormat:[DENKXWEB]}')}">
+	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[DENKXWEB]}')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.denkxwebResolverUrl}"
 	                                    id="denkxweb"
@@ -107,7 +107,7 @@
 	                            </ui:fragment>
 	     
 	                            <!-- DUBLINCORE -->
-	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen], accessCondition:DOWNLOAD_METADATA, sourceFormat:[DUBLINCORE]}')}">
+	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[DUBLINCORE]}')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.dublinCoreResolverUrl}"
 	                                    id="dublincorexml"
@@ -123,7 +123,7 @@
 	                            </ui:fragment>
 	
 	                            <!-- MARCXML -->
-	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen], accessCondition:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
+	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
 	                                <a
 	                                    id="marc"
 	                                    href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
@@ -139,7 +139,7 @@
 	                            </ui:fragment>
 	                        
 	                            <!-- OAI DC -->
-	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen], accessCondition:DOWNLOAD_METADATA}')}">
+	                            <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:DOWNLOAD_METADATA}')}">
 	                                <a
 	                                    id="dc"
 	                                    href="#{activeDocumentBean.viewManager.oaiDcUrl}"
@@ -155,7 +155,7 @@
 	                            </ui:fragment>
 	                        	                        
 	                        <!-- IIIF MANIFEST -->
-	                        <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen], accessCondition:GENERATE_IIIF_MANIFEST, mimeType:![application], numPages:1}')}">
+	                        <ui:fragment visibility-class="widget-element" rendered="#{displayConditions.matchRecord('{docType:![group], pageType:[viewMetadata, viewFullscreen, viewToc], accessCondition:GENERATE_IIIF_MANIFEST, mimeType:![application], numPages:1}')}">
 	                           <button 
 	                                id="iiifManifest"
 	                                class="badge badge-dark widget-format-links__work-download-iiif" 
