@@ -1,0 +1,84 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+	<composite:interface></composite:interface>
+	
+	<composite:implementation>
+		
+			<widgetComponent:widget_views id="widgetViews" collapsible="false"
+				widgetTitle="#{msg.view}"  />
+				
+			<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: ![viewThumbs], docType: ![group]}')}">
+					
+				<widgetComponent:widget_copyrightInfo rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}"/>
+
+				<widgetComponent:widget_searchInCurrentItem  rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc]}')}"/>
+
+				<widgetComponent:widget_statistics_usage />
+
+				<widgetComponent:widget_archives />
+
+				<widgetComponent:widget_nerFacetting />
+
+				<widgetComponent:widget_searchResultNavigation />
+
+				<widgetComponent:widget_metadata  rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata]}')}"/>
+
+				<widgetComponent:widget_geoMap
+					rendered="#{activeDocumentBean.geoMap.hasFeatures()}"
+					geoMap="#{activeDocumentBean.geoMap}" title="#{msg.NORM_LOCATION}"
+					allowFullscreen="false" linkToSearch="false"
+					showAnnotations="true" popoverOnHover="true"
+					popoverClass="record_geomap_popover"
+					highlightDocumentId="#{activeDocumentBean.logid}"
+					currentPageNo="#{activeDocumentBean.viewManager.currentImageOrder}"
+					featureClickHandling="openSearch" />
+
+				<widgetComponent:widget_annotations />
+
+				<widgetComponent:widget_recordNotes 
+					notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
+
+				<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc, viewFulltext]}')}">
+				
+					<widgetComponent:widget_downloads />
+
+					<widgetComponent:widget_citation />
+
+					<widgetComponent:widget_relatedGroups />
+
+					<widgetComponent:widget_toc 
+						rendered="#{configurationBean.sidebarTocWidgetVisible}" />
+						
+				</ui:fragment>
+
+				<widgetComponent:widget_formatsLinks  rendered="#{displayConditions.matchRecord('{pageType: [viewMetadata]}')}"/>
+					
+			</ui:fragment>
+
+
+			<widgetComponent:widget_versionHistory />
+
+			<c:forEach var="module" items="#{configurationBean.modules}">
+				<c:forEach var="contribution" items="#{module.sidebarContributions}">
+					<ui:include src="/#{contribution}" />
+				</c:forEach>
+			</c:forEach>
+
+			<widgetComponent:widget_userInteractions />
+		
+		<script>
+			viewerJS.clipboard.init();
+		</script>
+		
+	</composite:implementation>
+</ui:composition>

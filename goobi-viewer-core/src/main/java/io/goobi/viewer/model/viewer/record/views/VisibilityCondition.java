@@ -23,7 +23,9 @@ package io.goobi.viewer.model.viewer.record.views;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +40,7 @@ import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -124,7 +127,11 @@ public class VisibilityCondition {
     public boolean matchesRecord(PageType pageType, ViewManager viewManager, HttpServletRequest request, RecordPropertyCache properties)
             throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException {
 
-        List<String> docTypes = new ArrayList<>(List.of(viewManager.getTopStructElement().getDocStructType()));
+        List<String> docTypes = new ArrayList<>();
+        Optional.ofNullable(viewManager)
+                .map(ViewManager::getTopStructElement)
+                .map(StructElement::getDocStructType)
+                .ifPresent(type -> docTypes.add(type));
         if (viewManager.getTopStructElement().isGroup()) {
             docTypes.add("group");
         } else if (viewManager.getTopStructElement().isGroupMember()) {
@@ -147,7 +154,11 @@ public class VisibilityCondition {
         BaseMimeType baseMimeType = BaseMimeType.getByName(viewManager.getTopStructElement().getMetadataValue(SolrConstants.MIMETYPE));
         return checkAccess(viewManager, request, properties)
                 && this.fileTypes.matches(existingFileTypes)
-                && this.sourceFormat.matches(List.of(viewManager.getTopStructElement().getSourceDocFormat()))
+                && this.sourceFormat.matches(Optional.ofNullable(viewManager)
+                        .map(ViewManager::getTopStructElement)
+                        .map(StructElement::getSourceDocFormat)
+                        .map(List::of)
+                        .orElse(Collections.emptyList()))
                 && this.mimeType.matches(List.of(baseMimeType))
                 && this.views.matches(List.of(pageType))
                 && this.docTypes.matches(docTypes)

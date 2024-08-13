@@ -22,7 +22,7 @@
 	</composite:interface>
 
 	<composite:implementation>
-		<div class="widget widget_views" jsf:id="#{cc.clientId}" rendered="#{displayConditions.getTag(cc.clientId).getChildCount('widget-element') > 0}">
+		<div class="widget widget_views" jsf:id="widgetViewsContent" rendered="#{displayConditions.getTag('widgetViewsContent').getChildCount('widget-element') > 1}">
 
 			<div class="widget__topbar">
 				<h2 role="button"
@@ -94,15 +94,13 @@
 						</h:panelGroup>
 
 						<!-- Metadata -->
-						<h:panelGroup
-							rendered="#{configurationBean.sidebarMetadataLinkVisible and displayConditions.matchRecord('{docType: ![group]}')}">
-							<ui:repeat var="metadataView" varStatus="status"
-								value="#{metadataBean.metadataViews}">
-								<h:panelGroup 
-									rendered="#{metadataView.isVisible(activeDocumentBean.viewManager.topStructElement)}">
-									<li jsf:id="metadata_view_link_#{status.index}" visibility-class="widget-element"
+							<ui:repeat visibility-class="widget-element"
+							rendered="#{configurationBean.sidebarMetadataLinkVisible and displayConditions.matchRecord('{docType: ![group]}')}"
+							 var="metadataView" varStatus="status" 
+								value="#{metadataBean.metadataViews.stream().filter(mdView -> mdView.isVisible(activeDocumentBean.viewManager.topStructElement)).toList()}">
+									<li jsf:id="metadata_view_link_#{status.index}"
 										class="#{navigationHelper.currentPage == 'metadata'.concat(metadataView.url) ? 'active' : ''}">
-										<h:outputLink
+										<h:outputLink 
 											value="#{navigationHelper.metadataActiveUrl}#{metadataView.url}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
 											<h:outputText rendered="#{metadataView.label != null}"
 												value="#{msg[metadataView.label]}" />
@@ -112,9 +110,7 @@
 												value="#{msg.view}: #{metadataView.label != null ? msg[metadataView.label] : msg[metadataBean.defaultMetadataLabel]}" />
 										</h:outputLink>
 									</li>
-								</h:panelGroup>
 							</ui:repeat>
-						</h:panelGroup>
 
 						<!-- Full-text -->
 						<h:panelGroup visibility-class="widget-element"
@@ -131,9 +127,9 @@
 						</h:panelGroup>
 
 						<!-- TEI full-text -->
-						<h:panelGroup visibility-class="widget-element"
-							rendered="#{configurationBean.sidebarFulltextLinkVisible and displayConditions.matchRecord('{contentType:[TEI], accessCondition: VIEW_FULLTEXT}')}">
-							<ui:repeat var="lang"
+
+							<ui:repeat rendered="#{configurationBean.sidebarFulltextLinkVisible and displayConditions.matchRecord('{contentType:[TEI], accessCondition: VIEW_FULLTEXT}')}"
+							 	var="lang" visibility-class="widget-element"
 								value="#{textBean.getRecordLanguages(activeDocumentBean.viewManager.topStructElement)}">
 								<li
 									class="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.selectedRecordLanguage3 == lang ? 'active' : ''}">
@@ -145,7 +141,6 @@
 									</h:outputLink>
 								</li>
 							</ui:repeat>
-						</h:panelGroup>
 
 						<!-- External full-text URL -->
 						<h:panelGroup visibility-class="widget-element"
@@ -196,13 +191,9 @@
 						</h:panelGroup>
 
 						<!-- RELATED CMS PAGES -->
-						<h:panelGroup 
-							rendered="#{cmsBean.isHasRelatedPages(activeDocumentBean.viewManager.pi)}">
-							<ui:repeat var="relatedPage" varStatus="status"
-								value="#{cmsBean.getRelatedPages(activeDocumentBean.viewManager.pi)}">
-								<ui:fragment 
-									rendered="#{relatedPage.published || cmsBean.mayEdit(relatedPage)}">
-									<li jsf:id="cms_page_link_#{status.index}" visibility-class="widget-element"
+							<ui:repeat var="relatedPage" varStatus="status" visibility-class="widget-element"
+								value="#{cmsBean.getRelatedPages(activeDocumentBean.viewManager.pi).stream().filter(p -> p.published or cmsBean.mayEdit(p)).toList()}">
+									<li id="cms_page_link_#{status.index}"
 										class="#{cc.attrs.pageName != '' and cc.attrs.pageName == relatedPage.title ? 'active' : ''} #{relatedPage.published ? '' : 'unpublished'}">
 										<h:outputLink 
 											value="#{relatedPage.pageUrl}">
@@ -211,9 +202,7 @@
 												value="#{msg.view}: #{msg[relatedPage.menuTitleOrTitle]}" />
 										</h:outputLink>
 									</li>
-								</ui:fragment>
 							</ui:repeat>
-						</h:panelGroup>
 					</ul>
 				</h:form>
 		</div>

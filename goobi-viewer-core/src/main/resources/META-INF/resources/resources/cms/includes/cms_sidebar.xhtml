@@ -35,8 +35,7 @@
 			<!-- WORK -->
 			<c:if test="#{cmsBean.relatedWorkLoaded}">
 
-				<ui:include src="/resources/includes/sidebar/record_sidebar.xhtml">
-				</ui:include>
+				<viewerComponent:record_sidebar/>
 
 			</c:if>
 

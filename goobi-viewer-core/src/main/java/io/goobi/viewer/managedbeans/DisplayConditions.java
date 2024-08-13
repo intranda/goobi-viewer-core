@@ -29,6 +29,9 @@ import java.util.List;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UINamingContainer;
+import javax.faces.component.html.HtmlPanelGrid;
+import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -318,7 +321,16 @@ public class DisplayConditions implements Serializable {
         }
 
         private boolean isRendered(UIComponent child) {
-            return child.isRendered();
+            return child.isRendered() && isHasValuesIfRepeat(child);
+        }
+
+        @Deprecated
+        public boolean isHasChildrenIfComposite(UIComponent child) {
+            if (child instanceof UINamingContainer || child instanceof HtmlPanelGroup || child instanceof HtmlPanelGrid) {
+                return child.getChildCount() > 0;
+            } else {
+                return true;
+            }
         }
 
         UIComponentHelper getChild(String id) {
@@ -347,7 +359,7 @@ public class DisplayConditions implements Serializable {
         private boolean hasVisibilityTag(UIComponent c, String visibilityClass) {
             Object styles = c.getAttributes().get("visibility-class");
             if (styles instanceof Collection) {
-                return ((Collection) styles).contains(visibilityClass);
+                return ((Collection<?>) styles).contains(visibilityClass);
             } else if (styles != null) {
                 return styles.toString().equals(visibilityClass);
             } else {
@@ -355,6 +367,25 @@ public class DisplayConditions implements Serializable {
             }
         }
 
+        /**
+         * Check if the given element is a ui:repeat. If so and if its value has no elements, return false. Otherwise true
+         * 
+         * @param c
+         * @return
+         */
+        private boolean isHasValuesIfRepeat(UIComponent c) {
+            if (c instanceof com.sun.faces.facelets.component.UIRepeat) {
+                com.sun.faces.facelets.component.UIRepeat repeat = (com.sun.faces.facelets.component.UIRepeat) c;
+                Object value = repeat.getValue();
+                if (value instanceof Collection) {
+                    return ((Collection<?>) value).size() > 0;
+                } else {
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        }
     }
 
     public void clearCache() {
