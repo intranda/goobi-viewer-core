@@ -447,7 +447,8 @@
 							</div>
 
 
-							<div id="mediaDownloads">
+							<div jsf:id="mediaDownloads" rendered="#{displayConditions.getTag('mediaDownloads').getChildCount('widget-element') > 0}">
+							<h3>#{msg.title__media_downloads}</h3>
 							<ui:fragment visibility-class="widget-element"
 									rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen], contentType:[AUDIO], accessCondition:DOWNLOAD_IMAGES}')}">
 									<a
