@@ -62,7 +62,9 @@ import org.apache.logging.log4j.Logger;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
+import io.goobi.viewer.api.rest.model.MediaResourceHelper;
 import io.goobi.viewer.controller.DataFileTools;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -83,6 +85,11 @@ import io.swagger.v3.oas.annotations.Parameter;
 public class ObjectResource {
 
     private static final Logger logger = LogManager.getLogger(ObjectResource.class);
+
+    @Context
+    private HttpServletRequest servletRequest;
+    @Context
+    private HttpServletResponse servletResponse;
 
     private final String pi;
     private final String filename;
@@ -183,6 +190,7 @@ public class ObjectResource {
                 for (java.nio.file.Path folder : folders) {
                     java.nio.file.Path filePath = folder.resolve(filename);
                     if (Files.isRegularFile(filePath)) {
+                        new MediaResourceHelper(DataManager.getInstance().getConfiguration()).setContentHeaders(servletResponse, filename, filePath);
                         return new ObjectStreamingOutput(filePath);
                     }
                 }
@@ -190,7 +198,7 @@ public class ObjectResource {
 
             throw new FileNotFoundException("File " + objectPath + " not found in file system");
         }
-
+        new MediaResourceHelper(DataManager.getInstance().getConfiguration()).setContentHeaders(servletResponse, filename, objectPath);
         return new ObjectStreamingOutput(objectPath);
     }
 
