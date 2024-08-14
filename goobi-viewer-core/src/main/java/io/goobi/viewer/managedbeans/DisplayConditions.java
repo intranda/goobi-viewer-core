@@ -38,6 +38,7 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.omnifaces.cdi.Eager;
 
 import io.goobi.viewer.controller.json.JsonStringConverter;
 import io.goobi.viewer.exceptions.DAOException;
@@ -64,6 +65,7 @@ import io.goobi.viewer.model.viewer.record.views.VisibilityConditionInfo;
  */
 @Named
 @SessionScoped
+@Eager
 public class DisplayConditions implements Serializable {
 
     private static final long serialVersionUID = 6193053985791285569L;
