@@ -563,20 +563,20 @@ public class UserBean implements Serializable {
             try {
                 BeanUtils.getBeanFromRequest(request, "collectionViewBean", CollectionViewBean.class)
                         .ifPresentOrElse(CollectionViewBean::invalidate, () -> {
-                            logger.error("Cannot access collectionViewBean to invalidate");
+                            logger.debug("Cannot invalidate CollectionViewBean. Not instantiated yet");
                         });
                 BeanUtils.getBeanFromRequest(request, "activeDocumentBean", ActiveDocumentBean.class)
                         .ifPresentOrElse(ActiveDocumentBean::resetAccess, () -> {
-                            logger.error("Cannot access activeDocumentBean to resetAccess");
+                            logger.debug("Cannot reset access permissions in ActiveDocumentBean. Not instantiated yet");
                         });
                 BeanUtils.getBeanFromRequest(request, "sessionBean", SessionBean.class)
                         .ifPresentOrElse(SessionBean::cleanSessionObjects, () -> {
-                            logger.error("Cannot access sessionBean to cleanSessionObjects");
+                            logger.debug("Cannot clear session storage in SessionBean. Not instantiated yet");
                         });
 
                 BeanUtils.getBeanFromRequest(request, "displayConditions", DisplayConditions.class)
                         .ifPresentOrElse(DisplayConditions::clearCache, () -> {
-                            logger.error("Cannot access displayConditions to clear display conditions cache");
+                            logger.debug("Cannot clear DosplayConditions cache. Not instantiated yet");
                         });
             } catch (Exception e) {
                 logger.warn(e.getMessage());
