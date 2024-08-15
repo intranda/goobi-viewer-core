@@ -79,7 +79,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.6.1</alto.version>
-		<ics.version>3.13.1</ics.version>
+		<ics.version>3.14.0</ics.version>
 		<tei-conversion.version>1.3.2</tei-conversion.version>
 		<iiif-api-model.version>2.6.4</iiif-api-model.version>
 		<normdataimporter.version>1.11.2</normdataimporter.version>
