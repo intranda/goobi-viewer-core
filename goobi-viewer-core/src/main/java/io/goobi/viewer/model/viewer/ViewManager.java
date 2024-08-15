@@ -4176,7 +4176,7 @@ public class ViewManager implements Serializable {
      * @should return locked status if no statuses found
      */
     public List<CopyrightIndicatorStatus> getCopyrightIndicatorStatuses() {
-        logger.trace("getCopyrightIndicatorStatuses");
+        // logger.trace("getCopyrightIndicatorStatuses");
         if (copyrightIndicatorStatuses == null) {
             copyrightIndicatorStatuses = new ArrayList<>();
             String field = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusField();

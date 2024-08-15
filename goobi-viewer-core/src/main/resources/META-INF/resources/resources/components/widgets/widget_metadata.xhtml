@@ -80,7 +80,43 @@
                     </ui:fragment>
                     
                 </ui:fragment>
-            
+                
+                
+                <!-- Page metadata -->
+                <ui:fragment rendered="#{fn:length(activeDocumentBean.viewManager.currentPage.metadata) > 0}">
+                    <h2 >#{msg[metadataBean.defaultSidebarMetadataLabel]}</h2>
+                    
+                    <dl>
+                        <c:forEach items="#{activeDocumentBean.viewManager.currentPage.metadata}" var="metadata">
+                            <dt title="#{msg[metadata.label]}">
+                                <h:outputText value="#{msg[metadata.label]}:" escape="false" />
+                            </dt>
+    
+                            <!-- Grouped metadata -->
+                            <h:panelGroup rendered="#{metadata.group}">
+                                <dd>
+                                    <ui:repeat value="#{metadata.values}" var="val">
+                                        <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}" escape="false">
+                                        </h:outputFormat>
+                                        <br />
+                                    </ui:repeat>
+                                </dd>
+                            </h:panelGroup>
+    
+                            <!-- Non-grouped metadata -->
+                            <h:panelGroup rendered="#{!metadata.group}">
+                                <dd>
+                                    <ui:repeat value="#{metadata.values}" var="val">
+                                        <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
+                                        </h:outputFormat>
+                                        <br />
+                                    </ui:repeat>
+                                </dd>
+                            </h:panelGroup>
+                        </c:forEach>
+                    </dl>
+                </ui:fragment>
+                    
             <script type="text/javascript">
                 var normdataWidgetConfig = {
                     path: "#{request.contextPath}",
