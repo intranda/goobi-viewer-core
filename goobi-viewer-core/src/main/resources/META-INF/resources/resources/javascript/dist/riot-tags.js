@@ -4597,6 +4597,7 @@ this.loadThumbnails = function(source, type) {
 				rxjs.from(source.structures)
 				.pipe(
 						rxjs.operators.map(range => this.getFirstCanvas(range, true)),
+						rxjs.operators.filter(canvas => canvas != undefined),
 						rxjs.operators.concatMap(canvas => this.loadCanvas(canvas))
 						)
 				.subscribe(item => this.addThumbnail(item));
