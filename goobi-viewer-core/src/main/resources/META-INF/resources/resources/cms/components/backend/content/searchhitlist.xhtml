@@ -52,7 +52,7 @@
 					<div class="custom-control custom-control--select">
 						<h:selectOneMenu id="solrSortFields" styleClass="form-control -hide-disabled-options"
 							value="#{cc.attrs.contentItem.content.sortField}">
-							<f:selectItem itemDisabled="#{!cc.attrs.contentItem.owningComponent.getBooleanAttributeValue('showOptions', false)}" itemValue="" itemLabel="#{msg.option__use_default_sorting_selection}" />
+							<f:selectItem itemDisabled="#{!cc.attrs.contentItem.content.showOptions}" itemValue="" itemLabel="#{msg.option__use_default_sorting_selection}" />
 							<c:forEach var="field" items="#{cmsBean.possibleSortFields}">
 							    <c:choose>
                                     <c:when test="#{field eq 'RELEVANCE'}">
@@ -114,7 +114,7 @@
 			</div>
 		</div>
 
-	    <!-- CONTENT TYPE URL PARAMS -->
+	    <!-- SEARCH WITH AGGREGATION / FIND STRUCTURE ELEMENTS -->
 	    <div class="admin__content-component-input-group">
 	        <div class="admin__content-component-input-label">
 	            <label for="findStructElements">#{msg.cms_page_no_search_aggregation}:</label>
@@ -139,7 +139,40 @@
 	                <h:selectBooleanCheckbox 
 	                    id="findStructElements" 
 	                    value="#{cc.attrs.contentItem.content.includeStructureElements}" 
-	                    onclick="cmsJS.createPage.disablePreview();" />
+	                    onclick="cmsJS.createPage.disablePreview();">
+	                </h:selectBooleanCheckbox>
+	            </h:panelGroup>
+	        </div>
+	    </div>
+	    
+	    <!-- SHOW LIST OPTIONS -->
+	    <div class="admin__content-component-input-group">
+	        <div class="admin__content-component-input-label">
+	            <label for="showOptions">#{msg.cms_page__show_list_options}:</label>
+	        </div>
+	        <div class="admin__content-component-input-field align-self-center">
+	            <!-- AREA FOR AJAX REFRESH -->
+	            <h:panelGroup id="showOptionsElementsGroup" layout="block" styleClass="cms-module__option-checkbox">
+	                <!-- VALIDATION MESSAGE -->
+	                <div class="cms-module__option-message">
+	                    <h:messages for="showOptions" 
+	                        infoClass="cms-module__option-message-status success" 
+	                        warnClass="cms-module__option-message-status warning"
+	                        errorClass="cms-module__option-message-status danger" />
+	
+	                    <div class="cms-module__option-message-mark">
+	                        <i class="fa fa-check" aria-hidden="true"></i>
+	                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+	                    </div>
+	                </div>
+	                
+	                <!-- CHECKBOX -->
+	                <h:selectBooleanCheckbox 
+	                    id="showOptions" 
+	                    value="#{cc.attrs.contentItem.content.showOptions}" 
+	                    onclick="cmsJS.createPage.disablePreview();">
+	                    <f:ajax event="valueChange" render="solrSortFields"></f:ajax>
+	                </h:selectBooleanCheckbox>
 	            </h:panelGroup>
 	        </div>
 	    </div>
@@ -180,7 +213,7 @@
 
         <!-- HIT LIST CONFIGURATION -->
         <h:panelGroup id="metadataListTypeGroup">
-            <ui:fragment rendered="#{cc.attrs.contentItem.content.view.label == 'searchListTileView'}">
+            <ui:fragment rendered="#{cc.attrs.contentItem.content.view.label == 'searchListTileView' and not empty cmsBean.cmsMetadataListTypes}">
                 <div class="admin__content-component-input-group">
                     <div class="admin__content-component-input-label">
                         <label for="metadataListType">#{msg.cms_metadataListType}:</label>
