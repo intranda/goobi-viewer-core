@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +39,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkType;
+import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
@@ -118,26 +120,26 @@ public final class CitationTools {
             return Collections.emptyList();
         }
 
+        VariableReplacer vr = new VariableReplacer(viewManager);
+
         for (CitationLink link : ret) {
             if (!CitationLinkType.URL.equals(link.getType())) {
                 continue;
             }
+
             // logger.error("Loading value: {}/{}", level, link.getField()); //NOSONAR Debug
             if (doc.get(link.getField()) != null) {
-                link.setValue(SolrTools.getAsString(doc.get(link.getField())));
+                vr.addReplacement("value", SolrTools.getAsString(doc.get(link.getField())));
             } else if (link.isTopstructValueFallback() && !CitationLinkLevel.RECORD.equals(level)) {
                 query = SolrConstants.PI + ":" + viewManager.getPi();
                 topDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(link.getField()));
                 if (topDoc != null && topDoc.get(link.getField()) != null) {
-                    link.setValue(SolrTools.getAsString(topDoc.get(link.getField())));
+                    vr.addReplacement("value", SolrTools.getAsString(topDoc.get(link.getField())));
                 }
             }
-
-            if (StringUtils.isNotEmpty(link.getPattern()) && link.getValue() != null) {
-                link.setValue(link.getPattern()
-                        .replace("{value}", link.getValue())
-                        .replace("{page}", String.valueOf(viewManager.getCurrentImageOrder())));
-            }
+            vr.addReplacement("page", String.valueOf(viewManager.getCurrentImageOrder()));
+            String pattern = Optional.ofNullable(link.getPattern()).filter(StringUtils::isNotBlank).orElse("{value}");
+            link.setValue(vr.replaceFirst(pattern));
         }
 
         return ret;

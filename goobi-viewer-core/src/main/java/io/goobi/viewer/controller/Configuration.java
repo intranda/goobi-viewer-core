@@ -1065,9 +1065,10 @@ public class Configuration extends AbstractConfiguration {
             String label = sub.getString(XML_PATH_ATTRIBUTE_LABEL);
             String field = sub.getString("[@field]");
             String pattern = sub.getString("[@pattern]");
+            String action = sub.getString("[@action]", "clipboard");
             boolean topstructValueFallback = sub.getBoolean("[@topstructValueFallback]", false);
             try {
-                ret.add(new CitationLink(type, level, label).setField(field)
+                ret.add(new CitationLink(type, level, action, label).setField(field)
                         .setPattern(pattern)
                         .setTopstructValueFallback(topstructValueFallback));
             } catch (IllegalArgumentException e) {
