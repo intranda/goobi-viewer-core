@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import javax.enterprise.context.SessionScoped;
@@ -38,6 +39,8 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.omnifaces.cdi.Eager;
 
 import io.goobi.viewer.controller.json.JsonStringConverter;
@@ -69,6 +72,8 @@ import io.goobi.viewer.model.viewer.record.views.VisibilityConditionInfo;
 public class DisplayConditions implements Serializable {
 
     private static final long serialVersionUID = 6193053985791285569L;
+    private static final Logger logger = LogManager.getLogger(DisplayConditions.class);
+
     @Inject
     protected ActiveDocumentBean activeDocumentBean;
     @Inject
@@ -323,7 +328,13 @@ public class DisplayConditions implements Serializable {
         }
 
         private boolean isRendered(UIComponent child) {
-            return child.isRendered() && isHasValuesIfRepeat(child);
+            try {
+                return child.isRendered() && isHasValuesIfRepeat(child);
+            } catch (ConcurrentModificationException e) {
+                //possibly happens when rendered conditions are tested on child with 'displayConditions.matchPage/matchRecord', according to log entry
+                logger.warn("Cannot detect rendered state of child compnent {} because of {}", child.getClientId(), e.toString());
+                return true;
+            }
         }
 
         @Deprecated
