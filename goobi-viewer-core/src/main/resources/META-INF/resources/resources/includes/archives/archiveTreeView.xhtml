@@ -86,7 +86,8 @@
 											<a class="archives-tree__selected" name="selected"></a>
 										</ui:fragment>
 										<div>
-											<h:commandLink styleClass="archives-tree__inactive-title #{entry.containsImage != '' ? '-recordHasImage':''}"
+											<h:commandLink
+											    styleClass="archives-tree__inactive-title #{entry.containsImage and entry.imageAccessAllowed ? '-recordHasImage':''}"
 											action="#{archiveTree.toggleSelectedEntry(entry)}"
 												    value="#{entry.label}"
 												    pt:data-select-entry="#{entry.id}">

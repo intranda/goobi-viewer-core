@@ -726,6 +726,30 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
+     * Checks whether access to the given node is allowed due to set access conditions.
+     * 
+     * @return true if access granted; false otherwise
+     */
+    public boolean isImageAccessAllowed() {
+        if (!isContainsImage() || StringUtils.isEmpty(getAssociatedRecordPi())) {
+            return true;
+        }
+
+        try {
+            boolean ret = AccessConditionUtils
+                    .checkAccessPermissionByIdentifierAndLogId(getAssociatedRecordPi(), null, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, BeanUtils.getRequest())
+                    .isGranted();
+            if (!ret) {
+                logger.trace("Image access denied to {}", label);
+            }
+            return ret;
+        } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
+            logger.error(e.getMessage(), e);
+            return false;
+        }
+    }
+
+    /**
      * @return the identityStatementAreaList
      */
     public List<Metadata> getIdentityStatementAreaList() {
