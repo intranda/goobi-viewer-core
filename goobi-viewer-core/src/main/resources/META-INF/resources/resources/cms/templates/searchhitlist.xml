@@ -27,8 +27,9 @@
 		<value label="Hide on desktop">hideDesktop</value>
 		<value label="Hide on mobile">hideMobile</value>
 	</attribute>
-	<attribute name="showOptions" display="false" boolean="true">
-		<value>false</value>
+	<attribute name="showOptions" label="label__show_options" type="toggle"boolean="true">
+		<value label="option__show_options">true</value>
+		<value label="option__hide_options">false</value>
 	</attribute>
 	
 </component>
