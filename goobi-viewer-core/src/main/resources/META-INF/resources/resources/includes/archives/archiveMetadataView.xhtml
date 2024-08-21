@@ -21,9 +21,9 @@
 			<ui:repeat begin="0" end="6" var="index">
 			
 			<!-- Identity statement metadata -->
-			<ui:fragment rendered="#{archiveEntry.getAreaList(index).stream().filter(metadata -> !metadata.blank).count() > 0}">
+			<ui:fragment rendered="#{archiveEntry.getMetadata(archiveMetadataBean).getAreaList(index).stream().filter(metadata -> !metadata.blank).count() > 0}">
 				<div class="archives__object-block-label">#{msg['archives__archive_area_'.concat(index)]}</div>
-				<ui:repeat var="metadata" value="#{archiveEntry.getAreaList(index)}">
+				<ui:repeat var="metadata" value="#{archiveEntry.getMetadata(archiveMetadataBean).getAreaList(index)}">
 
                     <!-- grouped="true" -->
                     <h:panelGroup rendered="#{metadata.group}">
@@ -68,9 +68,9 @@
 			
 			<!-- Description control metadata -->
 			<c:if
-				test="#{archiveEntry.descriptionControlAreaList.stream().filter(field -> field.filled).count() > 0}">
+				test="#{archiveEntry.getMetadata(archiveMetadataBean).descriptionControlAreaList.stream().filter(field -> field.filled).count() > 0}">
 				<div class="archives__object-block-label">#{msg.archives__archive_area_descriptionControl}</div>
-				<ui:repeat var="metadata" value="#{archiveEntry.descriptionControlAreaList}">
+				<ui:repeat var="metadata" value="#{archiveEntry.getMetadata(archiveMetadataBean).descriptionControlAreaList}">
                     <!-- grouped="true" -->
                     <h:panelGroup rendered="#{metadata.group}">
 
