@@ -202,21 +202,7 @@ public class ArchiveTree implements Serializable {
         logger.trace("getVisibleTree");
         return getTreeView().stream()
                 .filter(e -> e.isVisible() && (e.isDisplaySearch() || !searchActive) && e.isAccessAllowed())
-                .map(e -> {
-                    if (!e.isMetadataLoaded()) {
-                        e.loadMetadata();
-                    }
-                    return e;
-                })
                 .toList();
-
-        //        ret.forEach(e -> {
-        //            if (!e.isMetadataLoaded()) {
-        //                e.loadMetadata();
-        //            }
-        //        });
-
-        //        return ret;
     }
 
     /**
@@ -296,9 +282,6 @@ public class ArchiveTree implements Serializable {
     public void setSelectedEntry(ArchiveEntry selectedEntry) {
         logger.trace("setSelectedEntry: {}", selectedEntry != null ? selectedEntry.getLabel() : null);
         this.selectedEntry = selectedEntry;
-        if (selectedEntry != null && !selectedEntry.isMetadataLoaded()) {
-            selectedEntry.loadMetadata();
-        }
     }
 
     /**
@@ -310,9 +293,6 @@ public class ArchiveTree implements Serializable {
             this.selectedEntry = null;
         } else {
             this.selectedEntry = selectedEntry;
-            if (selectedEntry != null && !selectedEntry.isMetadataLoaded()) {
-                selectedEntry.loadMetadata();
-            }
         }
     }
 
