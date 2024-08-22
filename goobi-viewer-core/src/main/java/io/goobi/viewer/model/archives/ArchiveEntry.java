@@ -731,6 +731,7 @@ public class ArchiveEntry implements Serializable {
      * @return true if access granted; false otherwise
      */
     public boolean isImageAccessAllowed() {
+        // Return true for potential parents of nodes with images
         if (!isContainsImage() || StringUtils.isEmpty(getAssociatedRecordPi())) {
             return true;
         }
