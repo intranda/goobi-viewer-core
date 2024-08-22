@@ -28,10 +28,16 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import javax.ws.rs.core.UriBuilder;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
@@ -51,6 +57,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
  * Builder for both {@link de.intranda.api.iiif.discovery.OrderedCollection} and {@link de.intranda.api.iiif.discovery.OrderedCollectionPage} of
@@ -68,10 +75,13 @@ public class ActivityCollectionBuilder {
     private final int activitiesPerPage = DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage();
     private Integer numActivities = null;
     private LocalDateTime startDate = null;
+    private String filterQuery = "";
     private final AbstractApiUrlManager urls;
+    private final SolrSearchIndex searchIndex;
 
-    public ActivityCollectionBuilder(AbstractApiUrlManager apiUrlManager) {
+    public ActivityCollectionBuilder(AbstractApiUrlManager apiUrlManager, SolrSearchIndex searchIndex, int itemsPerPage) {
         this.urls = apiUrlManager;
+        this.searchIndex = searchIndex;
     }
 
     /**
@@ -137,9 +147,21 @@ public class ActivityCollectionBuilder {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public ActivityCollectionBuilder setStartDate(LocalDateTime startDate) throws PresentationException, IndexUnreachableException {
+    public ActivityCollectionBuilder setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
         //reset numActivities because it is affected  by startDate
+        this.numActivities = null;
+        return this;
+    }
+
+    /**
+     * Set an additional filter query which must be met by all processes for which activities are counted
+     * 
+     * @param query The solr query which counted processes must meet
+     * @return myself
+     */
+    public ActivityCollectionBuilder setFilterQuery(String query) {
+        this.filterQuery = query;
         this.numActivities = null;
         return this;
     }
@@ -196,7 +218,14 @@ public class ActivityCollectionBuilder {
      */
     public URI getPageURI(int no) {
         String urlString = this.urls.path(RECORDS_CHANGES, RECORDS_CHANGES_PAGE).params(no).build();
-        return URI.create(urlString);
+        UriBuilder uri = UriBuilder.fromUri(urlString);
+        if (startDate != null) {
+            uri.queryParam("start", startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        }
+        if (StringUtils.isNotBlank(filterQuery)) {
+            uri.queryParam("filter", filterQuery);
+        }
+        return uri.build();
     }
 
     private int getLastPageNo() throws PresentationException, IndexUnreachableException {
@@ -252,15 +281,22 @@ public class ActivityCollectionBuilder {
         return new Manifest2(uri);
     }
 
-    private static int getNumberOfActivities(LocalDateTime startDate) throws PresentationException, IndexUnreachableException {
+    private int getNumberOfActivities(LocalDateTime startDate) throws PresentationException, IndexUnreachableException {
+        Long millisStart = DateTools.getMillisFromLocalDateTime(startDate, false);
         String query = QUERY_ISWORK;
         query += SearchHelper.getAllSuffixes();
         if (startDate != null) {
-            query += " +(DATEUPDATED:[" + startDate + " TO*] DATECREATED:[" + startDate + " TO *])";
+            query += " +(DATEUPDATED:[" + startDate.toInstant(ZoneOffset.UTC).toEpochMilli() + " TO *] DATECREATED:["
+                    + startDate.toInstant(ZoneOffset.UTC).toEpochMilli() + " TO *])";
         }
-        QueryResponse qr = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, null, Arrays.asList(FACET_FIELDS), 1, false);
+        QueryResponse qr = searchIndex.searchFacetsAndStatistics(query, List.of(filterQuery), Arrays.asList(FACET_FIELDS), 1, false);
         if (qr != null) {
-            Long count = qr.getFacetFields().stream().flatMap(field -> field.getValues().stream()).map(Count::getName).distinct().count();
+            Long count = qr.getFacetFields()
+                    .stream()
+                    .flatMap(field -> field.getValues().stream())
+                    .filter(c -> millisStart == null ? true : Long.parseLong(c.getName()) >= millisStart)
+                    .mapToLong(Count::getCount)
+                    .sum();
             return count.intValue();
         }
 
@@ -278,29 +314,39 @@ public class ActivityCollectionBuilder {
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    private static List<Long> getActivities(LocalDateTime startDate, int first, int last) throws PresentationException, IndexUnreachableException {
+    private List<Long> getActivities(LocalDateTime startDate, int first, int last) throws PresentationException, IndexUnreachableException {
         return getActivities(startDate).stream().skip(first).limit((long) last - first + 1).toList();
     }
 
-    private static List<Long> getActivities(LocalDateTime startDate) throws PresentationException, IndexUnreachableException {
+    private List<Long> getActivities(LocalDateTime startDate) throws PresentationException, IndexUnreachableException {
+        Long millisStart = DateTools.getMillisFromLocalDateTime(startDate, false);
         String query = QUERY_ISWORK;
         query += SearchHelper.getAllSuffixes();
         if (startDate != null) {
-            query += " +(DATEUPDATED:[" + startDate + " TO *] DATECREATED:[" + startDate + " TO *])";
+            query += " +(DATEUPDATED:[" + DateTools.getMillisFromLocalDateTime(startDate, false) + " TO *] DATECREATED:["
+                    + DateTools.getMillisFromLocalDateTime(startDate, false) + " TO *])";
         }
-        QueryResponse qr = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, null, Arrays.asList(FACET_FIELDS), 1, false);
+        QueryResponse qr = searchIndex.searchFacetsAndStatistics(query, List.of(filterQuery), Arrays.asList(FACET_FIELDS), 1, false);
         if (qr != null) {
             return qr.getFacetFields()
                     .stream()
                     .flatMap(field -> field.getValues().stream())
-                    .map(Count::getName)
-                    .distinct()
+                    .flatMap(count -> getAsList(count).stream())
                     .map(Long::parseLong)
+                    .filter(millisDate -> millisStart == null ? true : millisDate >= millisStart)
                     .sorted()
                     .toList();
         }
 
         return new ArrayList<>();
+    }
+
+    private List<String> getAsList(Count count) {
+        List<String> list = new ArrayList<>(Long.valueOf(count.getCount()).intValue());
+        for (int i = 0; i < count.getCount(); i++) {
+            list.add(count.getName());
+        }
+        return list;
     }
 
     /**
@@ -312,13 +358,14 @@ public class ActivityCollectionBuilder {
      * @throws IndexUnreachableException
      * @should only return topstructs
      */
-    static SolrDocumentList getDocs(Long startDate, Long endDate) throws PresentationException, IndexUnreachableException {
+    SolrDocumentList getDocs(Long startDate, Long endDate) throws PresentationException, IndexUnreachableException {
         String query = QUERY_ISWORK;
         query += SearchHelper.getAllSuffixes();
         if (startDate != null && endDate != null) {
             query = "+(" + query + ") +(DATEUPDATED:[" + startDate + " TO " + endDate + "] DATECREATED:[" + startDate + " TO " + endDate + "])";
         }
 
-        return DataManager.getInstance().getSearchIndex().search(query, Integer.MAX_VALUE, null, Arrays.asList(SOLR_FIELDS));
+        return searchIndex.search(query, 0, Integer.MAX_VALUE, Collections.emptyList(), Collections.emptyList(), Arrays.asList(SOLR_FIELDS),
+                List.of(filterQuery), Collections.emptyMap()).getResults();
     }
 }
