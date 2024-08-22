@@ -342,7 +342,7 @@ public class ActivityCollectionBuilder {
     }
 
     private List<String> getAsList(Count count) {
-        List<String> list = new ArrayList<>(Long.valueOf(count.getCount()).intValue());
+        List<String> list = new ArrayList<>((int) count.getCount());
         for (int i = 0; i < count.getCount(); i++) {
             list.add(count.getName());
         }
