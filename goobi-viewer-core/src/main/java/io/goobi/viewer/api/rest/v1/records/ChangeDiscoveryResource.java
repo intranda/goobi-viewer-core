@@ -24,6 +24,8 @@ package io.goobi.viewer.api.rest.v1.records;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CHANGES;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CHANGES_PAGE;
 
+import java.time.LocalDate;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,8 +33,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.api.iiif.discovery.Activity;
 import de.intranda.api.iiif.discovery.OrderedCollection;
@@ -40,6 +45,7 @@ import de.intranda.api.iiif.discovery.OrderedCollectionPage;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.iiif.discovery.ActivityCollectionBuilder;
@@ -80,8 +86,16 @@ public class ChangeDiscoveryResource {
             summary = "Get a IIIF change discovery activity stream of all record changes")
     @ApiResponse(responseCode = "200", description = "Return activity stream according to IIIF change discovery specification")
     @ApiResponse(responseCode = "500", description = "An internal error occured, possibly due to an unreachable SOLR index")
-    public OrderedCollection<Activity> getAllChanges() throws PresentationException, IndexUnreachableException {
-        ActivityCollectionBuilder builder = new ActivityCollectionBuilder(apiUrlManager);
+    public OrderedCollection<Activity> getAllChanges(@QueryParam("start") String startDate, @QueryParam("filter") String filterQuery)
+            throws PresentationException, IndexUnreachableException {
+        ActivityCollectionBuilder builder = new ActivityCollectionBuilder(apiUrlManager, DataManager.getInstance().getSearchIndex(),
+                DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage());
+        if (StringUtils.isNotBlank(startDate)) {
+            builder.setStartDate(LocalDate.parse(startDate).atStartOfDay());
+        }
+        if (StringUtils.isNotBlank(filterQuery)) {
+            builder.setFilterQuery(filterQuery);
+        }
         OrderedCollection<Activity> collection = builder.buildCollection();
         collection.setContext(CONTEXT);
         return collection;
@@ -100,8 +114,17 @@ public class ChangeDiscoveryResource {
     @GET
     @Path(RECORDS_CHANGES_PAGE)
     @Produces({ MediaType.APPLICATION_JSON })
-    public OrderedCollectionPage<Activity> getPage(@PathParam("pageNo") int pageNo) throws PresentationException, IndexUnreachableException {
-        ActivityCollectionBuilder builder = new ActivityCollectionBuilder(apiUrlManager);
+    public OrderedCollectionPage<Activity> getPage(@PathParam("pageNo") int pageNo, @QueryParam("start") String startDate,
+            @QueryParam("filter") String filterQuery)
+            throws PresentationException, IndexUnreachableException {
+        ActivityCollectionBuilder builder = new ActivityCollectionBuilder(apiUrlManager, DataManager.getInstance().getSearchIndex(),
+                DataManager.getInstance().getConfiguration().getIIIFDiscoveryAvtivitiesPerPage());
+        if (StringUtils.isNotBlank(startDate)) {
+            builder.setStartDate(LocalDate.parse(startDate).atStartOfDay());
+        }
+        if (StringUtils.isNotBlank(filterQuery)) {
+            builder.setFilterQuery(filterQuery);
+        }
         OrderedCollectionPage<Activity> page = builder.buildPage(pageNo);
         page.setContext(CONTEXT);
         return page;
