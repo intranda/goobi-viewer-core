@@ -30,7 +30,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ArchiveMetadataBean;
@@ -99,7 +98,7 @@ public class ArchiveEntryMetadataList {
     //    Date(s) of descriptions
     private final List<Metadata> descriptionControlAreaList = new ArrayList<>();
 
-    public ArchiveEntryMetadataList(String id, SolrDocument doc) {
+    public ArchiveEntryMetadataList(String id, SolrDocument doc, List<Metadata> metadataList) {
         if (StringUtils.isBlank(id)) {
             throw new IllegalArgumentException("Id of archive entry metadata list may not be null or empty");
         } else if (doc == null) {
@@ -108,7 +107,6 @@ public class ArchiveEntryMetadataList {
         this.id = id;
         logger.trace("loadMetadata ({})", doc);
         try {
-            List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getArchiveMetadataForTemplate("");
             // Collect metadata
             if (doc != null && metadataList != null && !metadataList.isEmpty()) {
                 StructElement se = new StructElement(doc);
