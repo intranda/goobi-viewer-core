@@ -28,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
@@ -38,7 +37,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
-import io.goobi.viewer.managedbeans.ArchiveMetadataBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -322,36 +320,6 @@ public class ArchiveEntry implements Serializable {
         }
     }
 
-    public ArchiveEntryMetadataList getMetadata(ArchiveMetadataBean metadataBean) throws PresentationException {
-        if (!metadataBean.isMetadataLoaded(id)) {
-            loadMetadata(metadataBean);
-        }
-        return metadataBean.getMetadata(id);
-    }
-
-    private void loadMetadata(ArchiveMetadataBean metadataBean) throws PresentationException {
-
-        //        ArchiveMetadataBean metadataBean = (ArchiveMetadataBean) BeanUtils.getBeanByName("archiveMetadataBean", ArchiveMetadataBean.class);
-        if (metadataBean == null) {
-            throw new PresentationException("Cannot find ArchiveMetadataBean in scope");
-        }
-
-        ArchiveEntryMetadataList metadata = metadataBean.loadMetadata(this.id, doc);
-
-        if (StringUtils.isBlank(getLabel())) {
-            String unitTitle = metadata.getFirstValue("unittitle");
-            if (StringUtils.isNotBlank(unitTitle)) {
-                setLabel(unitTitle);
-            }
-        }
-
-        String unitDate = metadata.getFirstValue("unitdate", 1);
-        if (StringUtils.isNotBlank(unitDate)) {
-            this.unitdate = unitDate;
-        }
-
-    }
-
     /**
      * 
      * @return Root node
@@ -607,6 +575,10 @@ public class ArchiveEntry implements Serializable {
      */
     public String getUnitdate() {
         return unitdate;
+    }
+
+    public void setUnitdate(String unitdate) {
+        this.unitdate = unitdate;
     }
 
     /**

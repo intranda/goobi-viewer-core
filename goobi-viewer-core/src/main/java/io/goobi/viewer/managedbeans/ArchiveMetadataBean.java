@@ -22,16 +22,20 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.apache.solr.common.SolrDocument;
+import org.apache.commons.lang3.StringUtils;
 
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.archives.ArchiveEntry;
 import io.goobi.viewer.model.archives.ArchiveEntryMetadataList;
+import io.goobi.viewer.model.metadata.Metadata;
 
 /**
  * Short lived bean to store {@link ArchiveEntryMetadataList metadata lists} for {@link ArchiveEntry archiveEntries}.
@@ -42,19 +46,74 @@ public class ArchiveMetadataBean implements Serializable {
 
     private static final long serialVersionUID = 7525640333611786457L;
     private final Map<String, ArchiveEntryMetadataList> entryMap = new ConcurrentHashMap<>();
+    private final List<Metadata> metadataList;
 
+    /**
+     * default constructor using local configuration to load metadata list
+     */
+    public ArchiveMetadataBean() {
+        this.metadataList = DataManager.getInstance().getConfiguration().getArchiveMetadata();
+    }
+
+    /**
+     * Constructor for testing. Receives custom metadata list
+     * 
+     * @param metadataList
+     */
+    public ArchiveMetadataBean(List<Metadata> metadataList) {
+        this.metadataList = metadataList;
+    }
+
+    /**
+     * Check if metadata for the {@link ArchiveEntry} with the given id has already been cached in the bean
+     * 
+     * @param entryId id of the archive entry
+     * @return true if metadata for the entry is stored in the bean
+     */
     public boolean isMetadataLoaded(String entryId) {
         return entryMap.containsKey(entryId);
     }
 
-    public ArchiveEntryMetadataList getMetadata(String entryId) {
-        return entryMap.get(entryId);
+    /**
+     * Get the {@link ArchiveEntryMetadataList} for the given {@link ArchiveEntry}. If the metadata is not already stored in the bean, it is created
+     * using the entry's solr document and the metadata list of the bean, and stored within the bean
+     * 
+     * @param entry The entry which metadata to return
+     * @return the metadata list for the given entry
+     * @throws PresentationException If the metadata list had to be created and an error occured while doing so
+     */
+    public ArchiveEntryMetadataList getMetadata(ArchiveEntry entry) throws PresentationException {
+        if (!isMetadataLoaded(entry.getId())) {
+            loadMetadata(entry);
+        }
+        return getMetadata(entry.getId());
     }
 
-    public ArchiveEntryMetadataList loadMetadata(String entryId, SolrDocument doc) {
-        ArchiveEntryMetadataList list = new ArchiveEntryMetadataList(entryId, doc);
-        this.entryMap.put(entryId, list);
-        return list;
+    private void loadMetadata(ArchiveEntry entry) throws PresentationException {
+
+        if (entry == null) {
+            throw new PresentationException("Cannot find ArchiveMetadataBean in scope");
+        }
+
+        ArchiveEntryMetadataList metadata = new ArchiveEntryMetadataList(entry.getId(), entry.getDoc(), metadataList);
+        this.entryMap.put(entry.getId(), metadata);
+
+        if (StringUtils.isBlank(entry.getLabel())) {
+            String unitTitle = metadata.getFirstValue("unittitle");
+            if (StringUtils.isNotBlank(unitTitle)) {
+                entry.setLabel(unitTitle);
+            }
+        }
+
+        String unitDate = metadata.getFirstValue("unitdate", 1);
+        if (StringUtils.isNotBlank(unitDate)) {
+            entry.setUnitdate(unitDate);
+        }
+
+    }
+
+    private ArchiveEntryMetadataList getMetadata(String entryId) {
+        return entryMap.get(entryId);
     }
 
 }
