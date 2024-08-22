@@ -147,7 +147,7 @@ public class SolrEADParser extends ArchiveParser {
         }
 
         logger.trace("loadDatabase: {}", database.getResourceId());
-        List<String> solrFields = getSolrFields("");
+        List<String> solrFields = getSolrFields();
         SolrDocument topDoc =
                 DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":\"" + database.getResourceId() + '"', solrFields);
         if (topDoc != null) {
@@ -377,8 +377,8 @@ public class SolrEADParser extends ArchiveParser {
      * @param template Metadata template name
      * @return List of Solr field names
      */
-    static List<String> getSolrFields(String template) {
-        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getArchiveMetadataForTemplate(template);
+    static List<String> getSolrFields() {
+        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getArchiveMetadata();
 
         List<String> ret = new ArrayList<>(SOLR_FIELDS_ENTRIES.length + metadataList.size());
         ret.addAll(Arrays.asList(SOLR_FIELDS_ENTRIES));

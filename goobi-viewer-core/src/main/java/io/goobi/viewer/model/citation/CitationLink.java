@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.citation;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -84,10 +85,36 @@ public class CitationLink {
         }
     }
 
+    public enum CitationLinkAction {
+        CLIPBOARD,
+        OPEN,
+        DOWNLOAD;
+
+        /**
+         *
+         * @param name
+         * @return {@link CitationLinkLevel}; null if no matching level found
+         */
+        public static CitationLinkAction getByName(String name) {
+            if (name == null) {
+                return null;
+            }
+
+            for (CitationLinkAction acion : CitationLinkAction.values()) {
+                if (acion.name().equals(name.toUpperCase())) {
+                    return acion;
+                }
+            }
+
+            return null;
+        }
+    }
+
     private static final Logger logger = LogManager.getLogger(CitationLink.class);
 
     private final CitationLinkType type;
     private final CitationLinkLevel level;
+    private final CitationLinkAction action;
     private final String label;
     private String field;
     private String value;
@@ -101,7 +128,7 @@ public class CitationLink {
      * @param label
      * 
      */
-    public CitationLink(String type, String level, String label) {
+    public CitationLink(String type, String level, String action, String label) {
         this.type = CitationLinkType.getByName(type);
         if (this.type == null) {
             throw new IllegalArgumentException("Unknown type: " + type);
@@ -110,7 +137,15 @@ public class CitationLink {
         if (this.level == null) {
             throw new IllegalArgumentException("Unknown level: " + level);
         }
+        this.action = CitationLinkAction.getByName(StringUtils.isBlank(action) ? "clipboard" : action);
+        if (this.action == null) {
+            throw new IllegalArgumentException("Unknown action: " + action);
+        }
         this.label = label;
+    }
+
+    public CitationLinkAction getAction() {
+        return action;
     }
 
     /**
@@ -229,6 +264,17 @@ public class CitationLink {
     public CitationLink setTopstructValueFallback(boolean topstructValueFallback) {
         this.topstructValueFallback = topstructValueFallback;
         return this;
+    }
+
+    public boolean isEmpty() {
+        switch (type) {
+            case URL:
+                return StringUtils.isBlank(value);
+            case INTERNAL:
+                return false;
+            default:
+                return true;
+        }
     }
 
 }

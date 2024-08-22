@@ -74,6 +74,8 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
     private String resultGroupName;
     @Column(name = "include_structure_elements")
     private boolean includeStructureElements = false;
+    @Column(name = "show_options")
+    private boolean showOptions = false;
     @Column(name = "elements_per_page")
     private int elementsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPageDefaultValue();
     @Column(name = "view")
@@ -98,6 +100,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         this.resultGroupName = orig.resultGroupName;
         this.view = orig.view;
         this.metadataListType = orig.metadataListType;
+        this.showOptions = orig.showOptions;
     }
 
     private SearchFunctionality initSearch() {
@@ -296,6 +299,14 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         } catch (PresentationException | IndexUnreachableException | DAOException | ViewerConfigurationException e) {
             throw new PresentationException("Error initializing search hit list on page load", e);
         }
+    }
+
+    public void setShowOptions(boolean showOptions) {
+        this.showOptions = showOptions;
+    }
+
+    public boolean isShowOptions() {
+        return showOptions;
     }
 
     @Override

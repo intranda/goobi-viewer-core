@@ -410,8 +410,8 @@ class ConfigurationTest extends AbstractTest {
      * @verifies return default template configuration if template not found
      */
     @Test
-    void getArchiveMetadataForTemplate_shouldReturnDefaultTemplateConfigurationIfTemplateNotFound() throws Exception {
-        assertEquals(9, DataManager.getInstance().getConfiguration().getArchiveMetadataForTemplate("nonexisting").size());
+    void getArchiveMetadata_shouldReturnDefaultTemplateConfiguration() throws Exception {
+        assertEquals(9, DataManager.getInstance().getConfiguration().getArchiveMetadata().size());
     }
 
     /**
