@@ -249,7 +249,7 @@
         <!-- PAGINATOR -->
         <ui:fragment rendered="#{!groupPreviewMode}">
             <viewerComponent:simplePaginator 
-        	   classSuffix="-top"
+        	   classSuffix="-bottom"
                 itemCount="#{search.lastPage}" 
                 itemActive="#{search.currentPage}" 
                 urlPrefix="#{search.currentSearchUrlRoot}/#{searchBean.activeResultGroupName}/#{search.exactSearchString}/"

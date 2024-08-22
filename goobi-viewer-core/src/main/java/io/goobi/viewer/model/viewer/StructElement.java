@@ -137,7 +137,15 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws IndexUnreachableException
      */
     public StructElement(SolrDocument doc) throws IndexUnreachableException {
-        this(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
+        this(getIDDOC(doc), doc);
+    }
+
+    public static long getIDDOC(SolrDocument doc) {
+        if (doc.containsKey(SolrConstants.IDDOC)) {
+            return Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString());
+        } else {
+            throw new IllegalArgumentException("Struct element cannot be initiated by solr document with missing IDDOC value");
+        }
     }
 
     /**
@@ -422,8 +430,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
     /**
      * Returns a StructElement that represents the top non-anchor element of the hierarchy (ISWORK=true). If the element itself is an anchor, itself
-     * will be returned. If no topStruct element is found because no metadata {@link io.goobi.viewer.solr.SolrConstants#IDDOC_TOPSTRUCT} is found 
-     * or because it could not be resolved, null is returned
+     * will be returned. If no topStruct element is found because no metadata {@link io.goobi.viewer.solr.SolrConstants#IDDOC_TOPSTRUCT} is found or
+     * because it could not be resolved, null is returned
      *
      * @should retrieve top struct correctly
      * @should return self if topstruct

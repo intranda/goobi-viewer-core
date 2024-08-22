@@ -105,6 +105,9 @@ public class UserBean implements Serializable {
 
     private Timer sessionTimeoutMonitorTimer;
 
+    /**
+     * The logged in user
+     */
     private User user;
     private String nickName;
     private String email;

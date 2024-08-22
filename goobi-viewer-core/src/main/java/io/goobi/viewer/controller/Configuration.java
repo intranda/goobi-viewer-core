@@ -606,11 +606,10 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the list of configured metadata for the archives.
      *
-     * @param template Template name (currently not in use)
      * @return List of configured metadata for configured fields
-     * @should return default template configuration if template not found
+     * @should return default template configuration
      */
-    public List<Metadata> getArchiveMetadataForTemplate(String template) {
+    public List<Metadata> getArchiveMetadata() {
         return getMetadataConfigurationForTemplate("archive", StringConstants.DEFAULT_NAME, true, false);
     }
 
@@ -1079,9 +1078,10 @@ public class Configuration extends AbstractConfiguration {
             String label = sub.getString(XML_PATH_ATTRIBUTE_LABEL);
             String field = sub.getString("[@field]");
             String pattern = sub.getString("[@pattern]");
+            String action = sub.getString("[@action]", "clipboard");
             boolean topstructValueFallback = sub.getBoolean("[@topstructValueFallback]", false);
             try {
-                ret.add(new CitationLink(type, level, label).setField(field)
+                ret.add(new CitationLink(type, level, action, label).setField(field)
                         .setPattern(pattern)
                         .setTopstructValueFallback(topstructValueFallback));
             } catch (IllegalArgumentException e) {

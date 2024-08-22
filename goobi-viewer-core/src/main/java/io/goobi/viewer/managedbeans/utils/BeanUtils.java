@@ -319,11 +319,15 @@ public final class BeanUtils {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Object getBeanByName(String name, Class clazz) {
-        BeanManager bm = getBeanManager();
-        if (bm != null && bm.getBeans(name).iterator().hasNext()) {
-            Bean bean = bm.getBeans(name).iterator().next();
-            CreationalContext ctx = bm.createCreationalContext(bean);
-            return bm.getReference(bean, clazz, ctx);
+        try {
+            BeanManager bm = getBeanManager();
+            if (bm != null && bm.getBeans(name).iterator().hasNext()) {
+                Bean bean = bm.getBeans(name).iterator().next();
+                CreationalContext ctx = bm.createCreationalContext(bean);
+                return bm.getReference(bean, clazz, ctx);
+            }
+        } catch (NullPointerException e) {
+            logger.error("Error when getting bean by name {}", e);
         }
 
         return null;

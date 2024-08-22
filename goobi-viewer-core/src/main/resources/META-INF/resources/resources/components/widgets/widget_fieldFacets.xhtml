@@ -56,7 +56,7 @@
                                         <!-- AVAILABLE FACETS -->
                                         <ui:repeat value="#{searchBean.getFieldFacetValues(field, cc.attrs.widget.numEntries, cc.attrs.widget.getCombinedFilterQuery(cmsBean.currentPage))}" var="facet">
                                                 <li>
-                                                    <h:outputLink value="#{navigationHelper.getSearchUrl(0,cmsBean.currentPage)}/#{empty cc.attrs.widget.filterQuery ? '-' : cc.attrs.widget.filterQuery}/1/-/#{facet.urlEscapedLink}/">
+                                                    <h:outputLink value="#{navigationHelper.getSearchUrl(0,cmsBean.currentPage)}/-/#{empty cc.attrs.widget.filterQuery ? '-' : cc.attrs.widget.filterQuery}/1/-/#{facet.urlEscapedLink}/">
                                                         #{msg[facet.label]} (#{facet.count})
                                                         <f:passThroughAttribute name="aria-label" value="#{msg[field.concat('_DD')]}: #{msg[facet.label]}" />
                                                     </h:outputLink>

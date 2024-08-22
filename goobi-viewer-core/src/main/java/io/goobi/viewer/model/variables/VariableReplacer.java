@@ -51,6 +51,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -112,6 +113,14 @@ public class VariableReplacer {
         } else {
             return getReplacedStrings(template, replacementValues);
         }
+    }
+
+    public String replaceFirst(String template) {
+        return this.replace(template).stream().findFirst().orElse("");
+    }
+
+    public String replaceAll(String template, String separator) {
+        return this.replace(template).stream().collect(Collectors.joining(separator));
     }
 
     public List<String> getReplacedStrings(String template, SortedMap<String, List<String>> replacementValues) {
@@ -223,7 +232,7 @@ public class VariableReplacer {
     }
 
     public void addReplacement(String var, String value) {
-        Map<String, List<String>> map = this.replacementsMap.putIfAbsent("custom", new HashMap<>());
+        Map<String, List<String>> map = this.replacementsMap.computeIfAbsent("custom", key -> new HashMap<String, List<String>>());
         map.put(var, List.of(value));
     }
 

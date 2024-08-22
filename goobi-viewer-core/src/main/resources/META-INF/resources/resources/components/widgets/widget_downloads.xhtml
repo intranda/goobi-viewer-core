@@ -128,7 +128,7 @@
                         
 	                            <!-- METS -->
 	                            <ui:fragment visibility-class="widget-element" 
-	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], pageType:![viewFulltext, viewFullscreen]}')}">
+	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], accessCondition:DOWNLOAD_METADATA, pageType:![viewFulltext, viewFullscreen]}')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.metsResolverUrl}"
 	                                    id="lidomets" 
@@ -143,7 +143,7 @@
 	                                </a>
 	                            </ui:fragment>
 	                            <ui:fragment visibility-class="widget-element" 
-	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], pageType:![viewFulltext, viewFullscreen], docType: [volume]}')}">
+	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], accessCondition:DOWNLOAD_METADATA, pageType:![viewFulltext, viewFullscreen], docType: [volume]}')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
 	                                    id="metsanchor" 
@@ -160,7 +160,7 @@
 	                            
 	                            <!-- LIDO -->
 	                            <ui:fragment visibility-class="widget-element" 
-	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[LIDO], pageType:![viewFulltext]}')}">
+	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[LIDO], accessCondition:DOWNLOAD_METADATA, pageType:![viewFulltext]}')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
 	                                    id="lidomets" 
@@ -177,7 +177,7 @@
 	                            
 	                            <!-- DUBLINCORE -->
 	                            <ui:fragment visibility-class="widget-element" 
-	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[DUBLINCORE], pageType:![viewFulltext, viewFullscreen]}')}">
+	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[DUBLINCORE], accessCondition:DOWNLOAD_METADATA, pageType:![viewFulltext, viewFullscreen]}')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.dublinCoreResolverUrl}"
 	                                    id="dublincorexml"

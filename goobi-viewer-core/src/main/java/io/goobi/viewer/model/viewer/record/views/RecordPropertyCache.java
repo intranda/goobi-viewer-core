@@ -1,12 +1,15 @@
 package io.goobi.viewer.model.viewer.record.views;
 
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.model.CachingMap;
 import io.goobi.viewer.exceptions.DAOException;
@@ -20,6 +23,8 @@ import io.goobi.viewer.model.viewer.ViewManager;
 
 public class RecordPropertyCache {
 
+    private static final Logger logger = LogManager.getLogger(RecordPropertyCache.class);
+
     private final Map<String, Collection<FileType>> recordFileTypes = new CachingMap<>(50);
     private final Map<Pair<String, Integer>, Collection<FileType>> pageFileTypes = new CachingMap<>(400);
     private final Map<String, Map<String, AccessPermission>> recordPermissions = new CachingMap<>(50);
@@ -30,7 +35,11 @@ public class RecordPropertyCache {
         Collection<FileType> fileTypes = recordFileTypes.get(viewManager.getPi());
         if (fileTypes == null) {
             fileTypes = FileType.containedFiletypes(viewManager);
-            recordFileTypes.put(viewManager.getPi(), fileTypes);
+            try {
+                recordFileTypes.put(viewManager.getPi(), fileTypes);
+            } catch (ConcurrentModificationException e) {
+                logger.warn("Concurrent modification occured when updating record file types cache: {}", e.toString());
+            }
         }
         return fileTypes;
     }
@@ -42,7 +51,11 @@ public class RecordPropertyCache {
         Collection<FileType> fileTypes = pageFileTypes.get(key);
         if (fileTypes == null) {
             fileTypes = FileType.containedFiletypes(page);
-            pageFileTypes.put(key, fileTypes);
+            try {
+                pageFileTypes.put(key, fileTypes);
+            } catch (ConcurrentModificationException e) {
+                logger.warn("Concurrent modification occured when updating page file types cache: {}", e.toString());
+            }
         }
         return fileTypes;
     }
@@ -50,26 +63,35 @@ public class RecordPropertyCache {
     public AccessPermission getPermissionForRecord(ViewManager viewManager, String privilege, HttpServletRequest request)
             throws IndexUnreachableException, PresentationException, DAOException, RecordNotFoundException {
 
-        Map<String, AccessPermission> permissionMap = recordPermissions.computeIfAbsent(viewManager.getPi(), s -> new HashMap<>());
-        AccessPermission permission = permissionMap.get(privilege);
-        if (permission == null) {
-            permission = checkAccessPermissionForRecord(viewManager, privilege, request);
-            permissionMap.put(privilege, permission);
+        try {
+            Map<String, AccessPermission> permissionMap = recordPermissions.computeIfAbsent(viewManager.getPi(), s -> new HashMap<>());
+            AccessPermission permission = permissionMap.get(privilege);
+            if (permission == null) {
+                permission = checkAccessPermissionForRecord(viewManager, privilege, request);
+                permissionMap.put(privilege, permission);
+            }
+            return permission;
+        } catch (ConcurrentModificationException e) {
+            logger.warn("Concurrent modification occured when updating record permissions cache: {}", e.toString());
+            return checkAccessPermissionForRecord(viewManager, privilege, request);
         }
-        return permission;
     }
 
     public AccessPermission getPermissionForPage(PhysicalElement page, String privilege, HttpServletRequest request)
             throws IndexUnreachableException, PresentationException, DAOException, RecordNotFoundException {
-
-        Pair<String, Integer> key = Pair.of(page.getPi(), page.getOrder());
-        Map<String, AccessPermission> permissionMap = pagePermissions.computeIfAbsent(key, s -> new HashMap<>());
-        AccessPermission permission = permissionMap.get(privilege);
-        if (permission == null) {
-            permission = checkAccessPermissionForPage(page, privilege, request);
-            permissionMap.put(privilege, permission);
+        try {
+            Pair<String, Integer> key = Pair.of(page.getPi(), page.getOrder());
+            Map<String, AccessPermission> permissionMap = pagePermissions.computeIfAbsent(key, s -> new HashMap<>());
+            AccessPermission permission = permissionMap.get(privilege);
+            if (permission == null) {
+                permission = checkAccessPermissionForPage(page, privilege, request);
+                permissionMap.put(privilege, permission);
+            }
+            return permission;
+        } catch (ConcurrentModificationException e) {
+            logger.warn("Concurrent modification occured when updating page permissions cache: {}", e.toString());
+            return checkAccessPermissionForPage(page, privilege, request);
         }
-        return permission;
     }
 
     private AccessPermission checkAccessPermissionForRecord(ViewManager viewManager, String privilege, HttpServletRequest request)

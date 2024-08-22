@@ -40,7 +40,7 @@ class CitationLinkTest extends AbstractSolrEnabledTest {
         Assertions.assertNotNull(viewManager);
         Assertions.assertEquals(viewManager.getTopStructElementIddoc(), viewManager.getCurrentStructElementIddoc());
 
-        CitationLink link = new CitationLink("internal", "record", "foo");
+        CitationLink link = new CitationLink("internal", "record", "clipboard", "foo");
         Assertions.assertEquals("/object/" + PI_KLEIUNIV + "/1/", link.getUrl(viewManager));
     }
 
@@ -55,7 +55,7 @@ class CitationLinkTest extends AbstractSolrEnabledTest {
         viewManager.setCurrentImageOrder(10);
         Assertions.assertNotEquals(viewManager.getTopStructElementIddoc(), viewManager.getCurrentStructElementIddoc());
 
-        CitationLink link = new CitationLink("internal", "docstruct", "foo").setField(SolrConstants.PI_TOPSTRUCT);
+        CitationLink link = new CitationLink("internal", "docstruct", "clipboard", "foo").setField(SolrConstants.PI_TOPSTRUCT);
         Assertions.assertEquals("/object/" + PI_KLEIUNIV + "/5/LOG_0003/", link.getUrl(viewManager));
     }
 
@@ -69,7 +69,7 @@ class CitationLinkTest extends AbstractSolrEnabledTest {
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(2);
 
-        CitationLink link = new CitationLink("internal", "image", "foo");
+        CitationLink link = new CitationLink("internal", "image", "clipboard", "foo");
         Assertions.assertEquals("/object/" + PI_KLEIUNIV + "/2/", link.getUrl(viewManager));
     }
 }
