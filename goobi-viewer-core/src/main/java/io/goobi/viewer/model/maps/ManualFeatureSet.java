@@ -115,4 +115,9 @@ public class ManualFeatureSet extends FeatureSet {
         return false;
     }
 
+    @Override
+    public String getType() {
+        return "MANUAL";
+    }
+
 }

@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -60,7 +61,7 @@ public class SolrFeatureSet extends FeatureSet {
     private String markerTitleField = "MD_VALUE";
 
     @Transient
-    private String featuresAsString = null;
+    protected String featuresAsString = null;
 
     public SolrFeatureSet() {
         super();
@@ -94,7 +95,7 @@ public class SolrFeatureSet extends FeatureSet {
         this.featuresAsString = null;
     }
 
-    private String createFeaturesAsString() throws PresentationException, IndexUnreachableException {
+    protected String createFeaturesAsString() throws PresentationException, IndexUnreachableException {
         if (DataManager.getInstance().getConfiguration().useHeatmapForCMSMaps()) {
             //No features required since they will be loaded dynamically with the heatmap
             return "[]";
@@ -107,10 +108,10 @@ public class SolrFeatureSet extends FeatureSet {
                 .distinct()
                 .map(GeoMapFeature::getJsonObject)
                 .map(Object::toString)
+                .map(string -> StringEscapeUtils.escapeJson(string))
                 .collect(Collectors.joining(","));
 
         return "[" + ret + "]";
-
     }
 
     public String getSolrQuery() {
@@ -173,5 +174,10 @@ public class SolrFeatureSet extends FeatureSet {
     public void setAggregateResults(boolean aggregateResults) {
         this.aggregateResults = aggregateResults;
         this.featuresAsString = null;
+    }
+
+    @Override
+    public String getType() {
+        return "SOLR_QUERY";
     }
 }

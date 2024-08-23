@@ -56,6 +56,7 @@ import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.maps.ManualFeatureSet;
+import io.goobi.viewer.model.maps.SearchResultFeatureSet;
 import io.goobi.viewer.model.maps.SolrFeatureSet;
 import io.goobi.viewer.model.translations.IPolyglott;
 
@@ -427,6 +428,8 @@ public class GeoMapBean implements Serializable, IPolyglott {
                 case "SOLR_QUERY":
                     map.addFeatureSet(new SolrFeatureSet());
                     break;
+                case "SEARCH_RESULTS":
+                    map.addFeatureSet(new SearchResultFeatureSet());
                 default:
                     break;
             }

@@ -203,7 +203,7 @@ public class Search implements Serializable {
         this.proximitySearchDistance = blueprint.proximitySearchDistance;
         this.resultGroups = new ArrayList<>();
         for (SearchResultGroup resultGroup : blueprint.getResultGroups()) {
-            this.getResultGroups().add(resultGroup);
+            this.getResultGroups().add(new SearchResultGroup(resultGroup));
         }
     }
 
