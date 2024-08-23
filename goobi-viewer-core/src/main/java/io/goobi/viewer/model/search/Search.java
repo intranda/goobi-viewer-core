@@ -23,6 +23,7 @@ package io.goobi.viewer.model.search;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -738,11 +739,11 @@ public class Search implements Serializable {
                 String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
                 boolean anchorOrGroup = SolrTools.isAnchor(doc) || SolrTools.isGroup(doc);
                 Boolean hasImages = (Boolean) doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE);
+                URI uri = Location.getRecordURI(pi, PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, false),
+                        DataManager.getInstance().getUrlBuilder());
                 locations.addAll(getLocations(doc.getFieldValue(solrField))
                         .stream()
-                        .map(p -> new Location(p, label,
-                                Location.getRecordURI(pi, PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, false),
-                                        DataManager.getInstance().getUrlBuilder())))
+                        .map(p -> new Location(p, label, uri))
                         .collect(Collectors.toList()));
             } catch (IllegalArgumentException e) {
                 logger.error("Error parsing field {} of document {}: {}", solrField, doc.get("IDDOC"), e.getMessage());
