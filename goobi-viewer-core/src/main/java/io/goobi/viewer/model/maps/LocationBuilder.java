@@ -44,7 +44,7 @@ public class LocationBuilder {
             if (StringUtils.isNotBlank(s)) {
                 locs.addAll(Arrays.asList(getPoints(s)).stream().map(p -> new Point(p[0], p[1])).collect(Collectors.toList()));
             }
-            if (s.startsWith("{")) {//probably json 
+            if (s.startsWith("{")) { //probably json 
                 getAreaFromGeoJson(s).ifPresent(locs::add);
             }
             return locs;
