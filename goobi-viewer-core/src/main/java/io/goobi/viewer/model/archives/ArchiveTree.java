@@ -73,16 +73,6 @@ public class ArchiveTree implements Serializable {
     }
 
     /**
-     * Cloning constructor.
-     * 
-     * @param orig
-     */
-    public ArchiveTree(ArchiveTree orig) {
-        this.generate(new ArchiveEntry(orig.getRootElement(), null));
-        this.getTreeViewForGroup(DEFAULT_GROUP);
-    }
-
-    /**
      * 
      * @param rootElement
      */
@@ -90,7 +80,7 @@ public class ArchiveTree implements Serializable {
         logger.trace("update: {}", rootElement);
         generate(rootElement);
         if (getSelectedEntry() == null) {
-            setSelectedEntry(getRootElement());
+            setSelectedEntry(rootElement);
         }
         // This should happen before the tree is expanded to the selected entry, otherwise the collapse level will be reset
         getTreeView();
@@ -116,6 +106,7 @@ public class ArchiveTree implements Serializable {
                 break;
             }
         }
+        // logger.trace("Generated tree of size {}", tree.size()); //NOSONAR Debug
         entryMap.put(DEFAULT_GROUP, tree);
     }
 
