@@ -176,8 +176,8 @@ public class ArchiveManager implements Serializable {
 
     /**
      * 
-     * @param cachedResource
-     * @param currentResource
+     * @param cachedResource Resource to check
+     * @param currentResource Resource to check against
      * @return true if cached resource is out of date; false otherwise
      */
     private static boolean isOutdated(ArchiveResource cachedResource, ArchiveResource currentResource) {
@@ -400,20 +400,37 @@ public class ArchiveManager implements Serializable {
 
     /**
      * 
-     * @param resource
+     * @param resource {@link ArchiveResource} to initialize
      * @throws IllegalStateException
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    private void initializeArchiveTree(ArchiveResource resource) throws IllegalStateException, PresentationException, IndexUnreachableException {
+    private void initializeArchiveTree(final ArchiveResource resource)
+            throws IllegalStateException, PresentationException, IndexUnreachableException {
         if (resource != null) {
             try {
-                if (this.archives.get(resource) == null || isOutdated(resource)) {
-                    logger.trace("Archive {} is not yet loaded or outdated, (re)loading...", resource.getResourceName());
-                    ArchiveTree archiveTree = loadDatabase(eadParser, resource);
-                    if (archiveTree != null) {
-                        this.archives.put(resource, archiveTree);
+                ArchiveResource useResource = resource;
+                boolean reload = false;
+                if (this.archives.get(useResource) == null) {
+                    logger.trace("Archive {} is not yet loaded, loading...", useResource.getResourceName());
+                    reload = true;
+
+                } else {
+                    ArchiveResource updatedResource = isOutdated(useResource);
+                    if (updatedResource != null) {
+                        logger.trace("Archive {} is outdated, reloading...", useResource.getResourceName());
+                        // logger.trace(updatedResource.getModifiedDate());
+                        reload = true;
+                        useResource = updatedResource;
                     }
+                }
+                if (reload) {
+                    ArchiveTree archiveTree = loadDatabase(eadParser, useResource);
+                    if (archiveTree != null) {
+                        logger.trace("Tree generated");
+                        this.archives.put(useResource, archiveTree);
+                    }
+
                 }
             } catch (IOException | HTTPException e) {
                 this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
@@ -426,19 +443,22 @@ public class ArchiveManager implements Serializable {
      * Check if the given resource is outdated compared to the last updated date from the server
      *
      * @param resource
-     * @return true if the resource in the database is newer than the given one
+     * @return Updated resource, if newer than given; null otherwise
      * @throws IOException if the the database server is not reachable
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    private boolean isOutdated(ArchiveResource resource) throws IOException, PresentationException, IndexUnreachableException {
+    private ArchiveResource isOutdated(ArchiveResource resource) throws IOException, PresentationException, IndexUnreachableException {
         logger.trace("isOutdated: {}", resource.getResourceId());
         try {
             List<ArchiveResource> resources = this.eadParser.getPossibleDatabases();
             ArchiveResource externalResource =
                     resources.stream().filter(extResource -> extResource.getResourceId().equals(resource.getResourceId())).findAny().orElse(null);
             if (externalResource != null) {
-                return isOutdated(resource, externalResource);
+                if (isOutdated(resource, externalResource)) {
+                    return externalResource;
+                }
+                return null;
             }
             throw new PresentationException("Resource " + resource.toString() + " not found on server " + this.eadParser.getUrl());
         } catch (HTTPException e) {
