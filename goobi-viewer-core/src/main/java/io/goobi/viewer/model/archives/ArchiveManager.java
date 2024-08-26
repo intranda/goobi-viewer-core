@@ -156,11 +156,11 @@ public class ArchiveManager implements Serializable {
                     cachedDatabases.keySet().stream().filter(res -> res.getResourceId().equals(db.getResourceId())).findAny().orElse(null);
             ArchiveTree cachedTree = cachedResource != null ? cachedDatabases.get(cachedResource) : null;
             if (cachedTree == null) {
-                logger.trace("Archive {} is not yet loaded.", db.getResourceName());
+                logger.trace("Archive '{}' is not yet loaded.", db.getResourceId());
                 this.archives.put(db, null);
                 updated = true;
             } else if (isOutdated(cachedResource, db)) {
-                logger.trace("Archive {} is outdated, (re)loading...", db.getResourceName());
+                logger.trace("Archive '{}' is outdated, (re)loading...", db.getResourceId());
                 this.archives.put(db, null);
                 updated = true;
             } else {
@@ -186,8 +186,8 @@ public class ArchiveManager implements Serializable {
         } else if (currentResource == null) {
             return true;
         } else {
-            logger.trace("Loaded resource date: {}", currentResource.getModifiedDate());
-            logger.trace("Cached resource date: {}", cachedResource.getModifiedDate());
+            logger.trace("Loaded resource date ({}): {}", currentResource.getResourceId(), currentResource.getModifiedDate());
+            logger.trace("Cached resource date ({}): {}", cachedResource.getResourceId(), cachedResource.getModifiedDate());
             return currentResource.getModifiedDate().isAfter(cachedResource.getModifiedDate());
         }
     }
@@ -432,12 +432,13 @@ public class ArchiveManager implements Serializable {
      * @throws PresentationException
      */
     private boolean isOutdated(ArchiveResource resource) throws IOException, PresentationException, IndexUnreachableException {
+        logger.trace("isOutdated: {}", resource.getResourceId());
         try {
             List<ArchiveResource> resources = this.eadParser.getPossibleDatabases();
             ArchiveResource externalResource =
                     resources.stream().filter(extResource -> extResource.getResourceId().equals(resource.getResourceId())).findAny().orElse(null);
             if (externalResource != null) {
-                return externalResource.getModifiedDate().isAfter(resource.getModifiedDate());
+                return isOutdated(resource, externalResource);
             }
             throw new PresentationException("Resource " + resource.toString() + " not found on server " + this.eadParser.getUrl());
         } catch (HTTPException e) {
@@ -475,6 +476,7 @@ public class ArchiveManager implements Serializable {
      * @should load tree correctly
      */
     static ArchiveTree loadTree(ArchiveEntry rootElement) {
+        // logger.trace("loadTree: {}", rootElement); //NOSONAR Debug
         ArchiveTree ret = new ArchiveTree();
         ret.update(rootElement);
 
@@ -516,7 +518,6 @@ public class ArchiveManager implements Serializable {
     public void updateArchiveList() {
         logger.trace("updateArchiveList"); //NOSONAR Debug
         try {
-
             if (this.initArchives(eadParser)) {
                 this.eadParser.updateAssociatedRecordMap();
                 this.databaseState = DatabaseState.ARCHIVES_LOADED;
