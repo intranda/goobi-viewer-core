@@ -2423,7 +2423,8 @@ public interface IDAO {
      * Get all {@link CMSRecordNote}s for the given pi
      *
      * @param pi The pi of the record.
-     * @param displayedNotesOnly set to true to only return notes with {@link io.goobi.viewer.model.cms.recordnotes.CMSRecordNote#isDisplayNote()} set to true
+     * @param displayedNotesOnly set to true to only return notes with {@link io.goobi.viewer.model.cms.recordnotes.CMSRecordNote#isDisplayNote()} set
+     *            to true
      * @return List of {@link CMSSingleRecordNote}s for the given pi
      * @throws DAOException
      */

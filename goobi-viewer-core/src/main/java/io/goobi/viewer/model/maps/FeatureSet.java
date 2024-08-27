@@ -132,4 +132,10 @@ public abstract class FeatureSet implements Serializable {
         return DEFAULT_FILL_OPACITY;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public abstract String getType();
+
 }
