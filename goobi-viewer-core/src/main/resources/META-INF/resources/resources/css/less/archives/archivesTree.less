@@ -51,7 +51,7 @@
 	}
 	&__list-expandable-title {
 		&.-archives-search-hit {
-			.archives-tree__inactive-title {
+			.archives-tree__record-link {
 				color: #5BA2E5;
 				}
 			.fa-stack {
@@ -62,7 +62,7 @@
 			}
 		}
 		&.-archives-selected {
-			.archives-tree__inactive-title {
+			.archives-tree__record-link {
 			font-weight: 700;
 			}
 			.fa-stack {
@@ -119,7 +119,46 @@
 			padding-left: 0.7rem;
 		}
 	}
-	&__inactive-title {
+	&__record-link {
+		&.-recordHasImage { 
+			&:after {
+				content: "\f03e";
+				font-family: "FontAwesome";
+				display: inline;
+				font-size: 14px;
+				margin: unset;
+				font-weight: 400;
+				padding-left: 1.2rem;
+			}
+		}
+		&.-recordHasImageAccessDenied {
+			&:before {
+			display: inline-block;
+		  font: normal normal normal 14px/1 FontAwesome;
+		    font-size: 14px;
+		  font-size: inherit;
+		  text-rendering: auto;
+			content: "\f05e";
+		  position: absolute;
+		  // content: "/";
+		  color: red;
+		  font-weight: 700;
+		  font-size: 1.7em;
+		  right: -6px;
+		  top: -6px;
+		  opacity: 0.4;
+		}
+        &:after {
+            opacity: 0.5;
+            content: "\f03e";
+            font-family: "FontAwesome";
+            display: inline;
+            font-size: 14px;
+            margin: unset;
+            font-weight: 400;
+            padding-left: 1.2rem;
+        }
+		}
 		&::after {
 			content: "\f0d7";
 			font-family: "FontAwesome";
@@ -127,6 +166,25 @@
 			display: inline-block;
 			padding-left: 0.7rem;
 		}
+	}
+	&__record-link-icon-wrapper-outer {
+		margin-left: 6px;
+	}
+	&__record-link-icon-wrapper {
+
+		position: relative; 
+		display: inline-flex;
+	    justify-content: center;
+	    align-items: center;
+	   //  margin-left: 10px;
+	    // padding-left: 6px; 
+	}
+	&__record-link-icon-ban {
+		position: absolute;
+		  color: red;
+		//  font-weight: 700;
+		  font-size: 2em;
+		  opacity: 0.4;
 	}
 	&__expandable-icon {
 		width: 25px;
@@ -157,6 +215,21 @@
 		font-size: 1.2rem;
 	}
 }
+
+	.archives-tree__record-link,
+	.archives-tree__active-title {
+		&::after {
+			display: none;
+		}
+	}
+
+	.archives-tree__record-link.-recordHasImage {
+
+	}
+    
+    .archives-tree__record-link.-recordHasImageAccessDenied {
+
+    }
 
 // ajax loading indicator for ead tree
 #AJAXLoader.archives-tree__loader {

@@ -481,37 +481,7 @@
 		display: none;
 	}
 
-	.archives-tree__inactive-title,
-	.archives-tree__active-title {
-		&::after {
-			display: none;
-		}
-	}
 
-	.archives-tree__inactive-title.-recordHasImage {
-		&:after {
-			content: "\f03e";
-			font-family: "FontAwesome";
-			display: inline;
-			font-size: 14px;
-			margin: unset;
-			font-weight: 400;
-			padding-left: 1.2rem;
-		}
-	}
-    
-    .archives-tree__inactive-title.-recordHasImageAccessDenied {
-        &:after {
-            opacity: 0.5;
-            content: "\f03e";
-            font-family: "FontAwesome";
-            display: inline;
-            font-size: 14px;
-            margin: unset;
-            font-weight: 400;
-            padding-left: 1.2rem;
-        }
-    }
 
 	&__object-info-heading {
 		padding: 1rem 2rem;
@@ -621,6 +591,11 @@
 
 	&__modal-select-database-confirm {
 		border: none;
+	}
+	&__widget-archives-interactions-wrapper {
+		margin-top: 20px;
+		display: flex;
+		justify-content: flex-end;
 	}
 }
 
