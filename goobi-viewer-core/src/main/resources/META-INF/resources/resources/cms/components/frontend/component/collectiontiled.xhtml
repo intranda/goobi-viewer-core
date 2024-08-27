@@ -31,7 +31,7 @@
 
 				<div class="tpl-collection-tiled__wrapper">
 					<viewerComponent:collectionViewTiled id="collection"
-						collection="#{collectionViewBean.getCollection(cc.attrs.component.firstContentItem.content, cc.attrs.collectionBaseLevels, cc.attrs.component.firstContentItem.content.openExpanded, cc.attrs.displayParents, cc.attrs.ignoreHierarchy, request.getParameter('collection'))}" />
+						collection="#{collectionViewBean.getCollection(cc.attrs.component.getContentItem('collection').content, request.getParameter('collection'))}" />
 				</div>
 
 			</div>
