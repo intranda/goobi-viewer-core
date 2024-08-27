@@ -402,7 +402,7 @@ public class CollectionView implements Serializable {
     /**
      * Count the hierarchy level of the given collection name
      * 
-     * @param collection
+     * @param collectionName
      * @param splittingChar
      * @return -1 if collection is emtpy, otherwise the number of occurrences of the splitting char
      */
@@ -457,7 +457,7 @@ public class CollectionView implements Serializable {
      * Setter for the field <code>topVisibleElement</code>.
      * </p>
      * 
-     * @deprecated use {@link #setBaseElementName()} instead
+     * @deprecated use {@link #setBaseElementName(String)} instead
      * @param topVisibleElement a {@link java.lang.String} object.
      */
     @Deprecated(since = "24.08")
@@ -470,7 +470,7 @@ public class CollectionView implements Serializable {
      * Setter for the field <code>topVisibleElement</code>.
      * </p>
      * 
-     * @deprecated use {@link #setBaseElementName()} instead
+     * @deprecated use {@link #setBaseElementName(String)} instead
      * @param element a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      */
     @Deprecated(since = "24.08")
