@@ -117,7 +117,8 @@
 					<script>
 						// FOCUS SELECTION ELEMENT IN MODAL IF IN ARCHIVE SELECTION SCREEN
 						archiveBeanDataBaseState = '#{archiveBean.databaseState}';
-						if ((sessionStorage.getItem("focusElement") != null) &amp;&amp; (archiveBeanDataBaseState == 'ARCHIVES_LOADED')) {
+						if (archiveBeanDataBaseState == 'ARCHIVES_LOADED') {
+							console.log('condition yes');
 							$( document ).ready(function() {
 							setTimeout(() => {
 								$('.archives__modal-select-database-dropdown').focus();
