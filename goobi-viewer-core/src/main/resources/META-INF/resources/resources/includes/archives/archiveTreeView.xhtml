@@ -150,7 +150,9 @@
 			
 			<script>
 			<!--  JUMP TO LAST SAVED FOCUS ELEMENT -->
-			if (sessionStorage.getItem("focusElement") != null) {
+// 			var archiveBeanDataBaseState = '#{archiveBean.databaseState}';
+// 			if ((sessionStorage.getItem("focusElement") != null) &amp;&amp; (archiveBeanDataBaseState != 'ARCHIVES_LOADED')) {
+				if ((sessionStorage.getItem("focusElement") != null)) {
 				var lastFocusElement = sessionStorage.getItem("focusElement");
 				var lastFocusElementEscaped = lastFocusElement.replace(/:/g, '\\:');
 				$('#' + lastFocusElementEscaped).focus();
