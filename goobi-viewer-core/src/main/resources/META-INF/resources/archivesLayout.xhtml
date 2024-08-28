@@ -37,7 +37,7 @@
 
 				<!-- ARCHIVE TITLE -->
 				<div class="archives__top-title">
-					<a href="#{request.contextPath}/" title="{msg.home}" target="_self" rel="noopener">#{msg.home}</a> › <a href="#{request.contextPath}/archives" target="_self" rel="noopener">#{msg.archives__archiveViewHeading}</a> › <h1 ><span>#{archiveBean.trueRoot.label == '' ? archiveBean.trueRoot.label : 'Archive'} #{archiveBean.trueRoot.label}</span></h1>
+					<a href="#{request.contextPath}/" title="{msg.home}" target="_self" rel="noopener">#{msg.home}</a> › <a href="#{request.contextPath}/archives" target="_self" rel="noopener">#{msg.archives__archiveViewHeading}</a> › <h1 ><span>#{archiveBean.trueRoot.label == '' ? archiveBean.trueRoot.label : msg.archives__title_placeholder} #{archiveBean.trueRoot.label}</span></h1>
 				</div>
 
 				<!-- EXIT -->
