@@ -26,7 +26,7 @@ package io.goobi.viewer.model.calendar;
  * ICalendarItem interface.
  * </p>
  */
-public interface ICalendarItem {
+public interface ICalendarItem extends Comparable<ICalendarItem> {
 
     /**
      * <p>
@@ -81,5 +81,10 @@ public interface ICalendarItem {
      * @param selected a boolean.
      */
     public void setSelected(boolean selected);
+
+    @Override
+    public default int compareTo(ICalendarItem other) {
+        return Integer.compare(getValue(), other.getValue());
+    }
 
 }

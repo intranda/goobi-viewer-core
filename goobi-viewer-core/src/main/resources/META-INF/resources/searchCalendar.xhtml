@@ -1,24 +1,34 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    template="/resources/themes/#{navigationHelper.theme}/template.html">
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/template.html">
 
-    <ui:define name="metadata">
-        <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('searchCalendar', false, true)}" />
-            <f:event type="preRenderView" listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('searchCalendar',1)}" />
-            <f:event type="preRenderView" listener="#{searchBean.resetSearchParameters}" />
-        </f:metadata>
-    </ui:define>
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentPage('searchCalendar', false, true)}" />
+			<f:event type="preRenderView"
+				listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('searchCalendar', 'searchcalendar',1)}" />
+			<c:if test="#{calendarBean.currentYear != null}">
+				<f:event type="preRenderView"
+				listener="#{breadcrumbBean.addStaticLinkToBreadcrumb(calendarBean.actualYear, 2)}" />
+			</c:if>
+			<f:event type="preRenderView"
+				listener="#{searchBean.resetSearchParameters}" />
+		</f:metadata>
+	</ui:define>
 
-    <ui:define name="breadcrumbs">
-        <viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
-    </ui:define>
+	<ui:define name="breadcrumbs">
+		<viewerComponent:breadcrumbs showIcon="false" showStartText="true" />
+	</ui:define>
 
 	<ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
@@ -27,45 +37,52 @@
 					<div class="search-calendar">
 						<!-- SEARCH CALENDAR TITLE -->
 						<div class="search-calendar__title">
-							<h1 >
+							<h1>
 								<h:outputText value="#{msg.searchCalendar}" />
 							</h1>
 						</div>
 
 						<!-- MESSAGE -->
-						<h:panelGroup rendered="#{!configurationBean.calendarSearchEnabled}">
+						<h:panelGroup
+							rendered="#{!configurationBean.calendarSearchEnabled}">
 							<div class="alert alert-warning" role="alert">
 								<h:outputText value="#{msg.errFunctionalityDisabled}" />
 							</div>
 						</h:panelGroup>
 
-						<h:panelGroup rendered="#{configurationBean.calendarSearchEnabled}">
-							<!-- SEARCH CALENDAR INPUT -->
-							<div class="search-calendar__input">
-								<div class="form-group form-row">
-									<label for="selectyear" class="col-12 col-md-4 align-self-center font-weight-bold control-label mb-0">#{msg.selectYear}</label>
-									<div class="col-12 col-md-8">
-										<div class="custom-control custom-control--select">
-											<h:selectOneMenu
-												id="selectyear"
-												styleClass="form-control"
-												value="#{calendarBean.selectYear}"
-												immediate="true"
-												onchange="submit();">
-												<f:selectItem itemDisabled="true" itemLabel="#{msg.select}" />
-												<f:selectItems
-													var="year"
-													itemLabel="#{year.name}, #{msg.currentHitsForYear}: #{year.hits}"
-													itemValue="#{year.name}"
-													value="#{calendarBean.allActiveYears}" />
-											</h:selectOneMenu>
+						<style>
+						.century-grid {
+							display: grid;
+							grid-template-columns: repeat(20, 10fr);
+							gap: 10px;
+						}
+						</style>
+
+						<!-- LIST OF YEARS BY CENTURY -->
+						<div jsf:id="centuryList" rendered="#{calendarBean.currentYear == null}">
+							<ui:repeat var="century"
+								value="#{calendarBean.allActiveCenturies}">
+								<h:outputFormat value="#{msg.label__calendar__century}" escape="false">
+									<f:param value="#{calendarBean.getCenturyLabel(century.value, navigationHelper.locale)}" />
+								</h:outputFormat>
+								<div class="century-grid">
+									<ui:repeat var="year" value="#{century.years}">
+										<div class="century-grid__year">
+											<span jsf:id="yearLink" jsf:rendered="#{!year.isEmpty()}" title="#{year.hits} #{msg.currentwitsForYear}">
+												<a href="#{request.contextPath}/searchcalendar/#{year.name}/">#{year.name}</a>
+											</span>
+											<span jsf:id="yearLabel" jsf:rendered="#{year.isEmpty()}">#{year.name}</span>
 										</div>
-									</div>
+									</ui:repeat>
 								</div>
-							</div>
+							</ui:repeat>
+						</div>
+
+						<h:panelGroup rendered="#{configurationBean.calendarSearchEnabled}">
 
 							<!-- SEARCH CALENDAR MONTHS -->
-							<h:panelGroup rendered="#{configurationBean.calendarSearchEnabled and calendarBean.currentYear.hits ge 1}">
+							<h:panelGroup
+								rendered="#{configurationBean.calendarSearchEnabled and calendarBean.currentYear.hits ge 1}">
 								<div class="search-calendar__months">
 									<div class="row">
 										<ui:repeat var="month" value="#{calendarBean.monthList}">
@@ -92,16 +109,17 @@
 																		<h:panelGroup rendered="#{day.hits == 0}">
 																			<span>#{day.name}</span>
 																		</h:panelGroup>
-																		<h:commandLink
-																			value="#{day.name}"
+																		<h:commandLink value="#{day.name}"
 																			rendered="#{day.hits != 0}"
 																			action="#{calendarBean.searchCalendar(month, day)}"
 																			styleClass="search-calendar__month-day-link"
-																			tabindex="0"
-																			role="button">
-																			<f:passThroughAttribute name="data-placement" value="bottom" />
-																			<f:passThroughAttribute name="data-toggle" value="popover" />
-																			<f:passThroughAttribute name="data-content" value="#{day.hits} #{msg.currentHitsForDay}" />
+																			tabindex="0" role="button">
+																			<f:passThroughAttribute name="data-placement"
+																				value="bottom" />
+																			<f:passThroughAttribute name="data-toggle"
+																				value="popover" />
+																			<f:passThroughAttribute name="data-content"
+																				value="#{day.hits} #{msg.currentHitsForDay}" />
 																		</h:commandLink>
 																	</div>
 																</h:panelGroup>
@@ -126,15 +144,15 @@
 	</ui:define>
 
 	<ui:define name="sidebar">
-        <h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
-            <widgetComponent:widget_browsing />
-        </h:panelGroup>
-    </ui:define>
+		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+			<widgetComponent:widget_browsing />
+		</h:panelGroup>
+	</ui:define>
 
-    <ui:define name="rssFeed">
-        <h:panelGroup rendered="#{configurationBean.displaySidebarRssFeed}">
-            <ui:include src="resources/includes/rssFeed.xhtml" />
-        </h:panelGroup>
-    </ui:define>
+	<ui:define name="rssFeed">
+		<h:panelGroup rendered="#{configurationBean.displaySidebarRssFeed}">
+			<ui:include src="resources/includes/rssFeed.xhtml" />
+		</h:panelGroup>
+	</ui:define>
 
 </ui:composition>
