@@ -50,28 +50,26 @@
 							</div>
 						</h:panelGroup>
 
-						<style>
-						.century-grid {
-							display: grid;
-							grid-template-columns: repeat(20, 10fr);
-							gap: 10px;
-						}
-						</style>
-
 						<!-- LIST OF YEARS BY CENTURY -->
-						<div jsf:id="centuryList" rendered="#{calendarBean.currentYear == null}">
-							<ui:repeat var="century"
-								value="#{calendarBean.allActiveCenturies}">
-								<h:outputFormat value="#{msg.label__calendar__century}" escape="false">
-									<f:param value="#{calendarBean.getCenturyLabel(century.value, navigationHelper.locale)}" />
-								</h:outputFormat>
-								<div class="century-grid">
+						<div jsf:id="centuryList" class="search-calendar__century-outer" rendered="#{calendarBean.currentYear == null}">
+							<ui:repeat var="century" value="#{calendarBean.allActiveCenturies}">
+								<h2 class="search-calendar__century-separator-heading">
+									<h:outputFormat value="#{msg.label__calendar__century}" escape="false">
+										<f:param value="#{calendarBean.getCenturyLabel(century.value, navigationHelper.locale)}" />
+									</h:outputFormat>
+								</h2>
+								
+								<div class="search-calendar__century-grid">
 									<ui:repeat var="year" value="#{century.years}">
-										<div class="century-grid__year">
-											<span jsf:id="yearLink" jsf:rendered="#{!year.isEmpty()}" title="#{year.hits} #{msg.currentwitsForYear}">
+										<div class="search-calendar__century-year">
+											
+											<!-- YEAR HAS ENTRIES SO LINK RENDERED -->
+											<span jsf:id="yearLink" class="search-calendar__century-year-link" jsf:rendered="#{!year.isEmpty()}" title="#{year.hits} #{msg.currentwitsForYear}">
 												<a href="#{request.contextPath}/searchcalendar/#{year.name}/">#{year.name}</a>
 											</span>
-											<span jsf:id="yearLabel" jsf:rendered="#{year.isEmpty()}">#{year.name}</span>
+											<!-- YEAR HAS 0 ENTRIES SO NO LINK RENDERED -->
+											<span aria-hidden="true" class="search-calendar__century-year-text" jsf:id="yearLabel" jsf:rendered="#{year.isEmpty()}">#{year.name}</span>
+
 										</div>
 									</ui:repeat>
 								</div>
