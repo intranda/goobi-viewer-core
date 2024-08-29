@@ -57,7 +57,7 @@ public class ArchiveMetadataBean implements Serializable {
     /**
      * Constructor for testing. Receives custom config object of which only the method {@link Configuration#getArchiveMetadata()} is used
      * 
-     * @param metadataList
+     * @param config
      */
     public ArchiveMetadataBean(Configuration config) {
         this.config = config;
@@ -86,6 +86,12 @@ public class ArchiveMetadataBean implements Serializable {
             loadMetadata(entry);
         }
         return getMetadata(entry.getId());
+    }
+
+    public void setUnitDate(ArchiveEntry entry) {
+        config.getArchiveMetadata().stream().filter(md -> "unitdate".equals(md.getLabel())).findAny().ifPresent(mdDate -> {
+
+        });
     }
 
     private void loadMetadata(ArchiveEntry entry) throws PresentationException {
