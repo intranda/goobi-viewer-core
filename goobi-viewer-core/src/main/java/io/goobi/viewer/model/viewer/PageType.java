@@ -433,8 +433,8 @@ public enum PageType {
     public static PageType determinePageType(String docStructType, String mimeType, Boolean anchorOrGroup, Boolean hasImages,
             boolean pageResolverUrl) {
         // Determine preferred target for the docstruct
-        //         logger.trace("determinePageType: docstrct: {} / mime type: {} / anchor: {} / images: {} / resolver: {}", docStructType, mimeType, //NOSONAR Debug
-        //                anchorOrGroup, hasImages, pageResolverUrl);
+        //         logger.trace("determinePageType: docstrct: {} / mime type: {} / anchor: {} / images: {} / resolver: {}", //NOSONAR Debug
+        //         docStructType, mimeType, anchorOrGroup, hasImages, pageResolverUrl);
         PageType configuredPageType = PageType.getPageTypeForDocStructType(docStructType);
         if (configuredPageType != null && !pageResolverUrl) {
             return configuredPageType;

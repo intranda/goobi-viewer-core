@@ -174,7 +174,7 @@ public class CMSCollectionContent extends CMSContent {
     /**
      * Getter for {@link #ignoreHierarchy}
      * 
-     * @return
+     * @return the ignoreHierarchy
      */
     public boolean isIgnoreHierarchy() {
         return ignoreHierarchy;
@@ -183,6 +183,7 @@ public class CMSCollectionContent extends CMSContent {
     /**
      * Setter for {@link #ignoreHierarchy}
      * 
+     * @param ignoreHierarchy
      */
     public void setIgnoreHierarchy(boolean ignoreHierarchy) {
         this.ignoreHierarchy = ignoreHierarchy;
