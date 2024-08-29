@@ -28,7 +28,9 @@ import java.util.Map;
 import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.archives.ArchiveEntry;
@@ -51,7 +53,9 @@ class ArchiveMetadataBeanTest {
         param.setType(MetadataParameterType.FIELD);
         Metadata metadata = new Metadata("Title", "{0}", List.of(param));
         metadata.setType(1);
-        ArchiveMetadataBean bean = new ArchiveMetadataBean(List.of(metadata));
+        Configuration config = Mockito.mock(Configuration.class);
+        Mockito.when(config.getArchiveMetadata()).thenReturn(List.of(metadata));
+        ArchiveMetadataBean bean = new ArchiveMetadataBean(config);
         Assertions.assertFalse(bean.isMetadataLoaded(entry.getId()));
         bean.getMetadata(entry);
         Assertions.assertTrue(bean.isMetadataLoaded(entry.getId()));
