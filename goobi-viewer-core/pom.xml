@@ -144,7 +144,7 @@
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
 		<activemq.version>5.18.5</activemq.version>
-		<spring.version>5.3.37</spring.version>
+		<spring.version>5.3.39</spring.version>
 		<reflections.version>0.10.2</reflections.version>
 		<quartz.version>2.3.2</quartz.version>
 		<cron-expression-descriptor.version>1.2.10</cron-expression-descriptor.version>
