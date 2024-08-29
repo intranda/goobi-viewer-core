@@ -81,7 +81,7 @@ public abstract class CMSRecordNote implements Serializable {
 
     @Column(name = "display_note", nullable = false, columnDefinition = "boolean default true")
     private boolean displayNote = true;
-    
+
     @Column(name = "style_class", nullable = true)
     private String styleClass = "";
 
@@ -183,11 +183,11 @@ public abstract class CMSRecordNote implements Serializable {
     public void setDisplayNote(boolean displayNote) {
         this.displayNote = displayNote;
     }
-    
+
     public String getStyleClass() {
         return styleClass;
     }
-    
+
     public void setStyleClass(String styleClass) {
         this.styleClass = styleClass;
     }

@@ -126,13 +126,12 @@ public class CollectionBuilder extends AbstractBuilder {
         collectionView.setIgnore(ignoreCollections);
         //        CollectionView collectionView = createCollectionView(collectionField, facetField, splittingChar);
         if (StringUtils.isNotBlank(topElement) && !"-".equals(topElement)) {
-            collectionView.setTopVisibleElement(topElement);
-            collectionView.setDisplayParentCollections(false);
+            collectionView.setBaseElementName(topElement);
         }
         collectionView.calculateVisibleDcElements(true);
 
         HierarchicalBrowseDcElement baseElement = null;
-        if (StringUtils.isNotBlank(collectionView.getTopVisibleElement())) {
+        if (StringUtils.isNotBlank(topElement)) {
             baseElement = collectionView.getCompleteList()
                     .stream()
                     .filter(element -> topElement.startsWith(element.getName()))
@@ -149,7 +148,6 @@ public class CollectionBuilder extends AbstractBuilder {
              * First make sure that the base Element is contained within visibleElements, then recalculate the visibleElements to
              * get CMS-Information for the base Element and its children
              */
-            collectionView.setDisplayParentCollections(true);
             collectionView.calculateVisibleDcElements(true);
             collection = createCollection(collectionView, baseElement, getCollectionURI(collectionField, baseElement.getName()));
 
