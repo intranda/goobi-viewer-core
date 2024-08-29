@@ -14,7 +14,7 @@
 	</composite:interface>
 
 	<composite:implementation>
-			<div id="widgetDownloads" class="widget widget-downloads" rendered="#{displayConditions.getTag('widgetDownloads').getChildCount('widget-element') > 0}"
+			<div jsf:id="widgetDownloads" class="widget widget-downloads" rendered="#{displayConditions.getTag('widgetDownloads').getChildCount('widget-element') > 0}"
 			data-numChildren="#{displayConditions.getTag('widgetDownloadsBody').getChildCount('widget-element')}">
 				<div class="widget-downloads__topbar widget__topbar">
 					<!-- WIDGET TITLE -->
@@ -196,7 +196,7 @@
 							<!-- PDF (WORK) -->
 							<c:set scope="request" var="hasPrerenderedPagePdfs"
 								value="#{activeDocumentBean.viewManager.hasPrerenderedPagePdfs()}" />
-							<ui:fragment
+							<ui:fragment 
 	                            rendered="#{displayConditions.matchRecord('{contentType:[IMAGE], pageType:[viewObject, viewFullscreen], accessCondition:DOWNLOAD_PDF}')}">
 								<ui:fragment visibility-class="widget-element"  rendered="#{!configurationBean.generatePdfInMessageQueue and hasPrerenderedPagePdfs}">
 									<a
