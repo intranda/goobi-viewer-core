@@ -43,8 +43,8 @@ public class GeoCoordinateFeature {
     private static final Logger logger = LogManager.getLogger(GeoCoordinateFeature.class);
 
     private static final String REGEX_GEOCOORDS_SEARCH_STRING =
-            "(IsWithin|Intersects|Contains|IsDisjointTo)" +
-                    "\\((\\w+)\\(\\(?([\\s\\d\\-.,]+)\\)?\\)\\)(?:\\s*distErrPct=([\\d\\-.,]+))?"; //NOSONAR backtracking save
+            "(IsWithin|Intersects|Contains|IsDisjointTo)\\((\\w+)\\(\\(?([\\s\\d\\-.,]+)\\)?\\)\\)"
+                    + "(?:\\s*distErrPct=([\\d\\-.,]+))?"; //NOSONAR backtracking save
 
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_RELATION = 1;
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_SHAPE = 2;
@@ -125,14 +125,12 @@ public class GeoCoordinateFeature {
                     .replace("$S", this.shape)
                     .replace("$V", pointString)
                     .replace("$E", Double.toString(this.distError));
-        } else {
-            String template = "$P($S(($V)))";
-            return template
-                    .replace("$P", this.predicate)
-                    .replace("$S", this.shape)
-                    .replace("$V", pointString);
         }
-
+        String template = "$P($S(($V)))";
+        return template
+                .replace("$P", this.predicate)
+                .replace("$S", this.shape)
+                .replace("$V", pointString);
     }
 
     public static String getPredicate(String searchString) {

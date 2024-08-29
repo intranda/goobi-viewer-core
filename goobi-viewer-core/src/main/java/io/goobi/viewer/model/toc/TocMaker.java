@@ -684,8 +684,9 @@ public final class TocMaker {
             } else {
                 queryValue = pi;
             }
-            // logger.trace("sort {} by {}", SolrSearchIndex.getSingleFieldStringValue(doc, LuceneConstants.DOCSTRCT), DataManager.getInstance() //NOSONAR Debug
-            // .getConfiguration().getTocVolumeSortFieldsForTemplate(SolrSearchIndex.getSingleFieldStringValue(doc, LuceneConstants.DOCSTRCT)));
+            // logger.trace("sort {} by {}", SolrSearchIndex.getSingleFieldStringValue(doc, LuceneConstants.DOCSTRCT), //NOSONAR Debug
+            //  DataManager.getInstance().getConfiguration().getTocVolumeSortFieldsForTemplate
+            // (SolrSearchIndex.getSingleFieldStringValue(doc, LuceneConstants.DOCSTRCT)));
             // TODO determine child docstruct type before fetching the child docs to determine the required fields
             SolrDocumentList childDocs = DataManager.getInstance()
                     .getSearchIndex()
