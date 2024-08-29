@@ -63,20 +63,38 @@ public class CMSCollectionContent extends CMSContent {
     @Column(name = "solr_field", length = 40)
     private String solrField = SolrConstants.DC;
     @Column(name = "collection_name")
-    private String collectionName = ""; //if black, all collections of the solrField are included
+    private String collectionName = ""; //if blank, all collections of the solrField are included
     @Column(name = "sorting", length = 20)
     @Enumerated(EnumType.STRING)
     private Sorting sorting = Sorting.alphanumeric;
     @Column(name = "filter_query")
     private String filterQuery = "";
-    /** Name of SOLR field by which to group results of the collection */
+    /**
+     * Name of SOLR field by which to group results of the collection This is only usable in a iiif view. If set, a separate collection list is
+     * displayed for each value of the grouping field
+     */
     @Column(name = "grouping_field", length = 40)
     private String groupingField = "";
-    /** Comma separated list of collection names to ignore for display */
+    /**
+     * Comma separated list of collection names to ignore for display. If {@link #ignoreHierarchy} is true, then this list needs to also include any
+     * child collections which should not be visible; otherwise child collection visibility is directly dependend on their parents
+     */
     @Column(name = "ignore_collections", columnDefinition = "LONGTEXT")
     private String ignoreCollections = null;
+
+    /**
+     * Only usable for tree views. If true, all child collections will be shown initially
+     */
     @Column(name = "open_expanded")
     private boolean openExpanded = false;
+
+    /**
+     * Only usable for list views, like the tiled collection view. If true, All collections, all child collections will be displayed in the collection
+     * list, regardless of hierarchy level. This differs from {@link #openExpanded} in that the visibility of child collections is independent from
+     * that of their parent collections
+     */
+    @Column(name = "ignore_hierarchy")
+    private boolean ignoreHierarchy = false;
 
     @Transient
     private Map<String, CollectionResult> dcStrings = null;
@@ -94,6 +112,7 @@ public class CMSCollectionContent extends CMSContent {
         this.groupingField = orig.groupingField;
         this.ignoreCollections = orig.ignoreCollections;
         this.openExpanded = orig.openExpanded;
+        this.ignoreHierarchy = orig.ignoreHierarchy;
     }
 
     public String getSolrField() {
@@ -150,6 +169,24 @@ public class CMSCollectionContent extends CMSContent {
 
     public void setOpenExpanded(boolean openExpanded) {
         this.openExpanded = openExpanded;
+    }
+
+    /**
+     * Getter for {@link #ignoreHierarchy}
+     * 
+     * @return the ignoreHierarchy
+     */
+    public boolean isIgnoreHierarchy() {
+        return ignoreHierarchy;
+    }
+
+    /**
+     * Setter for {@link #ignoreHierarchy}
+     * 
+     * @param ignoreHierarchy
+     */
+    public void setIgnoreHierarchy(boolean ignoreHierarchy) {
+        this.ignoreHierarchy = ignoreHierarchy;
     }
 
     /**
@@ -242,23 +279,6 @@ public class CMSCollectionContent extends CMSContent {
         } else {
             return this.filterQuery;
         }
-    }
-
-    /**
-     * Queries Solr for a list of all values of the set collectionField which my serve as a collection.
-     *
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    public List<String> getPossibleBaseCollectionList() throws IndexUnreachableException {
-        if (StringUtils.isBlank(solrField)) {
-            return Collections.singletonList("");
-        }
-        Map<String, CollectionResult> dcStringMap = getColletionMap();
-        List<String> list = new ArrayList<>(dcStringMap.keySet());
-        list.add(0, "");
-        Collections.sort(list);
-        return list;
     }
 
     /**

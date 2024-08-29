@@ -22,7 +22,6 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,11 +30,11 @@ import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.archives.ArchiveEntry;
 import io.goobi.viewer.model.archives.ArchiveEntryMetadataList;
-import io.goobi.viewer.model.metadata.Metadata;
 
 /**
  * Short lived bean to store {@link ArchiveEntryMetadataList metadata lists} for {@link ArchiveEntry archiveEntries}.
@@ -46,22 +45,22 @@ public class ArchiveMetadataBean implements Serializable {
 
     private static final long serialVersionUID = 7525640333611786457L;
     private final Map<String, ArchiveEntryMetadataList> entryMap = new ConcurrentHashMap<>();
-    private final List<Metadata> metadataList;
+    private final Configuration config;
 
     /**
      * default constructor using local configuration to load metadata list
      */
     public ArchiveMetadataBean() {
-        this.metadataList = DataManager.getInstance().getConfiguration().getArchiveMetadata();
+        this(DataManager.getInstance().getConfiguration());
     }
 
     /**
-     * Constructor for testing. Receives custom metadata list
+     * Constructor for testing. Receives custom config object of which only the method {@link Configuration#getArchiveMetadata()} is used
      * 
-     * @param metadataList
+     * @param config
      */
-    public ArchiveMetadataBean(List<Metadata> metadataList) {
-        this.metadataList = metadataList;
+    public ArchiveMetadataBean(Configuration config) {
+        this.config = config;
     }
 
     /**
@@ -89,13 +88,19 @@ public class ArchiveMetadataBean implements Serializable {
         return getMetadata(entry.getId());
     }
 
+    public void setUnitDate(ArchiveEntry entry) {
+        config.getArchiveMetadata().stream().filter(md -> "unitdate".equals(md.getLabel())).findAny().ifPresent(mdDate -> {
+
+        });
+    }
+
     private void loadMetadata(ArchiveEntry entry) throws PresentationException {
 
         if (entry == null) {
             throw new PresentationException("Cannot find ArchiveMetadataBean in scope");
         }
 
-        ArchiveEntryMetadataList metadata = new ArchiveEntryMetadataList(entry.getId(), entry.getDoc(), metadataList);
+        ArchiveEntryMetadataList metadata = new ArchiveEntryMetadataList(entry.getId(), entry.getDoc(), config.getArchiveMetadata());
         this.entryMap.put(entry.getId(), metadata);
 
         if (StringUtils.isBlank(entry.getLabel())) {

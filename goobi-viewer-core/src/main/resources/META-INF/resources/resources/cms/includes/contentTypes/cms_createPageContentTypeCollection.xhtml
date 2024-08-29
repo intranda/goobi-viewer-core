@@ -90,10 +90,10 @@
                         value="#{contentItem.baseCollection}"
                         disabled="#{empty contentItem.collectionField}">
                         <f:selectItems 
-                            value="#{contentItem.possibleBaseCollectionList}" 
+                            value="#{collectionViewBean.getPossibleBaseCollectionList(contentItem)}" 
                             var="field" 
                             itemValue="#{field}" 
-                            itemLabel="#{msg[field]}" />
+                            itemLabel="#{field}" />
                         <f:ajax render="ignoreCollectionGroup" />
                         <f:passThroughAttribute name="aria-label" value="#{msg.cms_itemBaseCollection}" />
                     </h:selectOneMenu>

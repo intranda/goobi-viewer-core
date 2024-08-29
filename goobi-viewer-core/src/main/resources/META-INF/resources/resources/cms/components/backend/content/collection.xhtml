@@ -10,6 +10,7 @@
 
 	<composite:interface>
 		<composite:attribute name="contentItem" required="true" />
+		<composite:attribute name="renderingGroup" required="false" default="ignoreCollectionGroup"/>
 	</composite:interface>
 
 	<composite:implementation>
@@ -84,9 +85,8 @@
 								value="#{cc.attrs.contentItem.content.collectionName}"
 								disabled="#{empty cc.attrs.contentItem.content.solrField}">
 								<f:selectItems
-									value="#{cc.attrs.contentItem.content.possibleBaseCollectionList}"
-									var="field" itemValue="#{field}" itemLabel="#{msg[field]}" />
-								<f:ajax render="ignoreCollectionGroup" />
+									value="#{collectionViewBean.getPossibleBaseCollectionList(cc.attrs.contentItem.content)}"/>
+								<f:ajax render="#{cc.attrs.renderingGroup}" />
 								<f:passThroughAttribute name="aria-label"
 									value="#{msg.cms_itemBaseCollection}" />
 							</h:selectOneMenu>
@@ -126,8 +126,8 @@
 								disabled="#{empty cc.attrs.contentItem.content.solrField}">
 								<f:selectItem itemLabel="#{msg.cms_itemIgnoreNoCollection}" />
 								<f:selectItems
-									value="#{collectionViewBean.getPossibleIgnoreCollectionList(cc.attrs.contentItem.content, false)}"
-									var="field" itemValue="#{field}" itemLabel="#{msg[field]}" />
+									value="#{collectionViewBean.getPossibleIgnoreCollectionList(cc.attrs.contentItem.content, cc.attrs.contentItem.content.ignoreHierarchy)}"
+									var="field" itemValue="#{field}" itemLabel="#{field}" />
 								<f:ajax render="@none" />
 								<f:passThroughAttribute name="aria-label"
 									value="#{msg.cms_itemIgnoreCollections}" />
@@ -139,101 +139,41 @@
 
 			</div>
 
-			<!-- GROUP BY SOLR FIELD -->
-			<ui:fragment rendered="#{cc.attrs.contentItem.owningComponent.getAttributeValue('allowGrouping')}">
-				<div class="admin__content-component-input-group">
-					<div class="admin__content-component-input-label">
-						<label for="groupByFieldCollection">#{msg.cms_itemGroupByField}:</label>
-					</div>
-					<div class="admin__content-component-input-field">
+			<!-- SORTING MODE -->
+			<div class="admin__content-component-input-group">
+				<div class="admin__content-component-input-label">
+					<label for="groupByFieldCollection">#{msg.label__sorting_mode}:</label>
+				</div>
+				<div class="admin__content-component-input-field">
+					<!-- AREA FOR AJAX REFRESH -->
+					<h:panelGroup id="sortingSelectGroup">
+						<!-- VALIDATION MESSAGE -->
+						<div class="cms-module__option-message">
+							<h:messages for="sortingSelect"
+								infoClass="cms-module__option-message-status success"
+								warnClass="cms-module__option-message-status warning"
+								errorClass="cms-module__option-message-status danger" />
+
+							<div class="cms-module__option-message-mark">
+								<i class="fa fa-check" aria-hidden="true"></i> <i
+									class="fa fa-exclamation" aria-hidden="true"></i>
+							</div>
+						</div>
+
+						<!-- SELECT MENU -->
 						<div class="custom-control custom-control--select">
-							<h:selectOneMenu id="groupByFieldCollection"
-								styleClass="form-control"
-								value="#{cc.attrs.contentItem.content.groupingField}">
-								<f:selectItem itemValue="" itemLabel="#{msg.select}" />
-								<f:selectItems value="#{cmsBean.possibleGroupFields}" var="field"
-									itemValue="#{field}" itemLabel="#{msg[field]} (#{field})" />
+							<h:selectOneMenu id="sortingSelect" styleClass="form-control"
+								value="#{cc.attrs.contentItem.content.sorting}">
+								<f:selectItems value="#{cmsBean.sortingModes}" var="mode"
+									itemValue="#{mode}" itemLabel="#{msg[mode.label]}" />
 								<f:passThroughAttribute name="aria-label"
-									value="#{msg.cms_itemGroupByField}" />
+									value="#{msg.label__sorting_mode}" />
 							</h:selectOneMenu>
 						</div>
-					</div>
-				</div>
-			</ui:fragment>
+					</h:panelGroup>
 
-			<!-- SORTING MODE -->
-				<div class="admin__content-component-input-group">
-					<div class="admin__content-component-input-label">
-						<label for="groupByFieldCollection">#{msg.label__sorting_mode}:</label>
-					</div>
-					<div class="admin__content-component-input-field">
-						<!-- AREA FOR AJAX REFRESH -->
-						<h:panelGroup id="sortingSelectGroup">
-							<!-- VALIDATION MESSAGE -->
-							<div class="cms-module__option-message">
-								<h:messages for="sortingSelect"
-									infoClass="cms-module__option-message-status success"
-									warnClass="cms-module__option-message-status warning"
-									errorClass="cms-module__option-message-status danger" />
-	
-								<div class="cms-module__option-message-mark">
-									<i class="fa fa-check" aria-hidden="true"></i> <i
-										class="fa fa-exclamation" aria-hidden="true"></i>
-								</div>
-							</div>
-	
-							<!-- SELECT MENU -->
-							<div class="custom-control custom-control--select">
-								<h:selectOneMenu id="sortingSelect" styleClass="form-control"
-									value="#{cc.attrs.contentItem.content.sorting}">
-									<f:selectItems value="#{cmsBean.sortingModes}" var="mode"
-										itemValue="#{mode}" itemLabel="#{msg[mode.label]}" />
-									<f:passThroughAttribute name="aria-label"
-										value="#{msg.label__sorting_mode}" />
-								</h:selectOneMenu>
-							</div>
-						</h:panelGroup>
-	
-					</div>
 				</div>
-
-			<!-- COLLECTION EXPANDED -->
-			<ui:fragment rendered="#{cc.attrs.contentItem.owningComponent.getAttribute('allowOpenExpanded').getBooleanValue()}">
-				<div class="admin__content-component-input-group">
-					<!-- LABEL -->
-					<div class="admin__content-component-input-label">
-						<label for="collectionExpanded">#{msg.cms_collectionOpenExpanded}:</label>
-					</div>
-	
-					<div class="admin__content-component-input-field align-self-center">
-						<!-- AREA FOR AJAX REFRESH -->
-						<h:panelGroup id="collectionExpandedGroup" layout="block"
-							styleClass="cms-module__option-checkbox">
-							<!-- VALIDATION MESSAGE -->
-							<div class="cms-module__option-message">
-								<h:messages for="collectionExpanded"
-									infoClass="cms-module__option-message-status success"
-									warnClass="cms-module__option-message-status warning"
-									errorClass="cms-module__option-message-status danger" />
-	
-								<div class="cms-module__option-message-mark">
-									<i class="fa fa-check" aria-hidden="true"></i> <i
-										class="fa fa-exclamation" aria-hidden="true"></i>
-								</div>
-							</div>
-	
-							<!-- CHECKBOX -->
-							<h:selectBooleanCheckbox id="collectionExpanded"
-								value="#{cc.attrs.contentItem.content.openExpanded}">
-								<f:ajax event="change" render="@this" />
-								<f:passThroughAttribute name="aria-label"
-									value="#{msg.cms_collectionOpenExpanded}" />
-							</h:selectBooleanCheckbox>
-						</h:panelGroup>
-	
-					</div>
-				</div>
-			</ui:fragment>
+			</div>
 
 			<!-- FILTER QUERY -->
 			<div class="admin__content-component-input-group">

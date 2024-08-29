@@ -214,6 +214,11 @@ public class SolrEADParser extends ArchiveParser {
             entry.setLabel(label);
         }
 
+        String date = SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_DATECREATED);
+        if (StringUtils.isNotEmpty(date)) {
+            entry.setUnitdate(date);
+        }
+
         String topstructPi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
         if (StringUtils.isNotEmpty(topstructPi)) {
             entry.setTopstructPi(topstructPi);

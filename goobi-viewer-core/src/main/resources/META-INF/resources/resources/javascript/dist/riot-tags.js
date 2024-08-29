@@ -1333,6 +1333,7 @@ riot.tag2('collectionview', '<div each="{set, index in collectionSets}"><h2 if="
 this.collectionSets = [];
 
 this.on("mount", () => {
+	console.log("mounting collection view", this.opts);
     this.fetchCollections()
     .then( () => {
         let keys = this.collectionSets.map(set => set[0]);
@@ -1346,8 +1347,8 @@ this.on("mount", () => {
 
 this.fetchCollections = function() {
     let url = this.opts.url;
-    if(this.opts.baseCollection) {
-        url += this.opts.baseCollection + "/";
+    if(this.opts.basecollection) {
+        url += this.opts.basecollection + "/";
     }
     let separator = "?";
     if(this.opts.grouping) {
@@ -1369,11 +1370,13 @@ this.buildSets = function(collection) {
     .filter( member => viewerJS.iiif.isCollection(member))
     .sort( (m1,m2) => this.compareMembers(m1, m2, this.opts.sorting) )
     .forEach( member => {
-        let tagList = viewerJS.iiif.getTags(member, "grouping");
+        let tagList = viewerJS.iiif.getTags(collection, "grouping");
+        console.log("tags ", tagList);
         if(tagList == undefined || tagList.length == 0) {
             this.addToMap(map, "", member);
         } else {
             tagList.forEach(tag => {
+            	console.log("add to map ", tag, member);
                this.addToMap(map, tag, member);
             });
         }
