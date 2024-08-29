@@ -172,7 +172,7 @@ public class DynamicContentBuilder {
      * @param library
      * @return {@link UIComponent}
      */
-    private UIComponent loadCompositeComponent(UIComponent parent, String name, String library) {
+    private UIComponent loadCompositeComponent(UIComponent parent, String name, String library) throws FacesException {
         Resource componentResource = context.getApplication().getResourceHandler().createResource(name, library);
         if (componentResource == null) {
             return null;
@@ -187,7 +187,7 @@ public class DynamicContentBuilder {
         parent.pushComponentToEL(context, composite); // This makes #{cc} available.
         try {
             faceletContext.includeFacelet(implementation, componentResource.getURL());
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             throw new FacesException(e);
         } catch (ELException e) {
             logger.error("Error rendering composite", e);

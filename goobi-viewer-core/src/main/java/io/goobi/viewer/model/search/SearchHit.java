@@ -452,9 +452,8 @@ public class SearchHit implements Comparable<SearchHit> {
                         if (StringUtils.isBlank(fulltext)) {
                             continue;
                         }
-                    case METADATA:
-                    case UGC:
-                    case EVENT:
+                        //FALLTHROUGH
+                    case METADATA, UGC, EVENT:
                         handleMetadataHit(childDoc, fulltext, docType, acccessDeniedType);
                         break;
                     case DOCSTRCT:
@@ -598,9 +597,6 @@ public class SearchHit implements Comparable<SearchHit> {
                             // logger.trace("found {} entity tags", tags.size()); //NOSONAR Debug
                             String highlightWord = null;
                             for (TagCount tag : tags) {
-                                if (tag.getIdentifier() != null) {
-                                    //logger.trace("tag identifier: {}", tag.getIdentifier()); //NOSONAR Debug
-                                }
                                 if (authorityIdentifier.equals(tag.getIdentifier())) {
                                     highlightWord = tag.getValue();
                                     break;
