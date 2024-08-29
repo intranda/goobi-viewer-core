@@ -126,8 +126,8 @@ public class CollectionViewBean implements Serializable {
                 logger.debug("Not matching collection element for id {} on page {}", content.getItemId(), content.getOwningPage().getId());
             }
         } else {
-            if (!Objects.equals(collection.getTopVisibleElement(), topVisibleElement)) {
-                collection.setTopVisibleElement(topVisibleElement);
+            if (!Objects.equals(collection.getBaseElementName(), topVisibleElement)) {
+                collection.setBaseElementName(topVisibleElement);
                 collection.populateCollectionList();
             }
 
@@ -257,6 +257,7 @@ public class CollectionViewBean implements Serializable {
      * Queries Solr for a list of all values of the set collectionField which my serve as a collection.
      *
      * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
+     * @param includeSubcollections
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -268,7 +269,6 @@ public class CollectionViewBean implements Serializable {
         Locale locale = BeanUtils.getLocale();
         String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(content.getSolrField());
         Map<String, CollectionResult> dcStrings = getColletionMap(content);
-        List<String> list = new ArrayList<>();
         return dcStrings.keySet()
                 .stream()
                 .filter(c -> StringUtils.isBlank(content.getCollectionName()) || c.startsWith(content.getCollectionName() + "."))
@@ -278,22 +278,22 @@ public class CollectionViewBean implements Serializable {
                 .collect(Collectors.toList());
     }
 
-    private String addHierarchyPrefix(String collection, int levelDifference, Locale locale) {
+    private static String addHierarchyPrefix(String collection, int levelDifference, Locale locale) {
         if (levelDifference <= 0) {
             return ViewerResourceBundle.getTranslation(collection, locale);
-        } else {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < levelDifference; i++) {
-                sb.append(HIERARCHY_LEVEL_PREFIX);
-            }
-            sb.append(ViewerResourceBundle.getTranslation(collection, locale));
-            return sb.toString();
         }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < levelDifference; i++) {
+            sb.append(HIERARCHY_LEVEL_PREFIX);
+        }
+        sb.append(ViewerResourceBundle.getTranslation(collection, locale));
+        return sb.toString();
     }
 
     /**
      * Queries Solr for a list of all values of the set collectionField which my serve as a collection.
      *
+     * @param content
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -322,7 +322,7 @@ public class CollectionViewBean implements Serializable {
      * @return an int < 1 if collection2 has a lower hierarchy level than collection1, 0 if both have the same hierarchy level, and an int > 1 if
      *         collection1 has a lower hierarchy level than collection 2.
      */
-    private int getLevelDifference(String collection1, String collection2, String splittingChar) {
+    private static int getLevelDifference(String collection1, String collection2, String splittingChar) {
         int level1 = CollectionView.getLevel(collection1, splittingChar);
         int level2 = CollectionView.getLevel(collection2, splittingChar);
         return level2 - level1;
