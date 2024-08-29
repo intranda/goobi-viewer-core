@@ -25,13 +25,19 @@
 	
 							<!-- Grouped metadata -->
 							<h:panelGroup rendered="#{metadata.group}">
-								<dd>
-									<ui:repeat value="#{metadata.values}" var="val">
-										<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}" escape="false">
-										</h:outputFormat>
-	                                    <br />
-									</ui:repeat>
-								</dd>
+                                        <!-- Single label for all values, each value is a single string -->
+                                        <h:panelGroup rendered="#{metadata.singleString}">
+                                            <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
+                                                <ui:param name="metadata" value="#{metadata}" />
+                                            </ui:include>
+                                        </h:panelGroup>
+
+                                        <!-- Each value has a label column and a value column -->
+                                        <h:panelGroup rendered="#{!metadata.singleString}">
+                                            <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+                                                <ui:param name="metadata" value="#{metadata}" />
+                                            </ui:include>
+                                        </h:panelGroup>
 							</h:panelGroup>
 	
 							<!-- Non-grouped metadata -->
@@ -84,8 +90,6 @@
                 
                 <!-- Page metadata -->
                 <ui:fragment rendered="#{fn:length(activeDocumentBean.viewManager.currentPage.metadata) > 0}">
-                    <h2 >#{msg[metadataBean.defaultSidebarMetadataLabel]}</h2>
-                    
                     <dl>
                         <c:forEach items="#{activeDocumentBean.viewManager.currentPage.metadata}" var="metadata">
                             <dt title="#{msg[metadata.label]}">
@@ -94,13 +98,19 @@
     
                             <!-- Grouped metadata -->
                             <h:panelGroup rendered="#{metadata.group}">
-                                <dd>
-                                    <ui:repeat value="#{metadata.values}" var="val">
-                                        <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}" escape="false">
-                                        </h:outputFormat>
-                                        <br />
-                                    </ui:repeat>
-                                </dd>
+                                        <!-- Single label for all values, each value is a single string -->
+                                        <h:panelGroup rendered="#{metadata.singleString}">
+                                            <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
+                                                <ui:param name="metadata" value="#{metadata}" />
+                                            </ui:include>
+                                        </h:panelGroup>
+
+                                        <!-- Each value has a label column and a value column -->
+                                        <h:panelGroup rendered="#{!metadata.singleString}">
+                                            <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+                                                <ui:param name="metadata" value="#{metadata}" />
+                                            </ui:include>
+                                        </h:panelGroup>
                             </h:panelGroup>
     
                             <!-- Non-grouped metadata -->

@@ -66,12 +66,12 @@ public abstract class AbstractPageLoader implements IPageLoader {
 
     /** All fields to be fetched when loading page documents. Any new required fields must be added to this array. */
     protected static final String[] FIELDS = { SolrConstants.PI_TOPSTRUCT, SolrConstants.PHYSID, SolrConstants.ORDER, SolrConstants.ORDERLABEL,
-            SolrConstants.IDDOC_OWNER, SolrConstants.MIMETYPE, SolrConstants.FILEIDROOT, SolrConstants.FILENAME, SolrConstants.FILENAME_ALTO,
-            SolrConstants.FILENAME_FULLTEXT, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.FILENAME + "_JPEG", SolrConstants.FILENAME_MPEG,
-            SolrConstants.FILENAME_MPEG3, SolrConstants.FILENAME_MP4, SolrConstants.FILENAME_OGG, SolrConstants.FILENAME + "_TIFF",
-            SolrConstants.FILENAME_WEBM, SolrConstants.FULLTEXTAVAILABLE, SolrConstants.DATAREPOSITORY, SolrConstants.IMAGEURN, SolrConstants.WIDTH,
-            SolrConstants.HEIGHT, SolrConstants.ACCESSCONDITION, SolrConstants.MDNUM_FILESIZE, SolrConstants.BOOL_IMAGEAVAILABLE,
-            SolrConstants.BOOL_DOUBLE_IMAGE, "MD_*", "MD2_*", "MDNUM_*" };
+            SolrConstants.IDDOC, SolrConstants.IDDOC_OWNER, SolrConstants.MIMETYPE, SolrConstants.FILEIDROOT, SolrConstants.FILENAME,
+            SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.FILENAME + "_JPEG",
+            SolrConstants.FILENAME_MPEG, SolrConstants.FILENAME_MPEG3, SolrConstants.FILENAME_MP4, SolrConstants.FILENAME_OGG,
+            SolrConstants.FILENAME + "_TIFF", SolrConstants.FILENAME_WEBM, SolrConstants.FULLTEXTAVAILABLE, SolrConstants.DATAREPOSITORY,
+            SolrConstants.IMAGEURN, SolrConstants.WIDTH, SolrConstants.HEIGHT, SolrConstants.ACCESSCONDITION, SolrConstants.MDNUM_FILESIZE,
+            SolrConstants.BOOL_IMAGEAVAILABLE, SolrConstants.BOOL_DOUBLE_IMAGE, "MD_*", "MD2_*", "MDNUM_*" };
 
     /**
      * Creates and returns the appropriate loader instance for the given <code>StructElement</code>. Only creates loaders that load pages.
