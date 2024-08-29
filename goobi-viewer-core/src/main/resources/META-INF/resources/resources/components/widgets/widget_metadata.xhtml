@@ -98,19 +98,53 @@
     
                             <!-- Grouped metadata -->
                             <h:panelGroup rendered="#{metadata.group}">
-                                        <!-- Single label for all values, each value is a single string -->
-                                        <h:panelGroup rendered="#{metadata.singleString}">
-                                            <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
-                                                <ui:param name="metadata" value="#{metadata}" />
+                                <!-- Single label for all values, each value is a single string -->
+                                <h:panelGroup rendered="#{metadata.singleString}">
+                        <c:forEach items="#{metadata.values}" var="val">
+                        <dd>
+                                <!-- Metadata value -->
+                                <h:panelGroup rendered="#{metadata.singleString}">
+                                    <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}" escape="false">
+                                    </h:outputFormat>
+                                </h:panelGroup>
+    
+                                <!-- Nested child metadata -->
+                                <c:forEach var="child" items="#{metadata.childMetadata}"
+                                    varStatus="status">
+                                    <ui:fragment rendered="#{!child.isBlank(val.iddoc)}">
+                                        <ui:fragment rendered="#{child.singleString}">
+                                            <ui:include
+                                                src="/resources/includes/metadata/metadataSingleString.xhtml">
+                                                <ui:param name="metadata"
+                                                    value="#{metadata.childMetadata[status.index]}" />
                                             </ui:include>
-                                        </h:panelGroup>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{!child.singleString}">
+                                            <ui:include
+                                                src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+                                                <ui:param name="metadata"
+                                                    value="#{metadata.childMetadata[status.index]}" />
+                                            </ui:include>
+                                        </ui:fragment>
+                                    </ui:fragment>
+                                </c:forEach>
+                            </dd>
+                        </c:forEach>
+                                </h:panelGroup>
 
-                                        <!-- Each value has a label column and a value column -->
-                                        <h:panelGroup rendered="#{!metadata.singleString}">
-                                            <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
-                                                <ui:param name="metadata" value="#{metadata}" />
-                                            </ui:include>
-                                        </h:panelGroup>
+                                <!-- Each value has a label column and a value column -->
+                                <h:panelGroup rendered="#{!metadata.singleString}">
+                                    <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind0">
+                                        <ui:fragment rendered="#{!val.isParamValueBlank(ind0)}">
+                                            <dt>
+                                                <h:outputText value="#{val.getParamLabelWithColon(ind0)}" escape="false" />
+                                            </dt>
+                                            <dd>
+                                                <h:outputText value="#{val.getComboValueShort(ind0)}" escape="false" />
+                                            </dd>
+                                        </ui:fragment>
+                                    </c:forEach>
+                                </h:panelGroup>
                             </h:panelGroup>
     
                             <!-- Non-grouped metadata -->
