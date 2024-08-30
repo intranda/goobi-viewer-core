@@ -76,6 +76,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
+import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -171,6 +172,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private List<StructElement> containedStructElements;
     /** Content type of loaded fulltext. */
     private String textContentType = null;
+
+    private final List<Metadata> metadata = new ArrayList<>();
 
     /**
      * <p>
@@ -1856,6 +1859,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                     .toList();
             return mapper.writeValueAsString(shapes);
         }
+    }
+
+    /**
+     * @return the metadata
+     */
+    public List<Metadata> getMetadata() {
+        return metadata;
     }
 
     @Override

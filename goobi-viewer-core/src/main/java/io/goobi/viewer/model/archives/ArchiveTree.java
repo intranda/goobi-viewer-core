@@ -72,6 +72,11 @@ public class ArchiveTree implements Serializable {
         logger.trace("new EADTree()");
     }
 
+    public ArchiveTree(ArchiveTree orig) {
+        this();
+        update(orig.trueRootElement);
+    }
+
     /**
      * 
      * @param rootElement
