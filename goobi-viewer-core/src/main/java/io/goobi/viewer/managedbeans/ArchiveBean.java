@@ -93,8 +93,12 @@ public class ArchiveBean implements Serializable {
         logger.trace("initializeArchiveTree: {}", selectedEntryId);
         if (getCurrentArchive() != null) {
             try {
-                // this.archiveTree = new ArchiveTree(archiveManager.getArchiveTree(getCurrentDatabase(), getCurrentResource()));
-                this.archiveTree = archiveManager.getArchiveTree(getCurrentResource());
+                //clone the global archive tree so its state (which nodes are expanded) is not preserved between sessions
+                // if state of archive tree should be reset on each page reload, remove the if-clause
+                // or call ArchiveTree.collapseAll()
+                if (this.archiveTree == null) {
+                    this.archiveTree = new ArchiveTree(archiveManager.getArchiveTree(getCurrentResource()));
+                }
                 this.databaseLoaded = true;
                 this.searchString = "";
                 this.archiveTree.resetSearch();
