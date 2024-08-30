@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -98,6 +99,13 @@ public class ManualFeatureSet extends FeatureSet {
             this.featuresAsString = "[" + this.features.stream().collect(Collectors.joining(",")) + "]";
         }
         return this.featuresAsString;
+    }
+
+    @Override
+    public String getFeaturesAsJsonString() throws PresentationException {
+        return "[" + this.features.stream()
+                .map(string -> StringEscapeUtils.escapeJson(string))
+                .collect(Collectors.joining(",")) + "]";
     }
 
     @Override
