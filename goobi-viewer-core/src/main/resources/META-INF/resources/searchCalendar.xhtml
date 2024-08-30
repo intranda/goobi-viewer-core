@@ -64,7 +64,7 @@
 										<div class="search-calendar__century-year">
 											
 											<!-- YEAR HAS ENTRIES SO LINK RENDERED -->
-											<span jsf:id="yearLink" class="search-calendar__century-year-link" jsf:rendered="#{!year.isEmpty()}" title="#{year.hits} #{msg.currentwitsForYear}">
+											<span jsf:id="yearLink" class="search-calendar__century-year-link" jsf:rendered="#{!year.isEmpty()}" data-toggle="tooltip" title="#{year.hits} #{msg.currentwitsForYear}">
 												<a href="#{request.contextPath}/searchcalendar/#{year.name}/">#{year.name}</a>
 											</span>
 											<!-- YEAR HAS 0 ENTRIES SO NO LINK RENDERED -->
