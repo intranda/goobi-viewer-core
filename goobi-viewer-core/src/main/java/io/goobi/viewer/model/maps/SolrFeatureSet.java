@@ -83,7 +83,7 @@ public class SolrFeatureSet extends FeatureSet {
     public String getFeaturesAsString() throws PresentationException {
         if (this.featuresAsString == null) {
             try {
-                this.featuresAsString = createFeaturesAsString();
+                this.featuresAsString = createFeaturesAsString(false);
             } catch (IndexUnreachableException e) {
                 throw new PresentationException("Error loading features", e);
             }
@@ -91,11 +91,21 @@ public class SolrFeatureSet extends FeatureSet {
         return this.featuresAsString;
     }
 
+    @Override
+    public String getFeaturesAsJsonString() throws PresentationException {
+        try {
+            return createFeaturesAsString(true);
+        } catch (PresentationException | IndexUnreachableException e) {
+            throw new PresentationException("Error loading features", e);
+        }
+
+    }
+
     public void setFeaturesAsString(String featuresAsString) {
         this.featuresAsString = null;
     }
 
-    protected String createFeaturesAsString() throws PresentationException, IndexUnreachableException {
+    protected String createFeaturesAsString(boolean escapeJson) throws PresentationException, IndexUnreachableException {
         if (DataManager.getInstance().getConfiguration().useHeatmapForCMSMaps()) {
             //No features required since they will be loaded dynamically with the heatmap
             return "[]";
@@ -108,7 +118,7 @@ public class SolrFeatureSet extends FeatureSet {
                 .distinct()
                 .map(GeoMapFeature::getJsonObject)
                 .map(Object::toString)
-                .map(string -> StringEscapeUtils.escapeJson(string))
+                .map(string -> escapeJson ? StringEscapeUtils.escapeJson(string) : string)
                 .collect(Collectors.joining(","));
 
         return "[" + ret + "]";
