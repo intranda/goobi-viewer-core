@@ -701,6 +701,22 @@
                 </metadata>
             </template>
         </metadataView>
+        
+        <metadataList type="page">
+            <template name="_DEFAULT">
+                <metadata label="MD_COPYRIGHT_IMAGE" value="">
+                    <param type="field" key="MD_COPYRIGHT_IMAGE" />
+                </metadata>
+                <metadata label="MD_TECH_BYTE_ORDER" value="">
+                    <param type="field" key="MD_TECH_BYTE_ORDER" />
+                </metadata>
+            </template>
+            <template name="Chapter">
+                <metadata label="MD_COPYRIGHT_IMAGE" value="">
+                    <param type="field" key="MD_COPYRIGHT_IMAGE" />
+                </metadata>
+            </template>
+        </metadataList>
 
 		<!-- metadataList[@type="search"]: defines metadata that is displayed in the search 
 			hitlist. The syntax is the same as in metadataView -->
@@ -727,9 +743,7 @@
 					<param type="field" key="DC" />
 				</metadata>
 			</template>
-
 		</metadataList>
-
 
 		<!-- metadataList[@type="sidebar"]: defines metadata that are displayed in the sidebar. -->
 		<metadataList type="sideBar">
