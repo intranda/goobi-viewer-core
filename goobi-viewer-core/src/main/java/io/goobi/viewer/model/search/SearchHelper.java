@@ -541,10 +541,10 @@ public final class SearchHelper {
      * Returns all suffixes relevant to search filtering.
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param addArchiveFilterSuffix
      * @param addStaticQuerySuffix a boolean.
      * @param addCollectionBlacklistSuffix a boolean.
      * @param privilege Privilege to check (Connector checks a different privilege)
+     * @param addArchiveFilterSuffix if true, ignore docs with DOCTYPE:ARCHIVE
      * @return Generated Solr query suffix
      * @should add archive filter suffix
      * @should add static suffix

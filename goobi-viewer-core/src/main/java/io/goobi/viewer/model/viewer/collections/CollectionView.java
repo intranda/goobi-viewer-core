@@ -255,7 +255,8 @@ public class CollectionView implements Serializable {
             } else {
                 if (isIgnoreHierarchy()) {
                     for (HierarchicalBrowseDcElement element : completeCollectionList) {
-                        if (this.ignoreList.contains(element.getName()) || !element.getName().startsWith(baseElement.getName() + splittingChar)) {
+                        if (this.ignoreList.contains(element.getName())
+                                || (baseElement != null && !element.getName().startsWith(baseElement.getName() + splittingChar))) {
                             continue;
                         }
                         visibleList.add(element);

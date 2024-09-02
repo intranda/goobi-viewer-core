@@ -14,7 +14,7 @@
 	</composite:interface>
 
 	<composite:implementation>
-			<div id="widgetDownloads" class="widget widget-downloads" rendered="#{displayConditions.getTag('widgetDownloads').getChildCount('widget-element') > 0}"
+			<div jsf:id="widgetDownloads" class="widget widget-downloads" rendered="#{displayConditions.getTag('widgetDownloads').getChildCount('widget-element') > 0}"
 			data-numChildren="#{displayConditions.getTag('widgetDownloadsBody').getChildCount('widget-element')}">
 				<div class="widget-downloads__topbar widget__topbar">
 					<!-- WIDGET TITLE -->
@@ -29,7 +29,7 @@
 				<div id="widgetDownloadsBody"
 					class="widget__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
 					<!-- INTRODUCTION TEXT -->
-					<ui:fragment visibility-class="widget-element"
+					<ui:fragment
 						rendered="#{fn:length(msg['widget__downloads__intro_text_object_downloads']) > 0 and displayConditions.matchRecord('{pageType:[viewObject, cmsPage]}') }">
 						<p id="introductionText" class="widget-downloads__license-text">
 							<h:outputText 
@@ -38,7 +38,7 @@
 						</p>
 					</ui:fragment>
 					<!-- INTRODUCTION TEXT DOWNLOADS GENERAL -->
-					<ui:fragment visibility-class="widget-element"
+					<ui:fragment
 						rendered="#{fn:length(msg['widget__downloads__intro_text_text_formats']) > 0 and displayConditions.matchRecord('{pageType:[viewFulltext]}') }">
 						<p id="introductionText" class="widget-downloads__license-text">
 							<h:outputText
@@ -48,7 +48,7 @@
 					</ui:fragment>
 
 					<!-- INTRODUCTION TEXT ADDITIONAL FILES -->
-					<ui:fragment visibility-class="widget-element"
+					<ui:fragment
 						rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_DOWNLOAD']) > 0 and activeDocumentBean.viewManager.displayContentDownloadMenu}">
 						<p id="introductionText"
 							class="widget-downloads__additional-files-text">
@@ -196,7 +196,7 @@
 							<!-- PDF (WORK) -->
 							<c:set scope="request" var="hasPrerenderedPagePdfs"
 								value="#{activeDocumentBean.viewManager.hasPrerenderedPagePdfs()}" />
-							<ui:fragment
+							<ui:fragment 
 	                            rendered="#{displayConditions.matchRecord('{contentType:[IMAGE], pageType:[viewObject, viewFullscreen], accessCondition:DOWNLOAD_PDF}')}">
 								<ui:fragment visibility-class="widget-element"  rendered="#{!configurationBean.generatePdfInMessageQueue and hasPrerenderedPagePdfs}">
 									<a

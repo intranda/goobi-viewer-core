@@ -84,13 +84,13 @@ public class Language implements Comparable<Language>, Serializable {
 
     /**
      * <p>
-     * Setter for the field <code>isoCode_639_1</code>.
+     * Setter for the field <code>isoCode6391</code>.
      * </p>
      *
-     * @param isoCode_639_1 the isoCode_639_1 to set
+     * @param isoCode6391 the isoCode_639_1 to set
      */
-    public void setIsoCode6391(String isoCode_639_1) {
-        this.isoCode6391 = isoCode_639_1;
+    public void setIsoCode6391(String isoCode6391) {
+        this.isoCode6391 = isoCode6391;
     }
 
     /**
@@ -98,10 +98,10 @@ public class Language implements Comparable<Language>, Serializable {
      * setIsoCode_639_2B.
      * </p>
      *
-     * @param isoCode_639_2_B the isoCode_639_2_B to set
+     * @param isoCode6392B the isoCode_639_2_B to set
      */
-    public void setIsoCode6392B(String isoCode_639_2_B) {
-        this.isoCode6392B = isoCode_639_2_B;
+    public void setIsoCode6392B(String isoCode6392B) {
+        this.isoCode6392B = isoCode6392B;
     }
 
     /**
@@ -109,10 +109,10 @@ public class Language implements Comparable<Language>, Serializable {
      * setIsoCode_639_2T.
      * </p>
      *
-     * @param isoCode_639_2_T the isoCode_639_2_T to set
+     * @param isoCode6392T the isoCode_639_2_T to set
      */
-    public void setIsoCode6392T(String isoCode_639_2_T) {
-        this.isoCode6392T = isoCode_639_2_T;
+    public void setIsoCode6392T(String isoCode6392T) {
+        this.isoCode6392T = isoCode6392T;
     }
 
     /**

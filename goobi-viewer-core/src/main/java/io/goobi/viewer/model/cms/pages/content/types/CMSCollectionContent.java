@@ -163,10 +163,20 @@ public class CMSCollectionContent extends CMSContent {
         this.ignoreCollections = ignoreCollections;
     }
 
+    /**
+     * get {@link #openExpanded}
+     * 
+     * @return {@link #openExpanded}
+     */
     public boolean isOpenExpanded() {
         return openExpanded;
     }
 
+    /**
+     * Set {@link #openExpanded}
+     * 
+     * @param openExpanded
+     */
     public void setOpenExpanded(boolean openExpanded) {
         this.openExpanded = openExpanded;
     }
@@ -174,7 +184,7 @@ public class CMSCollectionContent extends CMSContent {
     /**
      * Getter for {@link #ignoreHierarchy}
      * 
-     * @return the ignoreHierarchy
+     * @return {@link #ignoreHierarchy}
      */
     public boolean isIgnoreHierarchy() {
         return ignoreHierarchy;
