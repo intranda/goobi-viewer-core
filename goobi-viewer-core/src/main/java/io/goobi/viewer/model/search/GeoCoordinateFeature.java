@@ -76,7 +76,7 @@ public class GeoCoordinateFeature {
      * @param points
      * @param predicate
      * @param shape
-     * @param distError
+     * @param distError maximal distance between points for them to be considered overlapping
      */
     public GeoCoordinateFeature(double[][] points, String predicate, String shape, double distError) {
         JSONObject json = new JSONObject();
@@ -131,7 +131,6 @@ public class GeoCoordinateFeature {
                 .replace("$P", this.predicate)
                 .replace("$S", this.shape)
                 .replace("$V", pointString);
-
     }
 
     public static String getPredicate(String searchString) {

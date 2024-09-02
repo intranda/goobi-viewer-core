@@ -33,8 +33,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -55,7 +53,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
-import io.goobi.viewer.managedbeans.PersistentStorageBean;
 import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
@@ -69,9 +66,6 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
     private static final int DELAY_IF_PDF_IS_BEING_CREATED_MILLIS = 300_000;
     private static final int MAX_RETRIES = 2;
     private static final Logger logger = LogManager.getLogger(PdfMessageHandler.class);
-
-    @Inject
-    PersistentStorageBean storageBean;
 
     @Override
     public MessageStatus call(ViewerMessage message, MessageQueueManager queueManager) {

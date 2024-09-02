@@ -34,20 +34,13 @@
 					<ui:include src="/resources/includes/search/searchHitList.xhtml">
 						<ui:param name="listStyle" value="#{cc.attrs.component.getContent('recordlist').view.cssClass}"></ui:param>
 						<ui:param name="searchParam" value="#{sessionBean.get('cmsSearch')}"></ui:param>
-						<ui:param name="showOptions" value="#{cc.attrs.component.getBooleanAttributeValue('showOptions', false)}"></ui:param>
-						<ui:param name="showSorting" value="#{cc.attrs.component.getContent('recordlist').sortField  == ''}"></ui:param>
+						<ui:param name="showOptions" value="#{cc.attrs.component.getContent('recordlist').showOptions}"></ui:param>
+						<ui:param name="showSorting" value="#{empty cc.attrs.component.getContent('recordlist').sortField}"></ui:param>
 						<ui:param name="groupPreviewMode" value="#{false}"/>
 					</ui:include>
-					
 				</div>
-
 			</div>
-
 		</ui:fragment>
-
-
-
-
 
 	</composite:implementation>
 </ui:composition>

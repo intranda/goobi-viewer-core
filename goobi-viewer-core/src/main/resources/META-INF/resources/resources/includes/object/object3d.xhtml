@@ -130,7 +130,7 @@
 	 			 	$("#beforeLoad").text(unknownSizeMsgKey);
 	 			}
 	       		world.loadingMonitor.subscribe(e => {
-	       			console.log("load progress ", e);
+// 	       			console.log("load progress ", e);
 	       			let loaded = e.loaded;
 	       			let total = json.resourceSizes[e.url];
 	       			let finished = total - loaded  <= 0;

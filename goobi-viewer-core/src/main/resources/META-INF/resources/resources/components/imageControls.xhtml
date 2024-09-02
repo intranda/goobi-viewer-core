@@ -283,7 +283,7 @@
 
                             <!-- DOUBLE PAGE VIEW -->
                             <ui:fragment
-                                rendered="#{configurationBean.doublePageNavigationEnabled and pageCount gt 1 and activeDocumentBean.viewManager.currentPage.baseMimeType == 'image' and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and !activeDocumentBean.viewManager.currentPage.doubleImage}">
+                                rendered="#{configurationBean.doublePageNavigationEnabled and pageCount gt 1 and activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image' and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and !activeDocumentBean.viewManager.currentPage.doubleImage}">
                                 <li class="image-controls__action double-page-view">
                                     <h:commandLink action="#{activeDocumentBean.setDoublePageModeAction(true)}" title="#{msg.doublePageView}">
                                         <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-double-page.svg')}"/>
@@ -371,7 +371,7 @@
                             </ui:fragment>
                             <!-- ZOOMSLIDER -->
                             <!-- TODO: rendered Anweisung, wenn pageBrowse in der config aktiv -->
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'image' and activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}">
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image' and activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}">
                                 <li class="image-controls__action zoom-slider-wrapper">
                                 	<input type="range" min="0" max="1" value="0" step="0.01" class="slider zoom-slider" aria-label="#{msg.aria_label__zoom_slider}"/>
                                 </li>
@@ -447,7 +447,7 @@
                             </ui:fragment>
 
                             <!-- SHARE IMAGE REGION -->
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'image' and !activeDocumentBean.viewManager.doublePageMode}">
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image' and !activeDocumentBean.viewManager.doublePageMode}">
                                 <li class="image-controls__option share-image-region">
                                     <a role="button" title="#{msg.action__share_image_region}" data-toggle="tooltip" data-placement="top"
                                     data-popover-element="#share-image-area-popup" aria-label="#{msg.action__share_image_region}">
@@ -457,7 +457,7 @@
                             </ui:fragment>
 
                             <!-- IMAGE FILTER -->
-                            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'image'}">
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image'}">
                                 <li class="image-controls__option image-filter">
                                     <button type="button" class="btn btn--icon" disabled="disabled"
                                 	   data-popover-element="#imageFilterPopover"

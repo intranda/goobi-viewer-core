@@ -11,11 +11,11 @@
 
     <ui:fragment rendered="#{activeDocumentBean.recordLoaded}">
     
-        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'image'}">
+        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image'}">
             <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:image" content="#{activeDocumentBean.viewManager.currentPage.getImageUrl(750)}" />
         </ui:fragment>
-        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'video'}">
+        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'video'}">
             <meta name="twitter:card" content="player" />
             <meta name="twitter:player" content="#{navigationHelper.applicationUrl}video/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageOrder}/" />
             <meta name="twitter:player:width" content="300" />

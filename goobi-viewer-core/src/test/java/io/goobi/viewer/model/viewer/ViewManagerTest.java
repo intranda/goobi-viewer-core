@@ -28,8 +28,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
@@ -480,7 +480,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
             Mockito.when(page.getFilepath()).thenReturn(pi + "/" + pageFilename);
         }
         Mockito.when(page.getMimeType()).thenReturn(mimeType);
-        Mockito.when(page.getBaseMimeType()).thenReturn(BaseMimeType.getByName(mimeType).getName());
+        Mockito.when(page.getBaseMimeType()).thenReturn(BaseMimeType.getByName(mimeType));
 
         IPageLoader pageLoader = Mockito.mock(EagerPageLoader.class);
         Mockito.when(pageLoader.getPage(Mockito.anyInt())).thenReturn(page);

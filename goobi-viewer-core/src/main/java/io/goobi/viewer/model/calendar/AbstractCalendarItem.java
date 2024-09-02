@@ -120,4 +120,12 @@ public abstract class AbstractCalendarItem implements ICalendarItem {
     public void setSelected(boolean selected) {
         this.selected = selected;
     }
+
+    public boolean isEmpty() {
+        return this.hits < 1;
+    }
+
+    public void addHits(Integer additionalHits) {
+        this.hits += additionalHits;
+    }
 }

@@ -40,9 +40,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.client.solrj.util.ClientUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.client.solrj.util.ClientUtils;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
@@ -323,12 +323,21 @@ public class BrowseBean implements Serializable {
     /**
      * Use this method of a certain collections needs to be expanded via URL.
      *
-     * @param levels a int.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
      */
+    public void expandCollection() throws IndexUnreachableException, IllegalRequestException {
+        expandCollection(SolrConstants.DC, null);
+    }
+
+    @Deprecated(since = "24.08")
     public void expandCollection(int levels) throws IndexUnreachableException, IllegalRequestException {
-        expandCollection(SolrConstants.DC, null, levels);
+        expandCollection();
+    }
+
+    @Deprecated(since = "24.08")
+    public void expandCollection(String collectionField, String facetField, int levels) throws IndexUnreachableException, IllegalRequestException {
+        expandCollection(collectionField, facetField);
     }
 
     /**
@@ -338,14 +347,12 @@ public class BrowseBean implements Serializable {
      *
      * @param collectionField a {@link java.lang.String} object.
      * @param facetField a {@link java.lang.String} object.
-     * @param levels a int.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
      */
-    public void expandCollection(String collectionField, String facetField, int levels) throws IndexUnreachableException, IllegalRequestException {
+    public void expandCollection(String collectionField, String facetField) throws IndexUnreachableException, IllegalRequestException {
         synchronized (this) {
             initializeCollection(collectionField, facetField);
-            collections.get(collectionField).setBaseLevels(levels);
             collections.get(collectionField).setBaseElementName(getCollectionToExpand());
             collections.get(collectionField).setTopVisibleElement(getTopVisibleCollection());
             collections.get(collectionField).populateCollectionList();

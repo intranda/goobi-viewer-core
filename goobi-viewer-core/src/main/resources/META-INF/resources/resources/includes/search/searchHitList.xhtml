@@ -21,6 +21,7 @@
     
     <!-- THIS INCLUDE MUST BE WRAPPED IN AN DIV WITH THE CLASS ".search-list"! -->
     
+    
     <!-- SEARCH LIST HITS --> 
     <div class="search-list__hits #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : 'noClass'}">
         <!-- SEARCH LIST SORTING -->
@@ -242,13 +243,13 @@
                         <a class="search-list__expand-group-link" href="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{resultGroup.name}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.activeFacetString}/">#{msg.search__all_records}: #{msg[resultGroup.name]} <i class="fa fa-caret-right" aria-hidden="true"></i></a>
                     </ui:fragment> 
                 </ui:fragment>
-            </ui:repeat>
+            </ui:repeat> 
         </h:form> 
 
         <!-- PAGINATOR -->
         <ui:fragment rendered="#{!groupPreviewMode}">
             <viewerComponent:simplePaginator 
-        	   classSuffix="-top"
+        	   classSuffix="-bottom"
                 itemCount="#{search.lastPage}" 
                 itemActive="#{search.currentPage}" 
                 urlPrefix="#{search.currentSearchUrlRoot}/#{searchBean.activeResultGroupName}/#{search.exactSearchString}/"
@@ -256,6 +257,29 @@
             <div class="clearfix"></div>
         </ui:fragment>
 
+    </div>
+    
+    <!-- SEARCH HELP MODAL -->
+    <div class="modal fade search-help" id="searchHelpModal" tabindex="-1" role="dialog" aria-labelledby="searchHelpModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="searchHelpModalLabel">#{msg.search_helpModalTitle}</h2>
+                    <button type="button" class="fancy-close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">
+                            <h:outputText value="&amp;times;" escape="false" />
+                        </span>
+                    </button> 
+                </div>
+                <div class="modal-body">
+                    <viewerComponent:searchHelpText />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn--full" data-dismiss="modal">#{msg.search_helpModalClose}</button>
+                </div>
+            </div>
+        </div>
+		<div class="alt-backdrop" data-dismiss="modal"></div>
     </div>
 
 

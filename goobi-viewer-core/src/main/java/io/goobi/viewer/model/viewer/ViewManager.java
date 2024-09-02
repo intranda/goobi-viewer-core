@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -60,6 +61,7 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -77,6 +79,8 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetPdfAction;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.SinglePdfRequest;
+import de.unigoettingen.sub.commons.util.MimeType;
+import de.unigoettingen.sub.commons.util.MimeType.UnknownMimeTypeException;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.AlphanumCollatorComparator;
@@ -1385,7 +1389,6 @@ public class ViewManager implements Serializable {
         if (pageLoader == null) {
             return;
         }
-
         int useOrder = currentImageOrder;
         if (useOrder < pageLoader.getFirstPageOrder()) {
             useOrder = pageLoader.getFirstPageOrder();
@@ -2639,23 +2642,27 @@ public class ViewManager implements Serializable {
             return true;
         }
         if (pagesWithFulltext == null) {
-            pagesWithFulltext = DataManager.getInstance()
-                    .getSearchIndex()
-                    .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
-                            .append(':')
-                            .append(pi)
-                            .append(" +")
-                            .append(SolrConstants.DOCTYPE)
-                            .append(":PAGE")
-                            .append(" +")
-                            .append(SolrConstants.FULLTEXTAVAILABLE)
-                            .append(":true")
-                            .toString());
+            pagesWithFulltext = getPageCountWithFulltext();
         }
         double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
         // logger.trace("{}% of pages have full-text", percentage); //NOSONAR Debug
 
         return percentage < threshold;
+    }
+
+    public long getPageCountWithFulltext() throws IndexUnreachableException, PresentationException {
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                        .append(':')
+                        .append(pi)
+                        .append(" +")
+                        .append(SolrConstants.DOCTYPE)
+                        .append(":PAGE")
+                        .append(" +")
+                        .append(SolrConstants.FULLTEXTAVAILABLE)
+                        .append(":true")
+                        .toString());
     }
 
     /**
@@ -2800,23 +2807,59 @@ public class ViewManager implements Serializable {
         }
         if (pagesWithAlto == null) {
 
-            pagesWithAlto = DataManager.getInstance()
-                    .getSearchIndex()
-                    .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
-                            .append(':')
-                            .append(pi)
-                            .append(" +")
-                            .append(SolrConstants.DOCTYPE)
-                            .append(":PAGE")
-                            .append(" +")
-                            .append(SolrConstants.FILENAME_ALTO)
-                            .append(":*")
-                            .toString());
+            pagesWithAlto = getPageCountWithAlto();
             logger.trace("{} of pages have full-text", pagesWithAlto);
         }
         int threshold = 1; // TODO ???
 
         return pagesWithAlto >= threshold;
+    }
+
+    public Map<String, List<String>> getFilenamesByMimeType() throws IndexUnreachableException, PresentationException {
+        List<SolrDocument> pageDocs = DataManager.getInstance()
+                .getSearchIndex()
+                .getDocs(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                        .append(':')
+                        .append(pi)
+                        .append(" +")
+                        .append(SolrConstants.DOCTYPE)
+                        .append(":PAGE")
+                        .append(" +")
+                        .append(SolrConstants.FILENAME)
+                        .append(":*")
+                        .toString(), List.of(SolrConstants.FILENAME));
+        return Optional.ofNullable(pageDocs)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(doc -> doc.getFieldValue(SolrConstants.FILENAME))
+                .map(Object::toString)
+                .collect(Collectors.toMap(
+                        filename -> getMimetype((String) filename),
+                        filename -> List.of(filename),
+                        (set1, set2) -> new ArrayList<>(CollectionUtils.union((List<? extends String>) set1, (List<? extends String>) set2))));
+    }
+
+    public String getMimetype(String filename) {
+        try {
+            return MimeType.getMimeTypeFromExtension(filename);
+        } catch (UnknownMimeTypeException e) {
+            return "unknown";
+        }
+    }
+
+    public Long getPageCountWithAlto() throws IndexUnreachableException, PresentationException {
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                        .append(':')
+                        .append(pi)
+                        .append(" +")
+                        .append(SolrConstants.DOCTYPE)
+                        .append(":PAGE")
+                        .append(" +")
+                        .append(SolrConstants.FILENAME_ALTO)
+                        .append(":*")
+                        .toString());
     }
 
     /**
@@ -4133,7 +4176,7 @@ public class ViewManager implements Serializable {
      * @should return locked status if no statuses found
      */
     public List<CopyrightIndicatorStatus> getCopyrightIndicatorStatuses() {
-        logger.trace("getCopyrightIndicatorStatuses");
+        // logger.trace("getCopyrightIndicatorStatuses");
         if (copyrightIndicatorStatuses == null) {
             copyrightIndicatorStatuses = new ArrayList<>();
             String field = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusField();

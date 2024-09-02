@@ -132,6 +132,11 @@ public class GeoCoordinateConverter {
         Map<SolrDocument, List<SolrDocument>> docs = StringUtils.isNotBlank(query)
                 ? getSolrDocuments(query, filterQueries, coordinateFields, markerTitleField, aggregateResults) : Collections.emptyMap();
 
+        return getFeaturesFromSolrDocs(coordinateFields, markerTitleField, docs);
+    }
+
+    public List<GeoMapFeature> getFeaturesFromSolrDocs(List<String> coordinateFields, String markerTitleField,
+            Map<SolrDocument, List<SolrDocument>> docs) {
         List<GeoMapFeature> features = new ArrayList<>();
         for (Entry<SolrDocument, List<SolrDocument>> entry : docs.entrySet()) {
             SolrDocument doc = entry.getKey();

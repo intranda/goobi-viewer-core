@@ -72,14 +72,9 @@ public class ArchiveTree implements Serializable {
         logger.trace("new EADTree()");
     }
 
-    /**
-     * Cloning constructor.
-     * 
-     * @param orig
-     */
     public ArchiveTree(ArchiveTree orig) {
-        this.generate(new ArchiveEntry(orig.getRootElement(), null));
-        this.getTreeViewForGroup(DEFAULT_GROUP);
+        this();
+        update(orig.trueRootElement);
     }
 
     /**
@@ -90,7 +85,7 @@ public class ArchiveTree implements Serializable {
         logger.trace("update: {}", rootElement);
         generate(rootElement);
         if (getSelectedEntry() == null) {
-            setSelectedEntry(getRootElement());
+            setSelectedEntry(rootElement);
         }
         // This should happen before the tree is expanded to the selected entry, otherwise the collapse level will be reset
         getTreeView();
@@ -116,6 +111,7 @@ public class ArchiveTree implements Serializable {
                 break;
             }
         }
+        // logger.trace("Generated tree of size {}", tree.size()); //NOSONAR Debug
         entryMap.put(DEFAULT_GROUP, tree);
     }
 
@@ -202,21 +198,7 @@ public class ArchiveTree implements Serializable {
         logger.trace("getVisibleTree");
         return getTreeView().stream()
                 .filter(e -> e.isVisible() && (e.isDisplaySearch() || !searchActive) && e.isAccessAllowed())
-                .map(e -> {
-                    if (!e.isMetadataLoaded()) {
-                        e.loadMetadata();
-                    }
-                    return e;
-                })
                 .toList();
-
-        //        ret.forEach(e -> {
-        //            if (!e.isMetadataLoaded()) {
-        //                e.loadMetadata();
-        //            }
-        //        });
-
-        //        return ret;
     }
 
     /**
@@ -296,9 +278,6 @@ public class ArchiveTree implements Serializable {
     public void setSelectedEntry(ArchiveEntry selectedEntry) {
         logger.trace("setSelectedEntry: {}", selectedEntry != null ? selectedEntry.getLabel() : null);
         this.selectedEntry = selectedEntry;
-        if (selectedEntry != null && !selectedEntry.isMetadataLoaded()) {
-            selectedEntry.loadMetadata();
-        }
     }
 
     /**
@@ -310,9 +289,6 @@ public class ArchiveTree implements Serializable {
             this.selectedEntry = null;
         } else {
             this.selectedEntry = selectedEntry;
-            if (selectedEntry != null && !selectedEntry.isMetadataLoaded()) {
-                selectedEntry.loadMetadata();
-            }
         }
     }
 

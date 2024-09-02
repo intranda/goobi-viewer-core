@@ -36,15 +36,15 @@ public class Language implements Comparable<Language>, Serializable {
     /**
      * language code according to iso 639-2/B (based on English names)
      */
-    private String isoCode_639_2_B;
+    private String isoCode6392B;
     /**
      * language code according to iso 639-2/T (based on native names)
      */
-    private String isoCode_639_2_T;
+    private String isoCode6392T;
     /**
      * language code according to iso 639_1
      */
-    private String isoCode_639_1;
+    private String isoCode6391;
     private String englishName;
     private String frenchName;
     private String germanName;
@@ -56,8 +56,8 @@ public class Language implements Comparable<Language>, Serializable {
      *
      * @return the language code according to iso 639-1
      */
-    public String getIsoCode639_1() {
-        return isoCode_639_1;
+    public String getIsoCode6391() {
+        return isoCode6391;
     }
 
     /**
@@ -67,8 +67,8 @@ public class Language implements Comparable<Language>, Serializable {
      *
      * @return the language code according to iso 639-2/B
      */
-    public String getIsoCode639_2B() {
-        return isoCode_639_2_B;
+    public String getIsoCode6392B() {
+        return isoCode6392B;
     }
 
     /**
@@ -78,19 +78,19 @@ public class Language implements Comparable<Language>, Serializable {
      *
      * @return the language code according to iso 639-2/T
      */
-    public String getIsoCode639_2T() {
-        return isoCode_639_2_T;
+    public String getIsoCode6392T() {
+        return isoCode6392T;
     }
 
     /**
      * <p>
-     * Setter for the field <code>isoCode_639_1</code>.
+     * Setter for the field <code>isoCode6391</code>.
      * </p>
      *
-     * @param isoCode_639_1 the isoCode_639_1 to set
+     * @param isoCode6391 the isoCode_639_1 to set
      */
-    public void setIsoCode_639_1(String isoCode_639_1) {
-        this.isoCode_639_1 = isoCode_639_1;
+    public void setIsoCode6391(String isoCode6391) {
+        this.isoCode6391 = isoCode6391;
     }
 
     /**
@@ -98,10 +98,10 @@ public class Language implements Comparable<Language>, Serializable {
      * setIsoCode_639_2B.
      * </p>
      *
-     * @param isoCode_639_2_B the isoCode_639_2_B to set
+     * @param isoCode6392B the isoCode_639_2_B to set
      */
-    public void setIsoCode_639_2B(String isoCode_639_2_B) {
-        this.isoCode_639_2_B = isoCode_639_2_B;
+    public void setIsoCode6392B(String isoCode6392B) {
+        this.isoCode6392B = isoCode6392B;
     }
 
     /**
@@ -109,10 +109,10 @@ public class Language implements Comparable<Language>, Serializable {
      * setIsoCode_639_2T.
      * </p>
      *
-     * @param isoCode_639_2_T the isoCode_639_2_T to set
+     * @param isoCode6392T the isoCode_639_2_T to set
      */
-    public void setIsoCode_639_2T(String isoCode_639_2_T) {
-        this.isoCode_639_2_T = isoCode_639_2_T;
+    public void setIsoCode6392T(String isoCode6392T) {
+        this.isoCode6392T = isoCode6392T;
     }
 
     /**
@@ -123,7 +123,7 @@ public class Language implements Comparable<Language>, Serializable {
      * @return the language code according to iso 639-2/B
      */
     public String getIsoCode() {
-        return getIsoCode639_2B();
+        return getIsoCode6392B();
     }
 
     /**
@@ -134,7 +134,7 @@ public class Language implements Comparable<Language>, Serializable {
      * @param isoCode a {@link java.lang.String} object.
      */
     public void setIsoCode(String isoCode) {
-        this.isoCode_639_2_B = isoCode;
+        this.isoCode6392B = isoCode;
     }
 
     /**
@@ -145,7 +145,7 @@ public class Language implements Comparable<Language>, Serializable {
      * @return the language code according to iso 639-1
      */
     public String getIsoCodeOld() {
-        return getIsoCode639_1();
+        return getIsoCode6391();
     }
 
     /**
@@ -156,7 +156,7 @@ public class Language implements Comparable<Language>, Serializable {
      * @param isoCodeOld a {@link java.lang.String} object.
      */
     public void setIsoCodeOld(String isoCodeOld) {
-        this.isoCode_639_1 = isoCodeOld;
+        this.isoCode6391 = isoCodeOld;
     }
 
     /**
@@ -253,7 +253,7 @@ public class Language implements Comparable<Language>, Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((isoCode_639_2_B == null) ? 0 : isoCode_639_2_B.hashCode());
+        result = prime * result + ((isoCode6392B == null) ? 0 : isoCode6392B.hashCode());
         return result;
     }
 
@@ -272,11 +272,11 @@ public class Language implements Comparable<Language>, Serializable {
             return false;
         }
         Language other = (Language) obj;
-        if (isoCode_639_2_B == null) {
-            if (other.isoCode_639_2_B != null) {
+        if (isoCode6392B == null) {
+            if (other.isoCode6392B != null) {
                 return false;
             }
-        } else if (!isoCode_639_2_B.equals(other.isoCode_639_2_B)) {
+        } else if (!isoCode6392B.equals(other.isoCode6392B)) {
             return false;
         }
 
