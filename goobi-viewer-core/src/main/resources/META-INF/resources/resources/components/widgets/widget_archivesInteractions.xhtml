@@ -36,16 +36,16 @@
                         </h:panelGroup>
                         
                         <!-- DO STUFF HERE -->
-                         <h:panelGroup rendered="#{userBean.user.cmsAdmin}">
+                        <h:panelGroup rendered="#{userBean.user.cmsAdmin}">
                             <li>
-                            <a href="#{cmsPageEditBean.createAndOpenNewPage(msg.overviewPage, activeDocumentBean.viewManager.pi)}">#{msg.action__create_linked_cms_page__label}</a>
+                            <a href="#{cmsPageEditBean.createAndOpenNewPage(msg.overviewPage, archiveBean.currentArchive.resourceId)}">#{msg.action__create_linked_cms_page__label}</a>
                             </li>
                         </h:panelGroup>
                         
-                         <!-- DO MORE STUFF HERE -->
-                         <h:panelGroup  rendered="#{userBean.admin}">
+                        <!-- DO MORE STUFF HERE -->
+                        <h:panelGroup  rendered="#{userBean.admin}">
                             <li>
-                            	<a href="#{request.contextPath}/admin/cms/recordnotes/new/?pi=#{activeDocumentBean.viewManager.pi}"> #{msg.cms__record_notes__add_note}</a>
+                            	<a href="#{request.contextPath}/admin/cms/recordnotes/new/?pi=#{archiveBean.currentArchive.resourceId}"> #{msg.cms__record_notes__add_note}</a>
                             </li>
                         </h:panelGroup>
 
