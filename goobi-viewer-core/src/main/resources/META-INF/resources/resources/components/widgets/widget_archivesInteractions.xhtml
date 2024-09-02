@@ -48,6 +48,30 @@
                             	<a href="#{request.contextPath}/admin/cms/recordnotes/new/?pi=#{archiveBean.currentArchive.resourceId}"> #{msg.cms__record_notes__add_note}</a>
                             </li>
                         </h:panelGroup>
+                        
+                        <!-- DELETE ARCHIVE -->
+                        <h:panelGroup rendered="#{userBean.admin}">
+                            <li>
+                    <ui:fragment rendered="#{userBean.admin}">
+                        <ul class="widget-user-interactions__delete-record-wrapper">
+                        <h3>#{msg.deleteRecord}</h3>
+                        <div class="widget-user-interactions__delete-record">
+  
+                            <ui:fragment>
+                                <!-- ACTION -->
+                                    <div class="widget-user-interactions__delete-record-action has-urn">
+                                        <h:commandLink styleClass="btn btn--danger" role="button"
+                                            onclick="if ( !confirm( &quot;#{msg.deleteRecord_confirmationText}&quot; ) ) { return false };"
+                                            action="#{archiveBean.deleteArchiveAction}">
+                                            #{msg.button__delete}
+                                        </h:commandLink>
+                                    </div>
+                            </ui:fragment>
+                        </div>
+                        </ul>
+                    </ui:fragment>
+                            </li>
+                        </h:panelGroup>
 
                     </ul>
                 </h:form>

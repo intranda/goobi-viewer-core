@@ -23,6 +23,7 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -479,7 +480,7 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
-     * Exports the currently loaded for re-indexing.
+     * Exports the currently loaded archive for re-indexing.
      *
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -494,6 +495,30 @@ public class ArchiveBean implements Serializable {
                 Messages.error("reIndexRecordFailure");
             }
         }
+
+        return "";
+    }
+
+    /**
+     * <p>
+     * deleteArchiveAction.
+     * </p>
+     *
+     * @return outcome
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public String deleteArchiveAction() throws IOException, IndexUnreachableException {
+        if (getCurrentArchive() == null) {
+            return "";
+        }
+
+        if (IndexerTools.deleteRecord(getCurrentArchive().getResourceId(), false,
+                Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
+            Messages.info("deleteRecord_success");
+            return "pretty:index";
+        }
+        Messages.error("deleteRecord_failure");
 
         return "";
     }
