@@ -37,6 +37,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.ArchiveConnectionException;
@@ -477,4 +478,23 @@ public class ArchiveBean implements Serializable {
 
     }
 
+    /**
+     * Exports the currently loaded for re-indexing.
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.RecordNotFoundException if any.
+     */
+    public String reIndexArchiveAction() throws IndexUnreachableException, DAOException, RecordNotFoundException {
+        if (getCurrentArchive() != null) {
+            if (IndexerTools.reIndexRecord(getCurrentArchive().getResourceId())) {
+                Messages.info("reIndexRecordSuccess");
+            } else {
+                Messages.error("reIndexRecordFailure");
+            }
+        }
+
+        return "";
+    }
 }
