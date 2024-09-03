@@ -493,13 +493,13 @@ public class ArchiveBean implements Serializable {
                 if (StringUtils.isNotEmpty(url)) {
                     return url + getCurrentArchive().getResourceId();
                 }
-                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/metsresolver?id=" + getCurrentArchive().getResourceId();
+                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/sourcefile?id=" + getCurrentArchive().getResourceId();
             } catch (Exception e) {
-                logger.error("Could not get METS resolver URL for {}.", getCurrentArchive().getResourceId());
+                logger.error("Could not get EAD resolver URL for {}.", getCurrentArchive().getResourceId());
                 Messages.error("errGetCurrUrl");
             }
         }
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/metsresolver?id=" + 0;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/sourcefile?id=" + 0;
     }
 
     /**
