@@ -11,20 +11,21 @@
 	<composite:interface />
 
 	<composite:implementation>
-		<h:panelGroup rendered="#{metadataBean.getBottomMetadataElement(0).hasSidebarMetadata and not (activeDocumentBean.anchor or activeDocumentBean.group)}">
-
+        <!-- Page metadata -->
+        <ui:fragment rendered="#{fn:length(activeDocumentBean.viewManager.currentPage.metadata) > 0}">
+                
                 <!-- SIDEBAR METADATA -->
-				<div id="widgetMetadata" class="widget widget-metadata">
-					<h2 >#{msg[metadataBean.defaultSidebarMetadataLabel]}</h2>
-					
-					<dl>
-						<c:forEach items="#{metadataBean.getBottomMetadataElement(0).sidebarMetadataList}" var="metadata">
-							<dt title="#{msg[metadata.label]}">
-								<h:outputText value="#{msg[metadata.label]}:" escape="false" />
-							</dt>
-	
-							<!-- Grouped metadata -->
-							<h:panelGroup rendered="#{metadata.group}">
+                <div id="widgetMetadata" class="widget widget-metadata">
+                    <h2>#{msg.metadataTech}</h2>
+                    
+                    <dl>
+                        <c:forEach items="#{activeDocumentBean.viewManager.currentPage.metadata}" var="metadata">
+                            <dt title="#{msg[metadata.label]}">
+                                <h:outputText value="#{msg[metadata.label]}:" escape="false" />
+                            </dt>
+    
+                            <!-- Grouped metadata -->
+                            <h:panelGroup rendered="#{metadata.group}">
                                 <!-- Single label for all values, each value is a single string -->
                                 <h:panelGroup rendered="#{metadata.singleString}">
                                     <c:forEach items="#{metadata.values}" var="val">
@@ -67,54 +68,23 @@
                                         </ui:fragment>
                                     </c:forEach>
                                 </h:panelGroup>
-							</h:panelGroup>
-	
-							<!-- Non-grouped metadata -->
-							<h:panelGroup rendered="#{!metadata.group}">
-								<dd>
-									<ui:repeat value="#{metadata.values}" var="val">
-										<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
-										</h:outputFormat>
-										<br />
-									</ui:repeat>
-								</dd>
-							</h:panelGroup>
-						</c:forEach>
-					</dl>
-				</div>
-				
-				<!-- LIDO -->
-				<ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.lidoRecord}">
-                
-                    <!-- LIDO event sidebar metadata (event metadata explicitly configured in the sidebar metadata list) -->
-                    <ui:fragment rendered="#{fn:length(metadataBean.events) > 0}">
-                        <div id="widgetMetadata" class="widget widget-metadata">
-                            <ui:repeat value="#{metadataBean.events}" var="event">
-                                <ui:fragment rendered="#{event.hasSidebarMetadata}">
-                                <h2 >#{msg[event.label]}</h2>
-                                <dl>
-                                    <ui:repeat value="#{event.sidebarMetadata}" var="metadata">
-                                        <h:panelGroup rendered="#{!metadata.blank}">
-                                            <dt>
-                                                <h:outputText value="#{msg[metadata.label]}:" escape="false" />
-                                            </dt>
-                                            <h:panelGroup>
-                                                <dd>
-                                                    <ui:repeat value="#{metadata.values}" var="val">
-                                                        <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
-                                                        </h:outputFormat>
-                                                    </ui:repeat>
-                                                </dd>
-                                            </h:panelGroup>
-                                        </h:panelGroup>
+                            </h:panelGroup>
+    
+                            <!-- Non-grouped metadata -->
+                            <h:panelGroup rendered="#{!metadata.group}">
+                                <dd>
+                                    <ui:repeat value="#{metadata.values}" var="val">
+                                        <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
+                                        </h:outputFormat>
+                                        <br />
                                     </ui:repeat>
-                                    </dl>
-                                </ui:fragment>
-                            </ui:repeat>
-                        </div>
-                    </ui:fragment>
+                                </dd>
+                            </h:panelGroup>
+                        </c:forEach>
+                    </dl>
                     
-                </ui:fragment>
+                    </div>
+        </ui:fragment>
                     
             <script type="text/javascript">
                 var normdataWidgetConfig = {
@@ -129,6 +99,6 @@
                 
                 viewerJS.normdata.init( normdataWidgetConfig );
             </script>
-		</h:panelGroup>
-	</composite:implementation>
+            
+    </composite:implementation>
 </ui:composition>

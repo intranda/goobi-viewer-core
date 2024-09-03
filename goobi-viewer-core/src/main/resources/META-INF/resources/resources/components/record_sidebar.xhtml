@@ -31,7 +31,9 @@
 
 				<widgetComponent:widget_searchResultNavigation />
 
-				<widgetComponent:widget_metadata  rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc]}')}"/>
+				<widgetComponent:widget_metadata rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc]}')}"/>
+				
+				<widgetComponent:widget_metadataTech />
 
 				<widgetComponent:widget_geoMap
 					rendered="#{activeDocumentBean.geoMap.hasFeatures()}"
