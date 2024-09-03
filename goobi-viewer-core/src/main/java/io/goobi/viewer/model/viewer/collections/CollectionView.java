@@ -72,17 +72,20 @@ public class CollectionView implements Serializable {
     /**
      * @deprecated Currently collection views always start with the baseElement.
      */
+    @Deprecated(since = "24.08")
     private String topVisibleElement = null;
     private String baseElementName = null;
     /**
      * @deprecated Previously used to reload the same page showing only children of a collection which had a hierarchy level equal or less than
      *             "baseLevels"
      */
+    @Deprecated(since = "24.08")
     private int baseLevels = 0;
     private boolean showAllHierarchyLevels = false;
     /**
      * @deprecated Previously used to display parents of the topVisibleElement to navigate backwards
      */
+    @Deprecated(since = "24.08")
     private boolean displayParentCollections = false;
     private String searchUrl = "";
     private boolean ignoreHierarchy = false;
