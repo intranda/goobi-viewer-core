@@ -10,68 +10,63 @@
     <composite:implementation>
     	<!-- (ADMIN) WIDGET FOR ARCHIVE INTERACTIONS -->
         <h:panelGroup
-            rendered="#{userBean.loggedIn and (userBean.user.superuser)}">
+            rendered="#{userBean.loggedIn and userBean.admin}">
             <div id="widgetArchivesInteractions" class="widget widget-archives-interactions">
                 <h:form id="widgetArchivesInteractionsStandardForm" prependId="false">
                     <h2 >#{msg.menuUser_workInteractions}</h2>
                     <ul>
-                        <h:panelGroup
-                            rendered="#{userBean.user.maySetRepresentativeImage and activeDocumentBean.viewManager.hasPages and activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS'}">
-                            <li>
-                                <h:commandLink
-                                    action="#{adminBean.setRepresantativeImageAction(activeDocumentBean.viewManager.pi, activeDocumentBean.topDocument.dataRepository, activeDocumentBean.viewManager.currentPage.fileIdRoot)}">
-                                        #{msg.setRepresentativeImage}
-                                    </h:commandLink>
-                            </li>
-                        </h:panelGroup>
+                        
+                        <!-- EAD DOWNLOAD -->
+                        <ui:fragment visibility-class="widget-element">
+                            <a 
+                                href="#{archiveBean.eadResolverUrl}"
+                                id="lidomets" 
+                                class="badge badge-dark widget-format-links__work-download-lido-mets" 
+                                title="#{msg.metadata_dl_mets}"
+                                data-toggle="tooltip"
+                                data-placement="top"
+                                data-trigger="hover"
+                                target="_blank" rel="nofollow noopener"
+                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadMetsButtonLabel}"> 
+                                #{msg.downloadEadButtonLabel}
+                            </a>
+                        </ui:fragment>
 
-						<!-- TO DO: ADD ACTIONS FOR ARCHIVES HERE -->
                         <!-- RE-INDEX ARCHIVE -->
-                        <h:panelGroup rendered="#{userBean.admin}">
-                            <li>
-                                <h:commandLink action="#{archiveBean.reIndexArchiveAction}">
-                                    #{msg.reIndexRecord}
-                                </h:commandLink>
-                            </li>
-                        </h:panelGroup>
+                        <li>
+                            <h:commandLink action="#{archiveBean.reIndexArchiveAction}">
+                                #{msg.reIndexRecord}
+                            </h:commandLink>
+                        </li>
                         
-                        <!-- DO STUFF HERE -->
-                        <h:panelGroup rendered="#{userBean.user.cmsAdmin}">
-                            <li>
-                            <a href="#{cmsPageEditBean.createAndOpenNewPage(msg.overviewPage, archiveBean.currentArchive.resourceId)}">#{msg.action__create_linked_cms_page__label}</a>
-                            </li>
-                        </h:panelGroup>
+<!--                             <li> -->
+<!--                             <a href="#{cmsPageEditBean.createAndOpenNewPage(msg.overviewPage, archiveBean.currentArchive.resourceId)}">#{msg.action__create_linked_cms_page__label}</a> -->
+<!--                             </li> -->
                         
-                        <!-- DO MORE STUFF HERE -->
-                        <h:panelGroup  rendered="#{userBean.admin}">
-                            <li>
-                            	<a href="#{request.contextPath}/admin/cms/recordnotes/new/?pi=#{archiveBean.currentArchive.resourceId}"> #{msg.cms__record_notes__add_note}</a>
-                            </li>
-                        </h:panelGroup>
+<!--                             <li> -->
+<!--                             	<a href="#{request.contextPath}/admin/cms/recordnotes/new/?pi=#{archiveBean.currentArchive.resourceId}"> #{msg.cms__record_notes__add_note}</a> -->
+<!--                             </li> -->
                         
                         <!-- DELETE ARCHIVE -->
-                        <h:panelGroup rendered="#{userBean.admin}">
-                            <li>
-                    <ui:fragment rendered="#{userBean.admin}">
-                        <ul class="widget-user-interactions__delete-record-wrapper">
-                        <h3>#{msg.deleteRecord}</h3>
-                        <div class="widget-user-interactions__delete-record">
-  
-                            <ui:fragment>
-                                <!-- ACTION -->
-                                    <div class="widget-user-interactions__delete-record-action has-urn">
-                                        <h:commandLink styleClass="btn btn--danger" role="button"
-                                            onclick="if ( !confirm( &quot;#{msg.deleteRecord_confirmationText}&quot; ) ) { return false };"
-                                            action="#{archiveBean.deleteArchiveAction}">
-                                            #{msg.button__delete}
-                                        </h:commandLink>
+                        <li>
+                            <ui:fragment rendered="#{userBean.admin}">
+                                <ul class="widget-user-interactions__delete-record-wrapper">
+                                    <h3>#{msg.deleteRecord}</h3>
+                                    <div class="widget-user-interactions__delete-record">
+                                        <ui:fragment>
+                                            <!-- ACTION -->
+                                            <div class="widget-user-interactions__delete-record-action has-urn">
+                                                <h:commandLink styleClass="btn btn--danger" role="button"
+                                                    onclick="if ( !confirm( &quot;#{msg.deleteRecord_confirmationText}&quot; ) ) { return false };"
+                                                    action="#{archiveBean.deleteArchiveAction}">
+                                                    #{msg.button__delete}
+                                                </h:commandLink>
+                                            </div>
+                                        </ui:fragment>
                                     </div>
+                                </ul>
                             </ui:fragment>
-                        </div>
-                        </ul>
-                    </ui:fragment>
-                            </li>
-                        </h:panelGroup>
+                        </li>
 
                     </ul>
                 </h:form>

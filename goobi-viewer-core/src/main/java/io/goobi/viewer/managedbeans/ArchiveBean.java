@@ -480,6 +480,29 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
+     * <p>
+     * getMetsResolverUrl.
+     * </p>
+     *
+     * @return METS resolver link
+     */
+    public String getEadResolverUrl() {
+        if (getCurrentArchive() != null) {
+            try {
+                String url = DataManager.getInstance().getConfiguration().getSourceFileUrl();
+                if (StringUtils.isNotEmpty(url)) {
+                    return url + getCurrentArchive().getResourceId();
+                }
+                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/metsresolver?id=" + getCurrentArchive().getResourceId();
+            } catch (Exception e) {
+                logger.error("Could not get METS resolver URL for {}.", getCurrentArchive().getResourceId());
+                Messages.error("errGetCurrUrl");
+            }
+        }
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/metsresolver?id=" + 0;
+    }
+
+    /**
      * Exports the currently loaded archive for re-indexing.
      *
      * @return a {@link java.lang.String} object.
