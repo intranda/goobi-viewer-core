@@ -16,7 +16,7 @@
 				<h:form id="widgetArchivesInteractionsStandardForm"
 					prependId="false">
 					<h2>#{msg.menuUser_workInteractions}</h2>
-					<!-- 					<h3>#{msg.archives__current_collection}</h3> -->
+					<!-- <h3>#{msg.archives__current_collection}</h3> -->
 					<ul>
 						<!-- RE-INDEX ARCHIVE -->
 						<h:panelGroup rendered="#{userBean.admin}">
@@ -25,20 +25,10 @@
 	                                   #{msg.archives__widget__action_reindex_archive}
 	                               </h:commandLink></li>
 						</h:panelGroup>
-						<!--                     <h:panelGroup -->
-						<!--                         rendered="#{userBean.user.maySetRepresentativeImage and activeDocumentBean.viewManager.hasPages and activeDocumentBean.viewManager.topStructElement.sourceDocFormat == 'METS'}"> -->
-						<!--                         <li> -->
-						<!--                             <h:commandLink -->
-						<!--                                 action="#{adminBean.setRepresantativeImageAction(activeDocumentBean.viewManager.pi, activeDocumentBean.topDocument.dataRepository, activeDocumentBean.viewManager.currentPage.fileIdRoot)}"> -->
-						<!--                                     #{msg.setRepresentativeImage} -->
-						<!--                                 </h:commandLink> -->
-						<!--                         </li> -->
-						<!--                     </h:panelGroup> -->
-
 
 						<!-- 						<h3>#{msg.archives__widget__single_unit}</h3> -->
 						<!-- 						<ul> -->
-						<!-- DO STUFF HERE -->
+						<!-- LINK CMS PAGE -->
 						<!-- 							<h:panelGroup rendered="#{userBean.user.cmsAdmin}"> -->
 						<!-- 								<li><a -->
 						<!-- 									href="#{cmsPageEditBean.createAndOpenNewPage(msg.overviewPage, archiveBean.currentArchive.resourceId)}">#{msg.action__create_linked_cms_page__label}</a> -->
@@ -58,16 +48,7 @@
 						<h:panelGroup rendered="#{userBean.user.cmsAdmin}">
 							<li>
 		                        <ui:fragment visibility-class="widget-element">
-		                            <a 
-		                                href="#{archiveBean.eadResolverUrl}"
-		                                id="lidomets" 
-		                                class="badge badge-dark widget-format-links__work-download-lido-mets" 
-		                                title="#{msg.metadata_dl_mets}"
-		                                data-toggle="tooltip"
-		                                data-placement="top"
-		                                data-trigger="hover"
-		                                target="_blank" rel="nofollow noopener"
-		                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadMetsButtonLabel}"> 
+		                            <a href="#{archiveBean.eadResolverUrl}" download="true" target="_blank"> 
 		                                #{msg.archives__widget__action_download_archive}
 		                            </a>
 		                        </ui:fragment>
@@ -83,16 +64,10 @@
 									data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.archives__widget__action_delete_confirmation)}"
 									jsf:action="#{archiveBean.deleteArchiveAction}"
 									aria-label="#{msg.delete}: #{ticket.id}">
-									#{msg.archives__widget__action_delete_archive}</button> <!-- 										<h:commandLink role="button" -->
-								<!-- 													onclick="if ( !confirm( &quot;#{msg.deleteRecord_confirmationText}&quot; ) ) { return false };" -->
-								<!-- 													action="#{archiveBean.deleteArchiveAction}"> -->
-								<!--                                             #{msg.archives__widget__action_delete_archive} -->
-								<!--                                         </h:commandLink> -->
-
+									#{msg.archives__widget__action_delete_archive}</button> 
 
 							</li>
 						</h:panelGroup>
-
 					</ul>
 				</h:form>
 			</div>
