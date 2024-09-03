@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
@@ -534,6 +535,31 @@ public class ArchiveEntry implements Serializable {
                     .isGranted();
             if (!ret) {
                 logger.trace("Access denied to {}", label);
+            }
+            return ret;
+        } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
+            logger.error(e.getMessage(), e);
+            return false;
+        }
+    }
+
+    /**
+     * Checks whether access to the given node is allowed due to set access conditions.
+     * 
+     * @return true if access granted; false otherwise
+     */
+    public boolean isImageAccessAllowed() {
+        // Return true for potential parents of nodes with images
+        if (!isContainsImage() || StringUtils.isEmpty(getAssociatedRecordPi())) {
+            return true;
+        }
+
+        try {
+            boolean ret = AccessConditionUtils
+                    .checkAccessPermissionByIdentifierAndLogId(getAssociatedRecordPi(), null, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, BeanUtils.getRequest())
+                    .isGranted();
+            if (!ret) {
+                logger.trace("Image access denied to {}", label);
             }
             return ret;
         } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
