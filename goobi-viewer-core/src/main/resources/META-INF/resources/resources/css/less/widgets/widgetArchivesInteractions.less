@@ -28,13 +28,18 @@
 		border: none;
 		margin-bottom: 0rem;
 		li {
-			a {
+			a, button {
 				padding: 0.3rem 0;
 				color: @white;
+				background: transparent;
+				border: none;
+				line-height: 1.2;
+				display: flex;
 				&:hover,
 				&:focus,
 				&:active {
 					color: @white;
+					text-decoration: underline;
 				}
 			}
 			&:first-of-type {
@@ -55,6 +60,9 @@
 		font-style: italic;
 		margin-bottom: 1rem;
 		color: @white;
+	}
+	&__delete-button {
+
 	}
 	&__delete-record {}
 	&__delete-record-message {

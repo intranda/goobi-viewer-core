@@ -515,10 +515,10 @@ public class ArchiveBean implements Serializable {
 
         if (IndexerTools.deleteRecord(getCurrentArchive().getResourceId(), false,
                 Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
-            Messages.info("deleteRecord_success");
+            Messages.info("archives__widget__action_delete_archive_success");
             return "pretty:index";
         }
-        Messages.error("deleteRecord_failure");
+        Messages.error("archives__widget__action_delete_archive_no_success");
 
         return "";
     }
