@@ -941,7 +941,7 @@ public final class SearchHelper {
      * </p>
      *
      * @param subQuery a {@link java.lang.String} object.
-     * @return an array of {@link int} objects.
+     * @return an int[]
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */

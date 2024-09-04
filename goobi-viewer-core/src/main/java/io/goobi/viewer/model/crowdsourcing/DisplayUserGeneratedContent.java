@@ -437,8 +437,8 @@ public class DisplayUserGeneratedContent {
      * convertToIntArray.
      * </p>
      *
-     * @param coordinates an array of {@link double} objects.
-     * @return an array of {@link int} objects.
+     * @param coordinates
+     * @return an int[]
      */
     public static int[] convertToIntArray(double[] coordinates) {
         int[] intCoords = new int[coordinates.length];
@@ -454,8 +454,8 @@ public class DisplayUserGeneratedContent {
      * convertToDoubleArray.
      * </p>
      *
-     * @param coordinates an array of {@link int} objects.
-     * @return an array of {@link double} objects.
+     * @param coordinates
+     * @return a double[]
      */
     public static double[] convertToDoubleArray(int[] coordinates) {
         double[] doubleCoords = new double[coordinates.length];
