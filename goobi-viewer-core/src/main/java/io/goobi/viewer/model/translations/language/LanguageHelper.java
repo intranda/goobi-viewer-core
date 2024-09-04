@@ -35,8 +35,8 @@ import org.apache.commons.configuration2.reloading.PeriodicReloadingTrigger;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.configuration2.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * <p>
@@ -141,8 +141,6 @@ public class LanguageHelper {
         } catch (IndexOutOfBoundsException e) {
             logger.warn("No matching language found for {}", isoCode);
             return null;
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
         }
         if (languageConfig == null) {
             logger.warn("No matching language found for {}", isoCode);

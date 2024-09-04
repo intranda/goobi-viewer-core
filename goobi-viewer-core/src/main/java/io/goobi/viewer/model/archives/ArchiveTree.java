@@ -63,6 +63,8 @@ public class ArchiveTree implements Serializable {
     private boolean treeBuilt = false;
     private boolean treeFullyLoaded = true;
 
+    private final boolean expandEntryOnSelection;
+
     /**
      * <p>
      * Constructor for TOC.
@@ -70,16 +72,12 @@ public class ArchiveTree implements Serializable {
      */
     public ArchiveTree() {
         logger.trace("new EADTree()");
+        this.expandEntryOnSelection = DataManager.getInstance().getConfiguration().isExpandArchiveEntryOnSelection();
     }
 
-    /**
-     * Cloning constructor.
-     * 
-     * @param orig
-     */
     public ArchiveTree(ArchiveTree orig) {
-        this.generate(new ArchiveEntry(orig.getRootElement(), null));
-        this.getTreeViewForGroup(DEFAULT_GROUP);
+        this();
+        update(orig.trueRootElement);
     }
 
     /**
@@ -90,7 +88,7 @@ public class ArchiveTree implements Serializable {
         logger.trace("update: {}", rootElement);
         generate(rootElement);
         if (getSelectedEntry() == null) {
-            setSelectedEntry(getRootElement());
+            setSelectedEntry(rootElement);
         }
         // This should happen before the tree is expanded to the selected entry, otherwise the collapse level will be reset
         getTreeView();
@@ -116,6 +114,7 @@ public class ArchiveTree implements Serializable {
                 break;
             }
         }
+        // logger.trace("Generated tree of size {}", tree.size()); //NOSONAR Debug
         entryMap.put(DEFAULT_GROUP, tree);
     }
 
@@ -202,21 +201,7 @@ public class ArchiveTree implements Serializable {
         logger.trace("getVisibleTree");
         return getTreeView().stream()
                 .filter(e -> e.isVisible() && (e.isDisplaySearch() || !searchActive) && e.isAccessAllowed())
-                .map(e -> {
-                    if (!e.isMetadataLoaded()) {
-                        e.loadMetadata();
-                    }
-                    return e;
-                })
                 .toList();
-
-        //        ret.forEach(e -> {
-        //            if (!e.isMetadataLoaded()) {
-        //                e.loadMetadata();
-        //            }
-        //        });
-
-        //        return ret;
     }
 
     /**
@@ -295,10 +280,12 @@ public class ArchiveTree implements Serializable {
      */
     public void setSelectedEntry(ArchiveEntry selectedEntry) {
         logger.trace("setSelectedEntry: {}", selectedEntry != null ? selectedEntry.getLabel() : null);
-        this.selectedEntry = selectedEntry;
-        if (selectedEntry != null && !selectedEntry.isMetadataLoaded()) {
-            selectedEntry.loadMetadata();
+        if (this.expandEntryOnSelection && selectedEntry == null && this.selectedEntry != null) {
+            this.selectedEntry.collapse();
+        } else if (this.expandEntryOnSelection && selectedEntry != null) {
+            selectedEntry.expand();
         }
+        this.selectedEntry = selectedEntry;
     }
 
     /**
@@ -307,12 +294,9 @@ public class ArchiveTree implements Serializable {
      */
     public void toggleSelectedEntry(ArchiveEntry selectedEntry) {
         if (selectedEntry != null && selectedEntry.equals(this.selectedEntry)) {
-            this.selectedEntry = null;
+            setSelectedEntry(null);
         } else {
-            this.selectedEntry = selectedEntry;
-            if (selectedEntry != null && !selectedEntry.isMetadataLoaded()) {
-                selectedEntry.loadMetadata();
-            }
+            this.setSelectedEntry(selectedEntry);
         }
     }
 

@@ -26,12 +26,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.SessionScoped;
+import javax.faces.model.SelectItem;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
@@ -43,6 +45,8 @@ import io.goobi.viewer.exceptions.CmsElementNotFoundException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent;
 import io.goobi.viewer.model.search.CollectionResult;
@@ -58,6 +62,8 @@ import io.goobi.viewer.model.viewer.collections.CollectionView.BrowseDataProvide
 @Named
 @SessionScoped
 public class CollectionViewBean implements Serializable {
+
+    private static final String HIERARCHY_LEVEL_PREFIX = "- ";
 
     private static final long serialVersionUID = 6707278968715712945L;
 
@@ -80,20 +86,20 @@ public class CollectionViewBean implements Serializable {
      *
      * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} instance providing the base data for this
      *            collection
-     * @param collectionBaseLevels The number of hierarchy levels for which collections of these levels should not expand but rather redirect to a
-     *            view of the clicked collection alone
-     * @param openExpanded whether to open the page with all collections expanded.
-     * @param displayParents Whether to display all parent collections of the base collection. Useful in combination with collectionBaseLevels &gt; 0
-     *            to navigate back out of the current collection
-     * @param ignoreHierarchy a boolean
      * @return The CollectionView or null if no matching ContentItem was found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException
      */
+    public CollectionView getCollection(CMSCollectionContent content)
+            throws PresentationException, IndexUnreachableException, IllegalRequestException {
+        return getCollection(content, content.getCollectionName());
+    }
+
+    @Deprecated(since = "24.08")
     public CollectionView getCollection(CMSCollectionContent content, int collectionBaseLevels, boolean openExpanded, boolean displayParents,
             boolean ignoreHierarchy) throws PresentationException, IndexUnreachableException, IllegalRequestException {
-        return getCollection(content, collectionBaseLevels, openExpanded, displayParents, ignoreHierarchy, content.getCollectionName());
+        return getCollection(content);
     }
 
     /**
@@ -102,35 +108,37 @@ public class CollectionViewBean implements Serializable {
      * </p>
      *
      * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
-     * @param collectionBaseLevels a int
-     * @param openExpanded a boolean
-     * @param displayParents a boolean
-     * @param ignoreHierarchy a boolean
      * @param topVisibleElement a {@link java.lang.String} object
      * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if any.
      */
-    public CollectionView getCollection(CMSCollectionContent content, int collectionBaseLevels, boolean openExpanded, boolean displayParents,
-            boolean ignoreHierarchy, String topVisibleElement) throws PresentationException, IndexUnreachableException, IllegalRequestException {
+    public CollectionView getCollection(CMSCollectionContent content, String topVisibleElement)
+            throws PresentationException, IndexUnreachableException, IllegalRequestException {
         String myId = getCollectionId(content);
         CollectionView collection = collections.get(myId);
         if (collection == null) {
             try {
-                collection = initializeCollection(content, collectionBaseLevels, openExpanded, displayParents, ignoreHierarchy, topVisibleElement);
+                collection = initializeCollection(content, topVisibleElement);
                 collections.put(myId, collection);
             } catch (CmsElementNotFoundException e) {
                 logger.debug("Not matching collection element for id {} on page {}", content.getItemId(), content.getOwningPage().getId());
             }
         } else {
-            if (!Objects.equals(collection.getTopVisibleElement(), topVisibleElement)) {
-                collection.setTopVisibleElement(topVisibleElement);
+            if (!Objects.equals(collection.getBaseElementName(), topVisibleElement)) {
+                collection.setBaseElementName(topVisibleElement);
                 collection.populateCollectionList();
             }
 
         }
         return collection;
+    }
+
+    @Deprecated(since = "24.08")
+    public CollectionView getCollection(CMSCollectionContent content, int collectionBaseLevels, boolean openExpanded, boolean displayParents,
+            boolean ignoreHierarchy, String topVisibleElement) throws PresentationException, IndexUnreachableException, IllegalRequestException {
+        return getCollection(content, topVisibleElement);
     }
 
     /**
@@ -177,33 +185,32 @@ public class CollectionViewBean implements Serializable {
         return collections.remove(myId) != null;
     }
 
+    @Deprecated(since = "24.08")
+    public CollectionView initializeCollection(CMSCollectionContent content, int numBaseLevels, boolean openExpanded, boolean displayParents,
+            boolean ignoreHierarchy, String topVisibleElement) throws PresentationException, IllegalRequestException, IndexUnreachableException {
+        return initializeCollection(content, topVisibleElement);
+    }
+
     /**
      * Creates a collection view object from the item's collection related properties.
      *
      * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
-     * @param numBaseLevels a int
-     * @param openExpanded a boolean
-     * @param displayParents a boolean
-     * @param ignoreHierarchy a boolean
      * @param topVisibleElement a {@link java.lang.String} object
      * @return a {@link io.goobi.viewer.model.viewer.collections.CollectionView} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException
      */
-    public CollectionView initializeCollection(CMSCollectionContent content, int numBaseLevels, boolean openExpanded, boolean displayParents,
-            boolean ignoreHierarchy, String topVisibleElement) throws PresentationException, IllegalRequestException, IndexUnreachableException {
+    public CollectionView initializeCollection(CMSCollectionContent content, String topVisibleElement)
+            throws PresentationException, IllegalRequestException, IndexUnreachableException {
         if (StringUtils.isBlank(content.getSolrField())) {
             throw new PresentationException("No solr field provided to create collection view");
         }
         CollectionView collection = initializeCollection(content);
         collection.setBaseElementName(content.getCollectionName());
-        collection.setBaseLevels(numBaseLevels);
-        collection.setDisplayParentCollections(displayParents);
         collection.setIgnore(content.getIgnoreCollectionsAsList());
-        collection.setIgnoreHierarchy(ignoreHierarchy);
-        collection.setShowAllHierarchyLevels(openExpanded);
-        collection.setTopVisibleElement(topVisibleElement);
+        collection.setIgnoreHierarchy(content.isIgnoreHierarchy());
+        collection.setShowAllHierarchyLevels(content.isOpenExpanded());
         collection.populateCollectionList();
         return collection;
     }
@@ -250,27 +257,75 @@ public class CollectionViewBean implements Serializable {
      * Queries Solr for a list of all values of the set collectionField which my serve as a collection.
      *
      * @param content a {@link io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent} object
-     * @param ignoreHierarchy If true, sub-collections will be omitted
+     * @param includeSubcollections
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public List<String> getPossibleIgnoreCollectionList(CMSCollectionContent content, boolean ignoreHierarchy) throws IndexUnreachableException {
+    public List<SelectItem> getPossibleIgnoreCollectionList(CMSCollectionContent content, boolean includeSubcollections)
+            throws IndexUnreachableException {
         if (StringUtils.isBlank(content.getSolrField())) {
-            return Collections.singletonList("");
+            return Collections.singletonList(new SelectItem("", ""));
         }
+        Locale locale = BeanUtils.getLocale();
+        String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(content.getSolrField());
         Map<String, CollectionResult> dcStrings = getColletionMap(content);
-        for (String s : dcStrings.keySet()) {
-            logger.trace("DC: " + s);
-        }
-        List<String> list = new ArrayList<>(dcStrings.keySet());
-        list = list.stream()
+        return dcStrings.keySet()
+                .stream()
                 .filter(c -> StringUtils.isBlank(content.getCollectionName()) || c.startsWith(content.getCollectionName() + "."))
-                .filter(c -> !(ignoreHierarchy)
-                        || (StringUtils.isBlank(content.getCollectionName()) ? !c.contains(".")
-                                : !c.replace(content.getCollectionName() + ".", "").contains(".")))
+                .filter(c -> includeSubcollections || getLevelDifference(content.getCollectionName(), c, splittingChar) <= 1)
+                .sorted()
+                .map(c -> new SelectItem(c, addHierarchyPrefix(c, getLevelDifference(content.getCollectionName(), c, splittingChar) - 1, locale)))
                 .collect(Collectors.toList());
-        Collections.sort(list);
-        return list;
+    }
+
+    private static String addHierarchyPrefix(String collection, int levelDifference, Locale locale) {
+        if (levelDifference <= 0) {
+            return ViewerResourceBundle.getTranslation(collection, locale);
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < levelDifference; i++) {
+            sb.append(HIERARCHY_LEVEL_PREFIX);
+        }
+        sb.append(ViewerResourceBundle.getTranslation(collection, locale));
+        return sb.toString();
+    }
+
+    /**
+     * Queries Solr for a list of all values of the set collectionField which my serve as a collection.
+     *
+     * @param content
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public List<SelectItem> getPossibleBaseCollectionList(CMSCollectionContent content) throws IndexUnreachableException {
+        if (StringUtils.isBlank(content.getSolrField())) {
+            return Collections.singletonList(new SelectItem("", ""));
+        }
+        Locale locale = BeanUtils.getLocale();
+        String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(content.getSolrField());
+        Map<String, CollectionResult> dcStringMap = content.getColletionMap();
+        List<String> list = new ArrayList<>(dcStringMap.keySet());
+        list.add(0, "");
+        return list.stream()
+                .sorted()
+                .map(c -> new SelectItem(c, addHierarchyPrefix(c, getLevelDifference("", c, splittingChar) - 1, locale)))
+                .toList();
+    }
+
+    /**
+     * Count the hierarchy level difference between the given collections. Positive return values mean the the second collection has a higher level.
+     * Does not consider whether one collection is a child of the other
+     * 
+     * @param collection1
+     * @param collection2
+     * @param splittingChar
+     * @return an int < 1 if collection2 has a lower hierarchy level than collection1, 0 if both have the same hierarchy level, and an int > 1 if
+     *         collection1 has a lower hierarchy level than collection 2.
+     */
+    private static int getLevelDifference(String collection1, String collection2, String splittingChar) {
+        int level1 = CollectionView.getLevel(collection1, splittingChar);
+        int level2 = CollectionView.getLevel(collection2, splittingChar);
+        return level2 - level1;
     }
 
     /**

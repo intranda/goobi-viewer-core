@@ -69,7 +69,7 @@ public class SolrEADParser extends ArchiveParser {
     private static final String[] SOLR_FIELDS_ENTRIES = { SolrConstants.ACCESSCONDITION, SolrConstants.EAD_NODE_ID, SolrConstants.IDDOC,
             SolrConstants.IDDOC_PARENT, FIELD_ARCHIVE_ENTRY_LEVEL, SolrConstants.LOGID, SolrConstants.PI_TOPSTRUCT, SolrConstants.TITLE };
 
-    private Map<String, List<SolrDocument>> archiveDocMap = new HashMap<>();
+    private Map<String, Map<String, List<SolrDocument>>> archiveDocMap = new HashMap<>();
     /** Map of IDDOCs and their parent IDDOCs */
     private Map<String, String> parentIddocMap = new HashMap<>();
     /** Map of IDDOCs and loaded ArchiveEntry nodes */
@@ -147,7 +147,7 @@ public class SolrEADParser extends ArchiveParser {
         }
 
         logger.trace("loadDatabase: {}", database.getResourceId());
-        List<String> solrFields = getSolrFields("");
+        List<String> solrFields = getSolrFields();
         SolrDocument topDoc =
                 DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":\"" + database.getResourceId() + '"', solrFields);
         if (topDoc != null) {
@@ -159,11 +159,14 @@ public class SolrEADParser extends ArchiveParser {
                     .search(query, SolrSearchIndex.MAX_HITS,
                             Arrays.asList(new StringPair(SolrConstants.IDDOC_PARENT, "asc"), new StringPair(FIELD_ARCHIVE_ORDER, "asc")), solrFields);
 
+            Map<String, List<SolrDocument>> resourceArchiveDocMap = new HashMap<>();
+            archiveDocMap.put(database.getResourceId(), resourceArchiveDocMap);
+
             // Add all Solr docs for this archive to map
             for (SolrDocument doc : archiveDocs) {
                 String iddocParent = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_PARENT);
                 if (iddocParent != null) {
-                    List<SolrDocument> docList = archiveDocMap.computeIfAbsent(iddocParent, k -> new ArrayList<>());
+                    List<SolrDocument> docList = resourceArchiveDocMap.computeIfAbsent(iddocParent, k -> new ArrayList<>());
                     docList.add(doc);
                     parentIddocMap.put(SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC), iddocParent);
                 }
@@ -211,6 +214,11 @@ public class SolrEADParser extends ArchiveParser {
             entry.setLabel(label);
         }
 
+        String date = SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_DATECREATED);
+        if (StringUtils.isNotEmpty(date)) {
+            entry.setUnitdate(date);
+        }
+
         String topstructPi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
         if (StringUtils.isNotEmpty(topstructPi)) {
             entry.setTopstructPi(topstructPi);
@@ -252,8 +260,8 @@ public class SolrEADParser extends ArchiveParser {
 
         // get child elements
         String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
-        if (archiveDocMap.containsKey(iddoc)) {
-            logger.trace("found {} children of {}", archiveDocMap.get(iddoc).size(), iddoc); //NOSONAR Debug
+        if (archiveDocMap.containsKey(entry.getTopstructPi()) && archiveDocMap.get(entry.getTopstructPi()).containsKey(iddoc)) {
+            // logger.trace("found {} children of {}", archiveDocMap.get(entry.getTopstructPi()).get(iddoc).size(), iddoc); //NOSONAR Debug
             entry.setChildrenFound(true);
             if (loadChildrenRecursively || (loadPath != null && !loadPath.isEmpty()) || entry.equals(entry.getRootNode())) {
                 loadChildren(entry, loadPath, loadChildrenRecursively);
@@ -282,11 +290,11 @@ public class SolrEADParser extends ArchiveParser {
             throws PresentationException, IndexUnreachableException {
         String iddoc = SolrTools.getSingleFieldStringValue(entry.getDoc(), SolrConstants.IDDOC);
         boolean loadChildren = loadChildrenRecursively;
-        if (archiveDocMap.containsKey(iddoc)) {
-            logger.trace("Loading {} children of {}", archiveDocMap.get(iddoc).size(), entry.getLabel()); //NOSONAR Debug
+        if (archiveDocMap.containsKey(entry.getTopstructPi()) && archiveDocMap.get(entry.getTopstructPi()).containsKey(iddoc)) {
+            // logger.trace("Loading {} children of {}", archiveDocMap.get(iddoc).size(), entry.getLabel()); //NOSONAR Debug
             int subOrder = 0;
             int subHierarchy = entry.getHierarchyLevel() + 1;
-            for (SolrDocument c : archiveDocMap.get(iddoc)) {
+            for (SolrDocument c : archiveDocMap.get(entry.getTopstructPi()).get(iddoc)) {
                 if (!loadChildrenRecursively && loadPath != null) {
                     String childIddoc = SolrTools.getSingleFieldStringValue(c, SolrConstants.IDDOC);
                     loadChildren = loadPath.contains(childIddoc);
@@ -301,7 +309,7 @@ public class SolrEADParser extends ArchiveParser {
                 subOrder++;
             }
             entry.setChildrenLoaded(true);
-            logger.trace("Children loaded for {}", entry.getLabel());
+            // logger.trace("Children loaded for {}", entry.getLabel());
         }
     }
 
@@ -377,8 +385,8 @@ public class SolrEADParser extends ArchiveParser {
      * @param template Metadata template name
      * @return List of Solr field names
      */
-    static List<String> getSolrFields(String template) {
-        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getArchiveMetadataForTemplate(template);
+    static List<String> getSolrFields() {
+        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getArchiveMetadata();
 
         List<String> ret = new ArrayList<>(SOLR_FIELDS_ENTRIES.length + metadataList.size());
         ret.addAll(Arrays.asList(SOLR_FIELDS_ENTRIES));

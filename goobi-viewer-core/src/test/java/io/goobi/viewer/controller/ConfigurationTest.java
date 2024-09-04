@@ -410,8 +410,8 @@ class ConfigurationTest extends AbstractTest {
      * @verifies return default template configuration if template not found
      */
     @Test
-    void getArchiveMetadataForTemplate_shouldReturnDefaultTemplateConfigurationIfTemplateNotFound() throws Exception {
-        assertEquals(9, DataManager.getInstance().getConfiguration().getArchiveMetadataForTemplate("nonexisting").size());
+    void getArchiveMetadata_shouldReturnDefaultTemplateConfiguration() throws Exception {
+        assertEquals(9, DataManager.getInstance().getConfiguration().getArchiveMetadata().size());
     }
 
     /**
@@ -650,7 +650,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getMetadataListTypes_shouldReturnAllMetadataListTypesIfPrefixEmpty() throws Exception {
         List<String> result = DataManager.getInstance().getConfiguration().getMetadataListTypes(null);
-        assertEquals(5, result.size());
+        assertEquals(6, result.size());
     }
 
     /**
@@ -714,6 +714,33 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getSearchHitMetadataForTemplate_shouldReturnDefaultTemplateIfTemplateIsNull() throws Exception {
         assertEquals(5, DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(null).size());
+    }
+
+    /**
+     * @see Configuration#getPageMetadataForTemplate(String)
+     * @verifies return correct template configuration
+     */
+    @Test
+    void getPageMetadataForTemplate_shouldReturnCorrectTemplateConfiguration() {
+        assertEquals(1, DataManager.getInstance().getConfiguration().getPageMetadataForTemplate("Chapter").size());
+    }
+
+    /**
+     * @see Configuration#getPageMetadataForTemplate(String)
+     * @verifies return default template configuration if requested not found
+     */
+    @Test
+    void getPageMetadataForTemplate_shouldReturnDefaultTemplateConfigurationIfRequestedNotFound() {
+        assertEquals(2, DataManager.getInstance().getConfiguration().getPageMetadataForTemplate("nonexisting").size());
+    }
+
+    /**
+     * @see Configuration#getPageMetadataForTemplate(String)
+     * @verifies return default template if template is null
+     */
+    @Test
+    void getPageMetadataForTemplate_shouldReturnDefaultTemplateIfTemplateIsNull() {
+        assertEquals(2, DataManager.getInstance().getConfiguration().getPageMetadataForTemplate(null).size());
     }
 
     /**

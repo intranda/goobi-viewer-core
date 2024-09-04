@@ -324,6 +324,7 @@ public class DisplayConditions implements Serializable {
                     .stream()
                     .filter(child -> StringUtils.isNotBlank(visibilityClass) ? hasVisibilityTag(child, visibilityClass) : true)
                     .filter(child -> isRendered(child))
+                    .filter(child -> !hasNotRenderedParent(child))
                     .count();
         }
 
@@ -335,6 +336,17 @@ public class DisplayConditions implements Serializable {
                 logger.warn("Cannot detect rendered state of child compnent {} because of {}", child.getClientId(), e.toString());
                 return true;
             }
+        }
+
+        private boolean hasNotRenderedParent(UIComponent child) {
+            UIComponent current = child.getParent();
+            while (current != null && current != this.component) {
+                if (!isRendered(current)) {
+                    return true;
+                }
+                current = current.getParent();
+            }
+            return false;
         }
 
         @Deprecated

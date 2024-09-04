@@ -311,10 +311,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      * @return a int.
      */
     public int getLevel() {
-        if (StringUtils.isNotEmpty(splittingChar)) {
-            return name.split("\\" + splittingChar).length - 1;
-        }
-        return 0;
+        return CollectionView.getLevel(name, splittingChar);
     }
 
     /**

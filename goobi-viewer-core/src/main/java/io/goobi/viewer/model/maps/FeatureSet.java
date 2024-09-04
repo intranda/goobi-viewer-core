@@ -80,6 +80,8 @@ public abstract class FeatureSet implements Serializable {
 
     public abstract String getFeaturesAsString() throws PresentationException;
 
+    public abstract String getFeaturesAsJsonString() throws PresentationException;
+
     public abstract void updateFeatures();
 
     public abstract boolean hasFeatures();
@@ -131,5 +133,11 @@ public abstract class FeatureSet implements Serializable {
     public float getFillOpacity() {
         return DEFAULT_FILL_OPACITY;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public abstract String getType();
 
 }

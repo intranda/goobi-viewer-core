@@ -541,10 +541,10 @@ public final class SearchHelper {
      * Returns all suffixes relevant to search filtering.
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @para addArchiveFilterSuffix
      * @param addStaticQuerySuffix a boolean.
      * @param addCollectionBlacklistSuffix a boolean.
      * @param privilege Privilege to check (Connector checks a different privilege)
+     * @param addArchiveFilterSuffix if true, ignore docs with DOCTYPE:ARCHIVE
      * @return Generated Solr query suffix
      * @should add archive filter suffix
      * @should add static suffix
@@ -1481,7 +1481,7 @@ public final class SearchHelper {
             FuzzySearchTerm fuzzyTerm = new FuzzySearchTerm(t);
             String term = fuzzyTerm.getTerm();
             // Highlighting single-character terms can take a long time, so skip them
-            if (term.length() < 2) {//NOSONAR Debug
+            if (term.length() < 2) { //NOSONAR Debug
                 continue;
             }
             term = SearchHelper.removeTruncation(term);

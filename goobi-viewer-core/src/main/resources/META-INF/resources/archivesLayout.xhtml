@@ -37,7 +37,7 @@
 
 				<!-- ARCHIVE TITLE -->
 				<div class="archives__top-title">
-					<a href="#{request.contextPath}/" title="{msg.home}" target="_self" rel="noopener">#{msg.home}</a> › <a href="#{request.contextPath}/archives" target="_self" rel="noopener">#{msg.archives__archiveViewHeading}</a> › <h1 ><span>#{archiveBean.trueRoot.label}</span></h1>
+					<a href="#{request.contextPath}/" title="{msg.home}" target="_self" rel="noopener">#{msg.home}</a> › <a href="#{request.contextPath}/archives" target="_self" rel="noopener">#{msg.archives__archiveViewHeading}</a> › <h1 ><span>#{archiveBean.databaseState == 'ARCHIVES_LOADED' ? msg.archives__title_placeholder : archiveBean.trueRoot.label}</span></h1>
 				</div>
 
 				<!-- EXIT -->
@@ -67,7 +67,7 @@
 				<c:when test="#{archiveBean.databaseState == 'ARCHIVES_LOADED'}">
 
 					<!-- SHOW ARCHIVE SELECTION AS MODAL WITH BACKDROP -->
-					<div class="modal fade archives__modal show" id="#{cc.attrs.id}" tabindex="-1" role="dialog"  aria-hidden="true">
+					<div class="modal fade archives__modal show arcxhives__select-archive-modal" id="selectArchivesModal" tabindex="-1" role="dialog"  aria-hidden="true">
 						<div class="modal-dialog modal-dialog-centered widget-usage__citelinks-box" role="document">
 							<div class="modal-content">
 
@@ -80,12 +80,13 @@
 								<!-- MODAL CONTENT -->
 
 									<div class="archives__select">
-										<p>#{msg.archives__choose_database}:</p>
+<!-- 										<p>#{msg.archives__choose_database}:</p> -->
 
 										<!-- SELECT BOX ARCHIVE -->
 										<h:form>
+											<h:outputLabel for="selectArchivesDropdown">#{msg.archives__choose_database}:</h:outputLabel>
 											<div class="archives__modal-select-database-dropdown-wrapper">
-												<h:selectOneMenu
+												<h:selectOneMenu id="selectArchivesDropdown"
 													styleClass="archives__modal-select-database-dropdown"
 													value="#{archiveBean.archiveId}">
 													<f:selectItem itemLabel="#{msg.select}" itemValue=""
@@ -98,9 +99,9 @@
 
 											<div class="form-group form-row archives__modal-action">
 												<div class="col-sm-12 d-flex justify-content-end">
-													<h:commandButton
+													<button jsf:action="pretty:archives1" type="submit"
 														styleClass="btn btn--full archives__modal-select-database-confirm"
-														value="#{msg.apply}" action="pretty:archives1"></h:commandButton>
+														>#{msg.apply}</button>
 												</div>
 											</div>
 										</h:form>
@@ -112,6 +113,19 @@
 						</div>
 						<div class="alt-backdrop"></div>
 					</div>
+					
+					<script>
+						// FOCUS SELECTION ELEMENT IN MODAL IF IN ARCHIVE SELECTION SCREEN
+						archiveBeanDataBaseState = '#{archiveBean.databaseState}';
+						if (archiveBeanDataBaseState == 'ARCHIVES_LOADED') {
+							console.log('condition yes');
+							$( document ).ready(function() {
+							setTimeout(() => {
+								$('.archives__modal-select-database-dropdown').focus();
+								}, "0");
+							});
+						}
+					</script>
 
 				</c:when>
 				
