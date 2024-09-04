@@ -11,23 +11,23 @@
     <ui:param name="browseElement" value="#{browseElement != null ? browseElement : null}"></ui:param>
     <ui:param name="showBookmarkIcon" value="#{showBookmarkIcon != null ? showBookmarkIcon : false}"></ui:param>
 
-    <div class="row no-gutters">
-        <div class="col-12 col-sm-#{browseElement.showThumbnail ? '10' : '10'}">
-            <!-- TITLE -->
-            <div class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'}  #{configurationBean.displaySearchHitNumbers != null ? '-hitNumber' : ''} #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
-                <!-- Display search hit number -->
-                <h:panelGroup styleClass="search-list__hit-number-wrapper" rendered="#{configurationBean.displaySearchHitNumbers}">
-                    <span title="#{hit.hitNumber}" class="search-list__hit-number">#{hit.hitNumber}</span>
-                </h:panelGroup>
-                <h3>
-                    <a href="#{navigationHelper.applicationUrl}#{browseElement.url}" title="#{msg[browseElement.label]}">
-                        <h:outputText value="#{msg[browseElement.labelShort]}" escape="false" />
-                    </a>
-                </h3>
-            </div>
-
-            <!-- TYPE -->
-            <div class="search-list__hit-type #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
+    <div class="search-list__hit-inner-structure">
+ 
+            <!-- ALL CONTENT/VALUES WRAPPER -->
+            <div class="search-list__info-wrapper #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
+	            <!-- TITLE -->
+	            <div class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'}  #{configurationBean.displaySearchHitNumbers ? '-hitNumber' : ''} #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
+	                <!-- Display search hit number -->
+	                <h3>
+	                    <a class="search-list__hit-title-link" href="#{navigationHelper.applicationUrl}#{browseElement.url}" title="#{msg[browseElement.label]}">
+			                <h:panelGroup styleClass="search-list__hit-number-wrapper" rendered="#{configurationBean.displaySearchHitNumbers}">
+			                    <span title="#{hit.hitNumber}" class="search-list__hit-number">#{hit.hitNumber}</span>
+			                </h:panelGroup>
+	                        <h:outputText value="#{msg[browseElement.labelShort]}" escape="false" />
+	                    </a>
+	                </h3>
+	            </div>
+                
                 <!-- DOCTSTRUCT HIERACHY BREADCRUMBS -->
                 <h:panelGroup
                     rendered="#{fn:length(browseElement.structElements) > 0 and browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
@@ -63,21 +63,36 @@
                 </ui:include>
 
 	        </div>
-        </div>
         
-	    <!-- ADD TO BOOKMARKS ICON FOR OBJECTS WITHOUT THUMBS -->
-	    <ui:fragment rendered="#{configurationBean.bookmarksEnabled and !browseElement.showThumbnail}">
-			<div class="search-list__no-thumb-bookmark-wrapper col-12 col-sm-2 d-flex justify-content-center justify-content-md-end">
-		            <button type="button" class="btn btn--icon search-list__no-thumb-bookmark" data-bookmark-list-type="add" data-pi="#{browseElement.pi}"
-		                aria-label="#{msg.bookmarkList_addToBookmarkList}" role="switch" aria-checked="false">
-		                <span data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
-		                    data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}" data-toggle="tooltip" data-placement="bottom">
-		                    <i class="fa #{msg.bookmarkList_icon}" aria-hidden="true"></i>
-		                    <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
-		                </span>
-		            </button>
-	        </div>
-	    </ui:fragment>
+		    <!-- ADD TO BOOKMARKS ICON FOR OBJECTS WITHOUT THUMBS -->
+		    <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
+				<div class="search-list__thumb-bookmark-wrapper">
+			            <button type="button" class="btn btn--icon search-list__thumb-bookmark" data-bookmark-list-type="add" data-pi="#{browseElement.pi}"
+			                aria-label="#{msg.bookmarkList_addToBookmarkList}" role="switch" aria-checked="false">
+			                <span data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
+			                    data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}" data-toggle="tooltip" data-placement="bottom">
+			                    <i class="fa #{msg.bookmarkList_icon}" aria-hidden="true"></i>
+			                    <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
+			                </span>
+			            </button>
+		        </div>
+		    </ui:fragment>
+		    
+			<!-- ADD TO BOOKMARKS -->
+<!-- 			<ui:fragment rendered="#{showBookmarkIcon}"> -->
+<!-- 				<button type="button" class="btn btn-icon" -->
+<!-- 					data-bookmark-list-type="add" data-pi="#{browseElement.pi}" -->
+<!-- 					aria-label="#{msg.bookmarkList_addToBookmarkList}" role="switch" -->
+<!-- 					aria-checked="false"> -->
+<!-- 					<span -->
+<!-- 						data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}" -->
+<!-- 						data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}" -->
+<!-- 						data-toggle="tooltip" data-placement="bottom"> <i -->
+<!-- 						class="fa #{msg.bookmarkList_icon}" aria-hidden="true"></i> <i -->
+<!-- 						class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i> -->
+<!-- 					</span> -->
+<!-- 				</button> -->
+<!-- 			</ui:fragment> -->
 
         <ui:fragment rendered="#{browseElement.showThumbnail}">
         	<ui:include src="/resources/includes/search/browseElementThumbnail.xhtml">

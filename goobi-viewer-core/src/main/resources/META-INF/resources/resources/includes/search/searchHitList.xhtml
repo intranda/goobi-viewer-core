@@ -104,7 +104,7 @@
                             <span class="Z3988" title="#{hit.browseElement.contextObject}"></span>
                     
                             <!-- HEADER -->
-                            <header class="search-list__hit-header">
+                            <div class="search-list__hit-header">
                                 <ui:include src="/resources/includes/search/browseElement.xhtml">
                                     <ui:param name="browseElement" value="#{hit.browseElement}"></ui:param>
                         	       <ui:param name="showBookmarkIcon" value="#{configurationBean.bookmarksEnabled}"></ui:param>
@@ -116,7 +116,7 @@
                                         #{msg.archives__open_in_archive_view} <i class="fa fa-archive"></i>
                                     </a>
                                 </ui:fragment> 
-                            </header>
+                            </div>
 
                             <!-- CONTENT -->
                             <!-- GET CHILD HITS --> 

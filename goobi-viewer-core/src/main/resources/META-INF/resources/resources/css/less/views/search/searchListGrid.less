@@ -84,8 +84,7 @@
 				line-height: 1.45;
 			}
 			.search-list__hit-thumbnail img,
-			.search-list__hit-type,
-			.search-list__hit-info,
+			.search-list__hit-info-wrapper,
 			.search-list__hit-content {
 				.mx-hidden;
 			}
@@ -96,7 +95,7 @@
 			}
 
 			// EXTRA METADATA LIST FOR GRID STYLING
-			.search-list__hit-type.-extraMetadataForGrid {
+			.search-list__hit-info-wrapper.-extraMetadataForGrid {
 				display: block !important;
 				visibility: visible !important;
 				.search-list__hit-metadata-first, .search-list__hit-docstruct {
@@ -105,13 +104,13 @@
 				.search-list__hit-metadata-second {
 					display: block !important;
 					padding: 1rem;
+					.search-list__hit-text-label {
+						display: none;
+					}
 					.search-list__hit-text {
-						font-size: 13px;
-						display: flex;
-						flex-direction: column;
-						.search-list__hit-text-label {
-							display: none;
-						}
+//						font-size: 13px;
+//						display: flex;
+//						flex-direction: column;
 						.search-list__hit-text-value {
 							max-width: 100%;
 							width: 100%;
