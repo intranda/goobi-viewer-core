@@ -496,7 +496,7 @@ public class Configuration extends AbstractConfiguration {
 
         return getMetadataConfigurationForTemplate(METADATA_LIST_TYPE_SEARCH_HIT, template, true, true);
     }
-    
+
     /**
      * Returns the list of configured metadata for pages.
      *
@@ -5815,6 +5815,10 @@ public class Configuration extends AbstractConfiguration {
      */
     public int getArchivesLazyLoadingThreshold() {
         return getLocalInt("archives[@lazyLoadingThreshold]", 100);
+    }
+
+    public boolean isExpandArchiveEntryOnSelection() {
+        return getLocalBoolean("archives.expandOnSelect", false);
     }
 
     public Map<String, String> getArchiveNodeTypes() {

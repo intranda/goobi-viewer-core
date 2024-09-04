@@ -41,10 +41,15 @@ public class SearchResultFeatureSet extends SolrFeatureSet {
         return getFeaturesAsString(BeanUtils.getSearchBean());
     }
 
+    @Override
+    public String getFeaturesAsJsonString() throws PresentationException {
+        return getFeaturesAsJsonString(BeanUtils.getSearchBean());
+    }
+
     public String getFeaturesAsString(SearchBean searchBean) throws PresentationException {
         if (this.featuresAsString == null) {
             try {
-                this.featuresAsString = createFeaturesAsStringFromSearch(searchBean);
+                this.featuresAsString = createFeaturesAsStringFromSearch(false, searchBean);
             } catch (IndexUnreachableException | DAOException | ViewerConfigurationException e) {
                 throw new PresentationException("Error loading features", e);
             }
@@ -52,7 +57,18 @@ public class SearchResultFeatureSet extends SolrFeatureSet {
         return this.featuresAsString;
     }
 
-    private String createFeaturesAsStringFromSearch(SearchBean searchBean)
+    public String getFeaturesAsJsonString(SearchBean searchBean) throws PresentationException {
+        if (this.featuresAsString == null) {
+            try {
+                this.featuresAsString = createFeaturesAsStringFromSearch(true, searchBean);
+            } catch (IndexUnreachableException | DAOException | ViewerConfigurationException e) {
+                throw new PresentationException("Error loading features", e);
+            }
+        }
+        return this.featuresAsString;
+    }
+
+    private String createFeaturesAsStringFromSearch(boolean escapeJson, SearchBean searchBean)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
 
         if (searchBean != null && searchBean.getCurrentSearch() != null) {
@@ -76,7 +92,7 @@ public class SearchResultFeatureSet extends SolrFeatureSet {
                     .distinct()
                     .map(GeoMapFeature::getJsonObject)
                     .map(Object::toString)
-                    .map(string -> StringEscapeUtils.escapeJson(string))
+                    .map(string -> escapeJson ? StringEscapeUtils.escapeJson(string) : string)
                     .collect(Collectors.joining(","));
 
             return "[" + ret + "]";

@@ -1827,7 +1827,7 @@ public class ViewManager implements Serializable {
      */
     public String getLinkForDFGViewer() throws IndexUnreachableException {
         if (topStructElement != null && SolrConstants.SOURCEDOCFORMAT_METS.equals(topStructElement.getSourceDocFormat()) && isHasPages()) {
-            String metsUrl = getMetsResolverUrl();
+            String metsUrl = getSourceFileResolverUrl();
 
             String urlField = DataManager.getInstance().getConfiguration().getDfgViewerSourcefileField();
             if (StringUtils.isNotBlank(urlField)) {
@@ -1861,19 +1861,11 @@ public class ViewManager implements Serializable {
      * </p>
      *
      * @return METS resolver link
+     * @deprecated Use ViewManager.getSourceFileResolverUrl() 
      */
+    @Deprecated(since = "24.08")
     public String getMetsResolverUrl() {
-        try {
-            String url = DataManager.getInstance().getConfiguration().getSourceFileUrl();
-            if (StringUtils.isNotEmpty(url)) {
-                return url + getPi();
-            }
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/metsresolver?id=" + getPi();
-        } catch (Exception e) {
-            logger.error("Could not get METS resolver URL for {}.", topStructElementIddoc);
-            Messages.error("errGetCurrUrl");
-        }
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/metsresolver?id=" + 0;
+        return getSourceFileResolverUrl();
     }
 
     /**
@@ -1882,19 +1874,11 @@ public class ViewManager implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated Use ViewManager.getSourceFileResolverUrl() 
      */
+    @Deprecated(since = "24.08")
     public String getLidoResolverUrl() {
-        try {
-            String url = DataManager.getInstance().getConfiguration().getSourceFileUrl();
-            if (StringUtils.isNotEmpty(url)) {
-                return url + getPi();
-            }
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/lidoresolver?id=" + getPi();
-        } catch (Exception e) {
-            logger.error("Could not get LIDO resolver URL for {}.", topStructElementIddoc);
-            Messages.error("errGetCurrUrl");
-        }
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/lidoresolver?id=" + 0;
+        return getSourceFileResolverUrl();
     }
 
     /**
@@ -1903,19 +1887,11 @@ public class ViewManager implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated Use ViewManager.getSourceFileResolverUrl() 
      */
+    @Deprecated(since = "24.08")
     public String getDenkxwebResolverUrl() {
-        try {
-            String url = DataManager.getInstance().getConfiguration().getSourceFileUrl();
-            if (StringUtils.isNotEmpty(url)) {
-                return url + getPi();
-            }
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/denkxwebresolver?id=" + getPi();
-        } catch (Exception e) {
-            logger.error("Could not get DenkXweb resolver URL for {}.", topStructElementIddoc);
-            Messages.error("errGetCurrUrl");
-        }
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/denkxwebresolver?id=" + 0;
+        return getSourceFileResolverUrl();
     }
 
     /**
@@ -1924,19 +1900,29 @@ public class ViewManager implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated Use ViewManager.getSourceFileResolverUrl() 
      */
+    @Deprecated(since = "24.08")
     public String getDublinCoreResolverUrl() {
+        return getSourceFileResolverUrl();
+    }
+
+    /**
+     * 
+     * @return Source file resolver URL for the current record identifier
+     */
+    public String getSourceFileResolverUrl() {
         try {
             String url = DataManager.getInstance().getConfiguration().getSourceFileUrl();
             if (StringUtils.isNotEmpty(url)) {
                 return url + getPi();
             }
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/dublincoreresolver?id=" + getPi();
+            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/sourcefile?id=" + getPi();
         } catch (Exception e) {
-            logger.error("Could not get DublinCore resolver URL for {}.", topStructElementIddoc);
+            logger.error("Could not get source file resolver URL for {}.", topStructElementIddoc);
             Messages.error("errGetCurrUrl");
         }
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/dublincoreresolver?id=" + 0;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/sourcefile?id=" + 0;
     }
 
     /**
