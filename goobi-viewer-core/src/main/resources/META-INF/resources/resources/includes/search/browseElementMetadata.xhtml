@@ -11,8 +11,7 @@
     <ui:param name="browseElement" value="#{browseElement != null ? browseElement : null}" />
 
 
-<!-- 	<div class="search-list__hit-metadata-first"> -->
-	
+	<!-- 	STANDARD METADATA LIST IN SEARCH LIST (FIRST) -->	
 	<dl class="search-list__hit-metadata-first search-list__hit-metadata-list">
 
 		<ui:repeat value="#{browseElement.metadataListForCurrentLocale}"
@@ -119,7 +118,6 @@
 			</ui:fragment>
 		</ui:repeat>
 
-
 	<!-- FULLTEXT -->
 	<h:panelGroup
 		rendered="#{browseElement.fulltext != null and browseElement.fulltext != ''}">
@@ -137,7 +135,6 @@
 					<dt data-metadata-field="#{eventMetadata.label}" class="search-list__hit-text-label">
 						<h:outputFormat value="#{msg[eventMetadata.label]}: " escape="false"/>
 					</dt>
-					
 
 					<!-- Default multivalue separator (new line) -->
 					<ui:fragment rendered="#{eventMetadata.separator == null}">
@@ -170,12 +167,8 @@
 		</ui:repeat>
 	</ui:repeat>
 	</dl>
-	
-	
-	
-	
-	
-	
+	<!-- STANDARD METADATA LIST IN SEARCH LIST (FIRST) EOL -->	
+
 	<!-- SECONDARY METADATA (ONLY FOR TILE VIEW) -->
     <ui:fragment rendered="#{not empty browseElement.secondaryMetadataListForCurrentLocale}">
         <div class="search-list__hit-metadata-second">
@@ -196,19 +189,14 @@
                                 
                         <!-- Custom multivalue separator-->
                         <ui:fragment rendered="#{browseElementMetadata.separator != null}">
-<!--                             <span class="metadata__element-wrapper-single-custom-wrapper search-list__hit-text-value"> -->
                                 <dd class="search-list__hit-text-value">
 	                                <ui:repeat var="val" value="#{browseElementMetadata.values}" varStatus="status">
 	                                    <ui:fragment rendered="#{browseElementMetadata.separator != null}">
 	                                        <!-- !!ATTENTION!! DO NOT BREAK THIS LINE, OTHERWISE SPACES GENERATED IN FRONTEND -->
 	                                        <ui:fragment rendered="#{status.index gt 0}"><span class="metadata__element-wrapper-single-custom-separator">#{browseElementMetadata.separator}</span></ui:fragment><span class="search-list__hit-text-value-single"><h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false" /></span>
-	<!--                                         <span class="metadata__element-wrapper-single-custom"> -->
-	<!--                                             <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false" /> -->
-	<!--                                         </span> -->
 	                                    </ui:fragment>
 	                                </ui:repeat>
                                 </dd>
-<!--                             </span> -->
                         </ui:fragment>
 
                 </h:panelGroup>
@@ -216,11 +204,4 @@
         </div>
     </ui:fragment>
 	<!-- SECONDARY METADATA (ONLY FOR TILE VIEW) EOL -->
-	
-	
-	
-
 </ui:composition>
-
-
-
