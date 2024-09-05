@@ -91,7 +91,7 @@
 
         <div class="clearfix"></div>
         
-        <h:form class="search-list__hits__list " id="searchListHitsForm" prependId="false">
+        <h:form class="search-list__hits-list " id="searchListHitsForm" prependId="false">
             <ui:repeat value="#{searchBean.currentSearch.resultGroups}" var="resultGroup">
                 <ui:fragment rendered="#{not empty resultGroup.hits}">
                     <ui:fragment rendered="#{searchBean.displayResultGroupNames}">

@@ -14,7 +14,7 @@
     <div class="search-list__hit-inner-structure">
  
             <!-- ALL CONTENT/VALUES WRAPPER -->
-            <div class="search-list__info-wrapper #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
+            <div class="search-list__hit-info-wrapper #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
 	            <!-- TITLE -->
 	            <div class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'}  #{configurationBean.displaySearchHitNumbers ? '-hitNumber' : ''} #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
 	                <!-- Display search hit number -->
@@ -27,29 +27,27 @@
 	                    </a>
 	                </h3>
 	            </div>
-                
+
                 <!-- DOCTSTRUCT HIERACHY BREADCRUMBS -->
                 <h:panelGroup
                     rendered="#{fn:length(browseElement.structElements) > 0 and browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
-
-                    <div class="search-list__hit-docstruct">
-                        <ul>
-                            <ui:repeat value="#{browseElement.structElements}" varStatus="stat" var="struct">
-                                <li>
-                                    <ui:fragment rendered="#{struct.sourceDocFormat != 'CMS'}">  
-                                        <a href="#{struct.url}" aria-label="#{msg[struct.docStructType]}">
-                                             <h:outputText value="#{msg[struct.docStructType]}" />
-                                        </a>
-                                   	</ui:fragment>
-                                    <ui:fragment rendered="#{struct.sourceDocFormat == 'CMS'}">  
-                                        <h:outputText
-                                            value="#{msg['cms_category_'.concat(struct.getMetadataValue('MD_CATEGORY') != null ? struct.getMetadataValue('MD_CATEGORY') : 'default')]}" />
-                                    </ui:fragment>
-                                </li>
-                             </ui:repeat>
-                        </ul>
-                    </div>
-
+	                    <div class="search-list__hit-docstruct">
+	                        <ul>
+	                            <ui:repeat value="#{browseElement.structElements}" varStatus="stat" var="struct">
+	                                <li>
+	                                    <ui:fragment rendered="#{struct.sourceDocFormat != 'CMS'}">  
+	                                        <a href="#{struct.url}" aria-label="#{msg[struct.docStructType]}">
+	                                             <h:outputText value="#{msg[struct.docStructType]}" />
+	                                        </a>
+	                                   	</ui:fragment>
+	                                    <ui:fragment rendered="#{struct.sourceDocFormat == 'CMS'}">  
+	                                        <h:outputText
+	                                            value="#{msg['cms_category_'.concat(struct.getMetadataValue('MD_CATEGORY') != null ? struct.getMetadataValue('MD_CATEGORY') : 'default')]}" />
+	                                    </ui:fragment>
+	                                </li>
+	                             </ui:repeat>
+	                        </ul>
+	                    </div>
                 </h:panelGroup>
 
                 <h:panelGroup rendered="#{browseElement.group}">

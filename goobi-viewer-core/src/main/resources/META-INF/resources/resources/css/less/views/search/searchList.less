@@ -22,6 +22,11 @@
 	.geomap {
 		height: 250px;
 	}
+	&__hits-list {
+		display: grid;
+  		grid-template-columns: 1fr;
+  		gap: 20px;
+	}
 	&__hits-geo-map-results-container {
 		margin-bottom: 2rem;
 	}
@@ -271,7 +276,6 @@
 	}
 	&__hit {
 		position: relative;
-		margin-bottom: 21px;
 		padding: 10px;
 		border: 1px solid @middlegray;
 		background-color: @middlegray2;
@@ -333,8 +337,7 @@
 		}
 	}
 	&__hit-title-link {
-		display: flex;
-		gap: 10px;
+		display: block;
 	}
 	&__thumb-bookmark {
 		
@@ -382,6 +385,9 @@
 	&__hit-thumbnail {
 		position: relative;
 		width: 100%;
+		margin-bottom: 0;
+		display: flex;
+		justify-content: flex-end;
 		img {
 			display: inline;
 			padding: 0;
@@ -605,7 +611,7 @@
 	}
 	/* RESULT GROUP STYLES */
 	&__hit-result-group-heading {
-
+		margin: 5px 0 0 0;
 	}
 	&__expand-group-link {
 		
@@ -623,6 +629,7 @@
 	&--highlight {
 		background-color: @yellow;
 	}
+	
 }
 
 
