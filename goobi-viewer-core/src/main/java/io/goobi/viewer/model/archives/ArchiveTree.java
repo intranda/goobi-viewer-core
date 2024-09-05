@@ -198,7 +198,7 @@ public class ArchiveTree implements Serializable {
      * @return List<ArchiveEntry>
      */
     public List<ArchiveEntry> getVisibleTree(boolean searchActive) {
-        logger.trace("getVisibleTree");
+        logger.trace("getVisibleTree:  {}", trueRootElement.getLabel());
         return getTreeView().stream()
                 .filter(e -> e.isVisible() && (e.isDisplaySearch() || !searchActive) && e.isAccessAllowed())
                 .toList();
