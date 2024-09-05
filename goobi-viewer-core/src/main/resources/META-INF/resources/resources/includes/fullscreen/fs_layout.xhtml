@@ -124,6 +124,16 @@
                             <ui:include src="/resources/includes/metadata/metadata.xhtml" />
                         </div>
                     </div>
+                    <!-- METADATA TECH -->
+                    <div id="panel-12" class="fullscreen__view-sidebar-accordeon-panel fs-metadata-tech">
+                        <h2 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+                            <span>#{msg.metadataTech}</span>
+                        </h2>
+
+                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
+							<widgetComponent:widget_metadataTech />
+                        </div>
+                    </div>
 
                     <!-- TOC -->
 					<ui:fragment rendered="#{configurationBean.sidebarTocWidgetVisibleInFullscreen and (activeDocumentBean.toc.hasChildren)}">
