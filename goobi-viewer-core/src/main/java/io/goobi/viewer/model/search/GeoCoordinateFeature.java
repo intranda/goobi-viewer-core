@@ -43,7 +43,7 @@ public class GeoCoordinateFeature {
     private static final Logger logger = LogManager.getLogger(GeoCoordinateFeature.class);
 
     private static final String REGEX_GEOCOORDS_SEARCH_STRING =
-            "(IsWithin|Intersects|Contains|IsDisjointTo)\\((\\w+)\\(\\(?([\\s\\d\\-.,]+)\\)?\\)\\)"
+            "(IsWithin|Intersects|Contains|IsDisjointTo)\\((\\w+)\\(\\(?([\\s\\d\\-.,]+)\\)?\\)\\)" //NOSONAR backtracking save
                     + "(?:\\s*distErrPct=([\\d\\-.,]+))?"; //NOSONAR backtracking save
 
     private static final int REGEX_GEOCOORDS_SEARCH_GROUP_RELATION = 1;
