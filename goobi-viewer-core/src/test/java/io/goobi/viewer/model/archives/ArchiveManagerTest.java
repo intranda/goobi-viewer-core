@@ -86,6 +86,19 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
     }
 
     @Test
+    void testGetNodeTypes() {
+        ArchiveManager archiveManager = new ArchiveManager(eadParser);
+        assertEquals("collection", archiveManager.getNodeType("collection").getName());
+        assertEquals("folder", archiveManager.getNodeType("folder").getName());
+        assertEquals("folder", archiveManager.getNodeType("notmapped").getName());
+        assertEquals("folder", archiveManager.getNodeType("").getName());
+        assertEquals("folder", archiveManager.getNodeType(null).getName());
+        assertEquals("fa fa-folder-open-o", archiveManager.getNodeType(null).getIconClass());
+        assertEquals("fa fa-file-video-o", archiveManager.getNodeType("video").getIconClass());
+        assertEquals("video", archiveManager.getNodeType("video").getName());
+    }
+
+    @Test
     void testGetDatabase() throws Exception {
         {
             ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
