@@ -8,21 +8,21 @@
 		</div>
 	</div>
 	
-	<div if="{this.showPaginator}" ref="paginator" class="swiper-pagination swiper-pagination-wrapper slider-paginator-wrapper-{this.styleName} slider-pagination-{this.sliderInstance}"></div>
+	<div if="{this.showStandardPaginator}" ref="paginator" class="swiper-pagination swiper-pagination-wrapper slider-paginator-wrapper-{this.styleName} slider-pagination-{this.sliderInstance}"></div>
 
 </div>
 
 <script> 
 
 	//initially show paginator so it can be referenced when amending style config (see this.amendStyle())
-	this.showPaginator = true;
+	this.showStandardPaginator = true;
 
     this.on( 'mount', function() {
     	this.sliderInstance = this.opts.sliderinstanceid;
     	
 		this.style = $.extend(true, {}, this.opts.styles.get(this.opts.style));
     	// console.log(this.style);
-     	console.log("mounting 'slider.tag' ", this.opts, this.style);
+     	// console.log("mounting 'slider.tag' ", this.opts, this.style);
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
     	// console.log("init slider with '" + this.opts.style + "''", this.style);
@@ -191,12 +191,22 @@
     amendStyle(styleConfig) {
     	let swiperConfig = styleConfig.swiperConfig;
     	if(swiperConfig.pagination && !swiperConfig.pagination.el)  {
-    		swiperConfig.pagination.el = '.slider-pagination-' + this.sliderInstance;
-    		// console.log('log swiper pagination el: ' + swiperConfig.pagination.el); 
-    		this.showPaginator = true;
     		
+    		if (this.opts.paginator != 'none') {
+    			swiperConfig.pagination.el = this.opts.paginator;
+    			// console.log('paginator: ' + this.opts.paginator);
+        		this.showStandardPaginator = false;
+    		} else {
+        		swiperConfig.pagination.el = '.slider-pagination-' + this.sliderInstance;
+        		this.showStandardPaginator = true;
+        		// console.log('paginator else:');
+    		}
+
+    		// console.log('log swiper pagination el: ' + swiperConfig.pagination.el); 
+
     	} else {
-    		this.showPaginator = false;
+    		this.showStandardPaginator = false;
+    		// console.log('paginator dont show: ');
     	}
 	  	swiperConfig.a11y = {
 	  		prevSlideMessage: this.opts.prevslideMessage,

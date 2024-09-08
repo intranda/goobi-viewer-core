@@ -208,7 +208,7 @@
 		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(3)}</action>
         <action onPostback="false">#{searchBean.setActiveResultGroupName('-')}</action>
-		<action onPostback="false">#{calendarBean.resetAllActiveYears}</action>
+<!-- 		<action onPostback="false">#{calendarBean.resetAllActiveYears}</action> -->
         <action onPostback="false">#{calendarBean.resetCurrentSelection}</action>
 	</url-mapping>
     <url-mapping id="searchcalendar1">
@@ -218,7 +218,7 @@
         <action onPostback="false">#{searchBean.facets.resetActiveFacets}</action>
         <action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(3)}</action>
-        <action onPostback="false">#{calendarBean.resetAllActiveYears}</action>
+<!--         <action onPostback="false">#{calendarBean.resetAllActiveYears}</action> -->
     </url-mapping>
 	<url-mapping id="searchgeomap">
 		<pattern value="/searchgeomap/" />

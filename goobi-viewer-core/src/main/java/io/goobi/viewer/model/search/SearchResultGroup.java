@@ -68,6 +68,18 @@ public class SearchResultGroup implements Serializable {
     }
 
     /**
+     * Create a copy of the given SearchResultGroup, without any search results
+     * 
+     * @param blueprint
+     */
+    public SearchResultGroup(SearchResultGroup blueprint) {
+        this.name = blueprint.name;
+        this.query = blueprint.query;
+        this.previewHitCount = blueprint.previewHitCount;
+        this.useAsAdvancedSearchTemplate = blueprint.useAsAdvancedSearchTemplate;
+    }
+
+    /**
      * 
      * @return Created {@link SearchResultGroup}
      */

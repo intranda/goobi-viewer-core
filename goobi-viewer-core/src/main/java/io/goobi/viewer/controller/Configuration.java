@@ -59,6 +59,7 @@ import org.apache.commons.configuration2.event.EventListener;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -123,6 +124,7 @@ public class Configuration extends AbstractConfiguration {
 
     public static final String CONFIG_FILE_NAME = "config_viewer.xml";
 
+    public static final String METADATA_LIST_TYPE_PAGE = "page";
     public static final String METADATA_LIST_TYPE_SEARCH_HIT = "searchHit";
 
     private static final String XML_PATH_ATTRIBUTE_CONDITION = "[@condition]";
@@ -494,6 +496,19 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return getMetadataConfigurationForTemplate(METADATA_LIST_TYPE_SEARCH_HIT, template, true, true);
+    }
+
+    /**
+     * Returns the list of configured metadata for pages.
+     *
+     * @param template a {@link java.lang.String} object.
+     * @should return correct template configuration
+     * @should return default template configuration if requested not found
+     * @should return default template if template is null
+     * @return a {@link java.util.List} object.
+     */
+    public List<Metadata> getPageMetadataForTemplate(String template) {
+        return getMetadataConfigurationForTemplate(METADATA_LIST_TYPE_PAGE, template, true, true);
     }
 
     /**
@@ -5803,11 +5818,24 @@ public class Configuration extends AbstractConfiguration {
         return getLocalInt("archives[@lazyLoadingThreshold]", 100);
     }
 
+    public boolean isExpandArchiveEntryOnSelection() {
+        return getLocalBoolean("archives.expandOnSelect", false);
+    }
+
     public Map<String, String> getArchiveNodeTypes() {
         List<HierarchicalConfiguration<ImmutableNode>> nodeTypes = getLocalConfigurationsAt("archives.nodeTypes.node");
         nodeTypes.get(0).getString(getReCaptchaSiteKey());
         return nodeTypes.stream()
                 .collect(Collectors.toMap(node -> node.getString(XML_PATH_ATTRIBUTE_NAME), node -> node.getString(XML_PATH_ATTRIBUTE_ICON)));
+    }
+
+    public Pair<String, String> getDefaultArchiveNodeType() {
+        List<HierarchicalConfiguration<ImmutableNode>> nodeTypes = getLocalConfigurationsAt("archives.nodeTypes.node");
+        return nodeTypes.stream()
+                .filter(node -> node.getBoolean("[@default]", false))
+                .findFirst()
+                .map(node -> Pair.of(node.getString("[@name]", ""), node.getString("[@icon]", "")))
+                .orElse(Pair.of("", ""));
     }
 
     /**

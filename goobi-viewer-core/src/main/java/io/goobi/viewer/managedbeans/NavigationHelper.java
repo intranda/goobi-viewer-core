@@ -136,7 +136,7 @@ public class NavigationHelper implements Serializable {
     private Locale locale = Locale.ENGLISH;
 
     /** Map for setting any navigation status variables. Replaces currentView, etc. */
-    Map<String, String> statusMap = new HashMap<>();
+    private Map<String, String> statusMap = new HashMap<>();
 
     private final String theme;
 

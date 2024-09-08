@@ -23,6 +23,7 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.ArchiveConnectionException;
@@ -96,8 +98,9 @@ public class ArchiveBean implements Serializable {
                 //clone the global archive tree so its state (which nodes are expanded) is not preserved between sessions
                 // if state of archive tree should be reset on each page reload, remove the if-clause
                 // or call ArchiveTree.collapseAll()
-                if (this.archiveTree == null) {
+                if (this.archiveTree == null || !this.archiveTree.getRootElement().getTopstructPi().equals(getCurrentArchive().getResourceId())) {
                     this.archiveTree = new ArchiveTree(archiveManager.getArchiveTree(getCurrentResource()));
+                    logger.trace("Reloaded archive tree: {}", getCurrentArchive().getResourceId());
                 }
                 this.databaseLoaded = true;
                 this.searchString = "";
@@ -427,6 +430,7 @@ public class ArchiveBean implements Serializable {
     }
 
     public void setArchiveId(String archiveName) throws ArchiveException {
+        logger.trace("setArchiveId: {}", archiveName);
         ArchiveResource database = this.archiveManager.getArchiveResource(archiveName);
         if (database != null) {
             this.currentResource = database.getResourceId();
@@ -477,4 +481,70 @@ public class ArchiveBean implements Serializable {
 
     }
 
+    /**
+     * <p>
+     * getMetsResolverUrl.
+     * </p>
+     *
+     * @return METS resolver link
+     */
+    public String getEadResolverUrl() {
+        if (getCurrentArchive() != null) {
+            try {
+                String url = DataManager.getInstance().getConfiguration().getSourceFileUrl();
+                if (StringUtils.isNotEmpty(url)) {
+                    return url + getCurrentArchive().getResourceId();
+                }
+                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/sourcefile?id=" + getCurrentArchive().getResourceId();
+            } catch (Exception e) {
+                logger.error("Could not get EAD resolver URL for {}.", getCurrentArchive().getResourceId());
+                Messages.error("errGetCurrUrl");
+            }
+        }
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/sourcefile?id=" + 0;
+    }
+
+    /**
+     * Exports the currently loaded archive for re-indexing.
+     *
+     * @return a {@link java.lang.String} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.RecordNotFoundException if any.
+     */
+    public String reIndexArchiveAction() throws IndexUnreachableException, DAOException, RecordNotFoundException {
+        if (getCurrentArchive() != null) {
+            if (IndexerTools.reIndexRecord(getCurrentArchive().getResourceId())) {
+                Messages.info("reIndexRecordSuccess");
+            } else {
+                Messages.error("reIndexRecordFailure");
+            }
+        }
+
+        return "";
+    }
+
+    /**
+     * <p>
+     * deleteArchiveAction.
+     * </p>
+     *
+     * @return outcome
+     * @throws java.io.IOException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public String deleteArchiveAction() throws IOException, IndexUnreachableException {
+        if (getCurrentArchive() == null) {
+            return "";
+        }
+
+        if (IndexerTools.deleteRecord(getCurrentArchive().getResourceId(), false,
+                Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
+            Messages.info("archives__widget__action_delete_archive_success");
+            return "pretty:index";
+        }
+        Messages.error("archives__widget__action_delete_archive_no_success");
+
+        return "";
+    }
 }

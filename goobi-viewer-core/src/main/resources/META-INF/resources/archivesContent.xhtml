@@ -4,6 +4,7 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
@@ -30,29 +31,30 @@
 				<div class="archives__left-side">
 
 					<ui:fragment rendered="#{archiveBean.getNumArchives() > 1}">
-						<div class="archives__select-database-dropdown-wrapper">
-							<div class="archives__select-database-dropdown-label">#{msg.archives__current_collection}:</div>
+							<h:form styleClass="archives__select-database-dropdown-wrapper">
+							<h:outputLabel for="selectArchiveDatabaseDropdown" class="archives__select-database-dropdown-label">#{msg.archives__current_collection}:</h:outputLabel>
 
 							<div class="archives__select-database-dropdown-element">
-			                    <h:form>
+
 			                    <div class="custom-control custom-control--select archives__select-database-dropdown-element-select">
-				                    <h:selectOneMenu value="#{archiveBean.archiveId}"
+				                    <h:selectOneMenu id="selectArchiveDatabaseDropdown" value="#{archiveBean.archiveId}"
 				                        styleClass="archives__select-database-dropdown" onchange="$(this).next().click()">
 										<f:selectItems value="#{archiveBean.filteredDatabases}" var="database"
 										    itemValue="#{database.combinedId}" itemLabel="#{database.combinedName}" ></f:selectItems>
 									</h:selectOneMenu>
 									<h:commandButton styleClass="d-none" action="pretty:archives1"></h:commandButton>
 									</div>
-			                    </h:form>
 		                    </div>
-						</div>
+
+			                    </h:form>
 					</ui:fragment>
 
                     <div class="archives__tree-heading">
-                        #{msg.archives__archive_tree_heading}
+                      <h2>#{msg.archives__archive_tree_heading}</h2>  
                     	<button
 							id="archivesSearchTrigger"
-							class="#{not empty archiveBean.searchString ? '-active' : ''} btn">
+							class="#{not empty archiveBean.searchString ? '-active' : ''} btn"
+							aria-label="#{msg.search}"> 
 							<i class="fa fa-search"></i>
 						</button>
                     </div>
@@ -99,6 +101,12 @@
                             </ui:include>
                         </h:panelGroup>
                     </ui:fragment>
+                    
+                    <!-- (ADMIN) WIDGET FOR ARCHIVE INTERACTIONS -->
+                    <div class="archives__widget-archives-interactions-wrapper">
+						<widgetComponent:widget_archivesInteractions />
+					</div>
+                    
                 </div>
             </div>
         </f:view>

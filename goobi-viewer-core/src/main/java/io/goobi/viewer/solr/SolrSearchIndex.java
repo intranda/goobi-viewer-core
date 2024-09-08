@@ -328,7 +328,8 @@ public class SolrSearchIndex {
         }
         if (filterQueries != null && !filterQueries.isEmpty()) {
             for (String fq : filterQueries) {
-                solrQuery.addFilterQuery(SolrTools.cleanUpQuery(fq));
+                String cleanedQuery = SolrTools.cleanUpQuery(fq);
+                solrQuery.addFilterQuery(cleanedQuery);
                 // logger.trace("adding filter query: {}", fq) //NOSONAR Debug
             }
         }
@@ -1201,7 +1202,7 @@ public class SolrSearchIndex {
             logger.warn("Cannot fetch user generated content, no PI value given.");
             return Collections.emptyList();
         }
-        
+
         String query = new StringBuilder().append(SolrConstants.PI_TOPSTRUCT)
                 .append(":")
                 .append(pi)

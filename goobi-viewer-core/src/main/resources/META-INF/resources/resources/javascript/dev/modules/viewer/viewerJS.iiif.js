@@ -162,6 +162,7 @@ var viewerJS = ( function( viewer ) {
              * @returns the list of tags in the tag service with the given anme
              */
             getTags: function(collection, name) {
+                console.log("services", collection.service);
                 if(collection.service && Array.isArray(collection.service)) {
                     let tagService = collection.service.filter( service => service['@context'].endsWith('/taglists/context.json')).filter(service => service === undefined || service.name == name);
                     if(tagService && tagService.length > 0) {

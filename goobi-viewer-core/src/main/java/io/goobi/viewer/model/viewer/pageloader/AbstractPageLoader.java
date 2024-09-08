@@ -43,6 +43,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -50,6 +51,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * <p>
@@ -64,12 +66,12 @@ public abstract class AbstractPageLoader implements IPageLoader {
 
     /** All fields to be fetched when loading page documents. Any new required fields must be added to this array. */
     protected static final String[] FIELDS = { SolrConstants.PI_TOPSTRUCT, SolrConstants.PHYSID, SolrConstants.ORDER, SolrConstants.ORDERLABEL,
-            SolrConstants.IDDOC_OWNER, SolrConstants.MIMETYPE, SolrConstants.FILEIDROOT, SolrConstants.FILENAME, SolrConstants.FILENAME_ALTO,
-            SolrConstants.FILENAME_FULLTEXT, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.FILENAME + "_JPEG", SolrConstants.FILENAME_MPEG,
-            SolrConstants.FILENAME_MPEG3, SolrConstants.FILENAME_MP4, SolrConstants.FILENAME_OGG, SolrConstants.FILENAME + "_TIFF",
-            SolrConstants.FILENAME_WEBM, SolrConstants.FULLTEXTAVAILABLE, SolrConstants.DATAREPOSITORY, SolrConstants.IMAGEURN, SolrConstants.WIDTH,
-            SolrConstants.HEIGHT, SolrConstants.ACCESSCONDITION, SolrConstants.MDNUM_FILESIZE, SolrConstants.BOOL_IMAGEAVAILABLE,
-            SolrConstants.BOOL_DOUBLE_IMAGE };
+            SolrConstants.IDDOC, SolrConstants.IDDOC_OWNER, SolrConstants.MIMETYPE, SolrConstants.FILEIDROOT, SolrConstants.FILENAME,
+            SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.FILENAME + "_JPEG",
+            SolrConstants.FILENAME_MPEG, SolrConstants.FILENAME_MPEG3, SolrConstants.FILENAME_MP4, SolrConstants.FILENAME_OGG,
+            SolrConstants.FILENAME + "_TIFF", SolrConstants.FILENAME_WEBM, SolrConstants.FULLTEXTAVAILABLE, SolrConstants.DATAREPOSITORY,
+            SolrConstants.IMAGEURN, SolrConstants.WIDTH, SolrConstants.HEIGHT, SolrConstants.ACCESSCONDITION, SolrConstants.MDNUM_FILESIZE,
+            SolrConstants.BOOL_IMAGEAVAILABLE, SolrConstants.BOOL_DOUBLE_IMAGE, "MD_*", "MD2_*", "MDNUM_*" };
 
     /**
      * Creates and returns the appropriate loader instance for the given <code>StructElement</code>. Only creates loaders that load pages.
@@ -328,6 +330,25 @@ public abstract class AbstractPageLoader implements IPageLoader {
         // Double page view
         if (doc.containsKey(SolrConstants.BOOL_DOUBLE_IMAGE)) {
             pe.setDoubleImage((boolean) doc.getFieldValue(SolrConstants.BOOL_DOUBLE_IMAGE));
+        }
+
+        // Configured page metadata
+        try {
+            List<Metadata> mdList = DataManager.getInstance().getConfiguration().getPageMetadataForTemplate(null);
+            if (!mdList.isEmpty()) {
+                StructElement se = new StructElement();
+                se.setMetadataFields(SolrTools.getFieldValueMap(doc));
+                String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
+                for (Metadata md : mdList) {
+                    if (md.populate(se, iddoc, null, null)) {
+                        pe.getMetadata().add(md);
+                        logger.trace("Loaded page metadata: {}:{}", md.getLabel(), md.getFirstValue());
+                    }
+
+                }
+            }
+        } catch (IndexUnreachableException | PresentationException e) {
+            logger.error(e.getMessage());
         }
 
         return pe;

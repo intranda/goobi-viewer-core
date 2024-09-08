@@ -63,6 +63,8 @@ public class ArchiveTree implements Serializable {
     private boolean treeBuilt = false;
     private boolean treeFullyLoaded = true;
 
+    private final boolean expandEntryOnSelection;
+
     /**
      * <p>
      * Constructor for TOC.
@@ -70,6 +72,7 @@ public class ArchiveTree implements Serializable {
      */
     public ArchiveTree() {
         logger.trace("new EADTree()");
+        this.expandEntryOnSelection = DataManager.getInstance().getConfiguration().isExpandArchiveEntryOnSelection();
     }
 
     public ArchiveTree(ArchiveTree orig) {
@@ -195,7 +198,7 @@ public class ArchiveTree implements Serializable {
      * @return List<ArchiveEntry>
      */
     public List<ArchiveEntry> getVisibleTree(boolean searchActive) {
-        logger.trace("getVisibleTree");
+        logger.trace("getVisibleTree:  {}", trueRootElement.getLabel());
         return getTreeView().stream()
                 .filter(e -> e.isVisible() && (e.isDisplaySearch() || !searchActive) && e.isAccessAllowed())
                 .toList();
@@ -277,6 +280,11 @@ public class ArchiveTree implements Serializable {
      */
     public void setSelectedEntry(ArchiveEntry selectedEntry) {
         logger.trace("setSelectedEntry: {}", selectedEntry != null ? selectedEntry.getLabel() : null);
+        if (this.expandEntryOnSelection && selectedEntry == null && this.selectedEntry != null) {
+            this.selectedEntry.collapse();
+        } else if (this.expandEntryOnSelection && selectedEntry != null) {
+            selectedEntry.expand();
+        }
         this.selectedEntry = selectedEntry;
     }
 
@@ -286,9 +294,9 @@ public class ArchiveTree implements Serializable {
      */
     public void toggleSelectedEntry(ArchiveEntry selectedEntry) {
         if (selectedEntry != null && selectedEntry.equals(this.selectedEntry)) {
-            this.selectedEntry = null;
+            setSelectedEntry(null);
         } else {
-            this.selectedEntry = selectedEntry;
+            this.setSelectedEntry(selectedEntry);
         }
     }
 

@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Optional;
 
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
-import io.goobi.viewer.model.annotation.comments.Comment;
 
 /**
  * @author florian
