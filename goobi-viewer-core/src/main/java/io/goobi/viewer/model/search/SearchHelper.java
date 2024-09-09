@@ -541,10 +541,9 @@ public final class SearchHelper {
      * Returns all suffixes relevant to search filtering.
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param addStaticQuerySuffix a boolean.
+     * @param addArchiveFilterSuffix a boolean.
      * @param addCollectionBlacklistSuffix a boolean.
      * @param privilege Privilege to check (Connector checks a different privilege)
-     * @param addArchiveFilterSuffix if true, ignore docs with DOCTYPE:ARCHIVE
      * @return Generated Solr query suffix
      * @should add archive filter suffix
      * @should add static suffix
@@ -941,7 +940,7 @@ public final class SearchHelper {
      * </p>
      *
      * @param subQuery a {@link java.lang.String} object.
-     * @return an int[]
+     * @return int[]
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */

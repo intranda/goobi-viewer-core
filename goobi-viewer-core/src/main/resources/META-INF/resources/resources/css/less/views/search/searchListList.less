@@ -9,25 +9,24 @@
     /* HITS */
 	&__hits {
 		&.list-view {
+			.search-list__hit-result-group-heading {
+				margin: 5px 0px;
+			}
+			.search-list__hits-list {
+				gap: 5px;
+			}
 			h2:nth-child(n + 2 of .search-list__hit-result-group-heading) {
 				margin-top: 15px;
 			}
 			.search-list__hit {
-				margin-bottom: 5px;
+				// margin-bottom: 5px;
 			}
 			.search-list__hit-header {
-				.col-12.col-sm-10 {
-					width: 100%;
-				}
-				.col-12.col-sm-2 {
-					width: 0;
-				}
 			}
-
+			
 			.search-list__hit-thumbnail a,
-			.search-list__hit-type,
-			.search-list__hit-info,
-			.search-list__hit-content {
+			.search-list__hit-content,
+			.search-list__hit-metadata-list {
 				.mx-hidden;
 			}
 

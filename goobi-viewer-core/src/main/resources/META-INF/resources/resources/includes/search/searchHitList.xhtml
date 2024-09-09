@@ -21,7 +21,6 @@
     
     <!-- THIS INCLUDE MUST BE WRAPPED IN AN DIV WITH THE CLASS ".search-list"! -->
     
-    
     <!-- SEARCH LIST HITS --> 
     <div class="search-list__hits #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : 'noClass'}">
         <!-- SEARCH LIST SORTING -->
@@ -84,14 +83,9 @@
 			            urlSuffix="#{search.sortString}/#{search.facets.activeFacetString}/" />
 
                </div>
-			
-            <div class="clearfix"></div>
         </h:panelGroup>
 
-
-        <div class="clearfix"></div>
-        
-        <h:form class="search-list__hits__list " id="searchListHitsForm" prependId="false">
+        <h:form class="search-list__hits-list " id="searchListHitsForm" prependId="false">
             <ui:repeat value="#{searchBean.currentSearch.resultGroups}" var="resultGroup">
                 <ui:fragment rendered="#{not empty resultGroup.hits}">
                     <ui:fragment rendered="#{searchBean.displayResultGroupNames}">
@@ -104,7 +98,7 @@
                             <span class="Z3988" title="#{hit.browseElement.contextObject}"></span>
                     
                             <!-- HEADER -->
-                            <header class="search-list__hit-header">
+                            <div class="search-list__hit-header">
                                 <ui:include src="/resources/includes/search/browseElement.xhtml">
                                     <ui:param name="browseElement" value="#{hit.browseElement}"></ui:param>
                         	       <ui:param name="showBookmarkIcon" value="#{configurationBean.bookmarksEnabled}"></ui:param>
@@ -116,7 +110,7 @@
                                         #{msg.archives__open_in_archive_view} <i class="fa fa-archive"></i>
                                     </a>
                                 </ui:fragment> 
-                            </header>
+                            </div>
 
                             <!-- CONTENT -->
                             <!-- GET CHILD HITS --> 

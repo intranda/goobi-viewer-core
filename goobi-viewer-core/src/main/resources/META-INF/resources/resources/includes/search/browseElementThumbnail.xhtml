@@ -13,8 +13,6 @@
 	<ui:param name="browseElement"
 		value="#{browseElement != null ? browseElement : null}"></ui:param>
 	<ui:fragment rendered="#{browseElement.showThumbnail}">
-		<div
-			class="col-12 col-sm-2 d-flex justify-content-center justify-content-md-end mt-3 mt-md-0 mb-3 mb-sm-0">
 			<!-- THUMBNAIL -->
 			<figure class="search-list__hit-thumbnail">
 				<!-- SINGLEVOLUME -->
@@ -53,23 +51,7 @@
 					</div>
 				</h:outputLink>
 
-				<!-- ADD TO BOOKMARKS -->
-				<ui:fragment rendered="#{showBookmarkIcon}">
-					<button type="button" class="btn btn--icon"
-						data-bookmark-list-type="add" data-pi="#{browseElement.pi}"
-						aria-label="#{msg.bookmarkList_addToBookmarkList}" role="switch"
-						aria-checked="false">
-						<span
-							data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
-							data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
-							data-toggle="tooltip" data-placement="bottom"> <i
-							class="fa #{msg.bookmarkList_icon}" aria-hidden="true"></i> <i
-							class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
-						</span>
-					</button>
-				</ui:fragment>
 			</figure>
-		</div>
 	</ui:fragment>
 
 </ui:composition>

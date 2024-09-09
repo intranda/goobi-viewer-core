@@ -59,6 +59,7 @@ import org.apache.commons.configuration2.event.EventListener;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -5826,6 +5827,15 @@ public class Configuration extends AbstractConfiguration {
         nodeTypes.get(0).getString(getReCaptchaSiteKey());
         return nodeTypes.stream()
                 .collect(Collectors.toMap(node -> node.getString(XML_PATH_ATTRIBUTE_NAME), node -> node.getString(XML_PATH_ATTRIBUTE_ICON)));
+    }
+
+    public Pair<String, String> getDefaultArchiveNodeType() {
+        List<HierarchicalConfiguration<ImmutableNode>> nodeTypes = getLocalConfigurationsAt("archives.nodeTypes.node");
+        return nodeTypes.stream()
+                .filter(node -> node.getBoolean("[@default]", false))
+                .findFirst()
+                .map(node -> Pair.of(node.getString("[@name]", ""), node.getString("[@icon]", "")))
+                .orElse(Pair.of("", ""));
     }
 
     /**

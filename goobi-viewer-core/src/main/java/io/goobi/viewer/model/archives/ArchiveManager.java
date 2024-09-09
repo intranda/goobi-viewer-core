@@ -218,12 +218,17 @@ public class ArchiveManager implements Serializable {
     }
 
     /**
+     * Returns the node type configured for the given name. If no node type is configured for the name, then the default node type - indicated by the
+     * <code>default="true"</code> attribute - is used
      * 
      * @param name
      * @return {@link NodeType}
      */
     public NodeType getNodeType(String name) {
-        return this.nodeTypes.getOrDefault(name, new NodeType("", ""));
+        return this.nodeTypes.computeIfAbsent(name, n -> {
+            Pair<String, String> defaultValue = DataManager.getInstance().getConfiguration().getDefaultArchiveNodeType();
+            return new NodeType(defaultValue.getLeft(), defaultValue.getRight());
+        });
     }
 
     /**

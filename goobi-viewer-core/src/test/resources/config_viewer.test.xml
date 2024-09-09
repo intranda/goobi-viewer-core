@@ -1475,7 +1475,7 @@
     <archives enabled="true" lazyLoadingThreshold="100">
         <nodeTypes>
 			<node name="collection" icon="fa fa-folder-open-o" />
-            <node name="folder" icon="fa fa-folder-open-o" />
+            <node name="folder" default="true" icon="fa fa-folder-open-o" />
             <node name="class"  icon="fa fa-files-o" />
             <node name="file"   icon="fa fa-file-text-o" />
             <node name="image"  icon="fa fa-file-image-o" />
