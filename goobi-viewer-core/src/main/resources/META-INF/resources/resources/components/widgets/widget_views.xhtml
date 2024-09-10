@@ -173,7 +173,7 @@
 							rendered="#{activeDocumentBean.viewManager.displayExternalResolverLink}">
 							<li><a 
 								href="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER')}"
-								target="_blank" rel="noopner"
+								target="_blank" rel="noopener"
 								aria-label="#{msg.view}: #{msg.externalRepository}">
 									#{msg.externalRepository} </a></li>
 						</h:panelGroup>
@@ -181,13 +181,11 @@
 						<!-- OPAC URL -->
 						<h:panelGroup visibility-class="widget-element"
 							rendered="#{configurationBean.sidebarOpacLinkVisible and activeDocumentBean.viewManager.opacUrl != null}">
-							<li><h:outputLink 
-									value="#{activeDocumentBean.viewManager.opacUrl}"
-									target="_blank">
-								#{msg.opacLink}
-								<f:passThroughAttribute name="aria-label"
-										value="#{msg.view}: #{msg.opacLink}" />
-								</h:outputLink></li>
+                            <li>
+                                <a href="#{activeDocumentBean.viewManager.opacUrl}" target="_blank" rel="noopener"
+                                    aria-label="#{msg.view}: #{msg.opacLink}">
+                                    #{msg.opacLink}</a>
+                            </li>
 						</h:panelGroup>
 
 						<!-- RELATED CMS PAGES -->
