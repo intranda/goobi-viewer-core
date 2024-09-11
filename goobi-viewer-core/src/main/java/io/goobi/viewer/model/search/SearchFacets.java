@@ -563,7 +563,11 @@ public class SearchFacets implements Serializable {
             }
             String facetLink = fl;
             if (!facetLink.contains(":")) {
-                facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
+                if ("undefined".equals(facetLink)) {
+                    logger.warn("Facet value '{}' received, skipping.", facetLink);
+                } else {
+                    facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
+                }
             }
             String facetField = facetLink.substring(0, facetLink.indexOf(":"));
             if (DataManager.getInstance().getConfiguration().getGeoFacetFields().contains(facetField)) {
