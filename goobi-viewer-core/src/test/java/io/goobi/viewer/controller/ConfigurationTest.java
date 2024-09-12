@@ -58,6 +58,7 @@ import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 import io.goobi.viewer.model.metadata.MetadataView;
+import io.goobi.viewer.model.metadata.MetadataView.MetadataViewLocation;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
@@ -371,11 +372,15 @@ class ConfigurationTest extends AbstractTest {
     void getMetadataViews_shouldReturnAllConfiguredValues() throws Exception {
         List<MetadataView> result = DataManager.getInstance().getConfiguration().getMetadataViews();
         assertEquals(2, result.size());
+
+        assertEquals(MetadataViewLocation.SIDEBAR, result.get(0).getLocation()); // default value
+
         MetadataView view = result.get(1);
         assertEquals(1, view.getIndex());
         assertEquals("label__metadata_other", view.getLabel());
         assertEquals("_other", view.getUrl());
         assertEquals("foo:bar", view.getCondition());
+        assertEquals(MetadataViewLocation.OBJECTVIEW, view.getLocation());
     }
 
     /**

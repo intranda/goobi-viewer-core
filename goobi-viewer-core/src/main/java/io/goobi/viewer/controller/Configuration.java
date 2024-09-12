@@ -84,6 +84,7 @@ import io.goobi.viewer.model.maps.View;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
+import io.goobi.viewer.model.metadata.MetadataView.MetadataViewLocation;
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
@@ -550,7 +551,8 @@ public class Configuration extends AbstractConfiguration {
             String label = metadataView.getString(XML_PATH_ATTRIBUTE_LABEL);
             String url = metadataView.getString(XML_PATH_ATTRIBUTE_URL, "");
             String condition = metadataView.getString(XML_PATH_ATTRIBUTE_CONDITION);
-            MetadataView view = new MetadataView().setIndex(index).setLabel(label).setUrl(url).setCondition(condition);
+            MetadataViewLocation location = MetadataViewLocation.getByName(metadataView.getString("[@location]"));
+            MetadataView view = new MetadataView().setIndex(index).setLabel(label).setUrl(url).setCondition(condition).setLocation(location);
             ret.add(view);
         }
 
