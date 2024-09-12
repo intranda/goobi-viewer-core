@@ -551,7 +551,7 @@ public class Configuration extends AbstractConfiguration {
             String label = metadataView.getString(XML_PATH_ATTRIBUTE_LABEL);
             String url = metadataView.getString(XML_PATH_ATTRIBUTE_URL, "");
             String condition = metadataView.getString(XML_PATH_ATTRIBUTE_CONDITION);
-            MetadataViewLocation location = MetadataViewLocation.getByName(metadataView.getString("[@location]"));
+            MetadataViewLocation location = MetadataViewLocation.getByName(metadataView.getString("[@location]", "sidebar"));
             MetadataView view = new MetadataView().setIndex(index).setLabel(label).setUrl(url).setCondition(condition).setLocation(location);
             ret.add(view);
         }

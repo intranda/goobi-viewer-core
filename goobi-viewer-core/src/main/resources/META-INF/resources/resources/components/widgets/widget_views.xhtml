@@ -97,7 +97,7 @@
 						<ui:repeat visibility-class="widget-element"
 							rendered="#{configurationBean.sidebarMetadataLinkVisible and displayConditions.matchRecord('{docType: ![group, anchor]}')}"
 							var="metadataView" varStatus="status" 
-							value="#{metadataBean.metadataViews.stream().filter(mdView.displayInSidebar).filter(mdView -> mdView.isVisible(activeDocumentBean.viewManager.topStructElement)).toList()}">
+							value="#{metadataBean.metadataViews.stream().filter(mdView -> mdView.displayInSidebar).filter(mdView -> mdView.isVisible(activeDocumentBean.viewManager.topStructElement)).toList()}">
 							<li jsf:id="metadata_view_link_#{status.index}"
 								class="#{navigationHelper.currentPage == 'metadata'.concat(metadataView.url) ? 'active' : ''}">
 								<h:outputLink 

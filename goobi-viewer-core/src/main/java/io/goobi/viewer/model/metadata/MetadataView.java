@@ -39,10 +39,15 @@ public class MetadataView {
         SIDEBAR;
 
         public static MetadataViewLocation getByName(String name) {
-            if (OBJECTVIEW.name().equalsIgnoreCase(name)) {
-                return OBJECTVIEW;
+            if (name != null) {
+                for (MetadataViewLocation loc : MetadataViewLocation.values()) {
+                    if (loc.name().equalsIgnoreCase(name)) {
+                        return loc;
+                    }
+                }
             }
-            return SIDEBAR;
+
+            return null;
         }
     }
 
@@ -97,11 +102,15 @@ public class MetadataView {
         // Just field name
         return se.getMetadataValue(condition) != null;
     }
-    
+
     public boolean isDisplayInSidebar() {
         return MetadataViewLocation.SIDEBAR.equals(location);
     }
-    
+
+    public boolean isDisplayInObjectView() {
+        return MetadataViewLocation.OBJECTVIEW.equals(location);
+    }
+
     /**
      * @return the index
      */

@@ -51,6 +51,7 @@ import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataElement;
 import io.goobi.viewer.model.metadata.MetadataValue;
 import io.goobi.viewer.model.metadata.MetadataView;
+import io.goobi.viewer.model.metadata.MetadataView.MetadataViewLocation;
 import io.goobi.viewer.model.viewer.EventElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -337,6 +338,27 @@ public class MetadataBean {
         } finally {
             logger.debug("setMetadataViewUrl END");
         }
+    }
+
+    /**
+     * Sets activeMetadataView to the first configured MetadataView with location="location".
+     * 
+     * @param location Location name
+     */
+    public void selectFirstMetadataViewOfLocation(String location) {
+        logger.trace("selectFirstMetadataViewOfLocation: {}", location);
+        MetadataViewLocation loc = MetadataViewLocation.getByName(location);
+        if (loc != null) {
+            for (MetadataView view : DataManager.getInstance().getConfiguration().getMetadataViews()) {
+                if (loc.equals(view.getLocation())) {
+                    activeMetadataView = view;
+                    logger.trace("Set activeMetadataView: {}", activeMetadataView.getIndex());
+                    return;
+                }
+            }
+        }
+
+        activeMetadataView = null;
     }
 
     /**
