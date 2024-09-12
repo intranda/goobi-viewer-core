@@ -94,23 +94,23 @@
 						</h:panelGroup>
 
 						<!-- Metadata -->
-							<ui:repeat visibility-class="widget-element"
+						<ui:repeat visibility-class="widget-element"
 							rendered="#{configurationBean.sidebarMetadataLinkVisible and displayConditions.matchRecord('{docType: ![group, anchor]}')}"
-							 var="metadataView" varStatus="status" 
-								value="#{metadataBean.metadataViews.stream().filter(mdView -> mdView.isVisible(activeDocumentBean.viewManager.topStructElement)).toList()}">
-									<li jsf:id="metadata_view_link_#{status.index}"
-										class="#{navigationHelper.currentPage == 'metadata'.concat(metadataView.url) ? 'active' : ''}">
-										<h:outputLink 
-											value="#{navigationHelper.metadataActiveUrl}#{metadataView.url}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
-											<h:outputText rendered="#{metadataView.label != null}"
-												value="#{msg[metadataView.label]}" />
-											<h:outputText rendered="#{metadataView.label == null}"
-												value="#{msg[metadataBean.defaultMetadataLabel]}" />
-											<f:passThroughAttribute name="aria-label"
-												value="#{msg.view}: #{metadataView.label != null ? msg[metadataView.label] : msg[metadataBean.defaultMetadataLabel]}" />
-										</h:outputLink>
-									</li>
-							</ui:repeat>
+							var="metadataView" varStatus="status" 
+							value="#{metadataBean.metadataViews.stream().filter(mdView.displayInSidebar).filter(mdView -> mdView.isVisible(activeDocumentBean.viewManager.topStructElement)).toList()}">
+							<li jsf:id="metadata_view_link_#{status.index}"
+								class="#{navigationHelper.currentPage == 'metadata'.concat(metadataView.url) ? 'active' : ''}">
+								<h:outputLink 
+									value="#{navigationHelper.metadataActiveUrl}#{metadataView.url}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
+									<h:outputText rendered="#{metadataView.label != null}"
+										value="#{msg[metadataView.label]}" />
+									<h:outputText rendered="#{metadataView.label == null}"
+										value="#{msg[metadataBean.defaultMetadataLabel]}" />
+									<f:passThroughAttribute name="aria-label"
+										value="#{msg.view}: #{metadataView.label != null ? msg[metadataView.label] : msg[metadataBean.defaultMetadataLabel]}" />
+								</h:outputLink>
+							</li>
+						</ui:repeat>
 
 						<!-- Full-text -->
 						<h:panelGroup visibility-class="widget-element"
@@ -189,18 +189,18 @@
 						</h:panelGroup>
 
 						<!-- RELATED CMS PAGES -->
-							<ui:repeat var="relatedPage" varStatus="status" visibility-class="widget-element"
-								value="#{cmsBean.getRelatedPages(activeDocumentBean.viewManager.pi).stream().filter(p -> p.published or cmsBean.mayEdit(p)).toList()}">
-									<li id="cms_page_link_#{status.index}"
-										class="#{cc.attrs.pageName != '' and cc.attrs.pageName == relatedPage.title ? 'active' : ''} #{relatedPage.published ? '' : 'unpublished'}">
-										<h:outputLink 
-											value="#{relatedPage.pageUrl}">
-											<h:outputText value="#{msg[relatedPage.menuTitleOrTitle]}" />
-											<f:passThroughAttribute name="aria-label"
-												value="#{msg.view}: #{msg[relatedPage.menuTitleOrTitle]}" />
-										</h:outputLink>
-									</li>
-							</ui:repeat>
+						<ui:repeat var="relatedPage" varStatus="status" visibility-class="widget-element"
+							value="#{cmsBean.getRelatedPages(activeDocumentBean.viewManager.pi).stream().filter(p -> p.published or cmsBean.mayEdit(p)).toList()}">
+								<li id="cms_page_link_#{status.index}"
+									class="#{cc.attrs.pageName != '' and cc.attrs.pageName == relatedPage.title ? 'active' : ''} #{relatedPage.published ? '' : 'unpublished'}">
+									<h:outputLink 
+										value="#{relatedPage.pageUrl}">
+										<h:outputText value="#{msg[relatedPage.menuTitleOrTitle]}" />
+										<f:passThroughAttribute name="aria-label"
+											value="#{msg.view}: #{msg[relatedPage.menuTitleOrTitle]}" />
+									</h:outputLink>
+								</li>
+						</ui:repeat>
 					</ul>
 				</h:form>
 		</div>

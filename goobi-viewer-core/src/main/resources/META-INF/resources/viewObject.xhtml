@@ -118,6 +118,27 @@
                     urlPrefix="#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/"
                     urlSuffix="#topDocAnchor"
                     rtl="#{activeDocumentBean.viewManager.topStructElement.rtl}" />
+                    
+                
+                <!-- Metadata to be displayed below the image -->    
+                <c:forEach items="#{metadataBean.getMetadataElementList(1)[0].metadataList}" var="metadata">
+                    <h:panelGroup layout="block" styleClass="view-object__copyright-wrapper"
+                        rendered="#{metadata.group and !metadata.blank}">
+                        <c:forEach items="#{metadata.values}" var="val">
+                            <!-- Only render metadata groups for the current page -->
+                            <h:panelGroup rendered="#{val.getParamValue('MD_ORDER') == activeDocumentBean.imageToShow}">
+                            <div class="view-object__copyright-text">
+                                <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+                                    <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind0">
+                                        <f:param value="#{val.getParamLabelWithColon(ind0)}" />
+                                        <f:param value="#{val.getComboValueShort(ind0)}" />
+                                    </c:forEach>
+                                </h:outputFormat>
+                            </div>
+                            </h:panelGroup>
+                        </c:forEach>
+                    </h:panelGroup>
+                </c:forEach>
 
 
 				<!-- MODULE CONTRIBUTIONS -->

@@ -97,7 +97,11 @@ public class MetadataView {
         // Just field name
         return se.getMetadataValue(condition) != null;
     }
-
+    
+    public boolean isDisplayInSidebar() {
+        return MetadataViewLocation.SIDEBAR.equals(location);
+    }
+    
     /**
      * @return the index
      */
