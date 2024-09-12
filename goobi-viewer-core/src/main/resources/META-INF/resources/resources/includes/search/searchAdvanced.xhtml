@@ -27,6 +27,25 @@
         <h:panelGroup rendered="#{configurationBean.advancedSearchEnabled}">
             
             <h:form id="searchAdvancedForm" prependId="false" styleClass="search-advanced__form">
+            
+                <!-- ENTITY SELECTION -->
+                <div class="custom-search-advanced__list-input-area">
+                    <div class="custom-search-advanced__tabs-wrapper">
+                        <ui:repeat value="#{configurationBean.searchResultGroupNames}" var="groupName">
+                            <h:outputLink styleClass=" custom-search-advanced__tab #{groupName == searchBean.activeResultGroupName ? '-active' : ''}"
+                                value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{groupName}/-/">
+                                <ui:fragment rendered="#{groupName == searchBean.activeResultGroupName}">
+                                    #{msg[groupName]}
+                                </ui:fragment>
+                                <ui:fragment rendered="#{groupName != searchBean.activeResultGroupName}">
+                                    #{msg[groupName]}
+                                </ui:fragment>
+                                <f:passThroughAttribute name="aria-label" value="#{msg[groupName]}" />
+                            </h:outputLink>
+                        </ui:repeat>
+                    </div>
+                </div>
+            
            			<h2 class="search-advanced__entry-area-title">#{msg.search__search_query}</h2>
                     <div class="search-advanced__entry-area">
                         <!-- AJAX LOADER -->
