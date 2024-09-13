@@ -488,4 +488,17 @@ public class MetadataBean {
 
         return ret;
     }
+
+    public List<Metadata> getMetadataList(StructElement struct, String type) {
+        String template = struct.getDocStructType();
+        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getMetadataConfigurationForTemplate(type, template, true, true);
+        metadataList.forEach(metadata -> {
+            try {
+                metadata.populate(struct, Long.toString(struct.getLuceneId()), metadata.getSortFields(), currentMetadataLocale);
+            } catch (IndexUnreachableException | PresentationException e) {
+                logger.error("Error populationg metadata {} with  docStruct {}", metadata, struct, e);
+            }
+        });
+        return metadataList;
+    }
 }
