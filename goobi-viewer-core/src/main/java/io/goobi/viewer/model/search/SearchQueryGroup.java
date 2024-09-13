@@ -84,9 +84,11 @@ public class SearchQueryGroup implements Serializable {
         if (fieldConfigs != null) {
             for (AdvancedSearchFieldConfiguration fieldConfig : fieldConfigs) {
                 if (fieldConfig.isVisible()) {
-                    SearchQueryItem item = new SearchQueryItem(template);
+                    SearchQueryItem item = new SearchQueryItem(template)
+                            .setLabel(fieldConfig.getLabel())
+                            .setReplaceRegex(fieldConfig.getReplaceRegex())
+                            .setReplaceWith(fieldConfig.getReplaceWith());
                     item.setField(fieldConfig.getField());
-                    item.setLabel(fieldConfig.getLabel());
                     queryItems.add(item);
                 }
             }

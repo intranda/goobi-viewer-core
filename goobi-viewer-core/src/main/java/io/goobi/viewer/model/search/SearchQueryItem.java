@@ -85,6 +85,8 @@ public class SearchQueryItem implements Serializable {
     private volatile boolean displaySelectItems = false;
     /** If >0, proximity search will be applied to phrase searches. */
     private int proximitySearchDistance = 0;
+    private String replaceRegex;
+    private String replaceWith;
 
     /**
      * Zero-argument constructor.
@@ -279,9 +281,11 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * @param label the label to set
+     * @return this
      */
-    public void setLabel(String label) {
+    public SearchQueryItem setLabel(String label) {
         this.label = label;
+        return this;
     }
 
     /**
@@ -438,6 +442,38 @@ public class SearchQueryItem implements Serializable {
      */
     void setDisplaySelectItems(boolean displaySelectItems) {
         this.displaySelectItems = displaySelectItems;
+    }
+
+    /**
+     * @return the replaceRegex
+     */
+    public String getReplaceRegex() {
+        return replaceRegex;
+    }
+
+    /**
+     * @param replaceRegex the replaceRegex to set
+     * @return this
+     */
+    public SearchQueryItem setReplaceRegex(String replaceRegex) {
+        this.replaceRegex = replaceRegex;
+        return this;
+    }
+
+    /**
+     * @return the replaceWith
+     */
+    public String getReplaceWith() {
+        return replaceWith;
+    }
+
+    /**
+     * @param replaceWith the replaceWith to set
+     * @return this
+     */
+    public SearchQueryItem setReplaceWith(String replaceWith) {
+        this.replaceWith = replaceWith;
+        return this;
     }
 
     /**
@@ -633,7 +669,13 @@ public class SearchQueryItem implements Serializable {
         // AND/OR: e.g. '(FIELD:value1 AND/OR FIELD:"value2" AND/OR -FIELD:value3)' for each query item
         else {
             if (!values.get(0).trim().isEmpty()) {
-                String[] valueSplit = values.get(0).trim().split(SearchHelper.SEARCH_TERM_SPLIT_REGEX);
+                String value = values.get(0).trim();
+                if (replaceRegex != null && replaceWith != null) {
+                    logger.trace("Replacing '{}' with '{}'", replaceRegex, replaceWith);
+                    value = value.replaceAll(replaceRegex, replaceWith);
+                    logger.trace(value);
+                }
+                String[] valueSplit = value.split(SearchHelper.SEARCH_TERM_SPLIT_REGEX);
                 boolean moreThanOneField = false;
                 for (final String f : fields) {
                     if (moreThanOneField) {

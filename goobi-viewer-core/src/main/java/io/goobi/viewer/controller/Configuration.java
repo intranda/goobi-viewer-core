@@ -1704,6 +1704,8 @@ public class Configuration extends AbstractConfiguration {
             boolean visible = subElement.getBoolean("[@visible]", false);
             int displaySelectItemsThreshold = subElement.getInt("[@displaySelectItemsThreshold]", 50);
             String selectType = subElement.getString("[@selectType]", AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN);
+            String replaceRegex = subElement.getString("[@replaceRegex]");
+            String replaceWith = subElement.getString("[@replaceWith]");
 
             ret.add(new AdvancedSearchFieldConfiguration(field)
                     .setLabel(label)
@@ -1713,7 +1715,9 @@ public class Configuration extends AbstractConfiguration {
                     .setDisabled(field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#')
                     .setVisible(visible)
                     .setDisplaySelectItemsThreshold(displaySelectItemsThreshold)
-                    .setSelectType(selectType));
+                    .setSelectType(selectType)
+                    .setReplaceRegex(replaceRegex)
+                    .setReplaceWith(replaceWith));
         }
 
         return ret;
