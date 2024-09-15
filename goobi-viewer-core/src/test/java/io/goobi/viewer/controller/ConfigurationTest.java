@@ -552,6 +552,9 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("my_secret", ((OpenIdProvider) providers.get(2)).getClientSecret());
         assertEquals("custom.png", ((OpenIdProvider) providers.get(2)).getImage());
         assertEquals("Custom OIDC", ((OpenIdProvider) providers.get(2)).getLabel());
+        assertEquals("https://examplethirdparty.com/viewer/api", ((OpenIdProvider) providers.get(2)).getThirdPartyLoginUrl());
+        assertEquals("exampleApiKey", ((OpenIdProvider) providers.get(2)).getThirdPartyLoginApiKey());
+        assertEquals("tPscope", ((OpenIdProvider) providers.get(2)).getThirdPartyLoginScope());
 
         // vuFind
         assertEquals("VuFind", providers.get(3).getName());
