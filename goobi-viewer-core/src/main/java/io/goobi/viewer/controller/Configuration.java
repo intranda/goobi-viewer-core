@@ -2441,6 +2441,9 @@ public class Configuration extends AbstractConfiguration {
             String clientSecret = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@clientSecret]", null);
             String parameterType = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@parameterType]", null);
             String parameterName = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@parameterName]", null);
+            String ThirdPartyLoginUrl = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginUrl]", null);
+            String ThirdPartyLoginApiKey = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginApiKey]", null);
+            String ThirdPartyLoginScope = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginScope]", null);
             long timeoutMillis = myConfigToUse.getLong(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@timeout]", 60000);
 
             if (enabled) {
@@ -2454,7 +2457,8 @@ public class Configuration extends AbstractConfiguration {
                                 new OpenIdProvider(name, label, endpoint, image, timeoutMillis, clientId, clientSecret)
                                         .setTokenEndpoint(tokenEndpoint)
                                         .setRedirectionEndpoint(redirectionEndpoint)
-                                        .setScope(scope));
+                                        .setScope(scope)
+                                        .setThirdPartyVariables(ThirdPartyLoginUrl, ThirdPartyLoginApiKey, ThirdPartyLoginScope));
                         break;
                     case "userpassword":
                         switch (name.toLowerCase()) {
