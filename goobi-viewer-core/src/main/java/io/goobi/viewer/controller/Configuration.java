@@ -1942,6 +1942,7 @@ public class Configuration extends AbstractConfiguration {
      * @param template
      * @param fallbackToDefaultTemplate
      * @return Configured value; null if none found
+     * @should return correct value
      */
     public String getAdvancedSearchFieldReplaceRegex(String field, String template, boolean fallbackToDefaultTemplate) {
         return getAdvancedSearchFieldGetAttributeValue(field, "replaceRegex", template, fallbackToDefaultTemplate);
@@ -1953,6 +1954,7 @@ public class Configuration extends AbstractConfiguration {
      * @param template
      * @param fallbackToDefaultTemplate
      * @return Configured value; null if none found
+     * @should return correct value
      */
     public String getAdvancedSearchFieldReplaceWith(String field, String template, boolean fallbackToDefaultTemplate) {
         return getAdvancedSearchFieldGetAttributeValue(field, "replaceWith", template, fallbackToDefaultTemplate);

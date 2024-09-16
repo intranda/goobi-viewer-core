@@ -85,8 +85,6 @@ public class SearchQueryItem implements Serializable {
     private volatile boolean displaySelectItems = false;
     /** If >0, proximity search will be applied to phrase searches. */
     private int proximitySearchDistance = 0;
-    private String replaceRegex;
-    private String replaceWith;
 
     /**
      * Zero-argument constructor.
@@ -510,7 +508,7 @@ public class SearchQueryItem implements Serializable {
                     int size = !vals.isEmpty() ? Integer.valueOf(vals.get(0)) : 0;
 
                     if (size > 0 && size < getDisplaySelectItemsThreshold()) {
-                        //                        displaySelectItems = true;
+                        displaySelectItems = true;
                     } else {
                         displaySelectItems = false;
                     }
@@ -652,10 +650,9 @@ public class SearchQueryItem implements Serializable {
         else {
             if (!values.get(0).trim().isEmpty()) {
                 String value = values.get(0).trim();
-                if (replaceRegex != null && replaceWith != null) {
-                    logger.trace("Replacing '{}' with '{}'", replaceRegex, replaceWith);
-                    value = value.replaceAll(replaceRegex, replaceWith);
-                    logger.trace(value);
+                if (getReplaceRegex() != null && getReplaceWith() != null) {
+                    // logger.trace("Replacing '{}' with '{}'", getReplaceRegex(), getReplaceWith()); //NOSONAR Debug
+                    value = value.replaceAll(getReplaceRegex(), getReplaceWith());
                 }
                 String[] valueSplit = value.split(SearchHelper.SEARCH_TERM_SPLIT_REGEX);
                 boolean moreThanOneField = false;
