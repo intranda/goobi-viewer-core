@@ -144,7 +144,7 @@ public class Metadata implements Serializable {
         this.key = label;
         this.masterValue = masterValue;
         values.add(new MetadataValue(ownerIddoc + "_" + 0, masterValue, label));
-        if (paramValue != null) {
+        if (StringUtils.isNotEmpty(paramValue)) {
             values.get(0).getParamValues().add(new ArrayList<>());
             values.get(0).getParamValues().get(0).add(paramValue);
         }
