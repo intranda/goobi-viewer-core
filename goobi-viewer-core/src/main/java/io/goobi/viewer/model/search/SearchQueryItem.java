@@ -268,6 +268,20 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
+     * @return the replaceRegex
+     */
+    public String getReplaceRegex() {
+        return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldReplaceRegex(field, template, false);
+    }
+
+    /**
+     * @return the replaceWith
+     */
+    public String getReplaceWith() {
+        return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldReplaceWith(field, template, false);
+    }
+
+    /**
      * @return the label
      * @should return field if label empty
      */
@@ -445,38 +459,6 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
-     * @return the replaceRegex
-     */
-    public String getReplaceRegex() {
-        return replaceRegex;
-    }
-
-    /**
-     * @param replaceRegex the replaceRegex to set
-     * @return this
-     */
-    public SearchQueryItem setReplaceRegex(String replaceRegex) {
-        this.replaceRegex = replaceRegex;
-        return this;
-    }
-
-    /**
-     * @return the replaceWith
-     */
-    public String getReplaceWith() {
-        return replaceWith;
-    }
-
-    /**
-     * @param replaceWith the replaceWith to set
-     * @return this
-     */
-    public SearchQueryItem setReplaceWith(String replaceWith) {
-        this.replaceWith = replaceWith;
-        return this;
-    }
-
-    /**
      * This is called after <code>setField</code>, so no point in calling <code>toggleDisplaySelectItems</code> here.
      *
      * @param ev a {@link javax.faces.event.ValueChangeEvent} object.
@@ -528,7 +510,7 @@ public class SearchQueryItem implements Serializable {
                     int size = !vals.isEmpty() ? Integer.valueOf(vals.get(0)) : 0;
 
                     if (size > 0 && size < getDisplaySelectItemsThreshold()) {
-                        displaySelectItems = true;
+                        //                        displaySelectItems = true;
                     } else {
                         displaySelectItems = false;
                     }

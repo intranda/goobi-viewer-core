@@ -1913,26 +1913,12 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getAdvancedSearchFieldSelectType(String field, String template, boolean fallbackToDefaultTemplate) {
-        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
-        if (templateList == null) {
-            return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
-        }
-        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, fallbackToDefaultTemplate);
-        if (usingTemplate == null) {
-            return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
-        }
-        List<HierarchicalConfiguration<ImmutableNode>> fieldList = usingTemplate.configurationsAt("field");
-        if (fieldList == null) {
-            return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
+        String ret = getAdvancedSearchFieldGetAttributeValue(field, "selectType", template, fallbackToDefaultTemplate);
+        if (ret == null) {
+            ret = AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
         }
 
-        for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
-            if (subElement.getString(".").equals(field)) {
-                return subElement.getString("[@selectType]", AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN);
-            }
-        }
-
-        return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
+        return ret;
     }
 
     /**
@@ -1947,6 +1933,40 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getAdvancedSearchFieldSeparatorLabel(String field, String template, boolean fallbackToDefaultTemplate) {
+        return getAdvancedSearchFieldGetAttributeValue(field, "label", template, fallbackToDefaultTemplate);
+    }
+
+    /**
+     * 
+     * @param field
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return Configured value; null if none found
+     */
+    public String getAdvancedSearchFieldReplaceRegex(String field, String template, boolean fallbackToDefaultTemplate) {
+        return getAdvancedSearchFieldGetAttributeValue(field, "replaceRegex", template, fallbackToDefaultTemplate);
+    }
+
+    /**
+     * 
+     * @param field
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return Configured value; null if none found
+     */
+    public String getAdvancedSearchFieldReplaceWith(String field, String template, boolean fallbackToDefaultTemplate) {
+        return getAdvancedSearchFieldGetAttributeValue(field, "replaceWith", template, fallbackToDefaultTemplate);
+    }
+
+    /**
+     * 
+     * @param field
+     * @param attribute
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return Configured value; null if none found
+     */
+    String getAdvancedSearchFieldGetAttributeValue(String field, String attribute, String template, boolean fallbackToDefaultTemplate) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
         if (templateList == null) {
             return null;
@@ -1962,7 +1982,7 @@ public class Configuration extends AbstractConfiguration {
 
         for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
             if (subElement.getString(".").equals(field)) {
-                return subElement.getString(XML_PATH_ATTRIBUTE_LABEL, "");
+                return subElement.getString("[@" + attribute + "]");
             }
         }
 
@@ -1975,7 +1995,7 @@ public class Configuration extends AbstractConfiguration {
      * @param attribute Attribute name
      * @param template
      * @param fallbackToDefaultTemplate
-     * @return Configured value
+     * @return Configured value; false if none found
      */
     boolean isAdvancedSearchFieldHasAttribute(String field, String attribute, String template, boolean fallbackToDefaultTemplate) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
