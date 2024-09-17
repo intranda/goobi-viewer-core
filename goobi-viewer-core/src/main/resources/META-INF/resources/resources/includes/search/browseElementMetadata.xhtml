@@ -127,8 +127,7 @@
 									<ui:repeat value="#{browseElementMetadata.values}" var="val" varStatus="status">
 											<!-- Custom separator -->
 											<!-- !!ATTENTION!! DO NOT BREAK NEXT LINE IN CODE, OTHERWISE SPACES ARE GENERATED IN FRONTEND -->
-											<ui:fragment 
-											rendered="#{browseElementMetadata.separator != null and status.index gt 0}"><span class="metadata__element-wrapper-single-custom-separator">#{browseElementMetadata.separator}</span></ui:fragment><span class="search-list__hit-text-value-single"><h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false" /></span>
+												<span class="metadata__element-wrapper-single-custom-separator">#{browseElementMetadata.separator}</span><span class="search-list__hit-text-value-single"><h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false" /></span>
 									</ui:repeat>
 								</dd>
 						</ui:fragment>
