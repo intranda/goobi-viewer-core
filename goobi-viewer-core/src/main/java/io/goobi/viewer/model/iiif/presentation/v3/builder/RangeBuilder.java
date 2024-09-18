@@ -23,10 +23,11 @@ package io.goobi.viewer.model.iiif.presentation.v3.builder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.iiif.presentation.v3.Canvas3;
 import de.intranda.api.iiif.presentation.v3.Range3;
@@ -43,6 +44,7 @@ import io.goobi.viewer.model.viewer.StructElement;
  */
 public class RangeBuilder extends AbstractBuilder {
 
+    private static final String BASE_RANGE_ID = "base";
     private static final Logger logger = LogManager.getLogger(RangeBuilder.class);
 
     /**
@@ -65,13 +67,13 @@ public class RangeBuilder extends AbstractBuilder {
             throws ContentNotFoundException, PresentationException {
 
         structures.sort((s1, s2) -> Integer.compare(getFirstPageNo(s1), getFirstPageNo(s2)));
-        StructElement structElement = logId == null ? topElement
+        StructElement structElement = (logId == null || logId == BASE_RANGE_ID) ? topElement
                 : structures.stream()
                         .filter(s -> s.getLogid().equals(logId))
                         .findAny()
                         .orElseThrow(() -> new ContentNotFoundException("Range not found"));
-
-        URI id = urls.path(ApiUrls.RECORDS_SECTIONS, ApiUrls.RECORDS_SECTIONS_RANGE).params(topElement.getPi(), structElement.getLogid()).buildURI();
+        String rangeId = Optional.ofNullable(structElement.getLogid()).orElse(BASE_RANGE_ID);
+        URI id = urls.path(ApiUrls.RECORDS_SECTIONS, ApiUrls.RECORDS_SECTIONS_RANGE).params(topElement.getPi(), rangeId).buildURI();
         Range3 range = new Range3(id);
         range.setLabel(structElement.getMultiLanguageDisplayLabel());
 
