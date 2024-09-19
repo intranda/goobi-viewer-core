@@ -63,11 +63,10 @@ public class RangeBuilder extends AbstractBuilder {
         return build(mainDocument, childDocuments, logId);
     }
 
-    public Range3 build(StructElement topElement, List<StructElement> structures, String logId)
-            throws ContentNotFoundException, PresentationException {
+    public Range3 build(StructElement topElement, List<StructElement> structures, String logId) throws ContentNotFoundException {
 
         structures.sort((s1, s2) -> Integer.compare(getFirstPageNo(s1), getFirstPageNo(s2)));
-        StructElement structElement = (logId == null || logId == BASE_RANGE_ID) ? topElement
+        StructElement structElement = (logId == null || BASE_RANGE_ID.equals(logId)) ? topElement
                 : structures.stream()
                         .filter(s -> s.getLogid().equals(logId))
                         .findAny()
@@ -99,22 +98,18 @@ public class RangeBuilder extends AbstractBuilder {
         }
 
         for (StructElement child : children) {
-            try {
-                Range3 childRange = build(topElement, structures, child.getLogid());
-                range.addItem(childRange);
-            } catch (PresentationException e) {
-                logger.warn(e.getMessage());
-            }
+            Range3 childRange = build(topElement, structures, child.getLogid());
+            range.addItem(childRange);
         }
 
         return range;
     }
 
-    private int getFirstPageNo(StructElement structElement) {
+    private static int getFirstPageNo(StructElement structElement) {
         return structElement.getImageNumber();
     }
 
-    private int getLastPageNumber(StructElement structElement, List<StructElement> children) {
+    private static int getLastPageNumber(StructElement structElement, List<StructElement> children) {
         int firstPageNo = getFirstPageNo(structElement);
         int lastPageNo = firstPageNo + structElement.getNumPages() - 1;
         if (!children.isEmpty()) {
@@ -123,18 +118,16 @@ public class RangeBuilder extends AbstractBuilder {
         return lastPageNo;
     }
 
-    private void getNextSibling(List<StructElement> structures, StructElement structElement) {
+    private static void getNextSibling(List<StructElement> structures, StructElement structElement) {
         StructElement nextSibling = null;
         if (structures.indexOf(structElement) < structures.size() - 1) {
             nextSibling = structures.get(structures.indexOf(structElement) + 1);
         }
     }
 
-    private List<StructElement> getChildStructs(List<StructElement> structures, StructElement structElement) {
-        List<StructElement> children = structures.stream()
+    private static List<StructElement> getChildStructs(List<StructElement> structures, StructElement structElement) {
+        return structures.stream()
                 .filter(s -> structElement.getLuceneId() == s.getParentLuceneId())
                 .collect(Collectors.toList());
-        return children;
     }
-
 }
