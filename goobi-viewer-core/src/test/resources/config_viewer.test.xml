@@ -466,7 +466,7 @@
 				    <field>MD_PUBLISHER</field>
 				    <field>MD_PLACEPUBLISH</field>
 				    <field range="true">MD_YEARPUBLISH</field>
-				    <field>MD_SHELFMARK</field>
+				    <field replaceRegex=" " replaceWith="_">MD_SHELFMARK</field>
 				    <field label="-----">#SEPARATOR1#</field>
 				    <field>MD_FOO_LANG_EN</field>
 				    <field>MD_FOO_LANG_DE</field>
