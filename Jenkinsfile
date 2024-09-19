@@ -67,7 +67,7 @@ pipeline {
     }
     stage('trigger reference theme build (develop)') {
       when {
-        equals expected: 'develop', actual: params.UPSTREAM_BRANCH
+        branch 'develop'
       }
       steps {
         build wait: false, job: 'goobi-viewer/goobi-viewer-theme-reference/develop'
