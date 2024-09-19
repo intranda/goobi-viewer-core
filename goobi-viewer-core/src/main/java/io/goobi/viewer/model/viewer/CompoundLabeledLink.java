@@ -26,8 +26,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -114,13 +114,14 @@ public class CompoundLabeledLink extends LabeledLink {
             int subLinkWeight = weight;
             // Add collection hierarchy links with the same weight
             for (HierarchicalBrowseDcElement collectionElement : collectionElements) {
-                links.add(new LabeledLink(collectionElement.getLabel(), CollectionView.getCollectionUrl(collectionElement, field, null),
+                links.add(new LabeledLink(collectionElement.getLabel(),
+                        new CollectionView(field, () -> Collections.emptyMap()).getCollectionUrl(collectionElement, false),
                         subLinkWeight));
             }
         } catch (DAOException | PresentationException e) {
             logger.error(e.getMessage());
         }
-        
+
         return links;
     }
 
