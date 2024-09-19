@@ -162,6 +162,6 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         IMetadataValue label = browseElement.createMultiLanguageLabel(structElement);
         assertEquals("Mein Titel", label.getValueOrFallback(Locale.GERMAN));
         assertEquals("My title", label.getValueOrFallback(Locale.ENGLISH));
-        assertEquals("Mon titre", label.getValueOrFallback(Locale.FRENCH));
+        assertEquals("Mein Titel", label.getValueOrFallback(Locale.FRENCH)); // French is not among the Faces languages
     }
 }
