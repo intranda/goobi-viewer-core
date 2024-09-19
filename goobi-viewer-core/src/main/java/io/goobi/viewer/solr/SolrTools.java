@@ -213,7 +213,7 @@ public final class SolrTools {
             return null;
         }
     }
-    
+
     /**
      * <p>
      * getAsLong.
@@ -1063,6 +1063,14 @@ public final class SolrTools {
         return refId;
     }
 
+    /**
+     * Extract locales from language-specific metadata fields on the given {@link StructElement}.
+     * 
+     * @param structElement
+     * @return List<Locale>
+     * @deprecated No longer in use, as it can produce a list of only irrelevant locales
+     */
+    @Deprecated(since = "24.09")
     public static List<Locale> getAllUsedLocales(StructElement structElement) {
         return structElement.getMetadataFields()
                 .keySet()
