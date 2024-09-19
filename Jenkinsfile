@@ -65,6 +65,14 @@ pipeline {
         sh 'mvn -f goobi-viewer-core/pom.xml deploy'
       }
     }
+    stage('trigger reference theme build (develop)') {
+      when {
+        equals expected: 'develop', actual: params.UPSTREAM_BRANCH
+      }
+      steps {
+        build wait: false, job: 'goobi-viewer/goobi-viewer-theme-reference/develop'
+      }
+    }
   }
   post {
     always {
