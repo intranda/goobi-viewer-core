@@ -113,7 +113,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return empty string for unknown file extensions
      */
     @Test
-    void getMimeTypeFromExtension_shouldReturnEmptyStringForUnknownFileExtensions() throws Exception {
+    void getMimeTypeFromExtension_shouldReturnEmptyStringForUnknownFileExtensions() {
         assertEquals("", BrowseElement.getMimeTypeFromExtension("foo.bar"));
     }
 
@@ -122,7 +122,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies translate docstruct label
      */
     @Test
-    void generateDefaultLabel_shouldTranslateDocstructLabel() throws Exception {
+    void generateDefaultLabel_shouldTranslateDocstructLabel() {
         //        BrowseElement be = new BrowseElement("PPN123", 1, null, null, Locale.GERMAN, null, null);
         StructElement se = new StructElement();
         se.setDocStructType("Monograph");
@@ -135,7 +135,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies remove any line breaks
      */
     @Test
-    void getFulltextForHtml_shouldRemoveAnyLineBreaks() throws Exception {
+    void getFulltextForHtml_shouldRemoveAnyLineBreaks() {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", "foo\nbar", Locale.ENGLISH, null, null);
         assertEquals("foo bar", be.getFulltextForHtml());
     }
@@ -145,7 +145,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies remove any JS
      */
     @Test
-    void getFulltextForHtml_shouldRemoveAnyJS() throws Exception {
+    void getFulltextForHtml_shouldRemoveAnyJS() {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR",
                 "foo <script type=\"javascript\">\nfunction f {\n alert();\n}\n</script> bar", Locale.ENGLISH, null, null);
         assertEquals("foo  bar", be.getFulltextForHtml());
