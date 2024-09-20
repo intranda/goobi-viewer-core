@@ -64,6 +64,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.MediaResourceBinding;
+import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.MediaResourceHelper;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
@@ -96,9 +97,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 public class RecordFileResource {
 
     private static final Logger logger = LogManager.getLogger(RecordFileResource.class);
-    @Context
     private HttpServletRequest servletRequest;
-    @Context
     private HttpServletResponse servletResponse;
     @Context
     private Configuration config;
@@ -110,9 +109,15 @@ public class RecordFileResource {
      * 
      * @param pi
      */
-    public RecordFileResource(
+    public RecordFileResource(@Context HttpServletRequest request, @Context HttpServletResponse response,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
+        this.servletRequest = request;
+        this.servletResponse = response;
         this.pi = pi;
+        /**
+         * required to count download statistics in {@link RecordFileDownloadFilter}
+         */
+        servletRequest.setAttribute("pi", pi);
     }
 
     @GET
@@ -294,6 +299,7 @@ public class RecordFileResource {
     @GET
     @javax.ws.rs.Path(RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD)
     @Operation(tags = { "records" }, summary = "Get cmdi for record file")
+    @RecordFileDownloadBinding
     public Response getDownloadedResource(
             @Parameter(description = "download resource task id") @PathParam("taskId") String taskId,
             @Parameter(description = "file path relative to the download directory") @PathParam("path") String path)

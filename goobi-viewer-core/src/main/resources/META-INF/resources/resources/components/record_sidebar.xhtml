@@ -16,10 +16,12 @@
 		
 			<widgetComponent:widget_views id="widgetViews" collapsible="false"
 				widgetTitle="#{msg.view}"  />
+					
+			<widgetComponent:widget_copyrightInfo rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}"/>
+			
+			<widgetComponent:widget_searchResultNavigation />
 				
 			<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: ![viewThumbs], docType: ![group]}')}">
-					
-				<widgetComponent:widget_copyrightInfo rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}"/>
 
 				<widgetComponent:widget_searchInCurrentItem  rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc]}')}"/>
 
@@ -29,9 +31,7 @@
 
 				<widgetComponent:widget_nerFacetting rendered="#{displayConditions.matchRecord('{pageType: [viewObject]}')}"/>
 
-				<widgetComponent:widget_searchResultNavigation />
-
-				<widgetComponent:widget_metadata rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc]}')}"/>
+				<widgetComponent:widget_metadata rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc, viewFulltext]}')}"/>
 				
 				<widgetComponent:widget_metadataTech />
 
@@ -50,9 +50,11 @@
 				<widgetComponent:widget_recordNotes 
 					notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
 
-				<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc, viewFulltext]}')}">
+				<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc]}')}">
 				
 					<widgetComponent:widget_downloads />
+			</ui:fragment>
+			<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc, viewFulltext]}')}">
 
 					<widgetComponent:widget_citation />
 

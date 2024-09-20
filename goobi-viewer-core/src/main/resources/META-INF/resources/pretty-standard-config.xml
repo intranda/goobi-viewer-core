@@ -295,7 +295,7 @@
         <action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
     </url-mapping>
 	<url-mapping id="newSearch3">
-		<pattern value="/search/-/#{searchString:searchBean.searchString}/#{page:searchBean.currentPage}/" />
+		<pattern value="/search/#{activeResultGroupName:searchBean.activeResultGroupName}/#{searchString:searchBean.searchString}/#{page:searchBean.currentPage}/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.facets.resetActiveFacetString}</action>
@@ -303,7 +303,7 @@
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 	<url-mapping id="newSearch4">
-		<pattern value="/search/-/#{searchString:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
+		<pattern value="/search/#{activeResultGroupName:searchBean.activeResultGroupName}/#{searchString:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.facets.resetActiveFacetString}</action>
@@ -1224,6 +1224,13 @@
     <url-mapping id="cmsOpenPage3">
         <pattern
             value="/cms/#{page:cmsBean.currentPageId}/#{activeResultGroupName:searchBean.activeResultGroupName}/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/" />
+        <view-id value="#{cmsBean.getCurrentPageUrl}" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
+    </url-mapping>
+    <url-mapping id="cmsOpenPage4">
+        <pattern
+            value="/cms/#{page:cmsBean.currentPageId}/#{activeResultGroupName:searchBean.activeResultGroupName}/#{query:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
         <view-id value="#{cmsBean.getCurrentPageUrl}" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>

@@ -34,7 +34,6 @@
 									
 									<!-- Metadata value -->
 									<dd class="search-list__hit-text-value">
-										
 										<ui:fragment rendered="#{browseElementMetadata.singleString}">
 											<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}" escape="false" />
 										</ui:fragment>
@@ -103,17 +102,41 @@
 					</ui:fragment>
 
 					<!-- grouped="false" -->
-					<ui:fragment layout="block"
-						rendered="#{!browseElementMetadata.group}">
-							<dd class="search-list__hit-text-value">
-								<ui:repeat value="#{browseElementMetadata.values}" var="val" varStatus="status">
-										<!-- Custom separator -->
-										<!-- !!ATTENTION!! DO NOT BREAK NEXT LINE IN CODE, OTHERWISE SPACES ARE GENERATED IN FRONTEND -->
-										<ui:fragment 
-										rendered="#{browseElementMetadata.separator != null and status.index gt 0}"><span class="metadata__element-wrapper-single-custom-separator">#{browseElementMetadata.separator}</span></ui:fragment><span class="search-list__hit-text-value-single"><h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false" /></span>
-								</ui:repeat>
-							</dd>
+					<ui:fragment rendered="#{browseElementMetadata.separator == null}">
+					
+						<!-- WITHOUT SEPARATOR NEW LINES -->
+						<ui:fragment layout="block"
+							rendered="#{!browseElementMetadata.group}">
+									<ui:repeat value="#{browseElementMetadata.values}" var="val" varStatus="status">
+										<dd class="search-list__hit-text-value">
+											<!-- Custom separator -->
+											<!-- !!ATTENTION!! DO NOT BREAK NEXT LINE IN CODE, OTHERWISE SPACES ARE GENERATED IN FRONTEND -->
+											<span class="search-list__hit-text-value-single"><h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false" /></span>
+										</dd>
+									</ui:repeat>
+						</ui:fragment>
+					
 					</ui:fragment>
+
+					<ui:fragment rendered="#{browseElementMetadata.separator != null and status.index gt 0}">
+					
+						<!-- WITH SEPARATOR IN SAME LINE -->
+						<ui:fragment layout="block"
+							rendered="#{!browseElementMetadata.group}">
+								<dd class="search-list__hit-text-value">
+									<ui:repeat value="#{browseElementMetadata.values}" var="val" varStatus="status">
+											<!-- Custom separator -->
+											<!-- !!ATTENTION!! DO NOT BREAK NEXT LINE IN CODE, OTHERWISE SPACES ARE GENERATED IN FRONTEND -->
+												<span class="metadata__element-wrapper-single-custom-separator">#{browseElementMetadata.separator}</span><span class="search-list__hit-text-value-single"><h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false" /></span>
+									</ui:repeat>
+								</dd>
+						</ui:fragment>
+						
+					</ui:fragment>
+					
+					
+					
+					
 
 			</ui:fragment>
 		</ui:repeat>

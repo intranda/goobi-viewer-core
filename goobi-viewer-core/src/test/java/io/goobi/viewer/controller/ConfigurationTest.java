@@ -1771,6 +1771,30 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getAdvancedSearchFieldReplaceRegex(String,String,boolean)
+     * @verifies return correct value
+     */
+    @Test
+    void getAdvancedSearchFieldReplaceRegex_shouldReturnCorrectValue() {
+        assertEquals(" ",
+                DataManager.getInstance()
+                        .getConfiguration()
+                        .getAdvancedSearchFieldReplaceRegex("MD_SHELFMARK", StringConstants.DEFAULT_NAME, false));
+    }
+    
+    /**
+     * @see Configuration#getAdvancedSearchFieldReplaceWith(String,String,boolean)
+     * @verifies return correct value
+     */
+    @Test
+    void getAdvancedSearchFieldReplaceWith_shouldReturnCorrectValue() {
+        assertEquals("_",
+                DataManager.getInstance()
+                        .getConfiguration()
+                        .getAdvancedSearchFieldReplaceWith("MD_SHELFMARK", StringConstants.DEFAULT_NAME, false));
+    }
+
+    /**
      * @see Configuration#getSidebarTocCollapseLengthThreshold()
      * @verifies return correct value
      */
