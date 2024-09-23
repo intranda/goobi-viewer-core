@@ -348,7 +348,7 @@ public final class JsonTools {
         StringBuilder sbThumbnailUrl = new StringBuilder(250);
         StringBuilder sbMediumImage = new StringBuilder(250);
         try {
-            StructElement ele = new StructElement(0, doc);
+            StructElement ele = new StructElement("dummy", doc);
             if (thumbs != null) {
                 sbThumbnailUrl.append(thumbs.getThumbnailUrl(ele, 100, 120));
                 sbMediumImage.append(thumbs.getThumbnailUrl(ele, 600, 500));

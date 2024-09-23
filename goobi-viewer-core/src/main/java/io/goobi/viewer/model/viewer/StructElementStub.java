@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +57,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     private static final Logger logger = LogManager.getLogger(StructElementStub.class);
 
     /** IDDOC of the Solr document representing this structure element. */
-    protected final long luceneId;
+    protected final String luceneId;
     /** Identifier of top level structure element of the tree to which this structure element belongs. */
     protected String pi;
     /** Logical structure element ID from METS. */
@@ -98,7 +99,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * </p>
      */
     public StructElementStub() {
-        this.luceneId = 1L;
+        this.luceneId = UUID.randomUUID().toString();
     }
 
     /**
@@ -108,24 +109,14 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      *
      * @param luceneId a long.
      */
-    public StructElementStub(long luceneId) {
+    public StructElementStub(String luceneId) {
         this.luceneId = luceneId;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public int compareTo(StructElementStub o) {
-        if (luceneId > o.luceneId) {
-            return 1;
-        } else if (luceneId < o.luceneId) {
-            return -1;
-        }
-        return 0;
+        return logid.compareTo(o.logid);
     }
 
     /**
@@ -281,7 +272,7 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      *
      * @return a long.
      */
-    public long getLuceneId() {
+    public String getLuceneId() {
         return luceneId;
     }
 

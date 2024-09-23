@@ -137,7 +137,7 @@ public class LeanPageLoader extends AbstractPageLoader implements Serializable {
      */
     /** {@inheritDoc} */
     @Override
-    public Long getOwnerIddocForPage(int pageOrder) throws IndexUnreachableException, PresentationException {
+    public String getOwnerIddocForPage(int pageOrder) throws IndexUnreachableException, PresentationException {
         return DataManager.getInstance().getSearchIndex().getImageOwnerIddoc(topElement.getPi(), pageOrder);
     }
 

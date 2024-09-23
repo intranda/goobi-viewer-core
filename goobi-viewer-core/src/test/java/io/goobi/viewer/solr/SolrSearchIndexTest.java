@@ -199,8 +199,7 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     void getImageOwnerIddoc_shouldRetrieveCorrectIDDOC() throws Exception {
-        long iddoc = DataManager.getInstance().getSearchIndex().getImageOwnerIddoc(PI_KLEIUNIV, 1);
-        Assertions.assertNotEquals(-1, iddoc);
+        Assertions.assertNotNull(DataManager.getInstance().getSearchIndex().getImageOwnerIddoc(PI_KLEIUNIV, 1));
     }
 
     /**

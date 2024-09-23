@@ -389,7 +389,7 @@ public final class TocMaker {
             String thumbnailUrl = null;
             if (StringUtils.isNotEmpty(topStructPi) && StringUtils.isNotEmpty(thumbnailFile)) {
                 ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
-                StructElement struct = new StructElement(Long.valueOf(volumeIddoc), doc);
+                StructElement struct = new StructElement(volumeIddoc, doc);
                 thumbnailUrl = thumbs.getThumbnailUrl(struct, ANCHOR_THUMBNAIL_WIDTH, ANCHOR_THUMBNAIL_HEIGHT);
             }
             label.mapEach(StringEscapeUtils::unescapeHtml4);
@@ -541,7 +541,7 @@ public final class TocMaker {
                 logger.trace("volume mime type: {}", volumeMimeType);
 
                 ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
-                StructElement struct = new StructElement(Long.valueOf(volumeIddoc), volumeDoc);
+                StructElement struct = new StructElement(volumeIddoc, volumeDoc);
                 thumbnailUrl = thumbs.getThumbnailUrl(struct, ANCHOR_THUMBNAIL_WIDTH, ANCHOR_THUMBNAIL_HEIGHT);
 
                 String footerId = getFooterId(volumeDoc, DataManager.getInstance().getConfiguration().getWatermarkIdField());

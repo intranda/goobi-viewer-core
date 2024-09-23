@@ -153,8 +153,8 @@ public class SearchHit implements Comparable<SearchHit> {
         this.locale = locale;
         if (browseElement != null) {
             // Add self to owner hits to avoid adding self to child hits
-            this.ownerHits.put(Long.toString(browseElement.getIddoc()), this);
-            this.ownerDocs.put(Long.toString(browseElement.getIddoc()), doc);
+            this.ownerHits.put(browseElement.getIddoc(), this);
+            this.ownerDocs.put(browseElement.getIddoc(), doc);
             if (searchTerms != null) {
                 addLabelHighlighting();
             } else {

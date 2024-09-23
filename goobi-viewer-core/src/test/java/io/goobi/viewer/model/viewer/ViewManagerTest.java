@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Dimension;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -296,7 +295,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         String pi = "PPN123";
         String docstructType = "Catalogue";
 
-        StructElement se = new StructElement(123L);
+        StructElement se = new StructElement("123");
         se.setDocStructType(docstructType);
         se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
 
@@ -315,7 +314,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         String pi = "PPN123";
         String docstructType = "Catalogue";
 
-        StructElement se = new StructElement(123L);
+        StructElement se = new StructElement("123");
         se.setDocStructType(docstructType);
         se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
 
@@ -329,7 +328,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         String pi = "PPN123";
         String docstructType = "Catalogue";
 
-        StructElement se = new StructElement(123L);
+        StructElement se = new StructElement("123");
         se.setDocStructType(docstructType);
         se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
 
@@ -346,7 +345,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         String pi = "PPN123";
         String docstructType = "Catalogue";
 
-        StructElement se = new StructElement(123L);
+        StructElement se = new StructElement("123");
         se.setDocStructType(docstructType);
         se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
 
@@ -469,7 +468,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private static ViewManager createViewManager(String pi, String docstructType, String pageFilename, String mimeType)
             throws IndexUnreachableException, PresentationException {
-        StructElement se = new StructElement(123L);
+        StructElement se = new StructElement("123");
         se.setDocStructType(docstructType);
         se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
         PhysicalElement page = Mockito.mock(PhysicalElement.class);
@@ -734,8 +733,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    void test_getLinkToDownloadFile()
-            throws UnsupportedEncodingException, URISyntaxException, IndexUnreachableException, PresentationException, DAOException {
+    void test_getLinkToDownloadFile() throws IndexUnreachableException, PresentationException, DAOException {
         String filename = "INN 2_Gutenzell.pdf";
         String filenameEncoded = "INN%202_Gutenzell.pdf";
 

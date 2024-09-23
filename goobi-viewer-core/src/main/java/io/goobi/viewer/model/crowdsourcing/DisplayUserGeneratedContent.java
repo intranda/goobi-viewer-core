@@ -621,7 +621,8 @@ public class DisplayUserGeneratedContent {
         }
 
         DisplayUserGeneratedContent ret = new DisplayUserGeneratedContent();
-        long iddoc = Long.parseLong((String) doc.getFieldValue(SolrConstants.IDDOC));
+        // long iddoc = Long.parseLong((String) doc.getFieldValue(SolrConstants.IDDOC));
+        long iddoc = System.currentTimeMillis();
         ret.setId(iddoc);
         ret.setType(type);
         ret.setAreaString((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
@@ -640,7 +641,7 @@ public class DisplayUserGeneratedContent {
             ret.setLabel(createLabelFromBody(ret.getType(), ret.getAnnotationBody()));
             ret.setExtendendLabel(createExtendedLabelFromBody(ret.getType(), ret.getAnnotationBody()));
         } else {
-            StructElement se = new StructElement(iddoc, doc);
+            StructElement se = new StructElement(Long.toString(iddoc), doc);
             ret.setLabel(generateUgcLabel(se));
         }
 

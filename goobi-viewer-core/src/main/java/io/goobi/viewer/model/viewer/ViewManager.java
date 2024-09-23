@@ -155,9 +155,9 @@ public class ViewManager implements Serializable {
     private ImageDeliveryBean imageDeliveryBean;
 
     /** IDDOC of the top level document. */
-    private final long topStructElementIddoc;
+    private final String topStructElementIddoc;
     /** IDDOC of the current level document. The initial top level document values eventually gets overridden with the image owner element's IDDOC. */
-    private long currentStructElementIddoc;
+    private String currentStructElementIddoc;
     /** LOGID of the current level document. */
     private String logId;
 
@@ -224,7 +224,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mimeType,
+    public ViewManager(StructElement topDocument, IPageLoader pageLoader, String currentDocumentIddoc, String logId, String mimeType,
             ImageDeliveryBean imageDeliveryBean) throws IndexUnreachableException, PresentationException {
         this.imageDeliveryBean = imageDeliveryBean;
         this.topStructElement = topDocument;
@@ -234,7 +234,7 @@ public class ViewManager implements Serializable {
         this.currentStructElementIddoc = currentDocumentIddoc;
         this.logId = logId;
         this.doublePageMode = DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault();
-        if (topStructElementIddoc == currentDocumentIddoc) {
+        if (topStructElementIddoc.equals(currentDocumentIddoc)) {
             currentStructElement = topDocument;
         } else {
             currentStructElement = new StructElement(currentDocumentIddoc);
@@ -1398,9 +1398,9 @@ public class ViewManager implements Serializable {
         this.currentImageOrder = useOrder;
 
         if (StringUtils.isEmpty(logId)) {
-            Long iddoc = pageLoader.getOwnerIddocForPage(useOrder);
+            String iddoc = pageLoader.getOwnerIddocForPage(useOrder);
             // Set the currentDocumentIddoc to the IDDOC of the image owner document, but only if no specific document LOGID has been requested
-            if (iddoc != null && iddoc > -1) {
+            if (iddoc != null) {
                 currentStructElementIddoc = iddoc;
                 logger.trace("currentDocumentIddoc: {} ({})", currentStructElementIddoc, pi);
             } else if (isHasPages()) {
@@ -1410,8 +1410,8 @@ public class ViewManager implements Serializable {
         } else {
             // If a specific LOGID has been requested, look up its IDDOC
             logger.trace("Selecting currentElementIddoc by LOGID: {} ({})", logId, pi);
-            long iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(getPi(), logId);
-            if (iddoc > -1) {
+            String iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(getPi(), logId);
+            if (iddoc != null) {
                 currentStructElementIddoc = iddoc;
             } else {
                 logger.trace("currentElementIddoc not found for '{}', LOGID: {}", pi, logId);
@@ -1861,7 +1861,7 @@ public class ViewManager implements Serializable {
      * </p>
      *
      * @return METS resolver link
-     * @deprecated Use ViewManager.getSourceFileResolverUrl() 
+     * @deprecated Use ViewManager.getSourceFileResolverUrl()
      */
     @Deprecated(since = "24.08")
     public String getMetsResolverUrl() {
@@ -1874,7 +1874,7 @@ public class ViewManager implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
-     * @deprecated Use ViewManager.getSourceFileResolverUrl() 
+     * @deprecated Use ViewManager.getSourceFileResolverUrl()
      */
     @Deprecated(since = "24.08")
     public String getLidoResolverUrl() {
@@ -1887,7 +1887,7 @@ public class ViewManager implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
-     * @deprecated Use ViewManager.getSourceFileResolverUrl() 
+     * @deprecated Use ViewManager.getSourceFileResolverUrl()
      */
     @Deprecated(since = "24.08")
     public String getDenkxwebResolverUrl() {
@@ -1900,7 +1900,7 @@ public class ViewManager implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
-     * @deprecated Use ViewManager.getSourceFileResolverUrl() 
+     * @deprecated Use ViewManager.getSourceFileResolverUrl()
      */
     @Deprecated(since = "24.08")
     public String getDublinCoreResolverUrl() {
@@ -3066,11 +3066,11 @@ public class ViewManager implements Serializable {
      *
      * @return the topStructElementIddoc
      */
-    public long getTopStructElementIddoc() {
+    public String getTopStructElementIddoc() {
         return topStructElementIddoc;
     }
 
-    public Long getAnchorDocumentIddoc() {
+    public String getAnchorDocumentIddoc() {
         if (this.anchorStructElement != null) {
             return anchorStructElement.getLuceneId();
         }
@@ -3126,7 +3126,7 @@ public class ViewManager implements Serializable {
      *
      * @return the currentStructElementIddoc
      */
-    public long getCurrentStructElementIddoc() {
+    public String getCurrentStructElementIddoc() {
         return currentStructElementIddoc;
     }
 
@@ -3137,7 +3137,7 @@ public class ViewManager implements Serializable {
      *
      * @param currentStructElementIddoc the currentStructElementIddoc to set
      */
-    public void setCurrentStructElementtIddoc(long currentStructElementIddoc) {
+    public void setCurrentStructElementtIddoc(String currentStructElementIddoc) {
         this.currentStructElementIddoc = currentStructElementIddoc;
     }
 
@@ -4075,7 +4075,7 @@ public class ViewManager implements Serializable {
             throw new RecordNotFoundException(pi);
         }
 
-        long iddoc = Long.parseLong((String) doc.getFieldValue(SolrConstants.IDDOC));
+        String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
         StructElement topDocument = new StructElement(iddoc, doc);
         return new ViewManager(topDocument, AbstractPageLoader.create(topDocument, loadPages), iddoc, null, null, null);
     }

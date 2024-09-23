@@ -2906,7 +2906,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public StructElement getStructElement(String pi) throws IndexUnreachableException, PresentationException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-        return new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
+        return new StructElement((String) doc.getFirstValue(SolrConstants.IDDOC), doc);
     }
 
     /** {@inheritDoc} */

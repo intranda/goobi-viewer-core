@@ -103,7 +103,7 @@ public class StructureBuilder extends AbstractBuilder {
                 URI rangeURI = getRangeURI(pi, structElement.getLogid());
                 Range2 range = new Range2(rangeURI);
                 range.setUseMembers(useMembers);
-                idMap.put(Long.toString(structElement.getLuceneId()), structElement.getLogid());
+                idMap.put(structElement.getLuceneId(), structElement.getLogid());
                 if (structElement.isWork()) {
                     IMetadataValue label = getLabel(BASE_RANGE_LABEL);
                     range.setLabel(label);
@@ -136,9 +136,9 @@ public class StructureBuilder extends AbstractBuilder {
      * @param pi
      * @param range
      */
-    private void populateChildren(List<StructElement> elements, long parentIddoc, String pi, Range2 range) {
+    private void populateChildren(List<StructElement> elements, String parentIddoc, String pi, Range2 range) {
         elements.stream()
-                .filter(element -> Long.toString(parentIddoc).equals(element.getMetadataValue(SolrConstants.IDDOC_PARENT)))
+                .filter(element -> parentIddoc.equals(element.getMetadataValue(SolrConstants.IDDOC_PARENT)))
                 .map(StructElementStub::getLogid)
                 .forEach(logId -> range.addRange(new Range2(getRangeURI(pi, logId))));
 

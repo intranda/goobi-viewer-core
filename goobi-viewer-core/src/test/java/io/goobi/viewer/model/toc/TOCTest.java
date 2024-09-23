@@ -56,7 +56,7 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies calculate number correctly
      */
     @Test
-    void getNumPages_shouldCalculateNumberCorrectly() throws Exception {
+    void getNumPages_shouldCalculateNumberCorrectly() {
         TOC toc = new TOC();
         toc.setTotalTocSize(70);
         Assertions.assertEquals(7, toc.getNumPages());
@@ -69,7 +69,7 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct label
      */
     @Test
-    void getLabel_shouldReturnCorrectLabel() throws Exception {
+    void getLabel_shouldReturnCorrectLabel() {
         TOC toc = new TOC();
         toc.setTocElementMap(new HashMap<>());
         toc.getTocElementMap().put(StringConstants.DEFAULT_NAME, new ArrayList<>(3));
@@ -95,7 +95,7 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies set value to 1 if given value too low
      */
     @Test
-    void setCurrentPage_shouldSetValueTo1IfGivenValueTooLow() throws Exception {
+    void setCurrentPage_shouldSetValueTo1IfGivenValueTooLow() {
         TOC toc = new TOC();
         toc.setCurrentPage(0);
         Assertions.assertEquals(1, toc.getCurrentPage());
@@ -106,7 +106,7 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies set value to last page number if given value too high
      */
     @Test
-    void setCurrentPage_shouldSetValueToLastPageNumberIfGivenValueTooHigh() throws Exception {
+    void setCurrentPage_shouldSetValueToLastPageNumberIfGivenValueTooHigh() {
         TOC toc = new TOC();
         toc.setTotalTocSize(70);
         Assertions.assertEquals(7, toc.getNumPages());
@@ -143,7 +143,7 @@ class TOCTest extends AbstractDatabaseAndSolrEnabledTest {
         assertFalse(otherChild.isExpanded());
         assertFalse(otherGrandchild.isVisible());
 
-        toc.buildTree(StringConstants.DEFAULT_NAME, 1, 5, 0, Long.parseLong(grandchild.getIddoc()));
+        toc.buildTree(StringConstants.DEFAULT_NAME, 1, 5, 0, grandchild.getIddoc());
         assertTrue(top.isVisible());
         assertTrue(top.isExpanded());
         assertTrue(child.isVisible());

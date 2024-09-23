@@ -601,7 +601,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
             try {
                 SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(getRepresentativeWorkPI());
                 if (doc != null) {
-                    return Optional.ofNullable(new StructElement(Long.parseLong((String) doc.getFieldValue(SolrConstants.IDDOC)), doc));
+                    return Optional.ofNullable(new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc));
                 }
             } catch (PresentationException | IndexUnreachableException e) {
                 logger.error(e.toString(), e);

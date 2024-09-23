@@ -164,7 +164,7 @@ public class ActiveDocumentBean implements Serializable {
     private boolean anchor = false;
     private boolean volume = false;
     private boolean group = false;
-    protected long topDocumentIddoc = 0;
+    protected String topDocumentIddoc = null;
 
     // TODO move to SearchBean
     private BrowseElement prevHit;
@@ -256,7 +256,7 @@ public class ActiveDocumentBean implements Serializable {
             logger.trace("reset (thread {})", Thread.currentThread().getId());
             String pi = viewManager != null ? viewManager.getPi() : null;
             viewManager = null;
-            topDocumentIddoc = 0;
+            topDocumentIddoc = null;
             logid = "";
             action = "";
             prevHit = null;
@@ -356,7 +356,7 @@ public class ActiveDocumentBean implements Serializable {
     public void update() throws PresentationException, IndexUnreachableException, RecordNotFoundException, RecordDeletedException, DAOException,
             ViewerConfigurationException, IDDOCNotFoundException, NumberFormatException, RecordLimitExceededException {
         synchronized (this) {
-            if (topDocumentIddoc == 0) {
+            if (topDocumentIddoc == null) {
                 try {
                     if (StringUtils.isNotEmpty(lastReceivedIdentifier)) {
                         throw new RecordNotFoundException(lastReceivedIdentifier);
@@ -372,7 +372,8 @@ public class ActiveDocumentBean implements Serializable {
             boolean doublePageMode = isDoublePageUrl();
             // Do these steps only if a new document has been loaded
             boolean mayChangeHitIndex = false;
-            if (viewManager == null || viewManager.getTopStructElement() == null || viewManager.getTopStructElementIddoc() != topDocumentIddoc) {
+            if (viewManager == null || viewManager.getTopStructElement() == null
+                    || !viewManager.getTopStructElementIddoc().equals(topDocumentIddoc)) {
                 anchor = false;
                 volume = false;
                 group = false;
@@ -390,7 +391,7 @@ public class ActiveDocumentBean implements Serializable {
                     logger.info("IDDOC for the current record '{}' ({}) no longer seems to exist, attempting to retrieve an updated IDDOC...",
                             topStructElement.getPi(), topDocumentIddoc);
                     topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(topStructElement.getPi());
-                    if (topDocumentIddoc == 0) {
+                    if (topDocumentIddoc == null) {
                         logger.warn("New IDDOC for the current record '{}' could not be found. Perhaps this record has been deleted?",
                                 topStructElement.getPi());
                         reset();
@@ -494,10 +495,10 @@ public class ActiveDocumentBean implements Serializable {
                 SolrDocumentList docList = DataManager.getInstance()
                         .getSearchIndex()
                         .search(query, 1, null, Collections.singletonList(SolrConstants.IDDOC));
-                long subElementIddoc = 0;
+                String subElementIddoc = null;
                 // TODO check whether creating a new ViewManager can be avoided here
                 if (!docList.isEmpty()) {
-                    subElementIddoc = Long.valueOf((String) docList.get(0).getFieldValue(SolrConstants.IDDOC));
+                    subElementIddoc = (String) docList.get(0).getFieldValue(SolrConstants.IDDOC);
                     // Re-initialize ViewManager with the new current element
                     PageOrientation firstPageOrientation = viewManager.getFirstPageOrientation();
                     viewManager = new ViewManager(viewManager.getTopStructElement(), viewManager.getPageLoader(), subElementIddoc, logid,
@@ -979,9 +980,9 @@ public class ActiveDocumentBean implements Serializable {
             }
             lastReceivedIdentifier = persistentIdentifier;
             if (!"-".equals(persistentIdentifier) && (viewManager == null || !persistentIdentifier.equals(viewManager.getPi()))) {
-                long id = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(persistentIdentifier);
-                if (id > 0) {
-                    if (topDocumentIddoc != id) {
+                String id = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(persistentIdentifier);
+                if (id != null) {
+                    if (!id.equals(topDocumentIddoc)) {
                         topDocumentIddoc = id;
                         logger.trace("IDDOC found for {}: {}", persistentIdentifier, id);
                     }
@@ -1823,24 +1824,11 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return Not this.topDocumentIddoc but ViewManager.topDocumentIddoc
      */
-    public long getTopDocumentIddoc() {
+    public String getTopDocumentIddoc() {
         if (viewManager != null) {
             return viewManager.getTopStructElementIddoc();
         }
-        return 0;
-    }
-
-    /**
-     * <p>
-     * getActiveDocumentIddoc.
-     * </p>
-     *
-     * @return a long.
-     * @deprecated Use getTopDocumentIddoc()
-     */
-    @Deprecated(since = "2023.11")
-    public long getActiveDocumentIddoc() {
-        return getTopDocumentIddoc();
+        return null;
     }
 
     /**

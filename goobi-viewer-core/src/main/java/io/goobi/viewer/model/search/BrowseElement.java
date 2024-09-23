@@ -74,7 +74,6 @@ import io.goobi.viewer.model.viewer.StructElementStub;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
-import io.goobi.viewer.solr.SolrTools;
 
 /**
  * Representation of a search hit.
@@ -102,7 +101,7 @@ public class BrowseElement implements Serializable {
     private String originalFieldName = null;
     /** Type of the docstruct. */
     private String docStructType;
-    private long iddoc;
+    private String iddoc;
     private String thumbnailUrl;
     private int imageNo;
     @JsonIgnore
@@ -757,7 +756,7 @@ public class BrowseElement implements Serializable {
      *
      * @return the iddoc
      */
-    public long getIddoc() {
+    public String getIddoc() {
         return iddoc;
     }
 
