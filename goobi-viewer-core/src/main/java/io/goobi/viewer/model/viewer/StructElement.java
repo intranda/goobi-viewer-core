@@ -131,7 +131,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * Like {@link #StructElement(long, SolrDocument)}, but get the lucene Id from the SolrDocument.
+     * Like {@link #StructElement(String, SolrDocument)}, but get the lucene Id from the SolrDocument.
      *
      * @param doc
      * @throws IndexUnreachableException
