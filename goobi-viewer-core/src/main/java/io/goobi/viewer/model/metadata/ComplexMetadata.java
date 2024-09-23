@@ -37,7 +37,6 @@ import org.apache.solr.common.SolrDocument;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
 
 /**
@@ -65,12 +64,12 @@ public final class ComplexMetadata {
     /**
      * IDDOC_OWNER
      */
-    private final Long ownerId;
+    private final String ownerId;
 
     /**
      * IDDOC
      */
-    private final Long id;
+    private final String id;
 
     /**
      * PI_TOPSTRUCT
@@ -85,9 +84,9 @@ public final class ComplexMetadata {
 //        }
         this.field = SolrTools.getBaseFieldName(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL));
         this.type = SolrTools.getSingleFieldStringValue(doc, SolrConstants.METADATATYPE);
-        this.ownerId = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC_OWNER)).map(String.class::cast).map(Long::parseLong).orElse(null);
+        this.ownerId = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC_OWNER)).map(String.class::cast).orElse(null);
         this.topStructIdentifier = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI_TOPSTRUCT);
-        this.id = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(String.class::cast).map(Long::parseLong).orElse(null);
+        this.id = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(String.class::cast).orElse(null);
     }
 
     public static ComplexMetadata getFromSolrDoc(SolrDocument doc) {
@@ -104,12 +103,12 @@ public final class ComplexMetadata {
                 .filter(e -> e.getKey() != null)
                 .map(Entry::getValue)
                 .map(ComplexMetadata::getFromMultilanganguageDocs)
-                .collect(Collectors.toList());
+                .toList();
         List<ComplexMetadata> untranslatedMetadata = Optional.ofNullable(docMap.get(null))
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(ComplexMetadata::getFromSolrDoc)
-                .collect(Collectors.toList());
+                .toList();
         return ListUtils.union(translatedMetadata, untranslatedMetadata);
     }
 
@@ -142,7 +141,7 @@ public final class ComplexMetadata {
         return type;
     }
 
-    public Long getOwnerId() {
+    public String getOwnerId() {
         return ownerId;
     }
 
@@ -150,7 +149,7 @@ public final class ComplexMetadata {
         return topStructIdentifier;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
