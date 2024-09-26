@@ -138,7 +138,7 @@
 		<rome.version>2.1.0</rome.version>
 		<log4j.version>2.23.1</log4j.version>
 		<solr.version>9.6.1</solr.version>
-		<swagger.version>2.2.23</swagger.version>
+		<swagger.version>2.2.24</swagger.version>
 		<tomcat.version>9.0.58</tomcat.version>
 		<weld-servlet-shaded.version>3.1.9.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
