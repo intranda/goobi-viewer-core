@@ -104,6 +104,7 @@ var viewerJS = ( function( viewer ) {
             _setPanelStatus();
             _setSidebarStatus();
             _getSidebarScrollPosition();
+            _hideEmptyPanels();
 
             // toggle sidebar
             $( '[data-close="fs-sidebar"]' ).on( 'click', function() {
@@ -347,6 +348,15 @@ var viewerJS = ( function( viewer ) {
     	$( '.fullscreen__view-sidebar-inner' ).show();
     }
     
+    function _hideEmptyPanels() {
+        document.querySelectorAll(".fullscreen__view-sidebar-accordeon-panel").forEach(panel => {
+            let childCount = [...panel.querySelectorAll(".fullscreen__view-sidebar-accordeon-panel-body")].flatMap(body => body.children).map(child => child.length).reduce((acc, v) => acc+v );
+            if(childCount < 1) {
+                panel.classList.add("d-none");
+            }
+          })
+    }
+
     /**
      * @description Method to set the sidebar scroll position.
      * @method _setSidebarScrollPosition
