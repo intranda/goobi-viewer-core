@@ -555,6 +555,8 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("https://examplethirdparty.com/viewer/api", ((OpenIdProvider) providers.get(2)).getThirdPartyLoginUrl());
         assertEquals("exampleApiKey", ((OpenIdProvider) providers.get(2)).getThirdPartyLoginApiKey());
         assertEquals("tPscope", ((OpenIdProvider) providers.get(2)).getThirdPartyLoginScope());
+        assertEquals("tPparam", ((OpenIdProvider) providers.get(2)).getThirdPartyLoginReqParamDef());
+        assertEquals("tPclaim", ((OpenIdProvider) providers.get(2)).getThirdPartyLoginClaim());
 
         // vuFind
         assertEquals("VuFind", providers.get(3).getName());
