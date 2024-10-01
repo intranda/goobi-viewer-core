@@ -125,15 +125,17 @@
                         </div>
                     </div>
                     <!-- METADATA TECH -->
-                    <div id="panel-12" class="fullscreen__view-sidebar-accordeon-panel fs-metadata-tech">
-                        <h2 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
-                            <span>#{msg.metadataTech}</span>
-                        </h2>
-
-                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
-							<widgetComponent:widget_metadataTech />
-                        </div>
-                    </div>
+                    <ui:fragment rendered="#{fn:length(activeDocumentBean.viewManager.currentPage.metadata) > 0}">
+	                    <div id="panel-12" class="fullscreen__view-sidebar-accordeon-panel fs-metadata-tech">
+	                        <h2 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+	                            <span>#{msg.metadataTech}</span>
+	                        </h2>
+	
+	                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
+								<widgetComponent:widget_metadataTech />
+	                        </div>
+	                    </div>
+                    </ui:fragment>
 
                     <!-- TOC -->
 					<ui:fragment rendered="#{configurationBean.sidebarTocWidgetVisibleInFullscreen and (activeDocumentBean.toc.hasChildren)}">
@@ -274,6 +276,7 @@
                         </div>
                     </div>
                     
+                    <!-- FORMAT LINKS -->
                     <div id="panel-5" class="fullscreen__view-sidebar-accordeon-panel fs-downloads">
                         <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                             <span>#{msg.widget_formatsLinks}</span>
@@ -284,6 +287,7 @@
                         </div>
                     </div>
                     
+                    <!-- CITATION -->
                     <div id="panel-6" class="fullscreen__view-sidebar-accordeon-panel fs-downloads">
                         <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                             <span>#{msg.widget_citation}</span>

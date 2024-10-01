@@ -448,10 +448,11 @@ public class BrowseElement implements Serializable {
      */
     public IMetadataValue createMultiLanguageLabel(StructElement structElement) {
         MultiLanguageMetadataValue value = new MultiLanguageMetadataValue();
-        List<Locale> usedLocales = Optional.ofNullable(SolrTools.getAllUsedLocales(structElement))
+        List<Locale> usedLocales = Optional.ofNullable(ViewerResourceBundle.getAllLocales())
                 .filter(l -> !l.isEmpty())
-                .orElse(ViewerResourceBundle.getAllLocales());
+                .orElse(Collections.singletonList(Locale.ENGLISH));
         for (Locale loc : usedLocales) {
+            // logger.trace("Used locale: {}", loc.getLanguage()); //NOSONAR Debug
             StringBuilder sbLabel = new StringBuilder(generateLabel(structElement, loc));
             String subtitle = structElement.getMetadataValueForLanguage(SolrConstants.SUBTITLE, loc.getLanguage());
             if (StringUtils.isNotEmpty(subtitle)) {

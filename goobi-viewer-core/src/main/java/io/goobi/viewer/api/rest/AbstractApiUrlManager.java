@@ -39,9 +39,9 @@ import javax.ws.rs.core.MediaType;
 import org.apache.commons.collections4.iterators.ArrayIterator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.glassfish.jersey.client.ClientProperties;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.glassfish.jersey.client.ClientProperties;
 
 /**
  * @author florian
@@ -181,9 +181,12 @@ public abstract class AbstractApiUrlManager {
             while (matcher.find()) {
                 String group = matcher.group();
                 if (i.hasNext()) {
-                    String replacement = i.next().toString();
-                    // Escape URLs and colons
-                    urlString = urlString.replace(group, replacement);
+                    Object o = i.next();
+                    if (o != null) {
+                        String replacement = o.toString();
+                        // Escape URLs and colons
+                        urlString = urlString.replace(group, replacement);
+                    }
                 } else {
                     //no further params. Cannot keep replacing
                     break;

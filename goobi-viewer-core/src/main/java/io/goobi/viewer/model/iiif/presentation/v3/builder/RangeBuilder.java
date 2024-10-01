@@ -23,10 +23,11 @@ package io.goobi.viewer.model.iiif.presentation.v3.builder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.iiif.presentation.v3.Canvas3;
 import de.intranda.api.iiif.presentation.v3.Range3;
@@ -43,6 +44,7 @@ import io.goobi.viewer.model.viewer.StructElement;
  */
 public class RangeBuilder extends AbstractBuilder {
 
+    private static final String BASE_RANGE_ID = "base";
     private static final Logger logger = LogManager.getLogger(RangeBuilder.class);
 
     /**
@@ -61,17 +63,16 @@ public class RangeBuilder extends AbstractBuilder {
         return build(mainDocument, childDocuments, logId);
     }
 
-    public Range3 build(StructElement topElement, List<StructElement> structures, String logId)
-            throws ContentNotFoundException, PresentationException {
+    public Range3 build(StructElement topElement, List<StructElement> structures, String logId) throws ContentNotFoundException {
 
         structures.sort((s1, s2) -> Integer.compare(getFirstPageNo(s1), getFirstPageNo(s2)));
-        StructElement structElement = logId == null ? topElement
+        StructElement structElement = (logId == null || BASE_RANGE_ID.equals(logId)) ? topElement
                 : structures.stream()
                         .filter(s -> s.getLogid().equals(logId))
                         .findAny()
                         .orElseThrow(() -> new ContentNotFoundException("Range not found"));
-
-        URI id = urls.path(ApiUrls.RECORDS_SECTIONS, ApiUrls.RECORDS_SECTIONS_RANGE).params(topElement.getPi(), structElement.getLogid()).buildURI();
+        String rangeId = Optional.ofNullable(structElement.getLogid()).orElse(BASE_RANGE_ID);
+        URI id = urls.path(ApiUrls.RECORDS_SECTIONS, ApiUrls.RECORDS_SECTIONS_RANGE).params(topElement.getPi(), rangeId).buildURI();
         Range3 range = new Range3(id);
         range.setLabel(structElement.getMultiLanguageDisplayLabel());
 
@@ -97,22 +98,18 @@ public class RangeBuilder extends AbstractBuilder {
         }
 
         for (StructElement child : children) {
-            try {
-                Range3 childRange = build(topElement, structures, child.getLogid());
-                range.addItem(childRange);
-            } catch (PresentationException e) {
-                logger.warn(e.getMessage());
-            }
+            Range3 childRange = build(topElement, structures, child.getLogid());
+            range.addItem(childRange);
         }
 
         return range;
     }
 
-    private int getFirstPageNo(StructElement structElement) {
+    private static int getFirstPageNo(StructElement structElement) {
         return structElement.getImageNumber();
     }
 
-    private int getLastPageNumber(StructElement structElement, List<StructElement> children) {
+    private static int getLastPageNumber(StructElement structElement, List<StructElement> children) {
         int firstPageNo = getFirstPageNo(structElement);
         int lastPageNo = firstPageNo + structElement.getNumPages() - 1;
         if (!children.isEmpty()) {
@@ -121,18 +118,16 @@ public class RangeBuilder extends AbstractBuilder {
         return lastPageNo;
     }
 
-    private void getNextSibling(List<StructElement> structures, StructElement structElement) {
+    private static void getNextSibling(List<StructElement> structures, StructElement structElement) {
         StructElement nextSibling = null;
         if (structures.indexOf(structElement) < structures.size() - 1) {
             nextSibling = structures.get(structures.indexOf(structElement) + 1);
         }
     }
 
-    private List<StructElement> getChildStructs(List<StructElement> structures, StructElement structElement) {
-        List<StructElement> children = structures.stream()
+    private static List<StructElement> getChildStructs(List<StructElement> structures, StructElement structElement) {
+        return structures.stream()
                 .filter(s -> structElement.getLuceneId() == s.getParentLuceneId())
                 .collect(Collectors.toList());
-        return children;
     }
-
 }

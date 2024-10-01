@@ -377,6 +377,8 @@
                  mechanism needs the root path of the theme. The path must be defined down
                  to the /themes folder, just above the folder named like the theme. -->
             <rootPath>/opt/digiverso/goobi-viewer-theme-test/goobi-viewer-theme-mest/WebContent/resources/themes/</rootPath>
+            <!-- pullTheme/@enabled: If true, the theme can be update from the Git repository from the admin backend. Default is true. -->
+            <pullTheme enabled="false" />
 		</theme>
 		
         <!-- name: Goobi viewer instance name -->
@@ -467,7 +469,7 @@
 				    <field>MD_PUBLISHER</field>
 				    <field>MD_PLACEPUBLISH</field>
 				    <field range="true">MD_YEARPUBLISH</field>
-				    <field>MD_SHELFMARK</field>
+				    <field replaceRegex=" " replaceWith="_">MD_SHELFMARK</field>
 				    <field label="-----">#SEPARATOR1#</field>
 				    <field>MD_FOO_LANG_EN</field>
 				    <field>MD_FOO_LANG_DE</field>
