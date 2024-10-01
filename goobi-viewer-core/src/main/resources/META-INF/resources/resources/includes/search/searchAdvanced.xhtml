@@ -28,14 +28,26 @@
             
             <h:form id="searchAdvancedForm" prependId="false" styleClass="search-advanced__form">
             
+            
+            <ui:fragment rendered="#{configurationBean.searchResultGroupsEnabled}">
                 <!-- ENTITY SELECTION -->
-                <div class="custom-search-advanced__list-input-area">
-                    <div class="custom-search-advanced__tabs-wrapper">
-                        <ui:repeat value="#{configurationBean.searchResultGroupNames}" var="groupName">
-                            <h:outputLink styleClass=" custom-search-advanced__tab #{groupName == searchBean.activeResultGroupName ? '-active' : ''}"
+                
+                <div class="search-advanced__entity-tabs">
+                
+                	<h2 class="search-advanced__entry-area-title">#{msg.search__search_query}</h2>
+                
+                    <div class="search-advanced__entity-tabs-links-wrapper">
+                    
+                    <!-- LINK TO STANDARD -->
+                    <h:outputLink styleClass="search-advanced__entity-tab-link -standard #{groupName == searchBean.activeResultGroupName ? '-active' : ''}"
+                                value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/">Standard</h:outputLink>
+                    
+                    <!-- LINK TO DEFINED ENTITY GROUP(S) -->
+                        <ui:repeat value="#{configurationBean.searchResultGroupNames}" var="groupName" varStatus="status">
+                            <h:outputLink styleClass="search-advanced__entity-tab-link -group#{status.index} #{groupName == searchBean.activeResultGroupName ? '-active' : ''}"
                                 value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{groupName}/-/">
                                 <ui:fragment rendered="#{groupName == searchBean.activeResultGroupName}">
-                                    #{msg[groupName]}
+                                    #{msg[groupName]} 
                                 </ui:fragment>
                                 <ui:fragment rendered="#{groupName != searchBean.activeResultGroupName}">
                                     #{msg[groupName]}
@@ -45,8 +57,13 @@
                         </ui:repeat>
                     </div>
                 </div>
+             </ui:fragment>
             
-           			<h2 class="search-advanced__entry-area-title">#{msg.search__search_query}</h2>
+            		<!-- CONDITION IS ONLY FOR CHANGED STRUCTURE IF GROUPS ENABLED -->
+          			<ui:fragment rendered="#{!configurationBean.searchResultGroupsEnabled}">
+          				<h2 class="search-advanced__entry-area-title">#{msg.search__search_query}</h2>
+          			</ui:fragment>
+
                     <div class="search-advanced__entry-area">
                         <!-- AJAX LOADER -->
                         <div class="search-advanced__loader"></div>
