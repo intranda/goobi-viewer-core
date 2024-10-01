@@ -1239,6 +1239,14 @@ public class ConfigurationBean implements Serializable {
     public boolean isSubthemeDiscriminatorFieldSet() {
         return StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
     }
+    
+    /**
+     * 
+     * @return a boolean.
+     */
+    public boolean isPullThemeEnalbed() {
+        return DataManager.getInstance().getConfiguration().isPullThemeEnalbed();
+    }
 
     /**
      * <p>
