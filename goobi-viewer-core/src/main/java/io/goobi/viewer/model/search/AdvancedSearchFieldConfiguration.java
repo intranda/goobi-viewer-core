@@ -40,6 +40,8 @@ public class AdvancedSearchFieldConfiguration {
     private boolean visible = false;
     private int displaySelectItemsThreshold = DEFAULT_THRESHOLD;
     private String selectType = SELECT_TYPE_DROPDOWN;
+    private String replaceRegex;
+    private String replaceWith;
 
     /**
      *
@@ -188,4 +190,35 @@ public class AdvancedSearchFieldConfiguration {
         return this;
     }
 
+    /**
+     * @return the replaceRegex
+     */
+    public String getReplaceRegex() {
+        return replaceRegex;
+    }
+
+    /**
+     * @param replaceRegex the replaceRegex to set
+     * @return this
+     */
+    public AdvancedSearchFieldConfiguration setReplaceRegex(String replaceRegex) {
+        this.replaceRegex = replaceRegex;
+        return this;
+    }
+
+    /**
+     * @return the replaceWith
+     */
+    public String getReplaceWith() {
+        return replaceWith;
+    }
+
+    /**
+     * @param replaceWith the replaceWith to set
+     * @return this
+     */
+    public AdvancedSearchFieldConfiguration setReplaceWith(String replaceWith) {
+        this.replaceWith = replaceWith;
+        return this;
+    }
 }

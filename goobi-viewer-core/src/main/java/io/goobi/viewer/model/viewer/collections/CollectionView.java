@@ -997,7 +997,11 @@ public class CollectionView implements Serializable {
      * @throws URISyntaxException
      */
     public String getCollectionUrl(HierarchicalBrowseDcElement collection) {
-        return getCollectionUrl(collection, field, getSearchUrl());
+        return getCollectionUrl(collection, field, getSearchUrl(), true);
+    }
+
+    public String getCollectionUrl(HierarchicalBrowseDcElement collection, boolean openInSearch) {
+        return getCollectionUrl(collection, field, getSearchUrl(), openInSearch);
     }
 
     /**
@@ -1013,34 +1017,48 @@ public class CollectionView implements Serializable {
      * @should return identifier resolver url if single record and pi known
      * @should escape critical url chars in collection name
      */
-    public static String getCollectionUrl(HierarchicalBrowseDcElement collection, String field, final String baseSearchUrl) {
-        String searchUrl = baseSearchUrl;
-        if (StringUtils.isBlank(searchUrl)) {
-            searchUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName() + "/";
+    public String getCollectionUrl(HierarchicalBrowseDcElement collection, String field, final String baseSearchUrl, boolean openInSearch) {
+        if (hasCollectionPage(collection)) {
+            return getCollectionPageUrl(collection);
+        } else if (openInSearch) {
+            if (hasSingleRecordLink(collection)) {
+                return getFirstRecordUrl(collection, field);
+            } else {
+                return getSearchUrl(collection, field, baseSearchUrl);
+            }
+        } else {
+            return getCollectionViewUrl(collection);
+        }
+    }
+
+    public String getCollectionViewUrl(HierarchicalBrowseDcElement collection) {
+
+        String baseUri = ViewHistory.getCurrentView(BeanUtils.getRequest())
+                .map(view -> view.getApplicationUrl() + "/" + view.getPagePath().toString())
+                .orElse("");
+        baseUri = StringTools.appendTrailingSlash(baseUri);
+        try {
+            String ret = new URIBuilder(baseUri).addParameter("collection", collection.getName()).build().toString();
+            logger.trace("COLLECTION new window url: {}", ret);
+            return ret;
+        } catch (URISyntaxException e) {
+            logger.error("Error creating collection url ", e);
+            return "";
         }
 
-        if (collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null) {
-            String ret = collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
-            logger.trace("COLLECTION static url: {}", ret);
-            return ret;
-        } else if (collection.isOpensInNewWindow()) {
-            String baseUri = ViewHistory.getCurrentView(BeanUtils.getRequest())
-                    .map(view -> view.getApplicationUrl() + "/" + view.getPagePath().toString())
-                    .orElse("");
-            baseUri = StringTools.appendTrailingSlash(baseUri);
-            try {
-                String ret = new URIBuilder(baseUri).addParameter("collection", collection.getName()).build().toString();
-                logger.trace("COLLECTION new window url: {}", ret);
-                return ret;
-            } catch (URISyntaxException e) {
-                logger.error("Error creating collection url ", e);
-                return "";
-            }
-        } else if (DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() && collection.getNumberOfVolumes() == 1) {
-            // Link directly to single record, if record PI known
-            if (collection.getSingleRecordUrl() != null) {
-                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + collection.getSingleRecordUrl();
-            }
+    }
+
+    public boolean hasSingleRecordLink(HierarchicalBrowseDcElement collection) {
+        return DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork() && collection.getNumberOfVolumes() == 1;
+    }
+
+    public String getFirstRecordUrl(HierarchicalBrowseDcElement collection, String field) {
+
+        // Link directly to single record, if record PI known
+        if (collection.getSingleRecordUrl() != null) {
+            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + collection.getSingleRecordUrl();
+        } else {
+
             return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                     .append("/browse/")
                     .append(field)
@@ -1048,17 +1066,38 @@ public class CollectionView implements Serializable {
                     .append(collection.getLuceneName())
                     .append("/record/")
                     .toString();
-        } else {
-            String facetString = field + ":" + collection.getLuceneName();
-            String encFacetString = StringTools.encodeUrl(facetString, true);
-            return new StringBuilder(searchUrl)
-                    .append("-/-/1/")
-                    .append(collection.getSortField())
-                    .append('/')
-                    .append(encFacetString)
-                    .append('/')
-                    .toString();
         }
+    }
+
+    public boolean hasCollectionPage(HierarchicalBrowseDcElement collection) {
+        return collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null;
+    }
+
+    public String getCollectionPageUrl(HierarchicalBrowseDcElement collection) {
+
+        if (hasCollectionPage(collection)) {
+            String ret = collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
+            logger.trace("COLLECTION static url: {}", ret);
+            return ret;
+        } else {
+            return "";
+        }
+    }
+
+    public String getSearchUrl(HierarchicalBrowseDcElement collection, String field, final String baseSearchUrl) {
+        String searchUrl = baseSearchUrl;
+        if (StringUtils.isBlank(searchUrl)) {
+            searchUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName() + "/";
+        }
+        String facetString = field + ":" + collection.getLuceneName();
+        String encFacetString = StringTools.encodeUrl(facetString, true);
+        return new StringBuilder(searchUrl)
+                .append("-/-/1/")
+                .append(collection.getSortField())
+                .append('/')
+                .append(encFacetString)
+                .append('/')
+                .toString();
     }
 
     /**

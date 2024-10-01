@@ -354,26 +354,27 @@ public class MessageQueueManager {
 
     private static String submitTicket(ViewerMessage ticket, String queueName, Connection conn, String ticketType)
             throws JMSException, JsonProcessingException {
-
-        Session sess = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        final Destination dest = sess.createQueue(queueName);
-        MessageProducer producer = sess.createProducer(dest);
-        producer.setDeliveryMode(DeliveryMode.PERSISTENT);
-        TextMessage message = sess.createTextMessage();
-        // we set a random UUID here, because otherwise tickets will not be processed in parallel in an SQS fifo queue.
-        // we still need a fifo queue for message deduplication, though.
-        // See: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-additional-fifo-queue-recommendations.html
-        message.setStringProperty("JMSXGroupID", UUID.randomUUID().toString());
-        if (ticket.getDelay() > 0) {
-            message.setLongProperty(ScheduledMessage.AMQ_SCHEDULED_DELAY, ticket.getDelay());
+        try (Session sess = conn.createSession(false, Session.AUTO_ACKNOWLEDGE)) {
+            final Destination dest = sess.createQueue(queueName);
+            try (MessageProducer producer = sess.createProducer(dest)) {
+                producer.setDeliveryMode(DeliveryMode.PERSISTENT);
+                TextMessage message = sess.createTextMessage();
+                // we set a random UUID here, because otherwise tickets will not be processed in parallel in an SQS fifo queue.
+                // we still need a fifo queue for message deduplication, though.
+                // See: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-additional-fifo-queue-recommendations.html
+                message.setStringProperty("JMSXGroupID", UUID.randomUUID().toString());
+                if (ticket.getDelay() > 0) {
+                    message.setLongProperty(ScheduledMessage.AMQ_SCHEDULED_DELAY, ticket.getDelay());
+                }
+                message.setText(new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(ticket));
+                message.setStringProperty("JMSType", ticketType);
+                for (Map.Entry<String, String> entry : ticket.getProperties().entrySet()) {
+                    message.setStringProperty(entry.getKey(), entry.getValue());
+                }
+                producer.send(message);
+                return message.getJMSMessageID();
+            }
         }
-        message.setText(new ObjectMapper().registerModule(new JavaTimeModule()).writeValueAsString(ticket));
-        message.setStringProperty("JMSType", ticketType);
-        for (Map.Entry<String, String> entry : ticket.getProperties().entrySet()) {
-            message.setStringProperty(entry.getKey(), entry.getValue());
-        }
-        producer.send(message);
-        return message.getJMSMessageID();
     }
 
     public Optional<ViewerMessage> getMessageById(String messageId) {
@@ -473,10 +474,8 @@ public class MessageQueueManager {
     public ActiveMQConnection getConnection() throws JMSException {
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(config.getConnectorURI());
         connectionFactory.setTrustedPackages(Arrays.asList("io.goobi.viewer.managedbeans", "io.goobi.viewer.model.job.mq"));
-        ActiveMQConnection connection =
-                (ActiveMQConnection) connectionFactory.createConnection(this.config.getUsernameAdmin(),
-                        this.config.getPasswordAdmin()); //NOSONAR: Connection is closed in calling methods
-        return connection;
+        return (ActiveMQConnection) connectionFactory.createConnection(this.config.getUsernameAdmin(),
+                        this.config.getPasswordAdmin());
     }
 
     public boolean pauseQueue(String queueName) {
