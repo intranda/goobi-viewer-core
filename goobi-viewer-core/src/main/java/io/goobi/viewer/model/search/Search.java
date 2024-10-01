@@ -554,6 +554,7 @@ public class Search implements Serializable {
                                         DataManager.getInstance().getConfiguration().getHierarchicalFacetFields().contains(defacetifiedFieldName),
                                         DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField(defacetifiedFieldName), locale,
                                         facets.getLabelMap()));
+                logger.trace("Facets generated for field {}", facetField.getName());
             }
         }
 

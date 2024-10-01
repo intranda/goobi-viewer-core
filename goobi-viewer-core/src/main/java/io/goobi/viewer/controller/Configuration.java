@@ -2692,11 +2692,20 @@ public class Configuration extends AbstractConfiguration {
      * getThemeRootPath.
      * </p>
      *
-     * @should return correct value
      * @return a {@link java.lang.String} object.
+     * 
      */
     public String getThemeRootPath() {
         return getLocalString("viewer.theme.rootPath");
+    }
+    
+    /**
+     * 
+     * @return boolean
+     * @should return correct value
+     */
+    public boolean isPullThemeEnalbed() {
+        return getLocalBoolean("viewer.theme.pullTheme[@enabled]", true);
     }
 
     /**
@@ -2724,7 +2733,6 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * TagCloud auf der Startseite anzeigen lassen
      *
      * @should return correct value
      * @return a boolean.
