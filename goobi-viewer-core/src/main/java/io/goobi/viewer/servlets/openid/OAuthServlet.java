@@ -327,7 +327,6 @@ public class OAuthServlet extends HttpServlet {
     private static boolean doThirdPartyLogin(OpenIdProvider provider, OAuthClientRequest oAuthTokenRequest,
 			HttpServletRequest request, HttpServletResponse response) {
     	 OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
-		
     	 try {
              OAuthAccessTokenResponse oAuthTokenResponse = oAuthClient.accessToken(oAuthTokenRequest);
              if (oAuthTokenResponse != null) {
@@ -363,8 +362,8 @@ public class OAuthServlet extends HttpServlet {
                      external_request.addHeader("content-type", "application/json");
                      external_request.setEntity(entity);
                      
-                     CloseableHttpClient httpClient2 = HttpClientBuilder.create().build();
-                     HttpResponse external_response = (HttpResponse) httpClient2.execute(external_request);
+                     CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+                     HttpResponse external_response = (HttpResponse) httpClient.execute(external_request);
                      
                      JSONObject external_responseObj = new JSONObject(EntityUtils.toString(external_response.getEntity()));
                      String email = JsonTools.getNestedValue(external_responseObj, provider.getThirdPartyLoginClaim());
@@ -382,7 +381,6 @@ public class OAuthServlet extends HttpServlet {
              logger.error("OPENID - Error {}", e.getMessage(), e);
              return false;
          }
-
     	 
 		return false;
 	}

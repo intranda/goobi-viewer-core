@@ -486,5 +486,4 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return false;
     }
 
-
 }
