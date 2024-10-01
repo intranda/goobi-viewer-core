@@ -1776,7 +1776,7 @@ class ConfigurationTest extends AbstractTest {
                         .getConfiguration()
                         .getAdvancedSearchFieldReplaceRegex("MD_SHELFMARK", StringConstants.DEFAULT_NAME, false));
     }
-    
+
     /**
      * @see Configuration#getAdvancedSearchFieldReplaceWith(String,String,boolean)
      * @verifies return correct value
@@ -2892,6 +2892,15 @@ class ConfigurationTest extends AbstractTest {
     void getThemeRootPath_shouldReturnCorrectValue() {
         assertEquals("/opt/digiverso/goobi-viewer-theme-test/goobi-viewer-theme-mest/WebContent/resources/themes/",
                 DataManager.getInstance().getConfiguration().getThemeRootPath());
+    }
+
+    /**
+     * @see Configuration#isPullThemeEnalbed()
+     * @verifies return correct value
+     */
+    @Test
+    void isPullThemeEnalbed_shouldReturnCorrectValue() {
+        assertFalse(DataManager.getInstance().getConfiguration().isPullThemeEnalbed());
     }
 
     /**
