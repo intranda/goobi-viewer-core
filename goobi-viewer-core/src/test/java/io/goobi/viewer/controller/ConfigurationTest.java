@@ -2895,12 +2895,12 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isPullThemeEnalbed()
+     * @see Configuration#isPullThemeEnabled()
      * @verifies return correct value
      */
     @Test
-    void isPullThemeEnalbed_shouldReturnCorrectValue() {
-        assertFalse(DataManager.getInstance().getConfiguration().isPullThemeEnalbed());
+    void isPullThemeEnabled_shouldReturnCorrectValue() {
+        assertFalse(DataManager.getInstance().getConfiguration().isPullThemeEnabled());
     }
 
     /**
