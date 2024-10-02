@@ -6210,7 +6210,7 @@ public class Configuration extends AbstractConfiguration {
      * @return boolean
      * @should return correct value
      */
-    public boolean isPullThemeEnalbed() {
+    public boolean isPullThemeEnabled() {
         return getLocalBoolean("developer.scripts.pullTheme[@enabled]", true);
     }
 
