@@ -25,7 +25,6 @@ import java.io.Serializable;
 import java.net.URI;
 import java.time.LocalDateTime;
 
-import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.wa.Motivation;
 import de.intranda.api.annotation.wa.TextualResource;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -62,16 +61,6 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
      */
     public Comment(PersistentAnnotation source) {
         super(source);
-    }
-
-    /**
-     * @param source
-     * @param id
-     * @param targetPI
-     * @param targetPage
-     */
-    public Comment(AbstractAnnotation source, Long id, String targetPI, Integer targetPage) {
-        super(source, id, targetPI, targetPage);
     }
 
     /**

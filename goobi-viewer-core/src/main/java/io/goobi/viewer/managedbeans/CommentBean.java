@@ -55,7 +55,9 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * <p>CommentBean class.</p>
+ * <p>
+ * CommentBean class.
+ * </p>
  *
  * @author florian
  */
@@ -82,7 +84,9 @@ public class CommentBean implements Serializable {
     private Map<String, Boolean> deleteCommentPermissionMap = new HashMap<>();
 
     /**
-     * <p>Constructor for CommentBean.</p>
+     * <p>
+     * Constructor for CommentBean.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @throws io.goobi.viewer.exceptions.DAOException
@@ -97,7 +101,9 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * <p>createComment.</p>
+     * <p>
+     * createComment.
+     * </p>
      *
      * @param text a {@link java.lang.String} object
      * @param restricted a boolean
@@ -113,7 +119,9 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * <p>editComment.</p>
+     * <p>
+     * editComment.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.PresentationException
      */
@@ -132,7 +140,9 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * <p>editComment.</p>
+     * <p>
+     * editComment.
+     * </p>
      *
      * @param original a {@link io.goobi.viewer.model.annotation.comments.Comment} object
      * @param text a {@link java.lang.String} object
@@ -149,12 +159,14 @@ public class CommentBean implements Serializable {
         User currentUser = userBean.getUser();
         User commentOwner = original.getCreatorIfPresent().orElse(null);
         if (currentUser.equals(commentOwner) || isMayEditCommentsForRecord(original.getTargetPI())) {
-            this.commentManager.editComment(original, text, userBean.getUser(), getLicense(restricted), getInitialPublicationStatus());
+            this.commentManager.editComment(original, text, userBean.getUser(), getInitialPublicationStatus());
         }
     }
 
     /**
-     * <p>deleteComment.</p>
+     * <p>
+     * deleteComment.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.PresentationException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
@@ -173,7 +185,9 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * <p>deleteComment.</p>
+     * <p>
+     * deleteComment.
+     * </p>
      *
      * @param annotation a {@link io.goobi.viewer.model.annotation.comments.Comment} object
      * @throws io.goobi.viewer.exceptions.DAOException
@@ -193,7 +207,9 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * <p>getComments.</p>
+     * <p>
+     * getComments.
+     * </p>
      *
      * @param startIndex a int
      * @param numItems a int
@@ -209,7 +225,9 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * <p>getCommentsForCurrentPage.</p>
+     * <p>
+     * getCommentsForCurrentPage.
+     * </p>
      *
      * @return List of comments for the current page of the loaded record
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
@@ -240,7 +258,9 @@ public class CommentBean implements Serializable {
     }
 
     /**
-     * <p>isRestricted.</p>
+     * <p>
+     * isRestricted.
+     * </p>
      *
      * @param anno a {@link io.goobi.viewer.model.annotation.CrowdsourcingAnnotation} object
      * @return true if given annotation requires special privileges for commenting; false otherwise
@@ -254,7 +274,7 @@ public class CommentBean implements Serializable {
      * @param restricted
      * @return {@link String}
      */
-    private String getLicense(boolean restricted) {
+    private static String getLicense(boolean restricted) {
         return restricted ? getRestrictedLicense() : getPublicLicense();
     }
 
