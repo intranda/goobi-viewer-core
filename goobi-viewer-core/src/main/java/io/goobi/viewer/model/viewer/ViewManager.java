@@ -1861,7 +1861,7 @@ public class ViewManager implements Serializable {
      * </p>
      *
      * @return METS resolver link
-     * @deprecated Use ViewManager.getSourceFileResolverUrl() 
+     * @deprecated Use ViewManager.getSourceFileResolverUrl()
      */
     @Deprecated(since = "24.08")
     public String getMetsResolverUrl() {
@@ -1874,7 +1874,7 @@ public class ViewManager implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
-     * @deprecated Use ViewManager.getSourceFileResolverUrl() 
+     * @deprecated Use ViewManager.getSourceFileResolverUrl()
      */
     @Deprecated(since = "24.08")
     public String getLidoResolverUrl() {
@@ -1887,7 +1887,7 @@ public class ViewManager implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
-     * @deprecated Use ViewManager.getSourceFileResolverUrl() 
+     * @deprecated Use ViewManager.getSourceFileResolverUrl()
      */
     @Deprecated(since = "24.08")
     public String getDenkxwebResolverUrl() {
@@ -1900,7 +1900,7 @@ public class ViewManager implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
-     * @deprecated Use ViewManager.getSourceFileResolverUrl() 
+     * @deprecated Use ViewManager.getSourceFileResolverUrl()
      */
     @Deprecated(since = "24.08")
     public String getDublinCoreResolverUrl() {
