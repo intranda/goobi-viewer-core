@@ -108,7 +108,7 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         comment = dao.getCommentsForPage(PI, page).stream().findFirst().orElse(null);
         assertNotNull(comment);
 
-        this.manager.editComment(comment, COMMENT_TEXT_EDIT, user, OPEN_ACCESS, PUBLISHED);
+        this.manager.editComment(comment, COMMENT_TEXT_EDIT, user, PUBLISHED);
         comment = dao.getCommentsForPage(PI, page).stream().findFirst().orElse(null);
 
         assertNotNull(comment);
