@@ -1240,8 +1240,8 @@ public class ConfigurationBean implements Serializable {
      * 
      * @return a boolean.
      */
-    public boolean isPullThemeEnalbed() {
-        return DataManager.getInstance().getConfiguration().isPullThemeEnalbed();
+    public boolean isPullThemeEnabled() {
+        return DataManager.getInstance().getConfiguration().isPullThemeEnabled();
     }
 
     /**

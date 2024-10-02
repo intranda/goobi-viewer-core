@@ -2698,15 +2698,6 @@ public class Configuration extends AbstractConfiguration {
     public String getThemeRootPath() {
         return getLocalString("viewer.theme.rootPath");
     }
-    
-    /**
-     * 
-     * @return boolean
-     * @should return correct value
-     */
-    public boolean isPullThemeEnalbed() {
-        return getLocalBoolean("viewer.theme.pullTheme[@enabled]", true);
-    }
 
     /**
      * <p>
@@ -6212,6 +6203,15 @@ public class Configuration extends AbstractConfiguration {
 
     public String getThemePullScriptPath() {
         return getLocalString("developer.scripts.pullTheme", "{config-folder-path}/script_theme-pull.sh {theme-path}/../../../../");
+    }
+
+    /**
+     * 
+     * @return boolean
+     * @should return correct value
+     */
+    public boolean isPullThemeEnabled() {
+        return getLocalBoolean("developer.scripts.pullTheme[@enabled]", true);
     }
 
     public String getCreateDeveloperPackageScriptPath() {

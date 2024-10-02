@@ -161,8 +161,7 @@
 				<div class="admin__content-side -sticky">
 					<!-- THEME PULL STATUS AND ACTIONS BOX -->
 					<h:form>
-						<h:panelGroup id="updateThemeGroup">
-							<div class="admin__developer-autopull-wrapper">
+						<h:panelGroup layout="block" id="updateThemeGroup" styleClass="admin__developer-autopull-wrapper" rendered="#{configurationBean.pullThemeEnabled == true}">
 								<div class="admin__developer-autopull-status-wrapper">
 									<!-- AUTOPULL STATUS CAN BE ON, OFF OR ERROR -->
 									<div class="admin__developer-autopull-status-text">
@@ -222,7 +221,9 @@
 
 								</div>
 
-							</div>
+						</h:panelGroup>
+						<h:panelGroup layout="block" styleClass="admin__developer-autopull-wrapper" rendered="#{configurationBean.pullThemeEnabled == false}">
+							<p class="admin__developer-autopull-wrapper-text">#{msg.admin__developer__pull_theme_not_possible}</p>
 						</h:panelGroup>
 					</h:form>
 				</div>
