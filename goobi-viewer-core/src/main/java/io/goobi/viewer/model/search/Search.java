@@ -383,7 +383,7 @@ public class Search implements Serializable {
         logger.trace("result groups: {}", this.resultGroups.size());
         for (SearchResultGroup resultGroup : this.resultGroups) {
             searchResultGroup(resultGroup, currentQuery, finalQuery, subElementQueryFilterSuffix, activeFacetFilterQueries, params, searchTerms,
-                    facets, hitsPerPage, locale, keepSolrDoc, aggregationType);
+                    facets, this.resultGroups.size() == 1, hitsPerPage, locale, keepSolrDoc, aggregationType);
         }
     }
 
@@ -396,7 +396,8 @@ public class Search implements Serializable {
      * @param activeFacetFilterQueries
      * @param params
      * @param searchTerms
-     * @param facets
+     * @param facets {@link SearchFacets} object
+     * @param generateAvailableFacets If true, facet links will be generated from the search result
      * @param hitsPerPage
      * @param locale
      * @param keepSolrDoc
@@ -408,7 +409,7 @@ public class Search implements Serializable {
      */
     void searchResultGroup(SearchResultGroup resultGroup, String currentQuery, String finalQuery, String subElementQueryFilterSuffix,
             List<String> activeFacetFilterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, SearchFacets facets,
-            final int hitsPerPage, Locale locale, boolean keepSolrDoc, SearchAggregationType aggregationType)
+            boolean generateAvailableFacets, final int hitsPerPage, Locale locale, boolean keepSolrDoc, SearchAggregationType aggregationType)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("Result group: {}", resultGroup.getName());
 
@@ -531,7 +532,8 @@ public class Search implements Serializable {
         }
 
         // Collect available facets
-        if (resp.getFacetFields() != null) {
+        if (resp.getFacetFields() != null && generateAvailableFacets) {
+            logger.trace("Generating facets");
             for (FacetField facetField : resp.getFacetFields()) {
                 // Use non-FACET_ field names outside of the actual faceting query
                 String defacetifiedFieldName = SearchHelper.defacetifyField(facetField.getName());

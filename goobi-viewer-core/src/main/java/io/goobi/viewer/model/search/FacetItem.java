@@ -306,7 +306,9 @@ public class FacetItem implements Serializable, IFacetItem {
                 existingItems.put(key, facetItem);
             }
         }
-        switch (DataManager.getInstance().getConfiguration().getSortOrder(SearchHelper.defacetifyField(field))) {
+        String comparator = DataManager.getInstance().getConfiguration().getSortOrder(SearchHelper.defacetifyField(field));
+        logger.trace("Sorting facets ({})", comparator);
+        switch (comparator) {
             case "numerical":
             case "numerical_asc":
                 Collections.sort(retList, FacetItem.NUMERIC_COMPARATOR);
@@ -334,6 +336,7 @@ public class FacetItem implements Serializable, IFacetItem {
                 Collections.sort(retList, FacetItem.COUNT_COMPARATOR);
 
         }
+        logger.trace("Sorting done");
         // Add priority values at the beginning
         if (!priorityValueMap.isEmpty()) {
             List<IFacetItem> regularValues = new ArrayList<>(retList);
