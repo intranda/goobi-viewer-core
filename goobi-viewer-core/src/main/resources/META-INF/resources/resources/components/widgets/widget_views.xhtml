@@ -16,24 +16,31 @@
 	</ui:define>
 
 	<composite:interface>
-		<composite:attribute name="widgetTitle" required="true" />
-		<composite:attribute name="collapsible" required="false"
-			type="java.lang.Boolean" default="true" />
+		<composite:attribute name="widgetTitle" required="true" default="#{msg.view}" />
+		<composite:attribute name="collapsible" required="false" type="java.lang.Boolean" default="true" />
 	</composite:interface>
 
 	<composite:implementation>
 		<div class="widget widget__views" jsf:id="widgetViewsContent" rendered="#{displayConditions.getTag('widgetViewsContent').getChildCount('widget-element') > 1}">
 
-			<div class="widget__topbar">
-				<h2 role="button"
-					class="widget__title #{cc.attrs.collapsible ? 'collapseable' : ''}">
-					<span>#{cc.attrs.widgetTitle}</span> <i class="fa fa-angle-down"
-						aria-hidden="true"></i>
-				</h2>
-			</div>
+					<ui:framgent rendered="#{cc.attrs.collapsible == false}">
+						<h2 class="widget__title #{cc.attrs.collapsible ? 'collapseable' : ''}">
+							<span>#{cc.attrs.widgetTitle}</span>
+						</h2>
+					</ui:framgent>
+					
+					<ui:framgent rendered="#{cc.attrs.collapsible == true}">
+						<div class="widget__topbar">
+							<h2 role="button"
+								class="widget__title #{cc.attrs.collapsible ? 'collapseable' : ''}">
+								<span>#{cc.attrs.widgetTitle}</span> <i class="fa fa-angle-down"
+									aria-hidden="true"></i>
+							</h2>
+						</div>
+					</ui:framgent>
 
-				<h:form>
 					<ul  class="widget__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
+						<h:form>
 						<!-- Object -->
 						<h:panelGroup  visibility-class="widget-element"
 							rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, mimeType: [image, video, audio, model]}')}">
@@ -201,8 +208,8 @@
 										</h:outputLink>
 									</li>
 							</ui:repeat>
+						</h:form>
 					</ul>
-				</h:form>
 		</div>
 	</composite:implementation>
 </ui:composition>
