@@ -23,13 +23,13 @@
 	<composite:implementation>
 		<div class="widget widget__views" jsf:id="widgetViewsContent" rendered="#{displayConditions.getTag('widgetViewsContent').getChildCount('widget-element') > 1}">
 
-					<ui:framgent rendered="#{cc.attrs.collapsible == false}">
+					<ui:fragment rendered="#{cc.attrs.collapsible == false}">
 						<h2 class="widget__title #{cc.attrs.collapsible ? 'collapseable' : ''}">
 							<span>#{cc.attrs.widgetTitle}</span>
 						</h2>
-					</ui:framgent>
+					</ui:fragment>
 					
-					<ui:framgent rendered="#{cc.attrs.collapsible == true}">
+					<ui:fragment rendered="#{cc.attrs.collapsible == true}">
 						<div class="widget__topbar">
 							<h2 role="button"
 								class="widget__title #{cc.attrs.collapsible ? 'collapseable' : ''}">
@@ -37,7 +37,7 @@
 									aria-hidden="true"></i>
 							</h2>
 						</div>
-					</ui:framgent>
+					</ui:fragment>
 
 					<ul  class="widget__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
 						<h:form>
