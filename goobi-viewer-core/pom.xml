@@ -70,7 +70,7 @@
 		<sonar.java.target>17</sonar.java.target>
 
 		<!-- Checkstyle -->
-		<checkstyle.max.violations>105</checkstyle.max.violations>
+		<checkstyle.max.violations>99</checkstyle.max.violations>
 		<skipCheckstyle>true</skipCheckstyle>
 
 		<!-- Manifest information -->
@@ -136,9 +136,9 @@
 		<poi.version>5.3.0</poi.version>
 		<prettyfaces.version>3.5.2.Final</prettyfaces.version>
 		<rome.version>2.1.0</rome.version>
-		<log4j.version>2.23.1</log4j.version>
+		<log4j.version>2.24.1</log4j.version>
 		<solr.version>9.7.0</solr.version>
-		<swagger.version>2.2.24</swagger.version>
+		<swagger.version>2.2.25</swagger.version>
 		<tomcat.version>9.0.58</tomcat.version>
 		<weld-servlet-shaded.version>3.1.9.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
@@ -218,6 +218,10 @@
 				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-core</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

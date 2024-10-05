@@ -31,6 +31,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.util.StringUtil;
 import org.apache.solr.common.SolrDocument;
 
 import de.undercouch.citeproc.csl.CSLType;
@@ -128,18 +129,22 @@ public final class CitationTools {
             }
 
             // logger.error("Loading value: {}/{}", level, link.getField()); //NOSONAR Debug
-            if (doc.get(link.getField()) != null) {
-                vr.addReplacement("value", SolrTools.getAsString(doc.get(link.getField())));
+            String value = "";
+            if (doc.get(link.getField()) != null && doc.get(link.getField()) != null) {
+                value = SolrTools.getAsString(doc.get(link.getField()));
             } else if (link.isTopstructValueFallback() && !CitationLinkLevel.RECORD.equals(level)) {
                 query = SolrConstants.PI + ":" + viewManager.getPi();
                 topDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(link.getField()));
                 if (topDoc != null && topDoc.get(link.getField()) != null) {
-                    vr.addReplacement("value", SolrTools.getAsString(topDoc.get(link.getField())));
+                    value = SolrTools.getAsString(topDoc.get(link.getField()));
                 }
             }
-            vr.addReplacement("page", String.valueOf(viewManager.getCurrentImageOrder()));
-            String pattern = Optional.ofNullable(link.getPattern()).filter(StringUtils::isNotBlank).orElse("{value}");
-            link.setValue(vr.replaceFirst(pattern));
+            if (StringUtil.isBlank(link.getField()) || StringUtils.isNotBlank(value)) {
+                vr.addReplacement("value", value);
+                vr.addReplacement("page", String.valueOf(viewManager.getCurrentImageOrder()));
+                String pattern = Optional.ofNullable(link.getPattern()).filter(StringUtils::isNotBlank).orElse("{value}");
+                link.setValue(vr.replaceFirst(pattern));
+            }
         }
 
         return ret;
