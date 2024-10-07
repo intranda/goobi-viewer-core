@@ -139,7 +139,7 @@ public final class CitationTools {
                     value = SolrTools.getAsString(topDoc.get(link.getField()));
                 }
             }
-            if (StringUtil.isBlank(link.getField()) || StringUtils.isNotBlank(value)) {
+            if (StringUtils.isBlank(link.getField()) || StringUtils.isNotBlank(value)) {
                 vr.addReplacement("value", value);
                 vr.addReplacement("page", String.valueOf(viewManager.getCurrentImageOrder()));
                 String pattern = Optional.ofNullable(link.getPattern()).filter(StringUtils::isNotBlank).orElse("{value}");

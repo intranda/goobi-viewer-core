@@ -106,7 +106,7 @@ public class StatisticsBean implements Serializable {
         try {
             QueryResponse resp = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(new StringBuilder(SolrConstants.PI).append(":*").append(SearchHelper.getAllSuffixes()).toString(), 0, 0, null,
+                    .search(new StringBuilder("+").append(SolrConstants.PI).append(":*").append(SearchHelper.getAllSuffixes()).toString(), 0, 0, null,
                             Collections.singletonList(SolrConstants.DATECREATED), "count", Collections.singletonList(SolrConstants.DATECREATED), null,
                             null);
             if (resp != null && resp.getFacetField(SolrConstants.DATECREATED) != null
@@ -178,7 +178,8 @@ public class StatisticsBean implements Serializable {
         try {
             QueryResponse resp = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(new StringBuilder("+").append(SolrConstants.PI).append(":*")
+                    .search(new StringBuilder("+").append(SolrConstants.PI)
+                            .append(":*")
                             .append(" +(")
                             .append(SolrConstants.ISWORK)
                             .append(":true ")
@@ -226,13 +227,7 @@ public class StatisticsBean implements Serializable {
                 logger.debug("Refreshing number of imported pages...");
                 long pages = DataManager.getInstance()
                         .getSearchIndex()
-                        .getHitCount(SolrConstants.DOCTYPE + ":" + DocType.PAGE.name() + SearchHelper.getAllSuffixes());
-                // Fallback for older indexes that do not have the DOCTYPE field (slower)
-                if (pages == 0) {
-                    pages = DataManager.getInstance()
-                            .getSearchIndex()
-                            .getHitCount(SolrConstants.FILENAME + ":['' TO *]" + SearchHelper.getAllSuffixes());
-                }
+                        .getHitCount("+" + SolrConstants.DOCTYPE + ":" + DocType.PAGE.name() + SearchHelper.getAllSuffixes());
                 valueMap.put("getImportedPages", pages);
                 lastUpdateMap.put("getImportedPages", now);
             }
@@ -295,7 +290,9 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>getCoreVersion.</p>
+     * <p>
+     * getCoreVersion.
+     * </p>
      *
      * @return goobi-viewer-core version
      */
@@ -304,7 +301,9 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>getConnectorVersion.</p>
+     * <p>
+     * getConnectorVersion.
+     * </p>
      *
      * @return goobi-viewer-connector version
      */
@@ -313,7 +312,9 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>getContentServerVersion.</p>
+     * <p>
+     * getContentServerVersion.
+     * </p>
      *
      * @return intrandaContentServer version
      */
@@ -329,7 +330,9 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>getIndexerVersion.</p>
+     * <p>
+     * getIndexerVersion.
+     * </p>
      *
      * @return goobi-viewer-indexer version
      */
@@ -338,7 +341,9 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>getUsageStatisticsForRecord.</p>
+     * <p>
+     * getUsageStatisticsForRecord.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object
      * @return {@link io.goobi.viewer.model.statistics.usage.StatisticsSummary}
@@ -359,7 +364,9 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>getLastUsageStatisticsCheck.</p>
+     * <p>
+     * getLastUsageStatisticsCheck.
+     * </p>
      *
      * @return a {@link java.time.LocalDate} object
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -385,7 +392,9 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>isUsageStatisticsActive.</p>
+     * <p>
+     * isUsageStatisticsActive.
+     * </p>
      *
      * @return a boolean
      */

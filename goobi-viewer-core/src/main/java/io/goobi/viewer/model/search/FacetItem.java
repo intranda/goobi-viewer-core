@@ -255,9 +255,9 @@ public class FacetItem implements Serializable, IFacetItem {
         // Add supplied existing items
         if (existingFacetsItems != null) {
             for (IFacetItem item : existingFacetsItems) {
-                if (item instanceof FacetItem) {
+                if (item instanceof FacetItem facetItem) {
                     retList.add(item);
-                    existingItems.put(item.getLink(), (FacetItem) item);
+                    existingItems.put(item.getLink(), facetItem);
                 }
             }
         }

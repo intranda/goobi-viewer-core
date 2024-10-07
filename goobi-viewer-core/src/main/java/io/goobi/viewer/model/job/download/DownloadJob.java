@@ -393,7 +393,7 @@ public abstract class DownloadJob implements Serializable {
      * @param messageId Id of the MQ message to link to
      * @return a boolean.
      * @throws java.io.UnsupportedEncodingException if any.
-     * @throws javax.mail.MessagingException if any.
+     * @throws jakarta.mail.MessagingException if any.
      */
     public boolean notifyObservers(JobStatus status, String messageId, String message) throws UnsupportedEncodingException, MessagingException {
         if (observers == null || observers.isEmpty()) {

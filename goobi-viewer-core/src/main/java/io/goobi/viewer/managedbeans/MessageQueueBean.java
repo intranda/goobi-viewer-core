@@ -57,9 +57,6 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.jms.JMSException;
-import javax.jms.QueueSession;
-import javax.jms.Session;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.commons.lang3.StringUtils;
@@ -76,9 +73,14 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
+import jakarta.jms.JMSException;
+import jakarta.jms.QueueSession;
+import jakarta.jms.Session;
 
 /**
- * <p>MessageQueueBean class.</p>
+ * <p>
+ * MessageQueueBean class.
+ * </p>
  */
 @Named
 @ApplicationScoped
@@ -107,7 +109,9 @@ public class MessageQueueBean implements Serializable {
     private TableDataProvider<ViewerMessage> lazyModelViewerHistory;
 
     /**
-     * <p>Constructor for MessageQueueBean.</p>
+     * <p>
+     * Constructor for MessageQueueBean.
+     * </p>
      */
     public MessageQueueBean() {
         this.initMessageBrokerStart();
@@ -115,7 +119,9 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>Constructor for MessageQueueBean.</p>
+     * <p>
+     * Constructor for MessageQueueBean.
+     * </p>
      *
      * @param broker a {@link io.goobi.viewer.controller.mq.MessageQueueManager} object
      */
@@ -125,7 +131,9 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>init.</p>
+     * <p>
+     * init.
+     * </p>
      */
     @PostConstruct
     public void init() {
@@ -146,9 +154,11 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>close.</p>
+     * <p>
+     * close.
+     * </p>
      *
-     * @throws javax.jms.JMSException if any.
+     * @throws jakarta.jms.JMSException if any.
      */
     @PreDestroy
     public void close() throws JMSException {
@@ -161,7 +171,9 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>getQueueContent.</p>
+     * <p>
+     * getQueueContent.
+     * </p>
      *
      * @return a {@link java.util.Map} object
      */
@@ -175,7 +187,9 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>pauseQueue.</p>
+     * <p>
+     * pauseQueue.
+     * </p>
      */
     public void pauseQueue() {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
@@ -185,7 +199,9 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>resumeQueue.</p>
+     * <p>
+     * resumeQueue.
+     * </p>
      */
     public void resumeQueue() {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
@@ -195,7 +211,9 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>clearQueue.</p>
+     * <p>
+     * clearQueue.
+     * </p>
      */
     public void clearQueue() {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
@@ -205,7 +223,9 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>initMessageBrokerStart.</p>
+     * <p>
+     * initMessageBrokerStart.
+     * </p>
      */
     public void initMessageBrokerStart() {
         this.messageBrokerStart = DataManager.getInstance().getConfiguration().isStartInternalMessageBroker();
@@ -227,7 +247,9 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>getQueryMessages.</p>
+     * <p>
+     * getQueryMessages.
+     * </p>
      *
      * @param messageType a {@link java.lang.String} object
      * @return List<ViewerMessage>
@@ -268,7 +290,9 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>messageType</code>.</p>
+     * <p>
+     * Getter for the field <code>messageType</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -277,7 +301,9 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>messageType</code>.</p>
+     * <p>
+     * Setter for the field <code>messageType</code>.
+     * </p>
      *
      * @param messageType a {@link java.lang.String} object
      */
@@ -286,7 +312,9 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>isMessageBrokerStart.</p>
+     * <p>
+     * isMessageBrokerStart.
+     * </p>
      *
      * @return a boolean
      */
@@ -295,7 +323,9 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>isPaused.</p>
+     * <p>
+     * isPaused.
+     * </p>
      *
      * @return a boolean
      */
@@ -346,7 +376,9 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>lazyModelViewerHistory</code>.</p>
+     * <p>
+     * Getter for the field <code>lazyModelViewerHistory</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.managedbeans.tabledata.TableDataProvider} object
      */
@@ -355,7 +387,9 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>updateMessageQueueState.</p>
+     * <p>
+     * updateMessageQueueState.
+     * </p>
      */
     public void updateMessageQueueState() {
         messageQueueState.send("update");
@@ -376,7 +410,9 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>getListeners.</p>
+     * <p>
+     * getListeners.
+     * </p>
      *
      * @return a {@link java.util.List} object
      */
@@ -385,7 +421,9 @@ public class MessageQueueBean implements Serializable {
     }
 
     /**
-     * <p>restartAllListeners.</p>
+     * <p>
+     * restartAllListeners.
+     * </p>
      */
     public void restartAllListeners() {
         getListeners().forEach(l -> {

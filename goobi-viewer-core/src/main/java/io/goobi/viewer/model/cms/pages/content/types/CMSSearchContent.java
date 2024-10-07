@@ -173,7 +173,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
                     searchBean.resetSearchAction();
                     searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
                 }
-                if (searchBean.getSearchSortingOption().isDefaultOption()) {
+                if (searchBean.getSearchSortingOption() != null && searchBean.getSearchSortingOption().isDefaultOption()) {
                     searchBean.setSortString(this.sortField);
                 }
                 // Only set hits per page to configured value if not manually changed by user

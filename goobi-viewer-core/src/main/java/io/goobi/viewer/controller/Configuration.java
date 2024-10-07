@@ -1704,6 +1704,8 @@ public class Configuration extends AbstractConfiguration {
             boolean visible = subElement.getBoolean("[@visible]", false);
             int displaySelectItemsThreshold = subElement.getInt("[@displaySelectItemsThreshold]", 50);
             String selectType = subElement.getString("[@selectType]", AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN);
+            String replaceRegex = subElement.getString("[@replaceRegex]");
+            String replaceWith = subElement.getString("[@replaceWith]");
 
             ret.add(new AdvancedSearchFieldConfiguration(field)
                     .setLabel(label)
@@ -1713,7 +1715,9 @@ public class Configuration extends AbstractConfiguration {
                     .setDisabled(field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#')
                     .setVisible(visible)
                     .setDisplaySelectItemsThreshold(displaySelectItemsThreshold)
-                    .setSelectType(selectType));
+                    .setSelectType(selectType)
+                    .setReplaceRegex(replaceRegex)
+                    .setReplaceWith(replaceWith));
         }
 
         return ret;
@@ -1909,26 +1913,12 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getAdvancedSearchFieldSelectType(String field, String template, boolean fallbackToDefaultTemplate) {
-        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
-        if (templateList == null) {
-            return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
-        }
-        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, fallbackToDefaultTemplate);
-        if (usingTemplate == null) {
-            return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
-        }
-        List<HierarchicalConfiguration<ImmutableNode>> fieldList = usingTemplate.configurationsAt("field");
-        if (fieldList == null) {
-            return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
+        String ret = getAdvancedSearchFieldGetAttributeValue(field, "selectType", template, fallbackToDefaultTemplate);
+        if (ret == null) {
+            ret = AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
         }
 
-        for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
-            if (subElement.getString(".").equals(field)) {
-                return subElement.getString("[@selectType]", AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN);
-            }
-        }
-
-        return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
+        return ret;
     }
 
     /**
@@ -1943,6 +1933,42 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getAdvancedSearchFieldSeparatorLabel(String field, String template, boolean fallbackToDefaultTemplate) {
+        return getAdvancedSearchFieldGetAttributeValue(field, "label", template, fallbackToDefaultTemplate);
+    }
+
+    /**
+     * 
+     * @param field
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return Configured value; null if none found
+     * @should return correct value
+     */
+    public String getAdvancedSearchFieldReplaceRegex(String field, String template, boolean fallbackToDefaultTemplate) {
+        return getAdvancedSearchFieldGetAttributeValue(field, "replaceRegex", template, fallbackToDefaultTemplate);
+    }
+
+    /**
+     * 
+     * @param field
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return Configured value; null if none found
+     * @should return correct value
+     */
+    public String getAdvancedSearchFieldReplaceWith(String field, String template, boolean fallbackToDefaultTemplate) {
+        return getAdvancedSearchFieldGetAttributeValue(field, "replaceWith", template, fallbackToDefaultTemplate);
+    }
+
+    /**
+     * 
+     * @param field
+     * @param attribute
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return Configured value; null if none found
+     */
+    String getAdvancedSearchFieldGetAttributeValue(String field, String attribute, String template, boolean fallbackToDefaultTemplate) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
         if (templateList == null) {
             return null;
@@ -1958,7 +1984,7 @@ public class Configuration extends AbstractConfiguration {
 
         for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
             if (subElement.getString(".").equals(field)) {
-                return subElement.getString(XML_PATH_ATTRIBUTE_LABEL, "");
+                return subElement.getString("[@" + attribute + "]");
             }
         }
 
@@ -1971,7 +1997,7 @@ public class Configuration extends AbstractConfiguration {
      * @param attribute Attribute name
      * @param template
      * @param fallbackToDefaultTemplate
-     * @return Configured value
+     * @return Configured value; false if none found
      */
     boolean isAdvancedSearchFieldHasAttribute(String field, String attribute, String template, boolean fallbackToDefaultTemplate) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
@@ -2666,8 +2692,8 @@ public class Configuration extends AbstractConfiguration {
      * getThemeRootPath.
      * </p>
      *
-     * @should return correct value
      * @return a {@link java.lang.String} object.
+     * 
      */
     public String getThemeRootPath() {
         return getLocalString("viewer.theme.rootPath");
@@ -2698,7 +2724,6 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * TagCloud auf der Startseite anzeigen lassen
      *
      * @should return correct value
      * @return a boolean.
@@ -6178,6 +6203,15 @@ public class Configuration extends AbstractConfiguration {
 
     public String getThemePullScriptPath() {
         return getLocalString("developer.scripts.pullTheme", "{config-folder-path}/script_theme-pull.sh {theme-path}/../../../../");
+    }
+
+    /**
+     * 
+     * @return boolean
+     * @should return correct value
+     */
+    public boolean isPullThemeEnabled() {
+        return getLocalBoolean("developer.scripts.pullTheme[@enabled]", true);
     }
 
     public String getCreateDeveloperPackageScriptPath() {
