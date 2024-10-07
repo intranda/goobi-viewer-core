@@ -31,7 +31,6 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.util.StringUtil;
 import org.apache.solr.common.SolrDocument;
 
 import de.undercouch.citeproc.csl.CSLType;
@@ -139,7 +138,7 @@ public final class CitationTools {
                     value = SolrTools.getAsString(topDoc.get(link.getField()));
                 }
             }
-            if (StringUtil.isBlank(link.getField()) || StringUtils.isNotBlank(value)) {
+            if (StringUtils.isBlank(link.getField()) || StringUtils.isNotBlank(value)) {
                 vr.addReplacement("value", value);
                 vr.addReplacement("page", String.valueOf(viewManager.getCurrentImageOrder()));
                 String pattern = Optional.ofNullable(link.getPattern()).filter(StringUtils::isNotBlank).orElse("{value}");
