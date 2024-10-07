@@ -250,7 +250,8 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
             }
 
             Search s =
-                    new Search(SearchHelper.SEARCH_TYPE_REGULAR, DataManager.getInstance().getConfiguration().getDefaultSearchFilter(), resultGroups);
+                    new Search(SearchHelper.SEARCH_TYPE_REGULAR, DataManager.getInstance().getConfiguration().getDefaultSearchFilter(), resultGroups,
+                            Collections.emptyList());
 
             if (StringUtils.isNotBlank(this.getSortField())) {
                 s.setSortString(getSortFieldForLanguage(locale.getLanguage()));
