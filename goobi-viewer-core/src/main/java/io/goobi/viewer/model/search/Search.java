@@ -161,6 +161,9 @@ public class Search implements Serializable {
     @Transient
     private boolean saved = false;
 
+    @Transient
+    private final List<String> facetFields;
+
     /**
      * List of geo-locations found by the last search
      */
@@ -176,6 +179,7 @@ public class Search implements Serializable {
      * Empty constructor for JPA.
      */
     public Search() {
+        this.facetFields = DataManager.getInstance().getConfiguration().getAllFacetFields();
     }
 
     /**
@@ -205,6 +209,7 @@ public class Search implements Serializable {
         for (SearchResultGroup resultGroup : blueprint.getResultGroups()) {
             this.getResultGroups().add(new SearchResultGroup(resultGroup));
         }
+        this.facetFields = blueprint.facetFields;
     }
 
     /**
@@ -217,6 +222,19 @@ public class Search implements Serializable {
      * @param resultGroups
      */
     public Search(int searchType, SearchFilter searchFilter, List<SearchResultGroup> resultGroups) {
+        this(searchType, searchFilter, resultGroups, DataManager.getInstance().getConfiguration().getAllFacetFields());
+    }
+
+    /**
+     * <p>
+     * Constructor for Search.
+     * </p>
+     *
+     * @param searchType a int.
+     * @param searchFilter a {@link io.goobi.viewer.model.search.SearchFilter} object.
+     * @param resultGroups
+     */
+    public Search(int searchType, SearchFilter searchFilter, List<SearchResultGroup> resultGroups, List<String> facetFields) {
         this.searchType = searchType;
         if (searchFilter != null) {
             this.searchFilter = searchFilter.getField();
@@ -224,6 +242,7 @@ public class Search implements Serializable {
         if (resultGroups != null) {
             this.resultGroups = resultGroups;
         }
+        this.facetFields = facetFields;
     }
 
     /* (non-Javadoc)
@@ -418,7 +437,7 @@ public class Search implements Serializable {
             resultGroup.getHits().clear();
         }
 
-        List<String> allFacetFields = SearchHelper.facetifyList(DataManager.getInstance().getConfiguration().getAllFacetFields());
+        List<String> allFacetFields = SearchHelper.facetifyList(this.facetFields);
         if (locale != null) {
             Set<String> toRemove = new HashSet<>();
             for (String field : allFacetFields) {
@@ -505,11 +524,13 @@ public class Search implements Serializable {
             resultGroup.setHitsCount(resp.getResults().getNumFound());
             logger.trace("Pre-grouping search hits: {}", resultGroup.getHitsCount());
             // Check for duplicate values in the GROUPFIELD facet and subtract the number from the total hits.
-            for (FacetField facetField : resp.getFacetFields()) {
-                if (SolrConstants.GROUPFIELD.equals(facetField.getName())) {
-                    for (Count count : facetField.getValues()) {
-                        if (count.getCount() > 1) {
-                            setHitsCount(resultGroup.getHitsCount() - (count.getCount() - 1));
+            if (resp.getFacetFields() != null) {
+                for (FacetField facetField : resp.getFacetFields()) {
+                    if (SolrConstants.GROUPFIELD.equals(facetField.getName())) {
+                        for (Count count : facetField.getValues()) {
+                            if (count.getCount() > 1) {
+                                setHitsCount(resultGroup.getHitsCount() - (count.getCount() - 1));
+                            }
                         }
                     }
                 }
@@ -676,7 +697,7 @@ public class Search implements Serializable {
             Locale locale) throws PresentationException, IndexUnreachableException {
         List<String> unfilteredFacetFields = new ArrayList<>();
         // Collect facet fields with alwaysApplyToUnfilteredHits=true
-        for (String field : DataManager.getInstance().getConfiguration().getAllFacetFields()) {
+        for (String field : this.facetFields) {
             if (DataManager.getInstance().getConfiguration().isAlwaysApplyFacetFieldToUnfilteredHits(field)
                     || DataManager.getInstance().getConfiguration().getBooleanFacetFields().contains(field)) {
                 unfilteredFacetFields.add(SearchHelper.facetifyField(field));
@@ -1402,5 +1423,9 @@ public class Search implements Serializable {
      */
     public void setMetadataListType(String metadataListType) {
         this.metadataListType = metadataListType;
+    }
+
+    public List<String> getFacetFields() {
+        return Collections.unmodifiableList(facetFields);
     }
 }
