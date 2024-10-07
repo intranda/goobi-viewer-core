@@ -307,7 +307,7 @@ public class FacetItem implements Serializable, IFacetItem {
             }
         }
         String comparator = DataManager.getInstance().getConfiguration().getSortOrder(SearchHelper.defacetifyField(field));
-        logger.trace("Sorting facets ({})", comparator);
+        logger.trace("Sorting {} facets ({})", retList.size(), comparator);
         switch (comparator) {
             case "numerical":
             case "numerical_asc":
@@ -319,6 +319,7 @@ public class FacetItem implements Serializable, IFacetItem {
                 break;
             case "alphabetical":
             case "alphabetical_asc":
+                // Natural string sorting, but using the translated label, if available
                 Collections.sort(retList, FacetItem.ALPHABETIC_COMPARATOR);
                 break;
             case "alphabetical_desc":
@@ -330,6 +331,13 @@ public class FacetItem implements Serializable, IFacetItem {
                 break;
             case "alphanumerical_desc":
                 Collections.sort(retList, new FacetItemAlphanumComparator(locale));
+                Collections.reverse(retList);
+                break;
+            case "natural":
+            case "natural_asc":
+                // Strings come pre-sorted via the TreeMap
+                break;
+            case "natural_desc":
                 Collections.reverse(retList);
                 break;
             default:

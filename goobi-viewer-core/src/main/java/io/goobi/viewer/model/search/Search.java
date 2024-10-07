@@ -535,6 +535,7 @@ public class Search implements Serializable {
         if (resp.getFacetFields() != null && generateAvailableFacets) {
             logger.trace("Generating facets");
             for (FacetField facetField : resp.getFacetFields()) {
+                logger.trace("Facet field: {}", facetField.getName());
                 // Use non-FACET_ field names outside of the actual faceting query
                 String defacetifiedFieldName = SearchHelper.defacetifyField(facetField.getName());
                 if (SolrConstants.GROUPFIELD.equals(facetField.getName()) || facetField.getValues() == null
@@ -556,7 +557,7 @@ public class Search implements Serializable {
                                         DataManager.getInstance().getConfiguration().getHierarchicalFacetFields().contains(defacetifiedFieldName),
                                         DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField(defacetifiedFieldName), locale,
                                         facets.getLabelMap()));
-                logger.trace("Facets generated for field {}", facetField.getName());
+                logger.trace("{} facets generated for field {}", facets.getAvailableFacets().get(defacetifiedFieldName).size(), facetField.getName());
             }
         }
 
