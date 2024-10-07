@@ -319,25 +319,28 @@ public class FacetItem implements Serializable, IFacetItem {
                 break;
             case "alphabetical":
             case "alphabetical_asc":
-                // Natural string sorting, but using the translated label, if available
+                // Alphabetical string sorting; using the translated label, if available
                 Collections.sort(retList, FacetItem.ALPHABETIC_COMPARATOR);
                 break;
             case "alphabetical_desc":
                 Collections.sort(retList, FacetItem.ALPHABETIC_COMPARATOR);
                 Collections.reverse(retList);
                 break;
+            case "alphabetical_raw":
+            case "alphabetical_raw_asc":
+                // Raw values come pre-sorted via the TreeMap
+                break;
+            case "alphabetical_raw_desc":
+                Collections.reverse(retList);
+                break;
             case "alphanumerical":
+            case "natural":
+            case "natural_asc":
                 Collections.sort(retList, new FacetItemAlphanumComparator(locale));
                 break;
             case "alphanumerical_desc":
-                Collections.sort(retList, new FacetItemAlphanumComparator(locale));
-                Collections.reverse(retList);
-                break;
-            case "natural":
-            case "natural_asc":
-                // Strings come pre-sorted via the TreeMap
-                break;
             case "natural_desc":
+                Collections.sort(retList, new FacetItemAlphanumComparator(locale));
                 Collections.reverse(retList);
                 break;
             default:
