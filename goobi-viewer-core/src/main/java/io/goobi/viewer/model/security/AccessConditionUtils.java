@@ -888,7 +888,7 @@ public final class AccessConditionUtils {
             }
             if (!licenseType.getPrivileges().contains(privilegeName) && !licenseType.isOpenAccess()
                     && !licenseType.isRestrictionsExpired(query)) {
-                // logger.trace("LicenseType '{}' doesn't allow the action '{}' by default.", licenseType.getName(), privilegeName); //NOSONAR Debug
+                logger.trace("LicenseType '{}' doesn't allow the action '{}' by default.", licenseType.getName(), privilegeName); //NOSONAR Debug
                 licenseTypeAllowsPriv = false;
             }
         }

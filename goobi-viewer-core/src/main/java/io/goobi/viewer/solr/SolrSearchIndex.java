@@ -289,7 +289,6 @@ public class SolrSearchIndex {
             List<String> fieldList, List<String> filterQueries, Map<String, String> params, METHOD queryMethod)
             throws PresentationException, IndexUnreachableException {
         SolrQuery solrQuery = new SolrQuery(SolrTools.cleanUpQuery(query)).setStart(first).setRows(rows);
-
         if (sortFields != null && !sortFields.isEmpty()) {
             for (int i = 0; i < sortFields.size(); ++i) {
                 StringPair sortField = sortFields.get(i);

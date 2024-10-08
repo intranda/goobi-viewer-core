@@ -307,7 +307,7 @@ public class FacetItem implements Serializable, IFacetItem {
             }
         }
         String comparator = DataManager.getInstance().getConfiguration().getSortOrder(SearchHelper.defacetifyField(field));
-        logger.trace("Sorting facets ({})", comparator);
+        logger.trace("Sorting {} facets ({})", retList.size(), comparator);
         switch (comparator) {
             case "numerical":
             case "numerical_asc":
@@ -319,16 +319,27 @@ public class FacetItem implements Serializable, IFacetItem {
                 break;
             case "alphabetical":
             case "alphabetical_asc":
+                // Alphabetical string sorting; using the translated label, if available
                 Collections.sort(retList, FacetItem.ALPHABETIC_COMPARATOR);
                 break;
             case "alphabetical_desc":
                 Collections.sort(retList, FacetItem.ALPHABETIC_COMPARATOR);
                 Collections.reverse(retList);
                 break;
+            case "alphabetical_raw":
+            case "alphabetical_raw_asc":
+                // Raw values come pre-sorted via the TreeMap
+                break;
+            case "alphabetical_raw_desc":
+                Collections.reverse(retList);
+                break;
             case "alphanumerical":
+            case "natural":
+            case "natural_asc":
                 Collections.sort(retList, new FacetItemAlphanumComparator(locale));
                 break;
             case "alphanumerical_desc":
+            case "natural_desc":
                 Collections.sort(retList, new FacetItemAlphanumComparator(locale));
                 Collections.reverse(retList);
                 break;
@@ -786,14 +797,20 @@ public class FacetItem implements Serializable, IFacetItem {
 
     public static class AlphabeticComparator implements Comparator<IFacetItem> {
 
+        // Collator that ignores diacritics
+        private Collator col = initCollator();
+
+        private static Collator initCollator() {
+            Collator col = Collator.getInstance();
+            col.setStrength(Collator.PRIMARY);
+            return col;
+        }
+
         @Override
         public int compare(IFacetItem o1, IFacetItem o2) {
             String label1 = o1.getTranslatedLabel() != null ? o1.getTranslatedLabel() : o1.getLabel();
             String label2 = o2.getTranslatedLabel() != null ? o2.getTranslatedLabel() : o2.getLabel();
 
-            // Collator that ignores diacritics
-            Collator col = Collator.getInstance();
-            col.setStrength(Collator.PRIMARY);
             return col.compare(label1, label2);
         }
 
@@ -816,6 +833,15 @@ public class FacetItem implements Serializable, IFacetItem {
 
     public static class CountComparator implements Comparator<IFacetItem> {
 
+        // Collator that ignores diacritics
+        private Collator col = initCollator();
+
+        private static Collator initCollator() {
+            Collator col = Collator.getInstance();
+            col.setStrength(Collator.PRIMARY);
+            return col;
+        }
+
         /**
          * @should compare correctly
          */
@@ -834,9 +860,6 @@ public class FacetItem implements Serializable, IFacetItem {
             String label1 = o1.getTranslatedLabel() != null ? o1.getTranslatedLabel() : o1.getLabel();
             String label2 = o2.getTranslatedLabel() != null ? o2.getTranslatedLabel() : o2.getLabel();
 
-            // Collator that ignores diacritics
-            Collator col = Collator.getInstance();
-            col.setStrength(Collator.PRIMARY);
             return col.compare(label1, label2);
         }
     }
