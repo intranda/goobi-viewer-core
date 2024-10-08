@@ -310,9 +310,9 @@ public class SolrSearchIndex {
                 if (StringUtils.isNotEmpty(facetField)) {
                     // logger.trace("facet field: {}", facetField); //NOSONAR Debug
                     solrQuery.addFacetField(facetField);
-                    // TODO only do this once, perhaps?
-                    if (StringUtils.isNotEmpty(facetSort)) {
-                        solrQuery.setFacetSort(facetSort);
+                    // if no sorting is given, or the sorting is by "count", then set the facets to be sorted by count, 
+                    if (StringUtils.isEmpty(facetSort) || "count".equalsIgnoreCase(facetSort)) {
+                        solrQuery.setFacetSort("count");
                     }
                 }
             }
@@ -347,7 +347,6 @@ public class SolrSearchIndex {
             QueryResponse resp = client.query(solrQuery, queryMethod);
             //             logger.debug("found: {}", resp.getResults().getNumFound()); //NOSONAR Debug
             //             logger.debug("fetched: {}", resp.getResults().size()); //NOSONAR Debug
-
             return resp;
         } catch (SolrServerException e) {
             if (e.getMessage().startsWith("Server refused connection")) {

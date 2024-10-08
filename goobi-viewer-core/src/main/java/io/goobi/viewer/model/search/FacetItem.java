@@ -306,47 +306,6 @@ public class FacetItem implements Serializable, IFacetItem {
                 existingItems.put(key, facetItem);
             }
         }
-        String comparator = DataManager.getInstance().getConfiguration().getSortOrder(SearchHelper.defacetifyField(field));
-        logger.trace("Sorting {} facets ({})", retList.size(), comparator);
-        switch (comparator) {
-            case "numerical":
-            case "numerical_asc":
-                Collections.sort(retList, FacetItem.NUMERIC_COMPARATOR);
-                break;
-            case "numerical_desc":
-                Collections.sort(retList, FacetItem.NUMERIC_COMPARATOR);
-                Collections.reverse(retList);
-                break;
-            case "alphabetical":
-            case "alphabetical_asc":
-                // Alphabetical string sorting; using the translated label, if available
-                Collections.sort(retList, FacetItem.ALPHABETIC_COMPARATOR);
-                break;
-            case "alphabetical_desc":
-                Collections.sort(retList, FacetItem.ALPHABETIC_COMPARATOR);
-                Collections.reverse(retList);
-                break;
-            case "alphabetical_raw":
-            case "alphabetical_raw_asc":
-                // Raw values come pre-sorted via the TreeMap
-                break;
-            case "alphabetical_raw_desc":
-                Collections.reverse(retList);
-                break;
-            case "alphanumerical":
-            case "natural":
-            case "natural_asc":
-                Collections.sort(retList, new FacetItemAlphanumComparator(locale));
-                break;
-            case "alphanumerical_desc":
-            case "natural_desc":
-                Collections.sort(retList, new FacetItemAlphanumComparator(locale));
-                Collections.reverse(retList);
-                break;
-            default:
-                Collections.sort(retList, FacetItem.COUNT_COMPARATOR);
-
-        }
         logger.trace("Sorting done");
         // Add priority values at the beginning
         if (!priorityValueMap.isEmpty()) {
