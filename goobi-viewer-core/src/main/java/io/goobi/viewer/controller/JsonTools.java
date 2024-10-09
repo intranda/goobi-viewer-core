@@ -24,6 +24,7 @@ package io.goobi.viewer.controller;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -489,5 +490,35 @@ public final class JsonTools {
             logger.warn(e.getMessage());
             return notAvailableKey;
         }
+    }
+    /**
+     * 
+     * @param json
+     * @param key
+     * @return
+     */
+    public static String getNestedValue(JSONObject json, String key) {
+    	boolean found = json.has(key);
+    	Iterator<String> keys;
+    	String next_key;
+    	if (!found) {
+    		keys = json.keys();
+    		while(keys.hasNext()) {
+    			next_key = (String) keys.next();
+                if (json.get(next_key) instanceof JSONObject) {
+                	return getNestedValue(json.getJSONObject(next_key), key);
+                } else if (json.get(next_key) instanceof JSONArray) {
+                	JSONArray jsonArray = json.getJSONArray(next_key);
+                    int n = 0;
+                    while (n < jsonArray.length()){
+                        String jsonArrayString = jsonArray.get(n).toString();
+                        JSONObject innerJson = new JSONObject(jsonArrayString);
+                        n++;
+                        return getNestedValue(innerJson,key);
+                    }
+                }
+    		}
+    	}
+    	return json.getString(key).toString();
     }
 }
