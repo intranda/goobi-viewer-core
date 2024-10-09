@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -216,7 +215,6 @@ public class FacetItem implements Serializable, IFacetItem {
      * @param values Map containing facet values and their counts
      * @param hierarchical true if facet field is hierarchical; false otherwise
      * @param groupToLength If value is greater than 0, facet values will be grouped together by if they contain equal characters at {0-groupByLength}
-     * @param locale Optional locale for translation
      * @param labelMap Optional map for storing alternate labels for later use by the client
      * @return {@link java.util.ArrayList} of {@link io.goobi.viewer.model.search.FacetItem}
      * @should add priority values first
@@ -226,7 +224,7 @@ public class FacetItem implements Serializable, IFacetItem {
      * @should prefer existing items
      */
     public static List<IFacetItem> generateFilterLinkList(List<IFacetItem> existingFacetsItems, String field, SortingMap<String, Long> values,
-            boolean hierarchical, int groupToLength, Locale locale, Map<String, String> labelMap) {
+            boolean hierarchical, int groupToLength, Map<String, String> labelMap) {
         // logger.trace("generateFilterLinkList: {}", field); //NOSONAR Debug
         List<String> priorityValues = DataManager.getInstance().getConfiguration().getPriorityValuesForFacetField(field);
         Map<String, FacetItem> priorityValueMap = new HashMap<>(priorityValues.size());
@@ -252,8 +250,6 @@ public class FacetItem implements Serializable, IFacetItem {
             for (IFacetItem item : existingFacetsItems) {
                 if (item instanceof FacetItem facetItem) {
                     values.getMap().compute(item.getValue(), (k, v) -> v == null ? item.getCount() : v + item.getCount());
-                    //                    retList.add(item);
-                    //                    existingItems.put(item.getLink(), facetItem);
                 }
             }
         }

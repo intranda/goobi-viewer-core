@@ -76,9 +76,8 @@ public final class FacetSorting {
         private String getTranslatedLabel(String label) {
             if (translate) {
                 return ViewerResourceBundle.getTranslation(label, this.locale);
-            } else {
-                return label;
             }
+            return label;
         }
 
         @Override
@@ -143,12 +142,11 @@ public final class FacetSorting {
         private String getTranslatedLabel(String label) {
             if (translate) {
                 return ViewerResourceBundle.getTranslation(label, this.locale);
-            } else {
-                return label;
             }
+            return label;
         }
 
-        private AlphanumCollatorComparator buildComparator() {
+        private static AlphanumCollatorComparator buildComparator() {
             try {
                 return new AlphanumCollatorComparator(new RuleBasedCollator("< a< b< c< d"));
             } catch (ParseException e) {
@@ -175,7 +173,8 @@ public final class FacetSorting {
             if (relevantString1.length() > 0 && !Character.isDigit(relevantString1.charAt(0)) && !Character.isLetter(relevantString1.charAt(0))) {
                 string1Alphanum = false;
             }
-            if (relevantString2.length() > 0 && !Character.isDigit(relevantString2.charAt(0)) && !Character.isLetter(relevantString2.charAt(0))) {
+            if (relevantString2 != null & relevantString2.length() > 0 && !Character.isDigit(relevantString2.charAt(0))
+                    && !Character.isLetter(relevantString2.charAt(0))) {
                 string2Alphanum = false;
             }
             if (string1Alphanum && !string2Alphanum) {
