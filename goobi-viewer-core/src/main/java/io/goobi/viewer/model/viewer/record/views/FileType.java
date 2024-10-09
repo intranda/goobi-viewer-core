@@ -145,10 +145,10 @@ public enum FileType {
         for (Entry<String, String> entry : filenames.entrySet()) {
             String fileType = entry.getKey();
             String filename = entry.getValue();
-            if (localFilesOnly && filename.matches("(?i)^https?:.*")) {
-                continue;
-            }
             if (StringUtils.isNoneEmpty(fileType, filename)) {
+                if (localFilesOnly && filename.matches("(?i)^https?:.*")) {
+                    continue;
+                }
                 String mimeType = getContentTypeFor(filename);
                 if ("application/pdf".equals(mimeType)) {
                     types.add(FileType.PDF);
