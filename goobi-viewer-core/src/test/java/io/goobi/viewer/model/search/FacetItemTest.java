@@ -335,7 +335,7 @@ class FacetItemTest extends AbstractTest {
         existingItems.add(new FacetItem("MD_CREATOR:Cooper, Alice", false).setCount(1));
 
         Map<String, String> labelMap = new HashMap<>(1);
-        FacetSorting.SortingMap<String, Long> valueMap = new FacetSorting().getSortingMap("MD_CREATOR", "alphabetical", Locale.GERMAN);
+        FacetSorting.SortingMap<String, Long> valueMap = FacetSorting.getSortingMap("MD_CREATOR", "alphabetical", Locale.GERMAN);
         valueMap.put("Cooper, Alice", 1L);
         valueMap.put("Campbell, Wayne", 1L);
         valueMap.put("Algar, Garth", 1L);
