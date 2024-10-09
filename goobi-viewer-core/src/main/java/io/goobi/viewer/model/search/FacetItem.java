@@ -47,6 +47,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.search.FacetSorting.SortingMap;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -230,7 +231,7 @@ public class FacetItem implements Serializable, IFacetItem {
      * @should augment existing items with new values
      * @should prefer existing items
      */
-    public static List<IFacetItem> generateFilterLinkList(List<IFacetItem> existingFacetsItems, String field, Map<String, Long> values,
+    public static List<IFacetItem> generateFilterLinkList(List<IFacetItem> existingFacetsItems, String field, SortingMap<String, Long> values,
             boolean hierarchical, int groupToLength, Locale locale, Map<String, String> labelMap) {
         // logger.trace("generateFilterLinkList: {}", field); //NOSONAR Debug
         List<String> priorityValues = DataManager.getInstance().getConfiguration().getPriorityValuesForFacetField(field);
@@ -242,7 +243,7 @@ public class FacetItem implements Serializable, IFacetItem {
             try {
                 labelMap.putAll(DataManager.getInstance()
                         .getSearchIndex()
-                        .getLabelValuesForFacetField(field, labelField, values.keySet()));
+                        .getLabelValuesForFacetField(field, labelField, values.getMap().keySet()));
             } catch (PresentationException e) {
                 logger.debug(e.getMessage());
             } catch (IndexUnreachableException e) {
@@ -256,13 +257,14 @@ public class FacetItem implements Serializable, IFacetItem {
         if (existingFacetsItems != null) {
             for (IFacetItem item : existingFacetsItems) {
                 if (item instanceof FacetItem facetItem) {
-                    retList.add(item);
-                    existingItems.put(item.getLink(), facetItem);
+                    values.getMap().compute(item.getValue(), (k, v) -> v == null ? item.getCount() : v + item.getCount());
+                    //                    retList.add(item);
+                    //                    existingItems.put(item.getLink(), facetItem);
                 }
             }
         }
 
-        for (Entry<String, Long> entry : values.entrySet()) {
+        for (Entry<String, Long> entry : values.getMap().entrySet()) {
             // Skip reversed values
             if (entry.getKey().charAt(0) == 1) {
                 continue;
@@ -294,6 +296,7 @@ public class FacetItem implements Serializable, IFacetItem {
                     linkValue = '"' + linkValue + '"';
                 }
                 String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':').append(linkValue).toString() : linkValue;
+
                 FacetItem facetItem =
                         new FacetItem(field, link, StringTools.intern(label), entry.getValue(),
                                 hierarchical);
@@ -306,7 +309,8 @@ public class FacetItem implements Serializable, IFacetItem {
                 existingItems.put(key, facetItem);
             }
         }
-        logger.trace("Sorting done");
+        //        String comparator = DataManager.getInstance().getConfiguration().getSortOrder(SearchHelper.defacetifyField(field));
+        //        sortItems(field, locale, retList, comparator);
         // Add priority values at the beginning
         if (!priorityValueMap.isEmpty()) {
             List<IFacetItem> regularValues = new ArrayList<>(retList);
@@ -320,6 +324,49 @@ public class FacetItem implements Serializable, IFacetItem {
         }
         // logger.debug("filters: {}", retList.size()); //NOSONAR Debug
         return retList;
+    }
+
+    public static void sortItems(String field, Locale locale, List<IFacetItem> retList, String comparator) {
+        logger.trace("Sorting {} facets ({})", retList.size(), comparator);
+        switch (comparator) {
+            case "numerical":
+            case "numerical_asc":
+                Collections.sort(retList, FacetItem.NUMERIC_COMPARATOR);
+                break;
+            case "numerical_desc":
+                Collections.sort(retList, FacetItem.NUMERIC_COMPARATOR);
+                Collections.reverse(retList);
+                break;
+            case "alphabetical":
+            case "alphabetical_asc":
+                // Alphabetical string sorting; using the translated label, if available
+                Collections.sort(retList, FacetItem.ALPHABETIC_COMPARATOR);
+                break;
+            case "alphabetical_desc":
+                Collections.sort(retList, FacetItem.ALPHABETIC_COMPARATOR);
+                Collections.reverse(retList);
+                break;
+            case "alphabetical_raw":
+            case "alphabetical_raw_asc":
+                // Raw values come pre-sorted via the TreeMap
+                break;
+            case "alphabetical_raw_desc":
+                Collections.reverse(retList);
+                break;
+            case "alphanumerical":
+            case "natural":
+            case "natural_asc":
+                Collections.sort(retList, new FacetItemAlphanumComparator(locale));
+                break;
+            case "alphanumerical_desc":
+            case "natural_desc":
+                Collections.sort(retList, new FacetItemAlphanumComparator(locale));
+                Collections.reverse(retList);
+                break;
+            default:
+                Collections.sort(retList, FacetItem.COUNT_COMPARATOR);
+
+        }
     }
 
     /**

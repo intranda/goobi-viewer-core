@@ -481,7 +481,7 @@ public class Search implements Serializable {
                 // logger.trace("hits: {}", resp.getResults().getNumFound()); //NOSONAR Debug
                 for (FacetField facetField : resp.getFacetFields()) {
                     String defacetifiedFieldName = SearchHelper.defacetifyField(facetField.getName());
-                    Map<String, Long> facetResult = new FacetSorting().getSortingMap(defacetifiedFieldName,
+                    FacetSorting.SortingMap<String, Long> facetResult = FacetSorting.getSortingMap(defacetifiedFieldName,
                             DataManager.getInstance().getConfiguration().getSortOrder(defacetifiedFieldName), locale);
                     for (Count count : facetField.getValues()) {
                         if (StringUtils.isEmpty(count.getName())) {
@@ -564,7 +564,7 @@ public class Search implements Serializable {
                         || DataManager.getInstance().getConfiguration().isAlwaysApplyFacetFieldToUnfilteredHits(defacetifiedFieldName)) {
                     continue;
                 }
-                Map<String, Long> facetResult = new FacetSorting().getSortingMap(defacetifiedFieldName,
+                FacetSorting.SortingMap<String, Long> facetResult = FacetSorting.getSortingMap(defacetifiedFieldName,
                         DataManager.getInstance().getConfiguration().getSortOrder(defacetifiedFieldName), locale);
                 for (Count count : facetField.getValues()) {
                     if (StringUtils.isEmpty(count.getName())) {
@@ -734,7 +734,7 @@ public class Search implements Serializable {
                 continue;
             }
             String defacetifiedFieldName = SearchHelper.defacetifyField(facetField.getName());
-            Map<String, Long> counts = new FacetSorting().getSortingMap(defacetifiedFieldName,
+            FacetSorting.SortingMap<String, Long> counts = FacetSorting.getSortingMap(defacetifiedFieldName,
                     DataManager.getInstance().getConfiguration().getSortOrder(defacetifiedFieldName), locale);
             List<String> values = new ArrayList<>();
             for (Count count : facetField.getValues()) {

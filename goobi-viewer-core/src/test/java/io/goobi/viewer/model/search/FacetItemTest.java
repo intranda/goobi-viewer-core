@@ -248,7 +248,8 @@ class FacetItemTest extends AbstractTest {
     void generateFilterLinkList_shouldSetLabelFromSeparateFieldIfConfiguredAndFound() throws Exception {
         Map<String, String> labelMap = new HashMap<>(1);
         List<IFacetItem> facetItems =
-                FacetItem.generateFilterLinkList(null, "MD_CREATOR", Collections.singletonMap("Groos, Karl", 1L), false, -1, null, labelMap);
+                FacetItem.generateFilterLinkList(null, "MD_CREATOR",
+                        FacetSorting.getSortingMap(Collections.singletonMap("Groos, Karl", 1L), "alphabetical"), false, -1, null, labelMap);
         Assertions.assertEquals(1, facetItems.size());
         Assertions.assertEquals("Karl", facetItems.get(0).getLabel());
     }
@@ -262,7 +263,8 @@ class FacetItemTest extends AbstractTest {
         // Regular
         FacetItem existing1 = new FacetItem("MD_FOO:bar", false);
         List<IFacetItem> facetItems1 =
-                FacetItem.generateFilterLinkList(Collections.singletonList(existing1), "MD_FOO", Collections.singletonMap("bar", 1L),
+                FacetItem.generateFilterLinkList(Collections.singletonList(existing1), "MD_FOO",
+                        FacetSorting.getSortingMap(Collections.singletonMap("bar", 1L), "alphabetical"),
                         false, -1, null, null);
         Assertions.assertEquals(1, facetItems1.size());
         Assertions.assertEquals("MD_FOO:bar", facetItems1.get(0).getLink());
@@ -270,7 +272,8 @@ class FacetItemTest extends AbstractTest {
         // With groupToLength=1
         FacetItem existing2 = new FacetItem("MD_FOO:B*", false);
         List<IFacetItem> facetItems2 =
-                FacetItem.generateFilterLinkList(Collections.singletonList(existing2), "MD_FOO", Collections.singletonMap("bar", 1L),
+                FacetItem.generateFilterLinkList(Collections.singletonList(existing2), "MD_FOO",
+                        FacetSorting.getSortingMap(Collections.singletonMap("bar", 1L), "alphabetical"),
                         false, 1, null, null);
         Assertions.assertEquals(1, facetItems2.size());
         Assertions.assertEquals("MD_FOO:B*", facetItems2.get(0).getLink());
@@ -283,7 +286,7 @@ class FacetItemTest extends AbstractTest {
     @Test
     void generateFilterLinkList_shouldGroupValuesByStartingCharacterCorrectly() throws Exception {
         Map<String, String> labelMap = new HashMap<>(1);
-        Map<String, Long> valueMap = new HashMap<>(3);
+        FacetSorting.SortingMap<String, Long> valueMap = FacetSorting.getSortingMap("MD_PERSON", "alphabetical", Locale.GERMAN);
         valueMap.put("Cooper, Alice", 1L);
         valueMap.put("Campbell, Wayne", 1L);
         valueMap.put("Algar, Garth", 1L);
@@ -322,6 +325,31 @@ class FacetItemTest extends AbstractTest {
     }
 
     /**
+     * @see FacetItem#generateFilterLinkList(String,Map,boolean,boolean,Locale,Map)
+     * @verifies group values by starting character correctly, even with existing items
+     */
+    @Test
+    void generateFilterLinkList_shouldGroupValuesByStartingCharacterCorrectlyWithExistingItems() throws Exception {
+        List<IFacetItem> existingItems = new ArrayList<>(2);
+        existingItems.add(new FacetItem("MD_CREATOR:Groos, Karl", false).setCount(1));
+        existingItems.add(new FacetItem("MD_CREATOR:Cooper, Alice", false).setCount(1));
+
+        Map<String, String> labelMap = new HashMap<>(1);
+        FacetSorting.SortingMap<String, Long> valueMap = new FacetSorting().getSortingMap("MD_CREATOR", "alphabetical", Locale.GERMAN);
+        valueMap.put("Cooper, Alice", 1L);
+        valueMap.put("Campbell, Wayne", 1L);
+        valueMap.put("Algar, Garth", 1L);
+        List<IFacetItem> facetItems = FacetItem.generateFilterLinkList(existingItems, "MD_CREATOR", valueMap, false, 1, null, labelMap);
+        Assertions.assertEquals(3, facetItems.size());
+        Assertions.assertEquals("A", facetItems.get(0).getLabel());
+        Assertions.assertEquals(1L, facetItems.get(0).getCount());
+        Assertions.assertEquals("C", facetItems.get(1).getLabel());
+        Assertions.assertEquals(3L, facetItems.get(1).getCount());
+        Assertions.assertEquals("G", facetItems.get(2).getLabel());
+        Assertions.assertEquals(1L, facetItems.get(2).getCount());
+    }
+
+    /**
      * @see FacetItem#FacetItem(String,String,boolean)
      * @verifies set label to value if no label value given
      */
@@ -331,7 +359,7 @@ class FacetItemTest extends AbstractTest {
         existingItems.add(new FacetItem("MD_CREATOR:Groos, Karl", false).setCount(1));
         existingItems.add(new FacetItem("MD_CREATOR:Doe, John", false).setCount(1));
 
-        Map<String, Long> newValueMap = new HashMap<>(2);
+        FacetSorting.SortingMap<String, Long> newValueMap = FacetSorting.getSortingMap("MD_CREATOR", "alphabetical", Locale.GERMAN);
         newValueMap.put("Montana, Tony", 1L);
         newValueMap.put("Groos, Karl", 1L);
         List<IFacetItem> facetItems =
@@ -342,7 +370,7 @@ class FacetItemTest extends AbstractTest {
         Assertions.assertEquals(2, facetItems.get(1).getCount());
         Assertions.assertEquals("Montana, Tony", facetItems.get(2).getValue());
     }
-    
+
     @Nested
     class AlphabeticComparatorTest extends AbstractTest {
 
@@ -385,4 +413,5 @@ class FacetItemTest extends AbstractTest {
                     new FacetItem("MD_FOO:a", false).setCount(1L).setLabel("a")));
         }
     }
+
 }
