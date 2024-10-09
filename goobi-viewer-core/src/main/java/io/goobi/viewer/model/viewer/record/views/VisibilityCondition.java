@@ -153,7 +153,7 @@ public class VisibilityCondition {
             docTypes.add("subStruct");
         }
 
-        Collection<FileType> existingFileTypes = properties.getFileTypesForRecord(viewManager);
+        Collection<FileType> existingFileTypes = properties.getFileTypesForRecord(viewManager, true);
 
         BaseMimeType baseMimeType = BaseMimeType.getByName(viewManager.getTopStructElement().getMetadataValue(SolrConstants.MIMETYPE));
         return checkAccess(viewManager, request, properties)
@@ -186,7 +186,7 @@ public class VisibilityCondition {
             return false;
         }
 
-        Collection<FileType> existingFileTypes = properties.getFileTypesForPage(page);
+        Collection<FileType> existingFileTypes = properties.getFileTypesForPage(page, true);
         BaseMimeType baseMimeType = page.getBaseMimeType();
         return checkAccess(page, request, properties)
                 && this.fileTypes.matches(existingFileTypes)

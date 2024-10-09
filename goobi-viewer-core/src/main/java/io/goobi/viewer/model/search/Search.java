@@ -29,7 +29,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -161,6 +160,9 @@ public class Search implements Serializable {
     @Transient
     private boolean saved = false;
 
+    @Transient
+    private final List<String> facetFields;
+
     /**
      * List of geo-locations found by the last search
      */
@@ -176,6 +178,7 @@ public class Search implements Serializable {
      * Empty constructor for JPA.
      */
     public Search() {
+        this.facetFields = DataManager.getInstance().getConfiguration().getAllFacetFields();
     }
 
     /**
@@ -205,6 +208,7 @@ public class Search implements Serializable {
         for (SearchResultGroup resultGroup : blueprint.getResultGroups()) {
             this.getResultGroups().add(new SearchResultGroup(resultGroup));
         }
+        this.facetFields = blueprint.facetFields;
     }
 
     /**
@@ -217,6 +221,20 @@ public class Search implements Serializable {
      * @param resultGroups
      */
     public Search(int searchType, SearchFilter searchFilter, List<SearchResultGroup> resultGroups) {
+        this(searchType, searchFilter, resultGroups, DataManager.getInstance().getConfiguration().getAllFacetFields());
+    }
+
+    /**
+     * <p>
+     * Constructor for Search.
+     * </p>
+     *
+     * @param searchType a int.
+     * @param searchFilter a {@link io.goobi.viewer.model.search.SearchFilter} object.
+     * @param resultGroups the {@link SearchResultGroup}s to search
+     * @param facetFields the facet fields to use
+     */
+    public Search(int searchType, SearchFilter searchFilter, List<SearchResultGroup> resultGroups, List<String> facetFields) {
         this.searchType = searchType;
         if (searchFilter != null) {
             this.searchFilter = searchFilter.getField();
@@ -224,6 +242,7 @@ public class Search implements Serializable {
         if (resultGroups != null) {
             this.resultGroups = resultGroups;
         }
+        this.facetFields = facetFields;
     }
 
     /* (non-Javadoc)
@@ -418,7 +437,7 @@ public class Search implements Serializable {
             resultGroup.getHits().clear();
         }
 
-        List<String> allFacetFields = SearchHelper.facetifyList(DataManager.getInstance().getConfiguration().getAllFacetFields());
+        List<String> allFacetFields = SearchHelper.facetifyList(this.facetFields);
         if (locale != null) {
             Set<String> toRemove = new HashSet<>();
             for (String field : allFacetFields) {
@@ -462,7 +481,9 @@ public class Search implements Serializable {
             if (resp != null && resp.getFacetFields() != null) {
                 // logger.trace("hits: {}", resp.getResults().getNumFound()); //NOSONAR Debug
                 for (FacetField facetField : resp.getFacetFields()) {
-                    Map<String, Long> facetResult = new TreeMap<>();
+                    String defacetifiedFieldName = SearchHelper.defacetifyField(facetField.getName());
+                    FacetSorting.SortingMap<String, Long> facetResult = FacetSorting.getSortingMap(defacetifiedFieldName,
+                            DataManager.getInstance().getConfiguration().getSortOrder(defacetifiedFieldName), locale);
                     for (Count count : facetField.getValues()) {
                         if (StringUtils.isEmpty(count.getName())) {
                             logger.warn("Facet for {} has no name, skipping...", facetField.getName());
@@ -481,7 +502,7 @@ public class Search implements Serializable {
                                                             .getHierarchicalFacetFields()
                                                             .contains(fieldName),
                                                     DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField(fieldName),
-                                                    locale, facets.getLabelMap()));
+                                                    facets.getLabelMap()));
                     allFacetFields.remove(facetField.getName());
                 }
             }
@@ -505,11 +526,13 @@ public class Search implements Serializable {
             resultGroup.setHitsCount(resp.getResults().getNumFound());
             logger.trace("Pre-grouping search hits: {}", resultGroup.getHitsCount());
             // Check for duplicate values in the GROUPFIELD facet and subtract the number from the total hits.
-            for (FacetField facetField : resp.getFacetFields()) {
-                if (SolrConstants.GROUPFIELD.equals(facetField.getName())) {
-                    for (Count count : facetField.getValues()) {
-                        if (count.getCount() > 1) {
-                            setHitsCount(resultGroup.getHitsCount() - (count.getCount() - 1));
+            if (resp.getFacetFields() != null) {
+                for (FacetField facetField : resp.getFacetFields()) {
+                    if (SolrConstants.GROUPFIELD.equals(facetField.getName())) {
+                        for (Count count : facetField.getValues()) {
+                            if (count.getCount() > 1) {
+                                setHitsCount(resultGroup.getHitsCount() - (count.getCount() - 1));
+                            }
                         }
                     }
                 }
@@ -535,13 +558,15 @@ public class Search implements Serializable {
         if (resp.getFacetFields() != null && generateAvailableFacets) {
             logger.trace("Generating facets");
             for (FacetField facetField : resp.getFacetFields()) {
+                logger.trace("Facet field: {}", facetField.getName());
                 // Use non-FACET_ field names outside of the actual faceting query
                 String defacetifiedFieldName = SearchHelper.defacetifyField(facetField.getName());
                 if (SolrConstants.GROUPFIELD.equals(facetField.getName()) || facetField.getValues() == null
                         || DataManager.getInstance().getConfiguration().isAlwaysApplyFacetFieldToUnfilteredHits(defacetifiedFieldName)) {
                     continue;
                 }
-                Map<String, Long> facetResult = new TreeMap<>();
+                FacetSorting.SortingMap<String, Long> facetResult = FacetSorting.getSortingMap(defacetifiedFieldName,
+                        DataManager.getInstance().getConfiguration().getSortOrder(defacetifiedFieldName), locale);
                 for (Count count : facetField.getValues()) {
                     if (StringUtils.isEmpty(count.getName())) {
                         logger.warn("Facet for {} has no name, skipping...", facetField.getName());
@@ -551,15 +576,18 @@ public class Search implements Serializable {
                 }
                 facets.getAvailableFacets()
                         .put(defacetifiedFieldName,
-                                FacetItem.generateFilterLinkList(facets.getAvailableFacets().get(defacetifiedFieldName), defacetifiedFieldName,
-                                        facetResult,
-                                        DataManager.getInstance().getConfiguration().getHierarchicalFacetFields().contains(defacetifiedFieldName),
-                                        DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField(defacetifiedFieldName), locale,
+                                FacetItem.generateFilterLinkList(facets.getAvailableFacets().get(defacetifiedFieldName),
+                                        defacetifiedFieldName, facetResult,
+                                        DataManager.getInstance()
+                                                .getConfiguration()
+                                                .getHierarchicalFacetFields()
+                                                .contains(defacetifiedFieldName),
+                                        DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField(defacetifiedFieldName),
                                         facets.getLabelMap()));
-                logger.trace("Facets generated for field {}", facetField.getName());
+                logger.trace("{} facets generated for field {}", facets.getAvailableFacets().get(defacetifiedFieldName).size(),
+                        facetField.getName());
             }
         }
-
         // If this is a group preview, use the group's configured hit count instead of paginator hits per page
         int useHitsPerPage = hitsPerPage;
         if (resultGroups.size() > 1 && resultGroup.getPreviewHitCount() > 0 && resultGroup.getPreviewHitCount() < useHitsPerPage) {
@@ -675,7 +703,7 @@ public class Search implements Serializable {
             Locale locale) throws PresentationException, IndexUnreachableException {
         List<String> unfilteredFacetFields = new ArrayList<>();
         // Collect facet fields with alwaysApplyToUnfilteredHits=true
-        for (String field : DataManager.getInstance().getConfiguration().getAllFacetFields()) {
+        for (String field : this.facetFields) {
             if (DataManager.getInstance().getConfiguration().isAlwaysApplyFacetFieldToUnfilteredHits(field)
                     || DataManager.getInstance().getConfiguration().getBooleanFacetFields().contains(field)) {
                 unfilteredFacetFields.add(SearchHelper.facetifyField(field));
@@ -704,8 +732,9 @@ public class Search implements Serializable {
             if (!unfilteredFacetFields.contains(facetField.getName())) {
                 continue;
             }
-
-            Map<String, Long> counts = new HashMap<>();
+            String defacetifiedFieldName = SearchHelper.defacetifyField(facetField.getName());
+            FacetSorting.SortingMap<String, Long> counts = FacetSorting.getSortingMap(defacetifiedFieldName,
+                    DataManager.getInstance().getConfiguration().getSortOrder(defacetifiedFieldName), locale);
             List<String> values = new ArrayList<>();
             for (Count count : facetField.getValues()) {
                 if (count.getCount() > 0) {
@@ -714,13 +743,12 @@ public class Search implements Serializable {
                 }
             }
             if (!values.isEmpty()) {
-                String defacetifiedFieldName = SearchHelper.defacetifyField(facetField.getName());
                 // Facets where all values are permanently displayed, no matter the current filters
                 facets.getAvailableFacets()
                         .put(defacetifiedFieldName,
                                 FacetItem.generateFilterLinkList(facets.getAvailableFacets().get(defacetifiedFieldName), defacetifiedFieldName,
                                         counts, hierarchicalFacetFields.contains(defacetifiedFieldName),
-                                        DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField(defacetifiedFieldName), locale,
+                                        DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField(defacetifiedFieldName),
                                         facets.getLabelMap()));
             }
         }
@@ -1401,5 +1429,9 @@ public class Search implements Serializable {
      */
     public void setMetadataListType(String metadataListType) {
         this.metadataListType = metadataListType;
+    }
+
+    public List<String> getFacetFields() {
+        return Collections.unmodifiableList(facetFields);
     }
 }

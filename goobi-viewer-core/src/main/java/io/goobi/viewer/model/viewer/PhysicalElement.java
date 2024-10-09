@@ -1019,10 +1019,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @should return null if already loaded
      */
     String loadFullText() throws AccessDeniedException, IOException, IndexUnreachableException {
+        if (Boolean.FALSE.equals(isFulltextAccessPermission())) {
+            throw new AccessDeniedException(String.format("Fulltext access denied for pi %s and pageNo %d", pi, order));
+        }
         if (fulltextFileName == null) {
             return null;
-        } else if (Boolean.FALSE.equals(isFulltextAccessPermission())) {
-            throw new AccessDeniedException(String.format("Fulltext access denied for pi %s and pageNo %d", pi, order));
         }
 
         logger.trace("Loading full-text for page {}", fulltextFileName);
@@ -1100,10 +1101,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public StringPair loadAlto()
             throws AccessDeniedException, JDOMException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("loadAlto: {}", altoFileName);
+        if (Boolean.FALSE.equals(isFulltextAccessPermission())) {
+            throw new AccessDeniedException(String.format("Fulltext access denied for pi %s and pageNo %d", pi, order));
+        }
         if (altoFileName == null) {
             return new StringPair("", null);
-        } else if (Boolean.FALSE.equals(isFulltextAccessPermission())) {
-            throw new AccessDeniedException(String.format("Fulltext access denied for pi %s and pageNo %d", pi, order));
         }
 
         try {
