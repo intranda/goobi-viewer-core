@@ -30,11 +30,12 @@ public class RecordPropertyCache {
     private final Map<String, Map<String, AccessPermission>> recordPermissions = new CachingMap<>(50);
     private final Map<Pair<String, Integer>, Map<String, AccessPermission>> pagePermissions = new CachingMap<>(50);
 
-    public Collection<FileType> getFileTypesForRecord(ViewManager viewManager) throws IndexUnreachableException, PresentationException {
+    public Collection<FileType> getFileTypesForRecord(ViewManager viewManager, boolean localFilesOnly)
+            throws IndexUnreachableException, PresentationException {
 
         Collection<FileType> fileTypes = recordFileTypes.get(viewManager.getPi());
         if (fileTypes == null) {
-            fileTypes = FileType.containedFiletypes(viewManager);
+            fileTypes = FileType.containedFiletypes(viewManager, localFilesOnly);
             try {
                 recordFileTypes.put(viewManager.getPi(), fileTypes);
             } catch (ConcurrentModificationException e) {
@@ -44,13 +45,13 @@ public class RecordPropertyCache {
         return fileTypes;
     }
 
-    public Collection<FileType> getFileTypesForPage(PhysicalElement page)
+    public Collection<FileType> getFileTypesForPage(PhysicalElement page, boolean localFilesOnly)
             throws IndexUnreachableException, PresentationException, DAOException, RecordNotFoundException {
 
         Pair<String, Integer> key = Pair.of(page.getPi(), page.getOrder());
         Collection<FileType> fileTypes = pageFileTypes.get(key);
         if (fileTypes == null) {
-            fileTypes = FileType.containedFiletypes(page);
+            fileTypes = FileType.containedFiletypes(page, localFilesOnly);
             try {
                 pageFileTypes.put(key, fileTypes);
             } catch (ConcurrentModificationException e) {

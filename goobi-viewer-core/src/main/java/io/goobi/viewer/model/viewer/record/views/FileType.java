@@ -64,10 +64,11 @@ public enum FileType {
     private static final Logger logger = LogManager.getLogger(FileType.class);
     private static final FileNameMap filenameMap = URLConnection.getFileNameMap();
 
-    public static Collection<FileType> containedFiletypes(ViewManager viewManager) throws IndexUnreachableException, PresentationException {
+    public static Collection<FileType> containedFiletypes(ViewManager viewManager, boolean localFilesOnly)
+            throws IndexUnreachableException, PresentationException {
         Set<FileType> types = new HashSet<>();
 
-        Map<String, List<String>> filenames = viewManager.getFilenamesByMimeType();
+        Map<String, List<String>> filenames = viewManager.getFilenamesByMimeType(localFilesOnly);
 
         List<BaseMimeType> baseTypes = filenames.keySet().stream().map(BaseMimeType::getByName).collect(Collectors.toList());
 
@@ -134,15 +135,19 @@ public enum FileType {
         return filenameMap.getContentTypeFor(filename);
     }
 
-    public static Collection<FileType> containedFiletypes(PhysicalElement page)
+    public static Collection<FileType> containedFiletypes(PhysicalElement page, boolean localFilesOnly)
             throws IndexUnreachableException, DAOException, RecordNotFoundException {
 
         Set<FileType> types = new HashSet<>();
         Map<String, String> filenames = new HashMap<String, String>(page.getFileNames());
         filenames.put(page.getMimeType(), page.getFileName());
+
         for (Entry<String, String> entry : filenames.entrySet()) {
             String fileType = entry.getKey();
             String filename = entry.getValue();
+            if (localFilesOnly && filename.matches("(?i)^https?:.*")) {
+                continue;
+            }
             if (StringUtils.isNoneEmpty(fileType, filename)) {
                 String mimeType = getContentTypeFor(filename);
                 if ("application/pdf".equals(mimeType)) {
