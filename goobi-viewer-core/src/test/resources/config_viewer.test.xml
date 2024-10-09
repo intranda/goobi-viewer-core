@@ -1504,6 +1504,23 @@
     
     <activeMQ enabled="true" numberOfParallelMessages="2"/>
 
+    <!-- settings for the developer backend page, allowing the download of instance-specific data for development purposes
+    and publishing the theme git repository to the viewer instance -->
+    <developer>
+        <!-- these scripts utilize a variable system using '{xyz}' expressions representing values from the viewer configuration file. The following variables are used:
+        {config-folder-path}: The path to the viewer configuration folder, usually '/opt/digiverso/viewer/config/'
+        {theme-path}: The path given by the configuration in viewer/theme/rootPath
+        {base-path}: The base path of the viewer installation, given by the 'viewer/viewerHome' config property. Usually this is '/opt/digiverso/viewer/'
+        {solr-url}: The configured url to the solr, given in viewer/urls/solr. -->
+        <scripts>
+            <!-- bash script to call when the 'pull theme' action is performed on the developer page. The script's output is presented on the page after the operation -->
+            <!-- pullTheme/@enabled: If true, the theme can be update from the Git repository from the admin backend. Default is true. -->
+            <pullTheme enabled="false">{config-folder-path}/script_theme-pull.sh {theme-path}/../../../../</pullTheme>
+            <!-- bash script to call when the 'download' action is performed on the developer page.
+            If the output of the script is a file, it is downloaded to the client and then deleted on the server -->
+            <createDeveloperPackage>{config-folder-path}/script_create_package.sh -d viewer -f {base-path} -s {solr-url} </createDeveloperPackage>
+        </scripts>
+    </developer>
 
 </config>
 
