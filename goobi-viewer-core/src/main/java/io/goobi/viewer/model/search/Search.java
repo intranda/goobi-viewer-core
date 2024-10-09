@@ -231,7 +231,8 @@ public class Search implements Serializable {
      *
      * @param searchType a int.
      * @param searchFilter a {@link io.goobi.viewer.model.search.SearchFilter} object.
-     * @param resultGroups
+     * @param resultGroups the {@link SearchResultGroup}s to search
+     * @param facetFields the facet fields to use
      */
     public Search(int searchType, SearchFilter searchFilter, List<SearchResultGroup> resultGroups, List<String> facetFields) {
         this.searchType = searchType;

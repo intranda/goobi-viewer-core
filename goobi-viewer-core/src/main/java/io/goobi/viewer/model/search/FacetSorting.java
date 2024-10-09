@@ -41,7 +41,14 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
  * Class to create maps for facet values and their respective counts which are automatically sorted according to a given sort order. The maps are
  * returned as a SortedMap class to signal that the map takes care of sorting its members
  */
-public class FacetSorting {
+public final class FacetSorting {
+
+    /**
+     * Utility class. No instantiation necessary
+     */
+    private FacetSorting() {
+
+    }
 
     public static class AlphabeticComparator implements Comparator<String> {
 
