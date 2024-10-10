@@ -502,7 +502,7 @@ public class Search implements Serializable {
                                                             .getHierarchicalFacetFields()
                                                             .contains(fieldName),
                                                     DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField(fieldName),
-                                                    locale, facets.getLabelMap()));
+                                                    facets.getLabelMap()));
                     allFacetFields.remove(facetField.getName());
                 }
             }
@@ -577,14 +577,12 @@ public class Search implements Serializable {
                 facets.getAvailableFacets()
                         .put(defacetifiedFieldName,
                                 FacetItem.generateFilterLinkList(facets.getAvailableFacets().get(defacetifiedFieldName),
-                                        defacetifiedFieldName,
-                                        facetResult,
+                                        defacetifiedFieldName, facetResult,
                                         DataManager.getInstance()
                                                 .getConfiguration()
                                                 .getHierarchicalFacetFields()
                                                 .contains(defacetifiedFieldName),
                                         DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField(defacetifiedFieldName),
-                                        locale,
                                         facets.getLabelMap()));
                 logger.trace("{} facets generated for field {}", facets.getAvailableFacets().get(defacetifiedFieldName).size(),
                         facetField.getName());
@@ -750,7 +748,7 @@ public class Search implements Serializable {
                         .put(defacetifiedFieldName,
                                 FacetItem.generateFilterLinkList(facets.getAvailableFacets().get(defacetifiedFieldName), defacetifiedFieldName,
                                         counts, hierarchicalFacetFields.contains(defacetifiedFieldName),
-                                        DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField(defacetifiedFieldName), locale,
+                                        DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField(defacetifiedFieldName),
                                         facets.getLabelMap()));
             }
         }

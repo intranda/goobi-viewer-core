@@ -24,13 +24,10 @@ package io.goobi.viewer.model.search;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -60,10 +57,6 @@ public class FacetItem implements Serializable, IFacetItem {
     private static final long serialVersionUID = 5033196184122928247L;
 
     private static final Logger logger = LogManager.getLogger(FacetItem.class);
-
-    private static final Comparator<IFacetItem> NUMERIC_COMPARATOR = new FacetItem.NumericComparator();
-    private static final Comparator<IFacetItem> ALPHABETIC_COMPARATOR = new FacetItem.AlphabeticComparator();
-    private static final Comparator<IFacetItem> COUNT_COMPARATOR = new FacetItem.CountComparator();
 
     private FacetType type = FacetType.STANDARD;
     private String field;
@@ -222,7 +215,6 @@ public class FacetItem implements Serializable, IFacetItem {
      * @param values Map containing facet values and their counts
      * @param hierarchical true if facet field is hierarchical; false otherwise
      * @param groupToLength If value is greater than 0, facet values will be grouped together by if they contain equal characters at {0-groupByLength}
-     * @param locale Optional locale for translation
      * @param labelMap Optional map for storing alternate labels for later use by the client
      * @return {@link java.util.ArrayList} of {@link io.goobi.viewer.model.search.FacetItem}
      * @should add priority values first
@@ -232,7 +224,7 @@ public class FacetItem implements Serializable, IFacetItem {
      * @should prefer existing items
      */
     public static List<IFacetItem> generateFilterLinkList(List<IFacetItem> existingFacetsItems, String field, SortingMap<String, Long> values,
-            boolean hierarchical, int groupToLength, Locale locale, Map<String, String> labelMap) {
+            boolean hierarchical, int groupToLength, Map<String, String> labelMap) {
         // logger.trace("generateFilterLinkList: {}", field); //NOSONAR Debug
         List<String> priorityValues = DataManager.getInstance().getConfiguration().getPriorityValuesForFacetField(field);
         Map<String, FacetItem> priorityValueMap = new HashMap<>(priorityValues.size());
@@ -258,8 +250,6 @@ public class FacetItem implements Serializable, IFacetItem {
             for (IFacetItem item : existingFacetsItems) {
                 if (item instanceof FacetItem facetItem) {
                     values.getMap().compute(item.getValue(), (k, v) -> v == null ? item.getCount() : v + item.getCount());
-                    //                    retList.add(item);
-                    //                    existingItems.put(item.getLink(), facetItem);
                 }
             }
         }
@@ -324,49 +314,6 @@ public class FacetItem implements Serializable, IFacetItem {
         }
         // logger.debug("filters: {}", retList.size()); //NOSONAR Debug
         return retList;
-    }
-
-    public static void sortItems(String field, Locale locale, List<IFacetItem> retList, String comparator) {
-        logger.trace("Sorting {} facets ({})", retList.size(), comparator);
-        switch (comparator) {
-            case "numerical":
-            case "numerical_asc":
-                Collections.sort(retList, FacetItem.NUMERIC_COMPARATOR);
-                break;
-            case "numerical_desc":
-                Collections.sort(retList, FacetItem.NUMERIC_COMPARATOR);
-                Collections.reverse(retList);
-                break;
-            case "alphabetical":
-            case "alphabetical_asc":
-                // Alphabetical string sorting; using the translated label, if available
-                Collections.sort(retList, FacetItem.ALPHABETIC_COMPARATOR);
-                break;
-            case "alphabetical_desc":
-                Collections.sort(retList, FacetItem.ALPHABETIC_COMPARATOR);
-                Collections.reverse(retList);
-                break;
-            case "alphabetical_raw":
-            case "alphabetical_raw_asc":
-                // Raw values come pre-sorted via the TreeMap
-                break;
-            case "alphabetical_raw_desc":
-                Collections.reverse(retList);
-                break;
-            case "alphanumerical":
-            case "natural":
-            case "natural_asc":
-                Collections.sort(retList, new FacetItemAlphanumComparator(locale));
-                break;
-            case "alphanumerical_desc":
-            case "natural_desc":
-                Collections.sort(retList, new FacetItemAlphanumComparator(locale));
-                Collections.reverse(retList);
-                break;
-            default:
-                Collections.sort(retList, FacetItem.COUNT_COMPARATOR);
-
-        }
     }
 
     /**
@@ -799,75 +746,6 @@ public class FacetItem implements Serializable, IFacetItem {
      */
     public String toString() {
         return field + ":" + value + " - " + value2;
-    }
-
-    public static class AlphabeticComparator implements Comparator<IFacetItem> {
-
-        // Collator that ignores diacritics
-        private Collator col = initCollator();
-
-        private static Collator initCollator() {
-            Collator col = Collator.getInstance();
-            col.setStrength(Collator.PRIMARY);
-            return col;
-        }
-
-        @Override
-        public int compare(IFacetItem o1, IFacetItem o2) {
-            String label1 = o1.getTranslatedLabel() != null ? o1.getTranslatedLabel() : o1.getLabel();
-            String label2 = o2.getTranslatedLabel() != null ? o2.getTranslatedLabel() : o2.getLabel();
-
-            return col.compare(label1, label2);
-        }
-
-    }
-
-    public static class NumericComparator implements Comparator<IFacetItem> {
-
-        @Override
-        public int compare(IFacetItem o1, IFacetItem o2) {
-            try {
-                int i1 = Integer.parseInt(o1.getLabel());
-                int i2 = Integer.parseInt(o2.getLabel());
-                return Integer.compare(i1, i2);
-            } catch (NumberFormatException e) {
-                return o1.getLabel().compareTo(o2.getLabel());
-            }
-        }
-
-    }
-
-    public static class CountComparator implements Comparator<IFacetItem> {
-
-        // Collator that ignores diacritics
-        private Collator col = initCollator();
-
-        private static Collator initCollator() {
-            Collator col = Collator.getInstance();
-            col.setStrength(Collator.PRIMARY);
-            return col;
-        }
-
-        /**
-         * @should compare correctly
-         */
-        @Override
-        public int compare(IFacetItem o1, IFacetItem o2) {
-            if (o1.getCount() > o2.getCount()) {
-                return -1;
-            }
-            if (o1.getCount() < o2.getCount()) {
-                return 1;
-            }
-            if (o1.getLabel() == null && o2.getLabel() == null) {
-                return 0;
-            }
-
-            String label1 = o1.getTranslatedLabel() != null ? o1.getTranslatedLabel() : o1.getLabel();
-            String label2 = o2.getTranslatedLabel() != null ? o2.getTranslatedLabel() : o2.getLabel();
-
-            return col.compare(label1, label2);
-        }
     }
 
     public enum FacetType {
