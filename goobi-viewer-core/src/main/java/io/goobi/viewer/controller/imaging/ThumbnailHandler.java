@@ -66,6 +66,7 @@ import io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent;
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.solr.SolrConstants;
@@ -614,7 +615,7 @@ public class ThumbnailHandler {
                 region = doc.getShapeMetadata()
                         .stream()
                         .filter(shape -> shape.getPageNo() == doc.getImageNumber())
-                        .map(shape -> shape.getCoords())
+                        .map(ShapeMetadata::getCoords)
                         .findFirst()
                         .orElse(Region.FULL_IMAGE);
             }
@@ -850,7 +851,7 @@ public class ThumbnailHandler {
         String mimeType = getMimeType(doc).orElse("unknown");
         BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
         if (baseMimeType != null) {
-            switch (baseMimeType.getName()) {
+            switch (baseMimeType.getName().toLowerCase()) {
                 case "image":
                     ret = getFieldValue(doc, SolrConstants.THUMBNAIL);
                     break;
