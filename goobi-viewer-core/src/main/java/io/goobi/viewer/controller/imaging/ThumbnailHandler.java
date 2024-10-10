@@ -851,7 +851,7 @@ public class ThumbnailHandler {
         String mimeType = getMimeType(doc).orElse("unknown");
         BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
         if (baseMimeType != null) {
-            switch (baseMimeType.getName()) {
+            switch (baseMimeType.getName().toLowerCase()) {
                 case "image":
                     ret = getFieldValue(doc, SolrConstants.THUMBNAIL);
                     break;
@@ -881,7 +881,6 @@ public class ThumbnailHandler {
                     }
                     break;
                 case "":
-                case "other":
                 case "unknown": //no mimetype
                     ret = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
                     break;
