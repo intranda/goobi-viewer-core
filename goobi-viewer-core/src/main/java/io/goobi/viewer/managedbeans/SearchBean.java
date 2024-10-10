@@ -3189,6 +3189,20 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
+     * Executes an advanced search using the given field. The search value is set via the HTML component using this method.
+     * 
+     * @param queryField Advanced search field to query
+     * @return Navigation outcome
+     */
+    public String searchInField(String queryField) {
+        this.advancedSearchQueryGroup.getQueryItems().get(0).setField(queryField);
+        this.advancedSearchQueryGroup.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
+        this.setActiveSearchType(1);
+
+        return this.searchAdvanced();
+    }
+
+    /**
      * <p>
      * isSolrIndexReachable.
      * </p>

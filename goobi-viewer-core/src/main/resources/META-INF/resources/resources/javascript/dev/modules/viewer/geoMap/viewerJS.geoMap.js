@@ -131,6 +131,10 @@ var viewerJS = ( function( viewer ) {
         this.map.whenReady(e => {
         	this.resolveInitialization(this);
         	this.initialized = true;
+            if(this.config.search?.loader) {
+                //hide any active loaders on the map. These may still be visible when navigating back after a feature click
+                $(this.config.search.loader).hide();
+            }
         });
         if(this.config.tilesource.toLowerCase() == "mapbox" && this.config.mapBox) {
             let url = 'https://api.mapbox.com/styles/v1/{1}/{2}/tiles/{z}/{x}/{y}?access_token={3}'
