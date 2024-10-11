@@ -58,7 +58,7 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      * @verifies return true if solr online
      */
     @Test
-    void isSolrIndexOnline_shouldReturnTrueIfSolrOnline() throws Exception {
+    void isSolrIndexOnline_shouldReturnTrueIfSolrOnline() {
         assertTrue(DataManager.getInstance().getSearchIndex().isSolrIndexOnline());
     }
 
@@ -67,7 +67,7 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      * @verifies return false if solr offline
      */
     @Test
-    void isSolrIndexOnline_shouldReturnFalseIfSolrOffline() throws Exception {
+    void isSolrIndexOnline_shouldReturnFalseIfSolrOffline() {
         String solrUrl = DataManager.getInstance().getConfiguration().getSolrUrl();
         DataManager.getInstance().getConfiguration().overrideValue("urls.solr", "https://locahost:1234/solr");
         try {
@@ -255,7 +255,7 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     void getIddocByLogid_shouldRetrieveCorrectIDDOC() throws Exception {
-        Assertions.assertNotEquals(-1, DataManager.getInstance().getSearchIndex().getIddocByLogid(PI_KLEIUNIV, "LOG_0001"));
+        Assertions.assertNotNull(DataManager.getInstance().getSearchIndex().getIddocByLogid(PI_KLEIUNIV, "LOG_0001"));
     }
 
     /**
@@ -273,7 +273,7 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      * @verifies update value correctly
      */
     @Test
-    void updateDataRepositoryNames_shouldUpdateValueCorrectly() throws Exception {
+    void updateDataRepositoryNames_shouldUpdateValueCorrectly() {
         Assertions.assertNull(DataManager.getInstance().getSearchIndex().getDataRepositoryNames().get("PPN123"));
         DataManager.getInstance().getSearchIndex().updateDataRepositoryNames("PPN123", "repo/a");
         Assertions.assertEquals("repo/a", DataManager.getInstance().getSearchIndex().getDataRepositoryNames().get("PPN123"));
