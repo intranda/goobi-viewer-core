@@ -24,7 +24,7 @@
  */
 var viewerJS = ( function( viewer ) {
     'use strict';
-    
+   
     var _debug = false; 
 	
     viewer.notifications = {
@@ -98,11 +98,12 @@ var viewerJS = ( function( viewer ) {
 			}			
 		}
     }
-
+ 
 	// DEFINE SWEETALERT TOAST (SMALL BOX NOTIFICATION) BEHAVIOUR
 	const swalToast = (typeof Swal !== 'undefined') ?  Swal.mixin({
 	  toast: true,
-	  position: 'top-end',
+	  position: 'bottom',
+	  background: '#1b2330',
 	  showConfirmButton: false,
 	  timer: 4000,
 	  timerProgressBar: true,
