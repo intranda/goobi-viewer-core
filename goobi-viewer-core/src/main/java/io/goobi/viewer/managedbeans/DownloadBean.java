@@ -111,10 +111,9 @@ public class DownloadBean implements Serializable {
         }
         if (message != null) {
             return message.getMessageId();
-        } else {
-            logger.error("Download job with the ID {} not found.", downloadIdentifier);
-            throw new DownloadException("downloadErrorNotFound");
         }
+        logger.error("Download job with the ID {} not found.", downloadIdentifier);
+        throw new DownloadException("downloadErrorNotFound");
     }
 
     /**
@@ -128,9 +127,8 @@ public class DownloadBean implements Serializable {
         if (message != null) {
             return this.messageBroker.countMessagesBefore(MessageQueueManager.getQueueForMessageType(message.getTaskName()), message.getTaskName(),
                     message.getMessageId());
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     /**
