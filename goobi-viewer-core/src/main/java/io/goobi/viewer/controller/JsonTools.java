@@ -500,15 +500,15 @@ public final class JsonTools {
     public static String getNestedValue(JSONObject json, String key) {
     	boolean found = json.has(key);
     	Iterator<String> keys;
-    	String next_key;
+    	String nextKey;
     	if (!found) {
     		keys = json.keys();
     		while(keys.hasNext()) {
-    			next_key = (String) keys.next();
-                if (json.get(next_key) instanceof JSONObject) {
-                	return getNestedValue(json.getJSONObject(next_key), key);
-                } else if (json.get(next_key) instanceof JSONArray) {
-                	JSONArray jsonArray = json.getJSONArray(next_key);
+    			nextKey = (String) keys.next();
+                if (json.get(nextKey) instanceof JSONObject) {
+                	return getNestedValue(json.getJSONObject(nextKey), key);
+                } else if (json.get(nextKey) instanceof JSONArray) {
+                	JSONArray jsonArray = json.getJSONArray(nextKey);
                     int n = 0;
                     while (n < jsonArray.length()){
                         String jsonArrayString = jsonArray.get(n).toString();

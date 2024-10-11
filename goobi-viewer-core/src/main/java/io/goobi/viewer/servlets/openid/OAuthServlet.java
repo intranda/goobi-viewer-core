@@ -356,17 +356,17 @@ public class OAuthServlet extends HttpServlet {
                      json.put(provider.getThirdPartyLoginReqParamDef(), array);
                      final StringEntity entity = new StringEntity(json.toString());
                      
-                     HttpPost external_request = new HttpPost(provider.getThirdPartyLoginUrl());
+                     HttpPost externalRequest = new HttpPost(provider.getThirdPartyLoginUrl());
                      String[] thirdPartyLoginApiKeyParams = provider.getThirdPartyLoginApiKey().split(" ");
-                     external_request.addHeader(thirdPartyLoginApiKeyParams[0] , thirdPartyLoginApiKeyParams[1]);
-                     external_request.addHeader("content-type", "application/json");
-                     external_request.setEntity(entity);
+                     externalRequest.addHeader(thirdPartyLoginApiKeyParams[0] , thirdPartyLoginApiKeyParams[1]);
+                     externalRequest.addHeader("content-type", "application/json");
+                     externalRequest.setEntity(entity);
                      
                      CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-                     HttpResponse external_response = (HttpResponse) httpClient.execute(external_request);
+                     HttpResponse externalResponse = (HttpResponse) httpClient.execute(externalRequest);
                      
-                     JSONObject external_responseObj = new JSONObject(EntityUtils.toString(external_response.getEntity()));
-                     String email = JsonTools.getNestedValue(external_responseObj, provider.getThirdPartyLoginClaim());
+                     JSONObject externalResponseObj = new JSONObject(EntityUtils.toString(externalResponse.getEntity()));
+                     String email = JsonTools.getNestedValue(externalResponseObj, provider.getThirdPartyLoginClaim());
                      String sub = jsonPayload.getString("sub");
                      
                      JSONObject jsonObject = new JSONObject();
