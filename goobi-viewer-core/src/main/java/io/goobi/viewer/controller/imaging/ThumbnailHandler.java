@@ -886,9 +886,11 @@ public class ThumbnailHandler {
                 case "object":
                     ret = getThumbnailPath(OBJECT_3D_THUMB).toString();
                     break;
+                case "other":
+                    break;
                 default:
                     if (logger.isWarnEnabled()) {
-                        logger.warn("Mime type of '{}' not supported: {}", doc.getMetadataValue(SolrConstants.PI_TOPSTRUCT), baseMimeType);
+                        logger.warn("Mime type of '{}' not supported: {}", doc.getLuceneId(), baseMimeType);
                     }
                     break;
             }
