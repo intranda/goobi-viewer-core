@@ -29,6 +29,8 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.solr.common.SolrDocument;
@@ -436,4 +438,15 @@ class ThumbnailHandlerTest extends AbstractTest {
                         .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("object").build()));
     }
 
+    /**
+     * @see ThumbnailHandler#getImagePath(PhysicalElement)
+     * @verifies return mime type correctly
+     */
+    @Test
+    void getMimeType_shouldReturnMimeTypeCorrectly() {
+        StructElement se = new StructElement();
+        se.getMetadataFields().put(SolrConstants.MIMETYPE, Collections.singletonList("image/tiff"));
+        Assertions.assertEquals("image/tiff", ThumbnailHandler.getMimeType(se).get());
+    }
+    
 }
