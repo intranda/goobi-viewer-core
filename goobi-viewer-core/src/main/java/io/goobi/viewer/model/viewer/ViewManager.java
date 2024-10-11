@@ -776,7 +776,7 @@ public class ViewManager implements Serializable {
                     }
                 } else if (dim.width * dim.height == 0 || (maxWidth > 0 && maxWidth < dim.width) || (maxHeight > 0 && maxHeight < dim.height)) {
                     // nothing
-                } else if (origImageSize == null) {
+                } else if (origImageSize == null || origImageSize.height * origImageSize.width == 0) {
                     options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), option.getBoxSizeInPixel()));
                 } else {
                     Scale scale = new Scale.ScaleToBox(option.getBoxSizeInPixel());
@@ -2801,7 +2801,7 @@ public class ViewManager implements Serializable {
         return pagesWithAlto >= threshold;
     }
 
-    public Map<String, List<String>> getFilenamesByMimeType() throws IndexUnreachableException, PresentationException {
+    public Map<String, List<String>> getFilenamesByMimeType(boolean localFilesOnly) throws IndexUnreachableException, PresentationException {
         List<SolrDocument> pageDocs = DataManager.getInstance()
                 .getSearchIndex()
                 .getDocs(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
@@ -2819,6 +2819,7 @@ public class ViewManager implements Serializable {
                 .stream()
                 .map(doc -> doc.getFieldValue(SolrConstants.FILENAME))
                 .map(Object::toString)
+                .filter(path -> localFilesOnly ? !path.matches("(?i)^https?:.*") : true)
                 .collect(Collectors.toMap(
                         filename -> getMimetype((String) filename),
                         filename -> List.of(filename),

@@ -24,7 +24,7 @@ class FileTypeTest {
                 "model", "04.obj",
                 "object", "05.gltf");
         Mockito.when(page.getFileNames()).thenReturn(filenameMap);
-        Collection<FileType> types = FileType.containedFiletypes(page);
+        Collection<FileType> types = FileType.containedFiletypes(page, true);
 
         Assertions.assertTrue(types.contains(FileType.IMAGE));
         Assertions.assertTrue(types.contains(FileType.TEXT));

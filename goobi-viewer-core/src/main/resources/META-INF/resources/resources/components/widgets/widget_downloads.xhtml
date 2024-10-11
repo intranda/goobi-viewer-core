@@ -20,7 +20,7 @@
 					<!-- WIDGET TITLE -->
 					<h2 tabindex="0" role="button"
 						class="widget__title widget-downloads__title #{cc.attrs.collapsible  ? 'collapseable' : ''}">
-						<span>#{msg.downloads}</span> <i class="fa fa-angle-down"
+						<span>#{msg.widget__downloads__title}</span> <i class="fa fa-angle-down"
 							aria-hidden="true"></i>
 					</h2>
 				</div>
@@ -196,7 +196,7 @@
 							<!-- PDF (WORK) -->
 							<c:set scope="request" var="hasPrerenderedPagePdfs"
 								value="#{activeDocumentBean.viewManager.hasPrerenderedPagePdfs()}" />
-							<ui:fragment 
+							<ui:fragment
 	                            rendered="#{displayConditions.matchRecord('{contentType:[IMAGE], pageType:[viewObject, viewFullscreen], accessCondition:DOWNLOAD_PDF}')}">
 								<ui:fragment visibility-class="widget-element"  rendered="#{!configurationBean.generatePdfInMessageQueue and hasPrerenderedPagePdfs}">
 									<a

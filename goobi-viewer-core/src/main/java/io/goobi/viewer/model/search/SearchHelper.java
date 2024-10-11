@@ -545,6 +545,7 @@ public final class SearchHelper {
      * @param addArchiveFilterSuffix a boolean.
      * @param addCollectionBlacklistSuffix a boolean.
      * @param privilege Privilege to check (Connector checks a different privilege)
+     * @param addStaticQuerySuffix if true, add the configured static query suffix to the query
      * @return Generated Solr query suffix
      * @should add archive filter suffix
      * @should add static suffix

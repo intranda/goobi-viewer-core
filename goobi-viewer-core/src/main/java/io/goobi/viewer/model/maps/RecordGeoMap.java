@@ -119,6 +119,9 @@ public class RecordGeoMap {
                 .filter(config -> "docStruct".equals(config.getType()))
                 .forEach(config -> createDocStructFeatureSet(map, mainStruct, config));
         this.featureSetConfigs.stream()
+                .filter(config -> "docStructs".equals(config.getType()))
+                .forEach(config -> createAllDocStructFeatureSet(map, mainStruct, config));
+        this.featureSetConfigs.stream()
                 .filter(config -> "relation".equals(config.getType()))
                 .forEach(config -> createRelatedDocumentFeatureSet(map, relatedDocuments, config));
         this.featureSetConfigs.stream()
@@ -207,6 +210,18 @@ public class RecordGeoMap {
             features.forEach(f -> f.setTitle(label));
             featureSet.setFeatures(features.stream().map(GeoMapFeature::getJsonObject).map(JSONObject::toString).toList());
 
+            geoMap.addFeatureSet(featureSet);
+        }
+    }
+
+    private static void createAllDocStructFeatureSet(GeoMap geoMap, StructElement docStruct, FeatureSetConfiguration config) {
+        if (matchesQuery(MetadataContainer.createMetadataEntity(docStruct), config.getQuery())) {
+            SolrFeatureSet featureSet = new SolrFeatureSet();
+            featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), true)));
+            featureSet.setMarker(config.getMarker());
+            featureSet.setMarkerTitleField(config.getLabelConfig());
+            featureSet.setSolrQuery(String.format("+PI_TOPSTRUCT:%s +DOCTYPE:DOCSTRCT", docStruct.getPi()));
+            featureSet.setAggregateResults(false);
             geoMap.addFeatureSet(featureSet);
         }
     }
