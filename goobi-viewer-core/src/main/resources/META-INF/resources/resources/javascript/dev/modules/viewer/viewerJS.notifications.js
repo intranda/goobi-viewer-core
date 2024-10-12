@@ -105,6 +105,7 @@ var viewerJS = ( function( viewer ) {
 	  position: 'bottom',
 	  background: '#1b2330',
 	  showConfirmButton: false,
+      animation: false,
 	  timer: 4000,
 	  timerProgressBar: true,
 	  didOpen: (toast) => {
