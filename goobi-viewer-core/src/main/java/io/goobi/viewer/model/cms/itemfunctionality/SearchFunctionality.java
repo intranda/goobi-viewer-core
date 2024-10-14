@@ -65,6 +65,8 @@ public class SearchFunctionality implements Functionality, SearchInterface {
 
     private static final Logger logger = LogManager.getLogger(SearchFunctionality.class);
 
+    private SearchBean searchBean = BeanUtils.getSearchBean();
+
     /**
      * The current page of the search result list
      */
@@ -257,9 +259,6 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         return sb.toString();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.itemfunctionality.Functionality#setPageNo(int)
-     */
     /** {@inheritDoc} */
     @Override
     public void setPageNo(int pageNo) {
@@ -267,9 +266,6 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         Optional.ofNullable(getSearchBean()).ifPresent(bean -> bean.setCurrentPage(pageNo));
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.cms.itemfunctionality.Functionality#getPageNo()
-     */
     /** {@inheritDoc} */
     @Override
     public int getPageNo() {
@@ -290,7 +286,16 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * @return the searchBean
      */
     public SearchBean getSearchBean() {
-        return BeanUtils.getSearchBean();
+        return searchBean;
+    }
+
+    /**
+     * SearchBean injection for tests.
+     * 
+     * @param searchBean
+     */
+    void setSearchBean(SearchBean searchBean) {
+        this.searchBean = searchBean;
     }
 
     /**
@@ -302,6 +307,18 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      */
     public int getHitsPerPage() {
         return getSearchBean().getHitsPerPage();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getActiveResultGroupName() {
+        return getSearchBean().getActiveResultGroupName();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setActiveResultGroupName(String activeResultGroupName) {
+        getSearchBean().setActiveResultGroupName(activeResultGroupName);
     }
 
     /** {@inheritDoc} */
@@ -377,11 +394,16 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         return baseUrl;
     }
 
-    private URI getParameterPath() {
+    /**
+     * 
+     * @return {@link URI}
+     * @should include five parameters
+     */
+    URI getParameterPath() {
         URI path = URI.create("");
-        //        path = ViewerPathBuilder.resolve(path, getCollection());
         // URL-encoder query, if necessary (otherwise, exceptions might occur)
         String queryString = getQueryString();
+        path = ViewerPathBuilder.resolve(path, getActiveResultGroupName());
         path = ViewerPathBuilder.resolve(path, queryString);
         path = ViewerPathBuilder.resolve(path, Integer.toString(getPageNo()));
         path = ViewerPathBuilder.resolve(path, getSortString());
@@ -443,7 +465,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      */
     public String getFacettedUrl(String facetString) {
         Path path = Paths.get(getBaseUrl());
-        //        path = path.resolve(getCollection());
+        path = path.resolve(getActiveResultGroupName());
         path = path.resolve(getQueryString());
         path = path.resolve(Integer.toString(getPageNo()));
         path = path.resolve(getSortString());
