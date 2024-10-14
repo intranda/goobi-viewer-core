@@ -27,11 +27,11 @@ import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.solr.SolrTools;
 
-class SearchFunctionalityTest extends AbstractTest {
+class SearchFunctionalityTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SolrTools#getFieldValueMap(SolrDocument)
