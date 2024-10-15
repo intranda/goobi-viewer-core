@@ -173,7 +173,7 @@ public final class FacetSorting {
             if (relevantString1.length() > 0 && !Character.isDigit(relevantString1.charAt(0)) && !Character.isLetter(relevantString1.charAt(0))) {
                 string1Alphanum = false;
             }
-            if (relevantString2 != null & relevantString2.length() > 0 && !Character.isDigit(relevantString2.charAt(0))
+            if (StringUtils.isNotEmpty(relevantString2) && !Character.isDigit(relevantString2.charAt(0))
                     && !Character.isLetter(relevantString2.charAt(0))) {
                 string2Alphanum = false;
             }
@@ -184,10 +184,12 @@ public final class FacetSorting {
                 return 1;
             }
             // Sort digits after letters
-            if (Character.isDigit(relevantString1.charAt(0)) && Character.isLetter(relevantString2.charAt(0))) {
+            if (Character.isDigit(relevantString1.charAt(0)) && StringUtils.isNotEmpty(relevantString2)
+                    && Character.isLetter(relevantString2.charAt(0))) {
                 return 1;
             }
-            if (Character.isLetter(relevantString1.charAt(0)) && Character.isDigit(relevantString2.charAt(0))) {
+            if (Character.isLetter(relevantString1.charAt(0)) && StringUtils.isNotEmpty(relevantString2)
+                    && Character.isDigit(relevantString2.charAt(0))) {
                 return -1;
             }
 
@@ -268,33 +270,33 @@ public final class FacetSorting {
      * @return a SortingMap, which automatically orders entries as they are added to the map
      */
     public static SortingMap<String, Long> getSortingMap(String field, String sortOrder, Locale locale) {
-        return new SortingMap<String, Long>(getMap(field, sortOrder, locale));
+        return new SortingMap<>(getMap(field, sortOrder, locale));
     }
 
     private static Map<String, Long> getMap(String field, String sortOrder, Locale locale) {
         switch (sortOrder) {
             case "numerical":
             case "numerical_asc":
-                return new TreeMap<String, Long>(new NumericComparator());
+                return new TreeMap<>(new NumericComparator());
             case "numerical_desc":
-                return new TreeMap<String, Long>(new NumericComparator(false));
+                return new TreeMap<>(new NumericComparator(false));
             case "alphabetical":
             case "alphabetical_asc":
-                return new TreeMap<String, Long>(new AlphabeticComparator(field, locale));
+                return new TreeMap<>(new AlphabeticComparator(field, locale));
             case "alphabetical_desc":
-                return new TreeMap<String, Long>(new AlphabeticComparator(field, locale, false));
+                return new TreeMap<>(new AlphabeticComparator(field, locale, false));
             case "alphabetical_raw":
             case "alphabetical_raw_asc":
-                return new TreeMap<String, Long>();
+                return new TreeMap<>();
             case "alphabetical_raw_desc":
-                return new TreeMap<String, Long>((a, b) -> b.compareTo(a));
+                return new TreeMap<>((a, b) -> b.compareTo(a));
             case "alphanumerical":
             case "natural":
             case "natural_asc":
-                return new TreeMap<String, Long>(new AlphanumComparator(field, locale));
+                return new TreeMap<>(new AlphanumComparator(field, locale));
             case "alphanumerical_desc":
             case "natural_desc":
-                return new TreeMap<String, Long>(new AlphanumComparator(field, locale, false));
+                return new TreeMap<>(new AlphanumComparator(field, locale, false));
             case "count":
             default:
                 return new LinkedHashMap<>();

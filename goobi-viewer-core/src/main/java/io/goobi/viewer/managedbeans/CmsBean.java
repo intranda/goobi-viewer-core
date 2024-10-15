@@ -1483,6 +1483,7 @@ public class CmsBean implements Serializable {
             this.solrSortFields = new ArrayList<>();
             this.solrSortFields.add(SolrConstants.SORT_RELEVANCE);
             this.solrSortFields.add(SolrConstants.SORT_RANDOM);
+            this.solrSortFields.add(SolrConstants.CURRENTNOSORT);
             this.solrSortFields.addAll(DataManager.getInstance().getSearchIndex().getAllSortFieldNames());
         }
         return this.solrSortFields;

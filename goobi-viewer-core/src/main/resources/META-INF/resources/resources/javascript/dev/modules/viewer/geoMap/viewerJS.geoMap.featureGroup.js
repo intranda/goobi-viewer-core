@@ -150,11 +150,10 @@ var viewerJS = ( function( viewer ) {
                 .subscribe(this.onFeatureMove);
                 rxjs.fromEvent(layer, "click").pipe(rxjs.operators.map(e => layer.feature)).subscribe(this.onFeatureClick);
 
-
 				let title = viewerJS.getMetadataValue(feature.properties.title, this.config.language);
        			let desc = viewerJS.getMetadataValue(feature.properties.description, this.config.language);      
        			if(this.config.popover && feature.properties && (title || desc || this.config.emptyMarkerMessage)) {                    
-                    if(this.config.popoverOnHover) {                    
+                    if(this.config.popoverOnHover) {     
                         rxjs.fromEvent(layer, "mouseover").subscribe(() => layer.openPopup());
                         rxjs.fromEvent(layer, "mouseout").subscribe(() => layer.closePopup());
                     }

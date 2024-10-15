@@ -102,8 +102,6 @@
 		    		riot.mount(document.getElementById("featureList_#{cc.attrs.mapId}"), "geojsonfeaturelist", {
 		    			featureGroups: map.layers,
 		    			geomap: map,
-		    			entityLabelFormat: ["\${MD_CREATOR}", "\${MD_TITLE}"],
-		    			listLabelFormat: ["\${MD_BIOGRAPHY_EDUCATION}"],
 		    			entityLinkFormat: ["#{request.contextPath}/object/\${PI}/"],
 		    			locale: "#{navigationHelper.locale}",	    			  
 		    			defaultLocale: "#{navigationHelper.defaultLocale}"

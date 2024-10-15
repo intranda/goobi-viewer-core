@@ -264,6 +264,9 @@ public class DisplayConditions implements Serializable {
         json = json.replaceAll(":\\s*!\\[", ":[!,");
         VisibilityConditionInfo info = JsonStringConverter.of(VisibilityConditionInfo.class).convert(json);
         VisibilityCondition condition = new VisibilityCondition(info);
+        if (activeDocumentBean == null || !activeDocumentBean.isRecordLoaded()) {
+            return false;
+        }
         return condition.matchesPage(getPageType(), activeDocumentBean.getViewManager().getCurrentPage(), httpRequest,
                 propertyCache);
     }
@@ -288,9 +291,8 @@ public class DisplayConditions implements Serializable {
         UIComponentHelper tag = UIComponentHelper.getCurrentComponent().getChild(id);
         if (tag == null) {
             return UIComponentHelper.getCurrentComponent();
-        } else {
-            return tag;
         }
+        return tag;
     }
 
     /**
@@ -328,7 +330,7 @@ public class DisplayConditions implements Serializable {
                     .count();
         }
 
-        private boolean isRendered(UIComponent child) {
+        private static boolean isRendered(UIComponent child) {
             try {
                 return child.isRendered() && isHasValuesIfRepeat(child);
             } catch (ConcurrentModificationException e) {
@@ -346,6 +348,7 @@ public class DisplayConditions implements Serializable {
                 }
                 current = current.getParent();
             }
+
             return false;
         }
 
@@ -353,9 +356,9 @@ public class DisplayConditions implements Serializable {
         public boolean isHasChildrenIfComposite(UIComponent child) {
             if (child instanceof UINamingContainer || child instanceof HtmlPanelGroup || child instanceof HtmlPanelGrid) {
                 return child.getChildCount() > 0;
-            } else {
-                return true;
             }
+
+            return true;
         }
 
         UIComponentHelper getChild(String id) {
@@ -366,14 +369,13 @@ public class DisplayConditions implements Serializable {
                         .findAny()
                         .map(UIComponentHelper::new)
                         .orElse(null);
-            } else {
-                throw new IllegalArgumentException("Must pass a non-null value for id of descendant you want to find");
             }
 
+            throw new IllegalArgumentException("Must pass a non-null value for id of descendant you want to find");
         }
 
         private List<UIComponent> getDescendants(UIComponent container) {
-            List<UIComponent> descs = new ArrayList<UIComponent>();
+            List<UIComponent> descs = new ArrayList<>();
             for (UIComponent child : container.getChildren()) {
                 descs.add(child);
                 descs.addAll(getDescendants(child));
@@ -381,7 +383,7 @@ public class DisplayConditions implements Serializable {
             return descs;
         }
 
-        private boolean hasVisibilityTag(UIComponent c, String visibilityClass) {
+        private static boolean hasVisibilityTag(UIComponent c, String visibilityClass) {
             Object styles = c.getAttributes().get("visibility-class");
             if (styles instanceof Collection) {
                 return ((Collection<?>) styles).contains(visibilityClass);
@@ -398,18 +400,16 @@ public class DisplayConditions implements Serializable {
          * @param c
          * @return
          */
-        private boolean isHasValuesIfRepeat(UIComponent c) {
-            if (c instanceof com.sun.faces.facelets.component.UIRepeat) {
-                com.sun.faces.facelets.component.UIRepeat repeat = (com.sun.faces.facelets.component.UIRepeat) c;
+        private static boolean isHasValuesIfRepeat(UIComponent c) {
+            if (c instanceof com.sun.faces.facelets.component.UIRepeat repeat) {
                 Object value = repeat.getValue();
                 if (value instanceof Collection) {
-                    return ((Collection<?>) value).size() > 0;
-                } else {
-                    return false;
+                    return !((Collection<?>) value).isEmpty();
                 }
-            } else {
-                return true;
+                return false;
             }
+
+            return true;
         }
     }
 
