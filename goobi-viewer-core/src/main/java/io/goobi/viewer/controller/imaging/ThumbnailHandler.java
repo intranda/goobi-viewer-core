@@ -48,6 +48,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
@@ -886,8 +887,6 @@ public class ThumbnailHandler {
                 case "object":
                     ret = getThumbnailPath(OBJECT_3D_THUMB).toString();
                     break;
-//                case "other":
-//                    break;
                 default:
                     if (logger.isWarnEnabled()) {
                         logger.warn("Mime type of '{}' not supported: {}", doc.getLuceneId(), mimeType);
@@ -917,7 +916,7 @@ public class ThumbnailHandler {
                 if (volume != null) {
                     String volumeImagePath = getImagePath(volume);
                     if (StringUtils.isNotBlank(volumeImagePath)) {
-                        if (URI.create(volumeImagePath).isAbsolute()) {
+                        if (PathConverter.toURI(volumeImagePath).isAbsolute()) {
                             ret = volumeImagePath;
                         } else {
                             ret = volume.getPi() + "/" + volumeImagePath;
@@ -928,7 +927,7 @@ public class ThumbnailHandler {
                 } else {
                     ret = getThumbnailPath(ANCHOR_THUMB).toString();
                 }
-            } catch (PresentationException | IndexUnreachableException e) {
+            } catch (PresentationException | IndexUnreachableException | URISyntaxException e) {
                 logger.error("Unable to retrieve first volume of {} from index", doc, e);
             }
         } else {
