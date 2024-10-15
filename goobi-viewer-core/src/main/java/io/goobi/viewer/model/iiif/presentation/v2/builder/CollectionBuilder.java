@@ -76,8 +76,8 @@ public class CollectionBuilder extends AbstractBuilder {
      * Required field to create manifest stubs for works in collection
      */
     public static final String[] CONTAINED_WORKS_QUERY_FIELDS =
-            { SolrConstants.PI, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT,
-                    SolrConstants.IDDOC };
+            { SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LABEL, SolrConstants.MIMETYPE, SolrConstants.PI, SolrConstants.TITLE,
+                    SolrConstants.DOCSTRCT, SolrConstants.IDDOC };
     /** Constant <code>RSS_FEED_LABEL="Rss feed"</code> */
     public static final String RSS_FEED_LABEL = "Rss feed";
     /** Constant <code>RSS_FEED_FORMAT="Rss feed"</code> */

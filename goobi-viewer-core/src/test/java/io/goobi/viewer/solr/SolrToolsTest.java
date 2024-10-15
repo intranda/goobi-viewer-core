@@ -47,6 +47,8 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + PI_KLEIUNIV, null);
         Assertions.assertNotNull(doc);
         Map<String, List<String>> fieldValueMap = SolrTools.getFieldValueMap(doc);
+        Assertions.assertTrue(fieldValueMap.containsKey(SolrConstants.PI_TOPSTRUCT));
+        Assertions.assertTrue(fieldValueMap.containsKey(SolrConstants.MIMETYPE));
         Assertions.assertFalse(fieldValueMap.containsKey(SolrConstants.IMAGEURN_OAI));
         Assertions.assertFalse(fieldValueMap.containsKey("PAGEURNS"));
     }
