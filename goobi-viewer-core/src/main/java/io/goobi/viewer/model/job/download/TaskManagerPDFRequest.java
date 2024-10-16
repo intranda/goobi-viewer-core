@@ -25,8 +25,9 @@ import io.goobi.viewer.controller.DataManager;
 
 /**
  * @author florian
- *
+ * @deprecated jobs are now handled via queues
  */
+@Deprecated
 public class TaskManagerPDFRequest extends AbstractTaskManagerRequest {
 
     public TaskManagerPDFRequest() {
