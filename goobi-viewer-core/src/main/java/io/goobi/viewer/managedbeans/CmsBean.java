@@ -313,7 +313,7 @@ public class CmsBean implements Serializable {
      *
      * @deprecated This method only remains to avoid pages failing to load which still call this method
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public void forwardToCMSPage() {
         //do nothing
     }

@@ -119,7 +119,7 @@ public class DisclaimerBean implements Serializable {
      * @return the cookie banner stored in the DAO
      * @deprecated not needed if disclaimer is realized as a sweet alert which is created from {@link #getDisclaimerConfig()}
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public Disclaimer getDisclaimer() {
         if (dao != null) {
             try {

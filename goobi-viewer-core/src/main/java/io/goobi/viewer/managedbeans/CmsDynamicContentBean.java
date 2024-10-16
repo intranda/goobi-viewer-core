@@ -39,7 +39,9 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 
 /**
- * <p>CmsDynamicContentBean class.</p>
+ * <p>
+ * CmsDynamicContentBean class.
+ * </p>
  *
  * @author florian
  */
@@ -54,17 +56,21 @@ public class CmsDynamicContentBean implements Serializable {
     private CMSPage cmsPage = null;
 
     /**
-     * <p>Setter for the field <code>cmsPage</code>.</p>
+     * <p>
+     * Setter for the field <code>cmsPage</code>.
+     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
      */
-    @Deprecated //no longer needed to set
+    @Deprecated(since = "24.10")
     public void setCmsPage(CMSPage page) {
         this.cmsPage = page;
     }
 
     /**
-     * <p>getTopBarContent.</p>
+     * <p>
+     * getTopBarContent.
+     * </p>
      *
      * @return a {@link javax.faces.component.html.HtmlPanelGroup} object
      */
@@ -81,7 +87,9 @@ public class CmsDynamicContentBean implements Serializable {
     }
 
     /**
-     * <p>setTopBarContent.</p>
+     * <p>
+     * setTopBarContent.
+     * </p>
      *
      * @param topBarGroup the topBarGroup to set
      */

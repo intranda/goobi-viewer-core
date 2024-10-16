@@ -85,7 +85,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     private static final Logger logger = LogManager.getLogger(CMSCollection.class);
 
-    @Deprecated
+    @Deprecated(since = "24.10")
     private static final String LABEL_TAG = "label";
     private static final String DESCRIPTION_TAG = "description";
 
@@ -584,7 +584,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * @param collectionName
      * @return {@link URI}
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public static URI getDefaultIcon(String collectionName) {
         return null;
     }

@@ -1152,7 +1152,7 @@ public class NavigationHelper implements Serializable {
      * @return the reading mode url
      * @deprecated renamed to fullscreen
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public String getReadingModeUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewFullscreen.getName();
     }

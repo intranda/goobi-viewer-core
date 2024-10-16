@@ -352,7 +352,7 @@ public class DisplayConditions implements Serializable {
             return false;
         }
 
-        @Deprecated
+        @Deprecated(since = "24.10")
         public boolean isHasChildrenIfComposite(UIComponent child) {
             if (child instanceof UINamingContainer || child instanceof HtmlPanelGroup || child instanceof HtmlPanelGrid) {
                 return child.getChildCount() > 0;

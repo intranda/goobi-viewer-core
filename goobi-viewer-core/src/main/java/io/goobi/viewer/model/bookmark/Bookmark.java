@@ -108,7 +108,7 @@ public class Bookmark implements Serializable {
     /**
      * @deprecated TODO Remove column in the DB update so that this field can be removed
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     @Column(name = "main_title")
     private String mainTitle = null;
 

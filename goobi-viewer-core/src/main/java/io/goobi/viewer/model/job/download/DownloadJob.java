@@ -192,7 +192,7 @@ public abstract class DownloadJob implements Serializable {
      * @should throw IllegalArgumentException if type unknown
      * @deprecated only used in deprecated method {@link DownloadResource#getOrCreateDownloadJob(String, String, String, String)}
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public static synchronized DownloadJob checkDownload(String type, final String email, String pi, String logId, String downloadIdentifier,
             long ttl) throws DAOException, PresentationException, IndexUnreachableException {
         if (type == null) {
@@ -286,7 +286,7 @@ public abstract class DownloadJob implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @deprecated Only used in deprecated method {@link #checkDownload(String, String, String, String, String, long)}
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     protected abstract void triggerCreation() throws PresentationException, IndexUnreachableException;
 
     /**
@@ -726,7 +726,7 @@ public abstract class DownloadJob implements Serializable {
      * @throws IOException
      * @deprecated jobs are now handled via queues
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public static Response postJobRequest(String url, AbstractTaskManagerRequest body) throws IOException {
         try {
             Client client = ClientBuilder.newClient();

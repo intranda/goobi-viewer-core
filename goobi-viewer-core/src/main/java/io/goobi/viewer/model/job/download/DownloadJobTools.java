@@ -86,7 +86,7 @@ public final class DownloadJobTools {
      * @should delete file correctly
      * @deprecated Only used in deprecated method {@link DownloadJob#checkDownload(String, String, String, String, String, long)}
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public static int cleanupExpiredDownloads() throws DAOException {
         List<DownloadJob> jobs = DataManager.getInstance().getDao().getAllDownloadJobs();
         if (jobs.isEmpty()) {

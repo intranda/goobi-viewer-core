@@ -1150,7 +1150,7 @@ public class SolrSearchIndex {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public List<DisplayUserGeneratedContent> getDisplayUserGeneratedContentsForPage(String pi, int page)
             throws PresentationException, IndexUnreachableException {
         String query = new StringBuilder().append(SolrConstants.PI_TOPSTRUCT)

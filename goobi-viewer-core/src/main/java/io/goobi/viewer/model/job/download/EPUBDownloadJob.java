@@ -138,7 +138,7 @@ public class EPUBDownloadJob extends DownloadJob {
      * @return a long.
      * @deprecated jobs are no longs handled via TaskManager but via queues
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     protected static long getEpubSizeFromTaskManager(String identifier) {
         StringBuilder url = new StringBuilder();
         url.append(DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
@@ -166,7 +166,7 @@ public class EPUBDownloadJob extends DownloadJob {
      * @return a int.
      * @deprecated jobs are no longs handled via TaskManager but via queues
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public static int getEPUBJobsInQueue(String identifier) {
         StringBuilder url = new StringBuilder();
         url.append(DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
@@ -197,7 +197,7 @@ public class EPUBDownloadJob extends DownloadJob {
      * @throws io.goobi.viewer.exceptions.DownloadException if any.
      * @deprecated Creation via TaskManager request is no longer used and this method is never called
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public static void triggerCreation(String pi, String downloadIdentifier)
             throws PresentationException, IndexUnreachableException {
         File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(EPUBDownloadJob.LOCAL_TYPE));
@@ -242,7 +242,7 @@ public class EPUBDownloadJob extends DownloadJob {
         return "/viewerepub";
     }
 
-    @Deprecated
+    @Deprecated(since = "24.10")
     @Override
     protected void triggerCreation() throws PresentationException, IndexUnreachableException {
         // TODO Auto-generated method stub

@@ -178,7 +178,7 @@ public class TOC implements Serializable {
      *
      * @return a {@link java.util.List} object.
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public List<TOCElement> getTreeViewSidebar() {
         // logger.trace("getTreeViewSidebar"); //NOSONAR Debug
         return getTreeView();

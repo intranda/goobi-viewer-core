@@ -769,7 +769,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      *
      * @return a {@link java.lang.String} object.
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public String getTitle() {
         String answer = getLabel();
         if (StringUtils.isEmpty(answer)) {

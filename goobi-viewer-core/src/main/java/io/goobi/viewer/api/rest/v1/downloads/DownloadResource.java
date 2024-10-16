@@ -570,7 +570,7 @@ public class DownloadResource {
      * @deprecated replaced by {@link #putPDFDownloadJob(String, String, String, String)} for PDFs. For EPUB this needs to be rewritten using message
      *             queue functionality analogous to the handling of PDFs
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public String getOrCreateDownloadJob(String pi, final String inLogId, final String inEmail, String type) throws ContentLibException {
         String email = inEmail;
         if (email == null || "-".equals(email)) {
