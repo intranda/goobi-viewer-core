@@ -4967,7 +4967,9 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
+     * @deprecated currently unused since download jobs are handled via message queues
      */
+    @Deprecated
     public String getTaskManagerServiceUrl() {
         return getLocalString("urls.taskManager", "http://localhost:8080/itm/") + "service";
     }
@@ -4979,7 +4981,9 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
+     * @deprecated jobs are no longs handled via TaskManager but via queues
      */
+    @Deprecated
     public String getTaskManagerRestUrl() {
         return getLocalString("urls.taskManager", "http://localhost:8080/itm/") + "rest";
     }
