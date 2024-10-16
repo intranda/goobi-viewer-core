@@ -48,6 +48,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import io.goobi.viewer.api.rest.v1.downloads.DownloadResource;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
@@ -189,7 +190,9 @@ public abstract class DownloadJob implements Serializable {
      * @should throw IllegalArgumentException if type or pi or downloadIdentifier null
      * @should throw IllegalArgumentException if downloadIdentifier mismatches pattern
      * @should throw IllegalArgumentException if type unknown
+     * @deprecated only used in deprecated method {@link DownloadResource#getOrCreateDownloadJob(String, String, String, String)}
      */
+    @Deprecated
     public static synchronized DownloadJob checkDownload(String type, final String email, String pi, String logId, String downloadIdentifier,
             long ttl) throws DAOException, PresentationException, IndexUnreachableException {
         if (type == null) {
@@ -281,7 +284,9 @@ public abstract class DownloadJob implements Serializable {
      *
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @deprecated Only used in deprecated method {@link #checkDownload(String, String, String, String, String, long)}
      */
+    @Deprecated
     protected abstract void triggerCreation() throws PresentationException, IndexUnreachableException;
 
     /**
@@ -713,6 +718,15 @@ public abstract class DownloadJob implements Serializable {
         this.message = message;
     }
 
+    /**
+     * 
+     * @param url
+     * @param body
+     * @return a response
+     * @throws IOException
+     * @deprecated jobs are now handled via queues
+     */
+    @Deprecated
     public static Response postJobRequest(String url, AbstractTaskManagerRequest body) throws IOException {
         try {
             Client client = ClientBuilder.newClient();
