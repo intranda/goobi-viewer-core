@@ -56,6 +56,7 @@ var viewerJS = ( function( viewer ) {
             	featureUrl: "/viewer/api/v1/index/spatial/search/{solrField}",
             	filterQuery: "BOOL_WKT_COORDS:*",
 		        labelField: "LABEL",
+                queryAdapter: "goobiViewer",
             },
             style: {
             	stroke: true,
@@ -208,7 +209,7 @@ viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
         	    type: "clusters",
         	    filterQuery: this.config.heatmap.filterQuery,
         	    labelField: this.config.heatmap.labelField,
-        	    queryAdapter: "goobiViewer"    
+        	    queryAdapter: this.config.heatmap.queryAdapter    
         	});
         	this.heatmap.addTo(this.geoMap.map);        
     }

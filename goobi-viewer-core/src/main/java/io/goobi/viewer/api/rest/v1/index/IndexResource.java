@@ -322,9 +322,10 @@ public class IndexResource {
 
             }
         }
-        return DataManager.getInstance()
+        String heatmap = DataManager.getInstance()
                 .getSearchIndex()
                 .getHeatMap(solrField, wktRegion, finalQuery, facetQuery, gridLevel);
+        return heatmap;
 
     }
 

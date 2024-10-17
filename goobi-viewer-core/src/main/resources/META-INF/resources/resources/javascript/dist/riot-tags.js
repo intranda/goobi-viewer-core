@@ -3385,9 +3385,7 @@ this.on("mount", function() {
 	if(this.opts.toggleFeatures) {
 		this.initToggleLayer(this.geoMap, this.hitsLayer, this.opts.toggleFeatures);
 	}
-	if(this.opts.heatmap?.enabled) {
-		this.heatmap = this.initHeatmap(this.hitsLayer)
-	}
+
 });
 
 this.initMap = function() {
@@ -3644,28 +3642,19 @@ this.initHitsLayer = function(map) {
     this.opts.hitsLayer.language = viewerJS.translator.language;
 	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer);
 	map.layers.push(hitsLayer);
-
 	hitsLayer.init(this.opts.features, false);
-	hitsLayer.onFeatureClick.subscribe(f => {
-		if(f.properties && f.properties.link) {
-			$(this.opts.search?.loader).show();
-			window.location.assign(f.properties.link);
-		}
-	})
-
 	return hitsLayer;
 }.bind(this)
 
 this.initHeatmap = function(hitsLayer) {
-	let heatmapQuery = this.opts.heatmap.mainQuery;
-	let heatmapFacetQuery = this.opts.heatmap.facetQuery;
-
-	let heatmap = L.solrHeatmap(this.opts.heatmap.heatmapUrl, this.opts.heatmap.featureUrl, hitsLayer, {
+	let heatmapQuery = this.opts.hitsLayer.heatmap.mainQuery;
+	let heatmapFacetQuery = this.opts.hitsLayer.heatmap.facetQuery;
+	let heatmap = L.solrHeatmap(this.opts.hitsLayer.heatmap.heatmapUrl, this.opts.hitsLayer.heatmap.featureUrl, hitsLayer, {
 		field: "WKT_COORDS",
 		type: "clusters",
 		filterQuery: heatmapQuery,
 		facetQuery: heatmapFacetQuery,
-		labelField: this.opts.heatmap.labelField,
+		labelField: this.opts.hitsLayer.heatmap.labelField,
 		queryAdapter: "goobiViewer"
 	});
 	heatmap.addTo(this.geoMap.map);
