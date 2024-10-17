@@ -271,9 +271,9 @@
         <pattern value="/term/#{field:browseBean.browsingMenuField}/#{filterQuery:browseBean.filterQuery}/#{filter:browseBean.currentStringFilter}/#{page:browseBean.currentPage}/" />
         <view-id value="/searchTermsList.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{browseBean.searchTermsAction}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
         <action onPostback="false">#{searchBean.facets.resetActiveFacetString}</action>
+        <action onPostback="false">#{browseBean.searchTermsAction}</action>
     </url-mapping>
     <!-- searchTerm5: Pattern for search results (not term listing) while preserving search mode. Needed for correct filtering via active result group. -->
     <url-mapping id="searchTerm5">

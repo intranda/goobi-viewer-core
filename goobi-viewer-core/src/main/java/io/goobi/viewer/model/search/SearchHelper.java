@@ -24,6 +24,7 @@ package io.goobi.viewer.model.search;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.text.Collator;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,6 +70,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.ExpandParams;
 import org.jsoup.Jsoup;
 
+import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DamerauLevenshtein;
 import io.goobi.viewer.controller.DataFileTools;
@@ -1820,6 +1822,96 @@ public final class SearchHelper {
         logger.debug("getFilteredTermsCount result: {}", ret);
         return ret;
     }
+    
+    /**
+     * 
+     * @param bmfc
+     * @param filterQuery
+     * @param locale
+     * @return List<String>
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public static List<String> collectAvailableTermFilters(BrowsingMenuFieldConfig bmfc, String filterQuery, Locale locale)
+            throws PresentationException, IndexUnreachableException {
+        StringBuilder sbQuery = new StringBuilder("+");
+        if (StringUtils.isNotEmpty(bmfc.getSortField())) {
+            // TODO language-specific sort field
+            sbQuery.append(bmfc.getSortField());
+        } else {
+            sbQuery.append(bmfc.getFieldForLanguage(locale.getLanguage()));
+        }
+        sbQuery.append(":[* TO *] ");
+        if (bmfc.isRecordsAndAnchorsOnly()) {
+            sbQuery.append(ALL_RECORDS_QUERY);
+        }
+
+        // Add passed filter queries
+        List<String> filterQueries = new ArrayList<>();
+        if (StringUtils.isNotEmpty(filterQuery)) {
+            filterQueries.add(filterQuery);
+        }
+
+        // Add configured filter queries
+        if (!bmfc.getFilterQueries().isEmpty()) {
+            filterQueries.addAll(bmfc.getFilterQueries());
+        }
+
+        String query = buildFinalQuery(sbQuery.toString(), false, SearchAggregationType.NO_AGGREGATION);
+
+        String facetMainField = SearchHelper.facetifyField(bmfc.getFieldForLanguage(locale.getLanguage()));
+        String facetSortField = null;
+        if (StringUtils.isNotEmpty(bmfc.getSortField())) {
+            facetSortField = SearchHelper.facetifyField(bmfc.getSortField());
+        }
+        List<String> facetFields = Collections.singletonList(facetMainField);
+        if (StringUtils.isNotEmpty(facetSortField)) {
+            // Add facetified sort field to facet fields (SORT_ fields don't work for faceting)
+            facetFields = new ArrayList<>(facetFields);
+            facetFields.add(facetSortField);
+        }
+
+        QueryResponse qr = DataManager.getInstance()
+                .getSearchIndex()
+                .searchFacetsAndStatistics(query, filterQueries, facetFields, 1, null, null, false);
+
+        String useField = null;
+        if (qr.getFacetField(facetSortField) != null) {
+            // Prefer facets from sort field
+            useField = facetSortField;
+        } else if (qr.getFacetField(facetMainField) != null) {
+            // main field fallback
+            useField = facetMainField;
+        }
+
+        Set<String> alreadyAdded = new HashSet<>();
+        List<String> ret = new ArrayList<>();
+        if (useField != null) {
+            boolean ignoreLeadingChars =
+                    StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars());
+            for (Count count : qr.getFacetField(useField).getValues()) {
+                String firstChar;
+                if (ignoreLeadingChars) {
+                    // Exclude leading characters from filters explicitly configured to be ignored
+                    firstChar = BrowseTermComparator.normalizeString(count.getName(),
+                            DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars())
+                            .trim()
+                            .substring(0, 1)
+                            .toUpperCase();
+                } else {
+                    firstChar = count.getName().substring(0, 1).toUpperCase();
+                }
+                if (!alreadyAdded.contains(firstChar)) {
+                    ret.add(firstChar);
+                    alreadyAdded.add(firstChar);
+                }
+            }
+            Collections.sort(ret, new AlphanumCollatorComparator(Collator.getInstance(locale)));
+        }
+
+        return ret;
+    }
+
 
     /**
      * Returns a list of index terms for the given field name. This method uses the slower doc search instead of term search, but can be filtered with
@@ -1948,7 +2040,7 @@ public final class SearchHelper {
         logger.debug("getFilteredTerms end: {} terms found.", ret.size());
         return ret;
     }
-
+    
     /**
      *
      * @param bmfc
@@ -2019,6 +2111,7 @@ public final class SearchHelper {
         // Faceting (no rows requested or expected row count too high)
         if ((rows == 0 || hitCount > DataManager.getInstance().getConfiguration().getBrowsingMenuIndexSizeThreshold())
                 && StringUtils.isEmpty(bmfc.getSortField())) {
+            logger.trace("Using facets");
             return DataManager.getInstance()
                     .getSearchIndex()
                     .searchFacetsAndStatistics(query, filterQueries, facetFields, 1, startsWith, null, false);
