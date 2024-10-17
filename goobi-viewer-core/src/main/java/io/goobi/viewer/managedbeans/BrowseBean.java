@@ -87,8 +87,8 @@ public class BrowseBean implements Serializable {
     private NavigationHelper navigationHelper;
     @Inject
     private BreadcrumbBean breadcrumbBean;
-    @Inject
-    private SearchBean searchBean;
+    //    @Inject
+    //    private SearchBean searchBean;
 
     /** Hits per page in the browsing menu. */
     private int browsingMenuHitsPerPage = DataManager.getInstance().getConfiguration().getBrowsingMenuHitsPerPage();
@@ -132,14 +132,14 @@ public class BrowseBean implements Serializable {
         this.breadcrumbBean = breadcrumbBean;
     }
 
-    /**
-     * Required setter for ManagedProperty injection
-     *
-     * @param searchBean the searchBean to set
-     */
-    public void setSearchBean(SearchBean searchBean) {
-        this.searchBean = searchBean;
-    }
+    //    /**
+    //     * Required setter for ManagedProperty injection
+    //     *
+    //     * @param searchBean the searchBean to set
+    //     */
+    //    public void setSearchBean(SearchBean searchBean) {
+    //        this.searchBean = searchBean;
+    //    }
 
     /**
      * Resets all lists for term browsing.
@@ -392,10 +392,13 @@ public class BrowseBean implements Serializable {
             if (breadcrumbBean != null) {
                 breadcrumbBean.updateBreadcrumbsWithCurrentUrl("browseTitle", BreadcrumbBean.WEIGHT_SEARCH_TERMS);
             }
-            if (searchBean != null) {
-                searchBean.setSearchString("");
-                searchBean.resetSearchParameters(true);
-            }
+
+            // This shouldn't be necessary and costs some cycles
+            //            if (searchBean != null) {
+            //                searchBean.setSearchString("");
+            //                searchBean.resetSearchParameters(true);
+            //            }
+
             hitsCount = 0;
 
             // Sort filters
