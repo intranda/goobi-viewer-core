@@ -22,6 +22,7 @@
 package io.goobi.viewer.servlets;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -42,7 +43,6 @@ class DFGViewerImageTest extends AbstractTest {
 
     DFGViewerImage servlet;
 
-
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
@@ -53,7 +53,45 @@ class DFGViewerImageTest extends AbstractTest {
     void testForwardToImageApiUrl() throws ServletException, IOException {
 
         String requestUrl = "/1574750503285_37/800/0/1575272395963.jpg";
-        String expectedForwardUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl() + "records/1574750503285_37/files/images/1575272395963/full/800,/0/default.jpg";
+        String expectedForwardUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl()
+                + "records/1574750503285_37/files/images/1575272395963/full/800,/0/default.jpg";
+
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+
+        Mockito.when(request.getPathInfo()).thenReturn(requestUrl);
+
+        servlet.doGet(request, response);
+
+        Mockito.verify(response).sendRedirect(expectedForwardUrl);
+    }
+
+    @Test
+    public void testForwardToImageApiUrl_nonAsciiCharacters() throws ServletException, IOException {
+
+        String filename = "Bilder für eine Ausstellung";
+        String filenameEscaped = URLEncoder.encode(filename, "utf-8");
+
+        String requestUrl = "/1574750503285_37/800/0/" + filename + ".jpg";
+        String expectedForwardUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl()
+                + "records/1574750503285_37/files/images/" + filenameEscaped + "/full/800,/0/default.jpg";
+
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+
+        Mockito.when(request.getPathInfo()).thenReturn(requestUrl);
+
+        servlet.doGet(request, response);
+
+        Mockito.verify(response).sendRedirect(expectedForwardUrl);
+    }
+
+    @Test
+    public void testForwardToImageApiUrl_maxWith() throws ServletException, IOException {
+
+        String requestUrl = "/1574750503285_37/max/0/1575272395963.jpg";
+        String expectedForwardUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl()
+                + "records/1574750503285_37/files/images/1575272395963/full/max/0/default.jpg";
 
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
