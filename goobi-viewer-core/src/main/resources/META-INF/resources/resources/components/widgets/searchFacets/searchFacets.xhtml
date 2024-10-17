@@ -16,7 +16,6 @@
     </composite:interface>
 
     <composite:implementation>
-    <div>facets: #{searchBean.facets.allAvailableFacets.entrySet()}</div>
         <h:panelGroup rendered="#{searchBean.facets.allAvailableFacets.entrySet().toArray() != null}">
             <div id="searchListFacetsWrapper" class="widget-search-facets #{cc.attrs.widget.cssClass}">
                 <h:form id="searchListFacetsForm" prependId="false">
