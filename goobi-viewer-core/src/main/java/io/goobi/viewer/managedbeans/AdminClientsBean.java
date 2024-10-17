@@ -174,15 +174,16 @@ public class AdminClientsBean implements Serializable {
      * @param client
      */
     public void save(ClientApplication client) {
+        String clientId = Optional.ofNullable(client).map(ClientApplication::getClientIdentifier).orElse("-");
         try {
             if (dao.saveClientApplication(client)) {
-                Messages.info(null, "admin__clients__save_client__success", client.getClientIdentifier());
+                Messages.info(null, "admin__clients__save_client__success", clientId);
             } else {
-                Messages.error(null, "admin__clients__save_client__error", client.getClientIdentifier());
+                Messages.error(null, "admin__clients__save_client__error", clientId);
             }
         } catch (DAOException e) {
             logger.error(e.toString(), e);
-            Messages.error(null, "admin__clients__save_client__error", client.getClientIdentifier());
+            Messages.error(null, "admin__clients__save_client__error", clientId);
         }
     }
 
@@ -193,15 +194,16 @@ public class AdminClientsBean implements Serializable {
      * @return Navigation outcome
      */
     public String delete(ClientApplication client) {
+        String clientId = Optional.ofNullable(client).map(ClientApplication::getClientIdentifier).orElse("-");
         try {
             if (dao.deleteClientApplication(client.getId())) {
-                Messages.info(null, "admin__clients__delete_client__success", client.getClientIdentifier());
+                Messages.info(null, "admin__clients__delete_client__success", clientId);
             } else {
-                Messages.error(null, "admin__clients__delete_client__error", client.getClientIdentifier());
+                Messages.error(null, "admin__clients__delete_client__error", clientId);
             }
         } catch (DAOException e) {
             logger.error(e.toString(), e);
-            Messages.error(null, "admin__clients__delete_client__error", client.getClientIdentifier());
+            Messages.error(null, "admin__clients__delete_client__error", clientId);
         }
         return "pretty:adminClients";
     }
