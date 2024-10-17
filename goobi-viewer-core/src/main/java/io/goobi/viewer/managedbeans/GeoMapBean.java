@@ -367,10 +367,18 @@ public class GeoMapBean implements Serializable, IPolyglott {
     public String getCoordinateSearchQueryTemplate(SolrFeatureSet featureSet) {
         String locationQuery = "WKT_COORDS:\"Intersects(POINT({lng} {lat})) distErrPct=0\"";
         String filterQuery = featureSet != null ? featureSet.getSolrQuery() : "-";
-        //        String query = locationQuery;
-        //        if (StringUtils.isNotBlank(filterQuery)) {
-        //            query = "(" + locationQuery + ") AND (" + filterQuery + ")";
-        //        }
+        URL mappedUrl = PrettyContext.getCurrentInstance()
+                .getConfig()
+                .getMappingById("newSearch5")
+                .getPatternParser()
+                .getMappedURL("-", filterQuery, "1", "-", locationQuery);
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
+    }
+
+    public static String getCoordinateSearchQuery(SolrFeatureSet featureSet, String longLat) {
+        String locationQuery = "WKT_COORDS:\"Intersects(POINT({longLat})) distErrPct=0\"";
+        locationQuery = locationQuery.replace("{longLat}", longLat);
+        String filterQuery = featureSet != null ? featureSet.getSolrQuery() : "-";
         URL mappedUrl = PrettyContext.getCurrentInstance()
                 .getConfig()
                 .getMappingById("newSearch5")
