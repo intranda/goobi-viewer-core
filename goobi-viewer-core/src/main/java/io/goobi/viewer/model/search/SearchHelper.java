@@ -962,14 +962,14 @@ public final class SearchHelper {
         Object min = info.getMin();
         if (min instanceof Long || min instanceof Integer) {
             ret[0] = (int) min;
-        } else if (min instanceof Double) {
-            ret[0] = ((Double) min).intValue();
+        } else if (min instanceof Double d) {
+            ret[0] = d.intValue();
         }
         Object max = info.getMax();
         if (max instanceof Long || max instanceof Integer) {
             ret[1] = (int) max;
-        } else if (max instanceof Double) {
-            ret[1] = ((Double) max).intValue();
+        } else if (max instanceof Double d) {
+            ret[1] = d.intValue();
         }
 
         logger.trace("Min year: {}, max year: {}", ret[0], ret[1]);
@@ -1718,6 +1718,7 @@ public final class SearchHelper {
      */
     public static List<String> getFacetValues(String query, String facetFieldName, int facetMinCount)
             throws PresentationException, IndexUnreachableException {
+        logger.trace("getFacetValues: {} / ", query, facetFieldName);
         return getFacetValues(query, facetifyField(facetFieldName), null, facetMinCount, null);
     }
 
@@ -1736,6 +1737,7 @@ public final class SearchHelper {
      */
     public static List<String> getFacetValues(String query, final String facetFieldName, String facetPrefix, int facetMinCount,
             Map<String, String> params) throws PresentationException, IndexUnreachableException {
+        // logger.trace("getFacetValues: {}", query); //NOSONAR Debug
         if (StringUtils.isEmpty(query)) {
             throw new IllegalArgumentException("query may not be null or empty");
         }
@@ -1794,8 +1796,9 @@ public final class SearchHelper {
             throw new IllegalArgumentException("bmfc may not be null");
         }
 
+        String mainField = bmfc.getFieldForLanguage(language);
         if (logger.isTraceEnabled()) {
-            logger.trace("getFilteredTermsCount: {} ({})", bmfc.getFieldForLanguage(language), startsWith);
+            logger.trace("getFilteredTermsCount: {} ({})", mainField, startsWith);
         }
         List<StringPair> sortFields =
                 StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
@@ -1809,7 +1812,7 @@ public final class SearchHelper {
         int ret = 0;
         String facetField =
                 StringUtils.isNotEmpty(bmfc.getSortField()) ? SearchHelper.facetifyField(bmfc.getSortField())
-                        : SearchHelper.facetifyField(bmfc.getFieldForLanguage(language));
+                        : SearchHelper.facetifyField(mainField);
         if (resp.getFacetField(facetField) != null) {
             for (Count count : resp.getFacetField(facetField).getValues()) {
                 if (count.getCount() == 0
@@ -1822,8 +1825,9 @@ public final class SearchHelper {
         logger.debug("getFilteredTermsCount result: {}", ret);
         return ret;
     }
-    
+
     /**
+     * Generates starting character filters for term browsing, using facets.
      * 
      * @param bmfc
      * @param filterQuery
@@ -1835,6 +1839,7 @@ public final class SearchHelper {
     public static List<String> collectAvailableTermFilters(BrowsingMenuFieldConfig bmfc, String filterQuery, Locale locale)
             throws PresentationException, IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder("+");
+        String facetMainField = SearchHelper.facetifyField(bmfc.getFieldForLanguage(locale.getLanguage()));
         if (StringUtils.isNotEmpty(bmfc.getSortField())) {
             // TODO language-specific sort field
             sbQuery.append(bmfc.getSortField());
@@ -1858,8 +1863,6 @@ public final class SearchHelper {
         }
 
         String query = buildFinalQuery(sbQuery.toString(), false, SearchAggregationType.NO_AGGREGATION);
-
-        String facetMainField = SearchHelper.facetifyField(bmfc.getFieldForLanguage(locale.getLanguage()));
         String facetSortField = null;
         if (StringUtils.isNotEmpty(bmfc.getSortField())) {
             facetSortField = SearchHelper.facetifyField(bmfc.getSortField());
@@ -1912,7 +1915,6 @@ public final class SearchHelper {
         return ret;
     }
 
-
     /**
      * Returns a list of index terms for the given field name. This method uses the slower doc search instead of term search, but can be filtered with
      * a query.
@@ -1935,8 +1937,9 @@ public final class SearchHelper {
             throw new IllegalArgumentException("bmfc may not be null");
         }
 
+        String mainField = bmfc.getFieldForLanguage(language);
         if (logger.isTraceEnabled()) {
-            logger.trace("getFilteredTerms: {}", bmfc.getFieldForLanguage(language));
+            logger.trace("getFilteredTerms: {} ({})", mainField, startsWith);
         }
         List<BrowseTerm> ret = new ArrayList<>();
         ConcurrentMap<String, BrowseTerm> terms = new ConcurrentHashMap<>();
@@ -1957,7 +1960,7 @@ public final class SearchHelper {
             Pattern p = Pattern.compile("[\\d]");
             // Use hits (if sorting field is provided)
             for (SolrDocument doc : resp.getResults()) {
-                Collection<Object> termList = doc.getFieldValues(bmfc.getFieldForLanguage(language));
+                Collection<Object> termList = doc.getFieldValues(mainField);
                 String sortTerm = (String) doc.getFieldValue(bmfc.getSortField());
                 Set<String> usedTermsInCurrentDoc = new HashSet<>();
                 for (Object o : termList) {
@@ -1988,7 +1991,7 @@ public final class SearchHelper {
                 }
             }
         } else {
-            String facetMainField = SearchHelper.facetifyField(bmfc.getFieldForLanguage(language));
+            String facetMainField = SearchHelper.facetifyField(mainField);
             String facetSortField = null;
             if (StringUtils.isNotEmpty(bmfc.getSortField())) {
                 facetSortField = SearchHelper.facetifyField(bmfc.getSortField());
@@ -2040,7 +2043,7 @@ public final class SearchHelper {
         logger.debug("getFilteredTerms end: {} terms found.", ret.size());
         return ret;
     }
-    
+
     /**
      *
      * @param bmfc
@@ -2058,21 +2061,25 @@ public final class SearchHelper {
      */
     static QueryResponse getFilteredTermsFromIndex(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery, List<StringPair> sortFields,
             int start, int rows, String language) throws PresentationException, IndexUnreachableException {
+        String mainField = bmfc.getFieldForLanguage(language);
+        if (logger.isTraceEnabled()) {
+            logger.trace("getFilteredTermsFromIndex: {} ({})", mainField, startsWith);
+        }
+
         List<String> fields = new ArrayList<>(3);
         fields.add(SolrConstants.PI_TOPSTRUCT);
-        fields.add(bmfc.getFieldForLanguage(language));
+        fields.add(mainField);
 
         StringBuilder sbQuery = new StringBuilder();
         sbQuery.append('+');
-        // Only search via the sorting field if not doing a wildcard search
         // TODO language-specific sort field
         if (StringUtils.isNotEmpty(bmfc.getSortField())) {
             sbQuery.append(bmfc.getSortField());
             fields.add(bmfc.getSortField());
             fields.add(SearchHelper.facetifyField(bmfc.getSortField()));
-            fields.add(SearchHelper.facetifyField(bmfc.getFieldForLanguage(language)));
+            fields.add(SearchHelper.facetifyField(mainField));
         } else {
-            sbQuery.append(bmfc.getFieldForLanguage(language));
+            sbQuery.append(mainField);
         }
         sbQuery.append(":[* TO *] ");
         if (bmfc.isRecordsAndAnchorsOnly()) {
@@ -2082,6 +2089,11 @@ public final class SearchHelper {
         List<String> filterQueries = new ArrayList<>();
         if (StringUtils.isNotEmpty(filterQuery)) {
             filterQueries.add(filterQuery);
+        }
+
+        // If no separate sorting field is configured, add startsWith to the filter queries
+        if (StringUtils.isEmpty(bmfc.getSortField())) {
+            filterQueries.add(mainField + ":" + startsWith + "*");
         }
 
         // Add configured filter queries
@@ -2098,7 +2110,7 @@ public final class SearchHelper {
             }
         }
 
-        List<String> facetFields = Collections.singletonList(SearchHelper.facetifyField(bmfc.getFieldForLanguage(language)));
+        List<String> facetFields = Collections.singletonList(SearchHelper.facetifyField(mainField));
         if (StringUtils.isNotEmpty(bmfc.getSortField())) {
             // Add facetified sort field to facet fields (SORT_ fields don't work for faceting)
             facetFields = new ArrayList<>(facetFields);
@@ -2118,6 +2130,7 @@ public final class SearchHelper {
         }
 
         // Docs (required for correct mapping of sorting vs displayed term names, but may time out if doc count is too high)
+
         return DataManager.getInstance().getSearchIndex().search(query, start, rows, sortFields, facetFields, fields, filterQueries, params);
     }
 
