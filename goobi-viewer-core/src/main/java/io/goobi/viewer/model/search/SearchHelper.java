@@ -1718,7 +1718,7 @@ public final class SearchHelper {
      */
     public static List<String> getFacetValues(String query, String facetFieldName, int facetMinCount)
             throws PresentationException, IndexUnreachableException {
-        logger.trace("getFacetValues: {} / ", query, facetFieldName);
+        logger.trace("getFacetValues: {} / {}", query, facetFieldName);
         return getFacetValues(query, facetifyField(facetFieldName), null, facetMinCount, null);
     }
 
@@ -2092,7 +2092,7 @@ public final class SearchHelper {
         }
 
         // If no separate sorting field is configured, add startsWith to the filter queries
-        if (StringUtils.isEmpty(bmfc.getSortField())) {
+        if (StringUtils.isEmpty(bmfc.getSortField()) && StringUtils.isNotEmpty(startsWith) && !"0-9".equals(startsWith)) {
             filterQueries.add(mainField + ":" + startsWith + "*");
         }
 
