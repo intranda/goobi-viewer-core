@@ -1077,7 +1077,10 @@ public class SearchFacets implements Serializable {
             //add current facets which have no hits. This may happen due to geomap faceting
             List<IFacetItem> currentFacetsLocal = new ArrayList<>(activeFacets);
             for (IFacetItem currentItem : currentFacetsLocal) {
-                if ("geo".equals(DataManager.getInstance().getConfiguration().getFacetFieldType(currentItem.getField()))) {
+                String fieldType = DataManager.getInstance().getConfiguration().getFacetFieldType(currentItem.getField());
+                //don't include geo and range facets in list, since they have their own widgets
+                //Is this code still relevant then? Aren't all other facets included in allFacetFields and availableFacets?
+                if (!"geo".equals(fieldType) && !"range".equals(fieldType)) {
                     // Make a copy of the list to avoid concurrent modification
                     List<IFacetItem> availableFacetItems = new ArrayList<>(ret.getOrDefault(currentItem.getField(), new ArrayList<>()));
                     if (!availableFacetItems.contains(currentItem)) {
