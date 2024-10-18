@@ -547,15 +547,10 @@ public class BrowseBean implements Serializable {
         String browsingMenuFieldForCurrentLanguage =
                 getBrowsingMenuFieldForLanguage(navigationHelper != null ? navigationHelper.getLocaleString() : null);
         for (String filter : availableStringFilters.get(browsingMenuFieldForCurrentLanguage)) {
-            switch (filter) {
-                case "0-9":
-                    numericalFilter = filter;
-                    break;
-                default:
-                    if (filter.matches("[A-ZÄÁÀÂÖÓÒÔÜÚÙÛÉÈÊ]") && alphaFilter == null) {
-                        alphaFilter = filter;
-                    }
-                    break;
+            if (filter.matches("[A-ZÄÁÀÂÖÓÒÔÜÚÙÛÉÈÊ]") && alphaFilter == null) {
+                alphaFilter = filter;
+            } else if (filter.matches("[\\d]") && alphaFilter == null) {
+                numericalFilter = filter;
             }
         }
 

@@ -1954,82 +1954,44 @@ public final class SearchHelper {
                 StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
         QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, start, returnRows, language);
         logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
-        if ("0-9".equals(startsWith)) {
-            // TODO Is this still necessary?
-            // Numerical filtering
-            Pattern p = Pattern.compile("[\\d]");
-            // Use hits (if sorting field is provided)
-            for (SolrDocument doc : resp.getResults()) {
-                Collection<Object> termList = doc.getFieldValues(mainField);
-                String sortTerm = (String) doc.getFieldValue(bmfc.getSortField());
-                Set<String> usedTermsInCurrentDoc = new HashSet<>();
-                for (Object o : termList) {
-                    String term = String.valueOf(o);
-                    // Only add to hit count if the same string is not in the same doc
-                    if (usedTermsInCurrentDoc.contains(term)) {
+        String facetMainField = SearchHelper.facetifyField(mainField);
+        String facetSortField = null;
+        if (StringUtils.isNotEmpty(bmfc.getSortField())) {
+            facetSortField = SearchHelper.facetifyField(bmfc.getSortField());
+        }
+        if (resp.getResults().isEmpty()) {
+            // If only browsing records and anchors, use faceting
+            String useField = null;
+            if (resp.getFacetField(facetSortField) != null) {
+                // Prefer facets from sort field
+                useField = facetSortField;
+            } else if (resp.getFacetField(facetMainField) != null) {
+                // main field fallback
+                useField = facetMainField;
+            }
+            if (useField != null) {
+                for (Count count : resp.getFacetField(useField).getValues()) {
+                    if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith)
+                            && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith)) {
+                        // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}", //NOSONAR Debug
+                        // term, compareTerm, sortTerm, bmfc.isTranslate());
                         continue;
                     }
-                    String termStart = term;
-                    if (termStart.length() > 1) {
-                        termStart = term.substring(0, 1);
-                    }
-                    String compareTerm = termStart;
-                    if (StringUtils.isNotEmpty(sortTerm)) {
-                        compareTerm = sortTerm;
-                    }
-                    Matcher m = p.matcher(compareTerm);
-                    if (m.find()) {
-                        BrowseTerm browseTerm = terms.get(term);
-                        if (browseTerm == null) {
-                            browseTerm = new BrowseTerm(term, sortTerm, bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(term) : null);
-                            terms.put(term, browseTerm);
-                        }
-                        sortTerm = null; // only use the sort term for the first term
-                        browseTerm.addToHitCount(1);
-                        usedTermsInCurrentDoc.add(term);
-                    }
+                    terms.put(count.getName(),
+                            new BrowseTerm(count.getName(), null,
+                                    bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(count.getName()) : null)
+                                            .setHitCount(count.getCount()));
                 }
             }
         } else {
-            String facetMainField = SearchHelper.facetifyField(mainField);
-            String facetSortField = null;
-            if (StringUtils.isNotEmpty(bmfc.getSortField())) {
-                facetSortField = SearchHelper.facetifyField(bmfc.getSortField());
-            }
-            if (resp.getResults().isEmpty()) {
-                // If only browsing records and anchors, use faceting
-                String useField = null;
-                if (resp.getFacetField(facetSortField) != null) {
-                    // Prefer facets from sort field
-                    useField = facetSortField;
-                } else if (resp.getFacetField(facetMainField) != null) {
-                    // main field fallback
-                    useField = facetMainField;
-                }
-                if (useField != null) {
-                    for (Count count : resp.getFacetField(useField).getValues()) {
-                        if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith)
-                                && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith)) {
-                            // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}", //NOSONAR Debug
-                            // term, compareTerm, sortTerm, bmfc.isTranslate());
-                            continue;
-                        }
-                        terms.put(count.getName(),
-                                new BrowseTerm(count.getName(), null,
-                                        bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(count.getName()) : null)
-                                                .setHitCount(count.getCount()));
-                    }
-                }
-            } else {
-                // Without filtering or using alphabetical filtering
-                // Parallel processing of hits (if sorting field is provided), requires compiler level 1.8
-                //                ((List<SolrDocument>) resp.getResults()).parallelStream()
-                //                        .forEach(doc -> processSolrResult(doc, bmfc, startsWith, terms, true, language));
+            // Without filtering or using alphabetical filtering
+            // Parallel processing of hits (if sorting field is provided), requires compiler level 1.8
+            //                ((List<SolrDocument>) resp.getResults()).parallelStream()
+            //                        .forEach(doc -> processSolrResult(doc, bmfc, startsWith, terms, true, language));
 
-                // Sequential processing (doesn't break the sorting done by Solr)
-                for (SolrDocument doc : resp.getResults()) {
-                    processSolrResult(doc, bmfc, startsWith, terms, true, language);
-                }
+            // Sequential processing (doesn't break the sorting done by Solr)
+            for (SolrDocument doc : resp.getResults()) {
+                processSolrResult(doc, bmfc, startsWith, terms, true, language);
             }
         }
 
@@ -2092,7 +2054,7 @@ public final class SearchHelper {
         }
 
         // If no separate sorting field is configured, add startsWith to the filter queries
-        if (StringUtils.isEmpty(bmfc.getSortField()) && StringUtils.isNotEmpty(startsWith) && !"0-9".equals(startsWith)) {
+        if (StringUtils.isEmpty(bmfc.getSortField()) && StringUtils.isNotEmpty(startsWith)) {
             filterQueries.add(mainField + ":" + startsWith + "*");
         }
 
