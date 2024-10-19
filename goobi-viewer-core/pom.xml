@@ -129,7 +129,7 @@
 		<jsoup.version>1.18.1</jsoup.version>
 		<junit.version>5.11.2</junit.version>
 		<mariadb-java-client.version>3.4.1</mariadb-java-client.version>
-		<mockito.version>5.14.1</mockito.version>
+		<mockito.version>5.14.2</mockito.version>
 		<mockserver.version>5.15.0</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
 		<omnifaces.version>3.14.6</omnifaces.version>
