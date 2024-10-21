@@ -2182,6 +2182,8 @@ public class ActiveDocumentBean implements Serializable {
      * <p>
      * getRelatedItems.
      * </p>
+     * 
+     * TODO Is this still in use?
      *
      * @param identifierField Index field containing related item identifiers
      * @return List of related items as SearchHit objects.
@@ -2194,14 +2196,14 @@ public class ActiveDocumentBean implements Serializable {
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("getRelatedItems: {}", identifierField);
         if (identifierField == null) {
-            return null;
+            return Collections.emptyList();
         }
         if (viewManager == null) {
-            return null;
+            return Collections.emptyList();
         }
         String query = getRelatedItemsQueryString(identifierField);
         if (query == null) {
-            return null;
+            return Collections.emptyList();
         }
 
         List<SearchHit> ret = SearchHelper.searchWithAggregation(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null, null,
@@ -2485,8 +2487,7 @@ public class ActiveDocumentBean implements Serializable {
                     return null;
                 }
             }).orElse(null);
-            if (md instanceof RelationshipMetadataContainer) {
-                RelationshipMetadataContainer rmc = (RelationshipMetadataContainer) md;
+            if (md instanceof RelationshipMetadataContainer rmc) {
                 List<MetadataContainer> docs = rmc.getFieldNames()
                         .stream()
                         .map(rmc::getMetadata)
@@ -2494,7 +2495,7 @@ public class ActiveDocumentBean implements Serializable {
                         .distinct()
                         .map(rmc::getRelatedRecord)
                         .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
+                        .toList();
                 map = new RecordGeoMap(getTopDocument(), docs);
                 this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), map);
             } else {
@@ -2534,12 +2535,12 @@ public class ActiveDocumentBean implements Serializable {
             PageType pageType = PrettyUrlTools.getPreferredPageType(mainDoc);
 
             boolean addMetadataFeatures = DataManager.getInstance().getConfiguration().includeCoordinateFieldsFromMetadataDocs();
-            String docTypeFilter = "+DOCTYPE:DOCSTRCT";
+            String docTypeFilter = " +" + SolrConstants.DOCTYPE + ":DOCSTRCT";
             if (addMetadataFeatures) {
-                docTypeFilter = "+(DOCTYPE:DOCSTRCT DOCTYPE:METADATA)";
+                docTypeFilter = " +(" + SolrConstants.DOCTYPE + ":DOCSTRCT " + SolrConstants.DOCTYPE + ":METADATA)";
             }
 
-            String subDocQuery = String.format("+PI_TOPSTRUCT:%s " + docTypeFilter, pi);
+            String subDocQuery = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + docTypeFilter;
             List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
             List<String> subDocFields = new ArrayList<>();
             subDocFields.add(SolrConstants.LABEL);
@@ -2562,10 +2563,10 @@ public class ActiveDocumentBean implements Serializable {
                     .map(DisplayUserGeneratedContent::new)
                     .filter(a -> ContentType.GEOLOCATION.equals(a.getType()))
                     .filter(a -> ContentBean.isAccessible(a, BeanUtils.getRequest()))
-                    .collect(Collectors.toList());
+                    .toList();
             for (DisplayUserGeneratedContent anno : annos) {
-                if (anno.getAnnotationBody() instanceof TypedResource) {
-                    GeoMapFeature feature = new GeoMapFeature(((TypedResource) anno.getAnnotationBody()).asJson());
+                if (anno.getAnnotationBody() instanceof TypedResource tr) {
+                    GeoMapFeature feature = new GeoMapFeature(tr.asJson());
                     features.add(feature);
                 }
             }
