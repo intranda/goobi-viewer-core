@@ -113,7 +113,7 @@ public class TranslatedTextConverter implements AttributeConverter<TranslatedTex
         if (this.configuredLocales == null) {
             try {
                 this.configuredLocales = IPolyglott.getLocalesStatic();
-            } catch (Exception e) {
+            } catch (NullPointerException | IllegalStateException e) {
                 //too early?
                 return Collections.emptyList();
             }

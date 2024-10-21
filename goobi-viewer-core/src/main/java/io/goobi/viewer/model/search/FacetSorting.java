@@ -62,7 +62,7 @@ public final class FacetSorting {
      * @param sortOrder sorting order
      * @return a SortingMap, which automatically orders entries as they are added to the map
      */
-    public static SortingMap<String, Long> getSortingMap(Map<String, Long> map, String sortOrder) {
+    public static final SortingMap<String, Long> getSortingMap(Map<String, Long> map, String sortOrder) {
         SortingMap<String, Long> sortingMap = getSortingMap("", sortOrder, null);
         map.entrySet().forEach(entry -> sortingMap.getMap().put(entry.getKey(), entry.getValue()));
         return sortingMap;

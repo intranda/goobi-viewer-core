@@ -184,7 +184,8 @@ public class CollectionView implements Serializable {
                         lastElement = dc;
                     }
                 }
-                completeCollectionList.stream().flatMap(dc -> dc.getChildren(true).stream()).forEach(dc -> sortCollection(dc)); //apply configured sorting of collections after hierarchy is build
+                //apply configured sorting of collections after hierarchy is build
+                completeCollectionList.stream().flatMap(dc -> dc.getChildren(true).stream()).forEach(dc -> sortCollection(dc));
                 calculateVisibleDcElements();
                 logger.trace("populateCollectionList end");
             } catch (PresentationException e) {
@@ -1033,6 +1034,8 @@ public class CollectionView implements Serializable {
      * @param collection a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @param field a {@link java.lang.String} object.
      * @param baseSearchUrl
+     * @param openInSearch if true, return a search url if no cms page is associated with the collection. In case of single record in collection, the
+     *            record may be opened directly
      * @return a {@link java.lang.String} object.
      * @throws URISyntaxException
      * @should return identifier resolver url if single record and pi known

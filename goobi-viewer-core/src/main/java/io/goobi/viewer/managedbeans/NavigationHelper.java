@@ -1374,12 +1374,8 @@ public class NavigationHelper implements Serializable {
     public String getSearchUrl(int activeSearchType, CMSPage cmsPage) {
 
         //If we are on a cms-page, return the cms page url
-        try {
-            if (cmsPage != null && cmsPage.hasSearchFunctionality()) {
-                return StringTools.removeTrailingSlashes(cmsPage.getPageUrl());
-            }
-        } catch (Exception e) {
-            logger.error(e.toString(), e);
+        if (cmsPage != null && cmsPage.hasSearchFunctionality()) {
+            return StringTools.removeTrailingSlashes(cmsPage.getPageUrl());
         }
 
         switch (activeSearchType) {

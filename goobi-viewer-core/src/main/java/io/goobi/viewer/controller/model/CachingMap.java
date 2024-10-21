@@ -13,22 +13,22 @@ public class CachingMap<K, V> extends LinkedHashMap<K, V> {
     }
 
     @Override
-    synchronized public V get(Object key) {
+    public synchronized V get(Object key) {
         return super.get(key);
     }
 
     @Override
-    synchronized public V getOrDefault(Object key, V defaultValue) {
+    public synchronized V getOrDefault(Object key, V defaultValue) {
         return super.getOrDefault(key, defaultValue);
     }
 
     @Override
-    synchronized public V put(K key, V value) {
+    public synchronized V put(K key, V value) {
         return super.put(key, value);
     }
 
     @Override
-    synchronized public V computeIfAbsent(K arg0, Function<? super K, ? extends V> arg1) {
+    public synchronized V computeIfAbsent(K arg0, Function<? super K, ? extends V> arg1) {
         return super.computeIfAbsent(arg0, arg1);
     }
 

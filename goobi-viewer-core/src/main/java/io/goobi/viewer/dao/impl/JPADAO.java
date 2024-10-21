@@ -482,7 +482,7 @@ public class JPADAO implements IDAO {
             return (User) q.getSingleResult();
         } catch (NoResultException e) {
             return null;
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | IllegalStateException | PersistenceException e) {
             logger.error(e.getMessage());
             return null;
         } finally {
@@ -3947,7 +3947,7 @@ public class JPADAO implements IDAO {
         try {
             getRole(1);
             return true;
-        } catch (Exception e) {
+        } catch (DAOException | PersistenceException e) {
             logger.error(e.getMessage());
         }
 
@@ -6268,12 +6268,12 @@ public class JPADAO implements IDAO {
             }
             String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
             if ("NULL".equals(filterValue)) {
-                //don't add params
-            } else if ("creatorId_reviewerId".equals(key) || "campaignId".equals(key) || "generatorId".equals(key) || "creatorId".equals(key)
-                    || "reviewerId".equals(key)) {
-                params.put(keyValueParam, Long.valueOf(filterValue));
-            } else {
-                params.put(keyValueParam, "%" + filterValue.toUpperCase() + "%");
+                if ("creatorId_reviewerId".equals(key) || "campaignId".equals(key) || "generatorId".equals(key) || "creatorId".equals(key)
+                        || "reviewerId".equals(key)) {
+                    params.put(keyValueParam, Long.valueOf(filterValue));
+                } else {
+                    params.put(keyValueParam, "%" + filterValue.toUpperCase() + "%");
+                }
             }
 
             //subkeys = all keys this filter applies to, each of the form [field] or [table]-[field]

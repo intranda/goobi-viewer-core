@@ -1918,7 +1918,7 @@ public class ViewManager implements Serializable {
                 return url + getPi();
             }
             return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/sourcefile?id=" + getPi();
-        } catch (Exception e) {
+        } catch (NullPointerException | IllegalStateException | IndexUnreachableException e) {
             logger.error("Could not get source file resolver URL for {}.", topStructElementIddoc);
             Messages.error("errGetCurrUrl");
         }

@@ -33,6 +33,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
@@ -736,7 +737,7 @@ public abstract class DownloadJob implements Serializable {
                     .target(url)
                     .request(MediaType.APPLICATION_JSON)
                     .post(javax.ws.rs.client.Entity.entity(body, MediaType.APPLICATION_JSON));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | NullPointerException | ProcessingException e) {
             throw new IOException("Error connecting to " + url, e);
         }
     }

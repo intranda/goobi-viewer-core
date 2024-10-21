@@ -84,7 +84,7 @@ public class CMSMediaUpdate implements IModelUpdate {
                 try {
                     dao.executeUpdate("UPDATE cms_media_items SET link_url = '" + entry.getValue() + "' WHERE cms_media_item_id = " + entry.getKey());
                     logger.trace("Updated cms_media_items value at cms_media_item_id = '{}' to '{}'", entry.getKey(), entry.getValue());
-                } catch (Exception e) {
+                } catch (DAOException | NullPointerException e) {
                     logger.error("Error attempting to update cms_media_items value at cms_media_item_id = '{}' to '{}'", entry.getKey(),
                             entry.getValue());
                 }

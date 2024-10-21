@@ -29,8 +29,8 @@ import java.util.Locale;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
@@ -228,7 +228,7 @@ public class MetadataElement implements Serializable {
                 } else {
                     metadataList.add(metadata);
                 }
-            } catch (Exception e) {
+            } catch (IndexUnreachableException | PresentationException e) {
                 logger.error("Error populating {}", metadata.getLabel(), e);
             }
         }
