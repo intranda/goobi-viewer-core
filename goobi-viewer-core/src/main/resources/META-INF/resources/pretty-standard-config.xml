@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://ocpsoft.com/prettyfaces/3.5.0 http://ocpsoft.com/xml/ns/prettyfaces/ocpsoft-pretty-faces-3.5.0.xsd">
 
 	<rewrite match="/;jsessionid=\w+" substitute="/" />
-	<rewrite match="/(\w+|-)$" trailingSlash="append" />
+	<rewrite match="/(?!oai)(\w+|-)$" trailingSlash="append" />
 	<rewrite match="/admin/users/edit/?$" substitute="/admin/users/"/>
 	<rewrite match="/admin/groups/edit/?$" substitute="/admin/groups/"/>
 	<rewrite match="/admin/ipranges/edit/?$" substitute="/admin/ipranges/"/>
