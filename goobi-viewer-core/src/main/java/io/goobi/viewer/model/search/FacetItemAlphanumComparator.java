@@ -37,8 +37,10 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 /**
  * Custom string comparator for browsing terms (case-insensitive, ignores brackets, natural sorting).
  * 
- * @deprecated use {@link AlphanumComparator<FacetItem>} instead with constructor <code>new AlphanumComparator<IFacetItem>(true, locale,
-                        i -> i.getTranslatedLabel() != null ? i.getTranslatedLabel() : i.getLabel())</code>
+ * @deprecated use {@link AlphanumComparator} instead with constructor
+ * 
+ *             <pre>{@code new AlphanumComparator<IFacetItem>(true, locale,
+                        i -> i.getTranslatedLabel() != null ? i.getTranslatedLabel() : i.getLabel())}</pre>
  */
 @Deprecated(since = "24.10")
 public class FacetItemAlphanumComparator implements Comparator<IFacetItem>, Serializable {
