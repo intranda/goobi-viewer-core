@@ -1288,6 +1288,21 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Get all configured sortOrders for collections in the given field, mapped against regex which should match the collection(s) which
+     * subcollections should be sorted according the sortOrder
+     * 
+     * @param field the solr fild on which the collection is based
+     * @return a map of regular expressions matching collection names and associated sortOrders
+     */
+    public Map<String, String> getCollectionSortOrders(String field) {
+
+        HierarchicalConfiguration<ImmutableNode> collection = getCollectionConfiguration(field);
+        List<HierarchicalConfiguration<ImmutableNode>> sortOrders = collection.configurationsAt("sorting.sortOrder");
+        return sortOrders.stream().collect(Collectors.toMap(conf -> conf.getString("[@collections]"), conf -> conf.getString(".")));
+
+    }
+
+    /**
      * <p>
      * getCollectionSorting.
      * </p>
