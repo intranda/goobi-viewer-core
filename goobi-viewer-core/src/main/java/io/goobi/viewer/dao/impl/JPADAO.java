@@ -6267,7 +6267,7 @@ public class JPADAO implements IDAO {
                 continue;
             }
             String keyValueParam = key.replaceAll("[" + MULTIKEY_SEPARATOR + KEY_FIELD_SEPARATOR + "]", "");
-            if ("NULL".equals(filterValue)) {
+            if (!"NULL".equals(filterValue)) {
                 if ("creatorId_reviewerId".equals(key) || "campaignId".equals(key) || "generatorId".equals(key) || "creatorId".equals(key)
                         || "reviewerId".equals(key)) {
                     params.put(keyValueParam, Long.valueOf(filterValue));
