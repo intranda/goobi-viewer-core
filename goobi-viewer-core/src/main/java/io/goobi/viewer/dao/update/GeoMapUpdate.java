@@ -78,9 +78,9 @@ public class GeoMapUpdate implements IModelUpdate {
 
             GeoMap geomap = dao.getGeoMap(geomapId);
             geomap.addFeatureSet(featureSet);
-            if (featureSet instanceof ManualFeatureSet) {
+            if (featureSet instanceof ManualFeatureSet manualFeatureSet) {
                 List<String> features = dao.getNativeQueryResults("SELECT features FROM cms_geomap_features WHERE geomap_id = " + geomapId + ";");
-                ((ManualFeatureSet) featureSet).setFeatures(features);
+                manualFeatureSet.setFeatures(features);
             }
             maps.add(geomap);
         }
@@ -100,7 +100,7 @@ public class GeoMapUpdate implements IModelUpdate {
 
         List<Object[]> geomaps = dao.getNativeQueryResults("SELECT * FROM cms_geomap");
 
-        List<String> columnNames = info.stream().map(o -> (String) o[0]).collect(Collectors.toList());
+        List<String> columnNames = info.stream().map(o -> (String) o[0]).toList();
 
         Map<Long, FeatureSet> featureSets = new HashMap<>();
         for (Object[] geomap : geomaps) {
@@ -116,18 +116,19 @@ public class GeoMapUpdate implements IModelUpdate {
             String markerTitleField = Optional.ofNullable(columns.get("marker_title_field")).map(o -> (String) o).orElse(null);
             String marker = Optional.ofNullable(columns.get("marker")).map(o -> (String) o).orElse(null);
 
-            if (mapType == 1) {
-                ManualFeatureSet featureSet = new ManualFeatureSet();
-                featureSet.setMarker(marker);
-                featureSets.put(geomapId, featureSet);
-            } else if (mapType != null) {
-                SolrFeatureSet featureSet = new SolrFeatureSet();
-                featureSet.setMarker(marker);
-                featureSet.setSolrQuery(solrQuery);
-                featureSet.setMarkerTitleField(markerTitleField);
-                featureSets.put(geomapId, featureSet);
+            if (mapType != null) {
+                if (mapType == 1) {
+                    ManualFeatureSet featureSet = new ManualFeatureSet();
+                    featureSet.setMarker(marker);
+                    featureSets.put(geomapId, featureSet);
+                } else {
+                    SolrFeatureSet featureSet = new SolrFeatureSet();
+                    featureSet.setMarker(marker);
+                    featureSet.setSolrQuery(solrQuery);
+                    featureSet.setMarkerTitleField(markerTitleField);
+                    featureSets.put(geomapId, featureSet);
+                }
             }
-
         }
 
         return featureSets;

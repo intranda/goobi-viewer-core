@@ -1297,9 +1297,12 @@ public class Configuration extends AbstractConfiguration {
     public Map<String, String> getCollectionSortOrders(String field) {
 
         HierarchicalConfiguration<ImmutableNode> collection = getCollectionConfiguration(field);
-        List<HierarchicalConfiguration<ImmutableNode>> sortOrders = collection.configurationsAt("sorting.sortOrder");
-        return sortOrders.stream().collect(Collectors.toMap(conf -> conf.getString("[@collections]"), conf -> conf.getString(".")));
+        if (collection != null) {
+            List<HierarchicalConfiguration<ImmutableNode>> sortOrders = collection.configurationsAt("sorting.sortOrder");
+            return sortOrders.stream().collect(Collectors.toMap(conf -> conf.getString("[@collections]"), conf -> conf.getString(".")));
+        }
 
+        return Collections.emptyMap();
     }
 
     /**
