@@ -83,7 +83,6 @@ import de.unigoettingen.sub.commons.util.MimeType;
 import de.unigoettingen.sub.commons.util.MimeType.UnknownMimeTypeException;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -93,6 +92,7 @@ import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
+import io.goobi.viewer.controller.sorting.AlphanumCollatorComparator;
 import io.goobi.viewer.exceptions.ArchiveException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -1918,7 +1918,7 @@ public class ViewManager implements Serializable {
                 return url + getPi();
             }
             return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/sourcefile?id=" + getPi();
-        } catch (Exception e) {
+        } catch (NullPointerException | IllegalStateException | IndexUnreachableException e) {
             logger.error("Could not get source file resolver URL for {}.", topStructElementIddoc);
             Messages.error("errGetCurrUrl");
         }

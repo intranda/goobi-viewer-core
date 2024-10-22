@@ -438,6 +438,7 @@ public class GeoMapBean implements Serializable, IPolyglott {
                     break;
                 case "SEARCH_RESULTS":
                     map.addFeatureSet(new SearchResultFeatureSet());
+                    break;
                 default:
                     break;
             }

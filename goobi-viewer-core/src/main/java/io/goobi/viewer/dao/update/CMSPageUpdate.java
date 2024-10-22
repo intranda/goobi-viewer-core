@@ -156,7 +156,7 @@ public class CMSPageUpdate implements IModelUpdate {
                     logger.warn("No legacy template found with id {}: Cannot update cmsPage {}", legacyPageTemplateId, page.getId());
                 }
 
-            } catch (Exception e) {
+            } catch (DAOException | NullPointerException e) {
                 logger.error("Error updating page {}", page.getId(), e);
                 throw e;
             }
@@ -177,7 +177,7 @@ public class CMSPageUpdate implements IModelUpdate {
                 if (!dao.addCMSPageTemplate(template)) {
                     throw new DAOException("Adding template failed");
                 }
-            } catch (Exception e) {
+            } catch (DAOException | NullPointerException e) {
                 logger.error("Error creating template {}: {}", template.getName(), e.toString());
                 throw e;
             }
@@ -187,7 +187,7 @@ public class CMSPageUpdate implements IModelUpdate {
                     if (!dao.updateCMSPage(page)) {
                         throw new DAOException("Saving page failed");
                     }
-                } catch (Exception e) {
+                } catch (DAOException | NullPointerException e) {
                     logger.error("Error updating page {}: {}", page.getId(), e.toString());
                     throw e;
                 }

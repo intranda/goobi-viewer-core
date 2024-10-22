@@ -452,7 +452,7 @@ public class SearchHit implements Comparable<SearchHit> {
                         if (StringUtils.isBlank(fulltext)) {
                             continue;
                         }
-                        //FALLTHROUGH
+                        // fallthrough
                     case METADATA, UGC, EVENT:
                         handleMetadataHit(childDoc, fulltext, docType, acccessDeniedType);
                         break;

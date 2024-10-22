@@ -225,8 +225,11 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(getName());
-        for (HierarchicalBrowseDcElement child : children) {
-            sb.append("\n\t").append(child);
+        if (children.size() > 0) {
+            sb.append("(");
+            String cs = children.stream().map(c -> c.toString()).collect(Collectors.joining(", "));
+            sb.append(cs);
+            sb.append(")");
         }
         return sb.toString();
     }
@@ -238,7 +241,7 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
      *
      * @return a {@link java.util.Collection} object.
      */
-    public Collection<HierarchicalBrowseDcElement> getChildrenAndVisibleDescendants() {
+    public List<HierarchicalBrowseDcElement> getChildrenAndVisibleDescendants() {
         List<HierarchicalBrowseDcElement> list = new ArrayList<>();
         for (HierarchicalBrowseDcElement child : children) {
             list.add(child);

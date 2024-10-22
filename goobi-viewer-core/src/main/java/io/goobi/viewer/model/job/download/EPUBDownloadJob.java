@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.job.download;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -151,7 +152,7 @@ public class EPUBDownloadJob extends DownloadJob {
             String ret = handler.handleResponse(response);
             logger.trace("TaskManager response: {}", ret);
             return Long.parseLong(ret);
-        } catch (Exception e) {
+        } catch (IOException | IllegalArgumentException | NullPointerException e) {
             logger.error("Error getting response from TaskManager", e);
             return -1;
         }
@@ -179,7 +180,7 @@ public class EPUBDownloadJob extends DownloadJob {
             String ret = handler.handleResponse(response);
             logger.trace("TaskManager response: {}", ret);
             return Integer.parseInt(ret);
-        } catch (Exception e) {
+        } catch (IOException | IllegalArgumentException | NullPointerException e) {
             logger.error("Error getting response from TaskManager", e);
             return -1;
         }
@@ -228,7 +229,7 @@ public class EPUBDownloadJob extends DownloadJob {
                             + entityJson.get("ERRORMESSAGE"));
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException | IllegalArgumentException | NullPointerException e) {
             // Had to catch generic exception here because a ParseException triggered by Tomcat error HTML getting parsed as JSON cannot be caught
             throw new DownloadException("Failed to start pdf creation for PI=" + pi + ": " + e.getMessage());
         }

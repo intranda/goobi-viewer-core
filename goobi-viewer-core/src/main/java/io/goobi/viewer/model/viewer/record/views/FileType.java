@@ -62,7 +62,7 @@ public enum FileType {
     EPUB;
 
     private static final Logger logger = LogManager.getLogger(FileType.class);
-    private static final FileNameMap filenameMap = URLConnection.getFileNameMap();
+    private static final FileNameMap FILENAME_MAP = URLConnection.getFileNameMap();
 
     public static Collection<FileType> containedFiletypes(ViewManager viewManager, boolean localFilesOnly)
             throws IndexUnreachableException, PresentationException {
@@ -132,7 +132,7 @@ public enum FileType {
         if (suffix.matches("(?i)obj|gltf|glb|ply|stl|fbx")) {
             return "model/" + suffix.toLowerCase();
         }
-        return filenameMap.getContentTypeFor(filename);
+        return FILENAME_MAP.getContentTypeFor(filename);
     }
 
     public static Collection<FileType> containedFiletypes(PhysicalElement page, boolean localFilesOnly)

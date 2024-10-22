@@ -152,7 +152,7 @@ public class SolrSearchIndex {
             // Check whether the HTTP connection pool of the Solr client has been shut down and re-init
             try {
                 client.ping();
-            } catch (Exception e) {
+            } catch (IOException | SolrServerException e) {
                 logger.warn("HTTP client was closed, re-initializing Solr client...");
                 synchronized (this) {
                     try {
@@ -236,7 +236,7 @@ public class SolrSearchIndex {
         try {
             testQuery(SolrConstants.PI + ":*");
             return true;
-        } catch (Exception e) {
+        } catch (IOException | SolrServerException e) {
             return false;
         }
     }

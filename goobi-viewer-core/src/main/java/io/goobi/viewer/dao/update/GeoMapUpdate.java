@@ -116,13 +116,11 @@ public class GeoMapUpdate implements IModelUpdate {
             String markerTitleField = Optional.ofNullable(columns.get("marker_title_field")).map(o -> (String) o).orElse(null);
             String marker = Optional.ofNullable(columns.get("marker")).map(o -> (String) o).orElse(null);
 
-            if (mapType == null) {
-                //skip
-            } else if (mapType == 1) {
+            if (mapType == 1) {
                 ManualFeatureSet featureSet = new ManualFeatureSet();
                 featureSet.setMarker(marker);
                 featureSets.put(geomapId, featureSet);
-            } else {
+            } else if (mapType != null) {
                 SolrFeatureSet featureSet = new SolrFeatureSet();
                 featureSet.setMarker(marker);
                 featureSet.setSolrQuery(solrQuery);

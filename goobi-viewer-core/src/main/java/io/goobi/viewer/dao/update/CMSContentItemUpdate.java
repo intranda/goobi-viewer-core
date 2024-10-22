@@ -84,7 +84,7 @@ public class CMSContentItemUpdate implements IModelUpdate {
                     dao.executeUpdate("UPDATE cms_content_items SET ignore_collections = '" + entry.getValue() + "' WHERE cms_content_item_id = "
                             + entry.getKey());
                     logger.trace("Updated ignore_collections value at cms_content_item_id = '{}' to '{}'", entry.getKey(), entry.getValue());
-                } catch (Exception e) {
+                } catch (DAOException | NullPointerException e) {
                     logger.error("Error attempting to update cms_content_items value at cms_content_item_id = '{}' to '{}'", entry.getKey(),
                             entry.getValue());
                 }
