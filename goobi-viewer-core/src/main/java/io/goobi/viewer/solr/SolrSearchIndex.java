@@ -993,7 +993,7 @@ public class SolrSearchIndex {
         if (params != null && !params.isEmpty()) {
             for (Entry<String, String> entry : params.entrySet()) {
                 solrQuery.set(entry.getKey(), entry.getValue());
-                // logger.trace("&{}={}", key, params.get(key)); //NOSONAR Debug
+                // logger.trace("&{}={}", entry.getKey(), entry.getValue()); //NOSONAR Debug
             }
         }
 
