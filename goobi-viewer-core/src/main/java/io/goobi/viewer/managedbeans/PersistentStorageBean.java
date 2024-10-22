@@ -123,22 +123,30 @@ public class PersistentStorageBean implements DataStorage, Serializable {
      * If the given key exists and the entry is no older than the given timeToLiveMinutes, return the object stored under the key, otherwise store the
      * given object under the given key and return it
      * 
+     * @param <T> Type of the object to put
      * @param key the identifier under which to store the object
      * @param object the object to store under the given key if the key doesn't exist yet or is older than timeToLiveMinutes
      * @param timeToLiveMinutes the maximum age in minutes the stored object may have to be returned. If it's older, it will be replaced with the
      *            passed object
      * @return the object stored under the given key if viable, otherwise the given object
      */
-    @SuppressWarnings("unchecked")
     public synchronized <T> T getIfRecentOrPut(String key, T object, long timeToLiveMinutes) {
         return getIfRecentOrPut(key, object, timeToLiveMinutes, ChronoUnit.MINUTES);
     }
 
-    @SuppressWarnings("unchecked")
     public synchronized <T> Optional<T> getIfRecentOrRemove(String key, long timeToLiveMinutes) {
         return getIfRecentOrRemove(key, timeToLiveMinutes, ChronoUnit.MINUTES);
     }
 
+    /**
+     * Get an object stored under the given key. If the object is older than the given time to live, it is removed and an empty Optional returned
+     * 
+     * @param <T> Type of the object to get/remove
+     * @param key key of the object to get/remove
+     * @param timeToLive objects put within this timespan are returned, older objets are removed
+     * @param unit time unit of 'timeToLive'
+     * @return An optional containing the requested object, or an empty optional if the key doesn't exist or the object is older than 'timeToLive'
+     */
     @SuppressWarnings("unchecked")
     public synchronized <T> Optional<T> getIfRecentOrRemove(String key, long timeToLive, TemporalUnit unit) {
         Instant oldestViable = Instant.now().minus(timeToLive, unit);

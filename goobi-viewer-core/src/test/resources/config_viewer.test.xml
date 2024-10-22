@@ -607,6 +607,11 @@
 					<collection>d</collection>
 				</sortingList>
 				<collection>collection1</collection>
+				
+				<sortOrder collections="zeitschriften">alphanumerical_desc</sortOrder>
+				<sortOrder collections="zeitungen\..*">alphanumerical_asc</sortOrder>
+				<sortOrder collections="jahrbuecher">numerical_desc</sortOrder>
+								
 			</sorting>
 
 			<!-- Collection names listed here are hidden in the collection view. It 

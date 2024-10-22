@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.Part;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
@@ -153,7 +154,7 @@ public class UploadJob implements Serializable {
                     .target(url)
                     .request(MediaType.APPLICATION_JSON)
                     .post(javax.ws.rs.client.Entity.entity(body, MediaType.APPLICATION_JSON));
-        } catch (Exception e) {
+        } catch (ProcessingException | IllegalArgumentException | NullPointerException e) {
             throw new IOException("Error connecting to " + url, e);
         }
     }

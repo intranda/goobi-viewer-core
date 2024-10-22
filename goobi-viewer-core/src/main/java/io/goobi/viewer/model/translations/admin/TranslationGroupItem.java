@@ -84,8 +84,8 @@ public abstract class TranslationGroupItem {
      * Returns the translation status over all existing entries.
      *
      * @return <code>TranslationStatu</code>; FULL if all entries are FULL; NONE if all entries are NONE; PARTIAL otherwise
-     * @throws PresentationException 
-     * @throws IndexUnreachableException 
+     * @throws PresentationException
+     * @throws IndexUnreachableException
      */
     public TranslationStatus getTranslationStatus() throws IndexUnreachableException, PresentationException {
         int full = 0;
@@ -166,7 +166,6 @@ public abstract class TranslationGroupItem {
      * @return the messageKeys
      * @throws IndexUnreachableException
      * @throws PresentationException
-     * @throws Exception
      */
     public List<MessageEntry> getEntries() throws IndexUnreachableException, PresentationException {
         if (entries == null) {
