@@ -123,7 +123,7 @@
                     
                 <!-- METADATA (FIRST GROUP WITH location="objectview" -->    
                 <ui:fragment rendered="#{metadataBean.activeMetadataView != null}">
-                    <div id="view_metadata" class="view-metadata">
+                    <div id="view_metadata" class="view-metadata view-object__metadata">
                         <ui:insert name="viewMetadataMetadata">
                             <ui:include src="/resources/includes/metadata/metadata.xhtml">
                                 <ui:param name="metadataViewIndex" value="#{metadataBean.activeMetadataView.index}"/>

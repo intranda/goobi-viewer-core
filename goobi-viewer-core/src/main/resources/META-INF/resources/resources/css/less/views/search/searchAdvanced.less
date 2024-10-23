@@ -29,6 +29,10 @@
                 color: inherit;
             }
         }
+        &.-resultsGroupsActive {
+			border-top: none;
+			padding-top: 30px;
+		}
     }
     &__loader {
         display: none;
@@ -219,36 +223,69 @@
 		display: flex;
 		justify-content: space-between;
 		flex-wrap: wrap;
+		gap: @gap-sizer;
+		position: relative;
+		z-index: 5;
+        // padding: @gap-sizer;
+       	// margin-bottom: 20px;
 	}
 	&__entity-tabs-links-wrapper {
 		display: flex;
 		gap: 5px;
-		margin-bottom: 10px;
-		flex-wrap: wrap;
+		flex-wrap: wrap; 
+		
+	}
+	&__entity-tab-link-wrapper {
+		position: relative;
 	}
 	&__entity-tab-link {
-		padding: 15px;
-		color: white;
+		display: flex;
+		align-items: center; 
+		padding: 7px 15px;
+		// color: #222;
+//		position: relative;
+		&:hover {
+			text-decoration: none;
+		}
 		&.-standard {
-			color: #222;
-			background: white;
+
+		}
+		&.-active {
+			pointer-events: none;
+			font-weight: 700;
+			// border-width: 3px !important;
+			// border-color: #222;
+
+//			&:after {
+//				display: inline-block;
+//				  width: 0;
+//				  height: 0;
+//				  border-top: 7px solid #212529;
+//				  border-right: 7px solid transparent;
+//				  border-left: 7px solid transparent;
+//				  content: "";
+//				  bottom: -11px;
+//				  left: 50%;
+//				  transform: translate(-50%, -50%);
+//				  position: absolute;
+//			}
 		}
 		/* COLORING FOR THE ENTITY GHOUPS */
-		&.-group0 {
-			background: #b13b29;
-		}
-		&.-group1 {
-			background: #dc7e2e;
-		}
-		&.-group2 {
-			background: #8966ca;
-		}
-		&.-group3 {
-			background: #2e8d38;
-		}
-		&.-group4 {
-			background: #3365a9;
-		}
+//		&.-group0 {
+//			background: #b13b29;
+//		}
+//		&.-group1 {
+//			background: #dc7e2e;
+//		}
+//		&.-group2 {
+//			background: #8966ca;
+//		}
+//		&.-group3 {
+//			background: #2e8d38;
+//		}
+//		&.-group4 {
+//			background: #3365a9;
+//		}
 	}
 }
 
