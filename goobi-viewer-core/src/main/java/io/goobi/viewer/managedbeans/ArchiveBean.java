@@ -99,6 +99,10 @@ public class ArchiveBean implements Serializable {
                 // if state of archive tree should be reset on each page reload, remove the if-clause
                 // or call ArchiveTree.collapseAll()
                 if (this.archiveTree == null || !this.archiveTree.getRootElement().getTopstructPi().equals(getCurrentArchive().getResourceId())) {
+                    //                    if (this.archiveTree != null) {
+                    //                        logger.trace("Root PI: {}", this.archiveTree.getRootElement().getTopstructPi());
+                    //                    }
+                    //                    logger.trace("Resource ID: {}", getCurrentArchive().getResourceId());
                     this.archiveTree = new ArchiveTree(archiveManager.getArchiveTree(getCurrentResource()));
                     logger.trace("Reloaded archive tree: {}", getCurrentArchive().getResourceId());
                 }
@@ -430,6 +434,14 @@ public class ArchiveBean implements Serializable {
         return Optional.ofNullable(getCurrentArchive()).map(ArchiveResource::getResourceId).orElse("");
     }
 
+    /**
+     * Called when selecting an archive in the drop-down.
+     * 
+     * @param archiveName
+     * @throws ArchiveException
+     * @deprecated Redundant resolving of archive ID via the name + duplicate call to initializeArchiveTree(); use setCurrentResource()
+     */
+    @Deprecated
     public void setArchiveId(String archiveName) throws ArchiveException {
         logger.trace("setArchiveId: {}", archiveName);
         ArchiveResource database = this.archiveManager.getArchiveResource(archiveName);
