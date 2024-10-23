@@ -67,18 +67,18 @@
 <!-- 			                <h2 class="search-advanced__entry-area-title">#{msg.search__search_type}</h2> -->
 			                
 			                
-			                <div class="search-advanced__entity-tabs">
+			                <div class="search-advanced__entity-tabs -result-group-#{searchBean.activeResultGroupName == '-' ? 'standard' : searchBean.activeResultGroupName}">
 			                    <div class="search-advanced__entity-tabs-links-wrapper">
 			                    
 			                    <!-- LINK TO STANDARD -->
 			                    <div class="search-advanced__entity-tab-link-wrapper #{searchBean.activeResultGroupName == '-' ? '-active' : ''}">
-				                    <h:outputLink styleClass="search-advanced__entity-tab-link -standard #{searchBean.activeResultGroupName == '-' ? '-active' : ''}"
+				                    <h:outputLink styleClass="search-advanced__entity-tab-link -result-group-standard #{searchBean.activeResultGroupName == '-' ? '-active' : ''}"
 				                                value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/">#{msg.search__search_default_all_group}</h:outputLink>
-				                </div>
+				                </div> 
 			                    <!-- LINK TO DEFINED ENTITY GROUP(S) -->
 			                        <ui:repeat value="#{configurationBean.searchResultGroupNames}" var="groupName" varStatus="status">
-			                            <div class="search-advanced__entity-tab-link-wrapper #{groupName == searchBean.activeResultGroupName ? '-active' : ''}">
-				                            <h:outputLink styleClass="search-advanced__entity-tab-link -group#{status.index} #{groupName == searchBean.activeResultGroupName ? '-active' : ''}"
+			                            <div class="search-advanced__entity-tab-link-wrapper #{groupName == searchBean.activeResultGroupName ? '-active' : ''} -result-group-#{groupName}">
+				                            <h:outputLink styleClass="search-advanced__entity-tab-link -result-group-#{groupName} #{groupName == searchBean.activeResultGroupName ? '-active' : ''}"
 				                                value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{groupName}/-/">
 				                                <ui:fragment rendered="#{groupName == searchBean.activeResultGroupName}">
 				                                    #{msg[groupName]} 
@@ -94,7 +94,7 @@
 			                </div>
 			             </ui:fragment>
 
-                    <div class="search-advanced__entry-area #{configurationBean.searchResultGroupsEnabled ? '-resultsGroupsActive' : ''}">
+                    <div class="search-advanced__entry-area -result-group-#{searchBean.activeResultGroupName} #{configurationBean.searchResultGroupsEnabled ? '-resultsGroupsActive' : ''}">
                     
                         <!-- AJAX LOADER -->
                         <div class="search-advanced__loader"></div>
