@@ -334,8 +334,8 @@
                 <!-- SEARCH ADVANCED ACTION -->
                 <div class="search-advanced__action">
                 	<div class="search-advanced__action-submit-button-wrapper small-button-loader__wrapper">
-                
-	                    <h:commandButton styleClass="btn btn--full search-advanced__action-search-button" value="#{msg.search}" action="#{search.searchAdvanced}">
+                 
+	                    <h:commandButton styleClass="btn btn--full search-advanced__action-search-button -result-group-#{searchBean.activeResultGroupName}" value="#{msg.search}" action="#{search.searchAdvanced}">
 	                        <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="1" />
 	                        <f:passThroughAttribute name="data-target" value="buttonLoaderClickEvent" />
 	                    </h:commandButton>
