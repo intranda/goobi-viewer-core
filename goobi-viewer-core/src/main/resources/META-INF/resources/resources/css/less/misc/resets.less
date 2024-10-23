@@ -397,9 +397,16 @@ button {
 // Move swal notification a bit away from top so admin topbar is visible
 
 body.swal2-toast-shown .swal2-container.swal2-top-end, 
-body.swal2-toast-shown .swal2-container.swal2-top-right {
+body.swal2-toast-shown .swal2-container.swal2-top-right,
+body.swal2-toast-shown .swal2-container.swal2-top {
 	top: 40px;
 }
+body.swal2-toast-shown .swal2-container.swal2-bottom-end, 
+body.swal2-toast-shown .swal2-container.swal2-bottom-right,
+body.swal2-toast-shown .swal2-container.swal2-bottom {
+	bottom: 70px;
+}
+
 
 .swal2-header {
 	h1 {
@@ -421,10 +428,24 @@ body.swal2-toast-shown .swal2-container.swal2-top-right {
     background: rgba(0,0,0,.8);
 }
 
+.swal2-popup.swal2-toast {
+	border-left: 7px solid @adminBackend-bg;
+}
+
+.swal2-popup.swal2-toast.swal2-show {
+	animation: flashForSwal2Toast 0.8s ease, swal2-toast-show .4s;
+}
+
 .swal2-popup.swal2-toast .swal2-title {
 	font-size: 1.3rem;
 	font-family: "Inter", Arial, sans-serif;
-	color: #111;
+	color: white;
+}
+
+// SHORT FLASH FOR NOTIFICATION
+@keyframes flashForSwal2Toast {
+  from {border-left: 7px solid yellow;}
+  to {border-left: 7px solid @adminBackend-bg;}
 }
  
 .-sweetAlertShowAnimation {
