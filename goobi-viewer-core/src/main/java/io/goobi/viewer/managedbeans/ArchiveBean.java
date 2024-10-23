@@ -349,14 +349,15 @@ public class ArchiveBean implements Serializable {
      * @return the databaseState
      */
     public DatabaseState getDatabaseState() {
-        // logger.trace("getDatabaseState"); //NOSONAR Debug
+        logger.trace("getDatabaseState"); //NOSONAR Debug
         if (isDatabaseLoaded()) {
             return DatabaseState.ARCHIVE_TREE_LOADED;
         } else if (archiveManager.isInErrorState()) {
             logger.trace("archive error state");
             return archiveManager.getDatabaseState();
         } else {
-            archiveManager.updateArchiveList();
+            // TODO updateArchiveList is expensive, can't call it on every database state check!
+            // archiveManager.updateArchiveList();
             return archiveManager.getDatabaseState();
         }
     }
@@ -476,7 +477,7 @@ public class ArchiveBean implements Serializable {
     }
 
     public void updateArchives() {
-        // logger.trace("updateArchives"); //NOSONAR Debug
+        logger.trace("updateArchives"); //NOSONAR Debug
         this.archiveManager.updateArchiveList();
 
     }

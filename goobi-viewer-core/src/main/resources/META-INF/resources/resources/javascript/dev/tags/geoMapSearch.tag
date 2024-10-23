@@ -14,7 +14,7 @@
 <script>
 
 this.on("mount", function() {
-   // console.log("mapsearch ", this.opts);
+  // console.log("mapsearch ", this.opts);
 	this.geoMap = this.initMap();
 	this.drawLayer = this.initDrawLayer(this.geoMap);
     if(this.opts.area) {
@@ -28,9 +28,9 @@ this.on("mount", function() {
 	if(this.opts.toggleFeatures) {   
 		this.initToggleLayer(this.geoMap, this.hitsLayer, this.opts.toggleFeatures);
 	}
-	if(this.opts.heatmap?.enabled) {	    
-		this.heatmap = this.initHeatmap(this.hitsLayer)
-	}
+// 	if(this.opts.hitsLayer.heatmap?.enabled) {	    
+// 		this.heatmap = this.initHeatmap(this.hitsLayer)
+// 	}
 }); 
 
 initMap() {
@@ -288,28 +288,19 @@ initHitsLayer(map) {
     this.opts.hitsLayer.language = viewerJS.translator.language;
 	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer);
 	map.layers.push(hitsLayer);
-	// console.log("init hits layer ", this.opts.hitsLayer, hitsLayer, this.opts.features);
 	hitsLayer.init(this.opts.features, false);
-	hitsLayer.onFeatureClick.subscribe(f => {
-		if(f.properties && f.properties.link) {
-			$(this.opts.search?.loader).show();
-			window.location.assign(f.properties.link);
-		}
-	})
-
 	return hitsLayer;
 }
 
 initHeatmap(hitsLayer) {
-	let heatmapQuery = this.opts.heatmap.mainQuery;
-	let heatmapFacetQuery = this.opts.heatmap.facetQuery;
-	
-	let heatmap = L.solrHeatmap(this.opts.heatmap.heatmapUrl, this.opts.heatmap.featureUrl, hitsLayer, {
+	let heatmapQuery = this.opts.hitsLayer.heatmap.mainQuery;
+	let heatmapFacetQuery = this.opts.hitsLayer.heatmap.facetQuery;
+	let heatmap = L.solrHeatmap(this.opts.hitsLayer.heatmap.heatmapUrl, this.opts.hitsLayer.heatmap.featureUrl, hitsLayer, {
 		field: "WKT_COORDS",
 		type: "clusters",
 		filterQuery: heatmapQuery,
 		facetQuery: heatmapFacetQuery,
-		labelField: this.opts.heatmap.labelField,
+		labelField: this.opts.hitsLayer.heatmap.labelField,
 		queryAdapter: "goobiViewer"    
 	});
 	heatmap.addTo(this.geoMap.map);

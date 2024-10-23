@@ -163,6 +163,7 @@ public class ExternalFilesDownloader {
                     }
                 }
             case 401:
+                // fallthrough
             default:
                 logger.warn("Error code: {}", response.getStatusLine().getStatusCode());
                 throw new IOException(response.getStatusLine().getReasonPhrase());

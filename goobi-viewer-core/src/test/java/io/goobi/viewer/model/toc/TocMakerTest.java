@@ -64,8 +64,8 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void generateToc_shouldGenerateVolumeTOCWithSiblingsCorrectly() throws Exception {
-        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
-        Assertions.assertTrue(iddoc > 0);
+        String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
+        Assertions.assertNotNull(iddoc);
         StructElement structElement = new StructElement(iddoc);
         Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(new TOC(), structElement, true, BaseMimeType.IMAGE.getName(), 1, -1);
         Assertions.assertNotNull(tocElements);
@@ -93,8 +93,8 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void generateToc_shouldGenerateVolumeTOCWithoutSiblingsCorrectly() throws Exception {
-        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
-        Assertions.assertTrue(iddoc > 0);
+        String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
+        Assertions.assertNotNull(iddoc);
         StructElement structElement = new StructElement(iddoc);
         Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(new TOC(), structElement, false, BaseMimeType.IMAGE.getName(), 1, -1);
         Assertions.assertNotNull(tocElements);
@@ -115,8 +115,8 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void generateToc_shouldGenerateAnchorTOCCorrectly() throws Exception {
-        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648");
-        Assertions.assertTrue(iddoc > 0);
+        String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648");
+        Assertions.assertNotNull(iddoc);
         StructElement structElement = new StructElement(iddoc);
         TOC toc = new TOC();
         Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(toc, structElement, true, BaseMimeType.IMAGE.getName(), 1, -1);
@@ -136,8 +136,8 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void generateToc_shouldPaginateAnchorTOCCorrectly() throws Exception {
-        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648");
-        Assertions.assertTrue(iddoc > 0);
+        String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648");
+        Assertions.assertNotNull(iddoc);
         StructElement structElement = new StructElement(iddoc);
         TOC toc = new TOC();
         {
@@ -181,7 +181,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies throw IllegalArgumentException if structElement is null
      */
     @Test
-    void generateToc_shouldThrowIllegalArgumentExceptionIfStructElementIsNull() throws Exception {
+    void generateToc_shouldThrowIllegalArgumentExceptionIfStructElementIsNull() {
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> TocMaker.generateToc(new TOC(), null, true, BaseMimeType.IMAGE.getName(), 1, -1));
     }
@@ -192,8 +192,8 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void generateToc_shouldThrowIllegalArgumentExceptionIfTocIsNull() throws Exception {
-        long iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
-        Assertions.assertTrue(iddoc > 0);
+        String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
+        Assertions.assertNotNull(iddoc);
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> TocMaker.generateToc(null, new StructElement(iddoc), true, BaseMimeType.IMAGE.getName(), 1, -1));
     }
@@ -203,7 +203,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies build configured label correctly
      */
     @Test
-    void buildLabel_shouldBuildConfiguredLabelCorrectly() throws Exception {
+    void buildLabel_shouldBuildConfiguredLabelCorrectly() {
         {
             SolrDocument doc = new SolrDocument();
             doc.setField(SolrConstants.LABEL, "label");
@@ -224,7 +224,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies fill remaining parameters correctly if docstruct fallback used
      */
     @Test
-    void buildLabel_shouldFillRemainingParametersCorrectlyIfDocstructFallbackUsed() throws Exception {
+    void buildLabel_shouldFillRemainingParametersCorrectlyIfDocstructFallbackUsed() {
 
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.CURRENTNO, "1");
@@ -239,7 +239,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies create correctly sorted map
      */
     @Test
-    void createOrderedGroupDocMap_shouldCreateCorrectlySortedMap() throws Exception {
+    void createOrderedGroupDocMap_shouldCreateCorrectlySortedMap() {
         String pi = "PPN123";
         List<SolrDocument> groupMemberDocs = new ArrayList<>(5);
         {

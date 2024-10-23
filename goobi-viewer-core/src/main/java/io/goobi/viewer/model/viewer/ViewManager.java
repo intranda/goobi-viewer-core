@@ -83,7 +83,6 @@ import de.unigoettingen.sub.commons.util.MimeType;
 import de.unigoettingen.sub.commons.util.MimeType.UnknownMimeTypeException;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -93,6 +92,7 @@ import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
+import io.goobi.viewer.controller.sorting.AlphanumCollatorComparator;
 import io.goobi.viewer.exceptions.ArchiveException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -155,9 +155,9 @@ public class ViewManager implements Serializable {
     private ImageDeliveryBean imageDeliveryBean;
 
     /** IDDOC of the top level document. */
-    private final long topStructElementIddoc;
+    private final String topStructElementIddoc;
     /** IDDOC of the current level document. The initial top level document values eventually gets overridden with the image owner element's IDDOC. */
-    private long currentStructElementIddoc;
+    private String currentStructElementIddoc;
     /** LOGID of the current level document. */
     private String logId;
 
@@ -224,7 +224,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mimeType,
+    public ViewManager(StructElement topDocument, IPageLoader pageLoader, String currentDocumentIddoc, String logId, String mimeType,
             ImageDeliveryBean imageDeliveryBean) throws IndexUnreachableException, PresentationException {
         this.imageDeliveryBean = imageDeliveryBean;
         this.topStructElement = topDocument;
@@ -234,7 +234,7 @@ public class ViewManager implements Serializable {
         this.currentStructElementIddoc = currentDocumentIddoc;
         this.logId = logId;
         this.doublePageMode = DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault();
-        if (topStructElementIddoc == currentDocumentIddoc) {
+        if (topStructElementIddoc.equals(currentDocumentIddoc)) {
             currentStructElement = topDocument;
         } else {
             currentStructElement = new StructElement(currentDocumentIddoc);
@@ -583,7 +583,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public String getCurrentMasterImageUrl() throws IndexUnreachableException, DAOException {
         return getMasterImageUrl(Scale.MAX, getCurrentPage());
     }
@@ -845,7 +845,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public String getMasterImageUrlForDownload(String boxSizeInPixel) throws IndexUnreachableException, DAOException {
         if (boxSizeInPixel == null) {
             throw new IllegalArgumentException("boxSizeInPixel may not be null");
@@ -1398,9 +1398,9 @@ public class ViewManager implements Serializable {
         this.currentImageOrder = useOrder;
 
         if (StringUtils.isEmpty(logId)) {
-            Long iddoc = pageLoader.getOwnerIddocForPage(useOrder);
+            String iddoc = pageLoader.getOwnerIddocForPage(useOrder);
             // Set the currentDocumentIddoc to the IDDOC of the image owner document, but only if no specific document LOGID has been requested
-            if (iddoc != null && iddoc > -1) {
+            if (iddoc != null) {
                 currentStructElementIddoc = iddoc;
                 logger.trace("currentDocumentIddoc: {} ({})", currentStructElementIddoc, pi);
             } else if (isHasPages()) {
@@ -1410,8 +1410,8 @@ public class ViewManager implements Serializable {
         } else {
             // If a specific LOGID has been requested, look up its IDDOC
             logger.trace("Selecting currentElementIddoc by LOGID: {} ({})", logId, pi);
-            long iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(getPi(), logId);
-            if (iddoc > -1) {
+            String iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(getPi(), logId);
+            if (iddoc != null) {
                 currentStructElementIddoc = iddoc;
             } else {
                 logger.trace("currentElementIddoc not found for '{}', LOGID: {}", pi, logId);
@@ -1918,7 +1918,7 @@ public class ViewManager implements Serializable {
                 return url + getPi();
             }
             return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/sourcefile?id=" + getPi();
-        } catch (Exception e) {
+        } catch (NullPointerException | IllegalStateException | IndexUnreachableException e) {
             logger.error("Could not get source file resolver URL for {}.", topStructElementIddoc);
             Messages.error("errGetCurrUrl");
         }
@@ -2858,7 +2858,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @deprecated Use <code>PhysicalElement.getFullText()</code>
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public String getFulltext() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         return getFulltext(true, null);
     }
@@ -2874,7 +2874,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @deprecated Use <code>PhysicalElement.getFullText()</code>
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public String getFulltext(boolean escapeHtml, String language) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         String currentFulltext = null;
 
@@ -3067,11 +3067,11 @@ public class ViewManager implements Serializable {
      *
      * @return the topStructElementIddoc
      */
-    public long getTopStructElementIddoc() {
+    public String getTopStructElementIddoc() {
         return topStructElementIddoc;
     }
 
-    public Long getAnchorDocumentIddoc() {
+    public String getAnchorDocumentIddoc() {
         if (this.anchorStructElement != null) {
             return anchorStructElement.getLuceneId();
         }
@@ -3127,7 +3127,7 @@ public class ViewManager implements Serializable {
      *
      * @return the currentStructElementIddoc
      */
-    public long getCurrentStructElementIddoc() {
+    public String getCurrentStructElementIddoc() {
         return currentStructElementIddoc;
     }
 
@@ -3138,7 +3138,7 @@ public class ViewManager implements Serializable {
      *
      * @param currentStructElementIddoc the currentStructElementIddoc to set
      */
-    public void setCurrentStructElementtIddoc(long currentStructElementIddoc) {
+    public void setCurrentStructElementtIddoc(String currentStructElementIddoc) {
         this.currentStructElementIddoc = currentStructElementIddoc;
     }
 
@@ -4076,7 +4076,7 @@ public class ViewManager implements Serializable {
             throw new RecordNotFoundException(pi);
         }
 
-        long iddoc = Long.parseLong((String) doc.getFieldValue(SolrConstants.IDDOC));
+        String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
         StructElement topDocument = new StructElement(iddoc, doc);
         return new ViewManager(topDocument, AbstractPageLoader.create(topDocument, loadPages), iddoc, null, null, null);
     }

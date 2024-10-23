@@ -107,7 +107,9 @@ public class RecordFileResource {
 
     /**
      * 
-     * @param pi
+     * @param request the http request
+     * @param response the http response
+     * @param pi the requested indentifier
      */
     public RecordFileResource(@Context HttpServletRequest request, @Context HttpServletResponse response,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {

@@ -85,7 +85,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     private static final Logger logger = LogManager.getLogger(CMSCollection.class);
 
-    @Deprecated
+    @Deprecated(since = "24.10")
     private static final String LABEL_TAG = "label";
     private static final String DESCRIPTION_TAG = "description";
 
@@ -584,7 +584,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * @param collectionName
      * @return {@link URI}
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public static URI getDefaultIcon(String collectionName) {
         return null;
     }
@@ -601,7 +601,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
             try {
                 SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(getRepresentativeWorkPI());
                 if (doc != null) {
-                    return Optional.ofNullable(new StructElement(Long.parseLong((String) doc.getFieldValue(SolrConstants.IDDOC)), doc));
+                    return Optional.ofNullable(new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc));
                 }
             } catch (PresentationException | IndexUnreachableException e) {
                 logger.error(e.toString(), e);

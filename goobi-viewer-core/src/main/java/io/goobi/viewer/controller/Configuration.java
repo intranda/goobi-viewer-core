@@ -1294,6 +1294,24 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Get all configured sortOrders for collections in the given field, mapped against regex which should match the collection(s) which
+     * subcollections should be sorted according the sortOrder
+     * 
+     * @param field the solr fild on which the collection is based
+     * @return a map of regular expressions matching collection names and associated sortOrders
+     */
+    public Map<String, String> getCollectionSortOrders(String field) {
+
+        HierarchicalConfiguration<ImmutableNode> collection = getCollectionConfiguration(field);
+        if (collection != null) {
+            List<HierarchicalConfiguration<ImmutableNode>> sortOrders = collection.configurationsAt("sorting.sortOrder");
+            return sortOrders.stream().collect(Collectors.toMap(conf -> conf.getString("[@collections]"), conf -> conf.getString(".")));
+        }
+
+        return Collections.emptyMap();
+    }
+
+    /**
      * <p>
      * getCollectionSorting.
      * </p>
@@ -4973,7 +4991,9 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
+     * @deprecated currently unused since download jobs are handled via message queues
      */
+    @Deprecated(since = "24.10")
     public String getTaskManagerServiceUrl() {
         return getLocalString("urls.taskManager", "http://localhost:8080/itm/") + "service";
     }
@@ -4985,7 +5005,9 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
+     * @deprecated jobs are no longs handled via TaskManager but via queues
      */
+    @Deprecated(since = "24.10")
     public String getTaskManagerRestUrl() {
         return getLocalString("urls.taskManager", "http://localhost:8080/itm/") + "rest";
     }

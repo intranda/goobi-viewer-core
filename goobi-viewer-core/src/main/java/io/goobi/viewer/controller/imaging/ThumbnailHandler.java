@@ -347,7 +347,7 @@ public class ThumbnailHandler {
     public PhysicalElement getPage(String pi, int order) throws IndexUnreachableException, PresentationException, DAOException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         if (doc != null) {
-            StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
+            StructElement struct = new StructElement((String) doc.getFirstValue(SolrConstants.IDDOC), doc);
             IPageLoader pageLoader = AbstractPageLoader.create(struct);
             return pageLoader.getPage(order);
         }
@@ -529,10 +529,7 @@ public class ThumbnailHandler {
      */
     private static StructElement getStructElement(SolrDocument doc) {
         String value = (String) doc.getFirstValue(SolrConstants.IDDOC);
-        Long iddoc = 0L;
-        if (value != null) {
-            iddoc = Long.valueOf(value);
-        }
+        String iddoc = value;
         try {
             return new StructElement(iddoc, doc);
         } catch (IndexUnreachableException e) {
@@ -889,8 +886,6 @@ public class ThumbnailHandler {
                     break;
                 case "object":
                     ret = getThumbnailPath(OBJECT_3D_THUMB).toString();
-                    break;
-                case "other":
                     break;
                 default:
                     if (logger.isWarnEnabled()) {

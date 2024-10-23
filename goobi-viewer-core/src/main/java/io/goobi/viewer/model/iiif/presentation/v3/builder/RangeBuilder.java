@@ -127,7 +127,7 @@ public class RangeBuilder extends AbstractBuilder {
 
     private static List<StructElement> getChildStructs(List<StructElement> structures, StructElement structElement) {
         return structures.stream()
-                .filter(s -> structElement.getLuceneId() == s.getParentLuceneId())
+                .filter(s -> structElement.getLuceneId().equals(s.getParentLuceneId()))
                 .collect(Collectors.toList());
     }
 }

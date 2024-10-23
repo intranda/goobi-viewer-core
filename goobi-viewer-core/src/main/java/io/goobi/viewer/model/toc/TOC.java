@@ -142,7 +142,7 @@ public class TOC implements Serializable {
             int visibleLevel = DataManager.getInstance().getConfiguration().getSidebarTocInitialCollapseLevel();
             int collapseThreshold = DataManager.getInstance().getConfiguration().getSidebarTocCollapseLengthThreshold();
             int lowestLevelToCollapse = DataManager.getInstance().getConfiguration().getSidebarTocLowestLevelToCollapseForLength();
-            Long currentElementIdDoc = BeanUtils.getActiveDocumentBean().getViewManager().getCurrentStructElementIddoc();
+            String currentElementIdDoc = BeanUtils.getActiveDocumentBean().getViewManager().getCurrentStructElementIddoc();
             buildTree(group, visibleLevel, collapseThreshold, lowestLevelToCollapse, currentElementIdDoc);
         }
         return getViewForGroup(group);
@@ -178,7 +178,7 @@ public class TOC implements Serializable {
      *
      * @return a {@link java.util.List} object.
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public List<TOCElement> getTreeViewSidebar() {
         // logger.trace("getTreeViewSidebar"); //NOSONAR Debug
         return getTreeView();
@@ -192,7 +192,7 @@ public class TOC implements Serializable {
      * @param lowestLevelToCollapse
      * @param currentElementIdDoc
      */
-    protected void buildTree(String group, int visibleLevel, int collapseThreshold, int lowestLevelToCollapse, Long currentElementIdDoc) {
+    protected void buildTree(String group, int visibleLevel, int collapseThreshold, int lowestLevelToCollapse, String currentElementIdDoc) {
         logger.trace("buildTree");
         if (group == null) {
             throw new IllegalArgumentException("group may not be null");
@@ -252,7 +252,7 @@ public class TOC implements Serializable {
      * @param list
      * @param currentElementIdDoc
      */
-    private void uncollapseCurrentElementAncestors(List<TOCElement> list, Long currentElementIdDoc) {
+    private void uncollapseCurrentElementAncestors(List<TOCElement> list, String currentElementIdDoc) {
         if (currentElementIdDoc != null) {
             TOCElement currentElement = getElement(list, currentElementIdDoc);
             if (currentElement != null) {
@@ -276,7 +276,7 @@ public class TOC implements Serializable {
      * @param iddoc
      * @return {@link TOCElement}
      */
-    private static TOCElement getElement(List<TOCElement> list, Long iddoc) {
+    private static TOCElement getElement(List<TOCElement> list, String iddoc) {
         return list.stream().filter(ele -> ele.getIddoc().equals(iddoc.toString())).findAny().orElse(null);
     }
 

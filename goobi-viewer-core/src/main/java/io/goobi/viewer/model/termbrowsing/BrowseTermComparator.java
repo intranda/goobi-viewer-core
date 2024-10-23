@@ -32,8 +32,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.sorting.AlphanumCollatorComparator;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**

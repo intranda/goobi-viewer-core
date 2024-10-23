@@ -347,7 +347,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
                 for (Metadata md : metadataList) {
                     // Skip fields that have a different language code than the given locale
                     if (locale == null || !SolrTools.isHasWrongLanguageCode(md.getLabel(), locale.getLanguage())) {
-                        md.populate(se, Long.toString(se.getLuceneId()), null, locale);
+                        md.populate(se, se.getLuceneId(), null, locale);
                         ret.add(md);
                     }
                 }

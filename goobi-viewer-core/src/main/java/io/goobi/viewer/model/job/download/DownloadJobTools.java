@@ -25,8 +25,8 @@ import java.io.File;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -35,7 +35,7 @@ public final class DownloadJobTools {
 
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(DownloadJobTools.class);
-    
+
     /** Private constructor. */
     private DownloadJobTools() {
         //
@@ -84,7 +84,9 @@ public final class DownloadJobTools {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @should delete expired jobs correctly
      * @should delete file correctly
+     * @deprecated Only used in deprecated method {@link DownloadJob#checkDownload(String, String, String, String, String, long)}
      */
+    @Deprecated(since = "24.10")
     public static int cleanupExpiredDownloads() throws DAOException {
         List<DownloadJob> jobs = DataManager.getInstance().getDao().getAllDownloadJobs();
         if (jobs.isEmpty()) {

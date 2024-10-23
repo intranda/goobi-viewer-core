@@ -71,7 +71,7 @@
 		<sonar.java.target>17</sonar.java.target>
 
 		<!-- Checkstyle -->
-		<checkstyle.max.violations>99</checkstyle.max.violations>
+		<checkstyle.max.violations>50</checkstyle.max.violations>
 		<skipCheckstyle>true</skipCheckstyle>
 
 		<!-- Manifest information -->
@@ -80,7 +80,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.6.2</alto.version>
-		<ics.version>3.17.0</ics.version>
+		<ics.version>3.17.1</ics.version>
 		<tei-conversion.version>1.3.3</tei-conversion.version>
 		<iiif-api-model.version>2.6.5</iiif-api-model.version>
 		<normdataimporter.version>1.11.3</normdataimporter.version>
@@ -129,7 +129,7 @@
 		<jsoup.version>1.18.1</jsoup.version>
 		<junit.version>5.11.2</junit.version>
 		<mariadb-java-client.version>3.4.1</mariadb-java-client.version>
-		<mockito.version>5.14.1</mockito.version>
+		<mockito.version>5.14.2</mockito.version>
 		<mockserver.version>5.15.0</mockserver.version>
 		<oauth.version>1.0.2</oauth.version>
 		<omnifaces.version>3.14.6</omnifaces.version>

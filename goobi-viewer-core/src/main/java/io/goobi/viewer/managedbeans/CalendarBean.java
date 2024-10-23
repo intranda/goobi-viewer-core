@@ -24,10 +24,12 @@ package io.goobi.viewer.managedbeans;
 import java.io.IOException;
 import java.io.Serializable;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,6 +38,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.LongStream;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -971,6 +974,7 @@ public class CalendarBean implements Serializable {
                     break;
                 case 3:
                     mar.setHits((int) monthCount.getCount());
+                    break;
                 case 4:
                     apr.setHits((int) monthCount.getCount());
                     break;
@@ -1074,44 +1078,28 @@ public class CalendarBean implements Serializable {
                         dayItem.setDayOfWeek("unknown");
                         break;
                 }
-
-                if (date.getDayOfMonth() == 1 && !DayOfWeek.MONDAY.equals(date.getDayOfWeek())) {
-                    // fill first week with empty day items
-                    switch (date.getDayOfWeek()) {
-                        case SUNDAY:
-                            // Sunday
-                            CalendarItemDay sun = new CalendarItemDay("", 0, 0);
-                            currentWeek.addDay(sun);
-                        case SATURDAY:
-                            // Saturday
-                            CalendarItemDay sat = new CalendarItemDay("", 0, 0);
-                            currentWeek.addDay(sat);
-                        case FRIDAY:
-                            // Friday
-                            CalendarItemDay fri = new CalendarItemDay("", 0, 0);
-                            currentWeek.addDay(fri);
-                        case THURSDAY:
-                            // Thursday
-                            CalendarItemDay thu = new CalendarItemDay("", 0, 0);
-                            currentWeek.addDay(thu);
-                        case WEDNESDAY:
-                            // Wednesday
-                            CalendarItemDay wed = new CalendarItemDay("", 0, 0);
-                            currentWeek.addDay(wed);
-                        case TUESDAY:
-                            // Tuesday
-                            CalendarItemDay tue = new CalendarItemDay("", 0, 0);
-                            currentWeek.addDay(tue);
-                            break;
-                        default:
-                            break;
-                    }
+                if (date.getDayOfMonth() == 1) {
+                    addEmptyDays(currentWeek, date);
                 }
                 currentWeek.addDay(dayItem);
             }
         }
 
         return monthList;
+    }
+
+    /**
+     * Add as many {@link CalendarItemDay}s to 'currentWeek' as there are days between the start of the month and the previous monday
+     * 
+     * @param currentWeek
+     * @param date
+     */
+    protected static void addEmptyDays(CalendarItemWeek currentWeek, LocalDate date) {
+
+        LocalDate previousMonday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        long daysToAdd = Duration.between(previousMonday.atStartOfDay(), date.atStartOfDay()).toDays();
+        LongStream.range(0, daysToAdd).forEach(i -> currentWeek.addDay(new CalendarItemDay("", 0, 0)));
+
     }
 
     /**

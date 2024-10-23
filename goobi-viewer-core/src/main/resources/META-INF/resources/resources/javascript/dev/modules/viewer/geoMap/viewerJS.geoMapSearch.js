@@ -54,15 +54,15 @@ var viewerJS = ( function ( viewer ) {
 					svg: true,
 					prefix: "fa",
 					iconRotate: 0
-			    }
-			},
-			heatmap: {
-				enabled: true,
-				heatmapUrl: "/viewer/api/v1/index/spatial/heatmap/{solrField}",
-				featureUrl: "/viewer/api/v1/index/spatial/search/{solrField}",
-				mainQuery: "BOOL_WKT_COORDS:*",
-				facetQuery: "",
-				labelField: "LABEL",
+			    },
+				heatmap: {
+					enabled: true,
+					heatmapUrl: "/viewer/api/v1/index/spatial/heatmap/{solrField}",
+					featureUrl: "/viewer/api/v1/index/spatial/search/{solrField}",
+					mainQuery: "BOOL_WKT_COORDS:*",
+					facetQuery: "",
+					labelField: "LABEL",
+				}
 			},
 			areaLayer: {
 				style : {

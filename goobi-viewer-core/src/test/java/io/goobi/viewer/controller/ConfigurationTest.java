@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.faces.model.SelectItem;
@@ -3652,5 +3653,20 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getArchivesLazyLoadingThreshold_shouldReturnCorrectValue() {
         assertEquals(100, DataManager.getInstance().getConfiguration().getArchivesLazyLoadingThreshold());
+    }
+
+    @Test
+    void testGetCollectionSortOrders() {
+        Map<String, String> sortOrders = DataManager.getInstance().getConfiguration().getCollectionSortOrders("DC");
+        assertEquals(3, sortOrders.size());
+        assertEquals("alphanumerical_desc",
+                sortOrders.entrySet().stream().filter(e -> "zeitschriften".matches(e.getKey())).map(Entry::getValue).findAny().orElse(""));
+        assertEquals("alphanumerical_asc",
+                sortOrders.entrySet().stream().filter(e -> "zeitungen.gt".matches(e.getKey())).map(Entry::getValue).findAny().orElse(""));
+        assertEquals("numerical_desc",
+                sortOrders.entrySet().stream().filter(e -> "jahrbuecher".matches(e.getKey())).map(Entry::getValue).findAny().orElse(""));
+        assertEquals("",
+                sortOrders.entrySet().stream().filter(e -> "jahrbuecher.andere".matches(e.getKey())).map(Entry::getValue).findAny().orElse(""));
+
     }
 }

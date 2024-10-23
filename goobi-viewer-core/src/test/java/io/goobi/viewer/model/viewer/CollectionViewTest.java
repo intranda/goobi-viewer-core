@@ -106,13 +106,41 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals("c.d.a", allElements.get(12).getName());
     }
 
-    //    @Test
-    //    void testExpandCollection() throws IndexUnreachableException, IllegalRequestException {
-    //        CollectionView collection = new CollectionView(SolrConstants.DC, getTestProvider());
-    //        collection.setBaseElementName("c.c");
-    //        collection.populateCollectionList();
-    //        List<HierarchicalBrowseDcElement> topElements = new ArrayList<>(collection.getVisibleDcElements());
-    //    }
+    @Test
+    void test_sortSubcollections() throws IllegalRequestException, IndexUnreachableException {
+
+        CollectionView collection =
+                new CollectionView(SolrConstants.DC, () -> Map.of("monographien", new CollectionResult("monographien", 1l),
+                        "monographien.1900", new CollectionResult("monographien.1900", 1l),
+                        "monographien.2000", new CollectionResult("monographien.2000", 1l),
+                        "zeitungen", new CollectionResult("zeitungen", 1l),
+                        "zeitungen.goettingen", new CollectionResult("zeitungen.goettingen", 1l),
+                        "zeitungen.goettingen.2000", new CollectionResult("zeitungen.goettingen.2000", 1l),
+                        "zeitungen.goettingen.1900", new CollectionResult("zeitungen.goettingen.1900", 1l),
+                        "zeitschriften", new CollectionResult("zeitschriften", 1l),
+                        "zeitschriften.1900", new CollectionResult("zeitschriften.1900", 1l),
+                        "zeitschriften.2000", new CollectionResult("zeitschriften.2000", 1l)));
+        collection.populateCollectionList();
+        collection.expandAll();
+        List<HierarchicalBrowseDcElement> elements = new ArrayList<>(collection.getVisibleDcElements());
+        assertEquals(10, elements.size());
+
+        //unsorted elements
+        HierarchicalBrowseDcElement mono1900 = collection.getCollectionElement("monographien.1900", true);
+        HierarchicalBrowseDcElement mono2000 = collection.getCollectionElement("monographien.2000", true);
+        Assertions.assertTrue(elements.indexOf(mono1900) < elements.indexOf(mono2000));
+
+        //sorted ascending
+        HierarchicalBrowseDcElement zeit1900 = collection.getCollectionElement("zeitungen.goettingen.1900", true);
+        HierarchicalBrowseDcElement zeit2000 = collection.getCollectionElement("zeitungen.goettingen.2000", true);
+        Assertions.assertTrue(elements.indexOf(zeit1900) < elements.indexOf(zeit2000));
+
+        //sorted descending
+        HierarchicalBrowseDcElement schrift1900 = collection.getCollectionElement("zeitschriften.1900", true);
+        HierarchicalBrowseDcElement schrift2000 = collection.getCollectionElement("zeitschriften.2000", true);
+        Assertions.assertTrue(elements.indexOf(schrift1900) > elements.indexOf(schrift2000));
+
+    }
 
     /**
      * @return

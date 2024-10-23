@@ -164,7 +164,7 @@ public class ActiveDocumentBean implements Serializable {
     private boolean anchor = false;
     private boolean volume = false;
     private boolean group = false;
-    protected long topDocumentIddoc = 0;
+    protected String topDocumentIddoc = null;
 
     // TODO move to SearchBean
     private BrowseElement prevHit;
@@ -256,7 +256,7 @@ public class ActiveDocumentBean implements Serializable {
             logger.trace("reset (thread {})", Thread.currentThread().getId());
             String pi = viewManager != null ? viewManager.getPi() : null;
             viewManager = null;
-            topDocumentIddoc = 0;
+            topDocumentIddoc = null;
             logid = "";
             action = "";
             prevHit = null;
@@ -356,7 +356,7 @@ public class ActiveDocumentBean implements Serializable {
     public void update() throws PresentationException, IndexUnreachableException, RecordNotFoundException, RecordDeletedException, DAOException,
             ViewerConfigurationException, IDDOCNotFoundException, NumberFormatException, RecordLimitExceededException {
         synchronized (this) {
-            if (topDocumentIddoc == 0) {
+            if (topDocumentIddoc == null) {
                 try {
                     if (StringUtils.isNotEmpty(lastReceivedIdentifier)) {
                         throw new RecordNotFoundException(lastReceivedIdentifier);
@@ -372,7 +372,8 @@ public class ActiveDocumentBean implements Serializable {
             boolean doublePageMode = isDoublePageUrl();
             // Do these steps only if a new document has been loaded
             boolean mayChangeHitIndex = false;
-            if (viewManager == null || viewManager.getTopStructElement() == null || viewManager.getTopStructElementIddoc() != topDocumentIddoc) {
+            if (viewManager == null || viewManager.getTopStructElement() == null
+                    || !viewManager.getTopStructElementIddoc().equals(topDocumentIddoc)) {
                 anchor = false;
                 volume = false;
                 group = false;
@@ -390,7 +391,7 @@ public class ActiveDocumentBean implements Serializable {
                     logger.info("IDDOC for the current record '{}' ({}) no longer seems to exist, attempting to retrieve an updated IDDOC...",
                             topStructElement.getPi(), topDocumentIddoc);
                     topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(topStructElement.getPi());
-                    if (topDocumentIddoc == 0) {
+                    if (topDocumentIddoc == null) {
                         logger.warn("New IDDOC for the current record '{}' could not be found. Perhaps this record has been deleted?",
                                 topStructElement.getPi());
                         reset();
@@ -494,10 +495,10 @@ public class ActiveDocumentBean implements Serializable {
                 SolrDocumentList docList = DataManager.getInstance()
                         .getSearchIndex()
                         .search(query, 1, null, Collections.singletonList(SolrConstants.IDDOC));
-                long subElementIddoc = 0;
+                String subElementIddoc = null;
                 // TODO check whether creating a new ViewManager can be avoided here
                 if (!docList.isEmpty()) {
-                    subElementIddoc = Long.valueOf((String) docList.get(0).getFieldValue(SolrConstants.IDDOC));
+                    subElementIddoc = (String) docList.get(0).getFieldValue(SolrConstants.IDDOC);
                     // Re-initialize ViewManager with the new current element
                     PageOrientation firstPageOrientation = viewManager.getFirstPageOrientation();
                     viewManager = new ViewManager(viewManager.getTopStructElement(), viewManager.getPageLoader(), subElementIddoc, logid,
@@ -979,9 +980,9 @@ public class ActiveDocumentBean implements Serializable {
             }
             lastReceivedIdentifier = persistentIdentifier;
             if (!"-".equals(persistentIdentifier) && (viewManager == null || !persistentIdentifier.equals(viewManager.getPi()))) {
-                long id = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(persistentIdentifier);
-                if (id > 0) {
-                    if (topDocumentIddoc != id) {
+                String id = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(persistentIdentifier);
+                if (id != null) {
+                    if (!id.equals(topDocumentIddoc)) {
                         topDocumentIddoc = id;
                         logger.trace("IDDOC found for {}: {}", persistentIdentifier, id);
                     }
@@ -1823,24 +1824,11 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return Not this.topDocumentIddoc but ViewManager.topDocumentIddoc
      */
-    public long getTopDocumentIddoc() {
+    public String getTopDocumentIddoc() {
         if (viewManager != null) {
             return viewManager.getTopStructElementIddoc();
         }
-        return 0;
-    }
-
-    /**
-     * <p>
-     * getActiveDocumentIddoc.
-     * </p>
-     *
-     * @return a long.
-     * @deprecated Use getTopDocumentIddoc()
-     */
-    @Deprecated(since = "2023.11")
-    public long getActiveDocumentIddoc() {
-        return getTopDocumentIddoc();
+        return null;
     }
 
     /**
@@ -2194,6 +2182,8 @@ public class ActiveDocumentBean implements Serializable {
      * <p>
      * getRelatedItems.
      * </p>
+     * 
+     * TODO Is this still in use?
      *
      * @param identifierField Index field containing related item identifiers
      * @return List of related items as SearchHit objects.
@@ -2206,14 +2196,14 @@ public class ActiveDocumentBean implements Serializable {
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("getRelatedItems: {}", identifierField);
         if (identifierField == null) {
-            return null;
+            return Collections.emptyList();
         }
         if (viewManager == null) {
-            return null;
+            return Collections.emptyList();
         }
         String query = getRelatedItemsQueryString(identifierField);
         if (query == null) {
-            return null;
+            return Collections.emptyList();
         }
 
         List<SearchHit> ret = SearchHelper.searchWithAggregation(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null, null,
@@ -2497,8 +2487,7 @@ public class ActiveDocumentBean implements Serializable {
                     return null;
                 }
             }).orElse(null);
-            if (md instanceof RelationshipMetadataContainer) {
-                RelationshipMetadataContainer rmc = (RelationshipMetadataContainer) md;
+            if (md instanceof RelationshipMetadataContainer rmc) {
                 List<MetadataContainer> docs = rmc.getFieldNames()
                         .stream()
                         .map(rmc::getMetadata)
@@ -2506,7 +2495,7 @@ public class ActiveDocumentBean implements Serializable {
                         .distinct()
                         .map(rmc::getRelatedRecord)
                         .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
+                        .toList();
                 map = new RecordGeoMap(getTopDocument(), docs);
                 this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), map);
             } else {
@@ -2546,12 +2535,12 @@ public class ActiveDocumentBean implements Serializable {
             PageType pageType = PrettyUrlTools.getPreferredPageType(mainDoc);
 
             boolean addMetadataFeatures = DataManager.getInstance().getConfiguration().includeCoordinateFieldsFromMetadataDocs();
-            String docTypeFilter = "+DOCTYPE:DOCSTRCT";
+            String docTypeFilter = " +" + SolrConstants.DOCTYPE + ":DOCSTRCT";
             if (addMetadataFeatures) {
-                docTypeFilter = "+(DOCTYPE:DOCSTRCT DOCTYPE:METADATA)";
+                docTypeFilter = " +(" + SolrConstants.DOCTYPE + ":DOCSTRCT " + SolrConstants.DOCTYPE + ":METADATA)";
             }
 
-            String subDocQuery = String.format("+PI_TOPSTRUCT:%s " + docTypeFilter, pi);
+            String subDocQuery = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + docTypeFilter;
             List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
             List<String> subDocFields = new ArrayList<>();
             subDocFields.add(SolrConstants.LABEL);
@@ -2574,10 +2563,10 @@ public class ActiveDocumentBean implements Serializable {
                     .map(DisplayUserGeneratedContent::new)
                     .filter(a -> ContentType.GEOLOCATION.equals(a.getType()))
                     .filter(a -> ContentBean.isAccessible(a, BeanUtils.getRequest()))
-                    .collect(Collectors.toList());
+                    .toList();
             for (DisplayUserGeneratedContent anno : annos) {
-                if (anno.getAnnotationBody() instanceof TypedResource) {
-                    GeoMapFeature feature = new GeoMapFeature(((TypedResource) anno.getAnnotationBody()).asJson());
+                if (anno.getAnnotationBody() instanceof TypedResource tr) {
+                    GeoMapFeature feature = new GeoMapFeature(tr.asJson());
                     features.add(feature);
                 }
             }

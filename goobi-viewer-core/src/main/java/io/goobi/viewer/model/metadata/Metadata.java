@@ -457,8 +457,7 @@ public class Metadata implements Serializable {
                 case RELATEDFIELD:
                     value = relatedMetadata.getMetadataValue(this.label,
                             RelationshipMetadataContainer.FIELD_IN_RELATED_DOCUMENT_PREFIX + param.getKey(), locale);
-                case WIKIFIELD:
-                case WIKIPERSONFIELD:
+                case WIKIFIELD, WIKIPERSONFIELD:
                     if (value.contains(",")) {
                         // Find and remove additional information in a person's name
                         Pattern p = Pattern.compile(StringTools.REGEX_PARENTHESES);
@@ -817,6 +816,7 @@ public class Metadata implements Serializable {
      * @param anchorSe Optional anchor {@link StructElement}
      * @param ownerIddoc IDDOC of the owner document (either docstruct or parent metadata)
      * @param sortFields
+     * @param searchTerms
      * @param truncateLength
      * @param locale a {@link java.util.Locale} object.
      * @return a boolean.
@@ -1052,24 +1052,24 @@ public class Metadata implements Serializable {
                                 }
                                 logger.trace("conditional value added: {}", value);
                             }
-
+                            String modifiedValue = value;
                             // Truncate long values
-                            if (truncateLength > 0 && value.length() > truncateLength) {
-                                value = new StringBuilder(value.substring(0, truncateLength - 3)).append("...").toString();
+                            if (truncateLength > 0 && modifiedValue.length() > truncateLength) {
+                                modifiedValue = new StringBuilder(modifiedValue.substring(0, truncateLength - 3)).append("...").toString();
                             }
                             // Add highlighting
                             if (searchTerms != null) {
                                 if (searchTerms.get(getLabel()) != null) {
-                                    value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(getLabel()));
+                                    modifiedValue = SearchHelper.applyHighlightingToPhrase(modifiedValue, searchTerms.get(getLabel()));
                                 } else if (getLabel().startsWith("MD_SHELFMARK") && searchTerms.get("MD_SHELFMARKSEARCH") != null) {
-                                    value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get("MD_SHELFMARKSEARCH"));
+                                    modifiedValue = SearchHelper.applyHighlightingToPhrase(modifiedValue, searchTerms.get("MD_SHELFMARKSEARCH"));
                                 }
                                 if (searchTerms.get(SolrConstants.DEFAULT) != null) {
-                                    value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.DEFAULT));
+                                    modifiedValue = SearchHelper.applyHighlightingToPhrase(modifiedValue, searchTerms.get(SolrConstants.DEFAULT));
                                 }
                             }
 
-                            paramValues.add(value);
+                            paramValues.add(modifiedValue);
                         }
                         if (param.getKey().startsWith(NormDataImporter.FIELD_URI) && doc.getFieldValue(FIELD_NORM_TYPE) != null) {
                             options.put(FIELD_NORM_TYPE, SolrTools.getSingleFieldStringValue(doc, FIELD_NORM_TYPE));

@@ -154,7 +154,7 @@ public class UserGroupBean implements Serializable {
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public void saveMembershipAction() throws DAOException {
         currentRole = new Role();
         UserBean ub = BeanUtils.getUserBean();

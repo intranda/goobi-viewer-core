@@ -108,7 +108,7 @@ public class Bookmark implements Serializable {
     /**
      * @deprecated TODO Remove column in the DB update so that this field can be removed
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     @Column(name = "main_title")
     private String mainTitle = null;
 
@@ -336,7 +336,7 @@ public class Bookmark implements Serializable {
     @JsonIgnore
     public String getDocumentTitle() throws IndexUnreachableException, PresentationException {
         logger.trace("getDocumentTitle: {}/{}", pi, logId);
-        Long iddoc = null;
+        String iddoc = null;
         if (StringUtils.isNotBlank(logId)) {
             iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(pi, logId);
         } else if (StringUtils.isNotBlank(pi)) {
@@ -559,7 +559,7 @@ public class Bookmark implements Serializable {
     @JsonIgnore
     public MetadataElement getMetadataElement() throws IndexUnreachableException {
         SolrDocument doc = retrieveSolrDocument();
-        Long iddoc = Long.parseLong((String) doc.getFirstValue(SolrConstants.IDDOC));
+        String iddoc = (String) doc.getFirstValue(SolrConstants.IDDOC);
         StructElement se = new StructElement(iddoc, doc);
         Locale sessionLocale = BeanUtils.getLocale();
         String selectedRecordLanguage = sessionLocale.getLanguage();
@@ -608,11 +608,11 @@ public class Bookmark implements Serializable {
             try {
                 SolrDocument doc = retrieveSolrDocument();
                 if (doc != null) {
-                if (this.getOrder() != null) {
-                    doc.setField(SolrConstants.ORDER, this.getOrder());
-                } else if (StringUtils.isNotBlank(this.getLogId())) {
-                    doc.setField(SolrConstants.LOGID, this.getLogId());
-                }
+                    if (this.getOrder() != null) {
+                        doc.setField(SolrConstants.ORDER, this.getOrder());
+                    } else if (StringUtils.isNotBlank(this.getLogId())) {
+                        doc.setField(SolrConstants.LOGID, this.getLogId());
+                    }
                     Locale locale = BeanUtils.getLocale();
                     SearchHitFactory factory = new SearchHitFactory(null, null, null, 0, BeanUtils.getImageDeliveryBean().getThumbs(), locale);
                     SearchHit sh = factory.createSearchHit(doc, null, null, null);

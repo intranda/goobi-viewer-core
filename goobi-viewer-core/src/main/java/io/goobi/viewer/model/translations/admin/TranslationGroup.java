@@ -31,8 +31,8 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -176,8 +176,8 @@ public final class TranslationGroup {
             setSelectedEntry(entry);
             logger.trace("Added new message entry: {}", key);
             return true;
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            logger.error(e.toString(), e);
         }
 
         setSelectedEntry(null);

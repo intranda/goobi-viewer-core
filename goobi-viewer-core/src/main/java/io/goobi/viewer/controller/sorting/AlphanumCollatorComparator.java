@@ -23,7 +23,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
-package io.goobi.viewer.controller;
+package io.goobi.viewer.controller.sorting;
 
 import java.text.Collator;
 import java.util.Comparator;

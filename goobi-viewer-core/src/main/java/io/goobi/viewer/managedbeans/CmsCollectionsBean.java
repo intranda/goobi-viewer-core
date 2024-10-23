@@ -35,9 +35,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
@@ -55,9 +55,9 @@ import io.goobi.viewer.model.cms.collections.CMSCollectionTreeTab;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.translations.admin.MessageEntry;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
-import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
 import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
+import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -130,7 +130,7 @@ public class CmsCollectionsBean implements Serializable {
                 }
                 try {
                     return !TranslationStatus.FULL.equals(item.getTranslationStatus());
-                } catch (Exception e) {
+                } catch (PresentationException | IndexUnreachableException e) {
                     logger.error(e.getMessage(), e);
                 }
             }
@@ -168,7 +168,7 @@ public class CmsCollectionsBean implements Serializable {
                             return !TranslationStatus.FULL.equals(entry.getTranslationStatus());
                         }
                     }
-                } catch (Exception e) {
+                } catch (IndexUnreachableException | PresentationException e) {
                     logger.error(e.getMessage(), e);
                 }
             }
@@ -209,7 +209,7 @@ public class CmsCollectionsBean implements Serializable {
                             }
 
                         }
-                    } catch (Exception e) {
+                    } catch (IndexUnreachableException | PresentationException e) {
                         logger.error(e.getMessage(), e);
                         break;
                     }

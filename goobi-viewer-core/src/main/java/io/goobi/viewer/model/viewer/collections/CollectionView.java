@@ -43,6 +43,7 @@ import org.apache.logging.log4j.Logger;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.sorting.ObjectComparatorBuilder;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -183,6 +184,8 @@ public class CollectionView implements Serializable {
                         lastElement = dc;
                     }
                 }
+                //apply configured sorting of collections after hierarchy is build
+                completeCollectionList.stream().flatMap(dc -> dc.getChildren(true).stream()).forEach(dc -> sortCollection(dc));
                 calculateVisibleDcElements();
                 logger.trace("populateCollectionList end");
             } catch (PresentationException e) {
@@ -496,6 +499,25 @@ public class CollectionView implements Serializable {
             element.setShowSubElements(true);
             associateElementsWithCMSData();
         }
+    }
+
+    public void sortCollection(HierarchicalBrowseDcElement element) {
+        String sortOrder = getSortOrder(this.field, element.getName());
+
+        if (StringUtils.isNotBlank(sortOrder)) {
+            element.getChildren().sort(ObjectComparatorBuilder.build(sortOrder, null, HierarchicalBrowseDcElement::getName));
+        }
+    }
+
+    public String getSortOrder(String field, String collectionName) {
+        Map<String, String> sortOrderMap = DataManager.getInstance().getConfiguration().getCollectionSortOrders(field);
+        String sortOrder = sortOrderMap.entrySet()
+                .stream()
+                .filter(entry -> collectionName.matches(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .findAny()
+                .orElse("");
+        return sortOrder;
     }
 
     /**
@@ -1012,6 +1034,8 @@ public class CollectionView implements Serializable {
      * @param collection a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @param field a {@link java.lang.String} object.
      * @param baseSearchUrl
+     * @param openInSearch if true, return a search url if no cms page is associated with the collection. In case of single record in collection, the
+     *            record may be opened directly
      * @return a {@link java.lang.String} object.
      * @throws URISyntaxException
      * @should return identifier resolver url if single record and pi known
@@ -1285,7 +1309,12 @@ public class CollectionView implements Serializable {
     }
 
     public HierarchicalBrowseDcElement getCollectionElement(String name) {
+        return getCollectionElement(name, false);
+    }
+
+    public HierarchicalBrowseDcElement getCollectionElement(String name, boolean includeDescendants) {
         return this.completeCollectionList.stream()
+                .flatMap(e -> e.getAllDescendents(true).stream())
                 .filter(e -> e.getName().equals(name))
                 .findAny()
                 .orElse(null);

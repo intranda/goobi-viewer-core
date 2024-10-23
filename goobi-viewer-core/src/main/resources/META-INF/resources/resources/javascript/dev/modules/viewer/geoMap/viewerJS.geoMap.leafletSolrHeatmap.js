@@ -134,6 +134,42 @@ if (typeof L !== 'undefined') {
 	        	}
 	       		return bounds;
 	       },
+	    }),
+	  goobiViewerHeatmap: L.SolrHeatmapBaseQueryAdapter.extend({
+	    ajaxOptions: function(bounds) {
+	        let options = {
+	          url: this._solrQuery(bounds)
+	        };
+	        return options;
+	      },
+	      ajaxOptionsForSearchHits: function(bounds) {
+	        return undefined;
+	      },
+	      responseFormatter: function(data) {
+	        return {
+	            "WKT_COORDS" : data
+	        }
+	      },
+	      _solrQuery: function(bounds) {
+	        let b = this._getBoundsForQuery(bounds);
+	        let region = this.layer._mapViewToWkt(b);
+	        let query = this.layer._heatmapUrl.replace("{solrField}", this.options.field) + '?' + 
+	                "region=" + encodeURIComponent(region) + '&' + 
+		            "query=" + this.options.filterQuery;
+		    if(this.options.facetQuery) {
+		    	query += '&facetQuery=' + this.options.facetQuery;
+		    }
+		    return query;
+	      },
+		  _getBoundsForQuery(bounds) {
+		  	   if (bounds === undefined) {
+	          let rawBounds = this.layer._mapToAdd.getBounds();
+	          let east = rawBounds.getEast() > 180 ? 180 : rawBounds.getEast();
+	          let west = rawBounds.getWest() < -180 ? -180 : rawBounds.getWest();
+	          bounds = new L.latLngBounds(L.latLng(rawBounds.getNorth(), west), L.latLng(rawBounds.getSouth(), east));
+	        	}
+	       		return bounds;
+	       },
 	    })
 	  
 	  }
@@ -408,9 +444,17 @@ if (typeof L !== 'undefined') {
 	          count: val,
 	          bounds : bounds
 	        });
-	        marker.on('add', e => {
-	        	setTimeout(() => _this._expandMarker(e.target), 0);
-	        });
+			if(_this.queryAdapter.ajaxOptionsForSearchHits()) {
+				marker.on('add', e => {
+					setTimeout(() => _this._expandMarker(e.target), 0);
+				});
+			} else {
+				marker = new L.Marker(bounds.getCenter(), {
+					icon: _this.featureGroup.getMarkerIcon({count: val}),
+					count: val,
+					bounds : bounds
+				  });
+			}
 	        //marker.on('click', e => _this._expandMarker(e.target));
 	        _this.clusterMarkers.addLayer(marker);
 	      });
@@ -421,7 +465,6 @@ if (typeof L !== 'undefined') {
 	  
 	  _expandMarker(marker) {
 	  		var visibleOne = this.clusterMarkers.getVisibleParent(marker);
-		    //console.log("expand ", marker, visibleOne);
 		    if(visibleOne === marker) {
 				let bounds = marker.options.bounds;
 			    if(bounds && this.queryAdapter.ajaxOptionsForSearchHits) {
