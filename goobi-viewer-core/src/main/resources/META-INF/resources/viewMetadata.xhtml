@@ -33,7 +33,7 @@
                 <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
             </h:panelGroup>
 
-            <div id="view_metadata" class="view-metadata">
+            <div id="view_metadata" class="view-metadata #{activeDocumentBean.viewManager.cssClass}">
                 <!-- METADATA -->
                 <ui:insert name="viewMetadataMetadata">
                     <ui:include src="/resources/includes/metadata/metadata.xhtml">
