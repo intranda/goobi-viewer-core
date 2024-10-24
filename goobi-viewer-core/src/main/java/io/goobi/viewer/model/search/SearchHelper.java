@@ -2086,13 +2086,20 @@ public final class SearchHelper {
         if ((rows == 0 || hitCount > DataManager.getInstance().getConfiguration().getBrowsingMenuIndexSizeThreshold())
                 && StringUtils.isEmpty(bmfc.getSortField())) {
             logger.trace("Using facets");
+            // params.put("facet.sort", "index");
+            // params.put("facet.offset", String.valueOf(start));
+            // if (rows > 0) {
+            //     params.put("facet.limit", String.valueOf(rows));
+            // }
+            if (StringUtils.isNotEmpty(startsWith)) {
+                params.put("facet.prefix", startsWith);
+            }
             return DataManager.getInstance()
                     .getSearchIndex()
-                    .searchFacetsAndStatistics(query, filterQueries, facetFields, 1, startsWith, null, false);
+                    .searchFacetsAndStatistics(query, filterQueries, facetFields, 1, startsWith, params, false);
         }
 
         // Docs (required for correct mapping of sorting vs displayed term names, but may time out if doc count is too high)
-
         return DataManager.getInstance().getSearchIndex().search(query, start, rows, sortFields, facetFields, fields, filterQueries, params);
     }
 

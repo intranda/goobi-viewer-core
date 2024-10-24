@@ -196,7 +196,7 @@ public class AdminClientsBean implements Serializable {
     public String delete(ClientApplication client) {
         String clientId = Optional.ofNullable(client).map(ClientApplication::getClientIdentifier).orElse("-");
         try {
-            if (dao.deleteClientApplication(client.getId())) {
+            if (client != null && dao.deleteClientApplication(client.getId())) {
                 Messages.info(null, "admin__clients__delete_client__success", clientId);
             } else {
                 Messages.error(null, "admin__clients__delete_client__error", clientId);
