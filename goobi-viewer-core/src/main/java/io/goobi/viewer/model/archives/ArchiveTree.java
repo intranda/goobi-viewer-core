@@ -221,29 +221,32 @@ public class ArchiveTree implements Serializable {
             }
             int lastLevel = 0;
             List<ArchiveEntry> entries = entryMap.get(group);
-            for (int index = 0; index < entries.size(); index++) {
+            int index = 0;
+            for (ArchiveEntry entry : entries) {
                 // Current element index
-                ArchiveEntry entry = entries.get(index);
                 if (lastLevel < entry.getHierarchyLevel() && index > 0) {
                     if (entry.getHierarchyLevel() > collapseLevel) {
-                        entries.get(index - 1).setExpanded(false);
+                        entry.getParentNode().setExpanded(false);
                         entry.setVisible(false);
                         // logger.trace("Set node invisible: {} (level {})", entry.getLabel(), entry.getHierarchyLevel()); //NOSONAR Debug
                     } else {
-                        entries.get(index - 1).setExpanded(true);
+                        entry.getParentNode().setExpanded(true);
                     }
                 } else if (entry.getHierarchyLevel() > collapseLevel) {
                     entry.setVisible(false);
                 }
                 lastLevel = entry.getHierarchyLevel();
+                index++;
             }
             treeBuilt = true;
-            resetCollapseLevel(getRootElement(), collapseLevel);
+            resetCollapseLevel(getRootElement(), collapseLevel); // TODO Check whether redundant here
+            logger.trace("buildTree END");
         }
     }
 
     /**
-     *
+     * Recursively expands and sets visible entries at or below maxDepth; hides and collapses any below.
+     * 
      * @param entry
      * @param maxDepth
      */
