@@ -95,14 +95,13 @@ public class ArchiveBean implements Serializable {
         logger.trace("initializeArchiveTree: {}", selectedEntryId);
         if (getCurrentArchive() != null) {
             try {
-                //clone the global archive tree so its state (which nodes are expanded) is not preserved between sessions
-                // if state of archive tree should be reset on each page reload, remove the if-clause
-                // or call ArchiveTree.collapseAll()
+                // clone the global archive tree so its state (which nodes are expanded) is not preserved between sessions
+                // if state of archive tree should be reset on each page reload, remove the if-clause or call ArchiveTree.collapseAll()
                 if (this.archiveTree == null || !this.archiveTree.getRootElement().getTopstructPi().equals(getCurrentArchive().getResourceId())) {
-                    //                    if (this.archiveTree != null) {
-                    //                        logger.trace("Root PI: {}", this.archiveTree.getRootElement().getTopstructPi());
-                    //                    }
-                    //                    logger.trace("Resource ID: {}", getCurrentArchive().getResourceId());
+                    if (this.archiveTree != null) {
+                        logger.trace("Root PI: {}", this.archiveTree.getRootElement().getTopstructPi());
+                    }
+                    logger.trace("Resource ID: {}", getCurrentArchive().getResourceId());
                     this.archiveTree = new ArchiveTree(archiveManager.getArchiveTree(getCurrentResource()));
                     logger.trace("Reloaded archive tree: {}", getCurrentArchive().getResourceId());
                 }
@@ -441,7 +440,7 @@ public class ArchiveBean implements Serializable {
      * @throws ArchiveException
      * @deprecated Redundant resolving of archive ID via the name + duplicate call to initializeArchiveTree(); use setCurrentResource()
      */
-    @Deprecated
+    @Deprecated(since = "2024.10")
     public void setArchiveId(String archiveName) throws ArchiveException {
         logger.trace("setArchiveId: {}", archiveName);
         ArchiveResource database = this.archiveManager.getArchiveResource(archiveName);
