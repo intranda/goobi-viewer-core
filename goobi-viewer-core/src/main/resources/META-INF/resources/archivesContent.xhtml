@@ -40,7 +40,7 @@
 				                    <h:selectOneMenu id="selectArchiveDatabaseDropdown" value="#{archiveBean.currentResource}"
 				                        styleClass="archives__select-database-dropdown" onchange="$(this).next().click()">
 										<f:selectItems value="#{archiveBean.filteredDatabases}" var="database"
-										    itemValue="#{database.combinedId}" itemLabel="#{database.resourceId}" ></f:selectItems>
+										    itemValue="#{database.resourceId}" itemLabel="#{database.combinedName}" ></f:selectItems>
 									</h:selectOneMenu>
 									<h:commandButton styleClass="d-none" action="pretty:archives1"></h:commandButton>
 									</div>
