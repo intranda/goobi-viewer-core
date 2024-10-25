@@ -146,6 +146,10 @@ public enum FileType {
         if (suffix.matches("(?i)obj|gltf|glb|ply|stl|fbx")) {
             return "model/" + suffix.toLowerCase();
         }
+        if (suffix.matches("(?i)jp2|jpx|j2k.jpg2")) {
+            return "image/jp2";
+        }
+
         String urlContentType = FILENAME_MAP.getContentTypeFor(filename);
         if (StringUtils.isNotBlank(urlContentType)) {
             return urlContentType;
