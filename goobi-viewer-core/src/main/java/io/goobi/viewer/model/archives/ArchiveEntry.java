@@ -171,7 +171,7 @@ public class ArchiveEntry implements Serializable {
      */
     public List<ArchiveEntry> getAsFlatList(boolean ignoreDisplayChildren) {
         // logger.trace("getAsFlatList"); //NOSONAR Debug
-        List<ArchiveEntry> list = new LinkedList<>();
+        List<ArchiveEntry> list = new ArrayList<>();
         list.add(this);
         if ((displayChildren || ignoreDisplayChildren) && subEntryList != null && !subEntryList.isEmpty()) {
             for (ArchiveEntry ds : subEntryList) {
