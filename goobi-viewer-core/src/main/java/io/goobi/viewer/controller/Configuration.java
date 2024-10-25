@@ -6088,6 +6088,15 @@ public class Configuration extends AbstractConfiguration {
         return getLocalBoolean("statistics[@enabled]", false);
     }
 
+    public boolean isShowRecordStatisticsWidget() {
+        return isStatisticsEnabled() && getLocalBoolean("statistics.reporting.widget.record[@enabled]", true);
+    }
+
+    public boolean isRecordStatisticsWidgetCollapsible() {
+        String widgetMode = getLocalString("statistics.reporting.widget.record[@mode]", "full");
+        return "collapsible".equalsIgnoreCase(widgetMode);
+    }
+
     public String getCrawlerDetectionRegex() {
         return getLocalString("statistics.crawlerDetection[@regex]",
                 ".*[bB]ot.*|.*Yahoo! Slurp.*|.*Feedfetcher-Google.*|.*Apache-HttpClient.*|.*[Ss]pider.*|.*[Cc]rawler.*|.*nagios.*|.*Yandex.*");
