@@ -291,6 +291,10 @@ public class ArchiveTree implements Serializable {
         this.selectedEntry = selectedEntry;
     }
 
+    public boolean isExpandEntryOnSelection() {
+        return expandEntryOnSelection;
+    }
+
     /**
      * 
      * @param selectedEntry

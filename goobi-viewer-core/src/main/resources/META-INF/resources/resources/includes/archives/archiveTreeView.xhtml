@@ -99,7 +99,7 @@
 											<!-- (RECORD/ENTRY) HAS IMAGE -->
 										    <ui:fragment rendered="#{entry.containsImage}">
 											    <h:commandLink
-											        styleClass="archives-tree__record-link"
+											        styleClass="archives-tree__record-link #{archiveTree.expandEntryOnSelection ? 'collapsible' : ''}"
 											        action="#{archiveTree.toggleSelectedEntry(entry)}"
 												    value="#{entry.label}"
 												    pt:data-trigger="expand"
@@ -133,7 +133,7 @@
 											</ui:fragment>
 											<!-- RECORD HAS NO IMAGE -->
                                             <ui:fragment rendered="#{!entry.containsImage}">
-                                                <h:commandLink styleClass="archives-tree__record-link"
+                                                <h:commandLink styleClass="archives-tree__record-link #{archiveTree.expandEntryOnSelection ? 'collapsible' : ''}"
                                                     action="#{archiveTree.toggleSelectedEntry(entry)}"
                                                     value="#{entry.label}"
                                                     pt:data-trigger="expand"

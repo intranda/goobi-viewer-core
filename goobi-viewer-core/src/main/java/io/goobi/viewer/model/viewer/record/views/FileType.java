@@ -149,6 +149,9 @@ public enum FileType {
         if (suffix.matches("(?i)jp2|jpx|j2k.jpg2")) {
             return "image/jp2";
         }
+        if (suffix.matches("(?i)epub")) {
+            return "application/epub+zip";
+        }
 
         String urlContentType = FILENAME_MAP.getContentTypeFor(filename);
         if (StringUtils.isNotBlank(urlContentType)) {
