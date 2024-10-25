@@ -21,15 +21,17 @@
  */
 package io.goobi.viewer.model.viewer.record.views;
 
+import java.io.IOException;
 import java.net.FileNameMap;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,6 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.goobi.viewer.exceptions.ContentTypeException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -112,16 +115,27 @@ public enum FileType {
         Map<FileType, String> types = new HashMap<>();
 
         for (String filename : filenames) {
-            String mimeType = getContentTypeFor(filename);
-            FileType type = FileType.fromMimeType(Optional.ofNullable(mimeType).orElse(""));
-            if (type != null) {
-                types.put(type, filename);
+            try {
+                String mimeType = getContentTypeFor(filename);
+                FileType type = FileType.fromMimeType(mimeType);
+                if (type != null) {
+                    types.put(type, filename);
+                }
+            } catch (ContentTypeException e) {
+                logger.warn("Could not find content type for " + filename);
             }
         }
         return types;
     }
 
-    public static String getContentTypeFor(String filename) {
+    /**
+     * Attempt to determine mimetype of a filename by suffix analysis only, without filesystem access
+     * 
+     * @param filename the filename to parse
+     * @return the appropriate mimetype. May be an empty String if the filename is blank or has no suffix; but is never null
+     * @throws ContentTypeException If not mimetype could be determined
+     */
+    public static String getContentTypeFor(String filename) throws ContentTypeException {
         if (StringUtils.isBlank(filename)) {
             return "";
         }
@@ -132,7 +146,20 @@ public enum FileType {
         if (suffix.matches("(?i)obj|gltf|glb|ply|stl|fbx")) {
             return "model/" + suffix.toLowerCase();
         }
-        return FILENAME_MAP.getContentTypeFor(filename);
+        String urlContentType = FILENAME_MAP.getContentTypeFor(filename);
+        if (StringUtils.isNotBlank(urlContentType)) {
+            return urlContentType;
+        }
+        String fileContentType;
+        try {
+            fileContentType = Files.probeContentType(Path.of("nopath").resolve(filename));
+            if (StringUtils.isNotBlank(fileContentType)) {
+                return fileContentType;
+            }
+        } catch (IOException e) {
+            logger.error("Error probing content type of {}. This should not happen since this method is supposed to avoid filesystem access");
+        }
+        throw new ContentTypeException("Could not determine content type of " + filename);
     }
 
     public static Collection<FileType> containedFiletypes(PhysicalElement page, boolean localFilesOnly)
@@ -149,33 +176,37 @@ public enum FileType {
                 if (localFilesOnly && filename.matches("(?i)^https?:.*")) {
                     continue;
                 }
-                String mimeType = getContentTypeFor(filename);
-                if ("application/pdf".equals(mimeType)) {
-                    types.add(FileType.PDF);
-                } else if ("application/epub+zip".equals(mimeType)) {
-                    types.add(FileType.EPUB);
-                } else if ("text/xml".equals(mimeType) || "application/xml".equals(mimeType)) {
-                    if ("alto".equalsIgnoreCase(fileType)) {
-                        types.add(FileType.ALTO);
+                try {
+                    String mimeType = getContentTypeFor(filename);
+                    if ("application/pdf".equals(mimeType)) {
+                        types.add(FileType.PDF);
+                    } else if ("application/epub+zip".equals(mimeType)) {
+                        types.add(FileType.EPUB);
+                    } else if ("text/xml".equals(mimeType) || "application/xml".equals(mimeType)) {
+                        if ("alto".equalsIgnoreCase(fileType)) {
+                            types.add(FileType.ALTO);
+                        } else {
+                            types.add(FileType.TEI);
+                        }
+                    } else if ("text/plain".equals(mimeType)) {
+                        types.add(FileType.TEXT);
+                    } else if (fileType.startsWith("object") || fileType.startsWith("model")) {
+                        types.add(FileType.MODEL);
+                    } else if ("jpeg".equalsIgnoreCase(fileType)) {
+                        //pages with external urls also get a "jpeg" filename, even though there is not actual jpeg file
+                        //to ignore these, only add jpeg file if FILENAME_JPEG == FILENAME in the PAGE document in solr
+                        boolean actualFile = filename.equals(page.getFileName());
+                        if (actualFile) {
+                            types.add(IMAGE);
+                        }
                     } else {
-                        types.add(FileType.TEI);
+                        FileType type = FileType.fromMimeType(mimeType);
+                        if (type != null) {
+                            types.add(type);
+                        }
                     }
-                } else if ("text/plain".equals(mimeType)) {
-                    types.add(FileType.TEXT);
-                } else if (fileType.startsWith("object") || fileType.startsWith("model")) {
-                    types.add(FileType.MODEL);
-                } else if ("jpeg".equalsIgnoreCase(fileType)) {
-                    //pages with external urls also get a "jpeg" filename, even though there is not actual jpeg file
-                    //to ignore these, only add jpeg file if FILENAME_JPEG == FILENAME in the PAGE document in solr
-                    boolean actualFile = filename.equals(page.getFileName());
-                    if (actualFile) {
-                        types.add(IMAGE);
-                    }
-                } else {
-                    FileType type = FileType.fromMimeType(mimeType);
-                    if (type != null) {
-                        types.add(type);
-                    }
+                } catch (ContentTypeException e) {
+                    logger.warn("Could not find content type for " + filename);
                 }
             }
         }
