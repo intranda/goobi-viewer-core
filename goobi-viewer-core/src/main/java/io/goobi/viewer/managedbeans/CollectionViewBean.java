@@ -37,7 +37,8 @@ import javax.faces.model.SelectItem;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.ocpsoft.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
