@@ -68,7 +68,7 @@ public class CollectionViewBean implements Serializable {
 
     private static final long serialVersionUID = 6707278968715712945L;
 
-    private static final Logger logger = Logger.getLogger(CollectionViewBean.class);
+    private static final Logger logger = LogManager.getLogger(CollectionViewBean.class);
 
     /**
      * {@link CollectionView}s mapped to contentItem-Ids of {@link CMSCollectionContent} used to create the CollectionView.
