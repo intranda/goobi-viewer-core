@@ -3633,15 +3633,6 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isArchivesEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    void isArchivesEnabled_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isArchivesEnabled());
-    }
-
-    /**
      * @see Configuration#getArchivesLazyLoadingThreshold()
      * @verifies return correct value
      */

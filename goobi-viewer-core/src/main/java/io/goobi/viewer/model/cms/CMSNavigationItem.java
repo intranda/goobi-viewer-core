@@ -803,17 +803,9 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
         }
     }
 
+    @Deprecated(since = "24.10")
     public boolean isEnabled() {
-        try {
-            switch (PageType.getByName(this.pageUrl)) {
-                case archives:
-                    return DataManager.getInstance().getConfiguration().isArchivesEnabled();
-                default:
-                    return true;
-            }
-        } catch (NullPointerException e) {
-            return true;
-        }
+        return true;
     }
 
 }
