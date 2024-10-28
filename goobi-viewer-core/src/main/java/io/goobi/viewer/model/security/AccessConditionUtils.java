@@ -34,8 +34,8 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -90,7 +90,7 @@ public final class AccessConditionUtils {
      * checkAccess.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param action a {@link java.lang.String} object.
      * @param pi a {@link java.lang.String} object.
      * @param contentFileName a {@link java.lang.String} object.
@@ -358,7 +358,7 @@ public final class AccessConditionUtils {
      * @param identifier The PI to check.
      * @param logId The LOGID to check (optional).
      * @param privilegeName Particular privilege for which to check the permission.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -474,7 +474,7 @@ public final class AccessConditionUtils {
      *
      * @param identifier a {@link java.lang.String} object.
      * @param privilegeName a {@link java.lang.String} object.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @return Map with true/false for each LOGID
      * @should fill map completely
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -554,7 +554,7 @@ public final class AccessConditionUtils {
      * Checks if the record with the given identifier should allow access to the given request
      *
      * @param identifier The PI of the work to check
-     * @param request The HttpRequest which may provide a {@link javax.servlet.http.HttpSession} to store the access map
+     * @param request The HttpRequest which may provide a {@link jakarta.servlet.http.HttpSession} to store the access map
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -663,7 +663,7 @@ public final class AccessConditionUtils {
      *
      * @param requiredAccessConditions a {@link java.util.Set} object.
      * @param privilegeName a {@link java.lang.String} object.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param query a {@link java.lang.String} object.
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -686,7 +686,7 @@ public final class AccessConditionUtils {
     /**
      * Checks access permission for the given image and puts the permission status into the corresponding session map.
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param pi a {@link java.lang.String} object.
      * @param contentFileName a {@link java.lang.String} object.
      * @return {@link AccessPermission}
@@ -702,7 +702,7 @@ public final class AccessConditionUtils {
     /**
      * Checks access permission for the given thumbnail and puts the permission status into the corresponding session map.
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param pi a {@link java.lang.String} object.
      * @param contentFileName a {@link java.lang.String} object.
      * @return {@link AccessPermission}
@@ -717,7 +717,7 @@ public final class AccessConditionUtils {
     /**
      * Checks access permission for the given image and puts the permission status into the corresponding session map.
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -737,7 +737,7 @@ public final class AccessConditionUtils {
      * checkAccessPermissionByIdentifierAndFilePathWithSessionMap.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param filePath FILENAME_ALTO or FILENAME_FULLTEXT value
      * @param privilegeType a {@link java.lang.String} object.
      * @return {@link AccessPermission}
@@ -760,7 +760,7 @@ public final class AccessConditionUtils {
     /**
      * Checks access permission of the given privilege type for the given image and puts the permission status into the corresponding session map.
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param pi a {@link java.lang.String} object.
      * @param contentFileName a {@link java.lang.String} object.
      * @param privilegeType a {@link java.lang.String} object.

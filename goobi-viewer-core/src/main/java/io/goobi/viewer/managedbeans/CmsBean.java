@@ -40,8 +40,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.context.FacesContext;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -1216,7 +1216,7 @@ public class CmsBean implements Serializable {
      * getFacesContext.
      * </p>
      *
-     * @return a {@link javax.faces.context.FacesContext} object.
+     * @return a {@link jakarta.faces.context.FacesContext} object.
      */
     protected FacesContext getFacesContext() {
         return FacesContext.getCurrentInstance();

@@ -32,7 +32,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -537,7 +537,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getLinkURI(javax.servlet.http.HttpServletRequest)
+     * @see io.goobi.viewer.model.viewer.BrowseElementInfo#getLinkURI(jakarta.servlet.http.HttpServletRequest)
      */
     /** {@inheritDoc} */
     @Override

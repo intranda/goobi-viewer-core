@@ -36,10 +36,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.enterprise.context.SessionScoped;
+import jakarta.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -620,7 +620,7 @@ public class CmsMediaBean implements Serializable {
      * getFileName.
      * </p>
      *
-     * @param filePart a {@link javax.servlet.http.Part} object.
+     * @param filePart a {@link jakarta.servlet.http.Part} object.
      * @return a {@link java.lang.String} object.
      */
     public static String getFileName(Part filePart) {

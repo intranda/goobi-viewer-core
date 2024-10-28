@@ -28,15 +28,10 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
-import javax.enterprise.context.SessionScoped;
-import javax.faces.component.UIComponent;
-import javax.faces.component.UINamingContainer;
-import javax.faces.component.html.HtmlPanelGrid;
-import javax.faces.component.html.HtmlPanelGroup;
-import javax.faces.context.FacesContext;
+import jakarta.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -54,6 +49,11 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.record.views.RecordPropertyCache;
 import io.goobi.viewer.model.viewer.record.views.VisibilityCondition;
 import io.goobi.viewer.model.viewer.record.views.VisibilityConditionInfo;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.component.UINamingContainer;
+import jakarta.faces.component.html.HtmlPanelGrid;
+import jakarta.faces.component.html.HtmlPanelGroup;
+import jakarta.faces.context.FacesContext;
 
 /**
  * DisplayConditions tests whether GUI elements in record views should be visible by a number of factors. These factors encompass the the current

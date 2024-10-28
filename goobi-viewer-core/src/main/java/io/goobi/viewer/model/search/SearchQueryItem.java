@@ -31,7 +31,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.faces.event.ValueChangeEvent;
+import jakarta.faces.event.ValueChangeEvent;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -456,7 +456,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * This is called after <code>setField</code>, so no point in calling <code>toggleDisplaySelectItems</code> here.
      *
-     * @param ev a {@link javax.faces.event.ValueChangeEvent} object.
+     * @param ev a {@link jakarta.faces.event.ValueChangeEvent} object.
      */
     public void selectOneMenuListener(ValueChangeEvent ev) {
         //

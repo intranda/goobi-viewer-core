@@ -25,15 +25,15 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Optional;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -47,7 +47,7 @@ import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 /**
  * Filter for redirecting prettified calls to cmsPages.
  * <p>
- * Forwarding is handled by {@link javax.servlet.RequestDispatcher#forward(ServletRequest, ServletResponse)}, so the url displayed to the user doesn't
+ * Forwarding is handled by {@link jakarta.servlet.RequestDispatcher#forward(ServletRequest, ServletResponse)}, so the url displayed to the user doesn't
  * change, but the internal handling of the request is according to the forwarded url
  * </p>
  * <p>

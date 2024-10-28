@@ -26,11 +26,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import javax.enterprise.context.SessionScoped;
-import javax.faces.application.FacesMessage;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.validator.ValidatorException;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.validator.ValidatorException;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -599,10 +599,10 @@ public class CmsCollectionsBean implements Serializable {
      * validatePI.
      * </p>
      *
-     * @param context a {@link javax.faces.context.FacesContext} object.
-     * @param comp a {@link javax.faces.component.UIComponent} object.
+     * @param context a {@link jakarta.faces.context.FacesContext} object.
+     * @param comp a {@link jakarta.faces.component.UIComponent} object.
      * @param value a {@link java.lang.Object} object.
-     * @throws javax.faces.validator.ValidatorException if any.
+     * @throws jakarta.faces.validator.ValidatorException if any.
      */
     public void validatePI(FacesContext context, UIComponent comp, Object value) throws ValidatorException {
         if (getCurrentCollection() != null && StringUtils.isNotBlank(getCurrentCollection().getRepresentativeWorkPI())) {

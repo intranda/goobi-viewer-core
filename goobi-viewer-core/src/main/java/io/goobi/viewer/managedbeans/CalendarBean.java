@@ -41,7 +41,7 @@ import java.util.Map.Entry;
 import java.util.stream.LongStream;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
+import jakarta.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 

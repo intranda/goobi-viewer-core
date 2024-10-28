@@ -25,8 +25,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import io.goobi.viewer.model.security.user.User;
 
@@ -53,8 +53,8 @@ public class LoginResult {
      * Constructor for LoginResult.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
      * @param user a {@link java.util.Optional} object.
      * @param loginRefused true if the login has been refused even if the user may exist and be valid. Typically true for wrong password
      */
@@ -67,8 +67,8 @@ public class LoginResult {
      * Constructor for LoginResult.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
      * @param user a {@link java.util.Optional} object.
      * @param loginRefused true if the login has been refused even if the user may exist and be valid. Typically true for wrong password
      * @param delay a configured delay time
@@ -88,8 +88,8 @@ public class LoginResult {
      * Constructor for LoginResult.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
      * @param exception a {@link io.goobi.viewer.model.security.authentication.AuthenticationProviderException} object.
      */
     public LoginResult(HttpServletRequest request, HttpServletResponse response, AuthenticationProviderException exception) {
@@ -101,8 +101,8 @@ public class LoginResult {
      * Constructor for LoginResult.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
      * @param exception a {@link io.goobi.viewer.model.security.authentication.AuthenticationProviderException} object.
      * @param delay a configured delay time
      */

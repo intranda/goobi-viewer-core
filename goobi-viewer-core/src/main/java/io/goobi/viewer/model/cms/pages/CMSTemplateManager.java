@@ -44,11 +44,11 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
-import javax.faces.context.FacesContext;
+import jakarta.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -231,7 +231,7 @@ public class CMSTemplateManager implements Serializable {
      * </p>
      *
      * @param filesystemPath a {@link java.lang.String} object.
-     * @param servletContext a {@link javax.servlet.ServletContext} object.
+     * @param servletContext a {@link jakarta.servlet.ServletContext} object.
      * @param templateFolderUrl a {@link java.lang.String} object.
      * @return a {@link java.util.Optional} object.
      * @throws java.net.MalformedURLException if any.

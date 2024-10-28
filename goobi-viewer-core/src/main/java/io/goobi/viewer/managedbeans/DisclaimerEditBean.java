@@ -24,7 +24,7 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import javax.faces.view.ViewScoped;
+import jakarta.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.apache.logging.log4j.Logger;

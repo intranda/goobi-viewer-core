@@ -25,7 +25,7 @@ import java.io.Serializable;
 import java.util.Locale;
 
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import jakarta.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.apache.logging.log4j.Logger;

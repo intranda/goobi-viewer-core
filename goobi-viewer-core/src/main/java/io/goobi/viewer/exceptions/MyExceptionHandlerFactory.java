@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.exceptions;
 
-import javax.faces.context.ExceptionHandler;
-import javax.faces.context.ExceptionHandlerFactory;
+import jakarta.faces.context.ExceptionHandler;
+import jakarta.faces.context.ExceptionHandlerFactory;
 
 /**
  * <p>
@@ -38,7 +38,7 @@ public class MyExceptionHandlerFactory extends ExceptionHandlerFactory {
      * Constructor for MyExceptionHandlerFactory.
      * </p>
      *
-     * @param parent a {@link javax.faces.context.ExceptionHandlerFactory} object.
+     * @param parent a {@link jakarta.faces.context.ExceptionHandlerFactory} object.
      */
     public MyExceptionHandlerFactory(ExceptionHandlerFactory parent) {
         super(parent);

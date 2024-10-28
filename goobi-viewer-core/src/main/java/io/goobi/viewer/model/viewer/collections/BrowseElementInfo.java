@@ -23,7 +23,7 @@ package io.goobi.viewer.model.viewer.collections;
 
 import java.net.URI;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -66,7 +66,7 @@ public interface BrowseElementInfo {
      * getLinkURI.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @return a {@link java.net.URI} object.
      */
     public URI getLinkURI(HttpServletRequest request);

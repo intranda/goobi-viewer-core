@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.servlets;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
 /**
@@ -41,7 +41,7 @@ public class TestObject {
      * getRequest.
      * </p>
      *
-     * @return a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link jakarta.servlet.http.HttpServletRequest} object.
      */
     public HttpServletRequest getRequest() {
         return servletRequest;

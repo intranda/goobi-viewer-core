@@ -29,7 +29,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 
-import javax.faces.view.ViewScoped;
+import jakarta.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 

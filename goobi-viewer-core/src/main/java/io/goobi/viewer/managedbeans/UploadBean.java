@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
+import jakarta.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 

@@ -26,7 +26,7 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Random;
 
-import javax.faces.view.ViewScoped;
+import jakarta.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.apache.logging.log4j.LogManager;

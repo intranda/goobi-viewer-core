@@ -25,9 +25,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-import javax.faces.component.UIComponent;
-import javax.faces.component.html.HtmlPanelGroup;
-import javax.faces.view.ViewScoped;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.component.html.HtmlPanelGroup;
+import jakarta.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.apache.logging.log4j.LogManager;
@@ -72,7 +72,7 @@ public class CmsDynamicContentBean implements Serializable {
      * getTopBarContent.
      * </p>
      *
-     * @return a {@link javax.faces.component.html.HtmlPanelGroup} object
+     * @return a {@link jakarta.faces.component.html.HtmlPanelGroup} object
      */
     public HtmlPanelGroup getTopBarContent() {
         this.cmsPage = Optional.ofNullable(BeanUtils.getCmsBean()).map(CmsBean::getCurrentPage).orElse(null);

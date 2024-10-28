@@ -43,10 +43,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSessionBindingEvent;
-import javax.servlet.http.HttpSessionBindingListener;
-import javax.servlet.http.Part;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSessionBindingEvent;
+import jakarta.servlet.http.HttpSessionBindingListener;
+import jakarta.servlet.http.Part;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -1502,7 +1502,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * (non-Javadoc)
      *
      * @see
-     * javax.servlet.http.HttpSessionBindingListener#valueBound(javax.servlet.http.
+     * jakarta.servlet.http.HttpSessionBindingListener#valueBound(jakarta.servlet.http.
      * HttpSessionBindingEvent)
      */
     /** {@inheritDoc} */
@@ -1523,7 +1523,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
      * (non-Javadoc)
      *
      * @see
-     * javax.servlet.http.HttpSessionBindingListener#valueUnbound(javax.servlet.http
+     * jakarta.servlet.http.HttpSessionBindingListener#valueUnbound(jakarta.servlet.http
      * .HttpSessionBindingEvent)
      */
     /** {@inheritDoc} */

@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.api.rest.v2;
 
-import javax.servlet.ServletConfig;
+import jakarta.servlet.ServletConfig;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Context;
 

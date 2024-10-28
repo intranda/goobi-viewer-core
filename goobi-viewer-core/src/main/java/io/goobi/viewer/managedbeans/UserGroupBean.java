@@ -26,10 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.event.ActionEvent;
-import javax.faces.event.ValueChangeEvent;
-import javax.faces.model.SelectItem;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.event.ActionEvent;
+import jakarta.faces.event.ValueChangeEvent;
+import jakarta.faces.model.SelectItem;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
@@ -87,7 +87,7 @@ public class UserGroupBean implements Serializable {
     /**
      * Creates or updates (if already exists) currentOwnUserGroup.
      *
-     * @param actionEvent a {@link javax.faces.event.ActionEvent} object.
+     * @param actionEvent a {@link jakarta.faces.event.ActionEvent} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void saveCurrentOwnUserGroupAction(ActionEvent actionEvent) throws DAOException {
@@ -224,7 +224,7 @@ public class UserGroupBean implements Serializable {
      * memberSelectedAction.
      * </p>
      *
-     * @param event {@link javax.faces.event.ValueChangeEvent}
+     * @param event {@link jakarta.faces.event.ValueChangeEvent}
      */
     public void memberSelectedAction(ValueChangeEvent event) {
         // currentMember = DataManager.getInstance().getUserByName(String.valueOf(event.getNewValue()));

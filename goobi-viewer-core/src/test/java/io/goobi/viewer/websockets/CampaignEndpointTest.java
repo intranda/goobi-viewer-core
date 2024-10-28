@@ -24,7 +24,7 @@ package io.goobi.viewer.websockets;
 import java.io.IOException;
 import java.util.Collections;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 import javax.websocket.EndpointConfig;
 import javax.websocket.RemoteEndpoint.Basic;
 import javax.websocket.Session;

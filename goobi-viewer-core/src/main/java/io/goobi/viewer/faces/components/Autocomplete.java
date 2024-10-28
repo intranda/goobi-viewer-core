@@ -24,14 +24,14 @@ package io.goobi.viewer.faces.components;
 import java.io.IOException;
 import java.util.List;
 
-import javax.faces.component.FacesComponent;
-import javax.faces.component.UINamingContainer;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-
 import org.json.JSONArray;
 
-import com.sun.faces.facelets.el.ContextualCompositeMethodExpression;
+//import com.sun.faces.facelets.el.ContextualCompositeMethodExpression;
+
+import jakarta.faces.component.FacesComponent;
+import jakarta.faces.component.UINamingContainer;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
 
 /**
  * java-backend for autocomplete composite component. Handles the commandscript call with {@link #handleAutocomplete()} and returns a call to the

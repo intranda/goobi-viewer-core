@@ -24,7 +24,7 @@ package io.goobi.viewer.model.cms.media;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Contains a list of {@link MediaItem MediaItems} built from {@link CMSMediaItem CMSMediaItems}

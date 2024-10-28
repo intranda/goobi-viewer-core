@@ -43,8 +43,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -118,8 +118,8 @@ public class ObjectResource {
      * getInfo.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
      * @return a {@link io.goobi.viewer.model.viewer.object.ObjectInfo} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -161,8 +161,8 @@ public class ObjectResource {
      * getObject.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
      * @return a {@link javax.ws.rs.core.StreamingOutput} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -207,8 +207,8 @@ public class ObjectResource {
      * getObjectResource.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
      * @param pi a {@link java.lang.String} object.
      * @param subfolder a {@link java.lang.String} object.
      * @param auxfilename a {@link java.lang.String} object.
@@ -239,8 +239,8 @@ public class ObjectResource {
      * getObjectResource2.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
      * @param pi a {@link java.lang.String} object.
      * @param subfolder a {@link java.lang.String} object.
      * @param auxfilename a {@link java.lang.String} object.
@@ -263,8 +263,8 @@ public class ObjectResource {
      * getObjectResource.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
      * @param pi a {@link java.lang.String} object.
      * @param subfolder1 a {@link java.lang.String} object.
      * @param subfolder2 a {@link java.lang.String} object.
@@ -297,8 +297,8 @@ public class ObjectResource {
      * getObjectResource2.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
      * @param pi a {@link java.lang.String} object.
      * @param subfolder1 a {@link java.lang.String} object.
      * @param subfolder2 a {@link java.lang.String} object.
