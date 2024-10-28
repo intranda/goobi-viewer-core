@@ -283,10 +283,14 @@ public class ArchiveTree implements Serializable {
      */
     public void setSelectedEntry(ArchiveEntry selectedEntry) {
         logger.trace("setSelectedEntry: {}", selectedEntry != null ? selectedEntry.getLabel() : null);
-        if (this.expandEntryOnSelection && selectedEntry == null && this.selectedEntry != null) {
-            this.selectedEntry.collapse();
-        } else if (this.expandEntryOnSelection && selectedEntry != null) {
-            selectedEntry.expand();
+
+        ArchiveEntry currentEntry = Optional.ofNullable(selectedEntry).orElse(this.selectedEntry);
+        if (currentEntry != null && isExpandEntryOnSelection()) {
+            if (currentEntry.isExpanded()) {
+                currentEntry.collapse();
+            } else {
+                currentEntry.expand();
+            }
         }
         this.selectedEntry = selectedEntry;
     }
