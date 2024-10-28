@@ -37,7 +37,8 @@ import javax.faces.model.SelectItem;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
-import org.ocpsoft.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
@@ -67,7 +68,7 @@ public class CollectionViewBean implements Serializable {
 
     private static final long serialVersionUID = 6707278968715712945L;
 
-    private static final Logger logger = Logger.getLogger(CollectionViewBean.class);
+    private static final Logger logger = LogManager.getLogger(CollectionViewBean.class);
 
     /**
      * {@link CollectionView}s mapped to contentItem-Ids of {@link CMSCollectionContent} used to create the CollectionView.

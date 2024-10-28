@@ -470,7 +470,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     case ARCHIVE:
                         // EAD archive
                         iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
-                        if (!ownerHits.containsKey(iddoc) && DataManager.getInstance().getConfiguration().isArchivesEnabled()) {
+                        if (!ownerHits.containsKey(iddoc)) {
                             SearchHit childHit = factory.createSearchHit(childDoc, null, fulltext, null);
                             children.add(childHit);
                             ownerHits.put(iddoc, childHit);

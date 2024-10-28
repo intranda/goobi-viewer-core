@@ -521,8 +521,7 @@ public final class SearchHelper {
      * @return Generated Solr query suffix
      */
     public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix) {
-        return getAllSuffixes(request, !DataManager.getInstance().getConfiguration().isArchivesEnabled(), addStaticQuerySuffix,
-                addCollectionBlacklistSuffix, IPrivilegeHolder.PRIV_LIST);
+        return getAllSuffixes(request, false, addStaticQuerySuffix, addCollectionBlacklistSuffix, IPrivilegeHolder.PRIV_LIST);
     }
 
     /**
@@ -535,8 +534,7 @@ public final class SearchHelper {
      */
     public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix,
             String privilege) {
-        return getAllSuffixes(request, !DataManager.getInstance().getConfiguration().isArchivesEnabled(), addStaticQuerySuffix,
-                addCollectionBlacklistSuffix, privilege);
+        return getAllSuffixes(request, false, addStaticQuerySuffix, addCollectionBlacklistSuffix, privilege);
     }
 
     /**

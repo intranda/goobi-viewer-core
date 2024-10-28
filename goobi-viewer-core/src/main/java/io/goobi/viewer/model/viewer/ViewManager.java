@@ -259,14 +259,13 @@ public class ViewManager implements Serializable {
         this.mimeType = mimeType;
         logger.trace("mimeType: {}", mimeType);
 
+        // Linked archive node
         try {
-            if (DataManager.getInstance().getConfiguration().isArchivesEnabled()) {
-                String archiveId = getArchiveEntryIdentifier();
-                if (StringUtils.isNotBlank(archiveId)) {
-                    DataManager.getInstance().getArchiveManager().updateArchiveList();
-                    this.archiveResource = DataManager.getInstance().getArchiveManager().loadArchiveForEntry(archiveId);
-                    this.archiveTreeNeighbours = DataManager.getInstance().getArchiveManager().findIndexedNeighbours(archiveId);
-                }
+            String archiveId = getArchiveEntryIdentifier();
+            if (StringUtils.isNotBlank(archiveId)) {
+                DataManager.getInstance().getArchiveManager().updateArchiveList();
+                this.archiveResource = DataManager.getInstance().getArchiveManager().loadArchiveForEntry(archiveId);
+                this.archiveTreeNeighbours = DataManager.getInstance().getArchiveManager().findIndexedNeighbours(archiveId);
             }
         } catch (ArchiveException e) {
             logger.error("Error creating archive link for {}: {}", this.pi, e.getMessage());

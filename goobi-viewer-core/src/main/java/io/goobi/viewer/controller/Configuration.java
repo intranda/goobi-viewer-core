@@ -5852,15 +5852,6 @@ public class Configuration extends AbstractConfiguration {
      * @return Configured value
      * @should return correct value
      */
-    public boolean isArchivesEnabled() {
-        return getLocalBoolean("archives[@enabled]", false);
-    }
-
-    /**
-     * 
-     * @return Configured value
-     * @should return correct value
-     */
     public int getArchivesLazyLoadingThreshold() {
         return getLocalInt("archives[@lazyLoadingThreshold]", 100);
     }

@@ -158,6 +158,7 @@ public class SolrEADParser extends ArchiveParser {
                     .getSearchIndex()
                     .search(query, SolrSearchIndex.MAX_HITS,
                             Arrays.asList(new StringPair(SolrConstants.IDDOC_PARENT, "asc"), new StringPair(FIELD_ARCHIVE_ORDER, "asc")), solrFields);
+            logger.trace("Loaded {} archive docs.", archiveDocs.size());
 
             Map<String, List<SolrDocument>> resourceArchiveDocMap = new HashMap<>();
             archiveDocMap.put(database.getResourceId(), resourceArchiveDocMap);
