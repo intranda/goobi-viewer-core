@@ -28,6 +28,10 @@ import java.util.concurrent.Future;
 
 import org.apache.poi.ss.formula.functions.T;
 
+/**
+ * @deprecated apparently shut down but never used
+ */
+@Deprecated(since = "24.10")
 public class ThreadPoolManager {
 
     private final ExecutorService executorService;

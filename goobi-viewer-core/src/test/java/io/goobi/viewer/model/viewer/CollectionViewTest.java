@@ -26,10 +26,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -237,6 +245,85 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
     void getCollectionDefaultSortField_shouldReturnHyphenIfCollectionNotFound() throws Exception {
         Map<String, String> sortFields = DataManager.getInstance().getConfiguration().getCollectionDefaultSortFields(SolrConstants.DC);
         Assertions.assertEquals("-", CollectionView.getCollectionDefaultSortField("nonexistingcollection", sortFields));
+    }
+
+    @Test
+    void test_associateWithCMSCollections() throws IllegalRequestException, IndexUnreachableException {
+
+        CollectionView view = new CollectionView("DC", () -> {
+            return Map.of("a", new CollectionResult("a", 5));
+        });
+        view.populateCollectionList();
+
+        List<CMSCollection> cmsCollections = new ArrayList<>();
+        CMSCollection cmsCollection = new CMSCollection("DC", "a");
+        cmsCollection.populateDescriptions(List.of("de"));
+        cmsCollection.setDescription("AAA", "de");
+        cmsCollections.add(cmsCollection);
+
+        view.associateElementsWithCMSData(cmsCollections);
+        Assertions.assertEquals(1, view.getVisibleDcElements().size());
+        Assertions.assertEquals("a", view.getVisibleDcElements().get(0).getName());
+        Assertions.assertEquals("AAA", view.getVisibleDcElements().get(0).getDescription("de"));
+    }
+
+    @Test
+    void test_associateWithCMSCollections_noConcurrentModification()
+            throws IllegalRequestException, IndexUnreachableException, InterruptedException, ExecutionException {
+
+        RandomStringUtils random = RandomStringUtils.insecure();
+        Map<String, CollectionResult> providerMap = new HashMap<>();
+        List<CMSCollection> cmsCollections = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            String collectionName = random.next(10, true, true);
+            CollectionResult result = new CollectionResult(collectionName, 1);
+            providerMap.put(collectionName, result);
+            CMSCollection cmsCollection = new CMSCollection("DC", collectionName);
+            cmsCollection.populateDescriptions(List.of("de"));
+            cmsCollection.setDescription(collectionName + "_description", "de");
+            cmsCollections.add(cmsCollection);
+        }
+
+        CollectionView view = new CollectionView("DC", () -> {
+            return providerMap;
+        });
+        view.populateCollectionList();
+
+        Callable<Boolean> callable1 = () -> {
+            try {
+                for (int i = 0; i < 4; i++) {
+                    view.associateElementsWithCMSData(cmsCollections);
+                }
+                return true;
+            } catch (ConcurrentModificationException e) {
+                return false;
+            }
+        };
+
+        Callable<Boolean> callable2 = () -> {
+            try {
+                for (int i = 0; i < 4; i++) {
+                    boolean even = i % 2 == 0;
+                    Collections.sort(view.getVisibleDcElements(), (a, b) -> (even ? a.compareTo(b) : b.compareTo(a)));
+                }
+                return true;
+            } catch (ConcurrentModificationException e) {
+                return false;
+            }
+
+        };
+
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        Future<Boolean> result1 = executorService.submit(callable1);
+        Future<Boolean> result2 = executorService.submit(callable2);
+
+        Assertions.assertTrue(result1.get(), "Concurrent modification happened in 'associateElementsWithCMSData'");
+        Assertions.assertTrue(result2.get(), "Concurrent modification happened in 'Collections.sort'");
+
+        for (HierarchicalBrowseDcElement element : view.getVisibleDcElements()) {
+            Assertions.assertEquals(element.getName() + "_description", element.getDescription("de"));
+        }
+
     }
 
 }

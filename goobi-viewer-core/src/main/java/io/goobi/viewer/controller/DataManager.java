@@ -115,6 +115,10 @@ public final class DataManager {
 
     private UsageStatisticsRecorder usageStatisticsRecorder = null;
 
+    /**
+     * @deprecated apparently shut down but never used
+     */
+    @Deprecated(since = "24.10")
     private ThreadPoolManager threadPoolManager = null;
 
     /**
@@ -602,6 +606,10 @@ public final class DataManager {
         this.usageStatisticsRecorder = usageStatisticsRecorder;
     }
 
+    /**
+     * @deprecated apparently shut down but never used
+     */
+    @Deprecated(since = "24.10")
     public synchronized ThreadPoolManager getThreadPoolManager() {
         if (threadPoolManager == null) {
             this.threadPoolManager = new ThreadPoolManager(THREAD_POOL_SIZE);
