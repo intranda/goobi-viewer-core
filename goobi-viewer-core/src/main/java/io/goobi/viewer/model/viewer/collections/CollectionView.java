@@ -363,11 +363,11 @@ public class CollectionView implements Serializable {
      * <p>
      * associateWithCMSCollections.
      * </p>
+     * returns the 'collection' parameter
      *
      * @param collections a {@link java.util.List} object.
      * @param solrField a {@link java.lang.String} object.
      * @param cmsCollections
-     * @return the 'collection' parameter
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
