@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.WebApplicationException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;

@@ -28,13 +28,13 @@ import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.ext.Provider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringTokenizer;
@@ -93,7 +93,7 @@ public class ImageParameterFilter implements ContainerRequestFilter {
      * addRepositoryPathIfRequired.
      * </p>
      *
-     * @param request a {@link javax.ws.rs.container.ContainerRequestContext} object.
+     * @param request a {@link jakarta.ws.rs.container.ContainerRequestContext} object.
      * @param pi a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */

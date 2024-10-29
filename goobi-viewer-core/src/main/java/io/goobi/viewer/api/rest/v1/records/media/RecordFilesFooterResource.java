@@ -25,10 +25,10 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_FOOTER;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.Context;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Context;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

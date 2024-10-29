@@ -21,10 +21,10 @@
  */
 package io.goobi.viewer.api.rest.v1.cms;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,7 +42,7 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
  *
  */
 
-@javax.ws.rs.Path("/cms/pages/{pageId}")
+@jakarta.ws.rs.Path("/cms/pages/{pageId}")
 @ViewerRestServiceBinding
 public class CMSPageResource {
 

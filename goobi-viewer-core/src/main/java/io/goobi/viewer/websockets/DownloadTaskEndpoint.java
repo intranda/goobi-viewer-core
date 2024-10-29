@@ -41,7 +41,7 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;

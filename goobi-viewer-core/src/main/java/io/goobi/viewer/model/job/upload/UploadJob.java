@@ -35,11 +35,11 @@ import java.util.List;
 import java.util.UUID;
 
 import jakarta.servlet.http.Part;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ResponseHandler;
@@ -153,7 +153,7 @@ public class UploadJob implements Serializable {
             return client
                     .target(url)
                     .request(MediaType.APPLICATION_JSON)
-                    .post(javax.ws.rs.client.Entity.entity(body, MediaType.APPLICATION_JSON));
+                    .post(jakarta.ws.rs.client.Entity.entity(body, MediaType.APPLICATION_JSON));
         } catch (ProcessingException | IllegalArgumentException | NullPointerException e) {
             throw new IOException("Error connecting to " + url, e);
         }

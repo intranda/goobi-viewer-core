@@ -32,13 +32,13 @@ import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -59,7 +59,7 @@ import io.swagger.v3.oas.annotations.Parameter;
  * @author florian
  *
  */
-@javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_IMAGE)
+@jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_IMAGE)
 @CORSBinding
 public class CMSMediaImageResource extends ImageResource {
 

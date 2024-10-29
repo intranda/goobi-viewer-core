@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipInputStream;
 
 import jakarta.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;

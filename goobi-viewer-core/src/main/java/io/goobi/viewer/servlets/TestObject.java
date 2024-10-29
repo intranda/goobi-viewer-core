@@ -22,7 +22,7 @@
 package io.goobi.viewer.servlets;
 
 import jakarta.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
+import jakarta.ws.rs.core.Context;
 
 /**
  * <p>

@@ -31,10 +31,10 @@ import javax.annotation.Priority;
 import javax.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.ext.Provider;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;

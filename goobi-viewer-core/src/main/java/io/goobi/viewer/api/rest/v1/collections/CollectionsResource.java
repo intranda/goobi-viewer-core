@@ -32,12 +32,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -61,7 +61,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  * @author florian
  *
  */
-@javax.ws.rs.Path(COLLECTIONS)
+@jakarta.ws.rs.Path(COLLECTIONS)
 @ViewerRestServiceBinding
 public class CollectionsResource {
 
@@ -102,7 +102,7 @@ public class CollectionsResource {
     }
 
     @GET
-    @javax.ws.rs.Path(COLLECTIONS_COLLECTION)
+    @jakarta.ws.rs.Path(COLLECTIONS_COLLECTION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF Presentation 2.1.1 collection")
     @ApiResponse(responseCode = "400", description = "Invalid collection name or field")
@@ -131,7 +131,7 @@ public class CollectionsResource {
     }
 
     @GET
-    @javax.ws.rs.Path(COLLECTIONS_CONTENTASSIST)
+    @jakarta.ws.rs.Path(COLLECTIONS_CONTENTASSIST)
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponse(responseCode = "400", description = "No collections available for field")
     //    @Operation(tags = { "collections"}, summary = "Return a list of collections starting with the given input")

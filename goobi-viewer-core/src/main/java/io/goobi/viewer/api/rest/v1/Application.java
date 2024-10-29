@@ -22,8 +22,8 @@
 package io.goobi.viewer.api.rest.v1;
 
 import jakarta.servlet.ServletConfig;
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Context;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Context;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

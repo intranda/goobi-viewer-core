@@ -45,14 +45,14 @@ import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.StreamingOutput;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -79,7 +79,7 @@ import io.swagger.v3.oas.annotations.Parameter;
  * @author Florian Alpers
  */
 
-@javax.ws.rs.Path(RECORDS_FILES_3D)
+@jakarta.ws.rs.Path(RECORDS_FILES_3D)
 @AccessConditionBinding
 @CORSBinding
 public class ObjectResource {
@@ -125,7 +125,7 @@ public class ObjectResource {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @GET
-    @javax.ws.rs.Path(RECORDS_FILES_3D_INFO)
+    @jakarta.ws.rs.Path(RECORDS_FILES_3D_INFO)
     @Produces({ MediaType.APPLICATION_JSON })
     public ObjectInfo getInfo(@Context HttpServletRequest request, @Context HttpServletResponse response)
             throws PresentationException, IndexUnreachableException {
@@ -163,7 +163,7 @@ public class ObjectResource {
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
-     * @return a {@link javax.ws.rs.core.StreamingOutput} object.
+     * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -212,13 +212,13 @@ public class ObjectResource {
      * @param pi a {@link java.lang.String} object.
      * @param subfolder a {@link java.lang.String} object.
      * @param auxfilename a {@link java.lang.String} object.
-     * @return a {@link javax.ws.rs.core.StreamingOutput} object.
+     * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @GET
-    @javax.ws.rs.Path(RECORDS_FILES_3D_AUXILIARY_FILE_1)
+    @jakarta.ws.rs.Path(RECORDS_FILES_3D_AUXILIARY_FILE_1)
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
     public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder") String subfolder, @PathParam("auxfilename") final String auxfilename)
@@ -244,13 +244,13 @@ public class ObjectResource {
      * @param pi a {@link java.lang.String} object.
      * @param subfolder a {@link java.lang.String} object.
      * @param auxfilename a {@link java.lang.String} object.
-     * @return a {@link javax.ws.rs.core.StreamingOutput} object.
+     * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @GET
-    @javax.ws.rs.Path(RECORDS_FILES_3D_AUXILIARY_FILE_1_ALT)
+    @jakarta.ws.rs.Path(RECORDS_FILES_3D_AUXILIARY_FILE_1_ALT)
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
     public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder") String subfolder, @PathParam("auxfilename") final String auxfilename)
@@ -269,13 +269,13 @@ public class ObjectResource {
      * @param subfolder1 a {@link java.lang.String} object.
      * @param subfolder2 a {@link java.lang.String} object.
      * @param auxfilename a {@link java.lang.String} object.
-     * @return a {@link javax.ws.rs.core.StreamingOutput} object.
+     * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @GET
-    @javax.ws.rs.Path(RECORDS_FILES_3D_AUXILIARY_FILE_2)
+    @jakarta.ws.rs.Path(RECORDS_FILES_3D_AUXILIARY_FILE_2)
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
     public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder") String subfolder1, @PathParam("subsubfolder") String subfolder2, @PathParam("auxfilename") String auxfilename)
@@ -303,13 +303,13 @@ public class ObjectResource {
      * @param subfolder1 a {@link java.lang.String} object.
      * @param subfolder2 a {@link java.lang.String} object.
      * @param auxfilename a {@link java.lang.String} object.
-     * @return a {@link javax.ws.rs.core.StreamingOutput} object.
+     * @return a {@link jakarta.ws.rs.core.StreamingOutput} object.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     @GET
-    @javax.ws.rs.Path(RECORDS_FILES_3D_AUXILIARY_FILE_2_ALT)
+    @jakarta.ws.rs.Path(RECORDS_FILES_3D_AUXILIARY_FILE_2_ALT)
     @Produces({ MediaType.APPLICATION_OCTET_STREAM })
     public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder") String subfolder1, @PathParam("subsubfolder") String subfolder2, @PathParam("auxfilename") String auxfilename)

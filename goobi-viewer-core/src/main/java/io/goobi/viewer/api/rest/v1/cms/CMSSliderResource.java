@@ -32,10 +32,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -65,7 +65,7 @@ import io.goobi.viewer.solr.SolrTools;
  * @author florian
  *
  */
-@javax.ws.rs.Path("/cms/slider/{sliderId}")
+@jakarta.ws.rs.Path("/cms/slider/{sliderId}")
 @ViewerRestServiceBinding
 public class CMSSliderResource {
 
@@ -86,7 +86,7 @@ public class CMSSliderResource {
     }
 
     @GET
-    @javax.ws.rs.Path("/slides")
+    @jakarta.ws.rs.Path("/slides")
     @Produces({ MediaType.APPLICATION_JSON })
     public List<URI> getSlides() throws ContentNotFoundException, PresentationException, IndexUnreachableException, IllegalRequestException {
         if (this.slider != null) {

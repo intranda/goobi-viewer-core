@@ -42,14 +42,14 @@ import java.util.stream.Stream;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -91,7 +91,7 @@ import io.swagger.v3.oas.annotations.Parameter;
  * @author florian
  *
  */
-@javax.ws.rs.Path(RECORDS_FILES)
+@jakarta.ws.rs.Path(RECORDS_FILES)
 @ViewerRestServiceBinding
 @CORSBinding
 public class RecordFileResource {
@@ -123,7 +123,7 @@ public class RecordFileResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_FILES_ALTO)
+    @jakarta.ws.rs.Path(RECORDS_FILES_ALTO)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get Alto fulltext for a single page")
     public String getAlto(
@@ -139,7 +139,7 @@ public class RecordFileResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_FILES_PLAINTEXT)
+    @jakarta.ws.rs.Path(RECORDS_FILES_PLAINTEXT)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Get plaintext for a single page")
     public String getPlaintext(
@@ -153,7 +153,7 @@ public class RecordFileResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_FILES_TEI)
+    @jakarta.ws.rs.Path(RECORDS_FILES_TEI)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get fulltext for a single page in TEI format")
     public String getTEI(
@@ -167,7 +167,7 @@ public class RecordFileResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_FILES_SOURCE)
+    @jakarta.ws.rs.Path(RECORDS_FILES_SOURCE)
     @Operation(tags = { "records" }, summary = "Get source files of record")
     public Response getSourceFile(
             @Parameter(description = "Source file name") @PathParam("filename") String filename)
@@ -201,7 +201,7 @@ public class RecordFileResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_FILES_MEDIA)
+    @jakarta.ws.rs.Path(RECORDS_FILES_MEDIA)
     @Operation(tags = { "records" }, summary = "Get media files of record")
     @CORSBinding
     @MediaResourceBinding
@@ -269,7 +269,7 @@ public class RecordFileResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_FILES_CMDI)
+    @jakarta.ws.rs.Path(RECORDS_FILES_CMDI)
     @Operation(tags = { "records" }, summary = "Get cmdi for record file")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public String getCMDI(
@@ -299,7 +299,7 @@ public class RecordFileResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD)
+    @jakarta.ws.rs.Path(RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD)
     @Operation(tags = { "records" }, summary = "Get cmdi for record file")
     @RecordFileDownloadBinding
     public Response getDownloadedResource(

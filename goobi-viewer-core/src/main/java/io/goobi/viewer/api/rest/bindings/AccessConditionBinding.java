@@ -24,7 +24,7 @@ package io.goobi.viewer.api.rest.bindings;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.ws.rs.NameBinding;
+import jakarta.ws.rs.NameBinding;
 
 import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
 

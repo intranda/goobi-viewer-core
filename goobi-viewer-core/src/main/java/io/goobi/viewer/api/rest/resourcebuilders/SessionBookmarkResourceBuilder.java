@@ -27,7 +27,7 @@ import java.util.List;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import javax.ws.rs.PathParam;
+import jakarta.ws.rs.PathParam;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;

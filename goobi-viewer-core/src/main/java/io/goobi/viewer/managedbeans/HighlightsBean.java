@@ -36,7 +36,7 @@ import javax.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;

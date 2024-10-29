@@ -26,11 +26,11 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.COLLECTIONS_COLLECTION;
 
 import javax.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 
 import de.intranda.api.iiif.presentation.v3.Collection3;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
@@ -46,7 +46,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  * @author florian
  *
  */
-@javax.ws.rs.Path(COLLECTIONS)
+@jakarta.ws.rs.Path(COLLECTIONS)
 @ViewerRestServiceBinding
 public class CollectionsResource {
 
@@ -70,7 +70,7 @@ public class CollectionsResource {
     }
 
     @GET
-    @javax.ws.rs.Path(COLLECTIONS_COLLECTION)
+    @jakarta.ws.rs.Path(COLLECTIONS_COLLECTION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF presentation 3.0 collection")
     @ApiResponse(responseCode = "400", description = "Invalid collection name or field")

@@ -31,11 +31,11 @@ import java.net.URISyntaxException;
 import javax.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.solr.common.SolrDocument;
 import org.apache.logging.log4j.Logger;
@@ -66,7 +66,7 @@ import io.swagger.v3.oas.annotations.Parameter;
  * @author florian
  *
  */
-@javax.ws.rs.Path(RECORDS_SECTIONS)
+@jakarta.ws.rs.Path(RECORDS_SECTIONS)
 @ViewerRestServiceBinding
 @CORSBinding
 public class RecordSectionResource {
@@ -93,7 +93,7 @@ public class RecordSectionResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_SECTIONS_RIS_FILE)
+    @jakarta.ws.rs.Path(RECORDS_SECTIONS_RIS_FILE)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Download ris as file")
     public String getRISAsFile()
@@ -117,7 +117,7 @@ public class RecordSectionResource {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
-    @javax.ws.rs.Path(RECORDS_SECTIONS_RIS_TEXT)
+    @jakarta.ws.rs.Path(RECORDS_SECTIONS_RIS_TEXT)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Get ris as text")
     public String getRISAsText()
@@ -128,7 +128,7 @@ public class RecordSectionResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_SECTIONS_RANGE)
+    @jakarta.ws.rs.Path(RECORDS_SECTIONS_RANGE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 range for section")
     @IIIFPresentationBinding

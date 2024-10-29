@@ -35,12 +35,12 @@ import java.net.URISyntaxException;
 import javax.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,7 +70,7 @@ import io.swagger.v3.oas.annotations.Parameter;
  * @author florian
  *
  */
-@javax.ws.rs.Path(RECORDS_PAGES)
+@jakarta.ws.rs.Path(RECORDS_PAGES)
 @ViewerRestServiceBinding
 @CORSBinding
 public class RecordPagesResource {
@@ -97,7 +97,7 @@ public class RecordPagesResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_PAGES_CANVAS)
+    @jakarta.ws.rs.Path(RECORDS_PAGES_CANVAS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 3.0 canvas for page")
     @IIIFPresentationBinding
@@ -107,7 +107,7 @@ public class RecordPagesResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_PAGES_MEDIA)
+    @jakarta.ws.rs.Path(RECORDS_PAGES_MEDIA)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get media resources for page")
     @IIIFPresentationBinding
@@ -123,7 +123,7 @@ public class RecordPagesResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_PAGES_MEDIA + "/{itemid}")
+    @jakarta.ws.rs.Path(RECORDS_PAGES_MEDIA + "/{itemid}")
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get media resources for page")
     @IIIFPresentationBinding
@@ -141,7 +141,7 @@ public class RecordPagesResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_PAGES_TEXT)
+    @jakarta.ws.rs.Path(RECORDS_PAGES_TEXT)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get fulltext annotations for page")
     @IIIFPresentationBinding
@@ -151,7 +151,7 @@ public class RecordPagesResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_PAGES_ANNOTATIONS)
+    @jakarta.ws.rs.Path(RECORDS_PAGES_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a page")
     public AnnotationPage getAnnotationsForRecord() throws DAOException {
@@ -167,7 +167,7 @@ public class RecordPagesResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_PAGES_COMMENTS)
+    @jakarta.ws.rs.Path(RECORDS_PAGES_COMMENTS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List comments for a page")
     public AnnotationPage getCommentsForPage() throws DAOException {
@@ -177,7 +177,7 @@ public class RecordPagesResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_PAGES_MANIFEST)
+    @jakarta.ws.rs.Path(RECORDS_PAGES_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 manifest for record")
     @IIIFPresentationBinding

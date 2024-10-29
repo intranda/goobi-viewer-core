@@ -28,14 +28,14 @@ import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -62,7 +62,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  * @author florian
  *
  */
-@javax.ws.rs.Path(CLIENTS)
+@jakarta.ws.rs.Path(CLIENTS)
 @CORSBinding
 @ViewerRestServiceBinding
 public class ClientApplicationsResource {
@@ -87,7 +87,7 @@ public class ClientApplicationsResource {
     }
 
     @POST
-    @javax.ws.rs.Path(CLIENTS_REGISTER)
+    @jakarta.ws.rs.Path(CLIENTS_REGISTER)
     @Produces({ MediaType.APPLICATION_JSON })
     //    @Operation(summary = "Request registration as a trusted client application", tags = { "clients" })
     public String register() throws ContentLibException, DAOException {
@@ -101,7 +101,7 @@ public class ClientApplicationsResource {
     }
 
     @GET
-    @javax.ws.rs.Path(CLIENTS_REQUEST)
+    @jakarta.ws.rs.Path(CLIENTS_REQUEST)
     @Produces({ MediaType.APPLICATION_JSON })
     //    @Operation(summary = "Request", tags = { "clients" })
     public String request() throws ContentLibException, DAOException {
@@ -132,7 +132,7 @@ public class ClientApplicationsResource {
      */
     @PUT
     @AuthorizationBinding
-    @javax.ws.rs.Path(CLIENTS_CLIENT)
+    @jakarta.ws.rs.Path(CLIENTS_CLIENT)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Set properties of an existing client",
             description = "Set properties of the client with the clientIdentifier given in the URL to the ones specified in the data json-object."
@@ -195,7 +195,7 @@ public class ClientApplicationsResource {
      * @throws ContentNotFoundException
      */
     @GET
-    @javax.ws.rs.Path(CLIENTS_CLIENT)
+    @jakarta.ws.rs.Path(CLIENTS_CLIENT)
     @AuthorizationBinding
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get the client with the given client identifier", tags = { "clients" },
