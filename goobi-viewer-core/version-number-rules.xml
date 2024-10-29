@@ -6,13 +6,13 @@
      xsi:schemaLocation="http://mojo.codehaus.org/versions-maven-plugin/rule/2.0.0 http://www.mojohaus.org/versions-maven-plugin/xsd/rule-2.0.0.xsd">
 
     <ignoreVersions>
-        <ignoreVersion type="regex">.*[-_\.](alpha|Alpha|ALPHA|beta|Beta|BETA|rc|RC|M|EA|B)[-_\.]?[0-9]?.*</ignoreVersion>
+        <ignoreVersion type="regex">.*[-_\.](alpha|Alpha|ALPHA|beta|Beta|BETA|rc|RC|M|EA)[-_\.]?[0-9]?.*</ignoreVersion>
     </ignoreVersions>
 
     <!-- The following rules exist, because updating to this major versions include changing the javax. to jakarta. namespaces.
          Not all dependencies are compatible yet. Therefore excluding this is the best thing for now -->
     <rules>
-        <rule groupId="org.glassfish.jersey">
+        <!--rule groupId="org.glassfish.jersey">
             <ignoreVersions>
                 <ignoreVersion type="regex">3.0.*</ignoreVersion>
                 <ignoreVersion type="regex">3.1.*</ignoreVersion>
@@ -25,14 +25,14 @@
                 <ignoreVersion type="regex">3.*</ignoreVersion>
                 <ignoreVersion type="regex">4.*</ignoreVersion>
             </ignoreVersions>
-        </rule>
+        </rule-->
         <!-- see here why no 2.4.0 https://balusc.omnifaces.org/2018/04/do-not-use-orgglassfish-mojarra-240.html -->
-        <rule groupId="org.glassfish" artifactId="javax.faces">
+        <!--rule groupId="org.glassfish" artifactId="javax.faces">
             <ignoreVersions>
                 <ignoreVersion>2.4.0</ignoreVersion>
             </ignoreVersions>
-        </rule>
-        <rule groupId="org.omnifaces" artifactId="omnifaces">
+        </rule-->
+        <!--rule groupId="org.omnifaces" artifactId="omnifaces">
             <ignoreVersions>
                 <ignoreVersion type="regex">4.*</ignoreVersion>
             </ignoreVersions>
@@ -52,7 +52,6 @@
             <ignoreVersions>
                 <ignoreVersion>5.0.0</ignoreVersion>
                 <ignoreVersion>6.0.0</ignoreVersion>
-                <ignoreVersion>6.1.0</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="jakarta.xml.bind" artifactId="jakarta.xml.bind-api">
@@ -70,14 +69,14 @@
                 <ignoreVersion type="regex">4.*</ignoreVersion>
                 <ignoreVersion type="regex">5.*</ignoreVersion>
             </ignoreVersions>
-        </rule>
+        </rule-->
         <rule groupId="xml-apis" artifactId="xml-apis">
             <ignoreVersions>
                 <ignoreVersion>2.0.0</ignoreVersion>
                 <ignoreVersion>2.0.2</ignoreVersion>
             </ignoreVersions>
         </rule>
-        <rule groupId="org.springframework" artifactId="spring-*">
+        <!--rule groupId="org.springframework" artifactId="spring-*">
             <ignoreVersions>
                 <ignoreVersion type="regex">6.*</ignoreVersion>
             </ignoreVersions>
@@ -94,5 +93,10 @@
                 <ignoreVersion type="regex">8.*.Final</ignoreVersion>
             </ignoreVersions>
         </rule>
+        <rule groupId="org.apache.activemq" artifactId="activemq-*">
+            <ignoreVersions>
+                <ignoreVersion type="regex">6.*</ignoreVersion>
+            </ignoreVersions>
+        </rule-->
     </rules>
 </ruleset>
