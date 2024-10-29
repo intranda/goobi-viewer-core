@@ -2332,7 +2332,7 @@ public final class SearchHelper {
                         value = value.replace("\"", "");
                     }
                     // Skip values in stopwords and duplicates for fuzzy search
-                    if (value.length() > 0 && !stopwords.contains(value)) {
+                    if (value.length() > 0 && !stopwords.contains(value) && !value.matches(".*~[1-2]$")) {
                         if (ret.get(currentField) == null) {
                             ret.put(currentField, new HashSet<>());
                         }
@@ -2357,7 +2357,7 @@ public final class SearchHelper {
                 // single values w/o a field
                 
                 // Skip duplicates for fuzzy search
-                if (s.trim().equals("+")) {
+                if (s.trim().equals("+") || s.matches(".*~[1-2]$")) {
                     continue;
                 }
                 if (currentField == null) {
