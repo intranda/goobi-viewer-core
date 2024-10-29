@@ -600,6 +600,20 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#extractSearchTermsFromQuery(String,String)
+     * @verifies remove fuzzy search tokens
+     */
+    @Test
+    void extractSearchTermsFromQuery_shouldRemoveFuzzySearchTokens() {
+        Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery("(+(SUPERDEFAULT:((foo foo~1) (bar bar~1))))", null);
+        Set<String> terms = result.get(SolrConstants.DEFAULT);
+        Assertions.assertNotNull(terms);
+        Assertions.assertEquals(2, terms.size());
+        Assertions.assertTrue(terms.contains("foo"));
+        Assertions.assertTrue(terms.contains("bar"));
+    }
+
+    /**
+     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
      * @verifies remove range values
      */
     @Test
