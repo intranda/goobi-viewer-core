@@ -1506,7 +1506,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * JSF expects a getter, too.
      *
      * @return a {@link java.lang.String} object.
-     * @derecated user SearchBean.getExactSearchString()
+     * @deprecated user SearchBean.getExactSearchString()
      */
     @Deprecated(since = "24.01")
     public String getExactSearchStringResetGui() {
