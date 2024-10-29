@@ -80,7 +80,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.6.2</alto.version>
-		<ics.version>3.17.4</ics.version>
+		<ics.version>3.18-SNAPSHOT</ics.version>
 		<tei-conversion.version>1.3.3</tei-conversion.version>
 		<iiif-api-model.version>2.6.5</iiif-api-model.version>
 		<normdataimporter.version>1.11.3</normdataimporter.version>
@@ -201,8 +201,8 @@
 					<artifactId>jersey-container-servlet-core</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>javax.servlet</groupId>
-					<artifactId>servlet-api</artifactId>
+					<groupId>jakarta.servlet</groupId>
+					<artifactId>jakarta.servlet-api</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>xml-apis</groupId>
@@ -686,23 +686,23 @@
 		</dependency>
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
-			<artifactId>swagger-jaxrs2</artifactId>
+			<artifactId>swagger-jaxrs2-jakarta</artifactId>
 			<version>${swagger.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
-			<artifactId>swagger-annotations</artifactId>
+			<artifactId>swagger-annotations-jakarta</artifactId>
 			<version>${swagger.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
-			<artifactId>swagger-models</artifactId>
+			<artifactId>swagger-models-jakarta</artifactId>
 			<version>${swagger.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
-			<artifactId>swagger-integration</artifactId>
+			<artifactId>swagger-integration-jakarta</artifactId>
 			<version>${swagger.version}</version>
 			<exclusions>
 				<exclusion>
