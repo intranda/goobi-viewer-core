@@ -346,6 +346,8 @@ public class CollectionView implements Serializable {
      * <p>
      * associateElementsWithCMSData.
      * </p>
+     * 
+     * @param cmsCollections collection data with which to enricht the browse elements
      */
     public void associateElementsWithCMSData(List<CMSCollection> cmsCollections) {
         associateWithCMSCollections(new ArrayList<>(this.visibleCollectionList), this.field, cmsCollections);
