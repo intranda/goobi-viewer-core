@@ -2208,6 +2208,7 @@ public final class SearchHelper {
      * @should throw IllegalArgumentException if query is null
      * @should add title terms field
      * @should remove proximity search tokens
+     * @should remove fuzzy search tokens
      * @should remove range values
      * @should remove operators from field names
      */
@@ -2330,6 +2331,7 @@ public final class SearchHelper {
                     if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
                         value = value.replace("\"", "");
                     }
+                    // Skip values in stopwords and duplicates for fuzzy search
                     if (value.length() > 0 && !stopwords.contains(value)) {
                         if (ret.get(currentField) == null) {
                             ret.put(currentField, new HashSet<>());
@@ -2353,6 +2355,8 @@ public final class SearchHelper {
                 }
             } else if (s.length() > 0 && !stopwords.contains(s)) {
                 // single values w/o a field
+                
+                // Skip duplicates for fuzzy search
                 if (s.trim().equals("+")) {
                     continue;
                 }
