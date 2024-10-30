@@ -67,9 +67,6 @@
 	                    </div>
 	                </ui:fragment>
 				</h:panelGroup>
-<!-- 					<f:websocket channel="hotfolderFileCount" scope="view"> -->
-<!--                         <f:ajax event="update" render="hotfolderFileCountGroup" /> -->
-<!--                     </f:websocket> -->
                 <o:socket channel="hotfolderFileCount">
                     <f:ajax event="update" render="hotfolderFileCountGroup" />
                 </o:socket>

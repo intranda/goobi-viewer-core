@@ -462,8 +462,16 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * </p>
      */
     public void populateDescriptions() {
+        this.populateDescriptions(BeanUtils.getNavigationHelper().getSupportedLanguages());
+    }
+
+    /**
+     * <p>
+     * populateDescriptions.
+     * </p>
+     */
+    public void populateDescriptions(List<String> languages) {
         logger.trace("populateDescriptions");
-        List<String> languages = BeanUtils.getNavigationHelper().getSupportedLanguages();
         for (String language : languages) {
             if (getDescriptions().stream().noneMatch(description -> description.getLanguage().equalsIgnoreCase(language))) {
                 addDescription(new CMSCollectionTranslation(language, ""));
