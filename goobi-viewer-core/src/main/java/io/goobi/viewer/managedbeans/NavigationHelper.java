@@ -713,7 +713,7 @@ public class NavigationHelper implements Serializable {
      */
     public void setLocaleString(String inLocale) {
         logger.trace("setLocaleString: {}", inLocale);
-        locale = new Locale(inLocale);
+        locale = Locale.forLanguageTag(inLocale);
         FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
 
         // Make sure browsing terms are reloaded, so that locale-specific sorting can be applied
@@ -736,6 +736,12 @@ public class NavigationHelper implements Serializable {
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
         if (adb != null) {
             adb.setSelectedRecordLanguage(inLocale);
+        }
+
+        // Reset advanced search parameters so that the SearchQueryItems have correct language fields
+        SearchBean sb = BeanUtils.getSearchBean();
+        if (sb != null && sb.getActiveSearchType() == SearchHelper.SEARCH_TYPE_ADVANCED) {
+            sb.resetAdvancedSearchParameters();
         }
     }
 
