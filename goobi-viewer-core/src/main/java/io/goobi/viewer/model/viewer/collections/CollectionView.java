@@ -328,13 +328,15 @@ public class CollectionView implements Serializable {
     }
 
     /**
+     * 
      * <p>
      * associateElementsWithCMSData.
      * </p>
      */
     public void associateElementsWithCMSData() {
         try {
-            this.visibleCollectionList = associateWithCMSCollections(this.visibleCollectionList, this.field);
+            List<CMSCollection> cmsCollections = DataManager.getInstance().getDao().getCMSCollections(this.field);
+            associateElementsWithCMSData(cmsCollections);
         } catch (DAOException e) {
             logger.error("Failed to associate collections with media items: {}", e.getMessage());
         }
@@ -342,20 +344,37 @@ public class CollectionView implements Serializable {
 
     /**
      * <p>
+     * associateElementsWithCMSData.
+     * </p>
+     * 
+     * @param cmsCollections collection data with which to enricht the browse elements
+     */
+    public void associateElementsWithCMSData(List<CMSCollection> cmsCollections) {
+        associateWithCMSCollections(new ArrayList<>(this.visibleCollectionList), this.field, cmsCollections);
+    }
+
+    public static void associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField)
+            throws DAOException {
+        List<CMSCollection> cmsCollections = DataManager.getInstance().getDao().getCMSCollections(solrField);
+        associateWithCMSCollections(collections, solrField, cmsCollections);
+    }
+
+    /**
+     * <p>
      * associateWithCMSCollections.
      * </p>
+     * returns the 'collection' parameter
      *
      * @param collections a {@link java.util.List} object.
      * @param solrField a {@link java.lang.String} object.
-     * @return the 'collection' parameter
+     * @param cmsCollections
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public static List<HierarchicalBrowseDcElement> associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField)
-            throws DAOException {
-        List<CMSCollection> cmsCollections = DataManager.getInstance().getDao().getCMSCollections(solrField);
+    public static void associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField,
+            List<CMSCollection> cmsCollections) {
         if (cmsCollections == null || cmsCollections.isEmpty()) {
-            return collections;
+            return;
         }
         for (CMSCollection cmsCollection : cmsCollections) {
             String collectionName = cmsCollection.getSolrFieldValue();
@@ -369,7 +388,6 @@ public class CollectionView implements Serializable {
                     .findAny();
             element.ifPresent(ele -> ele.setInfo(cmsCollection));
         }
-        return collections;
     }
 
     /**
