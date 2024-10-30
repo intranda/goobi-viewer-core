@@ -305,6 +305,7 @@ public class SearchQueryItem implements Serializable {
      * @return the field
      */
     public String getField() {
+        logger.trace("getField: {}", field);
         return field;
     }
 
