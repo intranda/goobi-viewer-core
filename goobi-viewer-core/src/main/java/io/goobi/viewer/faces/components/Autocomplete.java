@@ -26,6 +26,8 @@ import java.util.List;
 
 import org.json.JSONArray;
 
+import jakarta.el.MethodExpression;
+
 //import com.sun.faces.facelets.el.ContextualCompositeMethodExpression;
 
 import jakarta.faces.component.FacesComponent;
@@ -65,7 +67,7 @@ public class Autocomplete extends UINamingContainer {
     }
 
     private List<String> getItems(String term) {
-        ContextualCompositeMethodExpression items = (ContextualCompositeMethodExpression) getAttributes().get("items");
+        MethodExpression items = (MethodExpression) getAttributes().get("items");
         return (List<String>) items.invoke(getFacesContext().getELContext(), new String[] { term });
     }
 
