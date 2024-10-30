@@ -26,7 +26,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 import jakarta.faces.view.ViewScoped;
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;

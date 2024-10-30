@@ -33,7 +33,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;

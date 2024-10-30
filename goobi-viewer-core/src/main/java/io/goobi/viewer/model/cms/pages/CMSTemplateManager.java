@@ -43,11 +43,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import jakarta.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 import jakarta.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;

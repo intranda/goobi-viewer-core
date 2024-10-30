@@ -32,9 +32,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 import jakarta.faces.view.ViewScoped;
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

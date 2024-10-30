@@ -38,8 +38,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

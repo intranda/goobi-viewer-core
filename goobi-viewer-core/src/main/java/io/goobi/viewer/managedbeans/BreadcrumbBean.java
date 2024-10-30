@@ -31,8 +31,8 @@ import java.util.Set;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;

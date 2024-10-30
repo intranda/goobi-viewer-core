@@ -28,8 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

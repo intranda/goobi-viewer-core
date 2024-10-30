@@ -31,7 +31,7 @@ import java.util.Optional;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;

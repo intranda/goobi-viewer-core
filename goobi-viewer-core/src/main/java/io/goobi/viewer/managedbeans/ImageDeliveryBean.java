@@ -28,10 +28,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;

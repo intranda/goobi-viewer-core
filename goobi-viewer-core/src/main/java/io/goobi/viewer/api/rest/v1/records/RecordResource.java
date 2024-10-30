@@ -52,7 +52,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Optional;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.Consumes;

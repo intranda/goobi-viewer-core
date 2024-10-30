@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import jakarta.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.servlet.ServletContext;
 
 import org.apache.logging.log4j.LogManager;

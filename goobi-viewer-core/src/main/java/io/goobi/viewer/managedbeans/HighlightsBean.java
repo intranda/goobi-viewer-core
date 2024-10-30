@@ -32,10 +32,10 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;

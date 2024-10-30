@@ -26,7 +26,7 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_SECTIONS_RANGE;
 
 import java.net.URISyntaxException;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;

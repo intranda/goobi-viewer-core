@@ -24,7 +24,7 @@ package io.goobi.viewer.api.rest.v2.collections;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.COLLECTIONS;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.COLLECTIONS_COLLECTION;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PathParam;

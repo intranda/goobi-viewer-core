@@ -26,7 +26,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.RequestScoped;
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;

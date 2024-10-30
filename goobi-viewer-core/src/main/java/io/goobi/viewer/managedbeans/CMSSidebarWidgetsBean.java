@@ -32,8 +32,8 @@ import java.util.Optional;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.component.UIComponent;
 import jakarta.faces.component.html.HtmlPanelGroup;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;

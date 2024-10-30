@@ -31,11 +31,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.model.SelectItem;
 import jakarta.faces.model.SelectItemGroup;
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;

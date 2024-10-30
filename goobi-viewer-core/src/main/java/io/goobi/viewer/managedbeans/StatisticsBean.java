@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
+import jakarta.inject.Named;
 import jakarta.ws.rs.WebApplicationException;
 
 import org.apache.commons.lang3.StringUtils;

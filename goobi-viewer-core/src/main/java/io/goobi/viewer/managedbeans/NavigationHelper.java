@@ -43,12 +43,12 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 

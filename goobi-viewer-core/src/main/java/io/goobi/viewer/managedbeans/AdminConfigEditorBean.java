@@ -41,13 +41,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.DataModel;
 import jakarta.faces.model.ListDataModel;
-import javax.inject.Named;
+import jakarta.inject.Named;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.logging.log4j.LogManager;

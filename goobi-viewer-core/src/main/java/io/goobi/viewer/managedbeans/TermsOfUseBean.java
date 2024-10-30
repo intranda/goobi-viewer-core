@@ -25,7 +25,7 @@ import java.io.Serializable;
 import java.util.Optional;
 
 import jakarta.enterprise.context.SessionScoped;
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;

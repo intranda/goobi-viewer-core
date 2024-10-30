@@ -29,8 +29,8 @@ import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import jakarta.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -401,13 +401,14 @@ public class DisplayConditions implements Serializable {
          * @return
          */
         private static boolean isHasValuesIfRepeat(UIComponent c) {
-            if (c instanceof com.sun.faces.facelets.component.UIRepeat repeat) {
-                Object value = repeat.getValue();
-                if (value instanceof Collection) {
-                    return !((Collection<?>) value).isEmpty();
-                }
-                return false;
-            }
+            // TODO Find replacement for com.sun.faces.*
+            //            if (c instanceof com.sun.faces.facelets.component.UIRepeat repeat) {
+            //                Object value = repeat.getValue();
+            //                if (value instanceof Collection) {
+            //                    return !((Collection<?>) value).isEmpty();
+            //                }
+            //                return false;
+            //            }
 
             return true;
         }

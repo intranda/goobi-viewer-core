@@ -24,7 +24,7 @@ package io.goobi.viewer.model.job.mq;
 import java.io.IOException;
 import java.util.Optional;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;

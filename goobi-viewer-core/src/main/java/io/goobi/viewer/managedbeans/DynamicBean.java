@@ -30,7 +30,7 @@ import jakarta.faces.component.UIComponent;
 import jakarta.faces.component.html.HtmlPanelGroup;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

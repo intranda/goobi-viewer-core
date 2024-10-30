@@ -29,11 +29,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.omnifaces.cdi.Eager;

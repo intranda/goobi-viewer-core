@@ -37,8 +37,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import jakarta.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.servlet.http.Part;
 
 import org.apache.commons.collections4.ListUtils;

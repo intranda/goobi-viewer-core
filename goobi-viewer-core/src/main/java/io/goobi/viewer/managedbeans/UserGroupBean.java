@@ -25,12 +25,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.event.ActionEvent;
 import jakarta.faces.event.ValueChangeEvent;
 import jakarta.faces.model.SelectItem;
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;

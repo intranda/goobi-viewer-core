@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.controller.mq;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;

@@ -30,7 +30,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PathParam;

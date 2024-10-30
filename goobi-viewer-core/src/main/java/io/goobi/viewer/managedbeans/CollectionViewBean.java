@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.model.SelectItem;
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;

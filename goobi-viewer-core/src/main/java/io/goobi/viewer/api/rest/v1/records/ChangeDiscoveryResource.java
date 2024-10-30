@@ -26,7 +26,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CHANGES_PAGE;
 
 import java.time.LocalDate;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;

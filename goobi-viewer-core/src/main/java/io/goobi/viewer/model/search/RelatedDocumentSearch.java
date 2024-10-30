@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import jakarta.faces.view.ViewScoped;
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;

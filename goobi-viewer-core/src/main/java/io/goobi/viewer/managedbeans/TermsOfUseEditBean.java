@@ -24,9 +24,9 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.util.Locale;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;

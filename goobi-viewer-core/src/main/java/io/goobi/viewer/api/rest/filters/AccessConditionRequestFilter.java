@@ -23,7 +23,7 @@ package io.goobi.viewer.api.rest.filters;
 
 import java.io.IOException;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.Priorities;

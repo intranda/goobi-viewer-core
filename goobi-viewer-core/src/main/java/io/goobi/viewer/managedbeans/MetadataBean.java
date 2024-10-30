@@ -33,8 +33,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;

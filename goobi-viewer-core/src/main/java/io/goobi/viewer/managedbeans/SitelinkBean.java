@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import jakarta.enterprise.context.SessionScoped;
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;

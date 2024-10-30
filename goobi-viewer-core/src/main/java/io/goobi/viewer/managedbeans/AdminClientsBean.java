@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import jakarta.enterprise.context.SessionScoped;
-import javax.inject.Named;
+import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
