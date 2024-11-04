@@ -82,7 +82,7 @@
 		<alto.version>1.6.2</alto.version>
 		<ics.version>4.0.0-SNAPSHOT</ics.version>
 		<tei-conversion.version>1.3.3</tei-conversion.version>
-		<iiif-api-model.version>2.6.5</iiif-api-model.version>
+		<iiif-api-model.version>3.0.0-SNAPSHOT</iiif-api-model.version>
 		<normdataimporter.version>1.2.0-SNAPSHOT</normdataimporter.version>
 
 		<!-- other libraries -->
@@ -118,7 +118,7 @@
 		<!-- This dependency is declared as ignoredUnusedDeclaredDependency, too -->
 		<jakarta.jstl.version>3.0.2</jakarta.jstl.version>
 		<jaxen.version>2.0.0</jaxen.version>
-		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
+		<jaxb-api.version>4.0.2</jaxb-api.version>
 		<jaxb-runtime.version>4.0.5</jaxb-runtime.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<jersey.version>3.1.9</jersey.version>
@@ -385,7 +385,7 @@
 		<dependency>
 			<groupId>org.glassfish</groupId>
 			<artifactId>jakarta.faces</artifactId>
-			<version>4.1.1</version>
+			<version>#${jakarta.faces.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.inject</groupId>
@@ -399,8 +399,8 @@
 			<version>${jakarta.persistence.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
 			<version>${jaxb-api.version}</version>
 		</dependency>
 		<dependency>
