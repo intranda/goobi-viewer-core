@@ -411,7 +411,8 @@ public class SearchFacets implements Serializable {
      * @should return false if only range facets available
      */
     public boolean isUnselectedValuesAvailable() {
-        for (String field : getAvailableFacets().keySet()) {
+        List<String> availableFacetFields = new ArrayList<>(getAvailableFacets().keySet());
+        for (String field : availableFacetFields) {
             if (!getAvailableFacetsForField(field, true).isEmpty()
                     && !DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(field)) {
                 return true;
