@@ -398,11 +398,11 @@
 			<artifactId>jakarta.persistence-api</artifactId>
 			<version>${jakarta.persistence.version}</version>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>jakarta.xml.bind</groupId>-->
-<!--			<artifactId>jakarta.xml.bind-api</artifactId>-->
-<!--			<version>${jaxb-api.version}</version>-->
-<!--		</dependency>-->
+		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+			<version>${jaxb-api.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom2</artifactId>
@@ -920,6 +920,9 @@
 								<!-- TODO Check whether necessary -->
 								<ignoredUnusedDeclaredDependency>jakarta.enterprise:jakarta.enterprise.cdi-api</ignoredUnusedDeclaredDependency>
 								<ignoredUnusedDeclaredDependency>jakarta.enterprise:jakarta.enterprise.cdi-el-api</ignoredUnusedDeclaredDependency>
+								
+								<!-- bind-api is required for Jersey -->
+								<ignoredUnusedDeclaredDependency>jakarta.xml.bind:jakarta.xml.bind-api</ignoredUnusedDeclaredDependency>
 
 								<!-- org.citationstyles.* are runtime resources for citeproc -->
 								<ignoredUnusedDeclaredDependency>org.citationstyles:locales</ignoredUnusedDeclaredDependency>
