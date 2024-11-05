@@ -108,14 +108,13 @@
 		<jackson.version>2.18.1</jackson.version>
 		<jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
 		<jakarta.el.version>6.0.1</jakarta.el.version>
-		<jakarta.faces.version>4.1.1</jakarta.faces.version>
+		<jakarta.faces.version>4.1.2</jakarta.faces.version>
 		<jakarta.mail-api.version>2.1.3</jakarta.mail-api.version>
 		<jakarta.persistence.version>3.2.0</jakarta.persistence.version>
 		<jakarta.jms-api.version>3.1.0</jakarta.jms-api.version>
 		<jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
 		<jakarta.websocket.version>1.1.2</jakarta.websocket.version>
 		<jakarta.ws.rs-api.version>3.1.0</jakarta.ws.rs-api.version>
-		<!-- This dependency is declared as ignoredUnusedDeclaredDependency, too -->
 		<jakarta.jstl.version>3.0.2</jakarta.jstl.version>
 		<jaxen.version>2.0.0</jaxen.version>
 		<jaxb-api.version>4.0.2</jaxb-api.version>
@@ -815,7 +814,6 @@
 			<artifactId>cron-expression-descriptor</artifactId>
 			<version>${cron-expression-descriptor.version}</version>
 		 </dependency>
-		 <!-- This dependency is used for jakarta.jms -->
 		 <dependency>
 			<groupId>jakarta.jms</groupId>
 			<artifactId>jakarta.jms-api</artifactId>
@@ -884,10 +882,10 @@
 								<!-- FALSE POSITIVE, SWITCHES WITH -jakarta PACKAGE IF DECLARED OTHER WAY ROUND -->
 								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-annotations</ignoredUsedUndeclaredDependency>
 								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-models</ignoredUsedUndeclaredDependency>
-								
+
 								<!-- Used by iiif-api-model -->
 								<ignoredUsedUndeclaredDependency>jakarta.xml.bind:jakarta.xml.bind-api</ignoredUsedUndeclaredDependency>
-								
+
 								<ignoredUsedUndeclaredDependency>org.glassfish.hk2.external:jakarta.inject</ignoredUsedUndeclaredDependency>
 							</ignoredUsedUndeclaredDependencies>
 
@@ -901,7 +899,7 @@
 
 								<!-- Jaxen ist used during runtime from jdom2.XPathExpression -->
 								<ignoredUnusedDeclaredDependency>jaxen:jaxen</ignoredUnusedDeclaredDependency>
-								
+
 								<!-- The jersey-container-servlet dependency is used for startup during runtime Unit tests run without it though -->
 								<ignoredUnusedDeclaredDependency>org.glassfish.jersey.containers:jersey-container-servlet</ignoredUnusedDeclaredDependency>
 
@@ -916,11 +914,12 @@
 
 								<!-- jakarta.annotation is not part of jdk 11 anymore -->
 								<ignoredUnusedDeclaredDependency>jakarta.annotation:jakarta.annotation-api</ignoredUnusedDeclaredDependency>
-								
-								<!-- TODO Check whether necessary -->
+
+								<!-- jakarta.enterprise.cdi-* is needed for EclipseLink Unit Tests, otherwise we will see a
+									 Target Invocation Exception: java.lang.NoClassDefFoundError: jakarta/enterprise/inject/spi/el/ELAwareBeanManager -->
 								<ignoredUnusedDeclaredDependency>jakarta.enterprise:jakarta.enterprise.cdi-api</ignoredUnusedDeclaredDependency>
 								<ignoredUnusedDeclaredDependency>jakarta.enterprise:jakarta.enterprise.cdi-el-api</ignoredUnusedDeclaredDependency>
-								
+
 								<!-- bind-api is required for Jersey -->
 								<ignoredUnusedDeclaredDependency>jakarta.xml.bind:jakarta.xml.bind-api</ignoredUnusedDeclaredDependency>
 
@@ -1169,7 +1168,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>10.19.0</version>
+						<version>10.20.0</version>
 					</dependency>
 				</dependencies>
 				<executions>
