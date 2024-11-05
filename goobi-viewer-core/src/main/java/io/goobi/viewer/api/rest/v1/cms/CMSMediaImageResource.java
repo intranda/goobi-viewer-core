@@ -30,20 +30,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -54,6 +45,15 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @author florian
@@ -68,8 +68,9 @@ public class CMSMediaImageResource extends ImageResource {
     public CMSMediaImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context ApiUrls urls,
-            @Parameter(description = "Filename of the image") @PathParam("filename") String filename) {
-        super(context, request, response, "", getMediaFileUrl(filename).toString());
+            @Parameter(description = "Filename of the image") @PathParam("filename") String filename,
+            @Context ContentServerCacheManager cacheManager) {
+        super(context, request, response, "", getMediaFileUrl(filename).toString(), cacheManager);
         request.setAttribute("filename", this.imageURI.toString());
 
         String baseImageUrl = (ApiUrls.CMS_MEDIA + ApiUrls.CMS_MEDIA_FILES_FILE).replace("{filename}", "");

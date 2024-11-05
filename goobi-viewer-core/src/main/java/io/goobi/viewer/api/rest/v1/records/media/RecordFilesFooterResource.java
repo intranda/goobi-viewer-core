@@ -23,6 +23,7 @@ package io.goobi.viewer.api.rest.v1.records.media;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_FOOTER;
 
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.Path;
@@ -33,6 +34,7 @@ import jakarta.ws.rs.core.Context;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
@@ -64,8 +66,9 @@ public class RecordFilesFooterResource extends FooterResource {
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context AbstractApiUrlManager urls,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
-            @Parameter(description = "Filename of the image") @PathParam("filename") String filename) throws ContentLibException {
-        super(request);
+            @Parameter(description = "Filename of the image") @PathParam("filename") String filename,
+            @Context ContentServerCacheManager cacheManager) throws ContentLibException {
+        super(request, cacheManager);
     }
 
 }

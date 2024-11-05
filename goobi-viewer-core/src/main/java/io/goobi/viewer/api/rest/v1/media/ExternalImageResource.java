@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
@@ -50,6 +51,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
@@ -93,8 +95,9 @@ public class ExternalImageResource extends ImageResource {
     public ExternalImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context ApiUrls urls,
-            @Parameter(description = "URL of the image") @PathParam("filename") String imageUrl) {
-        super(context, request, response, "", imageUrl);
+            @Parameter(description = "URL of the image") @PathParam("filename") String imageUrl,
+            @Context ContentServerCacheManager cacheManager) {
+        super(context, request, response, "", imageUrl, cacheManager);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, imageUrl);
         request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_VIEW_IMAGES);
         String requestUrl = request.getRequestURI();

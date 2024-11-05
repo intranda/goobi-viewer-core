@@ -5,9 +5,6 @@
     xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-fragment_4_0.xsd">
     <display-name>goobi-viewer-core</display-name>
     <!-- Application-internal listeners are registered via @WebListener annotations -->
-    <listener>
-        <listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>
-    </listener>
     <context-param>
         <param-name>jakarta.faces.faces.PROJECT_STAGE</param-name>
         <param-value>Production</param-value>

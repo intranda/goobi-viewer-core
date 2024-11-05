@@ -31,6 +31,7 @@ import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
@@ -74,6 +75,7 @@ public class Application extends ResourceConfig {
                 bind(templateManager).to(CMSTemplateManager.class);
                 bind(messageBroker).to(MessageQueueManager.class);
                 bind(DataManager.getInstance().getConfiguration()).to(Configuration.class);
+                bind(ContentServerCacheManager.getInstance()).to(ContentServerCacheManager.class);
                 try {
                     bind(DataManager.getInstance().getDao()).to(IDAO.class);
                 } catch (DAOException e) {
@@ -92,6 +94,12 @@ public class Application extends ResourceConfig {
     public Application(AbstractBinder binder) {
         super();
         this.init(binder);
+        register(new AbstractBinder() {
+            @Override
+            protected void configure() {
+                bind(ContentServerCacheManager.getInstance()).to(ContentServerCacheManager.class);
+            }
+        });
     }
 
     private void init(AbstractBinder injectionBinder) {

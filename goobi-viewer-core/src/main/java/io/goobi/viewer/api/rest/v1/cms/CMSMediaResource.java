@@ -52,6 +52,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.Consumes;
@@ -78,10 +79,11 @@ import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
+import de.unigoettingen.sub.commons.cache.CacheUtils;
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.UserLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
@@ -126,6 +128,8 @@ public class CMSMediaResource {
     protected HttpServletResponse servletResponse;
     @Context
     private IDAO dao;
+    @Context
+    private ContentServerCacheManager cacheManager;
 
     public CMSMediaResource() {
 
@@ -477,7 +481,7 @@ public class CMSMediaResource {
                     } else {
                         item.setFileName(mediaFile.getFileName().toString());
                         DataManager.getInstance().getDao().updateCMSMediaItem(item);
-                        removeFromImageCache(item);
+                        removeFromImageCache(item, cacheManager);
                     }
                     MediaItem jsonItem = new MediaItem(item, servletRequest);
                     return Response.status(Status.OK).entity(jsonItem).build();
@@ -505,10 +509,10 @@ public class CMSMediaResource {
     /**
      * @param item
      */
-    public static void removeFromImageCache(CMSMediaItem item) {
+    public static void removeFromImageCache(CMSMediaItem item, ContentServerCacheManager cacheManager) {
         String identifier =
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder() + "_" + item.getFileName().replace(".", "-").replaceAll("\\s", "");
-        CacheUtils.deleteFromCache(identifier, true, true);
+        new CacheUtils(cacheManager).deleteFromCache(identifier, true, true);
     }
 
     /**

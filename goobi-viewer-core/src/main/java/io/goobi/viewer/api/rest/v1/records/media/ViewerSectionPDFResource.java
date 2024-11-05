@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.api.rest.v1.records.media;
 
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
@@ -32,6 +33,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.StreamingOutput;
 
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfInformation;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
@@ -69,8 +71,9 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context AbstractApiUrlManager urls,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
-            @Parameter(description = "Logical div ID of METS section") @PathParam("divId") String divId) throws ContentLibException {
-        super(context, request, response, "pdf", pi + ".xml");
+            @Parameter(description = "Logical div ID of METS section") @PathParam("divId") String divId,
+            @Context ContentServerCacheManager cacheManager) throws ContentLibException {
+        super(context, request, response, "pdf", pi + ".xml", cacheManager);
         this.divId = divId;
         this.filename = pi + "_" + divId + ".pdf";
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);

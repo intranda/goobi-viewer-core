@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.api.rest.v2.records.media;
 
-import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_IMAGE;
-import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_IMAGE_PDF;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_PDF;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -31,8 +31,33 @@ import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
+import de.unigoettingen.sub.commons.util.PathConverter;
+import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
+import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
+import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
+import io.goobi.viewer.api.rest.filters.FilterTools;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
@@ -44,32 +69,6 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import de.intranda.api.iiif.image.ImageInformation;
-import de.intranda.api.iiif.image.v3.ImageInformation3;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
-import de.unigoettingen.sub.commons.util.PathConverter;
-import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
-import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
-import io.goobi.viewer.api.rest.filters.FilterTools;
-import io.goobi.viewer.api.rest.v2.ApiUrls;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.model.security.IPrivilegeHolder;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 
 /**
  * @author florian
@@ -95,12 +94,17 @@ public class RecordsFilesImageResource extends ImageResource {
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context ApiUrls urls,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
-            @Parameter(description = "Filename of the image") @PathParam("filename") String filename) {
-        super(context, request, response, pi, filename);
+            @Parameter(description = "Filename of the image") @PathParam("filename") String filename,
+            @Context ContentServerCacheManager cacheManager) {
+        super(context, request, response, pi, filename, cacheManager);
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename);
-        request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_VIEW_IMAGES);
-        request.setAttribute(ImageResource.IIIF_VERSION, "3.0");
+        //Privilege must be PRIV_BORN_DIGITAL for born digital PDFs, and PRIV_VIEW_IMAGES otherwise (i.e. for images)
+        if (ImageFileFormat.PDF.equals(ImageFileFormat.getImageFileFormatFromFileExtension(filename))) {
+            request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
+        } else {
+            request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_VIEW_IMAGES);
+        }
 
         String requestUrl = request.getRequestURI();
         String baseImageUrl = RECORDS_FILES_IMAGE.replace("{pi}", pi).replace("{filename}", filename);
@@ -108,7 +112,7 @@ public class RecordsFilesImageResource extends ImageResource {
         int baseEndIndex = baseStartIndex + baseImageUrl.length();
         String imageRequestPath = requestUrl.substring(baseEndIndex);
 
-        List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+        List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).toList();
         if (parts.size() == 4) {
             //image request
             String region = parts.get(0);
@@ -132,12 +136,13 @@ public class RecordsFilesImageResource extends ImageResource {
         }
     }
 
-    @Override
     @GET
     @Path(RECORDS_FILES_IMAGE_PDF)
     @Produces("application/pdf")
     @ContentServerPdfBinding
+    @RecordFileDownloadBinding
     @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
+    @Override
     public StreamingOutput getPdf() throws ContentLibException {
         String pi = request.getAttribute("pi").toString();
         String filename = request.getAttribute("filename").toString();
@@ -164,7 +169,7 @@ public class RecordsFilesImageResource extends ImageResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding
-    @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 3.0 image information object")
+    @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 2.1.1 image information object")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
         return super.redirectToCanonicalImageInfo();
     }
@@ -176,19 +181,7 @@ public class RecordsFilesImageResource extends ImageResource {
             String toReplace = URLEncoder.encode("{pi}", "UTF-8");
             this.resourceURI = URI.create(this.resourceURI.toString().replace(toReplace, directory));
         } catch (UnsupportedEncodingException e) {
-            //
         }
-    }
-
-    @Override
-    @GET
-    @jakarta.ws.rs.Path("/info.json")
-    @Produces({ MEDIA_TYPE_APPLICATION_JSONLD, MediaType.APPLICATION_JSON })
-    @ContentServerImageInfoBinding
-    @CORSBinding
-    public ImageInformation getInfoAsJson() throws ContentLibException {
-        ImageInformation info = super.getInfoAsJson();
-        return new ImageInformation3(info);
     }
 
 }

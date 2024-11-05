@@ -88,7 +88,7 @@ class CMSMediaImageResourceTest extends AbstractRestApiTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer(url));
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
-        CMSMediaImageResource resource = new CMSMediaImageResource(context, request, response, urls, filename);
+        CMSMediaImageResource resource = new CMSMediaImageResource(context, request, response, urls, filename, null);
         String resourceURI = resource.getResourceURI().toString();
         assertEquals(url, resourceURI);
     }
@@ -110,7 +110,7 @@ class CMSMediaImageResourceTest extends AbstractRestApiTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer(imageUrl));
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
-        CMSMediaImageResource resource = new CMSMediaImageResource(context, request, response, urls, filename);
+        CMSMediaImageResource resource = new CMSMediaImageResource(context, request, response, urls, filename, null);
         String resourceURI = resource.getResourceURI().toString();
         assertTrue(resourceURI.startsWith(apiUrl));
         assertTrue(resourceURI.contains(filenameEnc), resourceURI + " should contain " + filenameEnc);

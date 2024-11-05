@@ -80,7 +80,8 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import de.unigoettingen.sub.commons.util.CacheUtils;
+import de.unigoettingen.sub.commons.cache.CacheUtils;
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.UserLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
@@ -508,7 +509,8 @@ public class CMSMediaResource {
     public static void removeFromImageCache(CMSMediaItem item) {
         String identifier =
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder() + "_" + item.getFileName().replace(".", "-").replaceAll("\\s", "");
-        CacheUtils.deleteFromCache(identifier, true, true);
+        CacheUtils cacheUtils = new CacheUtils(ContentServerCacheManager.getInstance());
+        cacheUtils.deleteFromCache(identifier, true, true);
     }
 
     /**

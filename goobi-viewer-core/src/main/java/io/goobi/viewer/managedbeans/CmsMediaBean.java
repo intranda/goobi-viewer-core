@@ -46,6 +46,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import io.goobi.viewer.api.rest.v1.cms.CMSMediaResource;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -267,7 +268,7 @@ public class CmsMediaBean implements Serializable {
             if (!deleted) {
                 Messages.error(null, "admin__media_delete_error_inuse", item.getFileName());
             } else {
-                CMSMediaResource.removeFromImageCache(item);
+                CMSMediaResource.removeFromImageCache(item, ContentServerCacheManager.getInstance());
             }
             reloadMediaList(false);
         } catch (RollbackException e) {

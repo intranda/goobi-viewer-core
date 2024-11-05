@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.DELETE;
@@ -46,6 +47,7 @@ import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -74,8 +76,9 @@ public class TempMediaImageResource extends ImageResource {
     public TempMediaImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Parameter(description = "Temp folder name") @PathParam("folder") String folder,
-            @Parameter(description = "Filename of the image") @PathParam("filename") String filename) {
-        super(context, request, response, "", getMediaFileUrl(folder, filename).toString());
+            @Parameter(description = "Filename of the image") @PathParam("filename") String filename,
+            @Context ContentServerCacheManager cacheManager) {
+        super(context, request, response, "", getMediaFileUrl(folder, filename).toString(), cacheManager);
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
         request.setAttribute("filename", this.imageURI.toString());
         String requestUrl = request.getRequestURI();

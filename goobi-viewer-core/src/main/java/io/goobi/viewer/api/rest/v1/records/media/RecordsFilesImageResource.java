@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
@@ -50,6 +51,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
@@ -95,8 +97,9 @@ public class RecordsFilesImageResource extends ImageResource {
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context ApiUrls urls,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
-            @Parameter(description = "Filename of the image") @PathParam("filename") String filename) {
-        super(context, request, response, pi, filename);
+            @Parameter(description = "Filename of the image") @PathParam("filename") String filename,
+            @Context ContentServerCacheManager cacheManager) {
+        super(context, request, response, pi, filename, cacheManager);
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename);
         //Privilege must be PRIV_BORN_DIGITAL for born digital PDFs, and PRIV_VIEW_IMAGES otherwise (i.e. for images)

@@ -41,12 +41,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSessionBindingEvent;
-import jakarta.servlet.http.HttpSessionBindingListener;
-import jakarta.servlet.http.Part;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -55,6 +49,7 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.v1.authentication.UserAvatarResource;
 import io.goobi.viewer.controller.BCrypt;
@@ -92,6 +87,10 @@ import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSessionBindingEvent;
+import jakarta.servlet.http.HttpSessionBindingListener;
+import jakarta.servlet.http.Part;
 
 /**
  * <p>
@@ -416,7 +415,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
             ret.addAll(getUserGroupOwnerships());
             return ret;
         } catch (DAOException e) {
-            logger.error("Error getting user groups for user " + this.id, e);
+            logger.error("Error getting user groups for user {}", this.id, e);
             return Collections.emptyList();
         }
     }
@@ -630,7 +629,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     }
 
     /**
-     * get the url for the avatar. If useGravatar is active, return 
+     * get the url for the avatar. If useGravatar is active, return
      * {@link io.goobi.viewer.model.security.user.icon.GravatarUserAvatar#getGravatarUrl(int size)}. Otherwise build a resource url to
      * 'resources/images/backend/thumbnail_goobi_person.svg' from the request or the JSF-Context if no request is provided
      *
@@ -725,7 +724,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
 
         List<License> allLicenses = new ArrayList<>(licenses);
         try {
-            allLicenses.addAll(getUserGroupsWithMembership().stream().flatMap(g -> g.getLicenses().stream()).collect(Collectors.toList()));
+            allLicenses.addAll(getUserGroupsWithMembership().stream().flatMap(g -> g.getLicenses().stream()).toList());
         } catch (DAOException e) {
             logger.error(e.getMessage(), e);
         }
@@ -875,7 +874,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
 
         List<License> allLicenses = new ArrayList<>(licenses);
         try {
-            allLicenses.addAll(getUserGroupsWithMembership().stream().flatMap(g -> g.getLicenses().stream()).collect(Collectors.toList()));
+            allLicenses.addAll(getUserGroupsWithMembership().stream().flatMap(g -> g.getLicenses().stream()).toList());
         } catch (DAOException e) {
             logger.error(e.getMessage(), e);
         }
@@ -962,7 +961,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
 
         List<License> allLicenses = new ArrayList<>(licenses);
         try {
-            allLicenses.addAll(getUserGroupsWithMembership().stream().flatMap(g -> g.getLicenses().stream()).collect(Collectors.toList()));
+            allLicenses.addAll(getUserGroupsWithMembership().stream().flatMap(g -> g.getLicenses().stream()).toList());
         } catch (DAOException e) {
             logger.error(e.getMessage(), e);
         }
@@ -1640,7 +1639,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         String fileName = Paths.get(uploadedFile.getSubmittedFileName()).getFileName().toString(); // MSIE fix.
         Path destFile = UserAvatarResource.getAvatarFilePath(fileName, getId());
         deleteAvatarFile();
-        UserAvatarResource.removeFromImageCache(destFile);
+        UserAvatarResource.removeFromImageCache(destFile, ContentServerCacheManager.getInstance());
         try (InputStream initialStream = uploadedFile.getInputStream()) {
             if (!Files.isDirectory(destFile.getParent())) {
                 Files.createDirectories(destFile.getParent());

@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.Consumes;
@@ -59,6 +60,8 @@ import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
+import de.unigoettingen.sub.commons.cache.CacheUtils;
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -66,7 +69,6 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
-import de.unigoettingen.sub.commons.util.CacheUtils;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -97,9 +99,12 @@ public class UserAvatarResource extends ImageResource {
     private static final String FILENAME_TEMPLATE = "user_{id}";
 
     public UserAvatarResource(
-            @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Parameter(description = "User id") @PathParam("userId") Long userId) throws WebApplicationException, ViewerConfigurationException {
-        super(context, request, response, "", getMediaFileUrl(userId).toString());
+            @Context ContainerRequestContext context, 
+            @Context HttpServletRequest request, 
+            @Context HttpServletResponse response,
+            @Parameter(description = "User id") @PathParam("userId") Long userId, 
+            @Context ContentServerCacheManager cacheManager) throws WebApplicationException, ViewerConfigurationException {
+        super(context, request, response, "", getMediaFileUrl(userId).toString(), cacheManager);
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
         if (urls == null) {
             throw new ViewerConfigurationException("Could not initioalize API manager, check configuration.");
@@ -206,7 +211,7 @@ public class UserAvatarResource extends ImageResource {
             if (Files.exists(mediaFile) && Files.size(mediaFile) > 0) {
                 logger.debug("Successfully downloaded file {}", mediaFile);
                 //upload successful. TODO: check file integrity?
-                removeFromImageCache(mediaFile);
+                removeFromImageCache(mediaFile, this.cacheManager);
                 return Response.status(Status.OK).build();
             }
             String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
@@ -259,9 +264,9 @@ public class UserAvatarResource extends ImageResource {
         return Optional.of(user);
     }
 
-    public static void removeFromImageCache(Path file) {
+    public static void removeFromImageCache(Path file, ContentServerCacheManager cacheManager) {
         String identifier = file.getParent().getFileName().toString() + "_" + file.getFileName().toString().replace(".", "-");
-        CacheUtils.deleteFromCache(identifier, true, true);
+        new CacheUtils(cacheManager).deleteFromCache(identifier, true, true);
     }
 
 }
