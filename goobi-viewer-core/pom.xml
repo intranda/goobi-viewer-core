@@ -398,11 +398,11 @@
 			<artifactId>jakarta.persistence-api</artifactId>
 			<version>${jakarta.persistence.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>jakarta.xml.bind</groupId>
-			<artifactId>jakarta.xml.bind-api</artifactId>
-			<version>${jaxb-api.version}</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>jakarta.xml.bind</groupId>-->
+<!--			<artifactId>jakarta.xml.bind-api</artifactId>-->
+<!--			<version>${jaxb-api.version}</version>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom2</artifactId>
@@ -885,6 +885,9 @@
 								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-annotations</ignoredUsedUndeclaredDependency>
 								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-models</ignoredUsedUndeclaredDependency>
 								
+								<!-- Used by iiif-api-model -->
+								<ignoredUsedUndeclaredDependency>jakarta.xml.bind:jakarta.xml.bind-api</ignoredUsedUndeclaredDependency>
+								
 								<ignoredUsedUndeclaredDependency>org.glassfish.hk2.external:jakarta.inject</ignoredUsedUndeclaredDependency>
 							</ignoredUsedUndeclaredDependencies>
 
@@ -913,6 +916,10 @@
 
 								<!-- jakarta.annotation is not part of jdk 11 anymore -->
 								<ignoredUnusedDeclaredDependency>jakarta.annotation:jakarta.annotation-api</ignoredUnusedDeclaredDependency>
+								
+								<!-- TODO Check whether necessary -->
+								<ignoredUnusedDeclaredDependency>jakarta.enterprise:jakarta.enterprise.cdi-api</ignoredUnusedDeclaredDependency>
+								<ignoredUnusedDeclaredDependency>jakarta.enterprise:jakarta.enterprise.cdi-el-api</ignoredUnusedDeclaredDependency>
 
 								<!-- org.citationstyles.* are runtime resources for citeproc -->
 								<ignoredUnusedDeclaredDependency>org.citationstyles:locales</ignoredUnusedDeclaredDependency>
