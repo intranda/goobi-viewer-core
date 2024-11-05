@@ -109,6 +109,7 @@
 		<jackson.version>2.18.1</jackson.version>
 		<jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
 		<jakarta.el.version>6.0.1</jakarta.el.version>
+		<jakarta.enterprise.version>4.1.0</jakarta.enterprise.version>
 		<jakarta.faces.version>4.1.2</jakarta.faces.version>
 		<jakarta.jms-api.version>3.1.0</jakarta.jms-api.version>
 		<jakarta.jstl.version>3.0.2</jakarta.jstl.version>
@@ -827,12 +828,12 @@
 		<dependency>
 			<groupId>jakarta.enterprise</groupId>
 			<artifactId>jakarta.enterprise.cdi-api</artifactId>
-			<version>4.1.0</version>
+			<version>${jakarta.enterprise.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.enterprise</groupId>
 			<artifactId>jakarta.enterprise.cdi-el-api</artifactId>
-			<version>4.1.0</version>
+			<version>${jakarta.enterprise.version}</version>
 		</dependency>
 	</dependencies>
 
