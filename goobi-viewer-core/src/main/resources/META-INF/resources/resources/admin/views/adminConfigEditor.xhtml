@@ -178,8 +178,9 @@
 															</div>
 															
 															<div class="admin__config-editor-file-selection-single-entry-action-download">
-																<a jsf:action="#{adminConfigEditorBean.download(record.file)}" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.downloadHeading}"><i class="fa fa-download"></i>
-																</a>
+															    <!-- TODO This seems to cause an IllegalStateException in OmniFaces when used with JSF4 -->
+<!-- 																<a jsf:action="#{adminConfigEditorBean.download(record.file)}" data-toggle="tooltip" data-trigger="hover" data-placement="top" title="#{msg.downloadHeading}"><i class="fa fa-download"></i> -->
+<!-- 																</a> -->
 															</div>
 														</div>
 
