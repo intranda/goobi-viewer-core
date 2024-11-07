@@ -175,40 +175,39 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         }
         return this;
     }
-    
+
     public String getThirdPartyLoginUrl() {
-    	return thirdPartyLoginUrl;
-    }
-    
-    public String getThirdPartyLoginApiKey() {
-    	return thirdPartyLoginApiKey;
-    }
-    
-    public String getThirdPartyLoginScope() {
-    	return thirdPartyLoginScope;
-    }
-    
-    public String getThirdPartyLoginReqParamDef() {
-    	return thirdPartyLoginReqParamDef;
-    }
-    
-    public String getThirdPartyLoginClaim() {
-    	return thirdPartyLoginClaim;
-    }
-    
-    public IAuthenticationProvider setThirdPartyVariables(String thirdPartyLoginUrl, String thirdPartyLoginApiKey,
-    		String thirdPartyLoginScope, String thirdPartyLoginReqParamDef, String thirdPartyLoginClaim) {
-    	if ( (thirdPartyLoginUrl != null) && (thirdPartyLoginApiKey != null) && (thirdPartyLoginScope != null) ) {
-    		this.thirdPartyLoginUrl = thirdPartyLoginUrl;
-    		this.thirdPartyLoginApiKey = thirdPartyLoginApiKey;
-    		this.thirdPartyLoginScope = thirdPartyLoginScope;
-    		this.thirdPartyLoginReqParamDef = thirdPartyLoginReqParamDef;
-    		this.thirdPartyLoginClaim = thirdPartyLoginClaim;
-    	}
-    	
-    	return this;
+        return thirdPartyLoginUrl;
     }
 
+    public String getThirdPartyLoginApiKey() {
+        return thirdPartyLoginApiKey;
+    }
+
+    public String getThirdPartyLoginScope() {
+        return thirdPartyLoginScope;
+    }
+
+    public String getThirdPartyLoginReqParamDef() {
+        return thirdPartyLoginReqParamDef;
+    }
+
+    public String getThirdPartyLoginClaim() {
+        return thirdPartyLoginClaim;
+    }
+
+    public IAuthenticationProvider setThirdPartyVariables(String thirdPartyLoginUrl, String thirdPartyLoginApiKey,
+            String thirdPartyLoginScope, String thirdPartyLoginReqParamDef, String thirdPartyLoginClaim) {
+        if ((thirdPartyLoginUrl != null) && (thirdPartyLoginApiKey != null) && (thirdPartyLoginScope != null)) {
+            this.thirdPartyLoginUrl = thirdPartyLoginUrl;
+            this.thirdPartyLoginApiKey = thirdPartyLoginApiKey;
+            this.thirdPartyLoginScope = thirdPartyLoginScope;
+            this.thirdPartyLoginReqParamDef = thirdPartyLoginReqParamDef;
+            this.thirdPartyLoginClaim = thirdPartyLoginClaim;
+        }
+
+        return this;
+    }
 
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#login(java.lang.String, java.lang.String)
@@ -341,10 +340,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                     }
                     break;
                 case "thirdpartyloginapi":
-                	if(json.has("email"));
-                		email = (String) json.get("email");
-                	if(json.has("sub"));
-                		sub = (String) json.getString("sub");
+                    if (json.has("email")) {
+                        email = (String) json.get("email");
+                    }
+                    if (json.has("sub")) {
+                        sub = json.getString("sub");
+                    }
+                    break;
                 default:
                     if (json.has("email")) {
                         email = (String) json.get("email");

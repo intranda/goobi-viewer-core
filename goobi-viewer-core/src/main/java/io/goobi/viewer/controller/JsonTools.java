@@ -491,34 +491,35 @@ public final class JsonTools {
             return notAvailableKey;
         }
     }
+
     /**
      * 
      * @param json
      * @param key
-     * @return
+     * @return {@link String}
      */
     public static String getNestedValue(JSONObject json, String key) {
-    	boolean found = json.has(key);
-    	Iterator<String> keys;
-    	String nextKey;
-    	if (!found) {
-    		keys = json.keys();
-    		while(keys.hasNext()) {
-    			nextKey = (String) keys.next();
+        boolean found = json.has(key);
+        Iterator<String> keys;
+        String nextKey;
+        if (!found) {
+            keys = json.keys();
+            while (keys.hasNext()) {
+                nextKey = (String) keys.next();
                 if (json.get(nextKey) instanceof JSONObject) {
-                	return getNestedValue(json.getJSONObject(nextKey), key);
+                    return getNestedValue(json.getJSONObject(nextKey), key);
                 } else if (json.get(nextKey) instanceof JSONArray) {
-                	JSONArray jsonArray = json.getJSONArray(nextKey);
+                    JSONArray jsonArray = json.getJSONArray(nextKey);
                     int n = 0;
-                    while (n < jsonArray.length()){
+                    while (n < jsonArray.length()) {
                         String jsonArrayString = jsonArray.get(n).toString();
                         JSONObject innerJson = new JSONObject(jsonArrayString);
                         n++;
-                        return getNestedValue(innerJson,key);
+                        return getNestedValue(innerJson, key);
                     }
                 }
-    		}
-    	}
-    	return json.getString(key).toString();
+            }
+        }
+        return json.getString(key).toString();
     }
 }
