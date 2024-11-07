@@ -79,15 +79,8 @@ var viewerJS = ( function( viewer ) {
         	});
             
             if ( $( _defaults.commentEditLoader ).is(":visible") ) {
-            	jsf.ajax.addOnEvent( function( data ) {
-            		var ajaxstatus = data.status;
-            		
-            		switch ( ajaxstatus ) {    
-            		case "success":
-            			window.currContent.find( _defaults.commentEditLoader ).hide();
-            			break;
-            		}
-            	} );            	
+	            viewer.dataTable.filter.init();
+	            viewerJS.jsfAjax.success.subscribe(e => window.currContent.find( _defaults.commentEditLoader ).hide());           	
             }
             
         }

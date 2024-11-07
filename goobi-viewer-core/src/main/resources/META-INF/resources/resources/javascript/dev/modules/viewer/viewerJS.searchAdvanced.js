@@ -62,16 +62,12 @@ var viewerJS = ( function( viewer ) {
 			_resetValue();
 
 			// ajax eventlistener
-			jsf.ajax.addOnEvent(function(data) {
-				var ajaxstatus = data.status;
 
-				switch (ajaxstatus) {
-				case "begin":
-					// show loader
-					$(_defaults.loaderSelector).show();
-					break;
-				case "success":
-					// init bs tooltips
+            viewerJS.jsfAjax.begin.subscribe(e => {
+                $(_defaults.loaderSelector).show();
+            });
+            viewerJS.jsfAjax.success.subscribe(e => {
+                	// init bs tooltips
 					$( '[data-toggle="tooltip"]' ).tooltip( {
 			            trigger : 'hover'
 			        } );
@@ -92,9 +88,7 @@ var viewerJS = ( function( viewer ) {
 
 					// hide loader
 					$(_defaults.loaderSelector).hide();
-					break;
-				}
-			});
+            });
 		},
     };
     
