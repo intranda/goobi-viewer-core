@@ -194,7 +194,8 @@ public class SearchFacets implements Serializable {
         List<String> ret = new ArrayList<>();
         Map<String, StringBuilder> queries = new LinkedHashMap<>(activeFacets.size());
 
-        for (IFacetItem facetItem : activeFacets) {
+        List<IFacetItem> facetItems = new ArrayList<>(activeFacets);
+        for (IFacetItem facetItem : facetItems) {
             if (facetItem.isHierarchial() || facetItem.getField().equals(SolrConstants.DOCSTRCT_SUB)
                     || (!includeRangeFacets && DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(facetItem.getField()))) {
                 continue;
@@ -411,7 +412,8 @@ public class SearchFacets implements Serializable {
      * @should return false if only range facets available
      */
     public boolean isUnselectedValuesAvailable() {
-        for (String field : getAvailableFacets().keySet()) {
+        List<String> availableFacetFields = new ArrayList<>(getAvailableFacets().keySet());
+        for (String field : availableFacetFields) {
             if (!getAvailableFacetsForField(field, true).isEmpty()
                     && !DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(field)) {
                 return true;
@@ -1055,6 +1057,11 @@ public class SearchFacets implements Serializable {
      */
     public Map<String, List<IFacetItem>> getAllAvailableFacets() {
         return getAvailableFacets(Arrays.asList("", "boolean", "hierarchical"));
+    }
+
+    public boolean hasAvailableFacets() {
+        return !this.activeFacets.isEmpty()
+                || this.getAvailableFacets().values().stream().flatMap(List::stream).anyMatch(facetItem -> facetItem.getCount() > 1);
     }
 
     /**
