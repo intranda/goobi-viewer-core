@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.security.authentication;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
@@ -66,6 +67,11 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /** Scope. */
     private String scope = "openid email";
 
+    private String thirdPartyLoginUrl;
+    private String thirdPartyLoginApiKey;
+    private String thirdPartyLoginScope;
+    private String thirdPartyLoginReqParamDef;
+    private String thirdPartyLoginClaim;
     private String oAuthState = null;
     private String oAuthAccessToken = null;
     private volatile LoginResult loginResult = null; //NOSONAR   LoginResult is immutable, so thread-savety is guaranteed
@@ -170,6 +176,39 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return this;
     }
 
+    public String getThirdPartyLoginUrl() {
+        return thirdPartyLoginUrl;
+    }
+
+    public String getThirdPartyLoginApiKey() {
+        return thirdPartyLoginApiKey;
+    }
+
+    public String getThirdPartyLoginScope() {
+        return thirdPartyLoginScope;
+    }
+
+    public String getThirdPartyLoginReqParamDef() {
+        return thirdPartyLoginReqParamDef;
+    }
+
+    public String getThirdPartyLoginClaim() {
+        return thirdPartyLoginClaim;
+    }
+
+    public IAuthenticationProvider setThirdPartyVariables(String thirdPartyLoginUrl, String thirdPartyLoginApiKey,
+            String thirdPartyLoginScope, String thirdPartyLoginReqParamDef, String thirdPartyLoginClaim) {
+        if ((thirdPartyLoginUrl != null) && (thirdPartyLoginApiKey != null) && (thirdPartyLoginScope != null)) {
+            this.thirdPartyLoginUrl = thirdPartyLoginUrl;
+            this.thirdPartyLoginApiKey = thirdPartyLoginApiKey;
+            this.thirdPartyLoginScope = thirdPartyLoginScope;
+            this.thirdPartyLoginReqParamDef = thirdPartyLoginReqParamDef;
+            this.thirdPartyLoginClaim = thirdPartyLoginClaim;
+        }
+
+        return this;
+    }
+
     /* (non-Javadoc)
      * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#login(java.lang.String, java.lang.String)
      */
@@ -198,6 +237,16 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                             .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
                             .setState(oAuthState)
                             .setScope("email")
+                            .buildQueryMessage();
+                    break;
+                case "thirdpartyloginapi":
+                    // Login with help of third party API
+                    request = OAuthClientRequest.authorizationLocation(getUrl())
+                            .setResponseType(ResponseType.CODE.name().toLowerCase())
+                            .setClientId(getClientId())
+                            .setRedirectURI(redirectionEndpoint)
+                            .setState(oAuthState)
+                            .setScope("openid")
                             .buildQueryMessage();
                     break;
                 default:
@@ -288,6 +337,14 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                     }
                     if (json.has("sub")) {
                         sub = (String) json.get("sub");
+                    }
+                    break;
+                case "thirdpartyloginapi":
+                    if (json.has("email")) {
+                        email = (String) json.get("email");
+                    }
+                    if (json.has("sub")) {
+                        sub = json.getString("sub");
                     }
                     break;
                 default:
