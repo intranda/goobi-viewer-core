@@ -60,7 +60,7 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
     private String pi;
     private Map<Integer, PhysicalElement> pages = new HashMap<>();
     /** Map that holds references to the IDDOC for every page ORDER. */
-    private Map<Integer, Long> pageOwnerIddocMap = new HashMap<>();
+    private Map<Integer, String> pageOwnerIddocMap = new HashMap<>();
     private int firstPageOrder = 1;
     private int lastPageOrder = 1;
 
@@ -126,10 +126,10 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
 
     /** {@inheritDoc} */
     @Override
-    public Long getOwnerIddocForPage(int pageOrder) throws IndexUnreachableException, PresentationException {
+    public String getOwnerIddocForPage(int pageOrder) throws IndexUnreachableException, PresentationException {
         if (pageOwnerIddocMap.get(pageOrder) == null) {
             logger.warn("IDDOC for page {} not found, retrieving from Solr...", pageOrder);
-            long iddoc = DataManager.getInstance().getSearchIndex().getImageOwnerIddoc(pi, pageOrder);
+            String iddoc = DataManager.getInstance().getSearchIndex().getImageOwnerIddoc(pi, pageOrder);
             pageOwnerIddocMap.put(pageOrder, iddoc);
         }
 

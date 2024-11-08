@@ -67,10 +67,7 @@
 	                    </div>
 	                </ui:fragment>
 				</h:panelGroup>
-<!-- 					<f:websocket channel="hotfolderFileCount" scope="view"> -->
-<!--                         <f:ajax event="update" render="hotfolderFileCountGroup" /> -->
-<!--                     </f:websocket> -->
-                <o:socket channel="hotfolderFileCount">
+                <o:socket pt:data-jsf-update-type="ignore" id="hotfolderFileCount" channel="hotfolderFileCount">
                     <f:ajax event="update" render="hotfolderFileCountGroup" />
                 </o:socket>
             </div>

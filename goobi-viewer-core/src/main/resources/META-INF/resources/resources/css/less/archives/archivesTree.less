@@ -32,10 +32,10 @@
 	}
 	&__entry {
 		display: flex;
-		flex-wrap: wrap;
+		// flex-wrap: wrap;
 		margin-bottom: 1rem;
 		&:first-child {
-			.archives-tree__list-expandable-title {
+			.archives-tree__list-entry-title {
 				max-width: calc(100% - 130px);
 			}
 		}
@@ -44,14 +44,14 @@
 			.archives-tree__metadata-box {
 				margin-left: 0;
 			}
-			.archives-tree__expandable-icon {
+			.archives-tree__expandable-icon-button {
 				display: none;
 			}
 		}
 	}
-	&__list-expandable-title {
+	&__list-entry-title {
 		&.-archives-search-hit {
-			.archives-tree__inactive-title {
+			.archives-tree__record-link {
 				color: #5BA2E5;
 				}
 			.fa-stack {
@@ -62,8 +62,12 @@
 			}
 		}
 		&.-archives-selected {
-			.archives-tree__inactive-title {
+			.archives-tree__record-link {
 			font-weight: 700;
+			pointer-events: none;
+				&.collapsible {
+					pointer-events: auto;
+				}
 			}
 			.fa-stack {
 				color: green;
@@ -79,7 +83,6 @@
 			width: unset;
 			height: unset;
 			line-height: unset;
-			margin-right: 1rem;
 		}
 		.fa-stack-text {
 			font-size: 10px;
@@ -119,7 +122,47 @@
 			padding-left: 0.7rem;
 		}
 	}
-	&__inactive-title {
+	&__record-link {
+		display: block; 
+		&.-recordHasImage { 
+			&:after {
+				content: "\f03e";
+				font-family: "FontAwesome";
+				display: inline;
+				font-size: 14px;
+				margin: unset;
+				font-weight: 400;
+				padding-left: 1.2rem;
+			}
+		}
+		&.-recordHasImageAccessDenied {
+			&:before {
+			display: inline-block;
+		  font: normal normal normal 14px/1 FontAwesome;
+		    font-size: 14px;
+		  font-size: inherit;
+		  text-rendering: auto;
+			content: "\f05e";
+		  position: absolute;
+		  // content: "/";
+		  color: red;
+		  font-weight: 700;
+		  font-size: 1.7em;
+		  right: -6px;
+		  top: -6px;
+		  opacity: 0.4;
+		}
+        &:after {
+            opacity: 0.5;
+            content: "\f03e";
+            font-family: "FontAwesome";
+            display: inline;
+            font-size: 14px;
+            margin: unset;
+            font-weight: 400;
+            padding-left: 1.2rem;
+        }
+		}
 		&::after {
 			content: "\f0d7";
 			font-family: "FontAwesome";
@@ -128,8 +171,29 @@
 			padding-left: 0.7rem;
 		}
 	}
-	&__expandable-icon {
-		width: 25px;
+	&__record-link-icon-wrapper-outer {
+		margin-left: 6px;
+	}
+	&__record-link-icon-wrapper {
+
+		position: relative; 
+		display: inline-flex;
+	    justify-content: center;
+	    align-items: center;
+	   //  margin-left: 10px;
+	    // padding-left: 6px; 
+	}
+	&__record-link-icon-ban {
+		position: absolute;
+		  color: red;
+		//  font-weight: 700;
+		  font-size: 2em;
+		  opacity: 0.4;
+	}
+	&__expandable-icon-wrapper {
+		display: flex;
+		flex: 0 0 25px;
+		align-items: flex-start;
 		a, button {
 			color: inherit;
 			&:hover,
@@ -139,9 +203,9 @@
 			}
 		}
 		.fa {
+			display: flex;
 			font-size: 1.5rem;
-			flex: 0 0 50px;
-			max-width: 50px;
+			margin-top: 3px;
 		}
 		&.-expanded {
 			.fa-plus-square-o {
@@ -151,12 +215,41 @@
 			}
 		}
 	}
+	&__expandable-icon-button {
+		// width: 25px;
+	}
+	&__list-title-icon {
+		display: flex;
+		align-items: flex-start;
+		margin-top: 3px;
+		flex: 0 0 15px;
+		margin-right: 1rem;
+		font-size: 1.5rem;
+	}
+	&__list-entry-title-icon {
+		display: flex;
+	}
 	&__loader {}
 	&__entry-date {
 		font-style: italic;
 		font-size: 1.2rem;
 	}
 }
+
+	.archives-tree__record-link,
+	.archives-tree__active-title {
+		&::after {
+			display: none;
+		}
+	}
+
+	.archives-tree__record-link.-recordHasImage {
+
+	}
+    
+    .archives-tree__record-link.-recordHasImageAccessDenied {
+
+    }
 
 // ajax loading indicator for ead tree
 #AJAXLoader.archives-tree__loader {

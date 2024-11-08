@@ -48,6 +48,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
@@ -346,7 +347,7 @@ public class ThumbnailHandler {
     public PhysicalElement getPage(String pi, int order) throws IndexUnreachableException, PresentationException, DAOException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         if (doc != null) {
-            StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
+            StructElement struct = new StructElement((String) doc.getFirstValue(SolrConstants.IDDOC), doc);
             IPageLoader pageLoader = AbstractPageLoader.create(struct);
             return pageLoader.getPage(order);
         }
@@ -528,10 +529,7 @@ public class ThumbnailHandler {
      */
     private static StructElement getStructElement(SolrDocument doc) {
         String value = (String) doc.getFirstValue(SolrConstants.IDDOC);
-        Long iddoc = 0L;
-        if (value != null) {
-            iddoc = Long.valueOf(value);
-        }
+        String iddoc = value;
         try {
             return new StructElement(iddoc, doc);
         } catch (IndexUnreachableException e) {
@@ -648,6 +646,7 @@ public class ThumbnailHandler {
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @param scale a {@link de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale} object.
+     * @param formatString file extension for the desired format. May also be 'master' to indicate that the format of the original file should be used
      * @return a {@link java.lang.String} object.
      */
     public String getFullImageUrl(PhysicalElement page, Scale scale, String formatString) {
@@ -748,22 +747,22 @@ public class ThumbnailHandler {
 
         String thumbnailUrl = null;
         switch (page.getBaseMimeType()) {
-            case "image":
+            case IMAGE:
                 thumbnailUrl = page.getFilepath();
                 break;
-            case "video", "text":
+            case VIDEO, SANDBOXED_HTML:
                 thumbnailUrl = page.getImageFilepath();
                 if (StringUtils.isEmpty(thumbnailUrl)) {
                     thumbnailUrl = getThumbnailPath(VIDEO_THUMB).toString();
                 }
                 break;
-            case "audio":
+            case AUDIO:
                 thumbnailUrl = page.getImageFilepath();
                 if (StringUtils.isEmpty(thumbnailUrl)) {
                     thumbnailUrl = getThumbnailPath(AUDIO_THUMB).toString();
                 }
                 break;
-            case "application":
+            case APPLICATION:
                 switch (page.getMimeType()) {
                     case "application/pdf":
                         thumbnailUrl = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
@@ -775,7 +774,7 @@ public class ThumbnailHandler {
                         break;
                 }
                 break;
-            case "model":
+            case MODEL:
                 thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
                 break;
             default:
@@ -890,7 +889,7 @@ public class ThumbnailHandler {
                     break;
                 default:
                     if (logger.isWarnEnabled()) {
-                        logger.warn("Mime type of '{}' not supported: {}", doc.getMetadataValue(SolrConstants.PI_TOPSTRUCT), baseMimeType);
+                        logger.warn("Mime type of '{}' not supported: {}", doc.getLuceneId(), mimeType);
                     }
                     break;
             }
@@ -917,7 +916,7 @@ public class ThumbnailHandler {
                 if (volume != null) {
                     String volumeImagePath = getImagePath(volume);
                     if (StringUtils.isNotBlank(volumeImagePath)) {
-                        if (URI.create(volumeImagePath).isAbsolute()) {
+                        if (PathConverter.toURI(volumeImagePath).isAbsolute()) {
                             ret = volumeImagePath;
                         } else {
                             ret = volume.getPi() + "/" + volumeImagePath;
@@ -928,7 +927,7 @@ public class ThumbnailHandler {
                 } else {
                     ret = getThumbnailPath(ANCHOR_THUMB).toString();
                 }
-            } catch (PresentationException | IndexUnreachableException e) {
+            } catch (PresentationException | IndexUnreachableException | URISyntaxException e) {
                 logger.error("Unable to retrieve first volume of {} from index", doc, e);
             }
         } else {
@@ -1025,8 +1024,9 @@ public class ThumbnailHandler {
      *
      * @param structElement
      * @return Optional<String>
+     * @should return mime type correctly
      */
-    private static Optional<String> getMimeType(StructElement structElement) {
+    static Optional<String> getMimeType(StructElement structElement) {
         Optional<String> mimeType = Optional.empty();
         if (structElement.isAnchor()) {
             try {

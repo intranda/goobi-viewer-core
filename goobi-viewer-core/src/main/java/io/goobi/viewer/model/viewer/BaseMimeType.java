@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.viewer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,7 +36,8 @@ public enum BaseMimeType {
     APPLICATION("application"),
     SANDBOXED_HTML("text"),
     MODEL("model"),
-    UNKNOWN("");
+    UNKNOWN("other"),
+    NONE("");
 
     /** Constant <code>logger</code> */
     private static final Logger logger = LogManager.getLogger(BaseMimeType.class);
@@ -63,8 +65,8 @@ public enum BaseMimeType {
      * @should find mime type by full name correctly
      */
     public static BaseMimeType getByName(final String name) {
-        if (name == null) {
-            return UNKNOWN;
+        if (StringUtils.isBlank(name)) {
+            return NONE;
         }
 
         String useName = name;
@@ -76,7 +78,7 @@ public enum BaseMimeType {
             return MODEL;
         }
         for (BaseMimeType o : BaseMimeType.values()) {
-            if (o.getName().equals(useName)) {
+            if (o.getName().equalsIgnoreCase(useName)) {
                 return o;
             }
         }

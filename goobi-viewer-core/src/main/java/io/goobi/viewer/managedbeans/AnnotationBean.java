@@ -282,25 +282,21 @@ public class AnnotationBean implements Serializable {
      * @throws IOException
      */
     public void downloadAnnotations(List<CrowdsourcingAnnotation> annotations) throws IOException {
-        try {
-            String fileName = "annotations.xlsx";
+        String fileName = "annotations.xlsx";
 
-            FacesContext fc = FacesContext.getCurrentInstance();
-            ExternalContext ec = fc.getExternalContext();
-            // Some JSF component library or some Filter might have set some headers in the buffer beforehand.
-            // We want to get rid of them, else it may collide.
-            ec.responseReset();
-            ec.setResponseContentType("application/msexcel");
-            ec.setResponseHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
-            OutputStream os = ec.getResponseOutputStream();
-            AnnotationSheetWriter writer = new AnnotationSheetWriter();
-            writer.createExcelSheet(os, annotations);
-            fc.responseComplete();
-            // Important! Otherwise JSF will attempt to render the response which obviously
-            // will fail since it's already written with a file and closed.
-        } finally {
-            //
-        }
+        FacesContext fc = FacesContext.getCurrentInstance();
+        ExternalContext ec = fc.getExternalContext();
+        // Some JSF component library or some Filter might have set some headers in the buffer beforehand.
+        // We want to get rid of them, else it may collide.
+        ec.responseReset();
+        ec.setResponseContentType("application/msexcel");
+        ec.setResponseHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
+        OutputStream os = ec.getResponseOutputStream();
+        AnnotationSheetWriter writer = new AnnotationSheetWriter();
+        writer.createExcelSheet(os, annotations);
+        // Important! Otherwise JSF will attempt to render the response which obviously
+        // will fail since it's already written with a file and closed.
+        fc.responseComplete();
     }
 
     public Optional<CrowdsourcingAnnotation> getAnnotationById(Long id) {

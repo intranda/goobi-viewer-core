@@ -24,19 +24,24 @@ package io.goobi.viewer.managedbeans;
 import java.io.IOException;
 import java.io.Serializable;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.LongStream;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -48,14 +53,16 @@ import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 
+import com.ibm.icu.text.RuleBasedNumberFormat;
+
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.calendar.CalendarItemCentury;
 import io.goobi.viewer.model.calendar.CalendarItemDay;
 import io.goobi.viewer.model.calendar.CalendarItemMonth;
 import io.goobi.viewer.model.calendar.CalendarItemWeek;
@@ -81,7 +88,8 @@ public class CalendarBean implements Serializable {
     @Inject
     private SearchBean searchBean;
 
-    private List<CalendarItemYear> allActiveYears;
+    //    private List<CalendarItemYear> allActiveYears;
+    private Map<Integer, CalendarItemCentury> allActiveCenturies;
     private CalendarItemYear currentYear;
     private CalendarItemMonth currentMonth;
     private CalendarItemDay currentDay;
@@ -692,7 +700,7 @@ public class CalendarBean implements Serializable {
     }
 
     public void resetAllActiveYears() {
-        this.allActiveYears = null;
+        this.allActiveCenturies = null;
     }
 
     /**
@@ -704,49 +712,127 @@ public class CalendarBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public List<CalendarItemYear> getAllActiveYears() throws PresentationException, IndexUnreachableException {
-        if (allActiveYears == null) {
-            allActiveYears = new ArrayList<>();
-            List<String> fields = new ArrayList<>();
-            fields.add(SolrConstants.CALENDAR_YEAR);
-            fields.add(SolrConstants.CALENDAR_DAY);
-            StringBuilder sbSearchString = new StringBuilder();
-            if (collection != null && !collection.isEmpty()) {
-                sbSearchString.append(SolrConstants.CALENDAR_DAY)
-                        .append(":* AND ")
-                        .append(SolrConstants.DC)
-                        .append(':')
-                        .append(collection)
-                        .append('*')
-                        .append(docstructFilterQuery);
+    //    public List<CalendarItemYear> getAllActiveYears() throws PresentationException, IndexUnreachableException {
+    //        if (allActiveYears == null) {
+    //            allActiveYears = new ArrayList<>();
+    //            List<String> fields = new ArrayList<>();
+    //            fields.add(SolrConstants.CALENDAR_YEAR);
+    //            fields.add(SolrConstants.CALENDAR_DAY);
+    //            StringBuilder sbSearchString = new StringBuilder();
+    //            if (collection != null && !collection.isEmpty()) {
+    //                sbSearchString.append(SolrConstants.CALENDAR_DAY)
+    //                        .append(":* AND ")
+    //                        .append(SolrConstants.DC)
+    //                        .append(':')
+    //                        .append(collection)
+    //                        .append('*')
+    //                        .append(docstructFilterQuery);
+    //            } else {
+    //                sbSearchString.append(SolrConstants.CALENDAR_DAY).append(":*").append(docstructFilterQuery);
+    //            }
+    //            sbSearchString.append(SearchHelper.getAllSuffixes());
+    //
+    //            logger.trace("getAllActiveYears query: {}", sbSearchString);
+    //            QueryResponse resp = SearchHelper.searchCalendar(sbSearchString.toString(), fields, 1, false);
+    //
+    //            FacetField facetFieldDay = resp.getFacetField(SolrConstants.CALENDAR_DAY);
+    //            List<Count> dayCounts = facetFieldDay.getValues() != null ? facetFieldDay.getValues() : new ArrayList<>();
+    //            Map<Integer, Integer> yearCountMap = new HashMap<>();
+    //            for (Count day : dayCounts) {
+    //                int year = Integer.parseInt(day.getName().substring(0, 4));
+    //                Integer count = yearCountMap.get(year);
+    //                if (count == null) {
+    //                    count = 0;
+    //                }
+    //                yearCountMap.put(year, (int) (count + day.getCount()));
+    //            }
+    //
+    //            List<Integer> years = new ArrayList<>(yearCountMap.keySet());
+    //            Collections.sort(years);
+    //            for (int year : years) {
+    //                CalendarItemYear item = new CalendarItemYear(String.valueOf(year), year, yearCountMap.get(year));
+    //                allActiveYears.add(item);
+    //            }
+    //        }
+    //        return allActiveYears;
+    //    }
+
+    /**
+     * This method returns a list of all active centuries. <br />
+     *
+     * The method searches for the facet of the field 'CENTURY'. If the count of a facet is greater than 0, the century is active.
+     *
+     * @return a {@link java.util.List} object.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public List<CalendarItemCentury> getAllActiveCenturies() throws PresentationException, IndexUnreachableException {
+        if (allActiveCenturies == null) {
+            QueryResponse resp = getFacetCounts(SolrConstants.CALENDAR_CENTURY, SolrConstants.CALENDAR_YEAR,
+                    SolrConstants.CALENDAR_DAY);
+
+            Map<Integer, Integer> yearCountMap = getCounts(resp, SolrConstants.CALENDAR_YEAR);
+
+            Map<Integer, CalendarItemCentury> centuries = new HashMap<>();
+
+            for (Entry<Integer, Integer> yearEntry : yearCountMap.entrySet()) {
+                Integer year = yearEntry.getKey();
+                Integer count = yearEntry.getValue();
+                Integer century = getCentury(year);
+                CalendarItemCentury centuryItem =
+                        centuries.computeIfAbsent(century, cent -> new CalendarItemCentury(String.valueOf(century), century, 0));
+                centuryItem.addYearHits(year, count);
+            }
+            centuries.values().forEach(c -> fillEmptyYears(c, LocalDate.now().getYear()));
+            this.allActiveCenturies = centuries;
+        }
+        return allActiveCenturies.values().stream().sorted().toList();
+    }
+
+    private void fillEmptyYears(CalendarItemCentury century, Integer maxYear) {
+        for (int i = 0; i < 100; i++) {
+            Integer year = (century.getValue() - 1) * 100 + i;
+            if (year > maxYear) {
+                break;
             } else {
-                sbSearchString.append(SolrConstants.CALENDAR_DAY).append(":*").append(docstructFilterQuery);
-            }
-            sbSearchString.append(SearchHelper.getAllSuffixes());
-
-            logger.trace("getAllActiveYears query: {}", sbSearchString);
-            QueryResponse resp = SearchHelper.searchCalendar(sbSearchString.toString(), fields, 1, false);
-
-            FacetField facetFieldDay = resp.getFacetField(SolrConstants.CALENDAR_DAY);
-            List<Count> dayCounts = facetFieldDay.getValues() != null ? facetFieldDay.getValues() : new ArrayList<>();
-            Map<Integer, Integer> yearCountMap = new HashMap<>();
-            for (Count day : dayCounts) {
-                int year = Integer.parseInt(day.getName().substring(0, 4));
-                Integer count = yearCountMap.get(year);
-                if (count == null) {
-                    count = 0;
+                if (century.getYear(year) == null) {
+                    century.addYearHits(year, 0);
                 }
-                yearCountMap.put(year, (int) (count + day.getCount()));
-            }
-
-            List<Integer> years = new ArrayList<>(yearCountMap.keySet());
-            Collections.sort(years);
-            for (int year : years) {
-                CalendarItemYear item = new CalendarItemYear(String.valueOf(year), year, yearCountMap.get(year));
-                allActiveYears.add(item);
             }
         }
-        return allActiveYears;
+    }
+
+    public Integer getCentury(Integer year) {
+        return year / 100 + (int) Math.signum(year);
+    }
+
+    private Map<Integer, Integer> getCounts(QueryResponse resp, String facetField) {
+        FacetField facet = resp.getFacetField(facetField);
+        List<Count> counts = facet.getValues() != null ? facet.getValues() : new ArrayList<>();
+        Map<Integer, Integer> countMap = new HashMap<>();
+        for (Count count : counts) {
+            countMap.put(Integer.parseInt(count.getName()), (int) count.getCount());
+        }
+        return countMap;
+    }
+
+    public QueryResponse getFacetCounts(String... fields) throws PresentationException, IndexUnreachableException {
+        StringBuilder sbSearchString = new StringBuilder();
+        sbSearchString.append(
+                String.format("+%s:* +%s: [%d TO %d]", SolrConstants.CALENDAR_DAY, SolrConstants.CALENDAR_YEAR, this.yearStart, this.yearEnd));
+        if (StringUtils.isNotBlank(this.collection)) {
+            sbSearchString.append(" +")
+                    .append(SolrConstants.DC)
+                    .append(':')
+                    .append(collection)
+                    .append("*");
+        }
+        sbSearchString.append(docstructFilterQuery);
+        sbSearchString.append(SearchHelper.getAllSuffixes());
+
+        logger.trace("getAllActiveYears query: {}", sbSearchString);
+        QueryResponse resp = SearchHelper.searchCalendar(sbSearchString.toString(), Arrays.asList(fields), 1, false);
+        return resp;
     }
 
     /**
@@ -759,8 +845,8 @@ public class CalendarBean implements Serializable {
      */
     public void resetYears() throws PresentationException, IndexUnreachableException {
         logger.trace("resetYears");
-        allActiveYears = null;
-        getAllActiveYears();
+        allActiveCenturies = null;
+        getAllActiveCenturies();
     }
 
     // calendar view
@@ -780,28 +866,11 @@ public class CalendarBean implements Serializable {
             currentDay = null;
             currentMonth = null;
             monthList = populateMonthsWithDays(selectYear, collection, docstructFilterQuery);
-            // Set currentYear so that the number of hits is available for comparison
-            for (CalendarItemYear year : getAllActiveYears()) {
-                if (year.getName().equals(selectYear)) {
-                    setCurrentYear(year);
-                    selectYearListener();
-                }
+            Integer year = Integer.parseInt(selectYear);
+            Integer century = getCentury(year);
+            if (this.allActiveCenturies != null) {
+                setCurrentYear(this.allActiveCenturies.getOrDefault(century, new CalendarItemCentury(century)).getYear(year));
             }
-        }
-    }
-
-    /**
-     * Forwards to the URL containing the selected year.
-     */
-    public void selectYearListener() {
-        // logger.trace("selectYearListener"); //NOSONAR Debug
-        try {
-            String url = PrettyUrlTools.getAbsolutePageUrl("pretty:searchcalendar1", getSelectYear());
-            FacesContext.getCurrentInstance()
-                    .getExternalContext()
-                    .redirect(url);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
         }
     }
 
@@ -905,6 +974,7 @@ public class CalendarBean implements Serializable {
                     break;
                 case 3:
                     mar.setHits((int) monthCount.getCount());
+                    break;
                 case 4:
                     apr.setHits((int) monthCount.getCount());
                     break;
@@ -1008,44 +1078,28 @@ public class CalendarBean implements Serializable {
                         dayItem.setDayOfWeek("unknown");
                         break;
                 }
-
-                if (date.getDayOfMonth() == 1 && !DayOfWeek.MONDAY.equals(date.getDayOfWeek())) {
-                    // fill first week with empty day items
-                    switch (date.getDayOfWeek()) {
-                        case SUNDAY:
-                            // Sunday
-                            CalendarItemDay sun = new CalendarItemDay("", 0, 0);
-                            currentWeek.addDay(sun);
-                        case SATURDAY:
-                            // Saturday
-                            CalendarItemDay sat = new CalendarItemDay("", 0, 0);
-                            currentWeek.addDay(sat);
-                        case FRIDAY:
-                            // Friday
-                            CalendarItemDay fri = new CalendarItemDay("", 0, 0);
-                            currentWeek.addDay(fri);
-                        case THURSDAY:
-                            // Thursday
-                            CalendarItemDay thu = new CalendarItemDay("", 0, 0);
-                            currentWeek.addDay(thu);
-                        case WEDNESDAY:
-                            // Wednesday
-                            CalendarItemDay wed = new CalendarItemDay("", 0, 0);
-                            currentWeek.addDay(wed);
-                        case TUESDAY:
-                            // Tuesday
-                            CalendarItemDay tue = new CalendarItemDay("", 0, 0);
-                            currentWeek.addDay(tue);
-                            break;
-                        default:
-                            break;
-                    }
+                if (date.getDayOfMonth() == 1) {
+                    addEmptyDays(currentWeek, date);
                 }
                 currentWeek.addDay(dayItem);
             }
         }
 
         return monthList;
+    }
+
+    /**
+     * Add as many {@link CalendarItemDay}s to 'currentWeek' as there are days between the start of the month and the previous monday
+     * 
+     * @param currentWeek
+     * @param date
+     */
+    protected static void addEmptyDays(CalendarItemWeek currentWeek, LocalDate date) {
+
+        LocalDate previousMonday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        long daysToAdd = Duration.between(previousMonday.atStartOfDay(), date.atStartOfDay()).toDays();
+        LongStream.range(0, daysToAdd).forEach(i -> currentWeek.addDay(new CalendarItemDay("", 0, 0)));
+
     }
 
     /**
@@ -1301,6 +1355,12 @@ public class CalendarBean implements Serializable {
         searchBean.setExactSearchString(getQueryForIncompleteData(year));
         searchBean.executeSearch();
         return "pretty:newSearch5";
+    }
+
+    public String getCenturyLabel(Integer century, Locale locale) {
+        RuleBasedNumberFormat format = new RuleBasedNumberFormat(locale, RuleBasedNumberFormat.ORDINAL);
+        return format.format(century);
+
     }
 
 }

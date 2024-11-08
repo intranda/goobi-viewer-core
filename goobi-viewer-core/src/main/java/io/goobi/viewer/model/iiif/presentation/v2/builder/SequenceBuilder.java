@@ -387,7 +387,7 @@ public class SequenceBuilder extends AbstractBuilder {
         if (target.equals(LinkingTarget.ALTO) && StringUtils.isBlank(page.getAltoFileName())) {
             return null;
         }
-        if (target.equals(LinkingTarget.PDF) && !(BaseMimeType.IMAGE.getName().equals(page.getBaseMimeType()))) {
+        if (target.equals(LinkingTarget.PDF) && !(BaseMimeType.IMAGE.equals(page.getBaseMimeType()))) {
             return null;
         }
 

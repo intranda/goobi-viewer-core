@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -60,6 +61,7 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -77,9 +79,10 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetPdfAction;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.SinglePdfRequest;
+import de.unigoettingen.sub.commons.util.MimeType;
+import de.unigoettingen.sub.commons.util.MimeType.UnknownMimeTypeException;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -89,6 +92,7 @@ import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
+import io.goobi.viewer.controller.sorting.AlphanumCollatorComparator;
 import io.goobi.viewer.exceptions.ArchiveException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -151,9 +155,9 @@ public class ViewManager implements Serializable {
     private ImageDeliveryBean imageDeliveryBean;
 
     /** IDDOC of the top level document. */
-    private final long topStructElementIddoc;
+    private final String topStructElementIddoc;
     /** IDDOC of the current level document. The initial top level document values eventually gets overridden with the image owner element's IDDOC. */
-    private long currentStructElementIddoc;
+    private String currentStructElementIddoc;
     /** LOGID of the current level document. */
     private String logId;
 
@@ -220,7 +224,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mimeType,
+    public ViewManager(StructElement topDocument, IPageLoader pageLoader, String currentDocumentIddoc, String logId, String mimeType,
             ImageDeliveryBean imageDeliveryBean) throws IndexUnreachableException, PresentationException {
         this.imageDeliveryBean = imageDeliveryBean;
         this.topStructElement = topDocument;
@@ -230,7 +234,7 @@ public class ViewManager implements Serializable {
         this.currentStructElementIddoc = currentDocumentIddoc;
         this.logId = logId;
         this.doublePageMode = DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault();
-        if (topStructElementIddoc == currentDocumentIddoc) {
+        if (topStructElementIddoc.equals(currentDocumentIddoc)) {
             currentStructElement = topDocument;
         } else {
             currentStructElement = new StructElement(currentDocumentIddoc);
@@ -255,14 +259,13 @@ public class ViewManager implements Serializable {
         this.mimeType = mimeType;
         logger.trace("mimeType: {}", mimeType);
 
+        // Linked archive node
         try {
-            if (DataManager.getInstance().getConfiguration().isArchivesEnabled()) {
-                String archiveId = getArchiveEntryIdentifier();
-                if (StringUtils.isNotBlank(archiveId)) {
-                    DataManager.getInstance().getArchiveManager().updateArchiveList();
-                    this.archiveResource = DataManager.getInstance().getArchiveManager().loadArchiveForEntry(archiveId);
-                    this.archiveTreeNeighbours = DataManager.getInstance().getArchiveManager().findIndexedNeighbours(archiveId);
-                }
+            String archiveId = getArchiveEntryIdentifier();
+            if (StringUtils.isNotBlank(archiveId)) {
+                DataManager.getInstance().getArchiveManager().updateArchiveList();
+                this.archiveResource = DataManager.getInstance().getArchiveManager().loadArchiveForEntry(archiveId);
+                this.archiveTreeNeighbours = DataManager.getInstance().getArchiveManager().findIndexedNeighbours(archiveId);
             }
         } catch (ArchiveException e) {
             logger.error("Error creating archive link for {}: {}", this.pi, e.getMessage());
@@ -579,7 +582,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public String getCurrentMasterImageUrl() throws IndexUnreachableException, DAOException {
         return getMasterImageUrl(Scale.MAX, getCurrentPage());
     }
@@ -772,7 +775,7 @@ public class ViewManager implements Serializable {
                     }
                 } else if (dim.width * dim.height == 0 || (maxWidth > 0 && maxWidth < dim.width) || (maxHeight > 0 && maxHeight < dim.height)) {
                     // nothing
-                } else if (origImageSize == null) {
+                } else if (origImageSize == null || origImageSize.height * origImageSize.width == 0) {
                     options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), option.getBoxSizeInPixel()));
                 } else {
                     Scale scale = new Scale.ScaleToBox(option.getBoxSizeInPixel());
@@ -841,7 +844,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public String getMasterImageUrlForDownload(String boxSizeInPixel) throws IndexUnreachableException, DAOException {
         if (boxSizeInPixel == null) {
             throw new IllegalArgumentException("boxSizeInPixel may not be null");
@@ -1385,7 +1388,6 @@ public class ViewManager implements Serializable {
         if (pageLoader == null) {
             return;
         }
-
         int useOrder = currentImageOrder;
         if (useOrder < pageLoader.getFirstPageOrder()) {
             useOrder = pageLoader.getFirstPageOrder();
@@ -1395,9 +1397,9 @@ public class ViewManager implements Serializable {
         this.currentImageOrder = useOrder;
 
         if (StringUtils.isEmpty(logId)) {
-            Long iddoc = pageLoader.getOwnerIddocForPage(useOrder);
+            String iddoc = pageLoader.getOwnerIddocForPage(useOrder);
             // Set the currentDocumentIddoc to the IDDOC of the image owner document, but only if no specific document LOGID has been requested
-            if (iddoc != null && iddoc > -1) {
+            if (iddoc != null) {
                 currentStructElementIddoc = iddoc;
                 logger.trace("currentDocumentIddoc: {} ({})", currentStructElementIddoc, pi);
             } else if (isHasPages()) {
@@ -1407,8 +1409,8 @@ public class ViewManager implements Serializable {
         } else {
             // If a specific LOGID has been requested, look up its IDDOC
             logger.trace("Selecting currentElementIddoc by LOGID: {} ({})", logId, pi);
-            long iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(getPi(), logId);
-            if (iddoc > -1) {
+            String iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(getPi(), logId);
+            if (iddoc != null) {
                 currentStructElementIddoc = iddoc;
             } else {
                 logger.trace("currentElementIddoc not found for '{}', LOGID: {}", pi, logId);
@@ -1824,7 +1826,7 @@ public class ViewManager implements Serializable {
      */
     public String getLinkForDFGViewer() throws IndexUnreachableException {
         if (topStructElement != null && SolrConstants.SOURCEDOCFORMAT_METS.equals(topStructElement.getSourceDocFormat()) && isHasPages()) {
-            String metsUrl = getMetsResolverUrl();
+            String metsUrl = getSourceFileResolverUrl();
 
             String urlField = DataManager.getInstance().getConfiguration().getDfgViewerSourcefileField();
             if (StringUtils.isNotBlank(urlField)) {
@@ -1858,19 +1860,11 @@ public class ViewManager implements Serializable {
      * </p>
      *
      * @return METS resolver link
+     * @deprecated Use ViewManager.getSourceFileResolverUrl()
      */
+    @Deprecated(since = "24.08")
     public String getMetsResolverUrl() {
-        try {
-            String url = DataManager.getInstance().getConfiguration().getSourceFileUrl();
-            if (StringUtils.isNotEmpty(url)) {
-                return url + getPi();
-            }
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/metsresolver?id=" + getPi();
-        } catch (Exception e) {
-            logger.error("Could not get METS resolver URL for {}.", topStructElementIddoc);
-            Messages.error("errGetCurrUrl");
-        }
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/metsresolver?id=" + 0;
+        return getSourceFileResolverUrl();
     }
 
     /**
@@ -1879,19 +1873,11 @@ public class ViewManager implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated Use ViewManager.getSourceFileResolverUrl()
      */
+    @Deprecated(since = "24.08")
     public String getLidoResolverUrl() {
-        try {
-            String url = DataManager.getInstance().getConfiguration().getSourceFileUrl();
-            if (StringUtils.isNotEmpty(url)) {
-                return url + getPi();
-            }
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/lidoresolver?id=" + getPi();
-        } catch (Exception e) {
-            logger.error("Could not get LIDO resolver URL for {}.", topStructElementIddoc);
-            Messages.error("errGetCurrUrl");
-        }
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/lidoresolver?id=" + 0;
+        return getSourceFileResolverUrl();
     }
 
     /**
@@ -1900,19 +1886,11 @@ public class ViewManager implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated Use ViewManager.getSourceFileResolverUrl()
      */
+    @Deprecated(since = "24.08")
     public String getDenkxwebResolverUrl() {
-        try {
-            String url = DataManager.getInstance().getConfiguration().getSourceFileUrl();
-            if (StringUtils.isNotEmpty(url)) {
-                return url + getPi();
-            }
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/denkxwebresolver?id=" + getPi();
-        } catch (Exception e) {
-            logger.error("Could not get DenkXweb resolver URL for {}.", topStructElementIddoc);
-            Messages.error("errGetCurrUrl");
-        }
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/denkxwebresolver?id=" + 0;
+        return getSourceFileResolverUrl();
     }
 
     /**
@@ -1921,19 +1899,29 @@ public class ViewManager implements Serializable {
      * </p>
      *
      * @return a {@link java.lang.String} object.
+     * @deprecated Use ViewManager.getSourceFileResolverUrl()
      */
+    @Deprecated(since = "24.08")
     public String getDublinCoreResolverUrl() {
+        return getSourceFileResolverUrl();
+    }
+
+    /**
+     * 
+     * @return Source file resolver URL for the current record identifier
+     */
+    public String getSourceFileResolverUrl() {
         try {
             String url = DataManager.getInstance().getConfiguration().getSourceFileUrl();
             if (StringUtils.isNotEmpty(url)) {
                 return url + getPi();
             }
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/dublincoreresolver?id=" + getPi();
-        } catch (Exception e) {
-            logger.error("Could not get DublinCore resolver URL for {}.", topStructElementIddoc);
+            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/sourcefile?id=" + getPi();
+        } catch (NullPointerException | IllegalStateException | IndexUnreachableException e) {
+            logger.error("Could not get source file resolver URL for {}.", topStructElementIddoc);
             Messages.error("errGetCurrUrl");
         }
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/dublincoreresolver?id=" + 0;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/sourcefile?id=" + 0;
     }
 
     /**
@@ -2639,23 +2627,27 @@ public class ViewManager implements Serializable {
             return true;
         }
         if (pagesWithFulltext == null) {
-            pagesWithFulltext = DataManager.getInstance()
-                    .getSearchIndex()
-                    .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
-                            .append(':')
-                            .append(pi)
-                            .append(" +")
-                            .append(SolrConstants.DOCTYPE)
-                            .append(":PAGE")
-                            .append(" +")
-                            .append(SolrConstants.FULLTEXTAVAILABLE)
-                            .append(":true")
-                            .toString());
+            pagesWithFulltext = getPageCountWithFulltext();
         }
         double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
         // logger.trace("{}% of pages have full-text", percentage); //NOSONAR Debug
 
         return percentage < threshold;
+    }
+
+    public long getPageCountWithFulltext() throws IndexUnreachableException, PresentationException {
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                        .append(':')
+                        .append(pi)
+                        .append(" +")
+                        .append(SolrConstants.DOCTYPE)
+                        .append(":PAGE")
+                        .append(" +")
+                        .append(SolrConstants.FULLTEXTAVAILABLE)
+                        .append(":true")
+                        .toString());
     }
 
     /**
@@ -2800,23 +2792,60 @@ public class ViewManager implements Serializable {
         }
         if (pagesWithAlto == null) {
 
-            pagesWithAlto = DataManager.getInstance()
-                    .getSearchIndex()
-                    .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
-                            .append(':')
-                            .append(pi)
-                            .append(" +")
-                            .append(SolrConstants.DOCTYPE)
-                            .append(":PAGE")
-                            .append(" +")
-                            .append(SolrConstants.FILENAME_ALTO)
-                            .append(":*")
-                            .toString());
+            pagesWithAlto = getPageCountWithAlto();
             logger.trace("{} of pages have full-text", pagesWithAlto);
         }
         int threshold = 1; // TODO ???
 
         return pagesWithAlto >= threshold;
+    }
+
+    public Map<String, List<String>> getFilenamesByMimeType(boolean localFilesOnly) throws IndexUnreachableException, PresentationException {
+        List<SolrDocument> pageDocs = DataManager.getInstance()
+                .getSearchIndex()
+                .getDocs(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                        .append(':')
+                        .append(pi)
+                        .append(" +")
+                        .append(SolrConstants.DOCTYPE)
+                        .append(":PAGE")
+                        .append(" +")
+                        .append(SolrConstants.FILENAME)
+                        .append(":*")
+                        .toString(), List.of(SolrConstants.FILENAME));
+        return Optional.ofNullable(pageDocs)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(doc -> doc.getFieldValue(SolrConstants.FILENAME))
+                .map(Object::toString)
+                .filter(path -> localFilesOnly ? !path.matches("(?i)^https?:.*") : true)
+                .collect(Collectors.toMap(
+                        filename -> getMimetype((String) filename),
+                        filename -> List.of(filename),
+                        (set1, set2) -> new ArrayList<>(CollectionUtils.union((List<? extends String>) set1, (List<? extends String>) set2))));
+    }
+
+    public String getMimetype(String filename) {
+        try {
+            return MimeType.getMimeTypeFromExtension(filename);
+        } catch (UnknownMimeTypeException e) {
+            return "unknown";
+        }
+    }
+
+    public Long getPageCountWithAlto() throws IndexUnreachableException, PresentationException {
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                        .append(':')
+                        .append(pi)
+                        .append(" +")
+                        .append(SolrConstants.DOCTYPE)
+                        .append(":PAGE")
+                        .append(" +")
+                        .append(SolrConstants.FILENAME_ALTO)
+                        .append(":*")
+                        .toString());
     }
 
     /**
@@ -2828,7 +2857,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @deprecated Use <code>PhysicalElement.getFullText()</code>
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public String getFulltext() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         return getFulltext(true, null);
     }
@@ -2844,7 +2873,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @deprecated Use <code>PhysicalElement.getFullText()</code>
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public String getFulltext(boolean escapeHtml, String language) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         String currentFulltext = null;
 
@@ -3037,11 +3066,11 @@ public class ViewManager implements Serializable {
      *
      * @return the topStructElementIddoc
      */
-    public long getTopStructElementIddoc() {
+    public String getTopStructElementIddoc() {
         return topStructElementIddoc;
     }
 
-    public Long getAnchorDocumentIddoc() {
+    public String getAnchorDocumentIddoc() {
         if (this.anchorStructElement != null) {
             return anchorStructElement.getLuceneId();
         }
@@ -3097,7 +3126,7 @@ public class ViewManager implements Serializable {
      *
      * @return the currentStructElementIddoc
      */
-    public long getCurrentStructElementIddoc() {
+    public String getCurrentStructElementIddoc() {
         return currentStructElementIddoc;
     }
 
@@ -3108,7 +3137,7 @@ public class ViewManager implements Serializable {
      *
      * @param currentStructElementIddoc the currentStructElementIddoc to set
      */
-    public void setCurrentStructElementtIddoc(long currentStructElementIddoc) {
+    public void setCurrentStructElementtIddoc(String currentStructElementIddoc) {
         this.currentStructElementIddoc = currentStructElementIddoc;
     }
 
@@ -4046,7 +4075,7 @@ public class ViewManager implements Serializable {
             throw new RecordNotFoundException(pi);
         }
 
-        long iddoc = Long.parseLong((String) doc.getFieldValue(SolrConstants.IDDOC));
+        String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
         StructElement topDocument = new StructElement(iddoc, doc);
         return new ViewManager(topDocument, AbstractPageLoader.create(topDocument, loadPages), iddoc, null, null, null);
     }
@@ -4130,12 +4159,14 @@ public class ViewManager implements Serializable {
      * 
      * @return copyrightIndicatorStatuses
      * @should return correct statuses
-     * @should return open status if no statuses found
+     * @should return locked status if no statuses found
      */
     public List<CopyrightIndicatorStatus> getCopyrightIndicatorStatuses() {
+        // logger.trace("getCopyrightIndicatorStatuses");
         if (copyrightIndicatorStatuses == null) {
             copyrightIndicatorStatuses = new ArrayList<>();
             String field = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusField();
+            StringBuilder sbUnconfiguredAccessConditions = new StringBuilder();
             if (StringUtils.isNotEmpty(field)) {
                 List<String> values = topStructElement.getMetadataValues(field);
                 if (!values.isEmpty()) {
@@ -4143,13 +4174,19 @@ public class ViewManager implements Serializable {
                         CopyrightIndicatorStatus status = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue(value);
                         if (status != null) {
                             copyrightIndicatorStatuses.add(status);
+                        } else {
+                            if (sbUnconfiguredAccessConditions.length() > 0) {
+                                sbUnconfiguredAccessConditions.append(", ");
+                            }
+                            sbUnconfiguredAccessConditions.append(value);
                         }
                     }
                 }
             }
             // Default
             if (copyrightIndicatorStatuses.isEmpty()) {
-                copyrightIndicatorStatuses.add(new CopyrightIndicatorStatus(Status.OPEN, "COPYRIGHT_STATUS_OPEN"));
+                // If no statuses are configured for existing values, set to locked and add all values to the description
+                copyrightIndicatorStatuses.add(new CopyrightIndicatorStatus(Status.LOCKED, sbUnconfiguredAccessConditions.toString()));
             }
         }
 

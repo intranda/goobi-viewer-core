@@ -59,6 +59,7 @@ import org.apache.commons.configuration2.event.EventListener;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -123,6 +124,7 @@ public class Configuration extends AbstractConfiguration {
 
     public static final String CONFIG_FILE_NAME = "config_viewer.xml";
 
+    public static final String METADATA_LIST_TYPE_PAGE = "page";
     public static final String METADATA_LIST_TYPE_SEARCH_HIT = "searchHit";
 
     private static final String XML_PATH_ATTRIBUTE_CONDITION = "[@condition]";
@@ -497,6 +499,19 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Returns the list of configured metadata for pages.
+     *
+     * @param template a {@link java.lang.String} object.
+     * @should return correct template configuration
+     * @should return default template configuration if requested not found
+     * @should return default template if template is null
+     * @return a {@link java.util.List} object.
+     */
+    public List<Metadata> getPageMetadataForTemplate(String template) {
+        return getMetadataConfigurationForTemplate(METADATA_LIST_TYPE_PAGE, template, true, true);
+    }
+
+    /**
      * Returns the list of configured metadata for {@link Highlight}s which reference a record.
      *
      * @param template a {@link java.lang.String} object.
@@ -592,11 +607,10 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the list of configured metadata for the archives.
      *
-     * @param template Template name (currently not in use)
      * @return List of configured metadata for configured fields
-     * @should return default template configuration if template not found
+     * @should return default template configuration
      */
-    public List<Metadata> getArchiveMetadataForTemplate(String template) {
+    public List<Metadata> getArchiveMetadata() {
         return getMetadataConfigurationForTemplate("archive", StringConstants.DEFAULT_NAME, true, false);
     }
 
@@ -1065,9 +1079,10 @@ public class Configuration extends AbstractConfiguration {
             String label = sub.getString(XML_PATH_ATTRIBUTE_LABEL);
             String field = sub.getString("[@field]");
             String pattern = sub.getString("[@pattern]");
+            String action = sub.getString("[@action]", "clipboard");
             boolean topstructValueFallback = sub.getBoolean("[@topstructValueFallback]", false);
             try {
-                ret.add(new CitationLink(type, level, label).setField(field)
+                ret.add(new CitationLink(type, level, action, label).setField(field)
                         .setPattern(pattern)
                         .setTopstructValueFallback(topstructValueFallback));
             } catch (IllegalArgumentException e) {
@@ -1270,6 +1285,24 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return list;
+    }
+
+    /**
+     * Get all configured sortOrders for collections in the given field, mapped against regex which should match the collection(s) which
+     * subcollections should be sorted according the sortOrder
+     * 
+     * @param field the solr fild on which the collection is based
+     * @return a map of regular expressions matching collection names and associated sortOrders
+     */
+    public Map<String, String> getCollectionSortOrders(String field) {
+
+        HierarchicalConfiguration<ImmutableNode> collection = getCollectionConfiguration(field);
+        if (collection != null) {
+            List<HierarchicalConfiguration<ImmutableNode>> sortOrders = collection.configurationsAt("sorting.sortOrder");
+            return sortOrders.stream().collect(Collectors.toMap(conf -> conf.getString("[@collections]"), conf -> conf.getString(".")));
+        }
+
+        return Collections.emptyMap();
     }
 
     /**
@@ -1689,6 +1722,8 @@ public class Configuration extends AbstractConfiguration {
             boolean visible = subElement.getBoolean("[@visible]", false);
             int displaySelectItemsThreshold = subElement.getInt("[@displaySelectItemsThreshold]", 50);
             String selectType = subElement.getString("[@selectType]", AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN);
+            String replaceRegex = subElement.getString("[@replaceRegex]");
+            String replaceWith = subElement.getString("[@replaceWith]");
 
             ret.add(new AdvancedSearchFieldConfiguration(field)
                     .setLabel(label)
@@ -1698,7 +1733,9 @@ public class Configuration extends AbstractConfiguration {
                     .setDisabled(field.charAt(0) == '#' && field.charAt(field.length() - 1) == '#')
                     .setVisible(visible)
                     .setDisplaySelectItemsThreshold(displaySelectItemsThreshold)
-                    .setSelectType(selectType));
+                    .setSelectType(selectType)
+                    .setReplaceRegex(replaceRegex)
+                    .setReplaceWith(replaceWith));
         }
 
         return ret;
@@ -1894,26 +1931,12 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getAdvancedSearchFieldSelectType(String field, String template, boolean fallbackToDefaultTemplate) {
-        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
-        if (templateList == null) {
-            return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
-        }
-        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, fallbackToDefaultTemplate);
-        if (usingTemplate == null) {
-            return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
-        }
-        List<HierarchicalConfiguration<ImmutableNode>> fieldList = usingTemplate.configurationsAt("field");
-        if (fieldList == null) {
-            return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
+        String ret = getAdvancedSearchFieldGetAttributeValue(field, "selectType", template, fallbackToDefaultTemplate);
+        if (ret == null) {
+            ret = AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
         }
 
-        for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
-            if (subElement.getString(".").equals(field)) {
-                return subElement.getString("[@selectType]", AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN);
-            }
-        }
-
-        return AdvancedSearchFieldConfiguration.SELECT_TYPE_DROPDOWN;
+        return ret;
     }
 
     /**
@@ -1928,6 +1951,42 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getAdvancedSearchFieldSeparatorLabel(String field, String template, boolean fallbackToDefaultTemplate) {
+        return getAdvancedSearchFieldGetAttributeValue(field, "label", template, fallbackToDefaultTemplate);
+    }
+
+    /**
+     * 
+     * @param field
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return Configured value; null if none found
+     * @should return correct value
+     */
+    public String getAdvancedSearchFieldReplaceRegex(String field, String template, boolean fallbackToDefaultTemplate) {
+        return getAdvancedSearchFieldGetAttributeValue(field, "replaceRegex", template, fallbackToDefaultTemplate);
+    }
+
+    /**
+     * 
+     * @param field
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return Configured value; null if none found
+     * @should return correct value
+     */
+    public String getAdvancedSearchFieldReplaceWith(String field, String template, boolean fallbackToDefaultTemplate) {
+        return getAdvancedSearchFieldGetAttributeValue(field, "replaceWith", template, fallbackToDefaultTemplate);
+    }
+
+    /**
+     * 
+     * @param field
+     * @param attribute
+     * @param template
+     * @param fallbackToDefaultTemplate
+     * @return Configured value; null if none found
+     */
+    String getAdvancedSearchFieldGetAttributeValue(String field, String attribute, String template, boolean fallbackToDefaultTemplate) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
         if (templateList == null) {
             return null;
@@ -1943,7 +2002,7 @@ public class Configuration extends AbstractConfiguration {
 
         for (HierarchicalConfiguration<ImmutableNode> subElement : fieldList) {
             if (subElement.getString(".").equals(field)) {
-                return subElement.getString(XML_PATH_ATTRIBUTE_LABEL, "");
+                return subElement.getString("[@" + attribute + "]");
             }
         }
 
@@ -1956,7 +2015,7 @@ public class Configuration extends AbstractConfiguration {
      * @param attribute Attribute name
      * @param template
      * @param fallbackToDefaultTemplate
-     * @return Configured value
+     * @return Configured value; false if none found
      */
     boolean isAdvancedSearchFieldHasAttribute(String field, String attribute, String template, boolean fallbackToDefaultTemplate) {
         List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
@@ -2426,6 +2485,13 @@ public class Configuration extends AbstractConfiguration {
             String clientSecret = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@clientSecret]", null);
             String parameterType = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@parameterType]", null);
             String parameterName = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@parameterName]", null);
+            String thirdPartyLoginUrl = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginUrl]", null);
+            String thirdPartyLoginApiKey = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginApiKey]", null);
+            String thirdPartyLoginScope = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginScope]", null);
+            String thirdPartyLoginReqParamDef = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginReqParamDef]", null);
+            ;
+            String thirdPartyLoginClaim = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginClaim]", null);
+            ;
             long timeoutMillis = myConfigToUse.getLong(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@timeout]", 60000);
 
             if (enabled) {
@@ -2439,7 +2505,9 @@ public class Configuration extends AbstractConfiguration {
                                 new OpenIdProvider(name, label, endpoint, image, timeoutMillis, clientId, clientSecret)
                                         .setTokenEndpoint(tokenEndpoint)
                                         .setRedirectionEndpoint(redirectionEndpoint)
-                                        .setScope(scope));
+                                        .setScope(scope)
+                                        .setThirdPartyVariables(thirdPartyLoginUrl, thirdPartyLoginApiKey, thirdPartyLoginScope,
+                                                thirdPartyLoginReqParamDef, thirdPartyLoginClaim));
                         break;
                     case "userpassword":
                         switch (name.toLowerCase()) {
@@ -2651,8 +2719,8 @@ public class Configuration extends AbstractConfiguration {
      * getThemeRootPath.
      * </p>
      *
-     * @should return correct value
      * @return a {@link java.lang.String} object.
+     * 
      */
     public String getThemeRootPath() {
         return getLocalString("viewer.theme.rootPath");
@@ -2683,7 +2751,6 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * TagCloud auf der Startseite anzeigen lassen
      *
      * @should return correct value
      * @return a boolean.
@@ -4927,7 +4994,9 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
+     * @deprecated currently unused since download jobs are handled via message queues
      */
+    @Deprecated(since = "24.10")
     public String getTaskManagerServiceUrl() {
         return getLocalString("urls.taskManager", "http://localhost:8080/itm/") + "service";
     }
@@ -4939,7 +5008,9 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
+     * @deprecated jobs are no longs handled via TaskManager but via queues
      */
+    @Deprecated(since = "24.10")
     public String getTaskManagerRestUrl() {
         return getLocalString("urls.taskManager", "http://localhost:8080/itm/") + "rest";
     }
@@ -5790,17 +5861,12 @@ public class Configuration extends AbstractConfiguration {
      * @return Configured value
      * @should return correct value
      */
-    public boolean isArchivesEnabled() {
-        return getLocalBoolean("archives[@enabled]", false);
-    }
-
-    /**
-     * 
-     * @return Configured value
-     * @should return correct value
-     */
     public int getArchivesLazyLoadingThreshold() {
         return getLocalInt("archives[@lazyLoadingThreshold]", 100);
+    }
+
+    public boolean isExpandArchiveEntryOnSelection() {
+        return getLocalBoolean("archives.expandOnSelect", false);
     }
 
     public Map<String, String> getArchiveNodeTypes() {
@@ -5808,6 +5874,15 @@ public class Configuration extends AbstractConfiguration {
         nodeTypes.get(0).getString(getReCaptchaSiteKey());
         return nodeTypes.stream()
                 .collect(Collectors.toMap(node -> node.getString(XML_PATH_ATTRIBUTE_NAME), node -> node.getString(XML_PATH_ATTRIBUTE_ICON)));
+    }
+
+    public Pair<String, String> getDefaultArchiveNodeType() {
+        List<HierarchicalConfiguration<ImmutableNode>> nodeTypes = getLocalConfigurationsAt("archives.nodeTypes.node");
+        return nodeTypes.stream()
+                .filter(node -> node.getBoolean("[@default]", false))
+                .findFirst()
+                .map(node -> Pair.of(node.getString("[@name]", ""), node.getString("[@icon]", "")))
+                .orElse(Pair.of("", ""));
     }
 
     /**
@@ -6013,6 +6088,15 @@ public class Configuration extends AbstractConfiguration {
         return getLocalBoolean("statistics[@enabled]", false);
     }
 
+    public boolean isShowRecordStatisticsWidget() {
+        return isStatisticsEnabled() && getLocalBoolean("statistics.reporting.widget.record[@enabled]", true);
+    }
+
+    public boolean isRecordStatisticsWidgetCollapsible() {
+        String widgetMode = getLocalString("statistics.reporting.widget.record[@mode]", "full");
+        return "collapsible".equalsIgnoreCase(widgetMode);
+    }
+
     public String getCrawlerDetectionRegex() {
         return getLocalString("statistics.crawlerDetection[@regex]",
                 ".*[bB]ot.*|.*Yahoo! Slurp.*|.*Feedfetcher-Google.*|.*Apache-HttpClient.*|.*[Ss]pider.*|.*[Cc]rawler.*|.*nagios.*|.*Yandex.*");
@@ -6150,6 +6234,15 @@ public class Configuration extends AbstractConfiguration {
 
     public String getThemePullScriptPath() {
         return getLocalString("developer.scripts.pullTheme", "{config-folder-path}/script_theme-pull.sh {theme-path}/../../../../");
+    }
+
+    /**
+     * 
+     * @return boolean
+     * @should return correct value
+     */
+    public boolean isPullThemeEnabled() {
+        return getLocalBoolean("developer.scripts.pullTheme[@enabled]", true);
     }
 
     public String getCreateDeveloperPackageScriptPath() {

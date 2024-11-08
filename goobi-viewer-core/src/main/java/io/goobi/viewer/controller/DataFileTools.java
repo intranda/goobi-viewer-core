@@ -558,7 +558,7 @@ public final class DataFileTools {
         Dataset work = new Dataset();
         work.setPi(pi);
 
-        long iddoc = Long.parseLong((String) doc.getFieldValue(SolrConstants.IDDOC));
+        String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
         StructElement se = new StructElement(iddoc, doc);
 
         String format = se.getSourceDocFormat();

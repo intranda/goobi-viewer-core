@@ -213,7 +213,7 @@ public final class SolrTools {
             return null;
         }
     }
-    
+
     /**
      * <p>
      * getAsLong.
@@ -705,8 +705,8 @@ public final class SolrTools {
      * isHasImages.
      * </p>
      *
-     * @param doc a {@link org.apache.solr.common.SolrDocument} object. Needs to contain metadata fields 
-     *        {@link io.goobi.viewer.solr.SolrConstants#FILENAME} and {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
+     * @param doc a {@link org.apache.solr.common.SolrDocument} object. Needs to contain metadata fields
+     *            {@link io.goobi.viewer.solr.SolrConstants#FILENAME} and {@link io.goobi.viewer.solr.SolrConstants#THUMBNAIL}
      * @return true if record described by doc has images; false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should return correct value for page docs
@@ -714,7 +714,7 @@ public final class SolrTools {
      * @should return correct value for iiif manifests in file name
      */
     public static boolean isHasImages(SolrDocument doc) throws IndexUnreachableException {
-        StructElement structElement = new StructElement(0, doc);
+        StructElement structElement = new StructElement("dummy", doc);
         String fileExtension = "";
 
         String filename = structElement.getMetadataValue(SolrConstants.FILENAME);
@@ -903,10 +903,9 @@ public final class SolrTools {
     }
 
     /**
-     * Escapes all special characters used by SOLR.
-     * Details here: https://solr.apache.org/guide/7_3/the-standard-query-parser.html#escaping-special-characters
-     * as well as the characters '&lt;' and '&gt;' by adding a '\' before them. Special characters which already are escaped by '\' are not
-     * escaped any further making this method idempotent.
+     * Escapes all special characters used by SOLR. Details here:
+     * https://solr.apache.org/guide/7_3/the-standard-query-parser.html#escaping-special-characters as well as the characters '&lt;' and '&gt;' by
+     * adding a '\' before them. Special characters which already are escaped by '\' are not escaped any further making this method idempotent.
      *
      * @param string the string to escape
      * @return the escaped string. if the original string is null, null is also returned
@@ -1064,12 +1063,22 @@ public final class SolrTools {
         return refId;
     }
 
+    /**
+     * Extract locales from language-specific metadata fields on the given {@link StructElement}.
+     * 
+     * @param structElement
+     * @return List<Locale>
+     * @deprecated No longer in use, as it can produce a list of only irrelevant locales
+     */
+    @Deprecated(since = "24.09")
     public static List<Locale> getAllUsedLocales(StructElement structElement) {
-        return structElement.getMetadataFields().keySet().stream()
-        .filter(field -> field.matches(MULTILANGUAGE_FIELD_REGEX))
-        .map(SolrTools::getLanguage)
-        .map(Locale::forLanguageTag)
-        .toList();
+        return structElement.getMetadataFields()
+                .keySet()
+                .stream()
+                .filter(field -> field.matches(MULTILANGUAGE_FIELD_REGEX))
+                .map(SolrTools::getLanguage)
+                .map(Locale::forLanguageTag)
+                .toList();
     }
 
 }

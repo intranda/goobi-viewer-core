@@ -1333,6 +1333,7 @@ riot.tag2('collectionview', '<div each="{set, index in collectionSets}"><h2 if="
 this.collectionSets = [];
 
 this.on("mount", () => {
+	console.log("mounting collection view", this.opts);
     this.fetchCollections()
     .then( () => {
         let keys = this.collectionSets.map(set => set[0]);
@@ -1346,8 +1347,8 @@ this.on("mount", () => {
 
 this.fetchCollections = function() {
     let url = this.opts.url;
-    if(this.opts.baseCollection) {
-        url += this.opts.baseCollection + "/";
+    if(this.opts.basecollection) {
+        url += this.opts.basecollection + "/";
     }
     let separator = "?";
     if(this.opts.grouping) {
@@ -1369,11 +1370,13 @@ this.buildSets = function(collection) {
     .filter( member => viewerJS.iiif.isCollection(member))
     .sort( (m1,m2) => this.compareMembers(m1, m2, this.opts.sorting) )
     .forEach( member => {
-        let tagList = viewerJS.iiif.getTags(member, "grouping");
+        let tagList = viewerJS.iiif.getTags(collection, "grouping");
+        console.log("tags ", tagList);
         if(tagList == undefined || tagList.length == 0) {
             this.addToMap(map, "", member);
         } else {
             tagList.forEach(tag => {
+            	console.log("add to map ", tag, member);
                this.addToMap(map, tag, member);
             });
         }
@@ -3382,9 +3385,7 @@ this.on("mount", function() {
 	if(this.opts.toggleFeatures) {
 		this.initToggleLayer(this.geoMap, this.hitsLayer, this.opts.toggleFeatures);
 	}
-	if(this.opts.heatmap?.enabled) {
-		this.heatmap = this.initHeatmap(this.hitsLayer)
-	}
+
 });
 
 this.initMap = function() {
@@ -3641,28 +3642,19 @@ this.initHitsLayer = function(map) {
     this.opts.hitsLayer.language = viewerJS.translator.language;
 	let hitsLayer = new viewerJS.GeoMap.featureGroup(map, this.opts.hitsLayer);
 	map.layers.push(hitsLayer);
-
 	hitsLayer.init(this.opts.features, false);
-	hitsLayer.onFeatureClick.subscribe(f => {
-		if(f.properties && f.properties.link) {
-			$(this.opts.search?.loader).show();
-			window.location.assign(f.properties.link);
-		}
-	})
-
 	return hitsLayer;
 }.bind(this)
 
 this.initHeatmap = function(hitsLayer) {
-	let heatmapQuery = this.opts.heatmap.mainQuery;
-	let heatmapFacetQuery = this.opts.heatmap.facetQuery;
-
-	let heatmap = L.solrHeatmap(this.opts.heatmap.heatmapUrl, this.opts.heatmap.featureUrl, hitsLayer, {
+	let heatmapQuery = this.opts.hitsLayer.heatmap.mainQuery;
+	let heatmapFacetQuery = this.opts.hitsLayer.heatmap.facetQuery;
+	let heatmap = L.solrHeatmap(this.opts.hitsLayer.heatmap.heatmapUrl, this.opts.hitsLayer.heatmap.featureUrl, hitsLayer, {
 		field: "WKT_COORDS",
 		type: "clusters",
 		filterQuery: heatmapQuery,
 		facetQuery: heatmapFacetQuery,
-		labelField: this.opts.heatmap.labelField,
+		labelField: this.opts.hitsLayer.heatmap.labelField,
 		queryAdapter: "goobiViewer"
 	});
 	heatmap.addTo(this.geoMap.map);
@@ -4098,17 +4090,16 @@ riot.tag2('slide_stories', '<div class="slider-{this.opts.stylename}__image" rio
 });
 
 
-riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}__container slider-{this.sliderInstance}"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}"></div></div><div if="{this.showPaginator}" ref="paginator" class="swiper-pagination swiper-pagination-wrapper slider-paginator-wrapper-{this.styleName} slider-pagination-{this.sliderInstance}"></div></div>', '', '', function(opts) {
+riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}__container slider-{this.sliderInstance}"><div class="swiper-wrapper slider-{this.styleName}__wrapper"><div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}"></div></div><div if="{this.showStandardPaginator}" ref="paginator" class="swiper-pagination swiper-pagination-wrapper slider-paginator-wrapper-{this.styleName} slider-pagination-{this.sliderInstance}"></div></div>', '', '', function(opts) {
 
 
-	this.showPaginator = true;
+	this.showStandardPaginator = true;
 
     this.on( 'mount', function() {
     	this.sliderInstance = this.opts.sliderinstanceid;
 
 		this.style = $.extend(true, {}, this.opts.styles.get(this.opts.style));
 
-     	console.log("mounting 'slider.tag' ", this.opts, this.style);
 		this.amendStyle(this.style);
 		this.styleName = this.opts.styles.getStyleNameOrDefault(this.opts.style);
 
@@ -4266,12 +4257,20 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
     this.amendStyle = function(styleConfig) {
     	let swiperConfig = styleConfig.swiperConfig;
     	if(swiperConfig.pagination && !swiperConfig.pagination.el)  {
-    		swiperConfig.pagination.el = '.slider-pagination-' + this.sliderInstance;
 
-    		this.showPaginator = true;
+    		if (this.opts.paginator != 'none') {
+    			swiperConfig.pagination.el = this.opts.paginator;
+
+        		this.showStandardPaginator = false;
+    		} else {
+        		swiperConfig.pagination.el = '.slider-pagination-' + this.sliderInstance;
+        		this.showStandardPaginator = true;
+
+    		}
 
     	} else {
-    		this.showPaginator = false;
+    		this.showStandardPaginator = false;
+
     	}
 	  	swiperConfig.a11y = {
 	  		prevSlideMessage: this.opts.prevslideMessage,
@@ -4597,6 +4596,7 @@ this.loadThumbnails = function(source, type) {
 				rxjs.from(source.structures)
 				.pipe(
 						rxjs.operators.map(range => this.getFirstCanvas(range, true)),
+						rxjs.operators.filter(canvas => canvas != undefined),
 						rxjs.operators.concatMap(canvas => this.loadCanvas(canvas))
 						)
 				.subscribe(item => this.addThumbnail(item));

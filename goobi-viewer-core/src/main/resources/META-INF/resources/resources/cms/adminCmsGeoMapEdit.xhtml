@@ -177,7 +177,7 @@
 											<!-- FEATURESET NAME -->
 											<div class="form-group form-row">
 												<div class="col-2 control-label admin__form-label">
-													<label for="featureset_#{status.index}_name">#{msg.name}:<span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
+													<label for="featureset_#{status.index}_name">#{msg.name}:</label>
 												</div>
 												<div class="col-9 admin__form-input cms-module__option-control">
 													
@@ -229,8 +229,11 @@
 										<!-- SOLR QUERY -->
 										<ui:fragment rendered="#{featureSet.queryResultSet}">
 											<div class="form-group form-row">
-												<div class="col-2 control-label admin__form-label">
+												<div jsf:id="queryLabel_solrQuery" rendered="#{featureSet.type == 'SOLR_QUERY'}" class="col-2 control-label admin__form-label">
 													<label for="solrQueryInput">#{msg.cms__geomaps__solrquery__label}:<span class="admin__label-required-field">(#{msg.form__required_field})</span></label>
+												</div>
+												<div jsf:id="queryLabel_searchResults" rendered="#{featureSet.type == 'SEARCH_RESULTS'}" class="col-2 control-label admin__form-label">
+													<label for="solrQueryInput">#{msg.cms__geomaps__searchresults__label}:</label>
 												</div>
 
 												<div class="col-9 admin__form-input cms-module__option-control">
@@ -350,6 +353,8 @@
 															itemLabel="#{msg.select__geomap_type__MANUAL}" />
 														<f:selectItem itemValue="SOLR_QUERY"
 															itemLabel="#{msg.select__geomap_type__SOLR_QUERY}" />
+														<f:selectItem itemValue="SEARCH_RESULTS"
+															itemLabel="#{msg.select__geomap_type__SEARCH_RESULTS}" />
 													</h:selectOneMenu>
 												</div>
 											<button class="btn btn--full"

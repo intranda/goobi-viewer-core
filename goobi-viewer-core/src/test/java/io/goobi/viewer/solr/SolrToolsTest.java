@@ -47,6 +47,8 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + PI_KLEIUNIV, null);
         Assertions.assertNotNull(doc);
         Map<String, List<String>> fieldValueMap = SolrTools.getFieldValueMap(doc);
+        Assertions.assertTrue(fieldValueMap.containsKey(SolrConstants.PI_TOPSTRUCT));
+        Assertions.assertTrue(fieldValueMap.containsKey(SolrConstants.MIMETYPE));
         Assertions.assertFalse(fieldValueMap.containsKey(SolrConstants.IMAGEURN_OAI));
         Assertions.assertFalse(fieldValueMap.containsKey("PAGEURNS"));
     }
@@ -68,7 +70,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies not return null as string if value is null
      */
     @Test
-    void getSingleFieldStringValue_shouldNotReturnNullAsStringIfValueIsNull() throws Exception {
+    void getSingleFieldStringValue_shouldNotReturnNullAsStringIfValueIsNull() {
         SolrDocument doc = new SolrDocument();
         Assertions.assertNull(SolrTools.getSingleFieldStringValue(doc, "MD_NOSUCHFIELD"));
     }
@@ -78,7 +80,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies return value as string correctly
      */
     @Test
-    void getSingleFieldStringValue_shouldReturnValueAsStringCorrectly() throws Exception {
+    void getSingleFieldStringValue_shouldReturnValueAsStringCorrectly() {
         SolrDocument doc = new SolrDocument();
         doc.addField("NUM", 1337);
         assertEquals("1337", SolrTools.getSingleFieldStringValue(doc, "NUM"));
@@ -89,7 +91,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies split fields correctly
      */
     @Test
-    void getSolrSortFieldsAsList_shouldSplitFieldsCorrectly() throws Exception {
+    void getSolrSortFieldsAsList_shouldSplitFieldsCorrectly() {
         List<StringPair> result = SolrTools.getSolrSortFieldsAsList("SORT_A; SORT_B, desc;SORT_C,asc", ";", ",");
         Assertions.assertNotNull(result);
         assertEquals(3, result.size());
@@ -106,7 +108,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies split single field correctly
      */
     @Test
-    void getSolrSortFieldsAsList_shouldSplitSingleFieldCorrectly() throws Exception {
+    void getSolrSortFieldsAsList_shouldSplitSingleFieldCorrectly() {
         List<StringPair> result = SolrTools.getSolrSortFieldsAsList("SORT_A , desc ", ";", ",");
         Assertions.assertNotNull(result);
         assertEquals(1, result.size());
@@ -119,7 +121,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies throw IllegalArgumentException if solrSortFields is null
      */
     @Test
-    void getSolrSortFieldsAsList_shouldThrowIllegalArgumentExceptionIfSolrSortFieldsIsNull() throws Exception {
+    void getSolrSortFieldsAsList_shouldThrowIllegalArgumentExceptionIfSolrSortFieldsIsNull() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> SolrTools.getSolrSortFieldsAsList(null, ";", ","));
     }
 
@@ -128,7 +130,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies throw IllegalArgumentException if splitFieldsBy is null
      */
     @Test
-    void getSolrSortFieldsAsList_shouldThrowIllegalArgumentExceptionIfSplitFieldsByIsNull() throws Exception {
+    void getSolrSortFieldsAsList_shouldThrowIllegalArgumentExceptionIfSplitFieldsByIsNull() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> SolrTools.getSolrSortFieldsAsList("bla,blup", null, ","));
     }
 
@@ -137,7 +139,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies throw IllegalArgumentException if splitNameOrderBy is null
      */
     @Test
-    void getSolrSortFieldsAsList_shouldThrowIllegalArgumentExceptionIfSplitNameOrderByIsNull() throws Exception {
+    void getSolrSortFieldsAsList_shouldThrowIllegalArgumentExceptionIfSplitNameOrderByIsNull() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> SolrTools.getSolrSortFieldsAsList("bla,blup", ";", null));
     }
 
@@ -232,7 +234,6 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     void getAvailableValuesForField_shouldReturnAllEntireValues() throws Exception {
         List<String> values = SolrTools.getAvailableValuesForField("MD_PLACEPUBLISH", SolrConstants.ISWORK + ":true");
         Assertions.assertFalse(values.isEmpty());
-        //values.forEach(System.out::println);
         Assertions.assertTrue(values.contains("Ateliersituation vor neutralem Hintergrund"));
     }
 
@@ -253,7 +254,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies return empty string if exceptionMessage empty
      */
     @Test
-    void extractExceptionMessageHtmlTitle_shouldReturnEmptyStringIfExceptionMessageEmpty() throws Exception {
+    void extractExceptionMessageHtmlTitle_shouldReturnEmptyStringIfExceptionMessageEmpty() {
         assertEquals("", SolrTools.extractExceptionMessageHtmlTitle(null));
     }
 
@@ -262,7 +263,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies return exceptionMessage if no pattern match found
      */
     @Test
-    void extractExceptionMessageHtmlTitle_shouldReturnExceptionMessageIfNoPatternMatchFound() throws Exception {
+    void extractExceptionMessageHtmlTitle_shouldReturnExceptionMessageIfNoPatternMatchFound() {
         String html = "<html><head></head><body><h1>foo</h1></body</html>";
         assertEquals(html, SolrTools.extractExceptionMessageHtmlTitle(html));
     }
@@ -272,7 +273,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies return title content correctly
      */
     @Test
-    void extractExceptionMessageHtmlTitle_shouldReturnTitleContentCorrectly() throws Exception {
+    void extractExceptionMessageHtmlTitle_shouldReturnTitleContentCorrectly() {
         String html = "<html><head><title>foo bar</title></head><body><h1>foo</h1></body</html>";
         assertEquals("foo bar", SolrTools.extractExceptionMessageHtmlTitle(html));
     }
@@ -302,7 +303,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies remove brace pairs
      */
     @Test
-    void cleanUpQuery_shouldRemoveBracePairs() throws Exception {
+    void cleanUpQuery_shouldRemoveBracePairs() {
         assertEquals("foo:bar", SolrTools.cleanUpQuery("{foo:bar}"));
     }
 
@@ -311,7 +312,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies keep join parameter
      */
     @Test
-    void cleanUpQuery_shouldKeepJoinParameter() throws Exception {
+    void cleanUpQuery_shouldKeepJoinParameter() {
         assertEquals("{!join from=PI_TOPSTRUCT to=PI}foo:bar", SolrTools.cleanUpQuery("{!join from=PI_TOPSTRUCT to=PI}foo:bar"));
     }
 
@@ -320,7 +321,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
      * @verifies keep single braces
      */
     @Test
-    void cleanUpQuery_shouldKeepSingleBraces() throws Exception {
+    void cleanUpQuery_shouldKeepSingleBraces() {
         assertEquals("\\{u.a.", SolrTools.cleanUpQuery("\\{u.a."));
     }
 }

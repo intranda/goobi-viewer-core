@@ -41,6 +41,10 @@ import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.serializer.WebAnnotationMetadataValueSerializer;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.model.cms.CMSCategory;
 
@@ -116,6 +120,33 @@ public class MediaItem {
             return null;
         }
 
+    }
+
+    public URI getImageURI() {
+        return Optional.ofNullable(image).map(IContent::getId).orElse(URI.create(""));
+    }
+
+    public URI getImageURI(int maxWidth, int maxHeight) {
+        if (image instanceof ImageContent && ((ImageContent) image).getService() != null) {
+            Scale scale;
+            if (maxHeight <= 0 && maxWidth <= 0) {
+                scale = Scale.MAX;
+            } else if (maxHeight <= 0) {
+                scale = new Scale.ScaleToWidth(maxWidth);
+            } else if (maxWidth <= 0) {
+                scale = new Scale.ScaleToHeight(maxHeight);
+            } else {
+                scale = new Scale.ScaleToBox(maxWidth, maxHeight);
+            }
+            URI serviceURI = ((ImageContent) image).getService().getId();
+            ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(serviceURI.toString());
+            String uri =
+                    IIIFUrlResolver.getIIIFImageUrl(serviceURI.toString(), Region.FULL_IMAGE, scale.toString(),
+                            Rotation.NONE.toString(), "default", ImageFileFormat.getMatchingTargetFormat(iff).getFileExtension());
+            return URI.create(uri);
+        } else {
+            return getImageURI();
+        }
     }
 
     /**

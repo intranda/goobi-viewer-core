@@ -56,6 +56,7 @@ import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMap.GeoMapType;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.maps.ManualFeatureSet;
+import io.goobi.viewer.model.maps.SearchResultFeatureSet;
 import io.goobi.viewer.model.maps.SolrFeatureSet;
 import io.goobi.viewer.model.translations.IPolyglott;
 
@@ -366,10 +367,18 @@ public class GeoMapBean implements Serializable, IPolyglott {
     public String getCoordinateSearchQueryTemplate(SolrFeatureSet featureSet) {
         String locationQuery = "WKT_COORDS:\"Intersects(POINT({lng} {lat})) distErrPct=0\"";
         String filterQuery = featureSet != null ? featureSet.getSolrQuery() : "-";
-        //        String query = locationQuery;
-        //        if (StringUtils.isNotBlank(filterQuery)) {
-        //            query = "(" + locationQuery + ") AND (" + filterQuery + ")";
-        //        }
+        URL mappedUrl = PrettyContext.getCurrentInstance()
+                .getConfig()
+                .getMappingById("newSearch5")
+                .getPatternParser()
+                .getMappedURL("-", filterQuery, "1", "-", locationQuery);
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
+    }
+
+    public static String getCoordinateSearchQuery(SolrFeatureSet featureSet, String longLat) {
+        String locationQuery = "WKT_COORDS:\"Intersects(POINT({longLat})) distErrPct=0\"";
+        locationQuery = locationQuery.replace("{longLat}", longLat);
+        String filterQuery = featureSet != null ? featureSet.getSolrQuery() : "-";
         URL mappedUrl = PrettyContext.getCurrentInstance()
                 .getConfig()
                 .getMappingById("newSearch5")
@@ -426,6 +435,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
                     break;
                 case "SOLR_QUERY":
                     map.addFeatureSet(new SolrFeatureSet());
+                    break;
+                case "SEARCH_RESULTS":
+                    map.addFeatureSet(new SearchResultFeatureSet());
                     break;
                 default:
                     break;

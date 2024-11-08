@@ -364,7 +364,7 @@ public final class NetTools {
      * @param body a {@link java.lang.String} object.
      * @return true if mail sent successfully; false otherwise
      * @throws java.io.UnsupportedEncodingException if any.
-     * @throws javax.mail.MessagingException if any.
+     * @throws jakarta.mail.MessagingException if any.
      */
     public static boolean postMail(List<String> recipients, List<String> cc, List<String> bcc, String subject, String body)
             throws UnsupportedEncodingException, MessagingException {

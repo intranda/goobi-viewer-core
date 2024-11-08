@@ -48,7 +48,6 @@ public class EmptyPageLoader extends AbstractPageLoader implements Serializable 
 
     private static final Logger logger = LogManager.getLogger(EmptyPageLoader.class);
 
-    private String pi;
     private Map<Integer, PhysicalElement> pages = new HashMap<>();
     private int firstPageOrder = 1;
     private int lastPageOrder = 1;
@@ -66,7 +65,6 @@ public class EmptyPageLoader extends AbstractPageLoader implements Serializable 
 
     EmptyPageLoader(StructElement topElement) throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("EmptyPageLoader, skipping page loading...");
-        pi = topElement.getPi();
         pages = new HashMap<>();
     }
 
@@ -102,7 +100,7 @@ public class EmptyPageLoader extends AbstractPageLoader implements Serializable 
 
     /** {@inheritDoc} */
     @Override
-    public Long getOwnerIddocForPage(int pageOrder) throws IndexUnreachableException, PresentationException {
+    public String getOwnerIddocForPage(int pageOrder) throws IndexUnreachableException, PresentationException {
         return null;
     }
 

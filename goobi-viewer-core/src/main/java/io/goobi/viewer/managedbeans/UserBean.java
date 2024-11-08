@@ -105,6 +105,9 @@ public class UserBean implements Serializable {
 
     private Timer sessionTimeoutMonitorTimer;
 
+    /**
+     * The logged in user
+     */
     private User user;
     private String nickName;
     private String email;
@@ -563,15 +566,20 @@ public class UserBean implements Serializable {
             try {
                 BeanUtils.getBeanFromRequest(request, "collectionViewBean", CollectionViewBean.class)
                         .ifPresentOrElse(CollectionViewBean::invalidate, () -> {
-                            throw new IllegalStateException("Cannot access collectionViewBean to invalidate");
+                            logger.debug("Cannot invalidate CollectionViewBean. Not instantiated yet");
                         });
                 BeanUtils.getBeanFromRequest(request, "activeDocumentBean", ActiveDocumentBean.class)
                         .ifPresentOrElse(ActiveDocumentBean::resetAccess, () -> {
-                            throw new IllegalStateException("Cannot access activeDocumentBean to resetAccess");
+                            logger.debug("Cannot reset access permissions in ActiveDocumentBean. Not instantiated yet");
                         });
                 BeanUtils.getBeanFromRequest(request, "sessionBean", SessionBean.class)
                         .ifPresentOrElse(SessionBean::cleanSessionObjects, () -> {
-                            throw new IllegalStateException("Cannot access sessionBean to cleanSessionObjects");
+                            logger.debug("Cannot clear session storage in SessionBean. Not instantiated yet");
+                        });
+
+                BeanUtils.getBeanFromRequest(request, "displayConditions", DisplayConditions.class)
+                        .ifPresentOrElse(DisplayConditions::clearCache, () -> {
+                            logger.debug("Cannot clear DosplayConditions cache. Not instantiated yet");
                         });
             } catch (Exception e) {
                 logger.warn(e.getMessage());

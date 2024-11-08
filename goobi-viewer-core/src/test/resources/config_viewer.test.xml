@@ -126,7 +126,8 @@
                 clientSecret="secret_facebook" image="facebook.png" />
             <provider type="openId" name="Custom OIDC" endpoint="https://example.com/oauth/auth"
                 tokenEndpoint="https://example.com/oauth/token" redirectionEndpoint="https://example.com/viewer/oauth"
-                scope="email" clientId="my_id" clientSecret="my_secret" image="custom.png" />
+                scope="email" clientId="my_id" clientSecret="my_secret" tPLoginUrl="https://examplethirdparty.com/viewer/api" 
+                tPLoginApiKey="exampleApiKey" tPLoginScope="tPscope" tPLoginReqParamDef="tPparam" tPLoginClaim="tPclaim" image="custom.png" />
             <provider enabled="false" type="openId" name="incomplete" endpoint="https://graph.facebook.com/oauth"
                 clientId="" image="facebook.png" />
             <provider type="userPassword" name="VuFind" label="VuFind-label" endpoint="https://vuFind.example/Api/User/Auth" image="vufind.png" timeout="7000">
@@ -466,7 +467,7 @@
 				    <field>MD_PUBLISHER</field>
 				    <field>MD_PLACEPUBLISH</field>
 				    <field range="true">MD_YEARPUBLISH</field>
-				    <field>MD_SHELFMARK</field>
+				    <field replaceRegex=" " replaceWith="_">MD_SHELFMARK</field>
 				    <field label="-----">#SEPARATOR1#</field>
 				    <field>MD_FOO_LANG_EN</field>
 				    <field>MD_FOO_LANG_DE</field>
@@ -607,6 +608,11 @@
 					<collection>d</collection>
 				</sortingList>
 				<collection>collection1</collection>
+				
+				<sortOrder collections="zeitschriften">alphanumerical_desc</sortOrder>
+				<sortOrder collections="zeitungen\..*">alphanumerical_asc</sortOrder>
+				<sortOrder collections="jahrbuecher">numerical_desc</sortOrder>
+								
 			</sorting>
 
 			<!-- Collection names listed here are hidden in the collection view. It 
@@ -701,6 +707,22 @@
                 </metadata>
             </template>
         </metadataView>
+        
+        <metadataList type="page">
+            <template name="_DEFAULT">
+                <metadata label="MD_COPYRIGHT_IMAGE" value="">
+                    <param type="field" key="MD_COPYRIGHT_IMAGE" />
+                </metadata>
+                <metadata label="MD_TECH_BYTE_ORDER" value="">
+                    <param type="field" key="MD_TECH_BYTE_ORDER" />
+                </metadata>
+            </template>
+            <template name="Chapter">
+                <metadata label="MD_COPYRIGHT_IMAGE" value="">
+                    <param type="field" key="MD_COPYRIGHT_IMAGE" />
+                </metadata>
+            </template>
+        </metadataList>
 
 		<!-- metadataList[@type="search"]: defines metadata that is displayed in the search 
 			hitlist. The syntax is the same as in metadataView -->
@@ -727,9 +749,7 @@
 					<param type="field" key="DC" />
 				</metadata>
 			</template>
-
 		</metadataList>
-
 
 		<!-- metadataList[@type="sidebar"]: defines metadata that are displayed in the sidebar. -->
 		<metadataList type="sideBar">
@@ -1461,7 +1481,7 @@
     <archives enabled="true" lazyLoadingThreshold="100">
         <nodeTypes>
 			<node name="collection" icon="fa fa-folder-open-o" />
-            <node name="folder" icon="fa fa-folder-open-o" />
+            <node name="folder" default="true" icon="fa fa-folder-open-o" />
             <node name="class"  icon="fa fa-files-o" />
             <node name="file"   icon="fa fa-file-text-o" />
             <node name="image"  icon="fa fa-file-image-o" />
@@ -1490,6 +1510,23 @@
     
     <activeMQ enabled="true" numberOfParallelMessages="2"/>
 
+    <!-- settings for the developer backend page, allowing the download of instance-specific data for development purposes
+    and publishing the theme git repository to the viewer instance -->
+    <developer>
+        <!-- these scripts utilize a variable system using '{xyz}' expressions representing values from the viewer configuration file. The following variables are used:
+        {config-folder-path}: The path to the viewer configuration folder, usually '/opt/digiverso/viewer/config/'
+        {theme-path}: The path given by the configuration in viewer/theme/rootPath
+        {base-path}: The base path of the viewer installation, given by the 'viewer/viewerHome' config property. Usually this is '/opt/digiverso/viewer/'
+        {solr-url}: The configured url to the solr, given in viewer/urls/solr. -->
+        <scripts>
+            <!-- bash script to call when the 'pull theme' action is performed on the developer page. The script's output is presented on the page after the operation -->
+            <!-- pullTheme/@enabled: If true, the theme can be update from the Git repository from the admin backend. Default is true. -->
+            <pullTheme enabled="false">{config-folder-path}/script_theme-pull.sh {theme-path}/../../../../</pullTheme>
+            <!-- bash script to call when the 'download' action is performed on the developer page.
+            If the output of the script is a file, it is downloaded to the client and then deleted on the server -->
+            <createDeveloperPackage>{config-folder-path}/script_create_package.sh -d viewer -f {base-path} -s {solr-url} </createDeveloperPackage>
+        </scripts>
+    </developer>
 
 </config>
 

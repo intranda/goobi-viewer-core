@@ -389,7 +389,7 @@ public final class TocMaker {
             String thumbnailUrl = null;
             if (StringUtils.isNotEmpty(topStructPi) && StringUtils.isNotEmpty(thumbnailFile)) {
                 ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
-                StructElement struct = new StructElement(Long.valueOf(volumeIddoc), doc);
+                StructElement struct = new StructElement(volumeIddoc, doc);
                 thumbnailUrl = thumbs.getThumbnailUrl(struct, ANCHOR_THUMBNAIL_WIDTH, ANCHOR_THUMBNAIL_HEIGHT);
             }
             label.mapEach(StringEscapeUtils::unescapeHtml4);
@@ -428,6 +428,8 @@ public final class TocMaker {
         }
 
         Map<Integer, SolrDocument> ret = new TreeMap<>();
+        int fallbackOrder = 0;
+        groupMemberDocs = groupMemberDocs.stream().sorted((d1, d2) -> getLabel(d1).compareTo(getLabel(d2))).toList();
         for (SolrDocument doc : groupMemberDocs) {
             String groupIdField = null;
             for (String field : groupIdFields) {
@@ -444,12 +446,20 @@ public final class TocMaker {
             Integer order = (Integer) doc.getFieldValue(groupSortField);
             if (order == null) {
                 logger.warn("No {} on group member {}", groupSortField, doc.getFieldValue("PI"));
-                order = 0;
+                order = fallbackOrder++;
             }
             ret.put(order, doc);
         }
 
         return ret;
+    }
+
+    private static String getLabel(SolrDocument doc) {
+        String label = SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL);
+        if (StringUtils.isBlank(label)) {
+            label = SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE);
+        }
+        return Optional.ofNullable(label).orElse("");
     }
 
     /**
@@ -541,7 +551,7 @@ public final class TocMaker {
                 logger.trace("volume mime type: {}", volumeMimeType);
 
                 ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
-                StructElement struct = new StructElement(Long.valueOf(volumeIddoc), volumeDoc);
+                StructElement struct = new StructElement(volumeIddoc, volumeDoc);
                 thumbnailUrl = thumbs.getThumbnailUrl(struct, ANCHOR_THUMBNAIL_WIDTH, ANCHOR_THUMBNAIL_HEIGHT);
 
                 String footerId = getFooterId(volumeDoc, DataManager.getInstance().getConfiguration().getWatermarkIdField());
@@ -684,8 +694,9 @@ public final class TocMaker {
             } else {
                 queryValue = pi;
             }
-            // logger.trace("sort {} by {}", SolrSearchIndex.getSingleFieldStringValue(doc, LuceneConstants.DOCSTRCT), DataManager.getInstance() //NOSONAR Debug
-            // .getConfiguration().getTocVolumeSortFieldsForTemplate(SolrSearchIndex.getSingleFieldStringValue(doc, LuceneConstants.DOCSTRCT)));
+            // logger.trace("sort {} by {}", SolrSearchIndex.getSingleFieldStringValue(doc, LuceneConstants.DOCSTRCT), //NOSONAR Debug
+            //  DataManager.getInstance().getConfiguration().getTocVolumeSortFieldsForTemplate
+            // (SolrSearchIndex.getSingleFieldStringValue(doc, LuceneConstants.DOCSTRCT)));
             // TODO determine child docstruct type before fetching the child docs to determine the required fields
             SolrDocumentList childDocs = DataManager.getInstance()
                     .getSearchIndex()

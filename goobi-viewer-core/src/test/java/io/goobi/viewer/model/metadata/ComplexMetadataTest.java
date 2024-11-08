@@ -40,8 +40,8 @@ class ComplexMetadataTest {
     private static final String TITLE_DE = "Der Titel";
     private static final String MDTYPE = "PERSON";
     private static final String PI = "PI12345";
-    private static final Long IDDOC = 456l;
-    private static final Long IDDOC_OWNER = 123l;
+    private static final String IDDOC = "456";
+    private static final String IDDOC_OWNER = "123";
 
     @Test
     void testSingleDoc() {

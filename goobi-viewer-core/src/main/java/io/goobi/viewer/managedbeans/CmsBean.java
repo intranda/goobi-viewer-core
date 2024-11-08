@@ -313,7 +313,7 @@ public class CmsBean implements Serializable {
      *
      * @deprecated This method only remains to avoid pages failing to load which still call this method
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public void forwardToCMSPage() {
         //do nothing
     }
@@ -1483,6 +1483,7 @@ public class CmsBean implements Serializable {
             this.solrSortFields = new ArrayList<>();
             this.solrSortFields.add(SolrConstants.SORT_RELEVANCE);
             this.solrSortFields.add(SolrConstants.SORT_RANDOM);
+            this.solrSortFields.add(SolrConstants.CURRENTNOSORT);
             this.solrSortFields.addAll(DataManager.getInstance().getSearchIndex().getAllSortFieldNames());
         }
         return this.solrSortFields;
@@ -1702,7 +1703,7 @@ public class CmsBean implements Serializable {
      */
     public boolean mayEdit(CMSPage page) throws DAOException, PresentationException, IndexUnreachableException {
 
-        if (userBean.getUser() != null) {
+        if (userBean.getUser() != null && page != null) {
             synchronized (editablePages) {
                 Boolean mayEdit = editablePages.get(page.getId());
                 if (mayEdit == null) {

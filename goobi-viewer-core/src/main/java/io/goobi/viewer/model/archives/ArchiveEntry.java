@@ -39,10 +39,8 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
-import io.goobi.viewer.model.viewer.StructElement;
 
 /**
  * Single archive tree node.
@@ -57,6 +55,7 @@ public class ArchiveEntry implements Serializable {
     private ArchiveEntry parentNode;
     // list contains all child elements
     private List<ArchiveEntry> subEntryList = new ArrayList<>();
+
     // order number of the current element within the current hierarchy
     private Integer orderNumber;
     // hierarchy level
@@ -96,59 +95,9 @@ public class ArchiveEntry implements Serializable {
 
     private SolrDocument doc;
 
-    private boolean metadataLoaded = false;
-
     private boolean childrenFound = false;
 
     private boolean childrenLoaded = false;
-
-    /* 1. metadata for Identity Statement Area */
-    //    Reference code(s)
-    //    Title
-    //    private String unittitle; // did/unittitle
-    //    Date(s)
-    //    Level of description
-    //    Extent and medium of the unit of description (quantity, bulk, or size)
-    private List<Metadata> identityStatementAreaList = new ArrayList<>();
-
-    /* 2. Context Area */
-    //    Name of creator(s)
-    //    Administrative | Biographical history
-    //    Archival history
-    //    Immediate source of acquisition or transfer
-    private List<Metadata> contextAreaList = new ArrayList<>();
-
-    /* 3. Content and Structure Area */
-    //    Scope and content
-    //    Appraisal, destruction and scheduling information
-    //    Accruals
-    //    System of arrangement
-    private List<Metadata> contentAndStructureAreaAreaList = new ArrayList<>();
-
-    /* 4. Condition of Access and Use Area */
-    //    Conditions governing access
-    //    Conditions governing reproduction
-    //    Language | Scripts of material
-    //    Physical characteristics and technical requirements
-    //    Finding aids
-    private List<Metadata> accessAndUseAreaList = new ArrayList<>();
-
-    /* 5. Allied Materials Area */
-    //    Existence and location of originals
-    //    Existence and location of copies
-    //    Related units of description
-    //    Publication note
-    private List<Metadata> alliedMaterialsAreaList = new ArrayList<>();
-
-    /* 6. Note Area */
-    //    Note
-    private List<Metadata> notesAreaList = new ArrayList<>();
-
-    /* 7. Description Control Area */
-    //    Archivist's Note
-    //    Rules or Conventions
-    //    Date(s) of descriptions
-    private List<Metadata> descriptionControlAreaList = new ArrayList<>();
 
     /**
      * 
@@ -187,13 +136,6 @@ public class ArchiveEntry implements Serializable {
         }
 
         this.subEntryList = orig.subEntryList.stream().map(e -> new ArchiveEntry(e, this)).collect(Collectors.toList());
-        this.accessAndUseAreaList = orig.accessAndUseAreaList; //flat copy, because effectively final
-        this.alliedMaterialsAreaList = orig.alliedMaterialsAreaList; //flat copy, because effectively final
-        this.contentAndStructureAreaAreaList = orig.contentAndStructureAreaAreaList; //flat copy, because effectively final
-        this.contextAreaList = orig.contextAreaList; //flat copy, because effectively final
-        this.descriptionControlAreaList = orig.descriptionControlAreaList; //flat copy, because effectively final
-        this.identityStatementAreaList = orig.identityStatementAreaList; //flat copy, because effectively final
-        this.notesAreaList = orig.notesAreaList; //flat copy, because effectively final
 
         this.visible = orig.visible;
         this.expanded = orig.expanded;
@@ -201,7 +143,6 @@ public class ArchiveEntry implements Serializable {
         this.displayChildren = orig.displayChildren;
         this.displaySearch = orig.displaySearch;
         this.doc = orig.doc;
-        this.metadataLoaded = orig.metadataLoaded;
         this.childrenFound = orig.childrenFound;
         this.childrenLoaded = orig.childrenLoaded;
     }
@@ -226,16 +167,16 @@ public class ArchiveEntry implements Serializable {
     /**
      *
      * @param ignoreDisplayChildren
-     * @return List<ArchiveEntry>
+     * @return List<ArchiveEntry> LinkedList containing all nodes
      */
     public List<ArchiveEntry> getAsFlatList(boolean ignoreDisplayChildren) {
         // logger.trace("getAsFlatList"); //NOSONAR Debug
-        List<ArchiveEntry> list = new LinkedList<>();
+        List<ArchiveEntry> list = new LinkedList<>(); // LinkedList more efficient to create here due to the recursion
         list.add(this);
         if ((displayChildren || ignoreDisplayChildren) && subEntryList != null && !subEntryList.isEmpty()) {
             for (ArchiveEntry ds : subEntryList) {
                 list.addAll(ds.getAsFlatList(ignoreDisplayChildren));
-                // logger.trace("ID: {}, level {}", ds.getId(), ds.getHierarchyLevel()); //NOSONAR Debug
+                // logger.trace("ID: {}, level: {}, label: {}", ds.getId(), ds.getHierarchyLevel(), ds.getLabel()); //NOSONAR Debug
             }
         }
         return list;
@@ -378,82 +319,6 @@ public class ArchiveEntry implements Serializable {
                 sub.setChildrenVisibility(visible);
             }
         }
-    }
-
-    public void loadMetadata() {
-        logger.trace("loadMetadata ({})", label);
-        try {
-            // resetMetadata();
-            List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getArchiveMetadataForTemplate("");
-            // Collect metadata
-            if (doc != null && metadataList != null && !metadataList.isEmpty()) {
-                StructElement se = new StructElement(doc);
-                for (Metadata md : metadataList) {
-                    if (md.populate(se, null, null, null)) {
-                        addMetadataField(md);
-                    }
-                }
-            }
-        } catch (IndexUnreachableException | PresentationException e) {
-            logger.error(e.getMessage());
-        } finally {
-            metadataLoaded = true;
-        }
-    }
-
-    /**
-     * Add the metadata to the configured level.
-     *
-     * @param entry
-     * @param metadata
-     */
-    void addMetadataField(Metadata metadata) {
-        if (metadata == null) {
-            throw new IllegalArgumentException("metadata may not be null");
-        }
-
-        if (StringUtils.isBlank(getLabel()) && metadata.getLabel().equals("unittitle")) {
-            setLabel(metadata.getFirstValue());
-        }
-
-        switch (metadata.getType()) {
-            case 1:
-                getIdentityStatementAreaList().add(metadata);
-                if ("unitdate".equals(metadata.getLabel())) {
-                    this.unitdate = metadata.getFirstValue();
-                }
-                break;
-            case 2:
-                getContextAreaList().add(metadata);
-                break;
-            case 3:
-                getContentAndStructureAreaAreaList().add(metadata);
-                break;
-            case 4:
-                getAccessAndUseAreaList().add(metadata);
-                break;
-            case 5:
-                getAlliedMaterialsAreaList().add(metadata);
-                break;
-            case 6:
-                getNotesAreaList().add(metadata);
-                break;
-            case 7:
-                getDescriptionControlAreaList().add(metadata);
-                break;
-            default:
-                break;
-        }
-    }
-
-    void resetMetadata() {
-        getIdentityStatementAreaList().clear();
-        getContextAreaList().clear();
-        getContentAndStructureAreaAreaList().clear();
-        getAccessAndUseAreaList().clear();
-        getAlliedMaterialsAreaList().clear();
-        getNotesAreaList().clear();
-        getDescriptionControlAreaList().clear();
     }
 
     /**
@@ -653,53 +518,6 @@ public class ArchiveEntry implements Serializable {
         }
     }
 
-    public List<Metadata> getAllAreaLists() {
-        // logger.trace("getAllAreaLists ({})", id); //NOSONAR Debug
-        List<Metadata> ret = new ArrayList<>(getIdentityStatementAreaList().size()
-                + getContextAreaList().size()
-                + getContentAndStructureAreaAreaList().size()
-                + getAccessAndUseAreaList().size()
-                + getAlliedMaterialsAreaList().size()
-                + getNotesAreaList().size()
-                + getDescriptionControlAreaList().size());
-        ret.addAll(getIdentityStatementAreaList());
-        ret.addAll(getContextAreaList());
-        ret.addAll(getContentAndStructureAreaAreaList());
-        ret.addAll(getAccessAndUseAreaList());
-        ret.addAll(getAlliedMaterialsAreaList());
-        ret.addAll(getNotesAreaList());
-        ret.addAll(getDescriptionControlAreaList());
-
-        // logger.trace("getAllAreaLists END"); //NOSONAR Debug
-        return ret;
-    }
-
-    /**
-     * 
-     * @param index Area list index
-     * @return Appropriate metadata list for the given index
-     */
-    public List<Metadata> getAreaList(int index) {
-        switch (index) {
-            case 0:
-                return getIdentityStatementAreaList();
-            case 1:
-                return getContextAreaList();
-            case 2:
-                return getContentAndStructureAreaAreaList();
-            case 3:
-                return getAccessAndUseAreaList();
-            case 4:
-                return getAlliedMaterialsAreaList();
-            case 5:
-                return getNotesAreaList();
-            case 6:
-                return getDescriptionControlAreaList();
-            default:
-                return Collections.emptyList();
-        }
-    }
-
     /**
      * Checks whether access to the given node is allowed due to set access conditions.
      * 
@@ -726,108 +544,28 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the identityStatementAreaList
+     * Checks whether access to the given node is allowed due to set access conditions.
+     * 
+     * @return true if access granted; false otherwise
      */
-    public List<Metadata> getIdentityStatementAreaList() {
-        // logger.trace("getIdentityStatementAreaList ({})", id); //NOSONAR Debug
-        return identityStatementAreaList;
-    }
+    public boolean isImageAccessAllowed() {
+        // Return true for potential parents of nodes with images
+        if (!isContainsImage() || StringUtils.isEmpty(getAssociatedRecordPi())) {
+            return true;
+        }
 
-    /**
-     * @param identityStatementAreaList the identityStatementAreaList to set
-     */
-    public void setIdentityStatementAreaList(List<Metadata> identityStatementAreaList) {
-        this.identityStatementAreaList = identityStatementAreaList;
-    }
-
-    /**
-     * @return the contextAreaList
-     */
-    public List<Metadata> getContextAreaList() {
-        // logger.trace("getContextAreaList ({})", id); //NOSONAR Debug
-        return contextAreaList;
-    }
-
-    /**
-     * @param contextAreaList the contextAreaList to set
-     */
-    public void setContextAreaList(List<Metadata> contextAreaList) {
-        this.contextAreaList = contextAreaList;
-    }
-
-    /**
-     * @return the contentAndStructureAreaAreaList
-     */
-    public List<Metadata> getContentAndStructureAreaAreaList() {
-        // logger.trace("getContentAndStructureAreaAreaList ({})", id); //NOSONAR Debug
-        return contentAndStructureAreaAreaList;
-    }
-
-    /**
-     * @param contentAndStructureAreaAreaList the contentAndStructureAreaAreaList to set
-     */
-    public void setContentAndStructureAreaAreaList(List<Metadata> contentAndStructureAreaAreaList) {
-        this.contentAndStructureAreaAreaList = contentAndStructureAreaAreaList;
-    }
-
-    /**
-     * @return the accessAndUseAreaList
-     */
-    public List<Metadata> getAccessAndUseAreaList() {
-        // logger.trace("getAccessAndUseAreaList ({})", id); //NOSONAR Debug
-        return accessAndUseAreaList;
-    }
-
-    /**
-     * @param accessAndUseAreaList the accessAndUseAreaList to set
-     */
-    public void setAccessAndUseAreaList(List<Metadata> accessAndUseAreaList) {
-        this.accessAndUseAreaList = accessAndUseAreaList;
-    }
-
-    /**
-     * @return the alliedMaterialsAreaList
-     */
-    public List<Metadata> getAlliedMaterialsAreaList() {
-        // logger.trace("getAlliedMaterialsAreaList ({})", id); //NOSONAR Debug
-        return alliedMaterialsAreaList;
-    }
-
-    /**
-     * @param alliedMaterialsAreaList the alliedMaterialsAreaList to set
-     */
-    public void setAlliedMaterialsAreaList(List<Metadata> alliedMaterialsAreaList) {
-        this.alliedMaterialsAreaList = alliedMaterialsAreaList;
-    }
-
-    /**
-     * @return the notesAreaList
-     */
-    public List<Metadata> getNotesAreaList() {
-        // logger.trace("getNotesAreaList ({})", id); //NOSONAR Debug
-        return notesAreaList;
-    }
-
-    /**
-     * @param notesAreaList the notesAreaList to set
-     */
-    public void setNotesAreaList(List<Metadata> notesAreaList) {
-        this.notesAreaList = notesAreaList;
-    }
-
-    /**
-     * @return the descriptionControlAreaList
-     */
-    public List<Metadata> getDescriptionControlAreaList() {
-        // logger.trace("getDescriptionControlAreaList ({})", id); //NOSONAR Debug
-        return descriptionControlAreaList;
-    }
-
-    /**
-     * @param descriptionControlAreaList the descriptionControlAreaList to set
-     */
-    public void setDescriptionControlAreaList(List<Metadata> descriptionControlAreaList) {
-        this.descriptionControlAreaList = descriptionControlAreaList;
+        try {
+            boolean ret = AccessConditionUtils
+                    .checkAccessPermissionByIdentifierAndLogId(getAssociatedRecordPi(), null, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, BeanUtils.getRequest())
+                    .isGranted();
+            if (!ret) {
+                logger.trace("Image access denied to {}", label);
+            }
+            return ret;
+        } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
+            logger.error(e.getMessage(), e);
+            return false;
+        }
     }
 
     /**
@@ -863,6 +601,10 @@ public class ArchiveEntry implements Serializable {
      */
     public String getUnitdate() {
         return unitdate;
+    }
+
+    public void setUnitdate(String unitdate) {
+        this.unitdate = unitdate;
     }
 
     /**
@@ -965,13 +707,6 @@ public class ArchiveEntry implements Serializable {
     }
 
     /**
-     * @return the metadataLoaded
-     */
-    public boolean isMetadataLoaded() {
-        return metadataLoaded;
-    }
-
-    /**
      * @return the childrenFound
      */
     public boolean isChildrenFound() {
@@ -997,15 +732,6 @@ public class ArchiveEntry implements Serializable {
      */
     public void setChildrenLoaded(boolean childrenLoaded) {
         this.childrenLoaded = childrenLoaded;
-    }
-
-    public String getFieldValue(String field) {
-        return getAllAreaLists().stream()
-                .filter(entry -> entry.getLabel().equals(field))
-                .map(Metadata::getFirstValue)
-                .filter(StringUtils::isNotBlank)
-                .findAny()
-                .orElse(null);
     }
 
     @Override
@@ -1077,4 +803,5 @@ public class ArchiveEntry implements Serializable {
     public String toString() {
         return id;
     }
+
 }

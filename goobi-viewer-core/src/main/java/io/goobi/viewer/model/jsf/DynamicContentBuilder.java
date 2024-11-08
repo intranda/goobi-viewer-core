@@ -75,7 +75,7 @@ public class DynamicContentBuilder {
         } catch (FaceletException e) {
             throw new PresentationException(
                     "error building jsf custom component from file " + jsfComponent.toString() + ".\nCause: " + e.getMessage());
-        } catch (Exception e) {
+        } catch (NullPointerException | IllegalArgumentException | FacesException e) {
             throw new PresentationException("error building jsf custom component from file " + jsfComponent.toString()
                     + ". Please check if the file exists and is a valid jsf composite component");
         }
@@ -172,7 +172,7 @@ public class DynamicContentBuilder {
      * @param library
      * @return {@link UIComponent}
      */
-    private UIComponent loadCompositeComponent(UIComponent parent, String name, String library) {
+    private UIComponent loadCompositeComponent(UIComponent parent, String name, String library) throws FacesException {
         Resource componentResource = context.getApplication().getResourceHandler().createResource(name, library);
         if (componentResource == null) {
             return null;
@@ -187,7 +187,7 @@ public class DynamicContentBuilder {
         parent.pushComponentToEL(context, composite); // This makes #{cc} available.
         try {
             faceletContext.includeFacelet(implementation, componentResource.getURL());
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             throw new FacesException(e);
         } catch (ELException e) {
             logger.error("Error rendering composite", e);

@@ -177,7 +177,7 @@ public final class FileTools {
     /**
      * Reads a String from a byte array
      *
-     * @param bytes an array of {@link byte} objects.
+     * @param bytes byte[]
      * @param encoding a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
@@ -274,7 +274,7 @@ public final class FileTools {
      *
      * @param files Source files
      * @param zipFile Target file
-     * @param level Compression level 0-9
+     * @param level The compression level of the zip archive. Must be an integer in the range from 0 to 9
      * @should throw FileNotFoundException if file not found
      * @throws java.io.IOException if any.
      */
@@ -310,7 +310,7 @@ public final class FileTools {
      *
      * @param contentMap a {@link java.util.Map} object.
      * @param zipFile a {@link java.io.File} object.
-     * @param level a {@link java.lang.Integer} object.
+     * @param level The compression level of the zip archive. Must be an integer in the range from 0 to 9
      * @throws java.io.IOException if any.
      * @should throw FileNotFoundException if file not found
      */
@@ -346,7 +346,7 @@ public final class FileTools {
      *
      * @param output
      * @param contentMap a {@link java.util.Map} object.
-     * @param level a {@link java.lang.Integer} object.
+     * @param level The compression level of the zip archive. Must be an integer in the range from 0 to 9
      * @throws java.io.IOException if any.
      * @should throw FileNotFoundException if file not found
      */

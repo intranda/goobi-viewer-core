@@ -200,7 +200,7 @@ public class DataRetriever {
      */
     private static StructElement createStructElement(SolrDocument doc) {
         try {
-            return new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
+            return new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
         } catch (NumberFormatException | IndexUnreachableException e) {
             logger.error(e.toString());
             return null;

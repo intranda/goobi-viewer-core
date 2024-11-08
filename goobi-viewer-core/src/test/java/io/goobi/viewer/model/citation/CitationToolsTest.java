@@ -64,7 +64,7 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
                 () -> CitationTools.generateCitationLinksForLevel(allLinks, null, viewManager));
         Assertions.assertEquals("level may not be null", e.getMessage());
     }
-    
+
     /**
      * @see CitationLink#getValue(ViewManager)
      * @verifies throw IllegalArgumentException if viewManager null
@@ -89,8 +89,8 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
 
-        CitationLink link = new CitationLink("url", "record", "foo").setField(SolrConstants.PI);
-        CitationLink link2 = new CitationLink("internal", "record", "bar").setField(SolrConstants.PI);
+        CitationLink link = new CitationLink("url", "record", "clipboard", "foo").setField(SolrConstants.PI);
+        CitationLink link2 = new CitationLink("internal", "record", "clipboard", "bar").setField(SolrConstants.PI);
         Assertions.assertEquals(2, CitationTools.generateCitationLinksForLevel(Arrays.asList(link, link2), link.getLevel(), viewManager).size());
     }
 
@@ -103,7 +103,7 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
 
-        CitationLink link = new CitationLink("url", "record", "foo").setField(SolrConstants.PI);
+        CitationLink link = new CitationLink("url", "record", "clipboard", "foo").setField(SolrConstants.PI);
         CitationTools.generateCitationLinksForLevel(Collections.singletonList(link), link.getLevel(), viewManager);
         Assertions.assertEquals(PI_KLEIUNIV, link.getValue());
     }
@@ -117,7 +117,7 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
 
-        CitationLink link = new CitationLink("url", "docstruct", "foo").setField(SolrConstants.PI);
+        CitationLink link = new CitationLink("url", "docstruct", "clipboard", "foo").setField(SolrConstants.PI);
         CitationTools.generateCitationLinksForLevel(Collections.singletonList(link), link.getLevel(), viewManager);
         Assertions.assertEquals(PI_KLEIUNIV, link.getValue());
     }
@@ -132,7 +132,7 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(10);
 
-        CitationLink link = new CitationLink("url", "image", "foo").setField(SolrConstants.ORDER);
+        CitationLink link = new CitationLink("url", "image", "clipboard", "foo").setField(SolrConstants.ORDER);
         CitationTools.generateCitationLinksForLevel(Collections.singletonList(link), link.getLevel(), viewManager);
         Assertions.assertEquals("10", link.getValue());
     }
@@ -147,7 +147,7 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(10);
 
-        CitationLink link = new CitationLink("url", "image", "foo").setField(SolrConstants.PI).setTopstructValueFallback(true);
+        CitationLink link = new CitationLink("url", "image", "clipboard", "foo").setField(SolrConstants.PI).setTopstructValueFallback(true);
         CitationTools.generateCitationLinksForLevel(Collections.singletonList(link), link.getLevel(), viewManager);
         Assertions.assertEquals(PI_KLEIUNIV, link.getValue());
     }
@@ -162,7 +162,7 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(2);
 
-        CitationLink link = new CitationLink("url", "image", "foo").setField(SolrConstants.PI_TOPSTRUCT)
+        CitationLink link = new CitationLink("url", "image", "clipboard", "foo").setField(SolrConstants.PI_TOPSTRUCT)
                 .setPattern("https://viewer.goobi.io/resolver?id={value}&page={page}");
         CitationTools.generateCitationLinksForLevel(Collections.singletonList(link), link.getLevel(), viewManager);
         Assertions.assertEquals("https://viewer.goobi.io/resolver?id=" + PI_KLEIUNIV + "&page=2", link.getUrl(viewManager));

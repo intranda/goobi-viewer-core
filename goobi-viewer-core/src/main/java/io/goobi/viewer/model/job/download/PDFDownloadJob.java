@@ -139,6 +139,7 @@ public class PDFDownloadJob extends DownloadJob {
         return "/viewerpdf";
     }
 
+    @Deprecated(since = "24.10")
     @Override
     protected void triggerCreation() throws PresentationException, IndexUnreachableException {
         ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());

@@ -56,6 +56,7 @@ var viewerJS = ( function( viewer ) {
             	featureUrl: "/viewer/api/v1/index/spatial/search/{solrField}",
             	filterQuery: "BOOL_WKT_COORDS:*",
 		        labelField: "LABEL",
+                queryAdapter: "goobiViewer",
             },
             style: {
             	stroke: true,
@@ -150,11 +151,10 @@ var viewerJS = ( function( viewer ) {
                 .subscribe(this.onFeatureMove);
                 rxjs.fromEvent(layer, "click").pipe(rxjs.operators.map(e => layer.feature)).subscribe(this.onFeatureClick);
 
-
 				let title = viewerJS.getMetadataValue(feature.properties.title, this.config.language);
        			let desc = viewerJS.getMetadataValue(feature.properties.description, this.config.language);      
        			if(this.config.popover && feature.properties && (title || desc || this.config.emptyMarkerMessage)) {                    
-                    if(this.config.popoverOnHover) {                    
+                    if(this.config.popoverOnHover) {     
                         rxjs.fromEvent(layer, "mouseover").subscribe(() => layer.openPopup());
                         rxjs.fromEvent(layer, "mouseout").subscribe(() => layer.closePopup());
                     }
@@ -209,7 +209,7 @@ viewer.GeoMap.featureGroup.prototype.initHeatmap = function() {
         	    type: "clusters",
         	    filterQuery: this.config.heatmap.filterQuery,
         	    labelField: this.config.heatmap.labelField,
-        	    queryAdapter: "goobiViewer"    
+        	    queryAdapter: this.config.heatmap.queryAdapter    
         	});
         	this.heatmap.addTo(this.geoMap.map);        
     }

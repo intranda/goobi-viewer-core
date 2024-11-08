@@ -170,16 +170,7 @@
 
             $( document ).ready( function() {
                 viewerJS.userComments.init();
-
-                jsf.ajax.addOnEvent( function( data ) {
-                    var ajaxstatus = data.status;
-
-                    switch ( ajaxstatus ) {
-                    case "success":
-                        viewerJS.userComments.init();
-                        break;
-                    }
-                } );
+                viewerJS.jsfAjax.success.subscribe(data => viewerJS.userComments.init());
             } );
         </script>
 	</ui:fragment>

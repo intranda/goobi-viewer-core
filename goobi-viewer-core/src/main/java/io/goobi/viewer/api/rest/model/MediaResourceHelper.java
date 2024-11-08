@@ -59,4 +59,5 @@ public class MediaResourceHelper {
         }
         return mimeType;
     }
+
 }

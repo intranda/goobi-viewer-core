@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.spi.CreationalContext;
@@ -319,11 +320,15 @@ public final class BeanUtils {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Object getBeanByName(String name, Class clazz) {
-        BeanManager bm = getBeanManager();
-        if (bm != null && bm.getBeans(name).iterator().hasNext()) {
-            Bean bean = bm.getBeans(name).iterator().next();
-            CreationalContext ctx = bm.createCreationalContext(bean);
-            return bm.getReference(bean, clazz, ctx);
+        try {
+            BeanManager bm = getBeanManager();
+            if (bm != null && bm.getBeans(name).iterator().hasNext()) {
+                Bean bean = bm.getBeans(name).iterator().next();
+                CreationalContext ctx = bm.createCreationalContext(bean);
+                return bm.getReference(bean, clazz, ctx);
+            }
+        } catch (NullPointerException e) {
+            logger.error("Error when getting bean by name {}", e);
         }
 
         return null;
@@ -701,7 +706,7 @@ public final class BeanUtils {
             if (vb != null) {
                 try {
                     value = vb.getValue(context.getELContext());
-                } catch (Exception e) {
+                } catch (NullPointerException | ELException | IllegalStateException e) {
                     logger.error("Error getting the object {} from context: {}", expr, e.getMessage());
                 }
             }

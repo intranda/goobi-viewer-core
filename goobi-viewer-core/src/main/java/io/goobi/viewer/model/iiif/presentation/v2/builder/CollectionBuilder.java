@@ -76,8 +76,8 @@ public class CollectionBuilder extends AbstractBuilder {
      * Required field to create manifest stubs for works in collection
      */
     public static final String[] CONTAINED_WORKS_QUERY_FIELDS =
-            { SolrConstants.PI, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT,
-                    SolrConstants.IDDOC };
+            { SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LABEL, SolrConstants.MIMETYPE, SolrConstants.PI, SolrConstants.TITLE,
+                    SolrConstants.DOCSTRCT, SolrConstants.IDDOC };
     /** Constant <code>RSS_FEED_LABEL="Rss feed"</code> */
     public static final String RSS_FEED_LABEL = "Rss feed";
     /** Constant <code>RSS_FEED_FORMAT="Rss feed"</code> */
@@ -126,13 +126,12 @@ public class CollectionBuilder extends AbstractBuilder {
         collectionView.setIgnore(ignoreCollections);
         //        CollectionView collectionView = createCollectionView(collectionField, facetField, splittingChar);
         if (StringUtils.isNotBlank(topElement) && !"-".equals(topElement)) {
-            collectionView.setTopVisibleElement(topElement);
-            collectionView.setDisplayParentCollections(false);
+            collectionView.setBaseElementName(topElement);
         }
         collectionView.calculateVisibleDcElements(true);
 
         HierarchicalBrowseDcElement baseElement = null;
-        if (StringUtils.isNotBlank(collectionView.getTopVisibleElement())) {
+        if (StringUtils.isNotBlank(topElement)) {
             baseElement = collectionView.getCompleteList()
                     .stream()
                     .filter(element -> topElement.startsWith(element.getName()))
@@ -149,7 +148,6 @@ public class CollectionBuilder extends AbstractBuilder {
              * First make sure that the base Element is contained within visibleElements, then recalculate the visibleElements to
              * get CMS-Information for the base Element and its children
              */
-            collectionView.setDisplayParentCollections(true);
             collectionView.calculateVisibleDcElements(true);
             collection = createCollection(collectionView, baseElement, getCollectionURI(collectionField, baseElement.getName()));
 

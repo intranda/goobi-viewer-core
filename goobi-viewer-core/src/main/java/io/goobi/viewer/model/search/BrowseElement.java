@@ -33,7 +33,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -73,7 +72,6 @@ import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.StructElementStub;
 import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrTools;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 
@@ -103,7 +101,7 @@ public class BrowseElement implements Serializable {
     private String originalFieldName = null;
     /** Type of the docstruct. */
     private String docStructType;
-    private long iddoc;
+    private String iddoc;
     private String thumbnailUrl;
     private int imageNo;
     @JsonIgnore
@@ -394,74 +392,8 @@ public class BrowseElement implements Serializable {
         }
 
         for (Metadata md : metadataList) {
-            for (MetadataParameter param : md.getParams()) {
-                StructElement elementToUse = structElement;
-                if (StringUtils.isNotEmpty(param.getSource())) {
-                    StructElement tempElement = structElement;
-                    while (tempElement != null) {
-                        if (param.getSource().equals(tempElement.getDocStructType())) {
-                            elementToUse = tempElement;
-                            break;
-                        }
-                        tempElement = tempElement.getParent();
-                    }
-                } else if (MetadataParameterType.TOPSTRUCTFIELD.equals(param.getType()) && topStructElement != null) {
-                    // Use topstruct value, if the parameter has the type "topstructfield"
-                    elementToUse = topStructElement;
-                } else if (MetadataParameterType.ANCHORFIELD.equals(param.getType())) {
-                    // Use anchor value, if the parameter has the type "anchorfield"
-                    if (anchorStructElement != null) {
-                        elementToUse = anchorStructElement;
-                    } else {
-                        // Add empty parameter if there is no anchor
-                        md.setParamValue(0, md.getParams().indexOf(param), Collections.singletonList(""), null, null, null, null, locale);
-                        continue;
-                    }
-                }
-                int count = 0;
-                List<String> metadataValues = elementToUse.getMetadataValues(param.getKey());
-                // If the current element does not contain metadata values, look in the topstruct
-                if (metadataValues.isEmpty()) {
-                    if (topStructElement != null && !topStructElement.equals(elementToUse)
-                            && !MetadataParameterType.ANCHORFIELD.equals(param.getType()) && param.isTopstructValueFallback()) {
-                        metadataValues = topStructElement.getMetadataValues(param.getKey());
-                        // logger.debug("Checking topstruct metadata: " + topStructElement.getDocStruct()); //NOSONAR Debug
-                    } else {
-                        md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(""), null, null, null, null, locale);
-                        count++;
-                    }
-                }
-                // Set actual values
-                for (final String val : metadataValues) {
-                    if (count >= md.getNumber() && md.getNumber() != -1 || count >= number) {
-                        break;
-                    }
-                    String value = val;
-                    // Apply replace rules
-                    if (!param.getReplaceRules().isEmpty()) {
-                        value = MetadataTools.applyReplaceRules(value, param.getReplaceRules(), topStructElement.getPi());
-                    }
-                    // Truncate long values
-                    if (length > 0 && value.length() > length) {
-                        value = new StringBuilder(value.substring(0, length - 3)).append("...").toString();
-                    }
-                    // Add highlighting
-                    if (searchTerms != null) {
-                        if (searchTerms.get(md.getLabel()) != null) {
-                            value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(md.getLabel()));
-                        } else if (md.getLabel().startsWith("MD_SHELFMARK") && searchTerms.get("MD_SHELFMARKSEARCH") != null) {
-                            value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get("MD_SHELFMARKSEARCH"));
-                        }
-                        if (searchTerms.get(SolrConstants.DEFAULT) != null) {
-                            value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.DEFAULT));
-                        }
-                    }
-                    md.setParamValue(count, md.getParams().indexOf(param), Collections.singletonList(StringTools.intern(value)), null,
-                            param.isAddUrl() ? elementToUse.getUrl() : null, null, null, locale);
-                    this.existingMetadataFields.add(md.getLabel());
-                    count++;
-                }
-            }
+            md.populate(structElement, anchorStructElement, String.valueOf(structElement.getLuceneId()), md.getSortFields(), searchTerms, length,
+                    locale);
         }
     }
 
@@ -515,10 +447,11 @@ public class BrowseElement implements Serializable {
      */
     public IMetadataValue createMultiLanguageLabel(StructElement structElement) {
         MultiLanguageMetadataValue value = new MultiLanguageMetadataValue();
-        List<Locale> usedLocales = Optional.ofNullable(SolrTools.getAllUsedLocales(structElement))
+        List<Locale> usedLocales = Optional.ofNullable(ViewerResourceBundle.getAllLocales())
                 .filter(l -> !l.isEmpty())
-                .orElse(ViewerResourceBundle.getAllLocales());
+                .orElse(Collections.singletonList(Locale.ENGLISH));
         for (Locale loc : usedLocales) {
+            // logger.trace("Used locale: {}", loc.getLanguage()); //NOSONAR Debug
             StringBuilder sbLabel = new StringBuilder(generateLabel(structElement, loc));
             String subtitle = structElement.getMetadataValueForLanguage(SolrConstants.SUBTITLE, loc.getLanguage());
             if (StringUtils.isNotEmpty(subtitle)) {
@@ -823,7 +756,7 @@ public class BrowseElement implements Serializable {
      *
      * @return the iddoc
      */
-    public long getIddoc() {
+    public String getIddoc() {
         return iddoc;
     }
 
@@ -1294,7 +1227,7 @@ public class BrowseElement implements Serializable {
         return getMetadataListForLocale(field, BeanUtils.getLocale()).stream()
                 .flatMap(md -> md.getValues().stream())
                 .map(MetadataValue::getCombinedValue)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public String getFirstMetadataValue(String field) {

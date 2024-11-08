@@ -121,8 +121,7 @@ public class ExternalFilesDownloader {
     private Path downloadFromUrl(URI uri) throws IOException {
         logger.trace("download from url {}", uri);
         switch (uri.getScheme()) {
-            case "http":
-            case "https":
+            case "http", "https":
                 return downloadHttpResource(uri);
             case "file":
                 return downloadFileResource(uri);
@@ -164,6 +163,7 @@ public class ExternalFilesDownloader {
                     }
                 }
             case 401:
+                // fallthrough
             default:
                 logger.warn("Error code: {}", response.getStatusLine().getStatusCode());
                 throw new IOException(response.getStatusLine().getReasonPhrase());

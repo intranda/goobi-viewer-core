@@ -51,7 +51,7 @@
 							<f:passThroughAttribute name="data-toggle" value="tooltip" />
 							<f:passThroughAttribute name="data-placement" value="top" />
 							<f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
-							<f:ajax render="archivesForm" />
+							<f:ajax render="archivesForm" onevent="fadeOutAllTooltips" />
 							#{msg.allClose}
 						</button>
 					</div>
@@ -63,9 +63,9 @@
 									data-id="id_#{entry.id}"
 									style="padding-left: #{entry.hierarchyLevel * indent}px">
 									<!-- EXPAND OPTION -->
-									<div class="archives-tree__expandable-icon #{entry.expanded == true ? '-expanded' : '-collapsed' }">
+									<div jsf:rendered="#{entry.hasChild}" class="archives-tree__expandable-icon-wrapper #{entry.expanded == true ? '-expanded' : '-collapsed' }">
 										<button
-											class="btn btn--clean"
+											class="btn btn--clean archives-tree__expandable-icon"
 											jsf:rendered="#{entry.hasChild}"
 											jsf:action="#{archiveBean.toggleEntryExpansion(entry)}">
 											<i class="fa fa-plus-square-o" aria-hidden="true"></i>
@@ -75,26 +75,79 @@
 												value="expanded" />
 											<f:ajax render="archivesForm" />
 										</button>
+										
 									</div>
 
+
 									<!-- TITLE -->
-									<div class="archives-tree__list-expandable-title #{entry.id == archiveTree.selectedEntry.id ? '-archives-selected' : ''} #{entry.searchHit ? '-archives-search-hit':''}">
-										<span class="fa-stack">
-											<i class="archives-tree__list-expandable-title-icon #{archiveBean.getNodeType(entry.nodeType).iconClass}" data-level="#{entry.nodeType}"></i>
+									
+									<div class="archives-tree__list-entry-title #{entry.id == archiveTree.selectedEntry.id ? '-archives-selected' : ''} #{entry.searchHit ? '-archives-search-hit':''}">
+										<span class="archives-tree__list-title-icon">
+											<span class="fa-stack">
+												<i class="archives-tree__list-entry-title-icon #{archiveBean.getNodeType(entry.nodeType).iconClass}" data-level="#{entry.nodeType}"></i>
+											</span>
 										</span>
+
+										<!-- JUMP MARKER FOR URL -->
 										<ui:fragment rendered="#{entry.id == archiveTree.selectedEntry.id}">
-											<a class="archives-tree__selected" name="selected"></a>
+											<a class="archives-tree__selected -anchor-jump-marker" name="selected"></a>
 										</ui:fragment>
-										<div>
-											<h:commandLink styleClass="archives-tree__inactive-title #{entry.containsImage != '' ? '-recordHasImage':''}"
-											action="#{archiveTree.toggleSelectedEntry(entry)}"
+										
+										
+										<div class="archives-tree__record-link-wrapper">
+										
+											<!-- (RECORD/ENTRY) HAS IMAGE -->
+										    <ui:fragment rendered="#{entry.containsImage}">
+											    <h:commandLink
+											        styleClass="archives-tree__record-link #{archiveTree.expandEntryOnSelection ? 'collapsible' : ''}"
+											        action="#{archiveTree.toggleSelectedEntry(entry)}"
 												    value="#{entry.label}"
+												    pt:data-trigger="expand"
 												    pt:data-select-entry="#{entry.id}">
 												    <f:ajax render="#{render}" />
-											</h:commandLink>
-											<div class="archives-tree__entry-date">
-											    <h:outputText value="#{entry.unitdate}" escape="false" />
-											</div>
+												    
+												    <ui:fragment rendered="#{entry.imageAccessAllowed}">
+													    <!-- SMALL IMAGE ICON INDICATOR BEHIND RECORD -->
+<!-- 													    <span data-toggle="tooltip" title="#{msg.archives__record_has_image__tooltip}" class="archives-tree__record-link-icon-wrapper"> -->
+<!-- 													    	<i class="fa fa-picture-o" aria-hidden="true"></i> -->
+<!-- 													    </span> -->
+													    <!-- TO DO: TOOLTIP ONLY FOR RECORD LEVEL, SEE ABOVE -->
+													    <span class="archives-tree__record-link-icon-wrapper-outer">
+														    <span class="archives-tree__record-link-icon-wrapper">
+														    	<i class="fa fa-picture-o" aria-hidden="true"></i>
+														    </span>
+													    </span>
+												    </ui:fragment>
+												    
+												    <ui:fragment rendered="#{!entry.imageAccessAllowed}">
+													    <!-- SMALL ICON IMAGE INDICATOR BEHIND RECORD (NO ACCESS) -->
+													    <span class="archives-tree__record-link-icon-wrapper-outer" data-toggle="tooltip" title="#{msg.archives__record_has_image_no_access__tooltip}">
+														    <span class="archives-tree__record-link-icon-wrapper">
+														    	<i class="fa fa-ban archives-tree__record-link-icon-ban" aria-hidden="true"></i>
+														    	<i class="fa fa-picture-o" aria-hidden="true"></i>
+														    </span>
+													    </span>
+												    </ui:fragment>
+
+											    </h:commandLink>
+											</ui:fragment>
+											<!-- RECORD HAS NO IMAGE -->
+                                            <ui:fragment rendered="#{!entry.containsImage}">
+                                                <h:commandLink styleClass="archives-tree__record-link #{archiveTree.expandEntryOnSelection ? 'collapsible' : ''}"
+                                                    action="#{archiveTree.toggleSelectedEntry(entry)}"
+                                                    value="#{entry.label}"
+                                                    pt:data-trigger="expand"
+                                                    pt:data-select-entry="#{entry.id}">
+                                                    <f:ajax render="#{render}" />
+
+                                                </h:commandLink>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{not empty entry.unitdate}">
+												<div class="archives-tree__entry-date">
+												    <h:outputText value="#{entry.unitdate}" escape="false" />
+												</div>
+											</ui:fragment>
+	
 										</div>
 									</div>
 
@@ -107,21 +160,38 @@
 			
 			<script>
 			<!--  JUMP TO LAST SAVED FOCUS ELEMENT -->
-			if (sessionStorage.getItem("focusElement") != null) {
-				var lastFocusElement = sessionStorage.getItem("focusElement");
+// 			var archiveBeanDataBaseState = '#{archiveBean.databaseState}';
+// 			if ((sessionStorage.getItem("focusElement") != null) &amp;&amp; (archiveBeanDataBaseState != 'ARCHIVES_LOADED')) {
+				if ((sessionStorage.getItem("focusElement") != null)) {
+				var lastFocusElement = sessionStorage.getItem("focusElement"); 
 				var lastFocusElementEscaped = lastFocusElement.replace(/:/g, '\\:');
 				$('#' + lastFocusElementEscaped).focus();
 			}
 			</script>
 			
 		</h:form>
-		
-		<!--  REMEMBER FOCUS AFTER AJAX FUNCTIONALITY -->
+
 		<script>
+			// REMEMBER FOCUS AFTER AJAX FUNCTIONALITY //
 			$(document).on('focus', 'button, a', function() {
 				sessionStorage.setItem("focusElement", (this.id));
 			});
+
+			// REMOVE TOOLTIPS AFTER AJAX ONCE SO IT IS NOT STUCK ON SCREEN BECAUSE COLLAPSE ALL BUTTON IDENTITY IS DESTROYED DUE TO THE CALL
+			function fadeOutAllTooltips() {
+				$('.bs-tooltip-top').remove();
+			}
+			
+			// EXPAND ENTRY IF ITEM IS PARENT AND NOT ALREADY EXPANDED
+		    $('[data-trigger="expand"]').on("click",function() {
+		        $(this).closest('.archives-tree__expandable-icon-wrapper.-collapsed').hide();
+		        console.log('triggered');
+		    });
+			
 		</script>
+		
+		
+		
 
 	</div>
 	<div id="AJAXLoader" class="archives-tree__loader"></div>

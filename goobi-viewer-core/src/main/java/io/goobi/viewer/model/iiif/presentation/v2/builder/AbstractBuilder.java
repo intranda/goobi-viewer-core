@@ -234,7 +234,7 @@ public abstract class AbstractBuilder {
     public String getMetsResolverUrl(StructElement ele) {
         try {
             return urls.getApplicationUrl() + "/metsresolver?id=" + ele.getPi();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             logger.error("Could not get METS resolver URL for {}.", ele.getLuceneId());
             Messages.error("errGetCurrUrl");
         }
@@ -252,7 +252,7 @@ public abstract class AbstractBuilder {
     public String getLidoResolverUrl(StructElement ele) {
         try {
             return urls.getApplicationUrl() + "/lidoresolver?id=" + ele.getPi();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             logger.error("Could not get LIDO resolver URL for {}.", ele.getLuceneId());
             Messages.error("errGetCurrUrl");
         }
@@ -271,7 +271,7 @@ public abstract class AbstractBuilder {
     public String getViewUrl(PhysicalElement ele, PageType pageType) {
         try {
             return urls.getApplicationUrl() + "/" + pageType.getName() + ele.getPurlPart();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             logger.error("Could not get METS resolver URL for page {} + in {}.", ele.getOrder(), ele.getPi());
             Messages.error("errGetCurrUrl");
         }
@@ -459,7 +459,7 @@ public abstract class AbstractBuilder {
                 if ("EVENT".equals(doc.get(SolrConstants.DOCTYPE))) {
                     events.add(doc);
                 } else {
-                    StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
+                    StructElement ele = new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
                     eles.add(ele);
                     try {
                         Integer pageNo = (Integer) doc.getFieldValue(SolrConstants.THUMBPAGENO);
@@ -545,7 +545,7 @@ public abstract class AbstractBuilder {
         // List<String> displayFields = addLanguageFields(getSolrFieldList(), ViewerResourceBundle.getAllLocales());
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, null);
         if (doc != null) {
-            StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
+            StructElement ele = new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
             ele.setImageNumber(1);
             return ele;
         }

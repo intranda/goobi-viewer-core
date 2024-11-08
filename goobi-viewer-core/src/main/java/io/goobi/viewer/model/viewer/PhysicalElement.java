@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -75,11 +76,13 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
+import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.toc.TocMaker;
 import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
+import io.goobi.viewer.model.viewer.record.views.FileType;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
@@ -169,6 +172,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private List<StructElement> containedStructElements;
     /** Content type of loaded fulltext. */
     private String textContentType = null;
+
+    private final List<Metadata> metadata = new ArrayList<>();
 
     /**
      * <p>
@@ -332,6 +337,16 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
     }
 
+    public Map<FileType, String> getFileTypes() {
+        Collection<String> filenames = new HashSet<String>(getFileNames().values());
+        filenames.add(getFileName());
+        return FileType.sortByFileType(filenames);
+    }
+
+    public String getFileForType(String type) {
+        return getFileTypes().get(FileType.valueOf(type.toUpperCase()));
+    }
+
     /**
      * <p>
      * getSandboxedUrl.
@@ -451,7 +466,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @should return jpeg if availabel
      */
     public String getImageFilepath() {
-        if (!BaseMimeType.IMAGE.name().equals(getBaseMimeType())) {
+        if (!BaseMimeType.IMAGE.equals(getBaseMimeType())) {
             if (filePathTiff != null) {
                 return filePathTiff;
             }
@@ -614,12 +629,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @should return correct base mime type
      * @should return image if base mime type not found
      */
-    public String getBaseMimeType() {
+    public BaseMimeType getBaseMimeType() {
         BaseMimeType baseMimeType = BaseMimeType.getByName(mimeType);
         if (BaseMimeType.UNKNOWN.equals(baseMimeType)) {
-            return BaseMimeType.IMAGE.getName();
+            return BaseMimeType.IMAGE;
         }
-        return baseMimeType.getName();
+        return baseMimeType;
     }
 
     /**
@@ -1004,10 +1019,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @should return null if already loaded
      */
     String loadFullText() throws AccessDeniedException, IOException, IndexUnreachableException {
+        if (Boolean.FALSE.equals(isFulltextAccessPermission())) {
+            throw new AccessDeniedException(String.format("Fulltext access denied for pi %s and pageNo %d", pi, order));
+        }
         if (fulltextFileName == null) {
             return null;
-        } else if (Boolean.FALSE.equals(isFulltextAccessPermission())) {
-            throw new AccessDeniedException(String.format("Fulltext access denied for pi %s and pageNo %d", pi, order));
         }
 
         logger.trace("Loading full-text for page {}", fulltextFileName);
@@ -1085,10 +1101,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public StringPair loadAlto()
             throws AccessDeniedException, JDOMException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("loadAlto: {}", altoFileName);
+        if (Boolean.FALSE.equals(isFulltextAccessPermission())) {
+            throw new AccessDeniedException(String.format("Fulltext access denied for pi %s and pageNo %d", pi, order));
+        }
         if (altoFileName == null) {
             return new StringPair("", null);
-        } else if (Boolean.FALSE.equals(isFulltextAccessPermission())) {
-            throw new AccessDeniedException(String.format("Fulltext access denied for pi %s and pageNo %d", pi, order));
         }
 
         try {
@@ -1214,7 +1231,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         String url;
         try {
-            url = BeanUtils.getImageDeliveryBean().getMedia().getMediaUrl(getBaseMimeType(), format, pi, getFileNameForFormat(format));
+            url = BeanUtils.getImageDeliveryBean().getMedia().getMediaUrl(getBaseMimeType().getName(), format, pi, getFileNameForFormat(format));
         } catch (IllegalRequestException e) {
             throw new IllegalStateException("media type must be either audio or video, but is " + getBaseMimeType());
         }
@@ -1812,7 +1829,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             } else {
                 containedStructElements = new ArrayList<>(docstructDocs.size());
                 for (SolrDocument doc : docstructDocs) {
-                    StructElement ele = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
+                    StructElement ele = new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
                     IMetadataValue value = TocMaker.buildTocElementLabel(doc);
                     String label = value.getValue(BeanUtils.getLocale()).orElse(value.getValue().orElse(""));
                     if (StringUtils.isNotBlank(label)) {
@@ -1844,6 +1861,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                     .toList();
             return mapper.writeValueAsString(shapes);
         }
+    }
+
+    /**
+     * @return the metadata
+     */
+    public List<Metadata> getMetadata() {
+        return metadata;
     }
 
     @Override

@@ -112,55 +112,7 @@
 	</ui:define>
 
     <ui:define name="sidebar">
-        <widgetComponent:widget_views pageType="fulltext" />
-        
-<!--         <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}"> -->
-<!--         	<widgetComponent:widget_copyrightInfo /> -->
-<!--         </ui:fragment> -->
-
-<!--         <widgetComponent:widget_searchInCurrentItem /> -->
-
-        <widgetComponent:widget_statistics_usage />
-
-        <widgetComponent:widget_archives />
-
-        <widgetComponent:widget_nerFacetting />
-
-        <widgetComponent:widget_searchResultNavigation />
-
-<!--         <widgetComponent:widget_metadata /> -->
-
-		<ui:fragment rendered="#{activeDocumentBean.geoMap.hasFeatures()}">
-	        <widgetComponent:widget_geoMap 
-		        geoMap="#{activeDocumentBean.geoMap}" 
-		        title="#{msg.NORM_LOCATION}" 
-		        allowFullscreen="false" 
-		        linkToSearch="false" 
-		        showAnnotations="true"
-		        popoverOnHover="true"
-		        popoverClass="record_geomap_popover"
-		        highlightDocumentId="#{activeDocumentBean.logid}"/>
-        </ui:fragment>
-        
-<!-- 		<widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" /> -->
-
-        <widgetComponent:widget_downloads />
-
-        <widgetComponent:widget_relatedGroups />
-
-<!--         <widgetComponent:widget_toc visible="#{configurationBean.sidebarTocWidgetVisible}" /> -->
-
-<!--         <widgetComponent:widget_additionalFiles /> -->
-
-        <widgetComponent:widget_versionHistory />
-
-        <c:forEach var="module" items="#{configurationBean.modules}">
-            <c:forEach var="contribution" items="#{module.sidebarContributions}">
-                <ui:include src="/#{contribution}" />
-            </c:forEach>
-        </c:forEach>
-
-        <widgetComponent:widget_userInteractions />
+        <viewerComponent:record_sidebar/>
     </ui:define>
 
 </ui:composition>

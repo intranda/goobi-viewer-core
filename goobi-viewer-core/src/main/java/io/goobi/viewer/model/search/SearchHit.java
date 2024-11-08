@@ -153,8 +153,8 @@ public class SearchHit implements Comparable<SearchHit> {
         this.locale = locale;
         if (browseElement != null) {
             // Add self to owner hits to avoid adding self to child hits
-            this.ownerHits.put(Long.toString(browseElement.getIddoc()), this);
-            this.ownerDocs.put(Long.toString(browseElement.getIddoc()), doc);
+            this.ownerHits.put(browseElement.getIddoc(), this);
+            this.ownerDocs.put(browseElement.getIddoc(), doc);
             if (searchTerms != null) {
                 addLabelHighlighting();
             } else {
@@ -452,9 +452,8 @@ public class SearchHit implements Comparable<SearchHit> {
                         if (StringUtils.isBlank(fulltext)) {
                             continue;
                         }
-                    case METADATA:
-                    case UGC:
-                    case EVENT:
+                        // fallthrough
+                    case METADATA, UGC, EVENT:
                         handleMetadataHit(childDoc, fulltext, docType, acccessDeniedType);
                         break;
                     case DOCSTRCT:
@@ -471,7 +470,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     case ARCHIVE:
                         // EAD archive
                         iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
-                        if (!ownerHits.containsKey(iddoc) && DataManager.getInstance().getConfiguration().isArchivesEnabled()) {
+                        if (!ownerHits.containsKey(iddoc)) {
                             SearchHit childHit = factory.createSearchHit(childDoc, null, fulltext, null);
                             children.add(childHit);
                             ownerHits.put(iddoc, childHit);
@@ -598,9 +597,6 @@ public class SearchHit implements Comparable<SearchHit> {
                             // logger.trace("found {} entity tags", tags.size()); //NOSONAR Debug
                             String highlightWord = null;
                             for (TagCount tag : tags) {
-                                if (tag.getIdentifier() != null) {
-                                    //logger.trace("tag identifier: {}", tag.getIdentifier()); //NOSONAR Debug
-                                }
                                 if (authorityIdentifier.equals(tag.getIdentifier())) {
                                     highlightWord = tag.getValue();
                                     break;

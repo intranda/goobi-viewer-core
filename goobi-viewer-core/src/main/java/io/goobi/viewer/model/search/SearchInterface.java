@@ -69,6 +69,16 @@ public interface SearchInterface {
      * @return the last result list page number
      */
     public int getLastPage();
+    
+    /**
+     * @return The selected result group name
+     */
+    public String getActiveResultGroupName();
+
+    /**
+     * @param activeResultGroupName a {@link java.lang.String} object.
+     */
+    public void setActiveResultGroupName(String activeResultGroupName);
 
     /**
      * Return the search string for the selected sort option

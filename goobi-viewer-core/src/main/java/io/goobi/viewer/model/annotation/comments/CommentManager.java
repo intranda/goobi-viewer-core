@@ -134,10 +134,9 @@ public class CommentManager implements AnnotationLister<Comment> {
      * @param comment
      * @param text
      * @param editor
-     * @param license
      * @param publicationStatus
      */
-    public void editComment(Comment comment, String text, User editor, String license, PublicationStatus publicationStatus) {
+    public void editComment(Comment comment, String text, User editor, PublicationStatus publicationStatus) {
         String textCleaned = checkAndCleanScripts(text, editor, comment.getTargetPI(), comment.getTargetPageOrder());
         Comment editedComment = new Comment(comment);
         editedComment.setText(textCleaned);

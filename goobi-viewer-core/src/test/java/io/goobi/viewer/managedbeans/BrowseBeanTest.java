@@ -39,7 +39,7 @@ class BrowseBeanTest extends AbstractTest {
      * @verifies skip items that have skipInWidget true
      */
     @Test
-    void getBrowsingMenuItems_shouldSkipItemsThatHaveSkipInWidgetTrue() throws Exception {
+    void getBrowsingMenuItems_shouldSkipItemsThatHaveSkipInWidgetTrue() {
         BrowseBean bb = new BrowseBean();
         List<String> result = bb.getBrowsingMenuItems(null);
         assertEquals(2, result.size());
@@ -52,7 +52,7 @@ class BrowseBeanTest extends AbstractTest {
      * @verifies skip items for language-specific fields if no language was given
      */
     @Test
-    void getBrowsingMenuItems_shouldSkipItemsForLanguagespecificFieldsIfNoLanguageWasGiven() throws Exception {
+    void getBrowsingMenuItems_shouldSkipItemsForLanguagespecificFieldsIfNoLanguageWasGiven() {
         BrowseBean bb = new BrowseBean();
         List<String> result = bb.getBrowsingMenuItems(null);
         assertEquals(2, result.size());
@@ -65,7 +65,7 @@ class BrowseBeanTest extends AbstractTest {
      * @verifies skip items for language-specific fields if they don't match given language
      */
     @Test
-    void getBrowsingMenuItems_shouldSkipItemsForLanguagespecificFieldsIfTheyDontMatchGivenLanguage() throws Exception {
+    void getBrowsingMenuItems_shouldSkipItemsForLanguagespecificFieldsIfTheyDontMatchGivenLanguage() {
         BrowseBean bb = new BrowseBean();
         List<String> result = bb.getBrowsingMenuItems("en");
         assertEquals(4, result.size());
@@ -79,7 +79,7 @@ class BrowseBeanTest extends AbstractTest {
      * @verifies return language-specific fields with placeholder
      */
     @Test
-    void getBrowsingMenuItems_shouldReturnLanguagespecificFieldsWithPlaceholder() throws Exception {
+    void getBrowsingMenuItems_shouldReturnLanguagespecificFieldsWithPlaceholder() {
         BrowseBean bb = new BrowseBean();
         List<String> result = bb.getBrowsingMenuItems("en");
         assertEquals(4, result.size());
@@ -94,7 +94,7 @@ class BrowseBeanTest extends AbstractTest {
      * @verifies return hierarchy correctly
      */
     @Test
-    void getCollectionHierarchy_shouldReturnHierarchyCorrectly() throws Exception {
+    void getCollectionHierarchy_shouldReturnHierarchyCorrectly() {
         BrowseBean bb = new BrowseBean();
         assertEquals("foo", bb.getCollectionHierarchy("x", "foo"));
         assertEquals("foo / foo.bar", bb.getCollectionHierarchy("x", "foo.bar"));
@@ -105,7 +105,7 @@ class BrowseBeanTest extends AbstractTest {
      * @verifies return first available alphabetical filter if available
      */
     @Test
-    void selectRedirectFilter_shouldReturnFirstAvailableAlphabeticalFilterIfAvailable() throws Exception {
+    void selectRedirectFilter_shouldReturnFirstAvailableAlphabeticalFilterIfAvailable() {
         BrowseBean bb = new BrowseBean();
         bb.setBrowsingMenuField("foo");
         bb.getAvailableStringFiltersMap().put("foo", new ArrayList<>(4));
@@ -121,13 +121,13 @@ class BrowseBeanTest extends AbstractTest {
      * @verifies return numerical filter if available
      */
     @Test
-    void selectRedirectFilter_shouldReturnNumericalFilterIfAvailable() throws Exception {
+    void selectRedirectFilter_shouldReturnNumericalFilterIfAvailable() {
         BrowseBean bb = new BrowseBean();
         bb.setBrowsingMenuField("foo");
         bb.getAvailableStringFiltersMap().put("foo", new ArrayList<>(2));
         bb.getAvailableStringFilters().add("!");
-        bb.getAvailableStringFilters().add("0-9");
-        assertEquals("0-9", bb.selectRedirectFilter());
+        bb.getAvailableStringFilters().add("2");
+        assertEquals("2", bb.selectRedirectFilter());
     }
 
     /**
@@ -135,7 +135,7 @@ class BrowseBeanTest extends AbstractTest {
      * @verifies return first filter if no other available
      */
     @Test
-    void selectRedirectFilter_shouldReturnFirstFilterIfNoOtherAvailable() throws Exception {
+    void selectRedirectFilter_shouldReturnFirstFilterIfNoOtherAvailable() {
         BrowseBean bb = new BrowseBean();
         bb.setBrowsingMenuField("foo");
         bb.getAvailableStringFiltersMap().put("foo", new ArrayList<>(2));
@@ -149,7 +149,7 @@ class BrowseBeanTest extends AbstractTest {
      * @verifies return field for given language if placeholder found
      */
     @Test
-    void getBrowsingMenuFieldForLanguage_shouldReturnFieldForGivenLanguageIfPlaceholderFound() throws Exception {
+    void getBrowsingMenuFieldForLanguage_shouldReturnFieldForGivenLanguageIfPlaceholderFound() {
         BrowseBean bb = new BrowseBean();
         bb.setBrowsingMenuField("MD_FOO_LANG_{}");
         assertEquals("MD_FOO_LANG_EN", bb.getBrowsingMenuFieldForLanguage("en"));
@@ -160,7 +160,7 @@ class BrowseBeanTest extends AbstractTest {
      * @verifies return browsingMenuField if no language placeholder
      */
     @Test
-    void getBrowsingMenuFieldForLanguage_shouldReturnBrowsingMenuFieldIfNoLanguagePlaceholder() throws Exception {
+    void getBrowsingMenuFieldForLanguage_shouldReturnBrowsingMenuFieldIfNoLanguagePlaceholder() {
         BrowseBean bb = new BrowseBean();
         bb.setBrowsingMenuField("MD_FOO");
         assertEquals("MD_FOO", bb.getBrowsingMenuFieldForLanguage("en"));
@@ -171,7 +171,7 @@ class BrowseBeanTest extends AbstractTest {
      * @verifies return empty string if no filterQuery or result groups available
      */
     @Test
-    void generateFilterQuery_shouldReturnEmptyStringIfNoFilterQueryOrResultGroupsAvailable() throws Exception {
+    void generateFilterQuery_shouldReturnEmptyStringIfNoFilterQueryOrResultGroupsAvailable() {
         BrowseBean bb = new BrowseBean();
         assertEquals("", bb.generateFilterQuery(Collections.emptyList()));
     }
@@ -181,7 +181,7 @@ class BrowseBeanTest extends AbstractTest {
      * @verifies generate filter query correctly
      */
     @Test
-    void generateFilterQuery_shouldGenerateFilterQueryCorrectly() throws Exception {
+    void generateFilterQuery_shouldGenerateFilterQueryCorrectly() {
         BrowseBean bb = new BrowseBean();
         assertEquals("+(+( (SOURCEDOCFORMAT:LIDO) (DOCSTRCT:monograph) (+DOCSTRCT:\"cms_page\" +MD_CATEGORY:\"story\")))",
                 bb.generateFilterQuery(DataManager.getInstance().getConfiguration().getSearchResultGroups()));

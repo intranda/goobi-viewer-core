@@ -25,26 +25,26 @@
  			-->
             <div class="fullscreen__view-image-inner">
                 <!-- VIEW IMAGE -->
-                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'image'}">
+                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image'}">
                     <ui:include src="/resources/includes/object/image.xhtml" />
                 </ui:fragment>
 
                 <!-- VIEW VIDEO -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'video'}">
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'video'}">
                     <ui:insert name="viewVideo">
                         <ui:include src="/resources/includes/object/video.xhtml" />
                     </ui:insert>
                 </h:panelGroup>
 
                 <!-- VIEW AUDIO -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'audio'}">
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'audio'}">
                     <ui:insert name="viewAudio">
                         <ui:include src="/resources/includes/object/audio.xhtml" />
                     </ui:insert>
                 </h:panelGroup>
 
                 <!-- VIEW 3D OBJECT -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'object' or activeDocumentBean.viewManager.currentPage.baseMimeType == 'model'}">
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'object' or activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'model'}">
                     <ui:insert name="viewObject3d">
                         <ui:include src="/resources/includes/object/object3d.xhtml" />
                     </ui:insert>
@@ -124,6 +124,18 @@
                             <ui:include src="/resources/includes/metadata/metadata.xhtml" />
                         </div>
                     </div>
+                    <!-- METADATA TECH -->
+                    <ui:fragment rendered="#{fn:length(activeDocumentBean.viewManager.currentPage.metadata) > 0}">
+	                    <div id="panel-12" class="fullscreen__view-sidebar-accordeon-panel fs-metadata-tech">
+	                        <h2 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+	                            <span>#{msg.metadataTech}</span>
+	                        </h2>
+	
+	                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
+								<widgetComponent:widget_metadataTech />
+	                        </div>
+	                    </div>
+                    </ui:fragment>
 
                     <!-- TOC -->
 					<ui:fragment rendered="#{configurationBean.sidebarTocWidgetVisibleInFullscreen and (activeDocumentBean.toc.hasChildren)}">
@@ -151,28 +163,28 @@
                         </div>
                     </ui:fragment>
 
-                    <!-- KARTE -->
-<!--                     <ui:fragment rendered="#{activeDocumentBean.mapWidget.geoMapId > -1}"> -->
-<!--                         <div id="panel-11" class="fullscreen__view-sidebar-accordeon-panel fs-fulltext"> -->
-<!--                             <h3 class="fullscreen__view-sidebar-accordeon-panel-title"> -->
-<!--                                 <span>#{msg.geomap}</span> -->
-<!--                             </h3> -->
+                    <!-- GEOMAP -->
+                    <!-- NOT SHOWN BECAUSE OF RENDERING PROBLEMS WHEN MAP PANEL IS NOT OPENED AT PAGE LOAD -->
+                    <ui:fragment rendered="#{false and activeDocumentBean.geoMap.hasFeatures()}">
+                        <div id="panel-11" class="fullscreen__view-sidebar-accordeon-panel fs-location">
+                            <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+                                <span>#{msg.NORM_LOCATION}</span>
+                            </h3>
+							<div class="fullscreen__view-sidebar-accordeon-panel-body in">
+							        <widgetComponent:widget_geoMap 
+								        geoMap="#{activeDocumentBean.geoMap}" 
+								        title="" 
+								        allowFullscreen="false" 
+								        linkToSearch="false" 
+								        showAnnotations="true"
+								        popoverOnHover="true"
+								        popoverClass="record_geomap_popover"
+								        highlightDocumentId="#{activeDocumentBean.logid}"/>
+								        </div>
+                        </div>
+                    </ui:fragment>
 
-<!-- 								<ui:fragment rendered="#{activeDocumentBean.geoMap.hasFeatures()}"> -->
-<!-- 							        <widgetComponent:widget_geoMap  -->
-<!-- 								        geoMap="#{activeDocumentBean.geoMap}"  -->
-<!-- 								        title="#{msg.NORM_LOCATION}"  -->
-<!-- 								        allowFullscreen="false"  -->
-<!-- 								        linkToSearch="false"  -->
-<!-- 								        showAnnotations="true" -->
-<!-- 								        popoverOnHover="true" -->
-<!-- 								        popoverClass="record_geomap_popover" -->
-<!-- 								        highlightDocumentId="#{activeDocumentBean.logid}"/> -->
-<!-- 						        </ui:fragment> -->
-<!--                         </div> -->
-<!--                     </ui:fragment> -->
-
-					<c:if test="#{(!configurationBean.displayUserGeneratedContentBelowImage) and (!contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).isEmpty())}">
+					<c:if test="#{!configurationBean.displayUserGeneratedContentBelowImage and not empty contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).stream().filter(content -> !content.isEmpty() and content.type != 'GEOLOCATION').toList()}">
 	                <!-- ANNOTATIONS -->
 	                    <div id="panel-9" class="fullscreen__view-sidebar-accordeon-panel fs-annotations">
 	                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
@@ -185,7 +197,7 @@
 	                    </div>
 					</c:if>
 					
-						<c:if test="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.archiveEntryIdentifier != null and configurationBean.archivesEnabled}">
+						<c:if test="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.archiveEntryIdentifier != null}">
 		                <!-- ARCHIVE -->
 		                <div id="panel-10" class="fullscreen__view-sidebar-accordeon-panel fs-archives">
 	                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
@@ -256,17 +268,39 @@
                     <!-- DOWNLOADS -->
                     <div id="panel-4" class="fullscreen__view-sidebar-accordeon-panel fs-downloads">
                         <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
-                            <span>#{msg.widgetUsage}</span>
+                            <span>#{msg.downloads}</span>
                         </h3>
 
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
-                            <widgetComponent:widget_usage />
+                            <widgetComponent:widget_downloads collapsible="false" />
+                        </div>
+                    </div>
+                    
+                    <!-- FORMAT LINKS -->
+                    <div id="panel-5" class="fullscreen__view-sidebar-accordeon-panel fs-downloads">
+                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+                            <span>#{msg.widget_formatsLinks}</span>
+                        </h3>
+
+                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
+                             <widgetComponent:widget_formatsLinks collapsible="false"/>
+                        </div>
+                    </div>
+                    
+                    <!-- CITATION -->
+                    <div id="panel-6" class="fullscreen__view-sidebar-accordeon-panel fs-downloads">
+                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
+                            <span>#{msg.widget_citation}</span>
+                        </h3>
+
+                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
+                            <widgetComponent:widget_citation collapsible="false"/>
                         </div>
                     </div>
                     
                     <!-- STATISTICS -->
 					<ui:fragment rendered="#{statisticsBean.usageStatisticsActive and userBean.admin}">
-	                    <div id="panel-5" class="fullscreen__view-sidebar-accordeon-panel fs-statistics">
+	                    <div id="panel-7" class="fullscreen__view-sidebar-accordeon-panel fs-statistics">
 	                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
 	                            <span>#{msg.widget_usage_statistics__title}</span>
 	                        </h3>
@@ -279,7 +313,7 @@
 
                     <!-- SEARCH HIT NAVIGATION -->
                     <ui:fragment rendered="#{searchBean.hitsCount > 1 and activeDocumentBean.prevHit != null}">
-                        <div id="panel-6" class="fullscreen__view-sidebar-accordeon-panel fs-search-hit-navigation">
+                        <div id="panel-8" class="fullscreen__view-sidebar-accordeon-panel fs-search-hit-navigation">
                             <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                                 <span>#{msg.searchHitNavigation}</span>
                             </h3>
@@ -292,7 +326,7 @@
 
                     <!-- IMAGE FILTER -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.hasPages}">
-                        <div id="panel-7" class="fullscreen__view-sidebar-accordeon-panel fs-imagefilters">
+                        <div id="panel-9" class="fullscreen__view-sidebar-accordeon-panel fs-imagefilters">
                             <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                                 <span>#{msg.label__image_filter_toolkit}</span>
                             </h3>
@@ -307,8 +341,8 @@
                     </ui:fragment>
 
                     <!-- SHARE IMAGE AREA -->
-                    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType == 'image' and !activeDocumentBean.viewManager.doublePageMode}">
-                        <div id="panel-8" class="fullscreen__view-sidebar-accordeon-panel share-image-area">
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image' and !activeDocumentBean.viewManager.doublePageMode}">
+                        <div id="panel-10" class="fullscreen__view-sidebar-accordeon-panel share-image-area">
                             <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                                 <span>#{msg.action__share_image_region}</span>
                             </h3>

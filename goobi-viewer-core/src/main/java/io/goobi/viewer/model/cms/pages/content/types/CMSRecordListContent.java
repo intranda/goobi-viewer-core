@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -40,9 +41,12 @@ import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
+import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
+import io.goobi.viewer.model.cms.widgets.type.DefaultWidgetType;
 import io.goobi.viewer.model.search.HitListView;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
@@ -74,6 +78,8 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
     private String resultGroupName;
     @Column(name = "include_structure_elements")
     private boolean includeStructureElements = false;
+    @Column(name = "show_options")
+    private boolean showOptions = false;
     @Column(name = "elements_per_page")
     private int elementsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPageDefaultValue();
     @Column(name = "view")
@@ -98,6 +104,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         this.resultGroupName = orig.resultGroupName;
         this.view = orig.view;
         this.metadataListType = orig.metadataListType;
+        this.showOptions = orig.showOptions;
     }
 
     private SearchFunctionality initSearch() {
@@ -246,8 +253,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
                 resultGroups = Collections.singletonList(SearchResultGroup.createDefaultGroup());
             }
 
-            Search s =
-                    new Search(SearchHelper.SEARCH_TYPE_REGULAR, DataManager.getInstance().getConfiguration().getDefaultSearchFilter(), resultGroups);
+            Search s = createSearch(resultGroups, component);
 
             if (StringUtils.isNotBlank(this.getSortField())) {
                 s.setSortString(getSortFieldForLanguage(locale.getLanguage()));
@@ -296,6 +302,34 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         } catch (PresentationException | IndexUnreachableException | DAOException | ViewerConfigurationException e) {
             throw new PresentationException("Error initializing search hit list on page load", e);
         }
+    }
+
+    public Search createSearch(List<SearchResultGroup> resultGroups, CMSComponent component) {
+        if (isUseFacetting(component)) {
+            return new Search(SearchHelper.SEARCH_TYPE_REGULAR, DataManager.getInstance().getConfiguration().getDefaultSearchFilter(), resultGroups);
+        } else {
+            return new Search(SearchHelper.SEARCH_TYPE_REGULAR, DataManager.getInstance().getConfiguration().getDefaultSearchFilter(), resultGroups,
+                    Collections.emptyList());
+        }
+    }
+
+    private boolean isUseFacetting(CMSComponent component) {
+        List<CMSSidebarElement> widgets =
+                Optional.ofNullable(component).map(CMSComponent::getOwningPage).map(CMSPage::getSidebarElements).orElse(Collections.emptyList());
+        for (CMSSidebarElement element : widgets) {
+            if (DefaultWidgetType.WIDGET_FACETTING.equals(element.getContentType())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void setShowOptions(boolean showOptions) {
+        this.showOptions = showOptions;
+    }
+
+    public boolean isShowOptions() {
+        return showOptions;
     }
 
     @Override

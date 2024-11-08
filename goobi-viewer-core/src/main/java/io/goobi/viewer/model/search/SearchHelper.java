@@ -24,6 +24,7 @@ package io.goobi.viewer.model.search;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.text.Collator;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,6 +78,7 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
+import io.goobi.viewer.controller.sorting.AlphanumCollatorComparator;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -519,8 +521,7 @@ public final class SearchHelper {
      * @return Generated Solr query suffix
      */
     public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix) {
-        return getAllSuffixes(request, !DataManager.getInstance().getConfiguration().isArchivesEnabled(), addStaticQuerySuffix,
-                addCollectionBlacklistSuffix, IPrivilegeHolder.PRIV_LIST);
+        return getAllSuffixes(request, false, addStaticQuerySuffix, addCollectionBlacklistSuffix, IPrivilegeHolder.PRIV_LIST);
     }
 
     /**
@@ -533,18 +534,17 @@ public final class SearchHelper {
      */
     public static String getAllSuffixes(HttpServletRequest request, boolean addStaticQuerySuffix, boolean addCollectionBlacklistSuffix,
             String privilege) {
-        return getAllSuffixes(request, !DataManager.getInstance().getConfiguration().isArchivesEnabled(), addStaticQuerySuffix,
-                addCollectionBlacklistSuffix, privilege);
+        return getAllSuffixes(request, false, addStaticQuerySuffix, addCollectionBlacklistSuffix, privilege);
     }
 
     /**
      * Returns all suffixes relevant to search filtering.
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @para addArchiveFilterSuffix
-     * @param addStaticQuerySuffix a boolean.
+     * @param addArchiveFilterSuffix a boolean.
      * @param addCollectionBlacklistSuffix a boolean.
      * @param privilege Privilege to check (Connector checks a different privilege)
+     * @param addStaticQuerySuffix if true, add the configured static query suffix to the query
      * @return Generated Solr query suffix
      * @should add archive filter suffix
      * @should add static suffix
@@ -941,7 +941,7 @@ public final class SearchHelper {
      * </p>
      *
      * @param subQuery a {@link java.lang.String} object.
-     * @return an array of {@link int} objects.
+     * @return int[]
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
@@ -960,14 +960,14 @@ public final class SearchHelper {
         Object min = info.getMin();
         if (min instanceof Long || min instanceof Integer) {
             ret[0] = (int) min;
-        } else if (min instanceof Double) {
-            ret[0] = ((Double) min).intValue();
+        } else if (min instanceof Double d) {
+            ret[0] = d.intValue();
         }
         Object max = info.getMax();
         if (max instanceof Long || max instanceof Integer) {
             ret[1] = (int) max;
-        } else if (max instanceof Double) {
-            ret[1] = ((Double) max).intValue();
+        } else if (max instanceof Double d) {
+            ret[1] = d.intValue();
         }
 
         logger.trace("Min year: {}, max year: {}", ret[0], ret[1]);
@@ -1481,7 +1481,7 @@ public final class SearchHelper {
             FuzzySearchTerm fuzzyTerm = new FuzzySearchTerm(t);
             String term = fuzzyTerm.getTerm();
             // Highlighting single-character terms can take a long time, so skip them
-            if (term.length() < 2) {//NOSONAR Debug
+            if (term.length() < 2) { //NOSONAR Debug
                 continue;
             }
             term = SearchHelper.removeTruncation(term);
@@ -1716,6 +1716,7 @@ public final class SearchHelper {
      */
     public static List<String> getFacetValues(String query, String facetFieldName, int facetMinCount)
             throws PresentationException, IndexUnreachableException {
+        logger.trace("getFacetValues: {} / {}", query, facetFieldName);
         return getFacetValues(query, facetifyField(facetFieldName), null, facetMinCount, null);
     }
 
@@ -1734,6 +1735,7 @@ public final class SearchHelper {
      */
     public static List<String> getFacetValues(String query, final String facetFieldName, String facetPrefix, int facetMinCount,
             Map<String, String> params) throws PresentationException, IndexUnreachableException {
+        // logger.trace("getFacetValues: {}", query); //NOSONAR Debug
         if (StringUtils.isEmpty(query)) {
             throw new IllegalArgumentException("query may not be null or empty");
         }
@@ -1792,12 +1794,13 @@ public final class SearchHelper {
             throw new IllegalArgumentException("bmfc may not be null");
         }
 
+        String mainField = bmfc.getFieldForLanguage(language);
         if (logger.isTraceEnabled()) {
-            logger.trace("getFilteredTermsCount: {} ({})", bmfc.getFieldForLanguage(language), startsWith);
+            logger.trace("getFilteredTermsCount: {} ({})", mainField, startsWith);
         }
         List<StringPair> sortFields =
                 StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
-        QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, 0, SolrSearchIndex.MAX_HITS, language);
+        QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, 0, 0, language);
         logger.trace("getFilteredTermsCount hits: {}", resp.getResults().getNumFound());
 
         if (bmfc.getField() == null) {
@@ -1807,7 +1810,7 @@ public final class SearchHelper {
         int ret = 0;
         String facetField =
                 StringUtils.isNotEmpty(bmfc.getSortField()) ? SearchHelper.facetifyField(bmfc.getSortField())
-                        : SearchHelper.facetifyField(bmfc.getFieldForLanguage(language));
+                        : SearchHelper.facetifyField(mainField);
         if (resp.getFacetField(facetField) != null) {
             for (Count count : resp.getFacetField(facetField).getValues()) {
                 if (count.getCount() == 0
@@ -1818,6 +1821,95 @@ public final class SearchHelper {
             }
         }
         logger.debug("getFilteredTermsCount result: {}", ret);
+        return ret;
+    }
+
+    /**
+     * Generates starting character filters for term browsing, using facets.
+     * 
+     * @param bmfc
+     * @param filterQuery
+     * @param locale
+     * @return List<String>
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public static List<String> collectAvailableTermFilters(BrowsingMenuFieldConfig bmfc, String filterQuery, Locale locale)
+            throws PresentationException, IndexUnreachableException {
+        StringBuilder sbQuery = new StringBuilder("+");
+        String facetMainField = SearchHelper.facetifyField(bmfc.getFieldForLanguage(locale.getLanguage()));
+        if (StringUtils.isNotEmpty(bmfc.getSortField())) {
+            // TODO language-specific sort field
+            sbQuery.append(bmfc.getSortField());
+        } else {
+            sbQuery.append(bmfc.getFieldForLanguage(locale.getLanguage()));
+        }
+        sbQuery.append(":[* TO *] ");
+        if (bmfc.isRecordsAndAnchorsOnly()) {
+            sbQuery.append(ALL_RECORDS_QUERY);
+        }
+
+        // Add passed filter queries
+        List<String> filterQueries = new ArrayList<>();
+        if (StringUtils.isNotEmpty(filterQuery)) {
+            filterQueries.add(filterQuery);
+        }
+
+        // Add configured filter queries
+        if (!bmfc.getFilterQueries().isEmpty()) {
+            filterQueries.addAll(bmfc.getFilterQueries());
+        }
+
+        String query = buildFinalQuery(sbQuery.toString(), false, SearchAggregationType.NO_AGGREGATION);
+        String facetSortField = null;
+        if (StringUtils.isNotEmpty(bmfc.getSortField())) {
+            facetSortField = SearchHelper.facetifyField(bmfc.getSortField());
+        }
+        List<String> facetFields = Collections.singletonList(facetMainField);
+        if (StringUtils.isNotEmpty(facetSortField)) {
+            // Add facetified sort field to facet fields (SORT_ fields don't work for faceting)
+            facetFields = new ArrayList<>(facetFields);
+            facetFields.add(facetSortField);
+        }
+
+        QueryResponse qr = DataManager.getInstance()
+                .getSearchIndex()
+                .searchFacetsAndStatistics(query, filterQueries, facetFields, 1, null, null, false);
+
+        String useField = null;
+        if (qr.getFacetField(facetSortField) != null) {
+            // Prefer facets from sort field
+            useField = facetSortField;
+        } else if (qr.getFacetField(facetMainField) != null) {
+            // main field fallback
+            useField = facetMainField;
+        }
+
+        Set<String> alreadyAdded = new HashSet<>();
+        List<String> ret = new ArrayList<>();
+        if (useField != null) {
+            boolean ignoreLeadingChars =
+                    StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars());
+            for (Count count : qr.getFacetField(useField).getValues()) {
+                String firstChar;
+                if (ignoreLeadingChars) {
+                    // Exclude leading characters from filters explicitly configured to be ignored
+                    firstChar = BrowseTermComparator.normalizeString(count.getName(),
+                            DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars())
+                            .trim()
+                            .substring(0, 1)
+                            .toUpperCase();
+                } else {
+                    firstChar = count.getName().substring(0, 1).toUpperCase();
+                }
+                if (!alreadyAdded.contains(firstChar)) {
+                    ret.add(firstChar);
+                    alreadyAdded.add(firstChar);
+                }
+            }
+            Collections.sort(ret, new AlphanumCollatorComparator(Collator.getInstance(locale)));
+        }
+
         return ret;
     }
 
@@ -1843,8 +1935,9 @@ public final class SearchHelper {
             throw new IllegalArgumentException("bmfc may not be null");
         }
 
+        String mainField = bmfc.getFieldForLanguage(language);
         if (logger.isTraceEnabled()) {
-            logger.trace("getFilteredTerms: {}", bmfc.getFieldForLanguage(language));
+            logger.trace("getFilteredTerms: {} ({})", mainField, startsWith);
         }
         List<BrowseTerm> ret = new ArrayList<>();
         ConcurrentMap<String, BrowseTerm> terms = new ConcurrentHashMap<>();
@@ -1859,82 +1952,44 @@ public final class SearchHelper {
                 StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
         QueryResponse resp = getFilteredTermsFromIndex(bmfc, startsWith, filterQuery, sortFields, start, returnRows, language);
         logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
-        if ("0-9".equals(startsWith)) {
-            // TODO Is this still necessary?
-            // Numerical filtering
-            Pattern p = Pattern.compile("[\\d]");
-            // Use hits (if sorting field is provided)
-            for (SolrDocument doc : resp.getResults()) {
-                Collection<Object> termList = doc.getFieldValues(bmfc.getFieldForLanguage(language));
-                String sortTerm = (String) doc.getFieldValue(bmfc.getSortField());
-                Set<String> usedTermsInCurrentDoc = new HashSet<>();
-                for (Object o : termList) {
-                    String term = String.valueOf(o);
-                    // Only add to hit count if the same string is not in the same doc
-                    if (usedTermsInCurrentDoc.contains(term)) {
+        String facetMainField = SearchHelper.facetifyField(mainField);
+        String facetSortField = null;
+        if (StringUtils.isNotEmpty(bmfc.getSortField())) {
+            facetSortField = SearchHelper.facetifyField(bmfc.getSortField());
+        }
+        if (resp.getResults().isEmpty()) {
+            // If only browsing records and anchors, use faceting
+            String useField = null;
+            if (resp.getFacetField(facetSortField) != null) {
+                // Prefer facets from sort field
+                useField = facetSortField;
+            } else if (resp.getFacetField(facetMainField) != null) {
+                // main field fallback
+                useField = facetMainField;
+            }
+            if (useField != null) {
+                for (Count count : resp.getFacetField(useField).getValues()) {
+                    if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith)
+                            && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith)) {
+                        // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}", //NOSONAR Debug
+                        // term, compareTerm, sortTerm, bmfc.isTranslate());
                         continue;
                     }
-                    String termStart = term;
-                    if (termStart.length() > 1) {
-                        termStart = term.substring(0, 1);
-                    }
-                    String compareTerm = termStart;
-                    if (StringUtils.isNotEmpty(sortTerm)) {
-                        compareTerm = sortTerm;
-                    }
-                    Matcher m = p.matcher(compareTerm);
-                    if (m.find()) {
-                        BrowseTerm browseTerm = terms.get(term);
-                        if (browseTerm == null) {
-                            browseTerm = new BrowseTerm(term, sortTerm, bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(term) : null);
-                            terms.put(term, browseTerm);
-                        }
-                        sortTerm = null; // only use the sort term for the first term
-                        browseTerm.addToHitCount(1);
-                        usedTermsInCurrentDoc.add(term);
-                    }
+                    terms.put(count.getName(),
+                            new BrowseTerm(count.getName(), null,
+                                    bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(count.getName()) : null)
+                                            .setHitCount(count.getCount()));
                 }
             }
         } else {
-            String facetMainField = SearchHelper.facetifyField(bmfc.getFieldForLanguage(language));
-            String facetSortField = null;
-            if (StringUtils.isNotEmpty(bmfc.getSortField())) {
-                facetSortField = SearchHelper.facetifyField(bmfc.getSortField());
-            }
-            if (resp.getResults().isEmpty()) {
-                // If only browsing records and anchors, use faceting
-                String useField = null;
-                if (resp.getFacetField(facetSortField) != null) {
-                    // Prefer facets from sort field
-                    useField = facetSortField;
-                } else if (resp.getFacetField(facetMainField) != null) {
-                    // main field fallback
-                    useField = facetMainField;
-                }
-                if (useField != null) {
-                    for (Count count : resp.getFacetField(useField).getValues()) {
-                        if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith)
-                                && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith)) {
-                            // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}", //NOSONAR Debug
-                            // term, compareTerm, sortTerm, bmfc.isTranslate());
-                            continue;
-                        }
-                        terms.put(count.getName(),
-                                new BrowseTerm(count.getName(), null,
-                                        bmfc.isTranslate() ? ViewerResourceBundle.getTranslations(count.getName()) : null)
-                                                .setHitCount(count.getCount()));
-                    }
-                }
-            } else {
-                // Without filtering or using alphabetical filtering
-                // Parallel processing of hits (if sorting field is provided), requires compiler level 1.8
-                //                ((List<SolrDocument>) resp.getResults()).parallelStream()
-                //                        .forEach(doc -> processSolrResult(doc, bmfc, startsWith, terms, true, language));
+            // Without filtering or using alphabetical filtering
+            // Parallel processing of hits (if sorting field is provided), requires compiler level 1.8
+            //                ((List<SolrDocument>) resp.getResults()).parallelStream()
+            //                        .forEach(doc -> processSolrResult(doc, bmfc, startsWith, terms, true, language));
 
-                // Sequential processing (doesn't break the sorting done by Solr)
-                for (SolrDocument doc : resp.getResults()) {
-                    processSolrResult(doc, bmfc, startsWith, terms, true, language);
-                }
+            // Sequential processing (doesn't break the sorting done by Solr)
+            for (SolrDocument doc : resp.getResults()) {
+                processSolrResult(doc, bmfc, startsWith, terms, true, language);
             }
         }
 
@@ -1966,21 +2021,25 @@ public final class SearchHelper {
      */
     static QueryResponse getFilteredTermsFromIndex(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery, List<StringPair> sortFields,
             int start, int rows, String language) throws PresentationException, IndexUnreachableException {
+        String mainField = bmfc.getFieldForLanguage(language);
+        if (logger.isTraceEnabled()) {
+            logger.trace("getFilteredTermsFromIndex: {} ({})", mainField, startsWith);
+        }
+
         List<String> fields = new ArrayList<>(3);
         fields.add(SolrConstants.PI_TOPSTRUCT);
-        fields.add(bmfc.getFieldForLanguage(language));
+        fields.add(mainField);
 
         StringBuilder sbQuery = new StringBuilder();
         sbQuery.append('+');
-        // Only search via the sorting field if not doing a wildcard search
         // TODO language-specific sort field
         if (StringUtils.isNotEmpty(bmfc.getSortField())) {
             sbQuery.append(bmfc.getSortField());
             fields.add(bmfc.getSortField());
             fields.add(SearchHelper.facetifyField(bmfc.getSortField()));
-            fields.add(SearchHelper.facetifyField(bmfc.getFieldForLanguage(language)));
+            fields.add(SearchHelper.facetifyField(mainField));
         } else {
-            sbQuery.append(bmfc.getFieldForLanguage(language));
+            sbQuery.append(mainField);
         }
         sbQuery.append(":[* TO *] ");
         if (bmfc.isRecordsAndAnchorsOnly()) {
@@ -1990,6 +2049,11 @@ public final class SearchHelper {
         List<String> filterQueries = new ArrayList<>();
         if (StringUtils.isNotEmpty(filterQuery)) {
             filterQueries.add(filterQuery);
+        }
+
+        // If no separate sorting field is configured, add startsWith to the filter queries
+        if (StringUtils.isEmpty(bmfc.getSortField()) && StringUtils.isNotEmpty(startsWith)) {
+            filterQueries.add(mainField + ":" + startsWith + "*");
         }
 
         // Add configured filter queries
@@ -2006,7 +2070,7 @@ public final class SearchHelper {
             }
         }
 
-        List<String> facetFields = Collections.singletonList(SearchHelper.facetifyField(bmfc.getFieldForLanguage(language)));
+        List<String> facetFields = Collections.singletonList(SearchHelper.facetifyField(mainField));
         if (StringUtils.isNotEmpty(bmfc.getSortField())) {
             // Add facetified sort field to facet fields (SORT_ fields don't work for faceting)
             facetFields = new ArrayList<>(facetFields);
@@ -2019,9 +2083,18 @@ public final class SearchHelper {
         // Faceting (no rows requested or expected row count too high)
         if ((rows == 0 || hitCount > DataManager.getInstance().getConfiguration().getBrowsingMenuIndexSizeThreshold())
                 && StringUtils.isEmpty(bmfc.getSortField())) {
+            logger.trace("Using facets");
+            // params.put("facet.sort", "index");
+            // params.put("facet.offset", String.valueOf(start));
+            // if (rows > 0) {
+            //     params.put("facet.limit", String.valueOf(rows));
+            // }
+            if (StringUtils.isNotEmpty(startsWith)) {
+                params.put("facet.prefix", startsWith);
+            }
             return DataManager.getInstance()
                     .getSearchIndex()
-                    .searchFacetsAndStatistics(query, filterQueries, facetFields, 1, startsWith, null, false);
+                    .searchFacetsAndStatistics(query, filterQueries, facetFields, 1, startsWith, params, false);
         }
 
         // Docs (required for correct mapping of sorting vs displayed term names, but may time out if doc count is too high)
@@ -2135,6 +2208,7 @@ public final class SearchHelper {
      * @should throw IllegalArgumentException if query is null
      * @should add title terms field
      * @should remove proximity search tokens
+     * @should remove fuzzy search tokens
      * @should remove range values
      * @should remove operators from field names
      */
@@ -2257,7 +2331,8 @@ public final class SearchHelper {
                     if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
                         value = value.replace("\"", "");
                     }
-                    if (value.length() > 0 && !stopwords.contains(value)) {
+                    // Skip values in stopwords and duplicates for fuzzy search
+                    if (value.length() > 0 && !stopwords.contains(value) && !value.matches(".*~[1-2]$")) {
                         if (ret.get(currentField) == null) {
                             ret.put(currentField, new HashSet<>());
                         }
@@ -2280,7 +2355,9 @@ public final class SearchHelper {
                 }
             } else if (s.length() > 0 && !stopwords.contains(s)) {
                 // single values w/o a field
-                if (s.trim().equals("+")) {
+                
+                // Skip duplicates for fuzzy search
+                if (s.trim().equals("+") || s.matches(".*~[1-2]$")) {
                     continue;
                 }
                 if (currentField == null) {

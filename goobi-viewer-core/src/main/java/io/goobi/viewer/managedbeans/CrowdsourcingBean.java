@@ -40,16 +40,15 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import jakarta.persistence.PersistenceException;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
@@ -79,6 +78,7 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.persistence.PersistenceException;
 
 /**
  * <p>
@@ -121,7 +121,9 @@ public class CrowdsourcingBean implements Serializable {
     private final IDAO dao;
 
     /**
-     * <p>Constructor for CrowdsourcingBean.</p>
+     * <p>
+     * Constructor for CrowdsourcingBean.
+     * </p>
      */
     public CrowdsourcingBean() {
         this.viewerConfig = DataManager.getInstance().getConfiguration();
@@ -133,7 +135,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>Constructor for CrowdsourcingBean.</p>
+     * <p>
+     * Constructor for CrowdsourcingBean.
+     * </p>
      *
      * @param viewerConfig a {@link io.goobi.viewer.controller.Configuration} object
      * @param dao a {@link io.goobi.viewer.dao.IDAO} object
@@ -399,13 +403,15 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>isUserOwnsAnyCampaigns.</p>
+     * <p>
+     * isUserOwnsAnyCampaigns.
+     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object
      * @return true if user owns any existing campaigns; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public boolean isUserOwnsAnyCampaigns(User user) throws DAOException {
         return CrowdsourcingTools.isUserOwnsAnyCampaigns(user);
     }
@@ -663,7 +669,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>setNextIdentifierForAnnotation.</p>
+     * <p>
+     * setNextIdentifierForAnnotation.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -677,7 +685,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>setNextIdentifierForReview.</p>
+     * <p>
+     * setNextIdentifierForReview.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -775,7 +785,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>targetPage</code>.</p>
+     * <p>
+     * Getter for the field <code>targetPage</code>.
+     * </p>
      *
      * @return the targetPage
      */
@@ -784,7 +796,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>targetPage</code>.</p>
+     * <p>
+     * Setter for the field <code>targetPage</code>.
+     * </p>
      *
      * @param targetPage the targetPage to set
      */
@@ -854,8 +868,8 @@ public class CrowdsourcingBean implements Serializable {
      * </p>
      *
      * @param campaign The campaign with which to annotate/review
-     * @param status if {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus#REVIEW}, return a url for
-     *            reviewing, otherwise for annotating
+     * @param status if {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus#REVIEW}, return a url for reviewing, otherwise for
+     *            annotating
      * @return The pretty url to either review or annotate a random work with the given {@link io.goobi.viewer.model.crowdsourcing.campaigns.Campaign}
      */
     public String getNextItemUrl(Campaign campaign, CrowdsourcingStatus status) {
@@ -870,8 +884,8 @@ public class CrowdsourcingBean implements Serializable {
      * getTargetRecordStatus.
      * </p>
      *
-     * @return the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus} of the {@link #targetCampaign}
-     *         for the {@link #targetIdentifier}
+     * @return the {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus} of the {@link #targetCampaign} for the
+     *         {@link #targetIdentifier}
      */
     public CrowdsourcingStatus getTargetRecordStatus() {
         if (getTargetCampaign() != null && StringUtils.isNotBlank(getTargetIdentifier())) {
@@ -1001,7 +1015,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>getPossibleReviewModes.</p>
+     * <p>
+     * getPossibleReviewModes.
+     * </p>
      *
      * @return a {@link java.util.Set} object
      */
@@ -1010,7 +1026,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>getAvailableStatisticModes.</p>
+     * <p>
+     * getAvailableStatisticModes.
+     * </p>
      *
      * @return List of enum values
      */
@@ -1019,7 +1037,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>targetStatus</code>.</p>
+     * <p>
+     * Getter for the field <code>targetStatus</code>.
+     * </p>
      *
      * @return the targetStatus
      */
@@ -1028,7 +1048,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>targetStatus</code>.</p>
+     * <p>
+     * Setter for the field <code>targetStatus</code>.
+     * </p>
      *
      * @param targetStatus the targetStatus to set
      */
@@ -1037,7 +1059,9 @@ public class CrowdsourcingBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>targetStatus</code>.</p>
+     * <p>
+     * Setter for the field <code>targetStatus</code>.
+     * </p>
      *
      * @param targetStatus a {@link java.lang.String} object
      */

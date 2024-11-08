@@ -111,7 +111,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @param luceneId {@link java.lang.Long}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public StructElement(long luceneId) throws IndexUnreachableException {
+    public StructElement(String luceneId) throws IndexUnreachableException {
         super(luceneId);
         init(null);
     }
@@ -125,19 +125,26 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @param doc a {@link org.apache.solr.common.SolrDocument} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public StructElement(long luceneId, SolrDocument doc) throws IndexUnreachableException {
+    public StructElement(String luceneId, SolrDocument doc) throws IndexUnreachableException {
         super(luceneId);
         init(doc);
     }
 
     /**
-     * Like {@link #StructElement(long, SolrDocument)}, but get the lucene Id from the SolrDocument.
+     * Like {@link #StructElement(String, SolrDocument)}, but get the lucene Id from the SolrDocument.
      *
      * @param doc
      * @throws IndexUnreachableException
      */
     public StructElement(SolrDocument doc) throws IndexUnreachableException {
-        this(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
+        this(getIDDOC(doc), doc);
+    }
+
+    public static String getIDDOC(SolrDocument doc) {
+        if (doc.containsKey(SolrConstants.IDDOC)) {
+            return SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
+        }
+        throw new IllegalArgumentException("Struct element cannot be initiated by Solr document with missing IDDOC value");
     }
 
     /**
@@ -150,7 +157,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @param docToMerge a {@link org.apache.solr.common.SolrDocument} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public StructElement(long luceneId, SolrDocument doc, SolrDocument docToMerge) throws IndexUnreachableException {
+    public StructElement(String luceneId, SolrDocument doc, SolrDocument docToMerge) throws IndexUnreachableException {
         super(luceneId);
         if (docToMerge != null) {
             if (docToMerge.getFieldValue(SolrConstants.LABEL) != null) {
@@ -372,7 +379,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         try {
             String parentIddoc = getMetadataValue(SolrConstants.IDDOC_PARENT);
             if (parentIddoc != null) {
-                parent = new StructElement(Long.valueOf(parentIddoc), null);
+                parent = new StructElement(parentIddoc, null);
             }
         } catch (NumberFormatException e) {
             logger.error("Malformed number with get the parent element for Lucene IDDOC: {}", luceneId);
@@ -385,14 +392,14 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      *
      * @return IDDOC value of the parent document as a {@link Long}
      */
-    public Long getParentLuceneId() {
+    public String getParentLuceneId() {
         String parentIddoc = getMetadataValue(SolrConstants.IDDOC_PARENT);
         if (StringUtils.isBlank(parentIddoc)) {
             return null;
         }
 
         try {
-            return Long.valueOf(parentIddoc);
+            return parentIddoc;
         } catch (NumberFormatException e) {
             logger.error("Malformed number with get the parent element for Lucene IDDOC: {}", luceneId);
             return null;
@@ -422,8 +429,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
     /**
      * Returns a StructElement that represents the top non-anchor element of the hierarchy (ISWORK=true). If the element itself is an anchor, itself
-     * will be returned. If no topStruct element is found because no metadata {@link io.goobi.viewer.solr.SolrConstants#IDDOC_TOPSTRUCT} is found 
-     * or because it could not be resolved, null is returned
+     * will be returned. If no topStruct element is found because no metadata {@link io.goobi.viewer.solr.SolrConstants#IDDOC_TOPSTRUCT} is found or
+     * because it could not be resolved, null is returned
      *
      * @should retrieve top struct correctly
      * @should return self if topstruct
@@ -443,7 +450,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             String topstructIddoc = getMetadataValue(SolrConstants.IDDOC_TOPSTRUCT);
             try {
                 if (topstructIddoc != null) {
-                    this.topStruct = new StructElement(Long.valueOf(topstructIddoc), null);
+                    this.topStruct = new StructElement(topstructIddoc, null);
                 }
             } catch (NumberFormatException e) {
                 logger.error("Malformed number with get the topstruct element for Lucene IDDOC: {}", topstructIddoc);
@@ -762,7 +769,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      *
      * @return a {@link java.lang.String} object.
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public String getTitle() {
         String answer = getLabel();
         if (StringUtils.isEmpty(answer)) {
@@ -778,11 +785,16 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      */
     public boolean isHasTeiForLanguage(String language) {
         if (StringUtils.isNotEmpty(language)) {
-            logger.trace("isHasTeiForLanguage: {}", SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + language.toUpperCase());
-            return getMetadataFields().containsKey(SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + language.toUpperCase());
+            String key = SolrConstants.FILENAME_TEI + SolrConstants.MIDFIX_LANG + language.toUpperCase();
+            logger.trace("isHasTeiForLanguage: {}", key);
+            return getMetadataFields().containsKey(key);
         }
 
         return getMetadataFields().containsKey(SolrConstants.FILENAME_TEI);
+    }
+
+    public boolean isHasTei() {
+        return getMetadataFields().keySet().stream().anyMatch(k -> k.startsWith(SolrConstants.FILENAME_TEI));
     }
 
     /**
@@ -917,7 +929,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             } else {
                 String iddoc = SolrTools.getSingleFieldStringValue(docVolume, SolrConstants.IDDOC);
                 if (StringUtils.isNotBlank(iddoc)) {
-                    return new StructElement(Long.parseLong(iddoc), docVolume);
+                    return new StructElement(iddoc, docVolume);
                 }
             }
         } else if (isGroup()) {
@@ -931,7 +943,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             } else {
                 String iddoc = SolrTools.getSingleFieldStringValue(docVolume, SolrConstants.IDDOC);
                 if (StringUtils.isNotBlank(iddoc)) {
-                    return new StructElement(Long.parseLong(iddoc), docVolume);
+                    return new StructElement(iddoc, docVolume);
                 }
             }
         }

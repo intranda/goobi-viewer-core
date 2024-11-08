@@ -58,9 +58,6 @@ public class SearchQueryItem implements Serializable {
 
     private static final long serialVersionUID = -367323410132252816L;
 
-    /** Constant <code>ADVANCED_SEARCH_ALL_FIELDS="searchAdvanced_allFields"</code> */
-    // public static final String ADVANCED_SEARCH_ALL_FIELDS = "searchAdvanced_allFields";
-
     public enum SearchItemOperator {
         AND,
         OR,
@@ -266,6 +263,20 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
+     * @return the replaceRegex
+     */
+    public String getReplaceRegex() {
+        return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldReplaceRegex(field, template, false);
+    }
+
+    /**
+     * @return the replaceWith
+     */
+    public String getReplaceWith() {
+        return DataManager.getInstance().getConfiguration().getAdvancedSearchFieldReplaceWith(field, template, false);
+    }
+
+    /**
      * @return the label
      * @should return field if label empty
      */
@@ -279,9 +290,11 @@ public class SearchQueryItem implements Serializable {
 
     /**
      * @param label the label to set
+     * @return this
      */
-    public void setLabel(String label) {
+    public SearchQueryItem setLabel(String label) {
         this.label = label;
+        return this;
     }
 
     /**
@@ -292,6 +305,7 @@ public class SearchQueryItem implements Serializable {
      * @return the field
      */
     public String getField() {
+        logger.trace("getField: {}", field);
         return field;
     }
 
@@ -633,7 +647,12 @@ public class SearchQueryItem implements Serializable {
         // AND/OR: e.g. '(FIELD:value1 AND/OR FIELD:"value2" AND/OR -FIELD:value3)' for each query item
         else {
             if (!values.get(0).trim().isEmpty()) {
-                String[] valueSplit = values.get(0).trim().split(SearchHelper.SEARCH_TERM_SPLIT_REGEX);
+                String value = values.get(0).trim();
+                if (getReplaceRegex() != null && getReplaceWith() != null) {
+                    // logger.trace("Replacing '{}' with '{}'", getReplaceRegex(), getReplaceWith()); //NOSONAR Debug
+                    value = value.replaceAll(getReplaceRegex(), getReplaceWith());
+                }
+                String[] valueSplit = value.split(SearchHelper.SEARCH_TERM_SPLIT_REGEX);
                 boolean moreThanOneField = false;
                 for (final String f : fields) {
                     if (moreThanOneField) {

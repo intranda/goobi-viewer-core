@@ -481,24 +481,7 @@
 		display: none;
 	}
 
-	.archives-tree__inactive-title,
-	.archives-tree__active-title {
-		&::after {
-			display: none;
-		}
-	}
 
-	.archives-tree__inactive-title.-recordHasImage {
-		&:after {
-			content: "\f03e";
-			font-family: "FontAwesome";
-			display: inline;
-			font-size: 14px;
-			margin: unset;
-			font-weight: 400;
-			padding-left: 1.2rem;
-		}
-	}
 
 	&__object-info-heading {
 		padding: 1rem 2rem;
@@ -514,6 +497,11 @@
 		background: @middlegray;
 		font-size: 1.6rem;
 		padding-right: 4rem;
+		h2 {
+			margin-bottom: 0;
+			font-weight: 400;
+			font-size: 16px;
+		}
 
 		#archivesSearchTrigger {
 			position: absolute;
@@ -545,7 +533,9 @@
 		background: #f2f3f4;
 		padding-bottom: 2rem;
 	}
-
+	&__select-database-dropdown-label {
+		margin-bottom: 0;
+	}
 	&__select-database-dropdown-element {
 		overflow: hidden;
 		flex-grow: 1;
@@ -608,6 +598,11 @@
 
 	&__modal-select-database-confirm {
 		border: none;
+	}
+	&__widget-archives-interactions-wrapper {
+		margin-top: 20px;
+		display: flex;
+		justify-content: flex-end;
 	}
 }
 

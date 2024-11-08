@@ -435,8 +435,7 @@ public class Metadata implements Serializable {
                 case RELATEDFIELD:
                     value = relatedMetadata.getMetadataValue(this.label,
                             RelationshipMetadataContainer.FIELD_IN_RELATED_DOCUMENT_PREFIX + param.getKey(), locale);
-                case WIKIFIELD:
-                case WIKIPERSONFIELD:
+                case WIKIFIELD, WIKIPERSONFIELD:
                     if (value.contains(",")) {
                         // Find and remove additional information in a person's name
                         Pattern p = Pattern.compile(StringTools.REGEX_PARENTHESES);
@@ -774,19 +773,37 @@ public class Metadata implements Serializable {
     }
 
     /**
+     * 
+     * @param se
+     * @param ownerIddoc
+     * @param sortFields
+     * @param locale
+     * @return a boolean.
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public boolean populate(StructElement se, String ownerIddoc, List<StringPair> sortFields, Locale locale)
+            throws IndexUnreachableException, PresentationException {
+        return populate(se, null, ownerIddoc, sortFields, null, 0, locale);
+    }
+
+    /**
      * Populates the parameters of the given metadata with values from the given StructElement.
      *
      * @param se a {@link io.goobi.viewer.model.viewer.StructElement} object.
+     * @param anchorSe Optional anchor {@link StructElement}
      * @param ownerIddoc IDDOC of the owner document (either docstruct or parent metadata)
      * @param sortFields
+     * @param searchTerms
+     * @param truncateLength
      * @param locale a {@link java.util.Locale} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @should use default value of no value found
      */
-    public boolean populate(StructElement se, String ownerIddoc, List<StringPair> sortFields, Locale locale)
-            throws IndexUnreachableException, PresentationException {
+    public boolean populate(StructElement se, StructElement anchorSe, String ownerIddoc, List<StringPair> sortFields,
+            Map<String, Set<String>> searchTerms, int truncateLength, Locale locale) throws IndexUnreachableException, PresentationException {
         if (se == null) {
             return false;
         }
@@ -820,7 +837,7 @@ public class Metadata implements Serializable {
                 // In this case save time by skipping this field.
                 return false;
             }
-            return populateGroup(se, ownerIddoc, sortFields, locale);
+            return populateGroup(se, ownerIddoc, sortFields, searchTerms, truncateLength, locale);
         }
 
         // Regular, atomic metadata
@@ -832,12 +849,22 @@ public class Metadata implements Serializable {
             // logger.trace("{} ({})", param.toString(), indexOfParam); //NOSONAR Debug
             List<String> values = null;
             if (MetadataParameterType.TOPSTRUCTFIELD.equals(param.getType()) && se.getTopStruct() != null) {
-                // Topstruct values as the first choice
+                // Use topstruct value, if the parameter has the type "topstructfield"
                 values = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
+            } else if (MetadataParameterType.ANCHORFIELD.equals(param.getType())) {
+                // Use anchor value, if the parameter has the type "anchorfield"
+                if (anchorSe != null) {
+                    values = getMetadata(anchorSe.getTopStruct().getMetadataFields(), param.getKey(), locale);
+                } else {
+                    // Add empty parameter if there is no anchor
+                    setParamValue(0, getParams().indexOf(param), Collections.singletonList(""), null, null, null, null, locale);
+                    continue;
+                }
             } else {
                 // Own values
                 values = getMetadata(se.getMetadataFields(), param.getKey(), locale);
             }
+
             if (values == null && se.getTopStruct() != null && param.isTopstructValueFallback()) {
                 // Topstruct values as a fallback
                 values = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
@@ -875,6 +902,23 @@ public class Metadata implements Serializable {
                                 continue;
                             }
                         }
+
+                        // Truncate long values
+                        if (truncateLength > 0 && value.length() > truncateLength) {
+                            value = new StringBuilder(value.substring(0, truncateLength - 3)).append("...").toString();
+                        }
+                        // Add highlighting
+                        if (searchTerms != null) {
+                            if (searchTerms.get(getLabel()) != null) {
+                                value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(getLabel()));
+                            } else if (getLabel().startsWith("MD_SHELFMARK") && searchTerms.get("MD_SHELFMARKSEARCH") != null) {
+                                value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get("MD_SHELFMARKSEARCH"));
+                            }
+                            if (searchTerms.get(SolrConstants.DEFAULT) != null) {
+                                value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.DEFAULT));
+                            }
+                        }
+
                         setParamValue(count, indexOfParam, Collections.singletonList(value), param.getKey(), null, null, null, locale);
                         count++;
                     }
@@ -914,13 +958,16 @@ public class Metadata implements Serializable {
      * @param se {@link StructElement}
      * @param ownerIddoc Owner IDDOC (either docstruct or parent metadata)
      * @param sortFields Optional field/order pairs for sorting
+     * @param searchTerms
+     * @param truncateLength
      * @param locale
      * @return true if successful; false otherwise
      * @throws IndexUnreachableException
      * @should populate group correctly
      * @should apply default value if none found
      */
-    boolean populateGroup(StructElement se, String ownerIddoc, List<StringPair> sortFields, Locale locale) throws IndexUnreachableException {
+    boolean populateGroup(StructElement se, String ownerIddoc, List<StringPair> sortFields, Map<String, Set<String>> searchTerms, int truncateLength,
+            Locale locale) throws IndexUnreachableException {
         if (ownerIddoc == null) {
             return false;
         }
@@ -982,7 +1029,24 @@ public class Metadata implements Serializable {
                                 }
                                 logger.trace("conditional value added: {}", value);
                             }
-                            paramValues.add(value);
+                            String modifiedValue = value;
+                            // Truncate long values
+                            if (truncateLength > 0 && modifiedValue.length() > truncateLength) {
+                                modifiedValue = new StringBuilder(modifiedValue.substring(0, truncateLength - 3)).append("...").toString();
+                            }
+                            // Add highlighting
+                            if (searchTerms != null) {
+                                if (searchTerms.get(getLabel()) != null) {
+                                    modifiedValue = SearchHelper.applyHighlightingToPhrase(modifiedValue, searchTerms.get(getLabel()));
+                                } else if (getLabel().startsWith("MD_SHELFMARK") && searchTerms.get("MD_SHELFMARKSEARCH") != null) {
+                                    modifiedValue = SearchHelper.applyHighlightingToPhrase(modifiedValue, searchTerms.get("MD_SHELFMARKSEARCH"));
+                                }
+                                if (searchTerms.get(SolrConstants.DEFAULT) != null) {
+                                    modifiedValue = SearchHelper.applyHighlightingToPhrase(modifiedValue, searchTerms.get(SolrConstants.DEFAULT));
+                                }
+                            }
+
+                            paramValues.add(modifiedValue);
                         }
                         if (param.getKey().startsWith(NormDataImporter.FIELD_URI) && doc.getFieldValue(FIELD_NORM_TYPE) != null) {
                             options.put(FIELD_NORM_TYPE, SolrTools.getSingleFieldStringValue(doc, FIELD_NORM_TYPE));

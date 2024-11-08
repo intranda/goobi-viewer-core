@@ -35,8 +35,8 @@ import org.apache.commons.configuration2.reloading.PeriodicReloadingTrigger;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.configuration2.tree.xpath.XPathExpressionEngine;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * <p>
@@ -141,8 +141,6 @@ public class LanguageHelper {
         } catch (IndexOutOfBoundsException e) {
             logger.warn("No matching language found for {}", isoCode);
             return null;
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
         }
         if (languageConfig == null) {
             logger.warn("No matching language found for {}", isoCode);
@@ -158,9 +156,9 @@ public class LanguageHelper {
      */
     public Language createLanguage(HierarchicalConfiguration<ImmutableNode> languageConfig) {
         Language language = new Language();
-        language.setIsoCode_639_2B(languageConfig.getString("iso_639-2", languageConfig.getString("iso_639-2B")));
-        language.setIsoCode_639_2T(languageConfig.getString("iso_639-2T"));
-        language.setIsoCode_639_1(languageConfig.getString("iso_639-1"));
+        language.setIsoCode6392B(languageConfig.getString("iso_639-2", languageConfig.getString("iso_639-2B")));
+        language.setIsoCode6392T(languageConfig.getString("iso_639-2T"));
+        language.setIsoCode6391(languageConfig.getString("iso_639-1"));
         language.setEnglishName(languageConfig.getString("eng"));
         language.setGermanName(languageConfig.getString("ger"));
         language.setFrenchName(languageConfig.getString("fre"));

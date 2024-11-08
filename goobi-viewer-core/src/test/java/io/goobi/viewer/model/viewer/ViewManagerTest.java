@@ -27,9 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Dimension;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
@@ -296,7 +295,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         String pi = "PPN123";
         String docstructType = "Catalogue";
 
-        StructElement se = new StructElement(123L);
+        StructElement se = new StructElement("123");
         se.setDocStructType(docstructType);
         se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
 
@@ -315,7 +314,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         String pi = "PPN123";
         String docstructType = "Catalogue";
 
-        StructElement se = new StructElement(123L);
+        StructElement se = new StructElement("123");
         se.setDocStructType(docstructType);
         se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
 
@@ -329,7 +328,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         String pi = "PPN123";
         String docstructType = "Catalogue";
 
-        StructElement se = new StructElement(123L);
+        StructElement se = new StructElement("123");
         se.setDocStructType(docstructType);
         se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
 
@@ -346,7 +345,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         String pi = "PPN123";
         String docstructType = "Catalogue";
 
-        StructElement se = new StructElement(123L);
+        StructElement se = new StructElement("123");
         se.setDocStructType(docstructType);
         se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
 
@@ -469,7 +468,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private static ViewManager createViewManager(String pi, String docstructType, String pageFilename, String mimeType)
             throws IndexUnreachableException, PresentationException {
-        StructElement se = new StructElement(123L);
+        StructElement se = new StructElement("123");
         se.setDocStructType(docstructType);
         se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
         PhysicalElement page = Mockito.mock(PhysicalElement.class);
@@ -480,7 +479,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
             Mockito.when(page.getFilepath()).thenReturn(pi + "/" + pageFilename);
         }
         Mockito.when(page.getMimeType()).thenReturn(mimeType);
-        Mockito.when(page.getBaseMimeType()).thenReturn(BaseMimeType.getByName(mimeType).getName());
+        Mockito.when(page.getBaseMimeType()).thenReturn(BaseMimeType.getByName(mimeType));
 
         IPageLoader pageLoader = Mockito.mock(EagerPageLoader.class);
         Mockito.when(pageLoader.getPage(Mockito.anyInt())).thenReturn(page);
@@ -666,6 +665,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     void getCopyrightIndicatorStatusName_shouldReturnOpenStatusIfNoRestrictiveStatusesFound() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
         Assertions.assertNotNull(se);
+        se.metadataFields.put("MD_ACCESSCONDITION", Arrays.asList("Freier Zugang"));
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
 
         Assertions.assertEquals(Status.OPEN.name(), viewManager.getCopyrightIndicatorStatusName());
@@ -688,17 +688,17 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see ViewManager#getCopyrightIndicatorStatuses()
-     * @verifies return open status if no statuses found
+     * @verifies return locked status if no statuses found
      */
     @Test
-    void getCopyrightIndicatorStatuses_shouldReturnOpenStatusIfNoStatusesFound() throws Exception {
+    void getCopyrightIndicatorStatuses_shouldReturnLockedStatusIfNoStatusesFound() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
         Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
 
         List<CopyrightIndicatorStatus> result = viewManager.getCopyrightIndicatorStatuses();
         assertEquals(1, result.size());
-        assertEquals(Status.OPEN, result.get(0).getStatus());
+        assertEquals(Status.LOCKED, result.get(0).getStatus());
     }
 
     /**
@@ -733,8 +733,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    void test_getLinkToDownloadFile()
-            throws UnsupportedEncodingException, URISyntaxException, IndexUnreachableException, PresentationException, DAOException {
+    void test_getLinkToDownloadFile() throws IndexUnreachableException, PresentationException, DAOException {
         String filename = "INN 2_Gutenzell.pdf";
         String filenameEncoded = "INN%202_Gutenzell.pdf";
 

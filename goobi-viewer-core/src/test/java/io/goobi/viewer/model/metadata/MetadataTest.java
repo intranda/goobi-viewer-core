@@ -205,7 +205,7 @@ class MetadataTest extends AbstractSolrEnabledTest {
                 .add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_LIFEPERIOD").setPrefix(" (").setSuffix(")"));
 
         StructElement se = new StructElement();
-        Assertions.assertTrue(metadata.populateGroup(se, "1687786575170", null, Locale.ENGLISH));
+        Assertions.assertTrue(metadata.populateGroup(se, "1687786575170", null, null, 0, Locale.ENGLISH));
         assertEquals("Weheren, Bartholdt", metadata.getValues().get(0).getComboValueShort(0));
         assertEquals(" (1569)", metadata.getValues().get(0).getComboValueShort(1));
     }
@@ -227,7 +227,7 @@ class MetadataTest extends AbstractSolrEnabledTest {
                         .setDefaultValue("???"));
 
         StructElement se = new StructElement();
-        Assertions.assertTrue(metadata.populateGroup(se, "1687786563840", null, Locale.ENGLISH));
+        Assertions.assertTrue(metadata.populateGroup(se, "1687786563840", null, null, 0, Locale.ENGLISH));
         assertEquals("Stuttgart", metadata.getValues().get(0).getComboValueShort(0));
         assertEquals(" (???)", metadata.getValues().get(0).getComboValueShort(1));
         assertEquals("G&ouml;ttingen", metadata.getValues().get(1).getComboValueShort(0));

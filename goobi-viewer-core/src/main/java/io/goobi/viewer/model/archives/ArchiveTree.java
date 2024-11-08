@@ -63,6 +63,8 @@ public class ArchiveTree implements Serializable {
     private boolean treeBuilt = false;
     private boolean treeFullyLoaded = true;
 
+    private final boolean expandEntryOnSelection;
+
     /**
      * <p>
      * Constructor for TOC.
@@ -70,16 +72,12 @@ public class ArchiveTree implements Serializable {
      */
     public ArchiveTree() {
         logger.trace("new EADTree()");
+        this.expandEntryOnSelection = DataManager.getInstance().getConfiguration().isExpandArchiveEntryOnSelection();
     }
 
-    /**
-     * Cloning constructor.
-     * 
-     * @param orig
-     */
     public ArchiveTree(ArchiveTree orig) {
-        this.generate(new ArchiveEntry(orig.getRootElement(), null));
-        this.getTreeViewForGroup(DEFAULT_GROUP);
+        this();
+        update(orig.trueRootElement);
     }
 
     /**
@@ -90,7 +88,7 @@ public class ArchiveTree implements Serializable {
         logger.trace("update: {}", rootElement);
         generate(rootElement);
         if (getSelectedEntry() == null) {
-            setSelectedEntry(getRootElement());
+            setSelectedEntry(rootElement);
         }
         // This should happen before the tree is expanded to the selected entry, otherwise the collapse level will be reset
         getTreeView();
@@ -116,6 +114,7 @@ public class ArchiveTree implements Serializable {
                 break;
             }
         }
+        // logger.trace("Generated tree of size {}", tree.size()); //NOSONAR Debug
         entryMap.put(DEFAULT_GROUP, tree);
     }
 
@@ -199,24 +198,10 @@ public class ArchiveTree implements Serializable {
      * @return List<ArchiveEntry>
      */
     public List<ArchiveEntry> getVisibleTree(boolean searchActive) {
-        logger.trace("getVisibleTree");
+        logger.trace("getVisibleTree:  {}", trueRootElement.getLabel());
         return getTreeView().stream()
                 .filter(e -> e.isVisible() && (e.isDisplaySearch() || !searchActive) && e.isAccessAllowed())
-                .map(e -> {
-                    if (!e.isMetadataLoaded()) {
-                        e.loadMetadata();
-                    }
-                    return e;
-                })
                 .toList();
-
-        //        ret.forEach(e -> {
-        //            if (!e.isMetadataLoaded()) {
-        //                e.loadMetadata();
-        //            }
-        //        });
-
-        //        return ret;
     }
 
     /**
@@ -236,29 +221,32 @@ public class ArchiveTree implements Serializable {
             }
             int lastLevel = 0;
             List<ArchiveEntry> entries = entryMap.get(group);
-            for (int index = 0; index < entries.size(); index++) {
+            int index = 0;
+            for (ArchiveEntry entry : entries) {
                 // Current element index
-                ArchiveEntry entry = entries.get(index);
                 if (lastLevel < entry.getHierarchyLevel() && index > 0) {
                     if (entry.getHierarchyLevel() > collapseLevel) {
-                        entries.get(index - 1).setExpanded(false);
+                        entry.getParentNode().setExpanded(false);
                         entry.setVisible(false);
                         // logger.trace("Set node invisible: {} (level {})", entry.getLabel(), entry.getHierarchyLevel()); //NOSONAR Debug
                     } else {
-                        entries.get(index - 1).setExpanded(true);
+                        entry.getParentNode().setExpanded(true);
                     }
                 } else if (entry.getHierarchyLevel() > collapseLevel) {
                     entry.setVisible(false);
                 }
                 lastLevel = entry.getHierarchyLevel();
+                index++;
             }
             treeBuilt = true;
-            resetCollapseLevel(getRootElement(), collapseLevel);
+            resetCollapseLevel(getRootElement(), collapseLevel); // TODO Check whether redundant here
+            logger.trace("buildTree END");
         }
     }
 
     /**
-     *
+     * Recursively expands and sets visible entries at or below maxDepth; hides and collapses any below.
+     * 
      * @param entry
      * @param maxDepth
      */
@@ -295,10 +283,20 @@ public class ArchiveTree implements Serializable {
      */
     public void setSelectedEntry(ArchiveEntry selectedEntry) {
         logger.trace("setSelectedEntry: {}", selectedEntry != null ? selectedEntry.getLabel() : null);
-        this.selectedEntry = selectedEntry;
-        if (selectedEntry != null && !selectedEntry.isMetadataLoaded()) {
-            selectedEntry.loadMetadata();
+
+        ArchiveEntry currentEntry = Optional.ofNullable(selectedEntry).orElse(this.selectedEntry);
+        if (currentEntry != null && isExpandEntryOnSelection()) {
+            if (currentEntry.isExpanded()) {
+                currentEntry.collapse();
+            } else {
+                currentEntry.expand();
+            }
         }
+        this.selectedEntry = selectedEntry;
+    }
+
+    public boolean isExpandEntryOnSelection() {
+        return expandEntryOnSelection;
     }
 
     /**
@@ -307,12 +305,9 @@ public class ArchiveTree implements Serializable {
      */
     public void toggleSelectedEntry(ArchiveEntry selectedEntry) {
         if (selectedEntry != null && selectedEntry.equals(this.selectedEntry)) {
-            this.selectedEntry = null;
+            setSelectedEntry(null);
         } else {
-            this.selectedEntry = selectedEntry;
-            if (selectedEntry != null && !selectedEntry.isMetadataLoaded()) {
-                selectedEntry.loadMetadata();
-            }
+            this.setSelectedEntry(selectedEntry);
         }
     }
 

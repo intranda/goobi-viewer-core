@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -35,6 +36,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
@@ -87,6 +89,7 @@ public class StatisticsBean implements Serializable {
 
     private Map<String, Long> lastUpdateMap = new HashMap<>();
     private transient Map<String, Object> valueMap = new HashMap<>();
+    private transient Map<String, StatisticsSummary> recordUsageStatisticsMap = new ConcurrentHashMap<>();
 
     /**
      * <p>
@@ -106,7 +109,7 @@ public class StatisticsBean implements Serializable {
         try {
             QueryResponse resp = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(new StringBuilder(SolrConstants.PI).append(":*").append(SearchHelper.getAllSuffixes()).toString(), 0, 0, null,
+                    .search(new StringBuilder("+").append(SolrConstants.PI).append(":*").append(SearchHelper.getAllSuffixes()).toString(), 0, 0, null,
                             Collections.singletonList(SolrConstants.DATECREATED), "count", Collections.singletonList(SolrConstants.DATECREATED), null,
                             null);
             if (resp != null && resp.getFacetField(SolrConstants.DATECREATED) != null
@@ -178,7 +181,8 @@ public class StatisticsBean implements Serializable {
         try {
             QueryResponse resp = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(new StringBuilder("+").append(SolrConstants.PI).append(":*")
+                    .search(new StringBuilder("+").append(SolrConstants.PI)
+                            .append(":*")
                             .append(" +(")
                             .append(SolrConstants.ISWORK)
                             .append(":true ")
@@ -226,13 +230,7 @@ public class StatisticsBean implements Serializable {
                 logger.debug("Refreshing number of imported pages...");
                 long pages = DataManager.getInstance()
                         .getSearchIndex()
-                        .getHitCount(SolrConstants.DOCTYPE + ":" + DocType.PAGE.name() + SearchHelper.getAllSuffixes());
-                // Fallback for older indexes that do not have the DOCTYPE field (slower)
-                if (pages == 0) {
-                    pages = DataManager.getInstance()
-                            .getSearchIndex()
-                            .getHitCount(SolrConstants.FILENAME + ":['' TO *]" + SearchHelper.getAllSuffixes());
-                }
+                        .getHitCount("+" + SolrConstants.DOCTYPE + ":" + DocType.PAGE.name() + SearchHelper.getAllSuffixes());
                 valueMap.put("getImportedPages", pages);
                 lastUpdateMap.put("getImportedPages", now);
             }
@@ -295,7 +293,9 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>getCoreVersion.</p>
+     * <p>
+     * getCoreVersion.
+     * </p>
      *
      * @return goobi-viewer-core version
      */
@@ -304,7 +304,9 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>getConnectorVersion.</p>
+     * <p>
+     * getConnectorVersion.
+     * </p>
      *
      * @return goobi-viewer-connector version
      */
@@ -313,7 +315,9 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>getContentServerVersion.</p>
+     * <p>
+     * getContentServerVersion.
+     * </p>
      *
      * @return intrandaContentServer version
      */
@@ -329,7 +333,9 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>getIndexerVersion.</p>
+     * <p>
+     * getIndexerVersion.
+     * </p>
      *
      * @return goobi-viewer-indexer version
      */
@@ -338,7 +344,9 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>getUsageStatisticsForRecord.</p>
+     * <p>
+     * getUsageStatisticsForRecord.
+     * </p>
      *
      * @param pi a {@link java.lang.String} object
      * @return {@link io.goobi.viewer.model.statistics.usage.StatisticsSummary}
@@ -348,18 +356,31 @@ public class StatisticsBean implements Serializable {
      */
     public StatisticsSummary getUsageStatisticsForRecord(String pi) throws PresentationException, IndexUnreachableException, DAOException {
         if (StringUtils.isNotBlank(pi)) {
-            StatisticsSummaryFilter filter = StatisticsSummaryFilter.forRecord(pi);
-            try {
-                return new StatisticsSummaryBuilder().loadSummary(filter);
-            } catch (WebApplicationException e) {
-                logger.error(e.getMessage());
+
+            StatisticsSummary summary = recordUsageStatisticsMap.get(pi);
+            if (summary == null || summary.isOlderThan(1, ChronoUnit.DAYS)) {
+                summary = loadSummary(pi);
+                recordUsageStatisticsMap.put(pi, summary);
             }
+            return summary;
         }
         return new StatisticsSummary(Collections.emptyMap());
     }
 
+    protected StatisticsSummary loadSummary(String pi) throws IndexUnreachableException, PresentationException, DAOException {
+        StatisticsSummaryFilter filter = StatisticsSummaryFilter.forRecord(pi);
+        try {
+            return new StatisticsSummaryBuilder().loadSummary(filter);
+        } catch (WebApplicationException e) {
+            logger.error(e.getMessage());
+            return new StatisticsSummary(Collections.emptyMap());
+        }
+    }
+
     /**
-     * <p>getLastUsageStatisticsCheck.</p>
+     * <p>
+     * getLastUsageStatisticsCheck.
+     * </p>
      *
      * @return a {@link java.time.LocalDate} object
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -385,12 +406,22 @@ public class StatisticsBean implements Serializable {
     }
 
     /**
-     * <p>isUsageStatisticsActive.</p>
+     * <p>
+     * isUsageStatisticsActive.
+     * </p>
      *
      * @return a boolean
      */
     public boolean isUsageStatisticsActive() {
         return DataManager.getInstance().getConfiguration().isStatisticsEnabled();
+    }
+
+    public boolean isShowRecordStatisticsWidget() {
+        return DataManager.getInstance().getConfiguration().isShowRecordStatisticsWidget();
+    }
+
+    public boolean isRecordStatisticWidgetCollapsible() {
+        return DataManager.getInstance().getConfiguration().isRecordStatisticsWidgetCollapsible();
     }
 
 }

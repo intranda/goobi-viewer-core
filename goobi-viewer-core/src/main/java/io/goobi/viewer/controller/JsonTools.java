@@ -24,6 +24,7 @@ package io.goobi.viewer.controller;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -77,6 +78,7 @@ public final class JsonTools {
         mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
         mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
         mapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
+
     }
 
     public static final String KEY_MESSAGE = "message";
@@ -347,7 +349,7 @@ public final class JsonTools {
         StringBuilder sbThumbnailUrl = new StringBuilder(250);
         StringBuilder sbMediumImage = new StringBuilder(250);
         try {
-            StructElement ele = new StructElement(0, doc);
+            StructElement ele = new StructElement("dummy", doc);
             if (thumbs != null) {
                 sbThumbnailUrl.append(thumbs.getThumbnailUrl(ele, 100, 120));
                 sbMediumImage.append(thumbs.getThumbnailUrl(ele, 600, 500));
@@ -488,5 +490,36 @@ public final class JsonTools {
             logger.warn(e.getMessage());
             return notAvailableKey;
         }
+    }
+
+    /**
+     * 
+     * @param json
+     * @param key
+     * @return {@link String}
+     */
+    public static String getNestedValue(JSONObject json, String key) {
+        boolean found = json.has(key);
+        Iterator<String> keys;
+        String nextKey;
+        if (!found) {
+            keys = json.keys();
+            while (keys.hasNext()) {
+                nextKey = (String) keys.next();
+                if (json.get(nextKey) instanceof JSONObject) {
+                    return getNestedValue(json.getJSONObject(nextKey), key);
+                } else if (json.get(nextKey) instanceof JSONArray) {
+                    JSONArray jsonArray = json.getJSONArray(nextKey);
+                    int n = 0;
+                    while (n < jsonArray.length()) {
+                        String jsonArrayString = jsonArray.get(n).toString();
+                        JSONObject innerJson = new JSONObject(jsonArrayString);
+                        n++;
+                        return getNestedValue(innerJson, key);
+                    }
+                }
+            }
+        }
+        return json.getString(key).toString();
     }
 }

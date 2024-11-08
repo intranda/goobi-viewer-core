@@ -136,7 +136,7 @@ public class NavigationHelper implements Serializable {
     private Locale locale = Locale.ENGLISH;
 
     /** Map for setting any navigation status variables. Replaces currentView, etc. */
-    Map<String, String> statusMap = new HashMap<>();
+    private Map<String, String> statusMap = new HashMap<>();
 
     private final String theme;
 
@@ -713,7 +713,7 @@ public class NavigationHelper implements Serializable {
      */
     public void setLocaleString(String inLocale) {
         logger.trace("setLocaleString: {}", inLocale);
-        locale = new Locale(inLocale);
+        locale = Locale.forLanguageTag(inLocale);
         FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
 
         // Make sure browsing terms are reloaded, so that locale-specific sorting can be applied
@@ -736,6 +736,12 @@ public class NavigationHelper implements Serializable {
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
         if (adb != null) {
             adb.setSelectedRecordLanguage(inLocale);
+        }
+
+        // Reset advanced search parameters so that the SearchQueryItems have correct language fields
+        SearchBean sb = BeanUtils.getSearchBean();
+        if (sb != null && sb.getActiveSearchType() == SearchHelper.SEARCH_TYPE_ADVANCED) {
+            sb.resetAdvancedSearchParameters();
         }
     }
 
@@ -1152,7 +1158,7 @@ public class NavigationHelper implements Serializable {
      * @return the reading mode url
      * @deprecated renamed to fullscreen
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public String getReadingModeUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewFullscreen.getName();
     }
@@ -1374,12 +1380,8 @@ public class NavigationHelper implements Serializable {
     public String getSearchUrl(int activeSearchType, CMSPage cmsPage) {
 
         //If we are on a cms-page, return the cms page url
-        try {
-            if (cmsPage != null && cmsPage.hasSearchFunctionality()) {
-                return StringTools.removeTrailingSlashes(cmsPage.getPageUrl());
-            }
-        } catch (Exception e) {
-            logger.error(e.toString(), e);
+        if (cmsPage != null && cmsPage.hasSearchFunctionality()) {
+            return StringTools.removeTrailingSlashes(cmsPage.getPageUrl());
         }
 
         switch (activeSearchType) {

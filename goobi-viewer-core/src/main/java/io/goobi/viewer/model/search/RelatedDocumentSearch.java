@@ -69,9 +69,6 @@ public class RelatedDocumentSearch implements Serializable {
         List<String> ids = getRelatedProcessIdentifier(pi, relationshipField);
         String searchString = String.format(SEARCH_STRING_FORMAT, ids.stream().collect(Collectors.joining(SEARCH_STRING_IDENTIFIER_SEPARATOR)));
         return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", searchString, 1, searchBean.getSortString(), "-");
-
-        //        searchBean.setExactSearchString(searchString);
-        //        return "pretty:newSearch5";
     }
 
     private List<String> getRelatedProcessIdentifier(String pi, String relationshipField) throws PresentationException, IndexUnreachableException {

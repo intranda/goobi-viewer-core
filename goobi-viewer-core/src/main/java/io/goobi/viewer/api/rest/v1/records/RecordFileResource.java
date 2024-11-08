@@ -30,11 +30,14 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_SOURCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,6 +51,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,12 +64,14 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.MediaResourceBinding;
+import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.MediaResourceHelper;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
@@ -76,6 +83,7 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.model.viewer.record.views.FileType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
@@ -89,9 +97,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 public class RecordFileResource {
 
     private static final Logger logger = LogManager.getLogger(RecordFileResource.class);
-    @Context
     private HttpServletRequest servletRequest;
-    @Context
     private HttpServletResponse servletResponse;
     @Context
     private Configuration config;
@@ -101,11 +107,19 @@ public class RecordFileResource {
 
     /**
      * 
-     * @param pi
+     * @param request the http request
+     * @param response the http response
+     * @param pi the requested indentifier
      */
-    public RecordFileResource(
+    public RecordFileResource(@Context HttpServletRequest request, @Context HttpServletResponse response,
             @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi) {
+        this.servletRequest = request;
+        this.servletResponse = response;
         this.pi = pi;
+        /**
+         * required to count download statistics in {@link RecordFileDownloadFilter}
+         */
+        servletRequest.setAttribute("pi", pi);
     }
 
     @GET
@@ -204,7 +218,7 @@ public class RecordFileResource {
         }
 
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, filename,
-                IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES).isGranted();
+                IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES).isGranted();
         if (!access) {
             throw new ServiceNotAllowedException("Access to source file " + filename + " not allowed");
         }
@@ -216,12 +230,42 @@ public class RecordFileResource {
             logger.error("Failed to probe file content type");
         }
 
+        if (FileType.getContentTypeFor(filename).startsWith("model/")) {
+            String baseFilename = FilenameUtils.getBaseName(filename);
+            Path modelFolder = path.getParent().resolve(baseFilename);
+            if (Files.exists(modelFolder)) {
+                Path tempFolder = Path.of(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_3d_" + System.currentTimeMillis());
+                try {
+                    Files.createDirectories(tempFolder);
+                    List<File> fileList = new ArrayList<>();
+                    fileList.add(path.toFile());
+                    FileTools.listFiles(modelFolder, p -> true).forEach(p -> {
+                        fileList.add(p.toFile());
+                    });
+                    Path zipFile = tempFolder.resolve(FileTools.replaceExtension(Path.of(filename), "zip").toString());
+                    FileTools.compressZipFile(fileList, zipFile.toFile(), 9);
+                    mimeType = new MediaResourceHelper(config).setContentHeaders(servletResponse, zipFile.getFileName().toString(), zipFile);
+                    StreamingOutput so = out -> {
+                        try (InputStream in = Files.newInputStream(zipFile)) {
+                            IOUtils.copy(in, out);
+                        } finally {
+                            FileUtils.deleteQuietly(tempFolder.toFile());
+                        }
+                    };
+                    return Response.ok(so, mimeType).build();
+                } catch (IOException e) {
+                    logger.error("Error creating zip archive for 3d file {}", path, e);
+                    Response.serverError().entity("Error creating zip archive for 3d file " + path);
+                }
+            }
+        }
         StreamingOutput so = out -> {
             try (InputStream in = Files.newInputStream(path)) {
                 IOUtils.copy(in, out);
             }
         };
         return Response.ok(so, mimeType).build();
+
     }
 
     @GET
@@ -257,6 +301,7 @@ public class RecordFileResource {
     @GET
     @javax.ws.rs.Path(RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD)
     @Operation(tags = { "records" }, summary = "Get cmdi for record file")
+    @RecordFileDownloadBinding
     public Response getDownloadedResource(
             @Parameter(description = "download resource task id") @PathParam("taskId") String taskId,
             @Parameter(description = "file path relative to the download directory") @PathParam("path") String path)
