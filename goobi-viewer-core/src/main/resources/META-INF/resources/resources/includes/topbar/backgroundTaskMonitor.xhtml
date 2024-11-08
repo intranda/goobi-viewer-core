@@ -11,6 +11,18 @@
 		<h:panelGroup styleClass="admin__topbar-queue-state-wrapper"
 			layout="block" id="messageQueueStateWrapper">
 			<ui:fragment
+				rendered="#{userBean.admin and messageQueueBean.messageQueueState == 'INACTIVE'}">
+				<a class="admin__topbar-queue-info-link"
+					href="#{request.contextPath}/admin/tasks">
+					<div class="admin__topbar-queue-info-icon-wrapper">
+						<div class="admin__topbar-queue-info-icon">
+							<i class="fa fa-info" aria-hidden="true"></i>
+						</div>
+					</div>
+					<div class="admin__topbar-queue-warning-text">#{msg.admin__msg_queue__inactive}</div>
+				</a>
+			</ui:fragment>
+			<ui:fragment
 				rendered="#{userBean.admin and messageQueueBean.messageQueueState == 'STOPPED'}">
 				<a class="admin__topbar-queue-warning-link"
 					href="#{request.contextPath}/admin/tasks">

@@ -447,7 +447,9 @@ public class MessageQueueBean implements Serializable {
     }
 
     public MessageQueueState getMessageQueueState() {
-        if (this.messageBroker == null || !this.messageBroker.isQueueRunning()) {
+        if (!DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
+            return MessageQueueState.INACTIVE;
+        } else if (this.messageBroker == null || !this.messageBroker.isQueueRunning()) {
             return MessageQueueState.STOPPED;
         } else if (this.isPaused()) {
             return MessageQueueState.PAUSED;
@@ -457,6 +459,7 @@ public class MessageQueueBean implements Serializable {
     }
 
     public static enum MessageQueueState {
+        INACTIVE,
         STOPPED,
         RUNNING,
         PAUSED;
