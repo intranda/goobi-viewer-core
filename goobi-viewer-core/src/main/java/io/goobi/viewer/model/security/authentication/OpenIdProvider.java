@@ -22,21 +22,23 @@
 package io.goobi.viewer.model.security.authentication;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
-import org.apache.oltu.oauth2.common.OAuthProviderType;
-import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
-import org.apache.oltu.oauth2.common.message.types.ResponseType;
-import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -216,55 +218,37 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     @Override
     public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException {
 
-        // Apache Oltu
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+
+        byte[] secureBytes = new byte[64];
+        new SecureRandom().nextBytes(secureBytes);
+        String nonce = Base64.getUrlEncoder().encodeToString(secureBytes);
+        HttpSession session = (HttpSession) ec.getSession(false);
+        session.setAttribute("openIDNonce", nonce);
+
         try {
-            oAuthState =
-                    new StringBuilder(String.valueOf(System.nanoTime())).append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).toString();
-            OAuthClientRequest request = null;
-            switch (getName().toLowerCase()) {
-                case "google":
-                    request = OAuthClientRequest.authorizationProvider(OAuthProviderType.GOOGLE)
-                            .setResponseType(ResponseType.CODE.name().toLowerCase())
-                            .setClientId(getClientId())
-                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
-                            .setState(oAuthState)
-                            .setScope("openid email")
-                            .buildQueryMessage();
-                    break;
-                case "facebook":
-                    request = OAuthClientRequest.authorizationProvider(OAuthProviderType.FACEBOOK)
-                            .setClientId(getClientId())
-                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
-                            .setState(oAuthState)
-                            .setScope("email")
-                            .buildQueryMessage();
-                    break;
-                case "thirdpartyloginapi":
-                    // Login with help of third party API
-                    request = OAuthClientRequest.authorizationLocation(getUrl())
-                            .setResponseType(ResponseType.CODE.name().toLowerCase())
-                            .setClientId(getClientId())
-                            .setRedirectURI(redirectionEndpoint)
-                            .setState(oAuthState)
-                            .setScope("openid")
-                            .buildQueryMessage();
-                    break;
-                default:
-                    // Other providers
-                    request = OAuthClientRequest.authorizationLocation(getUrl())
-                            .setResponseType(ResponseType.CODE.name().toLowerCase())
-                            .setClientId(getClientId())
-                            .setRedirectURI(redirectionEndpoint)
-                            .setState(oAuthState)
-                            .setScope(scope)
-                            .buildQueryMessage();
-                    break;
-            }
+            //            oAuthState =
+            //                    new StringBuilder(String.valueOf(System.nanoTime())).append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).toString();
+            //            OAuthClientRequest request = OAuthClientRequest.authorizationLocation(getUrl())
+            //                    .setResponseType(ResponseType.CODE.name().toLowerCase())
+            //                    .setClientId(getClientId())
+            //                    .setRedirectURI(redirectionEndpoint)
+            //                    .setState(oAuthState)
+            //                    .setScope(scope)
+            //                    .buildQueryMessage();
 
             DataManager.getInstance().getOAuthResponseListener().register(this);
-            if (request != null) {
-                BeanUtils.getResponse().sendRedirect(request.getLocationUri());
-            }
+
+            URIBuilder builder = new URIBuilder(getUrl());
+            builder.addParameter("client_id", clientId);
+            builder.addParameter("response_type", "id_token");
+            builder.addParameter("redirect_uri", redirectionEndpoint);
+            builder.addParameter("response_mode", "form_post");
+            builder.addParameter("scope", scope);
+            builder.addParameter("nonce", nonce);
+
+            ec.redirect(builder.build().toString());
+
             return CompletableFuture.supplyAsync(() -> {
                 synchronized (responseLock) {
                     try {
@@ -280,7 +264,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                 }
             });
 
-        } catch (IOException | OAuthSystemException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new AuthenticationProviderException(e);
         }
     }

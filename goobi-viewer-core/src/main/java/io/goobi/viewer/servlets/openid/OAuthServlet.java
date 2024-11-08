@@ -22,7 +22,12 @@
 package io.goobi.viewer.servlets.openid;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.PublicKey;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -34,15 +39,18 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.oltu.oauth2.client.OAuthClient;
 import org.apache.oltu.oauth2.client.URLConnectionClient;
 import org.apache.oltu.oauth2.client.request.OAuthBearerClientRequest;
@@ -60,19 +68,32 @@ import org.apache.oltu.oauth2.common.message.types.GrantType;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
+import com.auth0.jwk.InvalidPublicKeyException;
+import com.auth0.jwk.JwkException;
+import com.auth0.jwk.JwkProvider;
+import com.auth0.jwk.UrlJwkProvider;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.RSAKeyProvider;
+
+import de.sub.goobi.helper.JwtHelper;
+import de.sub.goobi.persistence.managers.UserManager;
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.UserBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.authentication.AuthResponseListener;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import net.sf.ehcache.config.ConfigurationHelper;
 
 /**
  * OpenID Connect business logic.
@@ -234,10 +255,56 @@ public class OAuthServlet extends HttpServlet {
                 return doDefault(provider, oAuthTokenRequest, request, response);
         }
 
+        String nonce = (String) request.getSession().getAttribute("openIDNonce");
+        if (error == null) {
+            // no error - we should have a token. Verify it.
+            DecodedJWT jwt = verifyOpenIdToken(idToken);
+            if (jwt != null) {
+                // now check if the nonce is the same as in the old session
+                if (nonce.equals(jwt.getClaim("nonce").asString()) && provider.getClientId().equals(jwt.getClaim("aud").asString())) {
+                    //all OK, login the user
+                    UserBean userBean = BeanUtils.getUserBean();
+
+                    // get the user by the configured claim from the JWT
+                    String login = jwt.getClaim(config.getOIDCIdClaim()).asString();
+                    if (StringUtils.isBlank(login)) {
+                        log.error("The configured claim '{}' is not present in the response.", config.getOIDCIdClaim());
+                    } else {
+                        log.debug("logging in user ");
+                        User user = UserManager.getUserBySsoId(login);
+                        if (user == null) {
+                            userBean.setSsoError(
+                                    "Could not find user in Goobi database. Please contact your admin to add your SSO ID to the database.");
+                            servletResponse.sendRedirect("/goobi/uii/logout.xhtml");
+                            return false;
+                        }
+                        userBean.setSsoError(null);
+                        user.lazyLoad();
+                        userBean.setMyBenutzer(user);
+                        userBean.setRoles(user.getAllUserRoles());
+                        userBean.setMyBenutzer(user);
+                        //add the user to the sessionform that holds information about all logged in users
+                        sessionForm.updateSessionUserName(servletRequest.getSession(), user);
+                    }
+                } else {
+                    if (!nonce.equals(jwt.getClaim("nonce").asString())) {
+                        logger.error("nonce does not match. Not logging user in");
+                    }
+                    if (!provider.getClientId().equals(jwt.getClaim("aud").asString())) {
+                        logger.error("clientID does not match aud. Not logging user in");
+                    }
+                }
+            } else {
+                log.error("could not verify JWT");
+            }
+        } else {
+            log.error(error);
+        }
+
         return false;
     }
 
-	/**
+    /**
      * 
      * @param provider
      * @param oAuthTokenRequest
@@ -313,7 +380,7 @@ public class OAuthServlet extends HttpServlet {
 
         return false;
     }
-    
+
     /**
      * 
      * @param provider
@@ -325,65 +392,65 @@ public class OAuthServlet extends HttpServlet {
      * @throws OAuthProblemException
      */
     private static boolean doThirdPartyLogin(OpenIdProvider provider, OAuthClientRequest oAuthTokenRequest,
-			HttpServletRequest request, HttpServletResponse response) {
-    	 OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
-    	 try {
-             OAuthAccessTokenResponse oAuthTokenResponse = oAuthClient.accessToken(oAuthTokenRequest);
-             if (oAuthTokenResponse != null) {
-                 logger.debug("OPENID - oAuthTokenResponse class: {}", oAuthTokenResponse.getClass());
-                 TokenValidator tv = new TokenValidator();
-                 tv.validate(oAuthTokenResponse);
-                 provider.setoAuthAccessToken(oAuthTokenResponse.getAccessToken());
-                 logger.debug("OPENID - token response body:\n{}" + oAuthTokenResponse.getBody());
-                 String idTokenEncoded = (oAuthTokenResponse.getParam("id_token"));
-                 String[] idTokenEncodedSplit = idTokenEncoded.split("[.]");
-                 if (idTokenEncodedSplit.length != 3) {
-                     logger.error("Wrong number of segments in id_token. Expected 3, found {}", idTokenEncodedSplit.length);
-                     return false;
-                 }           
-                 String payload = new String(new Base64(true).decode(idTokenEncodedSplit[1]), StandardCharsets.UTF_8);
-                 JSONTokener tokener = new JSONTokener(payload);
-                 JSONObject jsonPayload = new JSONObject(tokener);
-                 if (jsonPayload.has("email")) { //If json has claim, continue as normal
-                	 redirected = provider.completeLogin(jsonPayload, request, response);
-                     return true;
-                 }
-                 if (jsonPayload.has(provider.getThirdPartyLoginScope())) { 
-                	 String data = (String) jsonPayload.get(provider.getThirdPartyLoginScope());
-                     JSONArray array = new JSONArray();
-                     JSONObject json = new JSONObject();
-                     array.put(data);
-                     json.put(provider.getThirdPartyLoginReqParamDef(), array);
-                     final StringEntity entity = new StringEntity(json.toString());
-                     
-                     HttpPost externalRequest = new HttpPost(provider.getThirdPartyLoginUrl());
-                     String[] thirdPartyLoginApiKeyParams = provider.getThirdPartyLoginApiKey().split(" ");
-                     externalRequest.addHeader(thirdPartyLoginApiKeyParams[0] , thirdPartyLoginApiKeyParams[1]);
-                     externalRequest.addHeader("content-type", "application/json");
-                     externalRequest.setEntity(entity);
-                     
-                     CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-                     HttpResponse externalResponse = (HttpResponse) httpClient.execute(externalRequest);
-                     
-                     JSONObject externalResponseObj = new JSONObject(EntityUtils.toString(externalResponse.getEntity()));
-                     String email = JsonTools.getNestedValue(externalResponseObj, provider.getThirdPartyLoginClaim());
-                     String sub = jsonPayload.getString("sub");
-                     
-                     JSONObject jsonObject = new JSONObject();
-                     jsonObject.put("sub", sub);
-                     jsonObject.put("email", email);
-                     
-                     redirected = provider.completeLogin(jsonObject, request, response);
-                     return true;                  
-                 }
-             }
-         } catch (OAuthSystemException | OAuthProblemException | IOException e) {
-             logger.error("OPENID - Error {}", e.getMessage(), e);
-             return false;
-         }
-    	 
-		return false;
-	}
+            HttpServletRequest request, HttpServletResponse response) {
+        OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
+        try {
+            OAuthAccessTokenResponse oAuthTokenResponse = oAuthClient.accessToken(oAuthTokenRequest);
+            if (oAuthTokenResponse != null) {
+                logger.debug("OPENID - oAuthTokenResponse class: {}", oAuthTokenResponse.getClass());
+                TokenValidator tv = new TokenValidator();
+                tv.validate(oAuthTokenResponse);
+                provider.setoAuthAccessToken(oAuthTokenResponse.getAccessToken());
+                logger.debug("OPENID - token response body:\n{}" + oAuthTokenResponse.getBody());
+                String idTokenEncoded = (oAuthTokenResponse.getParam("id_token"));
+                String[] idTokenEncodedSplit = idTokenEncoded.split("[.]");
+                if (idTokenEncodedSplit.length != 3) {
+                    logger.error("Wrong number of segments in id_token. Expected 3, found {}", idTokenEncodedSplit.length);
+                    return false;
+                }
+                String payload = new String(new Base64(true).decode(idTokenEncodedSplit[1]), StandardCharsets.UTF_8);
+                JSONTokener tokener = new JSONTokener(payload);
+                JSONObject jsonPayload = new JSONObject(tokener);
+                if (jsonPayload.has("email")) { //If json has claim, continue as normal
+                    redirected = provider.completeLogin(jsonPayload, request, response);
+                    return true;
+                }
+                if (jsonPayload.has(provider.getThirdPartyLoginScope())) {
+                    String data = (String) jsonPayload.get(provider.getThirdPartyLoginScope());
+                    JSONArray array = new JSONArray();
+                    JSONObject json = new JSONObject();
+                    array.put(data);
+                    json.put(provider.getThirdPartyLoginReqParamDef(), array);
+                    final StringEntity entity = new StringEntity(json.toString());
+
+                    HttpPost externalRequest = new HttpPost(provider.getThirdPartyLoginUrl());
+                    String[] thirdPartyLoginApiKeyParams = provider.getThirdPartyLoginApiKey().split(" ");
+                    externalRequest.addHeader(thirdPartyLoginApiKeyParams[0], thirdPartyLoginApiKeyParams[1]);
+                    externalRequest.addHeader("content-type", "application/json");
+                    externalRequest.setEntity(entity);
+
+                    CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+                    HttpResponse externalResponse = httpClient.execute(externalRequest);
+
+                    JSONObject externalResponseObj = new JSONObject(EntityUtils.toString(externalResponse.getEntity()));
+                    String email = JsonTools.getNestedValue(externalResponseObj, provider.getThirdPartyLoginClaim());
+                    String sub = jsonPayload.getString("sub");
+
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("sub", sub);
+                    jsonObject.put("email", email);
+
+                    redirected = provider.completeLogin(jsonObject, request, response);
+                    return true;
+                }
+            }
+        } catch (OAuthSystemException | OAuthProblemException | IOException e) {
+            logger.error("OPENID - Error {}", e.getMessage(), e);
+            return false;
+        }
+
+        return false;
+    }
 
     /**
      * 
@@ -451,4 +518,64 @@ public class OAuthServlet extends HttpServlet {
         return Optional.empty();
     }
 
+    /**
+     * 
+     * @param token
+     * @return {@link DecodedJWT}
+     */
+    static DecodedJWT verifyOpenIdToken(String token) {
+        RSAKeyProvider keyProvider = null;
+        final ConfigurationHelper config = ConfigurationHelper.getInstance();
+        try {
+            final JwkProvider provider = new UrlJwkProvider(new URL(config.getOIDCJWKSet()));
+
+            keyProvider = new RSAKeyProvider() {
+                @Override
+                public RSAPublicKey getPublicKeyById(String kid) {
+                    //Received 'kid' value might be null if it wasn't defined in the Token's header
+                    PublicKey publicKey;
+                    try {
+                        publicKey = provider.get(kid).getPublicKey();
+                        return (RSAPublicKey) publicKey;
+                    } catch (InvalidPublicKeyException e) {
+                        logger.error(e.getMessage(), e);
+                    } catch (JwkException e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                    return null;
+                }
+
+                @Override
+                public RSAPrivateKey getPrivateKey() {
+                    return null;
+                }
+
+                @Override
+                public String getPrivateKeyId() {
+                    return null;
+                }
+            };
+        } catch (MalformedURLException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        DecodedJWT decodedJwt = JWT.decode(token);
+        String strAlgorithm = decodedJwt.getAlgorithm();
+
+        Algorithm algorithm = null;
+        if ("RS256".equals(strAlgorithm)) {
+            algorithm = Algorithm.RSA256(keyProvider);
+        } else {
+            log.error("JWT algorithm not supported: \"" + strAlgorithm + "\"");
+            return null;
+        }
+
+        try {
+            JWTVerifier verifier = JWT.require(algorithm).withIssuer(config.getOIDCIssuer()).build();
+            return verifier.verify(decodedJwt);
+        } catch (JWTVerificationException exception) {
+            log.error(exception);
+            return null;
+        }
+    }
 }
