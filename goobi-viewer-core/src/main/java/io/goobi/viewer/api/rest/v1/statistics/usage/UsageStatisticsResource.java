@@ -44,6 +44,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.model.statistics.usage.UsageStatisticsInformation;
 import io.goobi.viewer.api.rest.model.statistics.usage.UsageStatisticsResponse;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -64,6 +65,7 @@ import io.swagger.v3.oas.annotations.Parameter;
  *
  */
 @javax.ws.rs.Path(ApiUrls.STATISTICS_USAGE)
+@AuthorizationBinding
 public class UsageStatisticsResource {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd";

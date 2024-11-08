@@ -1506,7 +1506,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * JSF expects a getter, too.
      *
      * @return a {@link java.lang.String} object.
-     * @derecated user SearchBean.getExactSearchString()
+     * @deprecated user SearchBean.getExactSearchString()
      */
     @Deprecated(since = "24.01")
     public String getExactSearchStringResetGui() {
@@ -2331,23 +2331,11 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public static List<AdvancedSearchFieldConfiguration> getAdvancedSearchAllowedFields(final String language, String template,
             boolean addSearchFilters) {
+        // logger.trace("getAdvancedSearchAllowedFields: {} / {}", language, template);
         List<AdvancedSearchFieldConfiguration> fields =
                 DataManager.getInstance().getConfiguration().getAdvancedSearchFields(template, false, language);
         if (fields == null) {
             return Collections.emptyList();
-        }
-
-        // Omit other languages
-        if (!fields.isEmpty() && StringUtils.isNotEmpty(language)) {
-            List<AdvancedSearchFieldConfiguration> toRemove = new ArrayList<>();
-            for (AdvancedSearchFieldConfiguration field : fields) {
-                if (field.getField().contains(SolrConstants.MIDFIX_LANG) && !field.getField().endsWith(language.toUpperCase())) {
-                    toRemove.add(field);
-                }
-            }
-            if (!toRemove.isEmpty()) {
-                fields.removeAll(toRemove);
-            }
         }
 
         if (addSearchFilters) {

@@ -41,38 +41,27 @@ var viewerJS = (function(viewer) {
             }
 			
 			// hide loader and overlay after successful ajax request
-	        if ( typeof jsf !== undefined ) {
-	            jsf.ajax.addOnEvent( function( data ) {
-	                var status = data.status;
-	                var source = data.source;
-	                var iddoc = $( source ).parents( '.widget-toc__element' ).attr( 'data-iddoc' );
-	                var widgetToc = $(source).parents('#widgetToc');
+	         viewerJS.jsfAjax.begin.subscribe(e => {
+	         	var widgetToc = $(e.source).parents('#widgetToc');
+	         	if (widgetToc.length) {
+            		$( '[data-iddoc*="iddoc"]' ).removeClass( 'active' );
+            		$( '.widget-toc__loader, .widget-toc__overlay' ).show();
+            		
+            		// hide all tooltips on ajax load
+            		$('[data-toggle="tooltip"]').tooltip('dispose');
+        		}
+	         });
+	         
+	         viewerJS.jsfAjax.begin.subscribe(e => {
+	         	var iddoc = $( e.source ).parents( '.widget-toc__element' ).attr( 'data-iddoc' );
+	         	if ( iddoc !== undefined ) {
+        			_parentPos = $( '[data-iddoc="' + iddoc + '"]' ).position().top;
+        			$( '[data-iddoc="' + iddoc + '"]' ).addClass( 'active' );
+        			$( '.widget-toc__elements' ).scrollTop( _parentPos );	                			
+        		}
+                $( '.widget-toc__loader, .widget-toc__overlay' ).hide();
+	         });
 
-	                switch ( status ) {
-	                	case 'begin':
-	                		if (widgetToc.length) {
-		                		$( '[data-iddoc*="iddoc"]' ).removeClass( 'active' );
-		                		$( '.widget-toc__loader, .widget-toc__overlay' ).show();
-		                		
-		                		// hide all tooltips on ajax load
-		                		$('[data-toggle="tooltip"]').tooltip('dispose');
-	                		}
-	                		break;
-	                	case 'success':
-	                		if ( iddoc !== undefined ) {
-	                			_parentPos = $( '[data-iddoc="' + iddoc + '"]' ).position().top;
-	                			$( '[data-iddoc="' + iddoc + '"]' ).addClass( 'active' );
-	                			$( '.widget-toc__elements' ).scrollTop( _parentPos );	                			
-	                		}
-	                    	
-	                        $( '.widget-toc__loader, .widget-toc__overlay' ).hide();
-	                        break;
-	                }
-	            } );
-	        }
-	        else {
-	        	$( '.widget-toc__loader, .widget-toc__overlay' ).hide();	        	
-	        }
 		}
 	};
 

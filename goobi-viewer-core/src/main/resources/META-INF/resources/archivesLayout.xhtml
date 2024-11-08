@@ -88,11 +88,11 @@
 											<div class="archives__modal-select-database-dropdown-wrapper">
 												<h:selectOneMenu id="selectArchivesDropdown"
 													styleClass="archives__modal-select-database-dropdown"
-													value="#{archiveBean.archiveId}">
+													value="#{archiveBean.currentResource}">
 													<f:selectItem itemLabel="#{msg.select}" itemValue=""
 														noSelectionOption="true" />
 													<f:selectItems value="#{archiveBean.filteredDatabases}"
-														var="database" itemValue="#{database.combinedId}"
+														var="database" itemValue="#{database.resourceId}"
 														itemLabel="#{database.combinedName}"></f:selectItems>
 												</h:selectOneMenu>
 											</div>

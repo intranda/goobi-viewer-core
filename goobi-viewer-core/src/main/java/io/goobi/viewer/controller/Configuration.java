@@ -2491,6 +2491,13 @@ public class Configuration extends AbstractConfiguration {
             String clientSecret = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@clientSecret]", null);
             String parameterType = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@parameterType]", null);
             String parameterName = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@parameterName]", null);
+            String thirdPartyLoginUrl = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginUrl]", null);
+            String thirdPartyLoginApiKey = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginApiKey]", null);
+            String thirdPartyLoginScope = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginScope]", null);
+            String thirdPartyLoginReqParamDef = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginReqParamDef]", null);
+            ;
+            String thirdPartyLoginClaim = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginClaim]", null);
+            ;
             long timeoutMillis = myConfigToUse.getLong(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@timeout]", 60000);
 
             if (enabled) {
@@ -2504,7 +2511,9 @@ public class Configuration extends AbstractConfiguration {
                                 new OpenIdProvider(name, label, endpoint, image, timeoutMillis, clientId, clientSecret)
                                         .setTokenEndpoint(tokenEndpoint)
                                         .setRedirectionEndpoint(redirectionEndpoint)
-                                        .setScope(scope));
+                                        .setScope(scope)
+                                        .setThirdPartyVariables(thirdPartyLoginUrl, thirdPartyLoginApiKey, thirdPartyLoginScope,
+                                                thirdPartyLoginReqParamDef, thirdPartyLoginClaim));
                         break;
                     case "userpassword":
                         switch (name.toLowerCase()) {
@@ -5858,15 +5867,6 @@ public class Configuration extends AbstractConfiguration {
      * @return Configured value
      * @should return correct value
      */
-    public boolean isArchivesEnabled() {
-        return getLocalBoolean("archives[@enabled]", false);
-    }
-
-    /**
-     * 
-     * @return Configured value
-     * @should return correct value
-     */
     public int getArchivesLazyLoadingThreshold() {
         return getLocalInt("archives[@lazyLoadingThreshold]", 100);
     }
@@ -6092,6 +6092,15 @@ public class Configuration extends AbstractConfiguration {
 
     public boolean isStatisticsEnabled() {
         return getLocalBoolean("statistics[@enabled]", false);
+    }
+
+    public boolean isShowRecordStatisticsWidget() {
+        return isStatisticsEnabled() && getLocalBoolean("statistics.reporting.widget.record[@enabled]", true);
+    }
+
+    public boolean isRecordStatisticsWidgetCollapsible() {
+        String widgetMode = getLocalString("statistics.reporting.widget.record[@mode]", "full");
+        return "collapsible".equalsIgnoreCase(widgetMode);
     }
 
     public String getCrawlerDetectionRegex() {

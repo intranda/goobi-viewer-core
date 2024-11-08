@@ -18,7 +18,7 @@
 	</composite:interface>
 
 	<composite:implementation>
-	    <c:if test="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.archiveEntryIdentifier != null and configurationBean.archivesEnabled}">
+	    <c:if test="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.archiveEntryIdentifier != null}">
 	    	<!-- neighbours is a pair of optionals holding the ids of the previous and succeeding archives entry. This format is used to avoid querying solr more than once -->
 	    	<c:set scope="view" var="neighbours" value="#{activeDocumentBean.viewManager.getArchiveTreeNeighbours()}"/>
             <div id="widgetArchives" class="widget widget-archives">

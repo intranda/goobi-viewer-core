@@ -428,6 +428,8 @@ public final class TocMaker {
         }
 
         Map<Integer, SolrDocument> ret = new TreeMap<>();
+        int fallbackOrder = 0;
+        groupMemberDocs = groupMemberDocs.stream().sorted((d1, d2) -> getLabel(d1).compareTo(getLabel(d2))).toList();
         for (SolrDocument doc : groupMemberDocs) {
             String groupIdField = null;
             for (String field : groupIdFields) {
@@ -444,12 +446,20 @@ public final class TocMaker {
             Integer order = (Integer) doc.getFieldValue(groupSortField);
             if (order == null) {
                 logger.warn("No {} on group member {}", groupSortField, doc.getFieldValue("PI"));
-                order = 0;
+                order = fallbackOrder++;
             }
             ret.put(order, doc);
         }
 
         return ret;
+    }
+
+    private static String getLabel(SolrDocument doc) {
+        String label = SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL);
+        if (StringUtils.isBlank(label)) {
+            label = SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE);
+        }
+        return Optional.ofNullable(label).orElse("");
     }
 
     /**

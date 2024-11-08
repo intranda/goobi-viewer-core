@@ -560,6 +560,11 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("my_secret", ((OpenIdProvider) providers.get(2)).getClientSecret());
         assertEquals("custom.png", ((OpenIdProvider) providers.get(2)).getImage());
         assertEquals("Custom OIDC", ((OpenIdProvider) providers.get(2)).getLabel());
+        assertEquals("https://examplethirdparty.com/viewer/api", ((OpenIdProvider) providers.get(2)).getThirdPartyLoginUrl());
+        assertEquals("exampleApiKey", ((OpenIdProvider) providers.get(2)).getThirdPartyLoginApiKey());
+        assertEquals("tPscope", ((OpenIdProvider) providers.get(2)).getThirdPartyLoginScope());
+        assertEquals("tPparam", ((OpenIdProvider) providers.get(2)).getThirdPartyLoginReqParamDef());
+        assertEquals("tPclaim", ((OpenIdProvider) providers.get(2)).getThirdPartyLoginClaim());
 
         // vuFind
         assertEquals("VuFind", providers.get(3).getName());
@@ -3635,15 +3640,6 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void testGetDateFormat() {
         assertEquals("dd/MM/yyyy", DataManager.getInstance().getConfiguration().getStringFormat("date", Locale.ENGLISH).orElse("Not configured"));
-    }
-
-    /**
-     * @see Configuration#isArchivesEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    void isArchivesEnabled_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isArchivesEnabled());
     }
 
     /**
