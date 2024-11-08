@@ -228,6 +228,16 @@
 			</exclusions>
 		</dependency>
 
+		<dependency>
+			<groupId>de.intranda.other</groupId>
+			<artifactId>org.apache.oltu.oauth2.common</artifactId>
+			<version>1.0.3-INJAED</version>
+		</dependency>
+		<dependency>
+			<groupId>de.intranda.other</groupId>
+			<artifactId>org.apache.oltu.oauth2.client</artifactId>
+			<version>1.0.3-INJAED</version>
+		</dependency>
 
 
 		<!-- other libraries -->
