@@ -105,6 +105,9 @@ public class MessageQueueBean implements Serializable {
     @Inject
     @Push
     private PushContext messageQueueState;
+    @Inject
+    @Push
+    private PushContext messageQueueStateForHeader;
 
     private TableDataProvider<ViewerMessage> lazyModelViewerHistory;
 
@@ -186,6 +189,10 @@ public class MessageQueueBean implements Serializable {
         return fastQueueContent;
     }
 
+    public int getTotalMessagesInQueueCount() {
+        return getQueueContent().values().stream().mapToInt(i -> i).sum();
+    }
+
     /**
      * <p>
      * pauseQueue.
@@ -195,6 +202,7 @@ public class MessageQueueBean implements Serializable {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
             paused = this.messageBroker.pauseQueue(MessageQueueManager.QUEUE_NAME_VIEWER)
                     && this.messageBroker.pauseQueue(MessageQueueManager.QUEUE_NAME_PDF);
+            updateMessageQueueState();
         }
     }
 
@@ -207,6 +215,7 @@ public class MessageQueueBean implements Serializable {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
             paused = !(this.messageBroker.resumeQueue(MessageQueueManager.QUEUE_NAME_VIEWER)
                     && this.messageBroker.resumeQueue(MessageQueueManager.QUEUE_NAME_PDF));
+            updateMessageQueueState();
         }
     }
 
@@ -219,6 +228,7 @@ public class MessageQueueBean implements Serializable {
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
             this.messageBroker.clearQueue(MessageQueueManager.QUEUE_NAME_VIEWER);
             this.messageBroker.clearQueue(MessageQueueManager.QUEUE_NAME_PDF);
+            updateMessageQueueState();
         }
     }
 
@@ -393,6 +403,7 @@ public class MessageQueueBean implements Serializable {
      */
     public void updateMessageQueueState() {
         messageQueueState.send("update");
+        messageQueueStateForHeader.send("update");
         cleanOldMessages();
     }
 
@@ -433,5 +444,21 @@ public class MessageQueueBean implements Serializable {
                 log.error("Error restarting message listener for queue {}: {}", l.getQueueType(), e.toString());
             }
         });
+    }
+
+    public MessageQueueState getMessageQueueState() {
+        if (this.messageBroker == null || !this.messageBroker.isQueueRunning()) {
+            return MessageQueueState.STOPPED;
+        } else if (this.isPaused()) {
+            return MessageQueueState.PAUSED;
+        } else {
+            return MessageQueueState.RUNNING;
+        }
+    }
+
+    public static enum MessageQueueState {
+        STOPPED,
+        RUNNING,
+        PAUSED;
     }
 }
