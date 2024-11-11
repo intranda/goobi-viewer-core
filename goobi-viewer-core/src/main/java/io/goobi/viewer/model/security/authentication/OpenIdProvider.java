@@ -22,27 +22,26 @@
 package io.goobi.viewer.model.security.authentication;
 
 import java.io.IOException;
-import java.util.Base64;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
 import org.apache.oltu.oauth2.common.OAuthProviderType;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.types.ResponseType;
 import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.openid.OAuthServlet;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * <p>
@@ -209,9 +208,6 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return this;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#login(java.lang.String, java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException {
@@ -263,7 +259,11 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
 
             DataManager.getInstance().getOAuthResponseListener().register(this);
             if (request != null) {
-                BeanUtils.getResponse().sendRedirect(request.getLocationUri());
+                logger.trace("Redirecting oauth");
+                BeanUtils.getResponse().sendRedirect(request.getLocationUri()); // TODO This produces error in OmniFaces
+                //                FacesContext.getCurrentInstance()
+                //                        .getExternalContext()
+                //                        .redirect(request.getLocationUri());
             }
             return CompletableFuture.supplyAsync(() -> {
                 synchronized (responseLock) {

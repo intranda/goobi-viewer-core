@@ -133,7 +133,7 @@
 		<mariadb-java-client.version>3.5.0</mariadb-java-client.version>
 		<mockito.version>5.14.2</mockito.version>
 		<mockserver.version>5.15.0</mockserver.version>
-		<oauth.version>1.0.2</oauth.version>
+		<oauth.version>1.0.3-INJAED</oauth.version>
 		<omnifaces.version>4.5.1</omnifaces.version>
 		<openpdf.version>2.0.3</openpdf.version>
 		<poi.version>5.3.0</poi.version>
@@ -237,6 +237,12 @@
 			<groupId>de.intranda.other</groupId>
 			<artifactId>org.apache.oltu.oauth2.client</artifactId>
 			<version>1.0.3-INJAED</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
 		</dependency>
 
 
@@ -582,17 +588,6 @@
 			<artifactId>mockserver-netty</artifactId>
 			<version>${mockserver.version}</version>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.oltu.oauth2</groupId>
-			<artifactId>org.apache.oltu.oauth2.client</artifactId>
-			<version>${oauth.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
