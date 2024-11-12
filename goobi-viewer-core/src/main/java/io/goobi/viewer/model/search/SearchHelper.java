@@ -399,7 +399,7 @@ public final class SearchHelper {
                 hit.setChildDocs(childDocs);
 
                 // Check whether user may see full-text, before adding them to count
-                boolean fulltextAccessGranted = true;
+                boolean fulltextAccessGranted = false; // Initial value should be false to avoid counting page docs that don't have text
                 if (Boolean.TRUE.equals(SolrTools.getAsBoolean(doc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE)))) {
                     fulltextAccessGranted =
                             AccessConditionUtils.isPrivilegeGrantedForDoc(doc, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, BeanUtils.getRequest());
@@ -432,6 +432,14 @@ public final class SearchHelper {
         return ret;
     }
 
+    /**
+     * 
+     * @param docs
+     * @param mainIdDoc
+     * @param searchTerms
+     * @param factory
+     * @return {@link SolrDocumentList}
+     */
     private static SolrDocumentList filterChildDocs(SolrDocumentList docs, String mainIdDoc, Map<String, Set<String>> searchTerms,
             SearchHitFactory factory) {
         SolrDocumentList filteredList = new SolrDocumentList();
@@ -444,7 +452,6 @@ public final class SearchHelper {
                 filteredList.add(doc);
             } else if (hitType == HitType.METADATA && !Objects.equals(mainIdDoc, ownerIDDoc)) {
                 //ignore metadata docs not in the main doc
-                continue;
             } else if (containsSearchTerms(doc, searchTerms, factory)) {
                 filteredList.add(doc);
                 if (hitType == HitType.DOCSTRCT) {
