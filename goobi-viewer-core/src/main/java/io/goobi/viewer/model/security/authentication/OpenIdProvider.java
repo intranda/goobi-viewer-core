@@ -259,18 +259,21 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
 
             DataManager.getInstance().getOAuthResponseListener().register(this);
             if (request != null) {
-                logger.trace("Redirecting oauth");
-                BeanUtils.getResponse().sendRedirect(request.getLocationUri()); // TODO This produces error in OmniFaces
-                //                FacesContext.getCurrentInstance()
-                //                        .getExternalContext()
-                //                        .redirect(request.getLocationUri());
+                request.addHeader("Accept", "application/json");
+                request.addHeader("Content-Type", "application/json");
+                
+                logger.trace("Redirecting oauth to {}", request.getLocationUri());
+                // BeanUtils.getResponse().sendRedirect(request.getLocationUri()); // TODO This produces error in OmniFaces
+                FacesContext.getCurrentInstance()
+                        .getExternalContext()
+                        .redirect(request.getLocationUri());
             }
             return CompletableFuture.supplyAsync(() -> {
                 synchronized (responseLock) {
                     try {
                         //                        long startTime = System.currentTimeMillis();
                         //                        while (System.currentTimeMillis() - startTime < getTimeoutMillis()) {
-                        responseLock.wait(getTimeoutMillis());
+                            responseLock.wait(getTimeoutMillis());
                         //                        }
                         return this.loginResult;
                     } catch (InterruptedException e) {

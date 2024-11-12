@@ -50,6 +50,7 @@ import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
 import org.apache.oltu.oauth2.client.response.GitHubTokenResponse;
 import org.apache.oltu.oauth2.client.response.OAuthAccessTokenResponse;
 import org.apache.oltu.oauth2.client.response.OAuthAuthzResponse;
+import org.apache.oltu.oauth2.client.response.OAuthJSONAccessTokenResponse;
 import org.apache.oltu.oauth2.client.response.OAuthResourceResponse;
 import org.apache.oltu.oauth2.client.validator.TokenValidator;
 import org.apache.oltu.oauth2.common.OAuth;
@@ -238,7 +239,7 @@ public class OAuthServlet extends HttpServlet {
         return false;
     }
 
-	/**
+    /**
      * 
      * @param provider
      * @param oAuthTokenRequest
@@ -249,7 +250,9 @@ public class OAuthServlet extends HttpServlet {
     static boolean doGoogle(OpenIdProvider provider, OAuthClientRequest oAuthTokenRequest, HttpServletRequest request, HttpServletResponse response) {
         OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
         try {
-            OAuthAccessTokenResponse oAuthTokenResponse = oAuthClient.accessToken(oAuthTokenRequest);
+            // logger.trace(oAuthTokenRequest.getBody());
+            OAuthAccessTokenResponse oAuthTokenResponse =
+                    oAuthClient.accessToken(oAuthTokenRequest, OAuth.HttpMethod.POST, OAuthJSONAccessTokenResponse.class);
             if (oAuthTokenResponse != null) {
                 TokenValidator tv = new TokenValidator();
                 tv.validate(oAuthTokenResponse);
@@ -314,7 +317,7 @@ public class OAuthServlet extends HttpServlet {
 
         return false;
     }
-    
+
     /**
      * 
      * @param provider
@@ -326,65 +329,65 @@ public class OAuthServlet extends HttpServlet {
      * @throws OAuthProblemException
      */
     private static boolean doThirdPartyLogin(OpenIdProvider provider, OAuthClientRequest oAuthTokenRequest,
-			HttpServletRequest request, HttpServletResponse response) {
-    	 OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
-    	 try {
-             OAuthAccessTokenResponse oAuthTokenResponse = oAuthClient.accessToken(oAuthTokenRequest);
-             if (oAuthTokenResponse != null) {
-                 logger.debug("OPENID - oAuthTokenResponse class: {}", oAuthTokenResponse.getClass());
-                 TokenValidator tv = new TokenValidator();
-                 tv.validate(oAuthTokenResponse);
-                 provider.setoAuthAccessToken(oAuthTokenResponse.getAccessToken());
-                 logger.debug("OPENID - token response body:\n{}" + oAuthTokenResponse.getBody());
-                 String idTokenEncoded = (oAuthTokenResponse.getParam("id_token"));
-                 String[] idTokenEncodedSplit = idTokenEncoded.split("[.]");
-                 if (idTokenEncodedSplit.length != 3) {
-                     logger.error("Wrong number of segments in id_token. Expected 3, found {}", idTokenEncodedSplit.length);
-                     return false;
-                 }           
-                 String payload = new String(new Base64(true).decode(idTokenEncodedSplit[1]), StandardCharsets.UTF_8);
-                 JSONTokener tokener = new JSONTokener(payload);
-                 JSONObject jsonPayload = new JSONObject(tokener);
-                 if (jsonPayload.has("email")) { //If json has claim, continue as normal
-                	 redirected = provider.completeLogin(jsonPayload, request, response);
-                     return true;
-                 }
-                 if (jsonPayload.has(provider.getThirdPartyLoginScope())) { 
-                	 String data = (String) jsonPayload.get(provider.getThirdPartyLoginScope());
-                     JSONArray array = new JSONArray();
-                     JSONObject json = new JSONObject();
-                     array.put(data);
-                     json.put(provider.getThirdPartyLoginReqParamDef(), array);
-                     final StringEntity entity = new StringEntity(json.toString());
-                     
-                     HttpPost externalRequest = new HttpPost(provider.getThirdPartyLoginUrl());
-                     String[] thirdPartyLoginApiKeyParams = provider.getThirdPartyLoginApiKey().split(" ");
-                     externalRequest.addHeader(thirdPartyLoginApiKeyParams[0] , thirdPartyLoginApiKeyParams[1]);
-                     externalRequest.addHeader("content-type", "application/json");
-                     externalRequest.setEntity(entity);
-                     
-                     CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-                     HttpResponse externalResponse = (HttpResponse) httpClient.execute(externalRequest);
-                     
-                     JSONObject externalResponseObj = new JSONObject(EntityUtils.toString(externalResponse.getEntity()));
-                     String email = JsonTools.getNestedValue(externalResponseObj, provider.getThirdPartyLoginClaim());
-                     String sub = jsonPayload.getString("sub");
-                     
-                     JSONObject jsonObject = new JSONObject();
-                     jsonObject.put("sub", sub);
-                     jsonObject.put("email", email);
-                     
-                     redirected = provider.completeLogin(jsonObject, request, response);
-                     return true;                  
-                 }
-             }
-         } catch (OAuthSystemException | OAuthProblemException | IOException e) {
-             logger.error("OPENID - Error {}", e.getMessage(), e);
-             return false;
-         }
-    	 
-		return false;
-	}
+            HttpServletRequest request, HttpServletResponse response) {
+        OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
+        try {
+            OAuthAccessTokenResponse oAuthTokenResponse = oAuthClient.accessToken(oAuthTokenRequest);
+            if (oAuthTokenResponse != null) {
+                logger.debug("OPENID - oAuthTokenResponse class: {}", oAuthTokenResponse.getClass());
+                TokenValidator tv = new TokenValidator();
+                tv.validate(oAuthTokenResponse);
+                provider.setoAuthAccessToken(oAuthTokenResponse.getAccessToken());
+                logger.debug("OPENID - token response body:\n{}" + oAuthTokenResponse.getBody());
+                String idTokenEncoded = (oAuthTokenResponse.getParam("id_token"));
+                String[] idTokenEncodedSplit = idTokenEncoded.split("[.]");
+                if (idTokenEncodedSplit.length != 3) {
+                    logger.error("Wrong number of segments in id_token. Expected 3, found {}", idTokenEncodedSplit.length);
+                    return false;
+                }
+                String payload = new String(new Base64(true).decode(idTokenEncodedSplit[1]), StandardCharsets.UTF_8);
+                JSONTokener tokener = new JSONTokener(payload);
+                JSONObject jsonPayload = new JSONObject(tokener);
+                if (jsonPayload.has("email")) { //If json has claim, continue as normal
+                    redirected = provider.completeLogin(jsonPayload, request, response);
+                    return true;
+                }
+                if (jsonPayload.has(provider.getThirdPartyLoginScope())) {
+                    String data = (String) jsonPayload.get(provider.getThirdPartyLoginScope());
+                    JSONArray array = new JSONArray();
+                    JSONObject json = new JSONObject();
+                    array.put(data);
+                    json.put(provider.getThirdPartyLoginReqParamDef(), array);
+                    final StringEntity entity = new StringEntity(json.toString());
+
+                    HttpPost externalRequest = new HttpPost(provider.getThirdPartyLoginUrl());
+                    String[] thirdPartyLoginApiKeyParams = provider.getThirdPartyLoginApiKey().split(" ");
+                    externalRequest.addHeader(thirdPartyLoginApiKeyParams[0], thirdPartyLoginApiKeyParams[1]);
+                    externalRequest.addHeader("content-type", "application/json");
+                    externalRequest.setEntity(entity);
+
+                    CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+                    HttpResponse externalResponse = (HttpResponse) httpClient.execute(externalRequest);
+
+                    JSONObject externalResponseObj = new JSONObject(EntityUtils.toString(externalResponse.getEntity()));
+                    String email = JsonTools.getNestedValue(externalResponseObj, provider.getThirdPartyLoginClaim());
+                    String sub = jsonPayload.getString("sub");
+
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("sub", sub);
+                    jsonObject.put("email", email);
+
+                    redirected = provider.completeLogin(jsonObject, request, response);
+                    return true;
+                }
+            }
+        } catch (OAuthSystemException | OAuthProblemException | IOException e) {
+            logger.error("OPENID - Error {}", e.getMessage(), e);
+            return false;
+        }
+
+        return false;
+    }
 
     /**
      * 

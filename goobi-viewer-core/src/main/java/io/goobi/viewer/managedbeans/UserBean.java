@@ -330,7 +330,6 @@ public class UserBean implements Serializable {
                 if (redirectUrl == null && provider instanceof HttpHeaderProvider) {
                     this.redirectUrl = buildRedirectUrl();
                 }
-                logger.trace("redirectUrl: {}", redirectUrl);
                 provider.setRedirectUrl(this.redirectUrl);
                 provider.login(email, password).thenAccept(result -> completeLogin(provider, result));
             } finally {
