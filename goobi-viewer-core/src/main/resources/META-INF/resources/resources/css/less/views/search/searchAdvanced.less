@@ -226,13 +226,12 @@
 		gap: @gap-sizer;
 		position: relative;
 		z-index: 5;
-		margin-bottom: -1px;
 	}
 	&__entity-tabs-links-wrapper {
 		display: flex;
-		gap: 5px;
+		gap: 7px;
 		flex-wrap: wrap; 
-		
+		// margin-bottom: -1px;
 	}
 	&__entity-tab-link-wrapper {
 		position: relative;
@@ -254,6 +253,8 @@
 		&.-active {
 			pointer-events: none;
 			padding-top: 7px;
+			padding-bottom: 8px;
+  			margin-bottom: -1px;
 		}
 	}
 	
@@ -266,7 +267,7 @@
 		display: none; 
 		position: absolute;
 		left: 0;
-		top: 100%;
+		top: calc(~"100% + 1px");
 		background: white;
 		padding: 5px 20px 15px 20px;
 		flex-direction: column;
@@ -300,6 +301,10 @@
 				transform: rotate(180deg);
 			}
 		}
+	}
+	&__entity-tabs-dropdown-link {
+		padding: 5px 0px;
+		display: block;
 	}
 }
 

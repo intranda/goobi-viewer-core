@@ -83,7 +83,7 @@
 			                    
 			                   <ul data-target="entityDropdown" class="search-advanced__entity-tabs-dropdown">
 				                   	<li class="search-advanced__entity-tabs-dropdown-list-entry">
-				                   		<h:outputLink styleClass="-result-group-standard #{searchBean.activeResultGroupName == '-' ? '-active' : ''}" value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/">#{msg.search__search_default_all_group}</h:outputLink>
+				                   		<h:outputLink styleClass="search-advanced__entity-tabs-dropdown-link -result-group-standard #{searchBean.activeResultGroupName == '-' ? '-active' : ''}" value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/">#{msg.search__search_default_all_group}</h:outputLink>
 				                   	</li>
  									<ui:repeat value="#{configurationBean.searchResultGroupNames}" var="groupName" varStatus="status">
 			                            <li class="search-advanced__entity-tabs-dropdown-list-entry">
@@ -395,7 +395,6 @@
                 		$( '[data-trigger="entityDropdown"]').removeClass('-active');
                 	}
                 });
-
 
                 window.addEventListener("unload", (event) => {
     					$('[data-target="buttonLoader"]').hide();
