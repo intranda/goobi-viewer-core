@@ -109,7 +109,6 @@ public class OAuthServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        // TODO Use compatible version
         // Apache Oltu
         try {
             OAuthAuthzResponse oar = OAuthAuthzResponse.oauthCodeAuthzResponse(request);
@@ -251,8 +250,7 @@ public class OAuthServlet extends HttpServlet {
         OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
         try {
             // logger.trace(oAuthTokenRequest.getBody());
-            OAuthAccessTokenResponse oAuthTokenResponse =
-                    oAuthClient.accessToken(oAuthTokenRequest, OAuth.HttpMethod.POST, OAuthJSONAccessTokenResponse.class);
+            OAuthAccessTokenResponse oAuthTokenResponse = oAuthClient.accessToken(oAuthTokenRequest);
             if (oAuthTokenResponse != null) {
                 TokenValidator tv = new TokenValidator();
                 tv.validate(oAuthTokenResponse);

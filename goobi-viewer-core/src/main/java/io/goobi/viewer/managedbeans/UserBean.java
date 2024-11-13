@@ -405,23 +405,16 @@ public class UserBean implements Serializable {
                         logger.trace("Redirecting to {}", redirectUrl);
                         String url = this.redirectUrl;
                         this.redirectUrl = "";
-                        FacesContext.getCurrentInstance()
-                                .getExternalContext()
-                                .redirect(url);
+                        doRedirect(response, url);
                     } else if (response != null) {
                         Optional<ViewerPath> currentPath = ViewHistory.getCurrentView(request);
                         if (currentPath.isPresent()) {
                             logger.trace("Redirecting to current URL: {}", currentPath.get().getCombinedPrettyfiedUrl());
-                            FacesContext.getCurrentInstance()
-                                    .getExternalContext()
-                                    .redirect(
-                                            ServletUtils.getServletPathWithHostAsUrlFromRequest(request)
-                                                    + currentPath.get().getCombinedPrettyfiedUrl());
+                            doRedirect(response, ServletUtils.getServletPathWithHostAsUrlFromRequest(request)
+                                    + currentPath.get().getCombinedPrettyfiedUrl());
                         } else {
                             logger.trace("Redirecting to start page");
-                            FacesContext.getCurrentInstance()
-                                    .getExternalContext()
-                                    .redirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
+                            doRedirect(response, ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
                         }
                     }
 
@@ -461,6 +454,24 @@ public class UserBean implements Serializable {
             result.setRedirected();
             // Reset to local provider so that the email field is displayed
             setAuthenticationProvider(getLocalAuthenticationProvider());
+        }
+    }
+
+    /**
+     * Redirects to the given URL. The type of response
+     * @param response {@link HttpServletResponse} from {@link LoginResult}
+     * @param url Redirect URL
+     * @throws IOException
+     */
+    private static void doRedirect(HttpServletResponse response, String url) throws IOException {
+        if (response.equals(BeanUtils.getResponse())) {
+            // Local authentication: use Faces external context for redirection to avoid an IllegalStateException 
+            FacesContext.getCurrentInstance()
+                    .getExternalContext()
+                    .redirect(url);
+        } else {
+            // OpenID, etc.: Use response from LoginResult
+            response.sendRedirect(url);
         }
     }
 
