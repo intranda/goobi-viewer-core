@@ -259,11 +259,10 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
 
             DataManager.getInstance().getOAuthResponseListener().register(this);
             if (request != null) {
-                request.addHeader("Accept", "application/json");
-                request.addHeader("Content-Type", "application/json");
+                // request.addHeader("Accept", "application/json");
+                // request.addHeader("Content-Type", "application/json");
                 
                 logger.trace("Redirecting oauth to {}", request.getLocationUri());
-                // BeanUtils.getResponse().sendRedirect(request.getLocationUri()); // TODO This produces error in OmniFaces
                 FacesContext.getCurrentInstance()
                         .getExternalContext()
                         .redirect(request.getLocationUri());
