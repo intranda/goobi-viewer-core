@@ -163,7 +163,7 @@
 					<h:form>
 						<h:panelGroup layout="block" id="updateThemeGroup" styleClass="admin__developer-autopull-wrapper" rendered="#{configurationBean.pullThemeEnabled == true}">
 								<div class="admin__developer-autopull-status-wrapper">
-									<!-- AUTOPULL STATUS CAN BE ON, OFF OR ERROR -->
+									<!-- PULL STATUS CAN BE SUCCESSFUL, FAILED OR UNKNOWN -->
 									<div class="admin__developer-autopull-status-text">
 										#{msg.admin__developer__pull_theme} #{adminDeveloperBean.autopullError ? '(failed)' : ''}
 									</div>
@@ -222,7 +222,8 @@
 								</div>
 
 						</h:panelGroup>
-						<h:panelGroup layout="block" styleClass="admin__developer-autopull-wrapper" rendered="#{configurationBean.pullThemeEnabled == false}">
+						<!-- PULL VIA BACKEND IS NOT POSSIBLE TEXT -->
+						<h:panelGroup layout="block" styleClass="admin__developer-autopull-wrapper -isOff" rendered="#{configurationBean.pullThemeEnabled == false}">
 							<p class="admin__developer-autopull-wrapper-text">#{msg.admin__developer__pull_theme_not_possible}</p>
 						</h:panelGroup>
 					</h:form>

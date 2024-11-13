@@ -325,14 +325,20 @@
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 
-	<!-- ADVANCED SEARCH -->
-	   <url-mapping id="searchAdvanced1">
+    <!-- ADVANCED SEARCH -->
+    <url-mapping id="searchAdvanced1">
         <pattern value="/searchadvanced/#{activeFacetString:searchBean.facets.activeFacetString}/" />
         <view-id value="/searchAdvanced.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
         <action onPostback="false">#{searchBean.setActiveResultGroupName('-')}</action>
         <action onPostback="false">#{searchBean.facets.resetActiveFacetString}</action>
+    </url-mapping>
+    <url-mapping id="searchAdvanced2">
+        <pattern value="/searchadvanced/#{activeFacetString:searchBean.activeResultGroupName}/#{activeFacetString:searchBean.facets.activeFacetString}/" />
+        <view-id value="/searchAdvanced.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
     </url-mapping>
     <url-mapping id="searchAdvanced4">
         <!-- TODO is searchStringForUrl correct for advanced search?! -->
