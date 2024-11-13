@@ -89,17 +89,4 @@ public class IndexerResource {
             throw new IllegalRequestException("Cannot parse request body to json ", e);
         }
     }
-
-    /**
-     * 
-     * @return Indexer version
-     * @deprecated Use /api/v1/monitoring/
-     */
-    @Deprecated(since = "23.02")
-    @GET
-    @Path("/version")
-    @Produces({ MediaType.APPLICATION_JSON })
-    public String getIndexerVersion() {
-        return DataManager.getInstance().getIndexerVersion();
-    }
 }
