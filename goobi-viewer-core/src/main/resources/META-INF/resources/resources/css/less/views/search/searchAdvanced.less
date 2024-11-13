@@ -225,12 +225,11 @@
 		display: flex;
 		gap: @gap-sizer;
 		position: relative;
-		z-index: 5;
-		margin-bottom: -1px;
+		z-index: 5; 
 	}
 	&__entity-tabs-links-wrapper {
 		display: flex;
-		gap: 7px;
+		gap: 5px;
 		flex-wrap: wrap; 
 		// margin-bottom: -1px;
 	}
@@ -238,23 +237,24 @@
 		position: relative;
 	}
 	&__entity-tab-link {
+ 		position: relative;
 		display: flex;
 		align-items: center; 
-		padding: 9px 15px;
-		padding-top: 10px;
+		padding: 10px 15px;
+		height: 38px;
         &:hover,
         &:focus,
         &:active {
 			text-decoration: none;
-			padding-top: 8px;
+			// padding-top: 8px;
 		}
 		&.-standard {
 
 		}
 		&.-active {
+			height: 39px;
 			pointer-events: none;
-			padding-top: 10px;
-			padding-bottom: 8px;
+			margin-bottom: -1px;
 		}
 	}
 	
