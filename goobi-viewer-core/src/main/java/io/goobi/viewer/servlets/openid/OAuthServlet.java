@@ -358,7 +358,7 @@ public class OAuthServlet extends HttpServlet {
                      
                      HttpPost externalRequest = new HttpPost(provider.getThirdPartyLoginUrl());
                      String[] thirdPartyLoginApiKeyParams = provider.getThirdPartyLoginApiKey().split(" ");
-                     externalRequest.addHeader(thirdPartyLoginApiKeyParams[0] , thirdPartyLoginApiKeyParams[1]);
+                     externalRequest.addHeader(thirdPartyLoginApiKeyParams[0], thirdPartyLoginApiKeyParams[1]);
                      externalRequest.addHeader("content-type", "application/json");
                      externalRequest.setEntity(entity);
                      
