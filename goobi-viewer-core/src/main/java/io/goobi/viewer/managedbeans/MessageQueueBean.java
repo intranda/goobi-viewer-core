@@ -282,6 +282,7 @@ public class MessageQueueBean implements Serializable {
 
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
             this.messageBroker.deleteMessages(type);
+            updateMessageQueueState();
         }
 
     }
@@ -295,6 +296,7 @@ public class MessageQueueBean implements Serializable {
 
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
             this.messageBroker.deleteMessage(ticket);
+            updateMessageQueueState();
         }
 
     }
@@ -444,6 +446,7 @@ public class MessageQueueBean implements Serializable {
                 log.error("Error restarting message listener for queue {}: {}", l.getQueueType(), e.toString());
             }
         });
+        updateMessageQueueState();
     }
 
     public MessageQueueState getMessageQueueState() {
