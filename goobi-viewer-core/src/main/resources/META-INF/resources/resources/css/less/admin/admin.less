@@ -1400,7 +1400,7 @@
 	}
 	&__topbar-backend-logout-link {
 		padding: 0 2rem;
-		color: @adminBackend-menu-text;;
+		color: @adminBackend-menu-text;
 		transition: all 0.2s ease;
 		display: flex;
 		justify-content: center;
@@ -1618,6 +1618,7 @@
 				visibility: visible;
 			}
 		}
+		
 	}
 	&__topbar-frontend-right {
 		margin-left: auto;
@@ -1672,7 +1673,7 @@
 	}
 	&__topbar-frontend-view-dashboard-link {
 		padding: 0 2rem;
-		color: @white;
+		color: @adminBackend-menu-text;
 		transition: all 0.2s ease;
 		display: flex;
 		justify-content: center;
@@ -1742,10 +1743,26 @@
 			color: @white;
 		}
 	}
+	&__topbar-queue-state-wrapper {
+		display: flex;
+	}
 	&__topbar-queue-warning-wrapper {
 		display: flex;
 	}
-
+	&__topbar-queue-info-icon-wrapper {
+		// background: @adminBackend-menu-text;
+		border-radius: 10px;
+		width: 20px;
+		height: 20px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		line-height: 1;
+	}
+	&__topbar-queue-info-icon {
+		// color: @adminBackend-bg;
+	}
 	&__topbar-queue-warning-icon-wrapper {
 		background: #f44336;
 		border-radius: 10px;
@@ -1757,19 +1774,12 @@
 		text-align: center;
 		line-height: 1;
 	}
-	&__topbar-queue-info-link {
+	&__topbar-queue-link {
 		display: flex;
 		gap: 0 10px;
 		align-items: center;
-		justify-content: center;
-		color: #3365a9;
-	}
-	&__topbar-queue-warning-link {
-		display: flex;
-		gap: 0 10px;
-		align-items: center;
-		color: white;
-		padding: 0 1rem;
+		color: @adminBackend-menu-text;
+		padding: 0 20px;
 		&:hover,
 		&:focus,
 		&:active {
@@ -1779,7 +1789,7 @@
 		}
 	}
 	&__topbar-queue-warning-icon {
-		color: white;
+		color: @adminBackend-menu-text;
 		font-size: 12px;
 	}
 	&__topbar-queue-warning-text {
@@ -1799,7 +1809,7 @@
 	}
 	&__topbar-frontend-logout-link {
 		padding: 0 2rem;
-		color: @white;
+		color: @adminBackend-menu-text;
 		transition: all 0.2s ease;
 		display: flex;
 		justify-content: center;

@@ -7,12 +7,12 @@
 	xmlns:jsf="http://xmlns.jcp.org/jsf" xmlns:o="http://omnifaces.org/ui"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
 
-	<span class="topbar-queue-monitor"> <!-- WARNING IF MSG QUEUE STOPPED IRREGULARLY -->
-		<h:panelGroup styleClass="admin__topbar-queue-state-wrapper"
+		<!-- WARNING IF MSG QUEUE STOPPED IRREGULARLY -->
+		<h:panelGroup styleClass="topbar-queue-monitor admin__topbar-queue-state-wrapper"
 			layout="block" id="messageQueueStateWrapper">
 			<ui:fragment
 				rendered="#{userBean.admin and messageQueueBean.messageQueueState == 'INACTIVE'}">
-				<a class="admin__topbar-queue-info-link"
+				<a class="admin__topbar-queue-link"
 					href="#{request.contextPath}/admin/tasks">
 					<div class="admin__topbar-queue-info-icon-wrapper">
 						<div class="admin__topbar-queue-info-icon">
@@ -22,9 +22,10 @@
 					<div class="admin__topbar-queue-warning-text">#{msg.admin__msg_queue__inactive}</div>
 				</a>
 			</ui:fragment>
+			<!-- WARNING IF MSG QUEUE STOPPED IRREGULARLY -->
 			<ui:fragment
 				rendered="#{userBean.admin and messageQueueBean.messageQueueState == 'STOPPED'}">
-				<a class="admin__topbar-queue-warning-link"
+				<a class="admin__topbar-queue-link"
 					href="#{request.contextPath}/admin/tasks">
 					<div class="admin__topbar-queue-warning-icon-wrapper">
 						<div class="admin__topbar-queue-warning-icon">
@@ -34,9 +35,10 @@
 					<div class="admin__topbar-queue-warning-text">#{msg.admin__msg_queue__stopped_with_error}</div>
 				</a>
 			</ui:fragment>
-			<ui:fragment
+			<!-- INFO IF MSG QUEUE PAUSED -->
+			<ui:fragment 
 				rendered="#{userBean.admin and messageQueueBean.messageQueueState == 'PAUSED'}">
-				<a class="admin__topbar-queue-info-link"
+				<a class="admin__topbar-queue-link"
 					href="#{request.contextPath}/admin/tasks">
 					<div class="admin__topbar-queue-info-icon-wrapper">
 						<div class="admin__topbar-queue-info-icon">
@@ -46,29 +48,36 @@
 					<div class="admin__topbar-queue-info-text">#{msg.admin__msg_queue__paused}</div>
 				</a>
 			</ui:fragment>
+				<!-- INFO IF MSG QUEUE RUNNING -->
+<!-- 			<ui:fragment -->
+<!-- 				rendered="#{userBean.admin and messageQueueBean.messageQueueState == 'RUNNING'}"> -->
+<!-- 				<a class="admin__topbar-queue-link" -->
+<!-- 					href="#{request.contextPath}/admin/tasks"> -->
+<!-- 					<div class="admin__topbar-queue-info-icon-wrapper"> -->
+<!-- 						<div class="admin__topbar-queue-info-icon"> -->
+<!-- 							<i class="fa fa-info" aria-hidden="true"></i> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 					<div class="admin__topbar-queue-info-text">#{msg.admin__msg_queue__running}</div> -->
+<!-- 				</a> -->
+<!-- 			</ui:fragment> -->
+			<!-- INFO IF MSG QUEUE RUNNING AND TASKS ARE WORKED -->
 			<ui:fragment
-				rendered="#{userBean.admin and messageQueueBean.messageQueueState == 'RUNNING'}">
-				<a class="admin__topbar-queue-info-link"
-					href="#{request.contextPath}/admin/tasks">
+				rendered="#{userBean.admin and messageQueueBean.totalMessagesInQueueCount > 0 and userBean.admin and messageQueueBean.messageQueueState == 'RUNNING'}">
+				<a class="admin__topbar-queue-link" href="#{request.contextPath}/admin/tasks">
 					<div class="admin__topbar-queue-info-icon-wrapper">
 						<div class="admin__topbar-queue-info-icon">
 							<i class="fa fa-info" aria-hidden="true"></i>
 						</div>
 					</div>
-					<div class="admin__topbar-queue-info-text">#{msg.admin__msg_queue__running}</div>
-				</a>
-			</ui:fragment>
-			<ui:fragment
-				rendered="#{userBean.admin and messageQueueBean.totalMessagesInQueueCount > 0}">
-				<div class="admin__topbar-queue-info-text">
 					<h:outputFormat value="#{msg.admin__msg_queue__message_count}">
 						<f:param value="#{messageQueueBean.totalMessagesInQueueCount}" />
 					</h:outputFormat>
-				</div>
+				</a>
+
 			</ui:fragment>
 		</h:panelGroup> 
 		<o:socket channel="messageQueueStateForHeader">
 			<f:ajax event="update" render="messageQueueStateWrapper" />
 		</o:socket>
-	</span>
 </ui:composition>
