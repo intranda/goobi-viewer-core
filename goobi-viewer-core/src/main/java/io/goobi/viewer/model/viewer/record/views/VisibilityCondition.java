@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -149,7 +150,7 @@ public class VisibilityCondition {
         if (viewManager.getTopStructElement().isWork()) {
             docTypes.add("record");
         }
-        if (viewManager.getTopStructElementIddoc() != viewManager.getCurrentStructElementIddoc()) {
+        if (!Objects.equals(viewManager.getTopStructElementIddoc(), viewManager.getCurrentStructElementIddoc())) {
             docTypes.add("subStruct");
         }
 
