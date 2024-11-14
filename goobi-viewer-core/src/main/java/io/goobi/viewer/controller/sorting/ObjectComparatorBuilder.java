@@ -25,13 +25,13 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.function.Function;
 
-public class ObjectComparatorBuilder {
+public final class ObjectComparatorBuilder {
 
     private ObjectComparatorBuilder() {
     }
 
     public static <T> Comparator<T> build(String sortOrder, Locale locale, Function<T, String> stringifier) {
-        ITranslator<T> translator = locale == null ? new NoopTranslator<>(stringifier) : new ResourceBundleTranslator<T>(stringifier);
+        ITranslator<T> translator = locale == null ? new NoopTranslator<>(stringifier) : new ResourceBundleTranslator<>(stringifier);
         switch (sortOrder) {
             case "numerical":
             case "numerical_asc":
