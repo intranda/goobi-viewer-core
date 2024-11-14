@@ -69,6 +69,7 @@
             <ignoreVersions>
                 <ignoreVersion type="regex">4.*</ignoreVersion>
                 <ignoreVersion type="regex">5.*</ignoreVersion>
+                <ignoreVersion type="regex">6.*</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="xml-apis" artifactId="xml-apis">
