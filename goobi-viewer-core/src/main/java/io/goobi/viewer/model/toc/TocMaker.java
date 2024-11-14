@@ -415,7 +415,7 @@ public final class TocMaker {
      * @return Map<Integer, SolrDocument>
      * @should create correctly sorted map
      */
-    static Map<Integer, SolrDocument> createOrderedGroupDocMap(List<SolrDocument> groupMemberDocs, List<String> groupIdFields,
+    static Map<Integer, SolrDocument> createOrderedGroupDocMap(final List<SolrDocument> groupMemberDocs, List<String> groupIdFields,
             String groupIdValue) {
         if (groupMemberDocs == null || groupMemberDocs.isEmpty()) {
             return Collections.emptyMap();
@@ -429,8 +429,8 @@ public final class TocMaker {
 
         Map<Integer, SolrDocument> ret = new TreeMap<>();
         int fallbackOrder = 0;
-        groupMemberDocs = groupMemberDocs.stream().sorted((d1, d2) -> getLabel(d1).compareTo(getLabel(d2))).toList();
-        for (SolrDocument doc : groupMemberDocs) {
+        List<SolrDocument> useGroupMemberDocs = groupMemberDocs.stream().sorted((d1, d2) -> getLabel(d1).compareTo(getLabel(d2))).toList();
+        for (SolrDocument doc : useGroupMemberDocs) {
             String groupIdField = null;
             for (String field : groupIdFields) {
                 if (groupIdValue.equals(doc.getFieldValue(field))) {

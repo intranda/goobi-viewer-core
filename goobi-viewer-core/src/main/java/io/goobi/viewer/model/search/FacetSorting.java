@@ -127,7 +127,7 @@ public final class FacetSorting {
      * @param <K> key
      * @param <V> value
      */
-    public static class SortingMap<K, V> {
+    public static final class SortingMap<K, V> {
 
         private final Map<K, V> map;
 
