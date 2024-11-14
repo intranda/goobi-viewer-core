@@ -22,6 +22,8 @@
 package io.goobi.viewer.model.job.mq;
 
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -49,38 +51,66 @@ public class RefreshArchiveTreeHandler implements MessageHandler<MessageStatus> 
     @Override
     public MessageStatus call(ViewerMessage ticket, MessageQueueManager queueManager) {
         String identifiers = ticket.getProperties().get(PARAMETER_IDENTIFIERS); // space-separated PIs
-        if (StringUtils.isNotBlank(identifiers)) {
-            String query1 = "+" + SolrConstants.EAD_NODE_ID + ":* +" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name() + " +"
-                    + SolrConstants.PI_TOPSTRUCT + ":(" + identifiers + ")";
-            try {
-                SolrDocumentList docs1 =
-                        DataManager.getInstance().getSearchIndex().search(query1, Collections.singletonList(SolrConstants.EAD_NODE_ID));
-                if (!docs1.isEmpty()) {
-                    String query2 = "+" + SolrConstants.PI + ":* +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name() + " +"
-                            + SolrConstants.EAD_NODE_ID + ":(";
-                    StringBuilder sb = new StringBuilder();
-                    for (SolrDocument doc : docs1) {
-                        String nodeId = (String) doc.getFieldValue(SolrConstants.EAD_NODE_ID);
-                        sb.append(nodeId).append(" ");
-                    }
-                    query2 += sb.toString().trim();
-                    query2 += ")";
-                    SolrDocumentList docs2 =
-                            DataManager.getInstance().getSearchIndex().search(query2, Collections.singletonList(SolrConstants.PI));
-                }
 
-            } catch (PresentationException | IndexUnreachableException e) {
-                logger.error(e.getMessage());
-                return MessageStatus.ERROR;
-            }
+        try {
+            unloadAssociatedArchiveTrees(identifiers);
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.error(e.getMessage());
+            return MessageStatus.ERROR;
         }
 
         return MessageStatus.FINISH;
     }
 
+    /**
+     * 
+     * @param identifiers List of record identifiers
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private static void unloadAssociatedArchiveTrees(String identifiers) throws PresentationException, IndexUnreachableException {
+        if (StringUtils.isBlank(identifiers)) {
+            return;
+        }
+
+        String query1 = "+" + SolrConstants.EAD_NODE_ID + ":* +" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name() + " +"
+                + SolrConstants.PI_TOPSTRUCT + ":(" + identifiers + ")";
+        logger.trace("query1: {}", query1);
+        SolrDocumentList associatedRecordDocs =
+                DataManager.getInstance().getSearchIndex().search(query1, Collections.singletonList(SolrConstants.EAD_NODE_ID));
+        if (associatedRecordDocs.isEmpty()) {
+            logger.trace("No associated records found.");
+            return;
+        }
+
+        String query2 = "+" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name() + " +" + SolrConstants.EAD_NODE_ID + ":(";
+        StringBuilder sb = new StringBuilder();
+        for (SolrDocument doc : associatedRecordDocs) {
+            String nodeId = (String) doc.getFieldValue(SolrConstants.EAD_NODE_ID);
+            sb.append(nodeId).append(" ");
+        }
+        query2 += sb.toString().trim();
+        query2 += ")";
+        logger.trace("query2: {}", query2);
+        SolrDocumentList archiveDocs =
+                DataManager.getInstance().getSearchIndex().search(query2, Collections.singletonList(SolrConstants.PI_TOPSTRUCT));
+        if (archiveDocs.isEmpty()) {
+            logger.warn("No archives to unload found with query: {}", query2);
+            return;
+        }
+
+        Set<String> resourceIds = new HashSet<>(archiveDocs.size());
+        for (SolrDocument doc : archiveDocs) {
+            resourceIds.add((String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT));
+
+        }
+        int count = DataManager.getInstance().getArchiveManager().unloadArchives(resourceIds);
+        logger.debug("{} archive(s) unloaded due to associated records having been (re)indexed.", count);
+    }
+
     @Override
     public String getMessageHandlerName() {
-        return TaskType.DELETE_RESOURCE.name();
+        return TaskType.REFRESH_ARCHIVE_TREE.name();
     }
 
 }
