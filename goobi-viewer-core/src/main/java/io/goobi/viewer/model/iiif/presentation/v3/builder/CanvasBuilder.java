@@ -144,8 +144,6 @@ public class CanvasBuilder extends AbstractBuilder {
 
         if (page.getMimeType().matches("(?i)image(\\/.*)?")) {
             addImageResource(canvas, page);
-        } else {
-            // not implemented
         }
 
         canvas.addAnnotations(getFulltextAnnotationsReference(page));

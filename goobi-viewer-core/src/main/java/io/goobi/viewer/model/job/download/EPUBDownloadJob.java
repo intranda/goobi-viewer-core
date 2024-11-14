@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.job.download;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -136,7 +137,9 @@ public class EPUBDownloadJob extends DownloadJob {
      *
      * @param identifier a {@link java.lang.String} object.
      * @return a long.
+     * @deprecated jobs are no longs handled via TaskManager but via queues
      */
+    @Deprecated(since = "24.10")
     protected static long getEpubSizeFromTaskManager(String identifier) {
         StringBuilder url = new StringBuilder();
         url.append(DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
@@ -149,7 +152,7 @@ public class EPUBDownloadJob extends DownloadJob {
             String ret = handler.handleResponse(response);
             logger.trace("TaskManager response: {}", ret);
             return Long.parseLong(ret);
-        } catch (Exception e) {
+        } catch (IOException | IllegalArgumentException | NullPointerException e) {
             logger.error("Error getting response from TaskManager", e);
             return -1;
         }
@@ -162,7 +165,9 @@ public class EPUBDownloadJob extends DownloadJob {
      *
      * @param identifier a {@link java.lang.String} object.
      * @return a int.
+     * @deprecated jobs are no longs handled via TaskManager but via queues
      */
+    @Deprecated(since = "24.10")
     public static int getEPUBJobsInQueue(String identifier) {
         StringBuilder url = new StringBuilder();
         url.append(DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
@@ -175,7 +180,7 @@ public class EPUBDownloadJob extends DownloadJob {
             String ret = handler.handleResponse(response);
             logger.trace("TaskManager response: {}", ret);
             return Integer.parseInt(ret);
-        } catch (Exception e) {
+        } catch (IOException | IllegalArgumentException | NullPointerException e) {
             logger.error("Error getting response from TaskManager", e);
             return -1;
         }
@@ -191,7 +196,9 @@ public class EPUBDownloadJob extends DownloadJob {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DownloadException if any.
+     * @deprecated Creation via TaskManager request is no longer used and this method is never called
      */
+    @Deprecated(since = "24.10")
     public static void triggerCreation(String pi, String downloadIdentifier)
             throws PresentationException, IndexUnreachableException {
         File targetFolder = new File(DataManager.getInstance().getConfiguration().getDownloadFolder(EPUBDownloadJob.LOCAL_TYPE));
@@ -222,7 +229,7 @@ public class EPUBDownloadJob extends DownloadJob {
                             + entityJson.get("ERRORMESSAGE"));
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException | IllegalArgumentException | NullPointerException e) {
             // Had to catch generic exception here because a ParseException triggered by Tomcat error HTML getting parsed as JSON cannot be caught
             throw new DownloadException("Failed to start pdf creation for PI=" + pi + ": " + e.getMessage());
         }
@@ -236,6 +243,7 @@ public class EPUBDownloadJob extends DownloadJob {
         return "/viewerepub";
     }
 
+    @Deprecated(since = "24.10")
     @Override
     protected void triggerCreation() throws PresentationException, IndexUnreachableException {
         // TODO Auto-generated method stub

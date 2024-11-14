@@ -714,7 +714,7 @@ public final class SolrTools {
      * @should return correct value for iiif manifests in file name
      */
     public static boolean isHasImages(SolrDocument doc) throws IndexUnreachableException {
-        StructElement structElement = new StructElement(0, doc);
+        StructElement structElement = new StructElement("dummy", doc);
         String fileExtension = "";
 
         String filename = structElement.getMetadataValue(SolrConstants.FILENAME);

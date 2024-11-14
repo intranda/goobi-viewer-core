@@ -1829,7 +1829,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             } else {
                 containedStructElements = new ArrayList<>(docstructDocs.size());
                 for (SolrDocument doc : docstructDocs) {
-                    StructElement ele = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
+                    StructElement ele = new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
                     IMetadataValue value = TocMaker.buildTocElementLabel(doc);
                     String label = value.getValue(BeanUtils.getLocale()).orElse(value.getValue().orElse(""));
                     if (StringUtils.isNotBlank(label)) {

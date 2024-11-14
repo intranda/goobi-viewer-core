@@ -194,7 +194,8 @@ public class SearchFacets implements Serializable {
         List<String> ret = new ArrayList<>();
         Map<String, StringBuilder> queries = new LinkedHashMap<>(activeFacets.size());
 
-        for (IFacetItem facetItem : activeFacets) {
+        List<IFacetItem> facetItems = new ArrayList<>(activeFacets);
+        for (IFacetItem facetItem : facetItems) {
             if (facetItem.isHierarchial() || facetItem.getField().equals(SolrConstants.DOCSTRCT_SUB)
                     || (!includeRangeFacets && DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(facetItem.getField()))) {
                 continue;
@@ -411,7 +412,8 @@ public class SearchFacets implements Serializable {
      * @should return false if only range facets available
      */
     public boolean isUnselectedValuesAvailable() {
-        for (String field : getAvailableFacets().keySet()) {
+        List<String> availableFacetFields = new ArrayList<>(getAvailableFacets().keySet());
+        for (String field : availableFacetFields) {
             if (!getAvailableFacetsForField(field, true).isEmpty()
                     && !DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(field)) {
                 return true;
@@ -1057,6 +1059,11 @@ public class SearchFacets implements Serializable {
         return getAvailableFacets(Arrays.asList("", "boolean", "hierarchical"));
     }
 
+    public boolean hasAvailableFacets() {
+        return !this.activeFacets.isEmpty()
+                || this.getAvailableFacets().values().stream().flatMap(List::stream).anyMatch(facetItem -> facetItem.getCount() > 1);
+    }
+
     /**
      * 
      * @param types
@@ -1077,7 +1084,10 @@ public class SearchFacets implements Serializable {
             //add current facets which have no hits. This may happen due to geomap faceting
             List<IFacetItem> currentFacetsLocal = new ArrayList<>(activeFacets);
             for (IFacetItem currentItem : currentFacetsLocal) {
-                if ("geo".equals(DataManager.getInstance().getConfiguration().getFacetFieldType(currentItem.getField()))) {
+                String fieldType = DataManager.getInstance().getConfiguration().getFacetFieldType(currentItem.getField());
+                //don't include geo and range facets in list, since they have their own widgets
+                //Is this code still relevant then? Aren't all other facets included in allFacetFields and availableFacets?
+                if (!"geo".equals(fieldType) && !"range".equals(fieldType)) {
                     // Make a copy of the list to avoid concurrent modification
                     List<IFacetItem> availableFacetItems = new ArrayList<>(ret.getOrDefault(currentItem.getField(), new ArrayList<>()));
                     if (!availableFacetItems.contains(currentItem)) {

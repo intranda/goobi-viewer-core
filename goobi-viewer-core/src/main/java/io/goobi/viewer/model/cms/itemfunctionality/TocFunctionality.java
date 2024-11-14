@@ -148,7 +148,7 @@ public class TocFunctionality implements Functionality {
      */
     private StructElement createDocStruct() throws IndexUnreachableException, PresentationException {
         if (StringUtils.isNotBlank(getPi())) {
-            long topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(getPi());
+            String topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(getPi());
             return new StructElement(topDocumentIddoc);
         }
 

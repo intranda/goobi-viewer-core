@@ -220,7 +220,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>saveCurrentUserAction.</p>
+     * <p>
+     * saveCurrentUserAction.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -234,7 +236,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>saveUserAction.</p>
+     * <p>
+     * saveUserAction.
+     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object
      * @param returnPage a {@link java.lang.String} object
@@ -249,7 +253,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>resetUserAction.</p>
+     * <p>
+     * resetUserAction.
+     * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object
      * @param returnPage a {@link java.lang.String} object
@@ -565,7 +571,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>resetDirtyUserRolesAction.</p>
+     * <p>
+     * resetDirtyUserRolesAction.
+     * </p>
      */
     public void resetDirtyUserRolesAction() {
         dirtyUserRoles.clear();
@@ -695,7 +703,9 @@ public class AdminBean implements Serializable {
     // IpRange
 
     /**
-     * <p>getAllIpRanges.</p>
+     * <p>
+     * getAllIpRanges.
+     * </p>
      *
      * @return all IpRanges from the database
      * @throws io.goobi.viewer.exceptions.DAOException
@@ -973,7 +983,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentPassword</code>.</p>
+     * <p>
+     * Getter for the field <code>currentPassword</code>.
+     * </p>
      *
      * @return the currentPassword
      */
@@ -982,7 +994,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentPassword</code>.</p>
+     * <p>
+     * Setter for the field <code>currentPassword</code>.
+     * </p>
      *
      * @param currentPassword the currentPassword to set
      */
@@ -1035,7 +1049,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>emailConfirmation</code>.</p>
+     * <p>
+     * Getter for the field <code>emailConfirmation</code>.
+     * </p>
      *
      * @return the emailConfirmation
      */
@@ -1044,7 +1060,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>emailConfirmation</code>.</p>
+     * <p>
+     * Setter for the field <code>emailConfirmation</code>.
+     * </p>
      *
      * @param emailConfirmation the emailConfirmation to set
      */
@@ -1053,7 +1071,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>isDeleteUserContributions.</p>
+     * <p>
+     * isDeleteUserContributions.
+     * </p>
      *
      * @return the deleteUserContributions
      */
@@ -1062,7 +1082,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>deleteUserContributions</code>.</p>
+     * <p>
+     * Setter for the field <code>deleteUserContributions</code>.
+     * </p>
      *
      * @param deleteUserContributions the deleteUserContributions to set
      */
@@ -1214,7 +1236,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>triggerMessage.</p>
+     * <p>
+     * triggerMessage.
+     * </p>
      *
      * @param message a {@link java.lang.String} object
      */
@@ -1224,7 +1248,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>isDisplayTranslationsDashboardWidget.</p>
+     * <p>
+     * isDisplayTranslationsDashboardWidget.
+     * </p>
      *
      * @return true if at least one group is not fully translated; false otherwise
      */
@@ -1239,7 +1265,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>getConfiguredTranslationGroupsCount.</p>
+     * <p>
+     * getConfiguredTranslationGroupsCount.
+     * </p>
      *
      * @return Number of configured translation grouns
      */
@@ -1254,7 +1282,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>getConfiguredTranslationGroups.</p>
+     * <p>
+     * getConfiguredTranslationGroups.
+     * </p>
      *
      * @return All configured <code>TranslationGroup</code>s
      */
@@ -1269,7 +1299,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>getTranslationGroupsForSolrField.</p>
+     * <p>
+     * getTranslationGroupsForSolrField.
+     * </p>
      *
      * @param field Index field that the translation groups should have as a key
      * @return List of TranslationGroups; null if not found
@@ -1280,7 +1312,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>getTranslationGroupForFieldAndKey.</p>
+     * <p>
+     * getTranslationGroupForFieldAndKey.
+     * </p>
      *
      * @param field Solr field
      * @param key Message key
@@ -1299,7 +1333,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>getTranslationGroupsForSolrFieldStatic.</p>
+     * <p>
+     * getTranslationGroupsForSolrFieldStatic.
+     * </p>
      *
      * @param field Index field that the translation groups should have as a key
      * @return List of TranslationGroups; null if not found
@@ -1335,7 +1371,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>currentTranslationGroup</code>.</p>
+     * <p>
+     * Getter for the field <code>currentTranslationGroup</code>.
+     * </p>
      *
      * @return the currentTranslationGroup
      */
@@ -1352,7 +1390,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>currentTranslationGroup</code>.</p>
+     * <p>
+     * Setter for the field <code>currentTranslationGroup</code>.
+     * </p>
      *
      * @param currentTranslationGroup the currentTranslationGroup to set
      */
@@ -1361,7 +1401,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>isNewMessageEntryModeAllowed.</p>
+     * <p>
+     * isNewMessageEntryModeAllowed.
+     * </p>
      *
      * @return true if at least one LOCAL_STRINGS type group is found in config; false otherwise
      */
@@ -1422,7 +1464,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>getCurrentTranslationGroupId.</p>
+     * <p>
+     * getCurrentTranslationGroupId.
+     * </p>
      *
      * @return Index of currentTranslationGroup in the list of configured groups
      */
@@ -1437,7 +1481,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>setCurrentTranslationGroupId.</p>
+     * <p>
+     * setCurrentTranslationGroupId.
+     * </p>
      *
      * @param id Looks up and loads <code>currentTranslationGroup</code> that matches the given id
      */
@@ -1454,7 +1500,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>getCurrentTranslationMessageKey.</p>
+     * <p>
+     * getCurrentTranslationMessageKey.
+     * </p>
      *
      * @return Key of the currently selected entry; otherwise "-"
      */
@@ -1478,7 +1526,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>isTranslationLocked.</p>
+     * <p>
+     * isTranslationLocked.
+     * </p>
      *
      * @return true if translations are locked by a different user; false otherwise
      */
@@ -1487,7 +1537,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>lockTranslation.</p>
+     * <p>
+     * lockTranslation.
+     * </p>
      */
     public void lockTranslation() {
         if (translationGroupsEditorSession == null) {
@@ -1497,7 +1549,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>translationGroupsEditorSession</code>.</p>
+     * <p>
+     * Getter for the field <code>translationGroupsEditorSession</code>.
+     * </p>
      *
      * @return the translationGroupsEditorSession
      */
@@ -1506,7 +1560,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>translationGroupsEditorSession</code>.</p>
+     * <p>
+     * Setter for the field <code>translationGroupsEditorSession</code>.
+     * </p>
      *
      * @param translationGroupsEditorSession the translationGroupsEditorSession to set
      */
@@ -1516,14 +1572,18 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>updateHotfolderFileCount.</p>
+     * <p>
+     * updateHotfolderFileCount.
+     * </p>
      */
     public void updateHotfolderFileCount() {
         hotfolderFileCount.send("update");
     }
 
     /**
-     * <p>Getter for the field <code>hotfolderFileCount</code>.</p>
+     * <p>
+     * Getter for the field <code>hotfolderFileCount</code>.
+     * </p>
      *
      * @return Number of queued records in hotfolder
      */
@@ -1532,7 +1592,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>isHasAccessPermissingForTranslationFiles.</p>
+     * <p>
+     * isHasAccessPermissingForTranslationFiles.
+     * </p>
      *
      * @return {@link io.goobi.viewer.model.translations.admin.TranslationGroup#isHasFileAccess()}
      */
@@ -1541,7 +1603,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>uploadedAvatarFile</code>.</p>
+     * <p>
+     * Setter for the field <code>uploadedAvatarFile</code>.
+     * </p>
      *
      * @param uploadedAvatarFile the uploadedAvatarFile to set
      */
@@ -1550,7 +1614,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>uploadedAvatarFile</code>.</p>
+     * <p>
+     * Getter for the field <code>uploadedAvatarFile</code>.
+     * </p>
      *
      * @return the uploadedAvatarFile
      */

@@ -29,6 +29,7 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 
 import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.Assertions;
@@ -189,7 +190,7 @@ class ThumbnailHandlerTest extends AbstractTest {
         solrDoc.setField(SolrConstants.PI, "1234");
         solrDoc.setField(SolrConstants.PI_TOPSTRUCT, "1234");
 
-        StructElement doc = new StructElement(1, solrDoc);
+        StructElement doc = new StructElement("1", solrDoc);
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
         Assertions.assertEquals("/api/v1/records/1234/files/images/00000001.tif/full/!200,300/0/default.jpg", url);
@@ -214,9 +215,9 @@ class ThumbnailHandlerTest extends AbstractTest {
         solrDocVolume.setField(SolrConstants.PI_TOPSTRUCT, "1234_1");
         solrDocVolume.setField(SolrConstants.PI_ANCHOR, "1234");
         solrDocVolume.setField(SolrConstants.PI_PARENT, "1234");
-        StructElement docVolume = new StructElement(2, solrDocVolume);
+        StructElement docVolume = new StructElement("2", solrDocVolume);
 
-        StructElement doc = new StructElement(1, solrDoc);
+        StructElement doc = new StructElement("1", solrDoc);
         StructElement docMock = Mockito.spy(doc);
         Mockito.when(docMock.getFirstVolume(Mockito.anyList())).thenReturn(docVolume);
 
@@ -243,9 +244,9 @@ class ThumbnailHandlerTest extends AbstractTest {
         solrDocVolume.setField(SolrConstants.PI_TOPSTRUCT, "1234_1");
         solrDocVolume.setField(SolrConstants.PI_ANCHOR, "1234");
         solrDocVolume.setField(SolrConstants.PI_PARENT, "1234");
-        StructElement docVolume = new StructElement(2, solrDocVolume);
+        StructElement docVolume = new StructElement("2", solrDocVolume);
 
-        StructElement doc = new StructElement(1, solrDoc);
+        StructElement doc = new StructElement("1", solrDoc);
         StructElement docMock = Mockito.spy(doc);
         Mockito.when(docMock.getFirstVolume(Mockito.anyList())).thenReturn(docVolume);
 
@@ -264,7 +265,7 @@ class ThumbnailHandlerTest extends AbstractTest {
         solrDoc.setField(SolrConstants.PI, "1234");
         solrDoc.setField(SolrConstants.PI_TOPSTRUCT, "1234");
 
-        StructElement doc = new StructElement(1, solrDoc);
+        StructElement doc = new StructElement("1", solrDoc);
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
         Assertions.assertEquals("/api/v1/images/external/http:U002FU002FexternalU002FiiifU002FimageU002F00000001.tif/full/!200,300/0/default.jpg",
@@ -282,7 +283,7 @@ class ThumbnailHandlerTest extends AbstractTest {
         solrDoc.setField(SolrConstants.PI, "1234");
         solrDoc.setField(SolrConstants.PI_TOPSTRUCT, "1234");
 
-        StructElement doc = new StructElement(1, solrDoc);
+        StructElement doc = new StructElement("1", solrDoc);
 
         String url = handler.getThumbnailUrl(doc, 200, 300);
         Assertions.assertEquals("http://external/iiif/image/00000001.tif/full/!200,300/0/default.jpg", url);
@@ -359,7 +360,7 @@ class ThumbnailHandlerTest extends AbstractTest {
      * @verifies use width only if height null or zero
      */
     @Test
-    void getSize_shouldUseWidthOnlyIfHeightNullOrZero() throws Exception {
+    void getSize_shouldUseWidthOnlyIfHeightNullOrZero() {
         Assertions.assertEquals("1,", ThumbnailHandler.getSize(1, null));
         Assertions.assertEquals("1,", ThumbnailHandler.getSize(1, 0));
     }
@@ -369,7 +370,7 @@ class ThumbnailHandlerTest extends AbstractTest {
      * @verifies use height only if width null or zero
      */
     @Test
-    void getSize_shouldUseHeightOnlyIfWidthNullOrZero() throws Exception {
+    void getSize_shouldUseHeightOnlyIfWidthNullOrZero() {
         Assertions.assertEquals(",1", ThumbnailHandler.getSize(null, 1));
         Assertions.assertEquals(",1", ThumbnailHandler.getSize(0, 1));
     }
@@ -379,7 +380,7 @@ class ThumbnailHandlerTest extends AbstractTest {
      * @verifies use width and height if both non zero
      */
     @Test
-    void getSize_shouldUseWidthAndHeightIfBothNonZero() throws Exception {
+    void getSize_shouldUseWidthAndHeightIfBothNonZero() {
         Assertions.assertEquals("!1,1", ThumbnailHandler.getSize(1, 1));
     }
 
@@ -388,12 +389,12 @@ class ThumbnailHandlerTest extends AbstractTest {
      * @verifies return max if both zero
      */
     @Test
-    void getSize_shouldReturnMaxIfBothZero() throws Exception {
+    void getSize_shouldReturnMaxIfBothZero() {
         Assertions.assertEquals("max", ThumbnailHandler.getSize(0, 0));
     }
 
     @Test
-    void getSize_shouldReturnMaxIfBothNull() throws Exception {
+    void getSize_shouldReturnMaxIfBothNull() {
         Assertions.assertEquals("max", ThumbnailHandler.getSize(null, null));
     }
 
@@ -402,7 +403,7 @@ class ThumbnailHandlerTest extends AbstractTest {
      * @verifies return image thumbnail path correctly
      */
     @Test
-    void getImagePath_shouldReturnImageThumbnailPathCorrectly() throws Exception {
+    void getImagePath_shouldReturnImageThumbnailPathCorrectly() {
         Assertions.assertEquals("00000001.tif",
                 new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("image/tiff").build()));
@@ -413,7 +414,7 @@ class ThumbnailHandlerTest extends AbstractTest {
      * @verifies return audio thumbnail path correctly
      */
     @Test
-    void getImagePath_shouldReturnAudioThumbnailPathCorrectly() throws Exception {
+    void getImagePath_shouldReturnAudioThumbnailPathCorrectly() {
         // Page thumbnail
         Assertions.assertEquals("00000001.tif",
                 new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
@@ -429,7 +430,7 @@ class ThumbnailHandlerTest extends AbstractTest {
      * @verifies return video thumbnail path correctly
      */
     @Test
-    void getImagePath_shouldReturnVideoThumbnailPathCorrectly() throws Exception {
+    void getImagePath_shouldReturnVideoThumbnailPathCorrectly() {
         // Page thumbnail
         Assertions.assertEquals("00000001.tif",
                 new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
@@ -445,7 +446,7 @@ class ThumbnailHandlerTest extends AbstractTest {
      * @verifies return pdf thumbnail path correctly
      */
     @Test
-    void getImagePath_shouldReturnPdfThumbnailPathCorrectly() throws Exception {
+    void getImagePath_shouldReturnPdfThumbnailPathCorrectly() {
         Assertions.assertEquals("https://example/com/viewer/thumbnail_epub.jpg",
                 new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("application/pdf").build()));
@@ -456,13 +457,24 @@ class ThumbnailHandlerTest extends AbstractTest {
      * @verifies return 3d object thumbnail path correctly
      */
     @Test
-    void getImagePath_shouldReturn3dObjectThumbnailPathCorrectly() throws Exception {
+    void getImagePath_shouldReturn3dObjectThumbnailPathCorrectly() {
         Assertions.assertEquals("https://example/com/viewer/thumbnail_3d.png",
                 new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("application/object").build()));
         Assertions.assertEquals("https://example/com/viewer/thumbnail_3d.png",
                 new ThumbnailHandler(new IIIFUrlHandler(), "https://example/com/viewer/")
                         .getImagePath(new PhysicalElementBuilder().setFilePath("00000001.tif").setMimeType("object").build()));
+    }
+
+    /**
+     * @see ThumbnailHandler#getImagePath(PhysicalElement)
+     * @verifies return mime type correctly
+     */
+    @Test
+    void getMimeType_shouldReturnMimeTypeCorrectly() {
+        StructElement se = new StructElement();
+        se.getMetadataFields().put(SolrConstants.MIMETYPE, Collections.singletonList("image/tiff"));
+        Assertions.assertEquals("image/tiff", ThumbnailHandler.getMimeType(se).get());
     }
 
 }

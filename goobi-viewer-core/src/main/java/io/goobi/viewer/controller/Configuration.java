@@ -85,6 +85,7 @@ import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataView;
+import io.goobi.viewer.model.metadata.MetadataView.MetadataViewLocation;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
@@ -550,7 +551,8 @@ public class Configuration extends AbstractConfiguration {
             String label = metadataView.getString(XML_PATH_ATTRIBUTE_LABEL);
             String url = metadataView.getString(XML_PATH_ATTRIBUTE_URL, "");
             String condition = metadataView.getString(XML_PATH_ATTRIBUTE_CONDITION);
-            MetadataView view = new MetadataView().setIndex(index).setLabel(label).setUrl(url).setCondition(condition);
+            MetadataViewLocation location = MetadataViewLocation.getByName(metadataView.getString("[@location]", "sidebar"));
+            MetadataView view = new MetadataView().setIndex(index).setLabel(label).setUrl(url).setCondition(condition).setLocation(location);
             ret.add(view);
         }
 
@@ -721,6 +723,7 @@ public class Configuration extends AbstractConfiguration {
         String masterValue = sub.getString("[@value]");
         String citationTemplate = sub.getString("[@citationTemplate]");
         boolean group = sub.getBoolean("[@group]", false);
+        String key = sub.getString("[@key]", label);
         boolean singleString = sub.getBoolean("[@singleString]", true);
         boolean topstructOnly = sub.getBoolean("[@topstructOnly]", false);
         int number = sub.getInt("[@number]", -1);
@@ -729,6 +732,7 @@ public class Configuration extends AbstractConfiguration {
         String labelField = sub.getString("[@labelField]");
         String sortField = sub.getString("[@sortField]");
         String separator = sub.getString("[@separator]");
+        String filterQuery = sub.getString("filterQuery", "");
         List<HierarchicalConfiguration<ImmutableNode>> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
         if (params != null) {
@@ -738,7 +742,7 @@ public class Configuration extends AbstractConfiguration {
             }
         }
 
-        Metadata ret = new Metadata(label, masterValue, paramList)
+        Metadata ret = new Metadata(label, key, masterValue, paramList)
                 .setType(type)
                 .setGroup(group)
                 .setNumber(number)
@@ -749,7 +753,9 @@ public class Configuration extends AbstractConfiguration {
                 .setLabelField(labelField)
                 .setSortField(sortField)
                 .setSeparator(separator)
-                .setIndentation(indentation);
+                .setIndentation(indentation)
+                .setFilterQuery(filterQuery);
+        ;
 
         // Recursively add nested metadata configurations
         List<HierarchicalConfiguration<ImmutableNode>> children = sub.configurationsAt("metadata");
@@ -1285,6 +1291,24 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return list;
+    }
+
+    /**
+     * Get all configured sortOrders for collections in the given field, mapped against regex which should match the collection(s) which
+     * subcollections should be sorted according the sortOrder
+     * 
+     * @param field the solr fild on which the collection is based
+     * @return a map of regular expressions matching collection names and associated sortOrders
+     */
+    public Map<String, String> getCollectionSortOrders(String field) {
+
+        HierarchicalConfiguration<ImmutableNode> collection = getCollectionConfiguration(field);
+        if (collection != null) {
+            List<HierarchicalConfiguration<ImmutableNode>> sortOrders = collection.configurationsAt("sorting.sortOrder");
+            return sortOrders.stream().collect(Collectors.toMap(conf -> conf.getString("[@collections]"), conf -> conf.getString(".")));
+        }
+
+        return Collections.emptyMap();
     }
 
     /**
@@ -2467,6 +2491,13 @@ public class Configuration extends AbstractConfiguration {
             String clientSecret = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@clientSecret]", null);
             String parameterType = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@parameterType]", null);
             String parameterName = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@parameterName]", null);
+            String thirdPartyLoginUrl = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginUrl]", null);
+            String thirdPartyLoginApiKey = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginApiKey]", null);
+            String thirdPartyLoginScope = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginScope]", null);
+            String thirdPartyLoginReqParamDef = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginReqParamDef]", null);
+            ;
+            String thirdPartyLoginClaim = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginClaim]", null);
+            ;
             long timeoutMillis = myConfigToUse.getLong(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@timeout]", 60000);
 
             if (enabled) {
@@ -2480,7 +2511,9 @@ public class Configuration extends AbstractConfiguration {
                                 new OpenIdProvider(name, label, endpoint, image, timeoutMillis, clientId, clientSecret)
                                         .setTokenEndpoint(tokenEndpoint)
                                         .setRedirectionEndpoint(redirectionEndpoint)
-                                        .setScope(scope));
+                                        .setScope(scope)
+                                        .setThirdPartyVariables(thirdPartyLoginUrl, thirdPartyLoginApiKey, thirdPartyLoginScope,
+                                                thirdPartyLoginReqParamDef, thirdPartyLoginClaim));
                         break;
                     case "userpassword":
                         switch (name.toLowerCase()) {
@@ -4967,7 +5000,9 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
+     * @deprecated currently unused since download jobs are handled via message queues
      */
+    @Deprecated(since = "24.10")
     public String getTaskManagerServiceUrl() {
         return getLocalString("urls.taskManager", "http://localhost:8080/itm/") + "service";
     }
@@ -4979,7 +5014,9 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return correct value
      * @return a {@link java.lang.String} object.
+     * @deprecated jobs are no longs handled via TaskManager but via queues
      */
+    @Deprecated(since = "24.10")
     public String getTaskManagerRestUrl() {
         return getLocalString("urls.taskManager", "http://localhost:8080/itm/") + "rest";
     }
@@ -5830,15 +5867,6 @@ public class Configuration extends AbstractConfiguration {
      * @return Configured value
      * @should return correct value
      */
-    public boolean isArchivesEnabled() {
-        return getLocalBoolean("archives[@enabled]", false);
-    }
-
-    /**
-     * 
-     * @return Configured value
-     * @should return correct value
-     */
     public int getArchivesLazyLoadingThreshold() {
         return getLocalInt("archives[@lazyLoadingThreshold]", 100);
     }
@@ -6064,6 +6092,15 @@ public class Configuration extends AbstractConfiguration {
 
     public boolean isStatisticsEnabled() {
         return getLocalBoolean("statistics[@enabled]", false);
+    }
+
+    public boolean isShowRecordStatisticsWidget() {
+        return isStatisticsEnabled() && getLocalBoolean("statistics.reporting.widget.record[@enabled]", true);
+    }
+
+    public boolean isRecordStatisticsWidgetCollapsible() {
+        String widgetMode = getLocalString("statistics.reporting.widget.record[@mode]", "full");
+        return "collapsible".equalsIgnoreCase(widgetMode);
     }
 
     public String getCrawlerDetectionRegex() {

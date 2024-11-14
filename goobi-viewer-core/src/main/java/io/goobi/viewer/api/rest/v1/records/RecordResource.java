@@ -624,7 +624,7 @@ public class RecordResource {
     private static StructElement getStructElement(String pi) throws PresentationException, IndexUnreachableException {
         // logger.trace("getStructElement: {}", pi); //NOSONAR Debug
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc("PI:" + pi, null);
-        return new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
+        return new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
     }
 
     /**

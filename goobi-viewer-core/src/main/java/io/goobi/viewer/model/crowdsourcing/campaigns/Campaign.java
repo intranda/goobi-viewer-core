@@ -119,7 +119,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
         /**
          * Hidden to all except users having the appropriate rights
          */
-        @Deprecated
+        @Deprecated(since = "24.10")
         RESTRICTED,
         /**
          * Visible by all users
@@ -128,7 +128,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
         /**
          * Visible to all, but no creation of annotations possible
          */
-        @Deprecated
+        @Deprecated(since = "24.10")
         FINISHED;
 
         public static CampaignVisibility getByName(String name) {
@@ -1106,7 +1106,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      *
      * @return formatted ISO string representation of stateStart
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public String getDateStartString() {
         if (dateStart == null) {
             return null;
@@ -1123,7 +1123,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      * @param dateStartString a {@link java.lang.String} object.
      * @should parse string correctly
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public void setDateStartString(String dateStartString) {
         logger.trace("setDateStartString: {}", dateStartString);
         if (dateStartString != null) {
@@ -1186,7 +1186,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      *
      * @return formatted ISO string representation of dateEnd
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public String getDateEndString() {
         if (dateEnd == null) {
             return null;
@@ -1203,7 +1203,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      * @param dateEndString a {@link java.lang.String} object.
      * @should parse string correctly
      */
-    @Deprecated
+    @Deprecated(since = "24.10")
     public void setDateEndString(String dateEndString) {
         if (dateEndString != null) {
             this.dateEnd = DateTools.parseDateTimeFromString(dateEndString, false);
@@ -1502,10 +1502,10 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
      * @return true if
      *         <ul>
-     *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus#REVIEW REVIEW} and
-     *         the user is not contained in the annotators list</li> or
-     *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus#ANNOTATE ANNOTATE}
-     *         and the user is not contained in the reviewers list</li> or
+     *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus#REVIEW REVIEW} and the user is not contained
+     *         in the annotators list</li> or
+     *         <li>the status is {@link io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus#ANNOTATE ANNOTATE} and the user is not
+     *         contained in the reviewers list</li> or
      *         <li>The user is admin</li> or
      *         <li>The user is null</li>
      * @param pi a {@link java.lang.String} object.

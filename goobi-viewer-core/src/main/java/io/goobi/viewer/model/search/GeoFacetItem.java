@@ -115,7 +115,7 @@ public class GeoFacetItem implements IFacetItem {
         }
     }
 
-    @Deprecated
+    @Deprecated(since = "24.10")
     public void setFeatureFromContext() {
         Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 

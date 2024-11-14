@@ -112,4 +112,18 @@ class JsonToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     void shortFormatVersionString_shouldReturnNotAvailableKeyIfJsonInvalid() throws Exception {
         Assertions.assertEquals("admin__dashboard_versions_not_available", JsonTools.shortFormatVersionString("not json"));
     }
+
+    @Test
+    void test_getNestedValue() {
+        String directlyInObject = "{\"a\": {\"b\":\"c\"}, \"d\": \"e\", \"catch\": \"gotcha\", \"f\": \"g\"}";
+        String inSubObject = "{\"a\": {\"b\":\"c\"}, \"d\": \"e\", \"h\": {\"catch\": \"gotcha\"}, \"f\": \"g\"}";
+        String inArray = "{\"a\": {\"b\":\"c\"}, \"d\": \"e\", \"h\": [{\"j\": \"k\"}, {\"catch\": \"gotcha\"}], \"f\": \"g\"}";
+        String inObjectInArray =
+                "{\"a\": {\"b\":\"c\"}, \"d\": \"e\", \"h\": { \"i\": [{\"j\": \"k\"}, {\"catch\": \"gotcha\"}], \"l\": \"m\"}, \"f\": \"g\"}";
+        Assertions.assertEquals("gotcha", JsonTools.getNestedValue(new JSONObject(directlyInObject), "catch"));
+        Assertions.assertEquals("gotcha", JsonTools.getNestedValue(new JSONObject(inSubObject), "catch"));
+        Assertions.assertEquals("gotcha", JsonTools.getNestedValue(new JSONObject(inArray), "catch"));
+        Assertions.assertEquals("gotcha", JsonTools.getNestedValue(new JSONObject(inObjectInArray), "catch"));
+
+    }
 }

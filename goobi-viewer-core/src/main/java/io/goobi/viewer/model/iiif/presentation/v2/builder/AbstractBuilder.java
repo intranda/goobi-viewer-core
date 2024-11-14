@@ -459,7 +459,7 @@ public abstract class AbstractBuilder {
                 if ("EVENT".equals(doc.get(SolrConstants.DOCTYPE))) {
                     events.add(doc);
                 } else {
-                    StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
+                    StructElement ele = new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
                     eles.add(ele);
                     try {
                         Integer pageNo = (Integer) doc.getFieldValue(SolrConstants.THUMBPAGENO);
@@ -545,7 +545,7 @@ public abstract class AbstractBuilder {
         // List<String> displayFields = addLanguageFields(getSolrFieldList(), ViewerResourceBundle.getAllLocales());
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, null);
         if (doc != null) {
-            StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
+            StructElement ele = new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
             ele.setImageNumber(1);
             return ele;
         }

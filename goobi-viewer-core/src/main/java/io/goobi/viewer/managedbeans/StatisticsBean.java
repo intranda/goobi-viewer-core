@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -35,6 +36,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
@@ -87,6 +89,7 @@ public class StatisticsBean implements Serializable {
 
     private Map<String, Long> lastUpdateMap = new HashMap<>();
     private transient Map<String, Object> valueMap = new HashMap<>();
+    private transient Map<String, StatisticsSummary> recordUsageStatisticsMap = new ConcurrentHashMap<>();
 
     /**
      * <p>
@@ -353,14 +356,25 @@ public class StatisticsBean implements Serializable {
      */
     public StatisticsSummary getUsageStatisticsForRecord(String pi) throws PresentationException, IndexUnreachableException, DAOException {
         if (StringUtils.isNotBlank(pi)) {
-            StatisticsSummaryFilter filter = StatisticsSummaryFilter.forRecord(pi);
-            try {
-                return new StatisticsSummaryBuilder().loadSummary(filter);
-            } catch (WebApplicationException e) {
-                logger.error(e.getMessage());
+
+            StatisticsSummary summary = recordUsageStatisticsMap.get(pi);
+            if (summary == null || summary.isOlderThan(1, ChronoUnit.DAYS)) {
+                summary = loadSummary(pi);
+                recordUsageStatisticsMap.put(pi, summary);
             }
+            return summary;
         }
         return new StatisticsSummary(Collections.emptyMap());
+    }
+
+    protected StatisticsSummary loadSummary(String pi) throws IndexUnreachableException, PresentationException, DAOException {
+        StatisticsSummaryFilter filter = StatisticsSummaryFilter.forRecord(pi);
+        try {
+            return new StatisticsSummaryBuilder().loadSummary(filter);
+        } catch (WebApplicationException e) {
+            logger.error(e.getMessage());
+            return new StatisticsSummary(Collections.emptyMap());
+        }
     }
 
     /**
@@ -400,6 +414,14 @@ public class StatisticsBean implements Serializable {
      */
     public boolean isUsageStatisticsActive() {
         return DataManager.getInstance().getConfiguration().isStatisticsEnabled();
+    }
+
+    public boolean isShowRecordStatisticsWidget() {
+        return DataManager.getInstance().getConfiguration().isShowRecordStatisticsWidget();
+    }
+
+    public boolean isRecordStatisticWidgetCollapsible() {
+        return DataManager.getInstance().getConfiguration().isRecordStatisticsWidgetCollapsible();
     }
 
 }

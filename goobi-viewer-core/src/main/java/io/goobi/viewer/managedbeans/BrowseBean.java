@@ -25,7 +25,6 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,7 +44,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.util.ClientUtils;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import io.goobi.viewer.controller.AlphanumCollatorComparator;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -89,8 +87,8 @@ public class BrowseBean implements Serializable {
     private NavigationHelper navigationHelper;
     @Inject
     private BreadcrumbBean breadcrumbBean;
-    @Inject
-    private SearchBean searchBean;
+    //    @Inject
+    //    private SearchBean searchBean;
 
     /** Hits per page in the browsing menu. */
     private int browsingMenuHitsPerPage = DataManager.getInstance().getConfiguration().getBrowsingMenuHitsPerPage();
@@ -134,14 +132,14 @@ public class BrowseBean implements Serializable {
         this.breadcrumbBean = breadcrumbBean;
     }
 
-    /**
-     * Required setter for ManagedProperty injection
-     *
-     * @param searchBean the searchBean to set
-     */
-    public void setSearchBean(SearchBean searchBean) {
-        this.searchBean = searchBean;
-    }
+    //    /**
+    //     * Required setter for ManagedProperty injection
+    //     *
+    //     * @param searchBean the searchBean to set
+    //     */
+    //    public void setSearchBean(SearchBean searchBean) {
+    //        this.searchBean = searchBean;
+    //    }
 
     /**
      * Resets all lists for term browsing.
@@ -394,10 +392,13 @@ public class BrowseBean implements Serializable {
             if (breadcrumbBean != null) {
                 breadcrumbBean.updateBreadcrumbsWithCurrentUrl("browseTitle", BreadcrumbBean.WEIGHT_SEARCH_TERMS);
             }
-            if (searchBean != null) {
-                searchBean.setSearchString("");
-                searchBean.resetSearchParameters(true);
-            }
+
+            // This shouldn't be necessary and costs some cycles
+            //            if (searchBean != null) {
+            //                searchBean.setSearchString("");
+            //                searchBean.resetSearchParameters(true);
+            //            }
+
             hitsCount = 0;
 
             // Sort filters
@@ -434,41 +435,8 @@ public class BrowseBean implements Serializable {
             String browsingMenuFieldForCurrentLanguage = getBrowsingMenuFieldForLanguage(locale.getLanguage());
             if (availableStringFilters.get(browsingMenuFieldForCurrentLanguage) == null) {
                 logger.trace("Collecting available filters for {}", browsingMenuFieldForCurrentLanguage);
-                int numRows = StringUtils.isNotEmpty(currentBmfc.getSortField()) ? SolrSearchIndex.MAX_HITS : 0;
-                terms = SearchHelper.getFilteredTerms(currentBmfc, "", useFilterQuery, 0, numRows, new BrowseTermComparator(locale),
-                        locale.getLanguage());
-                if (availableStringFilters.get(browsingMenuFieldForCurrentLanguage) == null || filterQuery != null) {
-                    logger.trace("Populating search term filters for field '{}'...", browsingMenuFieldForCurrentLanguage);
-                    availableStringFilters.put(browsingMenuFieldForCurrentLanguage, new ArrayList<>());
-                    for (BrowseTerm term : terms) {
-                        String rawTerm;
-                        if (StringUtils.isNotEmpty(term.getSortTerm())) {
-                            rawTerm = term.getSortTerm();
-                        } else {
-                            rawTerm = term.getTerm();
-                        }
-                        if (StringUtils.isEmpty(rawTerm)) {
-                            continue;
-                        }
-                        String firstChar;
-                        if (StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars())) {
-                            // Exclude leading characters from filters explicitly configured to be ignored
-                            firstChar = BrowseTermComparator.normalizeString(rawTerm,
-                                    DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars())
-                                    .trim()
-                                    .substring(0, 1)
-                                    .toUpperCase();
-                        } else {
-                            firstChar = rawTerm.substring(0, 1).toUpperCase();
-                        }
-                        if (!availableStringFilters.get(browsingMenuFieldForCurrentLanguage).contains(firstChar) && !"-".equals(firstChar)) {
-                            availableStringFilters.get(browsingMenuFieldForCurrentLanguage).add(firstChar);
-                        }
-                    }
-                }
-
-                Collections.sort(availableStringFilters.get(browsingMenuFieldForCurrentLanguage),
-                        new AlphanumCollatorComparator(Collator.getInstance(locale)));
+                availableStringFilters.put(browsingMenuFieldForCurrentLanguage,
+                        SearchHelper.collectAvailableTermFilters(currentBmfc, useFilterQuery, locale));
             }
 
             // If no filter is set, redirect to first available filter (if so configured)
@@ -579,15 +547,10 @@ public class BrowseBean implements Serializable {
         String browsingMenuFieldForCurrentLanguage =
                 getBrowsingMenuFieldForLanguage(navigationHelper != null ? navigationHelper.getLocaleString() : null);
         for (String filter : availableStringFilters.get(browsingMenuFieldForCurrentLanguage)) {
-            switch (filter) {
-                case "0-9":
-                    numericalFilter = filter;
-                    break;
-                default:
-                    if (filter.matches("[A-ZÄÁÀÂÖÓÒÔÜÚÙÛÉÈÊ]") && alphaFilter == null) {
-                        alphaFilter = filter;
-                    }
-                    break;
+            if (filter.matches("[A-ZÄÁÀÂÖÓÒÔÜÚÙÛÉÈÊ]") && alphaFilter == null) {
+                alphaFilter = filter;
+            } else if (filter.matches("[\\d]") && alphaFilter == null) {
+                numericalFilter = filter;
             }
         }
 

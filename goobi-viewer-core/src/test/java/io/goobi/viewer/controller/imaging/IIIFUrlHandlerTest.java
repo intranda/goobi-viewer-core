@@ -103,4 +103,10 @@ class IIIFUrlHandlerTest extends AbstractTest {
 
     }
 
+    @Test
+    void testIsIIIFUrl() {
+        fileUrl = "Eine Abrechnung mit den Rechtssozialisten_0018.tif";
+        Assertions.assertFalse(handler.isIIIFUrl(fileUrl));
+    }
+
 }

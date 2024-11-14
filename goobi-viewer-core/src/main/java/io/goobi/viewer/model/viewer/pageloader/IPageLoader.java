@@ -100,7 +100,7 @@ public interface IPageLoader extends Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public Long getOwnerIddocForPage(int pageOrder) throws IndexUnreachableException, PresentationException;
+    public String getOwnerIddocForPage(int pageOrder) throws IndexUnreachableException, PresentationException;
 
     /**
      * <p>

@@ -87,6 +87,8 @@ public class Metadata implements Serializable {
 
     /** Label from messages.properties. */
     private final String label;
+    /** Only used for group metadata. The value of the field 'LABEL' of the relevant metadata docs */
+    private final String key;
     /** Value from messages.properties (with placeholders) */
     private final String masterValue;
     private String citationTemplate;
@@ -100,6 +102,7 @@ public class Metadata implements Serializable {
     private boolean singleString = true;
     private boolean hideIfOnlyMetadataField = false;
     private boolean topstructOnly = false;
+    private String filterQuery = "";
 
     // Data
 
@@ -122,6 +125,7 @@ public class Metadata implements Serializable {
         this.ownerStructElementIddoc = "";
         this.label = "";
         this.masterValue = "";
+        this.key = "";
     }
 
     /**
@@ -137,9 +141,10 @@ public class Metadata implements Serializable {
     public Metadata(String ownerIddoc, String label, String masterValue, String paramValue) {
         this.ownerStructElementIddoc = ownerIddoc;
         this.label = label;
+        this.key = label;
         this.masterValue = masterValue;
         values.add(new MetadataValue(ownerIddoc + "_" + 0, masterValue, label));
-        if (paramValue != null) {
+        if (StringUtils.isNotEmpty(paramValue)) {
             values.get(0).getParamValues().add(new ArrayList<>());
             values.get(0).getParamValues().get(0).add(paramValue);
         }
@@ -155,7 +160,22 @@ public class Metadata implements Serializable {
      * @param params a {@link java.util.List} object.
      */
     public Metadata(String label, String masterValue, List<MetadataParameter> params) {
+        this(label, label, masterValue, params);
+    }
+
+    /**
+     * <p>
+     * Constructor with a {@link MetadataParameter} list.
+     * </p>
+     *
+     * @param label a {@link java.lang.String} object.
+     * @param key a {@link java.lang.String} object.
+     * @param masterValue a {@link java.lang.String} object.
+     * @param params a {@link java.util.List} object.
+     */
+    public Metadata(String label, String key, String masterValue, List<MetadataParameter> params) {
         this.label = label;
+        this.key = key;
         this.masterValue = masterValue;
         this.params.addAll(params);
     }
@@ -175,6 +195,7 @@ public class Metadata implements Serializable {
     public Metadata(String ownerIddoc, String label, String masterValue, MetadataParameter param, String paramValue, Locale locale) {
         this.ownerStructElementIddoc = ownerIddoc;
         this.label = label;
+        this.key = label;
         this.masterValue = masterValue;
         params.add(param);
         values.add(new MetadataValue(ownerIddoc + "_" + 0, masterValue, label));
@@ -194,6 +215,7 @@ public class Metadata implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((label == null) ? 0 : label.hashCode());
+        result = prime * result + ((key == null) ? 0 : key.hashCode());
         result = prime * result + ((masterValue == null) ? 0 : masterValue.hashCode());
         result = prime * result + type;
         return result;
@@ -435,8 +457,7 @@ public class Metadata implements Serializable {
                 case RELATEDFIELD:
                     value = relatedMetadata.getMetadataValue(this.label,
                             RelationshipMetadataContainer.FIELD_IN_RELATED_DOCUMENT_PREFIX + param.getKey(), locale);
-                case WIKIFIELD:
-                case WIKIPERSONFIELD:
+                case WIKIFIELD, WIKIPERSONFIELD:
                     if (value.contains(",")) {
                         // Find and remove additional information in a person's name
                         Pattern p = Pattern.compile(StringTools.REGEX_PARENTHESES);
@@ -795,6 +816,7 @@ public class Metadata implements Serializable {
      * @param anchorSe Optional anchor {@link StructElement}
      * @param ownerIddoc IDDOC of the owner document (either docstruct or parent metadata)
      * @param sortFields
+     * @param searchTerms
      * @param truncateLength
      * @param locale a {@link java.util.Locale} object.
      * @return a boolean.
@@ -832,7 +854,7 @@ public class Metadata implements Serializable {
 
         // Grouped metadata
         if (group) {
-            if (se.getMetadataFields().get(label) == null && parentMetadata == null) {
+            if (se.getMetadataFields().get(key) == null && parentMetadata == null) {
                 // If there is no plain value in the docstruct/event doc or this is a child metadata, then there shouldn't be a metadata Solr doc.
                 // In this case save time by skipping this field.
                 return false;
@@ -971,10 +993,11 @@ public class Metadata implements Serializable {
         if (ownerIddoc == null) {
             return false;
         }
-
+        String filterQuery = StringUtils.isNotBlank(this.filterQuery) ? String.format("+(%s)", this.filterQuery) : "";
         boolean found = false;
         try {
-            SolrDocumentList groupedMdList = MetadataTools.getGroupedMetadata(ownerIddoc, '+' + SolrConstants.LABEL + ":" + label, sortFields);
+            SolrDocumentList groupedMdList =
+                    MetadataTools.getGroupedMetadata(ownerIddoc, '+' + SolrConstants.LABEL + ":" + key + " " + filterQuery, sortFields);
             if (groupedMdList == null || groupedMdList.isEmpty()) {
                 return false;
             }
@@ -1029,24 +1052,24 @@ public class Metadata implements Serializable {
                                 }
                                 logger.trace("conditional value added: {}", value);
                             }
-
+                            String modifiedValue = value;
                             // Truncate long values
-                            if (truncateLength > 0 && value.length() > truncateLength) {
-                                value = new StringBuilder(value.substring(0, truncateLength - 3)).append("...").toString();
+                            if (truncateLength > 0 && modifiedValue.length() > truncateLength) {
+                                modifiedValue = new StringBuilder(modifiedValue.substring(0, truncateLength - 3)).append("...").toString();
                             }
                             // Add highlighting
                             if (searchTerms != null) {
                                 if (searchTerms.get(getLabel()) != null) {
-                                    value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(getLabel()));
+                                    modifiedValue = SearchHelper.applyHighlightingToPhrase(modifiedValue, searchTerms.get(getLabel()));
                                 } else if (getLabel().startsWith("MD_SHELFMARK") && searchTerms.get("MD_SHELFMARKSEARCH") != null) {
-                                    value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get("MD_SHELFMARKSEARCH"));
+                                    modifiedValue = SearchHelper.applyHighlightingToPhrase(modifiedValue, searchTerms.get("MD_SHELFMARKSEARCH"));
                                 }
                                 if (searchTerms.get(SolrConstants.DEFAULT) != null) {
-                                    value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.DEFAULT));
+                                    modifiedValue = SearchHelper.applyHighlightingToPhrase(modifiedValue, searchTerms.get(SolrConstants.DEFAULT));
                                 }
                             }
 
-                            paramValues.add(value);
+                            paramValues.add(modifiedValue);
                         }
                         if (param.getKey().startsWith(NormDataImporter.FIELD_URI) && doc.getFieldValue(FIELD_NORM_TYPE) != null) {
                             options.put(FIELD_NORM_TYPE, SolrTools.getSingleFieldStringValue(doc, FIELD_NORM_TYPE));
@@ -1270,6 +1293,15 @@ public class Metadata implements Serializable {
     public Metadata setOwnerDocstrctType(String ownerDocstrctType) {
         this.ownerDocstrctType = ownerDocstrctType;
         return this;
+    }
+
+    public Metadata setFilterQuery(String filterQuery) {
+        this.filterQuery = filterQuery;
+        return this;
+    }
+
+    public String getFilterQuery() {
+        return filterQuery;
     }
 
     /**

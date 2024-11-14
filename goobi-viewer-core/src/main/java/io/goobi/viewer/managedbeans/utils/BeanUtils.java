@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.spi.CreationalContext;
@@ -705,7 +706,7 @@ public final class BeanUtils {
             if (vb != null) {
                 try {
                     value = vb.getValue(context.getELContext());
-                } catch (Exception e) {
+                } catch (NullPointerException | ELException | IllegalStateException e) {
                     logger.error("Error getting the object {} from context: {}", expr, e.getMessage());
                 }
             }

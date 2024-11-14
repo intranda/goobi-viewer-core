@@ -206,7 +206,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
      * @param pageOwnerIddocMap Optional map containing relationships between pages and owner IDDOCs
      * @return Constructed PhysicalElement
      */
-    protected static PhysicalElement loadPageFromDoc(SolrDocument doc, String pi, StructElement topElement, Map<Integer, Long> pageOwnerIddocMap) {
+    protected static PhysicalElement loadPageFromDoc(SolrDocument doc, String pi, StructElement topElement, Map<Integer, String> pageOwnerIddocMap) {
         if (doc == null) {
             throw new IllegalArgumentException("doc may not be null");
         }
@@ -229,7 +229,7 @@ public abstract class AbstractPageLoader implements IPageLoader {
         // IDDOC_OWNER
         if (doc.getFieldValue(SolrConstants.IDDOC_OWNER) != null && pageOwnerIddocMap != null) {
             String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC_OWNER);
-            pageOwnerIddocMap.put(order, Long.valueOf(iddoc));
+            pageOwnerIddocMap.put(order, iddoc);
         }
         // Mime type
         String mimeType = null;

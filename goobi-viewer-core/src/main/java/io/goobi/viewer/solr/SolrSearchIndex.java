@@ -152,7 +152,7 @@ public class SolrSearchIndex {
             // Check whether the HTTP connection pool of the Solr client has been shut down and re-init
             try {
                 client.ping();
-            } catch (Exception e) {
+            } catch (IOException | SolrServerException e) {
                 logger.warn("HTTP client was closed, re-initializing Solr client...");
                 synchronized (this) {
                     try {
@@ -236,7 +236,7 @@ public class SolrSearchIndex {
         try {
             testQuery(SolrConstants.PI + ":*");
             return true;
-        } catch (Exception e) {
+        } catch (IOException | SolrServerException e) {
             return false;
         }
     }
@@ -679,18 +679,18 @@ public class SolrSearchIndex {
      *
      * @param identifier a {@link java.lang.String} object.
      * @should retrieve correct IDDOC
-     * @return a long.
+     * @return String value; null if none found
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public long getIddocFromIdentifier(String identifier) throws PresentationException, IndexUnreachableException {
+    public String getIddocFromIdentifier(String identifier) throws PresentationException, IndexUnreachableException {
         // logger.trace("getIddocFromIdentifier: {}", identifier); //NOSONAR Debug
         SolrDocumentList docs = search(new StringBuilder(SolrConstants.PI).append(':').append(SolrTools.cleanUpQuery(identifier)).toString(), 1, null,
                 Collections.singletonList(SolrConstants.IDDOC));
         if (!docs.isEmpty()) {
-            return Long.valueOf((String) docs.get(0).getFieldValue(SolrConstants.IDDOC));
+            return (String) docs.get(0).getFieldValue(SolrConstants.IDDOC);
         }
-        return 0;
+        return null;
     }
 
     /**
@@ -704,7 +704,7 @@ public class SolrSearchIndex {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public String getIdentifierFromIddoc(long iddoc) throws PresentationException, IndexUnreachableException {
+    public String getIdentifierFromIddoc(String iddoc) throws PresentationException, IndexUnreachableException {
         logger.trace("getIdentifierFromIddoc: {}", iddoc);
         SolrQuery solrQuery = new SolrQuery(new StringBuilder(SolrConstants.IDDOC).append(":").append(iddoc).toString());
         solrQuery.setRows(1);
@@ -742,12 +742,12 @@ public class SolrSearchIndex {
      *
      * @param pi a {@link java.lang.String} object.
      * @param pageNo a int.
+     * @return String value; null if none found
      * @should retrieve correct IDDOC
-     * @return a long.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public long getImageOwnerIddoc(String pi, int pageNo) throws IndexUnreachableException, PresentationException {
+    public String getImageOwnerIddoc(String pi, int pageNo) throws IndexUnreachableException, PresentationException {
         logger.trace("getImageOwnerIddoc: {}:{}", pi, pageNo);
         String query = SolrTools.cleanUpQuery(new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(":")
                 .append(pi)
@@ -764,11 +764,10 @@ public class SolrSearchIndex {
         String luceneOwner = SolrConstants.IDDOC_OWNER;
         SolrDocument pageDoc = getFirstDoc(query, Collections.singletonList(luceneOwner));
         if (pageDoc != null) {
-            String iddoc = (String) pageDoc.getFieldValue(luceneOwner);
-            return Long.valueOf(iddoc);
+            return (String) pageDoc.getFieldValue(luceneOwner);
         }
 
-        return -1;
+        return null;
     }
 
     /**
@@ -776,12 +775,12 @@ public class SolrSearchIndex {
      *
      * @param pi a {@link java.lang.String} object.
      * @param logId a {@link java.lang.String} object.
-     * @return a long.
+     * @return String value; null if none found
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @should retrieve correct IDDOC
      */
-    public long getIddocByLogid(String pi, String logId) throws IndexUnreachableException, PresentationException {
+    public String getIddocByLogid(String pi, String logId) throws IndexUnreachableException, PresentationException {
         logger.trace("getIddocByLogid: {}:{}", pi, logId);
         String query = SolrTools.cleanUpQuery(new StringBuilder("+")
                 .append(SolrConstants.PI_TOPSTRUCT)
@@ -798,11 +797,10 @@ public class SolrSearchIndex {
                 .toString());
         SolrDocument doc = getFirstDoc(query, Collections.singletonList(SolrConstants.IDDOC));
         if (doc != null) {
-            String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
-            return Long.valueOf(iddoc);
+            return (String) doc.getFieldValue(SolrConstants.IDDOC);
         }
 
-        return -1;
+        return null;
     }
 
     /**
@@ -995,7 +993,7 @@ public class SolrSearchIndex {
         if (params != null && !params.isEmpty()) {
             for (Entry<String, String> entry : params.entrySet()) {
                 solrQuery.set(entry.getKey(), entry.getValue());
-                // logger.trace("&{}={}", key, params.get(key)); //NOSONAR Debug
+                // logger.trace("&{}={}", entry.getKey(), entry.getValue()); //NOSONAR Debug
             }
         }
 
@@ -1152,6 +1150,7 @@ public class SolrSearchIndex {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
+    @Deprecated(since = "24.10")
     public List<DisplayUserGeneratedContent> getDisplayUserGeneratedContentsForPage(String pi, int page)
             throws PresentationException, IndexUnreachableException {
         String query = new StringBuilder().append(SolrConstants.PI_TOPSTRUCT)
@@ -1475,7 +1474,7 @@ public class SolrSearchIndex {
     public PhysicalElement getPage(String pi, int order) throws IndexUnreachableException, PresentationException, DAOException {
         SolrDocument doc = getDocumentByPI(pi);
         if (doc != null) {
-            StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
+            StructElement struct = new StructElement(SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC), doc);
             IPageLoader pageLoader = AbstractPageLoader.create(struct, List.of(order));
             return pageLoader.getPage(order);
         }

@@ -114,26 +114,6 @@ public class IndexResource {
     private HttpServletResponse servletResponse;
 
     /**
-     * 
-     * @return Solr schema version
-     * @deprecated Use /api/v1/monitoring/
-     */
-    @Deprecated(since = "23.02")
-    @GET
-    @Path(ApiUrls.INDEX_SCHEMA_VERSION)
-    @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "index" }, summary = "DEPRECATED: Solr schema version")
-    public String getSchemaVersion() {
-        String[] result = SolrTools.checkSolrSchemaName();
-        int status = Integer.parseInt(result[0]);
-        if (status == 200) {
-            return "OK";
-        }
-
-        return result[1];
-    }
-
-    /**
      *
      * @param query
      * @return Indexed records statistics as JSON
@@ -322,9 +302,10 @@ public class IndexResource {
 
             }
         }
-        return DataManager.getInstance()
+        String heatmap = DataManager.getInstance()
                 .getSearchIndex()
                 .getHeatMap(solrField, wktRegion, finalQuery, facetQuery, gridLevel);
+        return heatmap;
 
     }
 

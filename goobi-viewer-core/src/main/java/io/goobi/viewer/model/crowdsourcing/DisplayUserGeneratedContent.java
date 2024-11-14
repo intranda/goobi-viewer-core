@@ -621,8 +621,9 @@ public class DisplayUserGeneratedContent {
         }
 
         DisplayUserGeneratedContent ret = new DisplayUserGeneratedContent();
-        long iddoc = Long.parseLong((String) doc.getFieldValue(SolrConstants.IDDOC));
-        ret.setId(iddoc);
+        String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
+        // long iddoc = System.currentTimeMillis();
+        // ret.setId(iddoc);
         ret.setType(type);
         ret.setAreaString((String) doc.getFieldValue(SolrConstants.UGCCOORDS));
         ret.setDisplayCoordinates((String) doc.getFieldValue(SolrConstants.UGCCOORDS));

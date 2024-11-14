@@ -189,8 +189,8 @@ public class DisplayConditions implements Serializable {
      */
     public boolean matchRecord(String json)
             throws IOException, IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException {
-        json = json.replaceAll(":\\s*!\\[", ":[!,");
-        VisibilityConditionInfo info = JsonStringConverter.of(VisibilityConditionInfo.class).convert(json);
+        String cleanedJson = json.replaceAll(":\\s*!\\[", ":[!,");
+        VisibilityConditionInfo info = JsonStringConverter.of(VisibilityConditionInfo.class).convert(cleanedJson);
         VisibilityCondition condition = new VisibilityCondition(info);
         return condition.matchesRecord(getPageType(), activeDocumentBean.getViewManager(), httpRequest, propertyCache);
     }
@@ -261,8 +261,8 @@ public class DisplayConditions implements Serializable {
      */
     public boolean matchPage(String json)
             throws IOException, IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException {
-        json = json.replaceAll(":\\s*!\\[", ":[!,");
-        VisibilityConditionInfo info = JsonStringConverter.of(VisibilityConditionInfo.class).convert(json);
+        String cleanedJson = json.replaceAll(":\\s*!\\[", ":[!,");
+        VisibilityConditionInfo info = JsonStringConverter.of(VisibilityConditionInfo.class).convert(cleanedJson);
         VisibilityCondition condition = new VisibilityCondition(info);
         if (activeDocumentBean == null || !activeDocumentBean.isRecordLoaded()) {
             return false;
@@ -285,7 +285,7 @@ public class DisplayConditions implements Serializable {
      * called. This is used to count the number of rendered jsf-components with a specific attribute within said UIComponent.
      *
      * @param id
-     * @return
+     * @return a {@link UIComponentHelper} for the {@link UIComponent} with the given id. If no such component exists, the current component
      */
     public UIComponentHelper getTag(String id) {
         UIComponentHelper tag = UIComponentHelper.getCurrentComponent().getChild(id);
@@ -332,7 +332,7 @@ public class DisplayConditions implements Serializable {
 
         private static boolean isRendered(UIComponent child) {
             try {
-                return child.isRendered() && isHasValuesIfRepeat(child);
+                return child != null && child.isRendered() && isHasValuesIfRepeat(child);
             } catch (ConcurrentModificationException e) {
                 //possibly happens when rendered conditions are tested on child with 'displayConditions.matchPage/matchRecord', according to log entry
                 logger.warn("Cannot detect rendered state of child compnent {} because of {}", child.getClientId(), e.toString());
@@ -352,7 +352,7 @@ public class DisplayConditions implements Serializable {
             return false;
         }
 
-        @Deprecated
+        @Deprecated(since = "24.10")
         public boolean isHasChildrenIfComposite(UIComponent child) {
             if (child instanceof UINamingContainer || child instanceof HtmlPanelGroup || child instanceof HtmlPanelGrid) {
                 return child.getChildCount() > 0;

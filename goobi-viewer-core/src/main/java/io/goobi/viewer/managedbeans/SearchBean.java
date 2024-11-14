@@ -139,6 +139,10 @@ public class SearchBean implements SearchInterface, Serializable {
 
     private static final String PREFIX_KEY = "KEY::";
 
+    private static final boolean FUZZY_SEARCH_ENABLED_INITIAL = false;
+
+    private static final String LOG_SEARCH_TYPE_DISABLED = "Cannot set search type {} because it's disabled.";
+
     @Inject
     private NavigationHelper navigationHelper;
     @Inject
@@ -195,8 +199,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /** If >0, proximity search will be applied to phrase searches. */
     private int proximitySearchDistance = 0;
     /** Fuzzy search switch. */
-    private final boolean fuzzySearchEnabledInitial = false;
-    private boolean fuzzySearchEnabled = fuzzySearchEnabledInitial;
+    private boolean fuzzySearchEnabled = FUZZY_SEARCH_ENABLED_INITIAL;
 
     private volatile FutureTask<Boolean> downloadReady; //NOSONAR   Future is thread-save
     private volatile FutureTask<Boolean> downloadComplete; //NOSONAR   Future is thread-save
@@ -528,7 +531,7 @@ public class SearchBean implements SearchInterface, Serializable {
         if (resetAllSearchTypes) {
             resetSimpleSearchParameters();
             resetAdvancedSearchParameters();
-            this.fuzzySearchEnabled = this.fuzzySearchEnabledInitial;
+            this.fuzzySearchEnabled = FUZZY_SEARCH_ENABLED_INITIAL;
             if (calendarBean != null) {
                 calendarBean.resetCurrentSelection();
             }
@@ -1050,7 +1053,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         this.activeSearchType = activeSearchType;
                     } else {
                         this.activeSearchType = SearchHelper.SEARCH_TYPE_REGULAR;
-                        logger.debug("Cannot set search type {} because it's disabled.", activeSearchType);
+                        logger.debug(LOG_SEARCH_TYPE_DISABLED, activeSearchType);
                     }
                     break;
                 case 2:
@@ -1058,7 +1061,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         this.activeSearchType = activeSearchType;
                     } else {
                         this.activeSearchType = SearchHelper.SEARCH_TYPE_REGULAR;
-                        logger.debug("Cannot set search type {} because it's disabled.", activeSearchType);
+                        logger.debug(LOG_SEARCH_TYPE_DISABLED, activeSearchType);
                     }
                     break;
                 case 3:
@@ -1066,7 +1069,7 @@ public class SearchBean implements SearchInterface, Serializable {
                         this.activeSearchType = activeSearchType;
                     } else {
                         this.activeSearchType = SearchHelper.SEARCH_TYPE_REGULAR;
-                        logger.debug("Cannot set search type {} because it's disabled.", activeSearchType);
+                        logger.debug(LOG_SEARCH_TYPE_DISABLED, activeSearchType);
                     }
                     break;
                 default:
@@ -1256,7 +1259,7 @@ public class SearchBean implements SearchInterface, Serializable {
                             // Proximity search term augmentation
                             sb.append('~').append(proximitySearchDistance);
                         }
-                        sb.append(") OR ");
+                        sb.append(')').append(SolrConstants.SOLR_QUERY_OR);
                         sb.append(SolrConstants.SUPERUGCTERMS).append(":(\"").append(phrase).append("\") OR ");
                         sb.append(SolrConstants.SUPERSEARCHTERMS_ARCHIVE).append(":(\"").append(phrase).append("\") OR ");
                         sb.append(SolrConstants.DEFAULT).append(":(\"").append(phrase).append("\") OR ");
@@ -1265,7 +1268,7 @@ public class SearchBean implements SearchInterface, Serializable {
                             // Proximity search term augmentation
                             sb.append('~').append(proximitySearchDistance);
                         }
-                        sb.append(") OR ");
+                        sb.append(')').append(SolrConstants.SOLR_QUERY_OR);
                         sb.append(SolrConstants.NORMDATATERMS).append(":(\"").append(phrase).append("\") OR ");
                         sb.append(SolrConstants.UGCTERMS).append(":(\"").append(phrase).append("\") OR ");
                         sb.append(SolrConstants.SEARCHTERMS_ARCHIVE).append(":(\"").append(phrase).append("\") OR ");
@@ -1286,7 +1289,12 @@ public class SearchBean implements SearchInterface, Serializable {
                                     // Proximity search term augmentation
                                     sb.append('~').append(proximitySearchDistance);
                                 }
-                                sb.append(") OR ").append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append('"');
+                                sb.append(')')
+                                        .append(SolrConstants.SOLR_QUERY_OR)
+                                        .append(SolrConstants.FULLTEXT)
+                                        .append(":(\"")
+                                        .append(phrase)
+                                        .append('"');
                                 if (proximitySearchDistance > 0) {
                                     // Proximity search term augmentation
                                     sb.append('~').append(proximitySearchDistance);
@@ -1373,19 +1381,35 @@ public class SearchBean implements SearchInterface, Serializable {
                     // Specific filter selected
                     switch (currentSearchFilter.getField()) {
                         case SolrConstants.DEFAULT:
-                            sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(innerQuery).append(") OR ");
+                            sbOuter.append(SolrConstants.SUPERDEFAULT)
+                                    .append(":(")
+                                    .append(innerQuery)
+                                    .append(')')
+                                    .append(SolrConstants.SOLR_QUERY_OR);
                             sbOuter.append(SolrConstants.DEFAULT).append(":(").append(innerQuery).append(')');
                             break;
                         case SolrConstants.FULLTEXT:
-                            sbOuter.append(SolrConstants.SUPERFULLTEXT).append(":(").append(innerQuery).append(") OR ");
+                            sbOuter.append(SolrConstants.SUPERFULLTEXT)
+                                    .append(":(")
+                                    .append(innerQuery)
+                                    .append(')')
+                                    .append(SolrConstants.SOLR_QUERY_OR);
                             sbOuter.append(SolrConstants.FULLTEXT).append(":(").append(innerQuery).append(')');
                             break;
                         case SolrConstants.UGCTERMS:
-                            sbOuter.append(SolrConstants.SUPERUGCTERMS).append(":(").append(innerQuery).append(") OR ");
+                            sbOuter.append(SolrConstants.SUPERUGCTERMS)
+                                    .append(":(")
+                                    .append(innerQuery)
+                                    .append(')')
+                                    .append(SolrConstants.SOLR_QUERY_OR);
                             sbOuter.append(SolrConstants.UGCTERMS).append(":(").append(innerQuery).append(')');
                             break;
                         case SolrConstants.SEARCHTERMS_ARCHIVE:
-                            sbOuter.append(SolrConstants.SUPERSEARCHTERMS_ARCHIVE).append(":(").append(innerQuery).append(") OR ");
+                            sbOuter.append(SolrConstants.SUPERSEARCHTERMS_ARCHIVE)
+                                    .append(":(")
+                                    .append(innerQuery)
+                                    .append(')')
+                                    .append(SolrConstants.SOLR_QUERY_OR);
                             sbOuter.append(SolrConstants.SEARCHTERMS_ARCHIVE).append(":(").append(innerQuery).append(')');
                             break;
                         default:
@@ -1482,7 +1506,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * JSF expects a getter, too.
      *
      * @return a {@link java.lang.String} object.
-     * @derecated user SearchBean.getExactSearchString()
+     * @deprecated user SearchBean.getExactSearchString()
      */
     @Deprecated(since = "24.01")
     public String getExactSearchStringResetGui() {
@@ -2307,23 +2331,11 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public static List<AdvancedSearchFieldConfiguration> getAdvancedSearchAllowedFields(final String language, String template,
             boolean addSearchFilters) {
+        // logger.trace("getAdvancedSearchAllowedFields: {} / {}", language, template);
         List<AdvancedSearchFieldConfiguration> fields =
                 DataManager.getInstance().getConfiguration().getAdvancedSearchFields(template, false, language);
         if (fields == null) {
             return Collections.emptyList();
-        }
-
-        // Omit other languages
-        if (!fields.isEmpty() && StringUtils.isNotEmpty(language)) {
-            List<AdvancedSearchFieldConfiguration> toRemove = new ArrayList<>();
-            for (AdvancedSearchFieldConfiguration field : fields) {
-                if (field.getField().contains(SolrConstants.MIDFIX_LANG) && !field.getField().endsWith(language.toUpperCase())) {
-                    toRemove.add(field);
-                }
-            }
-            if (!toRemove.isEmpty()) {
-                fields.removeAll(toRemove);
-            }
         }
 
         if (addSearchFilters) {
@@ -2906,7 +2918,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public StructElement getStructElement(String pi) throws IndexUnreachableException, PresentationException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-        return new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
+        return new StructElement((String) doc.getFirstValue(SolrConstants.IDDOC), doc);
     }
 
     /** {@inheritDoc} */

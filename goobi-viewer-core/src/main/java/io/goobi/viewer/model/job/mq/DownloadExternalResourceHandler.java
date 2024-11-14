@@ -68,7 +68,7 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
     private static final Logger logger = LogManager.getLogger(DownloadExternalResourceHandler.class);
 
     @Inject
-    PersistentStorageBean storageBean;
+    private PersistentStorageBean storageBean;
 
     @Override
     public MessageStatus call(ViewerMessage message, MessageQueueManager queueManager) {
@@ -191,6 +191,14 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
         ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_EXTERNAL_RESOURCE.name());
         message.setProperties(Map.of(PARAMETER_PI, pi, PARAMETER_URL, url));
         return message;
+    }
+
+    public PersistentStorageBean getStorageBean() {
+        return storageBean;
+    }
+
+    public void setStorageBean(PersistentStorageBean storageBean) {
+        this.storageBean = storageBean;
     }
 
 }

@@ -21,14 +21,16 @@
  */
 package io.goobi.viewer.model.search;
 
+import java.util.function.Function;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
-import io.goobi.viewer.model.search.FacetSorting.AlphabeticComparator;
-import io.goobi.viewer.model.search.FacetSorting.NumericComparator;
+import io.goobi.viewer.controller.sorting.AlphabeticComparator;
+import io.goobi.viewer.controller.sorting.NumericComparator;
 
 class FacetSortingTest extends AbstractTest {
 
@@ -47,9 +49,10 @@ class FacetSortingTest extends AbstractTest {
          */
         @Test
         void compare_shouldCompareCorrectly() {
-            Assertions.assertEquals(1, new AlphabeticComparator("MD_FOO", null).compare("b", "a"));
-            Assertions.assertEquals(-1, new AlphabeticComparator("MD_FOO", null).compare("a", "b"));
-            Assertions.assertEquals(0, new AlphabeticComparator("MD_FOO", null).compare("ä", "a"));
+            AlphabeticComparator<String> comparator = new AlphabeticComparator<String>("MD_FOO", null, Function.identity());
+            Assertions.assertEquals(1, comparator.compare("b", "a"));
+            Assertions.assertEquals(-1, comparator.compare("a", "b"));
+            Assertions.assertEquals(0, comparator.compare("ä", "a"));
         }
     }
 
@@ -62,11 +65,14 @@ class FacetSortingTest extends AbstractTest {
          */
         @Test
         void compare_shouldCompareCorrectly() {
-            Assertions.assertEquals(1, new NumericComparator().compare("2", "1"));
-            Assertions.assertEquals(-1, new NumericComparator().compare("1", "2"));
-            Assertions.assertEquals(0, new NumericComparator().compare("1", "1"));
-            Assertions.assertEquals(-1, new NumericComparator(false).compare("2", "1"));
-            Assertions.assertEquals(1, new NumericComparator(false).compare("1", "2"));
+            NumericComparator<String> comparatorAsc = new NumericComparator<String>(Function.identity());
+            NumericComparator<String> comparatorDesc = new NumericComparator<String>(false, Function.identity());
+
+            Assertions.assertEquals(1, comparatorAsc.compare("2", "1"));
+            Assertions.assertEquals(-1, comparatorAsc.compare("1", "2"));
+            Assertions.assertEquals(0, comparatorAsc.compare("1", "1"));
+            Assertions.assertEquals(-1, comparatorDesc.compare("2", "1"));
+            Assertions.assertEquals(1, comparatorDesc.compare("1", "2"));
         }
     }
 

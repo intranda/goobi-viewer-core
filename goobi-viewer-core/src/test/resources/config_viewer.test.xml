@@ -126,7 +126,8 @@
                 clientSecret="secret_facebook" image="facebook.png" />
             <provider type="openId" name="Custom OIDC" endpoint="https://example.com/oauth/auth"
                 tokenEndpoint="https://example.com/oauth/token" redirectionEndpoint="https://example.com/viewer/oauth"
-                scope="email" clientId="my_id" clientSecret="my_secret" image="custom.png" />
+                scope="email" clientId="my_id" clientSecret="my_secret" tPLoginUrl="https://examplethirdparty.com/viewer/api" 
+                tPLoginApiKey="exampleApiKey" tPLoginScope="tPscope" tPLoginReqParamDef="tPparam" tPLoginClaim="tPclaim" image="custom.png" />
             <provider enabled="false" type="openId" name="incomplete" endpoint="https://graph.facebook.com/oauth"
                 clientId="" image="facebook.png" />
             <provider type="userPassword" name="VuFind" label="VuFind-label" endpoint="https://vuFind.example/Api/User/Auth" image="vufind.png" timeout="7000">
@@ -607,6 +608,11 @@
 					<collection>d</collection>
 				</sortingList>
 				<collection>collection1</collection>
+				
+				<sortOrder collections="zeitschriften">alphanumerical_desc</sortOrder>
+				<sortOrder collections="zeitungen\..*">alphanumerical_asc</sortOrder>
+				<sortOrder collections="jahrbuecher">numerical_desc</sortOrder>
+								
 			</sorting>
 
 			<!-- Collection names listed here are hidden in the collection view. It 
@@ -676,7 +682,7 @@
 				</metadata>
 			</template>
 		</metadataView>
-        <metadataView index="1" label="label__metadata_other" url="_other" condition="foo:bar" >
+        <metadataView index="1" label="label__metadata_other" url="_other" condition="foo:bar" location="objectview" >
             <template name="_DEFAULT">
                 <metadata label="MD_TITLE" value="">
                     <param type="field" key="MD_TITLE">

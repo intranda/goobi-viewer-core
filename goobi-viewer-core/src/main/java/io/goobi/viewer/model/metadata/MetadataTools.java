@@ -608,7 +608,7 @@ public final class MetadataTools {
                     break;
             }
             if (ret != null) {
-                logger.trace("Authority data type determined from 075$b (gndspec): {}", ret);
+                // logger.trace("Authority data type determined from 075$b (gndspec): {}", ret);
                 return ret;
             }
         } else {

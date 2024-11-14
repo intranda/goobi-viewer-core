@@ -5,7 +5,7 @@
 
 /* .modal-open .modal {
     overflow-y: hidden;
-} */
+} */ 
 
 .alert-danger {
 	word-wrap: break-word;
@@ -397,9 +397,19 @@ button {
 // Move swal notification a bit away from top so admin topbar is visible
 
 body.swal2-toast-shown .swal2-container.swal2-top-end, 
-body.swal2-toast-shown .swal2-container.swal2-top-right {
+body.swal2-toast-shown .swal2-container.swal2-top-right,
+body.swal2-toast-shown .swal2-container.swal2-top {
 	top: 40px;
 }
+body.swal2-toast-shown .swal2-container.swal2-top-end {
+	right: 40px;
+}
+body.swal2-toast-shown .swal2-container.swal2-bottom-end, 
+body.swal2-toast-shown .swal2-container.swal2-bottom-right,
+body.swal2-toast-shown .swal2-container.swal2-bottom {
+	bottom: 90px;
+}
+
 
 .swal2-header {
 	h1 {
@@ -418,13 +428,28 @@ body.swal2-toast-shown .swal2-container.swal2-top-right {
 	}
 }
 .swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
-    background: rgba(0,0,0,.8);
+    // background: rgba(0,0,0,.8);
+}
+
+.swal2-popup.swal2-toast {
+	border-left: 4px solid @adminBackend-bg;;
+	border-radius: 5px;
+}
+
+.swal2-popup.swal2-toast.swal2-show {
+	animation: flashForSwal2Toast 0.95s ease, swal2-toast-show .4s;
 }
 
 .swal2-popup.swal2-toast .swal2-title {
 	font-size: 1.3rem;
 	font-family: "Inter", Arial, sans-serif;
-	color: #111;
+	color: white;
+}
+
+// SHORT FLASH FOR NOTIFICATION
+@keyframes flashForSwal2Toast {
+  from {border-left: 4px solid yellow;}
+  to {border-left: 4px solid @adminBackend-bg;}
 }
  
 .-sweetAlertShowAnimation {
@@ -445,18 +470,27 @@ body.swal2-toast-shown .swal2-container.swal2-top-right {
   100% { opacity: 0; }
 }
 
+//@keyframes swal2-toast-show {
+// 0% {
+//  transform:translateY(-.625em) rotateZ(0deg)
+// }
+// 33% {
+//  transform:translateY(0) rotateZ(0deg)
+// }
+// 66% {
+//  transform:translateY(.3125em) rotateZ(0deg)
+// }
+// 100% {
+//  transform:translateY(0) rotateZ(0)
+// }
+//}
+
 @keyframes swal2-toast-show {
  0% {
-  transform:translateY(-.625em) rotateZ(0deg)
- }
- 33% {
-  transform:translateY(0) rotateZ(0deg)
- }
- 66% {
-  transform:translateY(.3125em) rotateZ(0deg)
+  opacity: 0;
  }
  100% {
-  transform:translateY(0) rotateZ(0)
+  opacity: 1;
  }
 }
 

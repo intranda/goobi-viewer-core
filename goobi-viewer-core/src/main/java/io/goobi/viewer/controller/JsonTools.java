@@ -24,6 +24,7 @@ package io.goobi.viewer.controller;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -348,7 +349,7 @@ public final class JsonTools {
         StringBuilder sbThumbnailUrl = new StringBuilder(250);
         StringBuilder sbMediumImage = new StringBuilder(250);
         try {
-            StructElement ele = new StructElement(0, doc);
+            StructElement ele = new StructElement("dummy", doc);
             if (thumbs != null) {
                 sbThumbnailUrl.append(thumbs.getThumbnailUrl(ele, 100, 120));
                 sbMediumImage.append(thumbs.getThumbnailUrl(ele, 600, 500));
@@ -488,6 +489,47 @@ public final class JsonTools {
         } catch (JSONException e) {
             logger.warn(e.getMessage());
             return notAvailableKey;
+        }
+    }
+
+    /**
+     * Return the string value of the given key in the json object or within another json object nested somewhere within the original object. If the
+     * key is not found anywhere within the object, an empty string is returned. If the value to the key is anything other than a string, a
+     * stringified version of the object is returned. This method cannot parse arrays within array. If the key is within that, an empty string is also
+     * returned
+     * 
+     * @param json The json object to parse
+     * @param key the key to find
+     * @return a {@link String}. May be empty if the key is not found
+     */
+    public static String getNestedValue(JSONObject json, String key) {
+        boolean found = json.has(key);
+        Iterator<String> keys;
+        String nextKey;
+        if (!found) {
+            keys = json.keys();
+            while (keys.hasNext()) {
+                nextKey = (String) keys.next();
+                if (json.get(nextKey) instanceof JSONObject) {
+                    String foundValue = getNestedValue(json.getJSONObject(nextKey), key);
+                    if (StringUtils.isNotBlank(foundValue)) {
+                        return foundValue;
+                    }
+                } else if (json.get(nextKey) instanceof JSONArray) {
+                    JSONArray jsonArray = json.getJSONArray(nextKey);
+                    for (Object entry : jsonArray) {
+                        if (entry instanceof JSONObject object) {
+                            String foundValue = getNestedValue(object, key);
+                            if (StringUtils.isNotBlank(foundValue)) {
+                                return foundValue;
+                            }
+                        }
+                    }
+                }
+            }
+            return "";
+        } else {
+            return json.get(key).toString();
         }
     }
 }

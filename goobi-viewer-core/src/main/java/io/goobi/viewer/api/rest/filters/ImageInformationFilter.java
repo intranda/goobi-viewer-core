@@ -212,7 +212,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
         fieldList.addAll(DataManager.getInstance().getConfiguration().getWatermarkIdField());
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, fieldList);
         if (doc != null) {
-            Long iddoc = Long.parseLong((String) doc.getFieldValue(SolrConstants.IDDOC));
+            String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
             StructElement element = new StructElement(iddoc, doc);
             return Optional.ofNullable(element);
         }

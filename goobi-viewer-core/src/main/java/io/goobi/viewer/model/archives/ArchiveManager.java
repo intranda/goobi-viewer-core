@@ -171,6 +171,7 @@ public class ArchiveManager implements Serializable {
         // cached databases that are included in the response are removed from the cachedDatabases list.
         // If it is still not empty at this point, databases were removed
         updated = updated || !cachedDatabases.isEmpty();
+        logger.trace("initArchives END");
         return updated;
     }
 
@@ -412,6 +413,7 @@ public class ArchiveManager implements Serializable {
      */
     private void initializeArchiveTree(final ArchiveResource resource)
             throws IllegalStateException, PresentationException, IndexUnreachableException {
+        logger.trace("initializeArchiveTree: {}", resource);
         if (resource != null) {
             try {
                 ArchiveResource useResource = resource;
@@ -501,7 +503,7 @@ public class ArchiveManager implements Serializable {
      * @should load tree correctly
      */
     static ArchiveTree loadTree(ArchiveEntry rootElement) {
-        // logger.trace("loadTree: {}", rootElement); //NOSONAR Debug
+        logger.trace("loadTree: {}", rootElement); //NOSONAR Debug
         ArchiveTree ret = new ArchiveTree();
         ret.update(rootElement);
 

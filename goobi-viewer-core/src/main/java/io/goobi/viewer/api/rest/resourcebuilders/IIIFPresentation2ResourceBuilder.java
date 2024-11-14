@@ -427,7 +427,7 @@ public class IIIFPresentation2ResourceBuilder {
         List<IPresentationModelElement> manifests = new ArrayList<>(queryResults.size());
         ManifestBuilder builder = new ManifestBuilder(urls);
         for (SolrDocument doc : queryResults) {
-            long luceneId = Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString());
+            String luceneId = (String) doc.getFirstValue(SolrConstants.IDDOC);
             StructElement ele = new StructElement(luceneId, doc);
             AbstractPresentationModelElement2 manifest = builder.generateManifest(ele, Collections.emptyList());
 

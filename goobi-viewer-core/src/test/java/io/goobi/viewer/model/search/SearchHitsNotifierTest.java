@@ -46,6 +46,7 @@ class SearchHitsNotifierTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
@@ -54,6 +55,7 @@ class SearchHitsNotifierTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
@@ -61,6 +63,7 @@ class SearchHitsNotifierTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * Test method for {@link io.goobi.viewer.servlets.rest.search.SearchHitsNotificationResource#sendNewHitsNotifications()}.
+     * 
      * @throws ViewerConfigurationException
      * @throws DAOException
      * @throws IndexUnreachableException

@@ -58,9 +58,6 @@ public class SearchQueryItem implements Serializable {
 
     private static final long serialVersionUID = -367323410132252816L;
 
-    /** Constant <code>ADVANCED_SEARCH_ALL_FIELDS="searchAdvanced_allFields"</code> */
-    // public static final String ADVANCED_SEARCH_ALL_FIELDS = "searchAdvanced_allFields";
-
     public enum SearchItemOperator {
         AND,
         OR,
@@ -308,6 +305,7 @@ public class SearchQueryItem implements Serializable {
      * @return the field
      */
     public String getField() {
+        logger.trace("getField: {}", field);
         return field;
     }
 

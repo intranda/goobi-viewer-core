@@ -389,7 +389,7 @@ public final class TocMaker {
             String thumbnailUrl = null;
             if (StringUtils.isNotEmpty(topStructPi) && StringUtils.isNotEmpty(thumbnailFile)) {
                 ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
-                StructElement struct = new StructElement(Long.valueOf(volumeIddoc), doc);
+                StructElement struct = new StructElement(volumeIddoc, doc);
                 thumbnailUrl = thumbs.getThumbnailUrl(struct, ANCHOR_THUMBNAIL_WIDTH, ANCHOR_THUMBNAIL_HEIGHT);
             }
             label.mapEach(StringEscapeUtils::unescapeHtml4);
@@ -415,7 +415,7 @@ public final class TocMaker {
      * @return Map<Integer, SolrDocument>
      * @should create correctly sorted map
      */
-    static Map<Integer, SolrDocument> createOrderedGroupDocMap(List<SolrDocument> groupMemberDocs, List<String> groupIdFields,
+    static Map<Integer, SolrDocument> createOrderedGroupDocMap(final List<SolrDocument> groupMemberDocs, List<String> groupIdFields,
             String groupIdValue) {
         if (groupMemberDocs == null || groupMemberDocs.isEmpty()) {
             return Collections.emptyMap();
@@ -428,7 +428,9 @@ public final class TocMaker {
         }
 
         Map<Integer, SolrDocument> ret = new TreeMap<>();
-        for (SolrDocument doc : groupMemberDocs) {
+        int fallbackOrder = 0;
+        List<SolrDocument> useGroupMemberDocs = groupMemberDocs.stream().sorted((d1, d2) -> getLabel(d1).compareTo(getLabel(d2))).toList();
+        for (SolrDocument doc : useGroupMemberDocs) {
             String groupIdField = null;
             for (String field : groupIdFields) {
                 if (groupIdValue.equals(doc.getFieldValue(field))) {
@@ -444,12 +446,20 @@ public final class TocMaker {
             Integer order = (Integer) doc.getFieldValue(groupSortField);
             if (order == null) {
                 logger.warn("No {} on group member {}", groupSortField, doc.getFieldValue("PI"));
-                order = 0;
+                order = fallbackOrder++;
             }
             ret.put(order, doc);
         }
 
         return ret;
+    }
+
+    private static String getLabel(SolrDocument doc) {
+        String label = SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL);
+        if (StringUtils.isBlank(label)) {
+            label = SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE);
+        }
+        return Optional.ofNullable(label).orElse("");
     }
 
     /**
@@ -541,7 +551,7 @@ public final class TocMaker {
                 logger.trace("volume mime type: {}", volumeMimeType);
 
                 ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
-                StructElement struct = new StructElement(Long.valueOf(volumeIddoc), volumeDoc);
+                StructElement struct = new StructElement(volumeIddoc, volumeDoc);
                 thumbnailUrl = thumbs.getThumbnailUrl(struct, ANCHOR_THUMBNAIL_WIDTH, ANCHOR_THUMBNAIL_HEIGHT);
 
                 String footerId = getFooterId(volumeDoc, DataManager.getInstance().getConfiguration().getWatermarkIdField());

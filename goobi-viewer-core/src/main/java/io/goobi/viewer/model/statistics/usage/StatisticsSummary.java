@@ -21,8 +21,12 @@
  */
 package io.goobi.viewer.model.statistics.usage;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -54,8 +58,12 @@ public class StatisticsSummary {
      * Request counts sorted by {@link RequestType}
      */
     private final Map<RequestType, RequestTypeSummary> types;
-
+    private final LocalDateTime creationTime = LocalDateTime.now();
     private UsageStatisticsInformation info = null;
+
+    public StatisticsSummary() {
+        this(Collections.emptyMap());
+    }
 
     /**
      * Default constructor
@@ -252,5 +260,19 @@ public class StatisticsSummary {
 
     public UsageStatisticsInformation getInformation() {
         return info;
+    }
+
+    public boolean isOlderThan(long num, TemporalUnit unit) {
+        return isOlderThan(num, unit, LocalDateTime.now());
+    }
+
+    public boolean isOlderThan(long num, TemporalUnit unit, Temporal currentTime) {
+        Duration maxAge = Duration.of(num, unit);
+        Duration sinceCreation = Duration.between(getCreationTime(), currentTime);
+        return sinceCreation.compareTo(maxAge) > 0;
+    }
+
+    public LocalDateTime getCreationTime() {
+        return creationTime;
     }
 }

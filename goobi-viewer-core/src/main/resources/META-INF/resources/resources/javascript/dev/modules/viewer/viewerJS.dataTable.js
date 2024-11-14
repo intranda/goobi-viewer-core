@@ -86,25 +86,19 @@ var viewerJS = ( function( viewer ) {
                  * AJAX Eventlistener
                  */
                 if ( !this.setupAjax ) {
-                    jsf.ajax.addOnEvent( function( data ) {
-                        var ajaxstatus = data.status;
-                        
-                        if ( _defaults.dataTablePaginator.length > 0 ) {
-                            switch ( ajaxstatus ) {
-                                case "begin":
-                                    if ( _txtField1 !== null && _txtField2 !== null ) {
-                                        _txtField1.off();
-                                        _txtField2.off();
-                                    }
-                                    break;
-                                case "complete":
-                                    break;
-                                case "success":
-                                    viewer.dataTable.paginator.init();
-                                    break;
+                	viewerJS.jsfAjax.begin.subscribe(e => {
+                		if ( _defaults.dataTablePaginator.length > 0 ) {
+                			viewer.dataTable.paginator.init();
+                		}
+                	});
+                	viewerJS.jsfAjax.success.subscribe(e => {
+                		if ( _defaults.dataTablePaginator.length > 0 ) {
+                			if ( _txtField1 !== null && _txtField2 !== null ) {
+                                _txtField1.off();
+                                _txtField2.off();
                             }
-                        }
-                    } );
+                		}
+                	});
                     this.setupAjax = true;
                 }
             },
@@ -151,21 +145,12 @@ var viewerJS = ( function( viewer ) {
                  * AJAX Eventlistener
                  */
                 if ( !this.setupAjax ) {
-                    jsf.ajax.addOnEvent( function( data ) {
-                        var ajaxstatus = data.status;
-                        
-                        if ( _defaults.dataTablePaginator.length > 0 ) {
-                            switch ( ajaxstatus ) {
-                                case "begin":
-                                    break;
-                                case "complete":
-                                    break;
-                                case "success":
-                                    viewer.dataTable.filter.init();
-                                    break;
-                            }
-                        }
-                    } );
+                
+                	viewerJS.jsfAjax.success.subscribe(e => {
+                		if ( _defaults.dataTablePaginator.length > 0 ) {
+                			viewer.dataTable.filter.init();
+                		}
+                	});
                     this.setupAjax = true;
                 }
             },

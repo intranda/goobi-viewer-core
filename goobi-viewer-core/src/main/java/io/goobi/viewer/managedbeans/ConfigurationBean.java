@@ -964,7 +964,7 @@ public class ConfigurationBean implements Serializable {
     public boolean isShowSearchInItem() {
         return DataManager.getInstance().getConfiguration().isSearchInItemEnabled();
     }
-    
+
     /**
      * <p>
      * isShowSearchInItemOnlyIfFullTextAvailable.
@@ -1235,7 +1235,7 @@ public class ConfigurationBean implements Serializable {
     public boolean isSubthemeDiscriminatorFieldSet() {
         return StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
     }
-    
+
     /**
      * 
      * @return a boolean.
@@ -1374,14 +1374,6 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * 
-     * @return Configured value
-     */
-    public boolean isArchivesEnabled() {
-        return DataManager.getInstance().getConfiguration().isArchivesEnabled();
-    }
-
-    /**
      * @param field
      * @return Configured value
      */
@@ -1399,6 +1391,14 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * 
+     * @return true if result groups enabled; false otherwise
+     */
+    public boolean isSearchResultGroupsEnabled() {
+        return DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled();
+    }
+
+    /**
+     * 
      * @return List of names of the configured search result groups
      * @should return all values
      */
@@ -1409,7 +1409,7 @@ public class ConfigurationBean implements Serializable {
                 .getSearchResultGroups()
                 .stream()
                 .map(SearchResultGroup::getName)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -1542,7 +1542,7 @@ public class ConfigurationBean implements Serializable {
             List<LabeledValue> translatedValues = entry.getValue()
                     .stream()
                     .map(v -> new LabeledValue(v.getValue(), ViewerResourceBundle.getTranslation(v.getLabel(), locale), v.getStyleClass()))
-                    .collect(Collectors.toList());
+                    .toList();
             translatedMap.put(entry.getKey(), translatedValues);
 
         }
@@ -1555,7 +1555,7 @@ public class ConfigurationBean implements Serializable {
                 .getGeomapFeatureTitleOptions()
                 .stream()
                 .map(item -> new SelectItem(item.getValue(), ViewerResourceBundle.getTranslation(item.getLabel(), BeanUtils.getLocale())))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<Metadata> getMetadataConfiguration(String type) {

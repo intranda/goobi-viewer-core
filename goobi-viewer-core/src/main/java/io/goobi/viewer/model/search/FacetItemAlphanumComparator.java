@@ -31,12 +31,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import io.goobi.viewer.controller.AlphanumCollatorComparator;
+import io.goobi.viewer.controller.sorting.AlphanumCollatorComparator;
+import io.goobi.viewer.controller.sorting.AlphanumComparator;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 
 /**
  * Custom string comparator for browsing terms (case-insensitive, ignores brackets, natural sorting).
+ * 
+ * @deprecated use {@link AlphanumComparator} instead with constructor
+ * 
+ *             <pre>{@code new AlphanumComparator<IFacetItem>(true, locale,
+                        i -> i.getTranslatedLabel() != null ? i.getTranslatedLabel() : i.getLabel())}</pre>
  */
+@Deprecated(since = "24.10")
 public class FacetItemAlphanumComparator implements Comparator<IFacetItem>, Serializable {
 
     private static final long serialVersionUID = 8047374873015931547L;

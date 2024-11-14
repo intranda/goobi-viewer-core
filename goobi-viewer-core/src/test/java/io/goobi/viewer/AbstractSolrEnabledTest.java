@@ -36,7 +36,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 public abstract class AbstractSolrEnabledTest extends AbstractTest {
 
     protected static final String PI_KLEIUNIV = "PPN517154005";
-    protected static long iddocKleiuniv = -1;
+    protected static String iddocKleiuniv = null;
 
     private SolrClient client;
 
@@ -47,16 +47,17 @@ public abstract class AbstractSolrEnabledTest extends AbstractTest {
     }
 
     @BeforeEach
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         client = SolrSearchIndex.getNewSolrClient();
         DataManager.getInstance().injectSearchIndex(new SolrSearchIndex(client));
 
         // Load current IDDOC for PPN517154005, which is used in many tests
-        if (iddocKleiuniv == -1) {
+        if (iddocKleiuniv == null) {
             iddocKleiuniv = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(PI_KLEIUNIV);
         }
-        Assertions.assertNotEquals(0, iddocKleiuniv);
+        Assertions.assertNotNull(iddocKleiuniv);
     }
 
     @AfterEach

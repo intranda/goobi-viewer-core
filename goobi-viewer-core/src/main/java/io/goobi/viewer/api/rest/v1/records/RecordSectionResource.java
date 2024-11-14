@@ -147,7 +147,7 @@ public class RecordSectionResource {
      */
     private static StructElement getStructElement(String pi, String divId) throws PresentationException, IndexUnreachableException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc("+PI_TOPSTRUCT:" + pi + " +DOCTYPE:DOCSTRCT +LOGID:" + divId, null);
-        return new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc);
+        return new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
     }
 
 }

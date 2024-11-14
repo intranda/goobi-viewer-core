@@ -167,11 +167,11 @@ public class ArchiveEntry implements Serializable {
     /**
      *
      * @param ignoreDisplayChildren
-     * @return List<ArchiveEntry>
+     * @return List<ArchiveEntry> LinkedList containing all nodes
      */
     public List<ArchiveEntry> getAsFlatList(boolean ignoreDisplayChildren) {
         // logger.trace("getAsFlatList"); //NOSONAR Debug
-        List<ArchiveEntry> list = new LinkedList<>();
+        List<ArchiveEntry> list = new LinkedList<>(); // LinkedList more efficient to create here due to the recursion
         list.add(this);
         if ((displayChildren || ignoreDisplayChildren) && subEntryList != null && !subEntryList.isEmpty()) {
             for (ArchiveEntry ds : subEntryList) {
@@ -556,7 +556,8 @@ public class ArchiveEntry implements Serializable {
 
         try {
             boolean ret = AccessConditionUtils
-                    .checkAccessPermissionByIdentifierAndLogId(getAssociatedRecordPi(), null, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, BeanUtils.getRequest())
+                    .checkAccessPermissionByIdentifierAndLogId(getAssociatedRecordPi(), null, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS,
+                            BeanUtils.getRequest())
                     .isGranted();
             if (!ret) {
                 logger.trace("Image access denied to {}", label);

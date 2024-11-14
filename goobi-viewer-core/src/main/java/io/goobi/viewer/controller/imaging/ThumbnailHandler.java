@@ -347,7 +347,7 @@ public class ThumbnailHandler {
     public PhysicalElement getPage(String pi, int order) throws IndexUnreachableException, PresentationException, DAOException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         if (doc != null) {
-            StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
+            StructElement struct = new StructElement((String) doc.getFirstValue(SolrConstants.IDDOC), doc);
             IPageLoader pageLoader = AbstractPageLoader.create(struct);
             return pageLoader.getPage(order);
         }
@@ -384,10 +384,12 @@ public class ThumbnailHandler {
 
     public static ImageFileFormat getImageFileFormat(PhysicalElement page, String format) {
         if ("MASTER".equalsIgnoreCase(format)) {
+            logger.trace("Fetching master image format via mime type: {}", page.getMimeType());
             return ImageFileFormat.getImageFileFormatFromMimeType(page.getMimeType());
         }
         ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(format);
         if (iff == null) {
+            logger.trace("Fetching image format via file extension: {}", page.getFileNameExtension());
             return ImageFileFormat.getImageFileFormatFromFileExtension(page.getFileNameExtension());
         }
 
@@ -529,10 +531,7 @@ public class ThumbnailHandler {
      */
     private static StructElement getStructElement(SolrDocument doc) {
         String value = (String) doc.getFirstValue(SolrConstants.IDDOC);
-        Long iddoc = 0L;
-        if (value != null) {
-            iddoc = Long.valueOf(value);
-        }
+        String iddoc = value;
         try {
             return new StructElement(iddoc, doc);
         } catch (IndexUnreachableException e) {
@@ -892,7 +891,7 @@ public class ThumbnailHandler {
                     break;
                 default:
                     if (logger.isWarnEnabled()) {
-                        logger.warn("Mime type of '{}' not supported: {}", doc.getMetadataValue(SolrConstants.PI_TOPSTRUCT), baseMimeType);
+                        logger.warn("Mime type of '{}' not supported: {}", doc.getLuceneId(), mimeType);
                     }
                     break;
             }
@@ -1027,8 +1026,9 @@ public class ThumbnailHandler {
      *
      * @param structElement
      * @return Optional<String>
+     * @should return mime type correctly
      */
-    private static Optional<String> getMimeType(StructElement structElement) {
+    static Optional<String> getMimeType(StructElement structElement) {
         Optional<String> mimeType = Optional.empty();
         if (structElement.isAnchor()) {
             try {

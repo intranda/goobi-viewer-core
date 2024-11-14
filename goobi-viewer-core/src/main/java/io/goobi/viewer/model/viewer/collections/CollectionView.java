@@ -43,6 +43,7 @@ import org.apache.logging.log4j.Logger;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.sorting.ObjectComparatorBuilder;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -183,6 +184,8 @@ public class CollectionView implements Serializable {
                         lastElement = dc;
                     }
                 }
+                //apply configured sorting of collections after hierarchy is build
+                completeCollectionList.stream().flatMap(dc -> dc.getChildren(true).stream()).forEach(dc -> sortCollection(dc));
                 calculateVisibleDcElements();
                 logger.trace("populateCollectionList end");
             } catch (PresentationException e) {
@@ -325,13 +328,15 @@ public class CollectionView implements Serializable {
     }
 
     /**
+     * 
      * <p>
      * associateElementsWithCMSData.
      * </p>
      */
     public void associateElementsWithCMSData() {
         try {
-            this.visibleCollectionList = associateWithCMSCollections(this.visibleCollectionList, this.field);
+            List<CMSCollection> cmsCollections = DataManager.getInstance().getDao().getCMSCollections(this.field);
+            associateElementsWithCMSData(cmsCollections);
         } catch (DAOException e) {
             logger.error("Failed to associate collections with media items: {}", e.getMessage());
         }
@@ -339,20 +344,37 @@ public class CollectionView implements Serializable {
 
     /**
      * <p>
+     * associateElementsWithCMSData.
+     * </p>
+     * 
+     * @param cmsCollections collection data with which to enricht the browse elements
+     */
+    public void associateElementsWithCMSData(List<CMSCollection> cmsCollections) {
+        associateWithCMSCollections(new ArrayList<>(this.visibleCollectionList), this.field, cmsCollections);
+    }
+
+    public static void associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField)
+            throws DAOException {
+        List<CMSCollection> cmsCollections = DataManager.getInstance().getDao().getCMSCollections(solrField);
+        associateWithCMSCollections(collections, solrField, cmsCollections);
+    }
+
+    /**
+     * <p>
      * associateWithCMSCollections.
      * </p>
+     * returns the 'collection' parameter
      *
      * @param collections a {@link java.util.List} object.
      * @param solrField a {@link java.lang.String} object.
-     * @return the 'collection' parameter
+     * @param cmsCollections
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public static List<HierarchicalBrowseDcElement> associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField)
-            throws DAOException {
-        List<CMSCollection> cmsCollections = DataManager.getInstance().getDao().getCMSCollections(solrField);
+    public static void associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField,
+            List<CMSCollection> cmsCollections) {
         if (cmsCollections == null || cmsCollections.isEmpty()) {
-            return collections;
+            return;
         }
         for (CMSCollection cmsCollection : cmsCollections) {
             String collectionName = cmsCollection.getSolrFieldValue();
@@ -366,7 +388,6 @@ public class CollectionView implements Serializable {
                     .findAny();
             element.ifPresent(ele -> ele.setInfo(cmsCollection));
         }
-        return collections;
     }
 
     /**
@@ -496,6 +517,25 @@ public class CollectionView implements Serializable {
             element.setShowSubElements(true);
             associateElementsWithCMSData();
         }
+    }
+
+    public void sortCollection(HierarchicalBrowseDcElement element) {
+        String sortOrder = getSortOrder(this.field, element.getName());
+
+        if (StringUtils.isNotBlank(sortOrder)) {
+            element.getChildren().sort(ObjectComparatorBuilder.build(sortOrder, null, HierarchicalBrowseDcElement::getName));
+        }
+    }
+
+    public String getSortOrder(String field, String collectionName) {
+        Map<String, String> sortOrderMap = DataManager.getInstance().getConfiguration().getCollectionSortOrders(field);
+        String sortOrder = sortOrderMap.entrySet()
+                .stream()
+                .filter(entry -> collectionName.matches(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .findAny()
+                .orElse("");
+        return sortOrder;
     }
 
     /**
@@ -1012,6 +1052,8 @@ public class CollectionView implements Serializable {
      * @param collection a {@link io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement} object.
      * @param field a {@link java.lang.String} object.
      * @param baseSearchUrl
+     * @param openInSearch if true, return a search url if no cms page is associated with the collection. In case of single record in collection, the
+     *            record may be opened directly
      * @return a {@link java.lang.String} object.
      * @throws URISyntaxException
      * @should return identifier resolver url if single record and pi known
@@ -1285,7 +1327,12 @@ public class CollectionView implements Serializable {
     }
 
     public HierarchicalBrowseDcElement getCollectionElement(String name) {
+        return getCollectionElement(name, false);
+    }
+
+    public HierarchicalBrowseDcElement getCollectionElement(String name, boolean includeDescendants) {
         return this.completeCollectionList.stream()
+                .flatMap(e -> e.getAllDescendents(true).stream())
                 .filter(e -> e.getName().equals(name))
                 .findAny()
                 .orElse(null);

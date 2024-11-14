@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.faces.model.SelectItem;
@@ -60,6 +61,7 @@ import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 import io.goobi.viewer.model.metadata.MetadataView;
+import io.goobi.viewer.model.metadata.MetadataView.MetadataViewLocation;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
@@ -373,11 +375,15 @@ class ConfigurationTest extends AbstractTest {
     void getMetadataViews_shouldReturnAllConfiguredValues() {
         List<MetadataView> result = DataManager.getInstance().getConfiguration().getMetadataViews();
         assertEquals(2, result.size());
+
+        assertEquals(MetadataViewLocation.SIDEBAR, result.get(0).getLocation()); // default value
+
         MetadataView view = result.get(1);
         assertEquals(1, view.getIndex());
         assertEquals("label__metadata_other", view.getLabel());
         assertEquals("_other", view.getUrl());
         assertEquals("foo:bar", view.getCondition());
+        assertEquals(MetadataViewLocation.OBJECTVIEW, view.getLocation());
     }
 
     /**
@@ -554,6 +560,11 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("my_secret", ((OpenIdProvider) providers.get(2)).getClientSecret());
         assertEquals("custom.png", ((OpenIdProvider) providers.get(2)).getImage());
         assertEquals("Custom OIDC", ((OpenIdProvider) providers.get(2)).getLabel());
+        assertEquals("https://examplethirdparty.com/viewer/api", ((OpenIdProvider) providers.get(2)).getThirdPartyLoginUrl());
+        assertEquals("exampleApiKey", ((OpenIdProvider) providers.get(2)).getThirdPartyLoginApiKey());
+        assertEquals("tPscope", ((OpenIdProvider) providers.get(2)).getThirdPartyLoginScope());
+        assertEquals("tPparam", ((OpenIdProvider) providers.get(2)).getThirdPartyLoginReqParamDef());
+        assertEquals("tPclaim", ((OpenIdProvider) providers.get(2)).getThirdPartyLoginClaim());
 
         // vuFind
         assertEquals("VuFind", providers.get(3).getName());
@@ -3632,20 +3643,26 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isArchivesEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    void isArchivesEnabled_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isArchivesEnabled());
-    }
-
-    /**
      * @see Configuration#getArchivesLazyLoadingThreshold()
      * @verifies return correct value
      */
     @Test
     void getArchivesLazyLoadingThreshold_shouldReturnCorrectValue() {
         assertEquals(100, DataManager.getInstance().getConfiguration().getArchivesLazyLoadingThreshold());
+    }
+
+    @Test
+    void testGetCollectionSortOrders() {
+        Map<String, String> sortOrders = DataManager.getInstance().getConfiguration().getCollectionSortOrders("DC");
+        assertEquals(3, sortOrders.size());
+        assertEquals("alphanumerical_desc",
+                sortOrders.entrySet().stream().filter(e -> "zeitschriften".matches(e.getKey())).map(Entry::getValue).findAny().orElse(""));
+        assertEquals("alphanumerical_asc",
+                sortOrders.entrySet().stream().filter(e -> "zeitungen.gt".matches(e.getKey())).map(Entry::getValue).findAny().orElse(""));
+        assertEquals("numerical_desc",
+                sortOrders.entrySet().stream().filter(e -> "jahrbuecher".matches(e.getKey())).map(Entry::getValue).findAny().orElse(""));
+        assertEquals("",
+                sortOrders.entrySet().stream().filter(e -> "jahrbuecher.andere".matches(e.getKey())).map(Entry::getValue).findAny().orElse(""));
+
     }
 }

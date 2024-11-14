@@ -29,9 +29,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 
-import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -56,7 +56,7 @@ import io.goobi.viewer.model.job.download.PDFDownloadJob;
  * </p>
  */
 @Named
-@SessionScoped
+@ViewScoped
 public class DownloadBean implements Serializable {
 
     private static final long serialVersionUID = 1418828357626472799L;
@@ -111,10 +111,9 @@ public class DownloadBean implements Serializable {
         }
         if (message != null) {
             return message.getMessageId();
-        } else {
-            logger.error("Download job with the ID {} not found.", downloadIdentifier);
-            throw new DownloadException("downloadErrorNotFound");
         }
+        logger.error("Download job with the ID {} not found.", downloadIdentifier);
+        throw new DownloadException("downloadErrorNotFound");
     }
 
     /**
@@ -128,9 +127,8 @@ public class DownloadBean implements Serializable {
         if (message != null) {
             return this.messageBroker.countMessagesBefore(MessageQueueManager.getQueueForMessageType(message.getTaskName()), message.getTaskName(),
                     message.getMessageId());
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     /**

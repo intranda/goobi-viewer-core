@@ -1,104 +1,127 @@
-<ui:composition
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:o="http://omnifaces.org/ui"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-    xmlns:adminComponent="http://xmlns.jcp.org/jsf/composite/admin/components"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    >
-    
-    <!-- MESSAGES -->
-    <div class="messages">
-        <h:messages id="messages" globalOnly="false" infoClass="alert alert-success" errorClass="alert alert-danger" />
-    </div>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" xmlns:o="http://omnifaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	xmlns:adminComponent="http://xmlns.jcp.org/jsf/composite/admin/components"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
-    <div class="admin">
-    	<!-- ADMIN TOPBAR (ACTION MENU) -->
-    	<div class="admin__topbar-backend" role="navigation" aria-label="#{msg.aria_label__nav_main}">
+	<!-- MESSAGES -->
+	<div class="messages">
+		<h:messages id="messages" globalOnly="false"
+			infoClass="alert alert-success" errorClass="alert alert-danger" />
+	</div>
 
-    		<div class="admin__topbar-backend-logo-menu -dropdown">
-    			<div class="admin__topbar-backend-logo" aria-hidden="true">
-					<ui:include src="/resources/images/goobi_logo.svg" alt="Goobi Viewer"/>
+	<div class="admin">
+		<!-- ADMIN TOPBAR (ACTION MENU) -->
+		<div class="admin__topbar-backend" role="navigation"
+			aria-label="#{msg.aria_label__nav_main}">
+
+			<div class="admin__topbar-backend-logo-menu -dropdown">
+				<div class="admin__topbar-backend-logo" aria-hidden="true">
+					<ui:include src="/resources/images/goobi_logo.svg"
+						alt="Goobi Viewer" />
 				</div>
-    			<ul class="admin__topbar-backend-dropdown" aria-label="Topbar logo menu dropdown">
-	    			<li><a href="https://goobi.io" target="_blank" rel="noopener">#{msg.admin__about_goobi}</a></li>
-	    			<li><a href="https://docs.goobi.io/" target="_blank" rel="noopener">#{msg.admin__documentation}</a></li>
-	    			<li><a href="https://community.goobi.io/" target="_blank" rel="noopener">#{msg.admin__community}</a></li>
-	    			<li><a href="https://github.com/intranda/" target="_blank" rel="noopener">#{msg.admin__sourcecode}</a></li>
-	    			<li><a href="https://www.intranda.com/contact/" target="_blank" rel="noopener">#{msg.admin__support}</a></li>
-    			</ul>
-    		</div>
+				<ul class="admin__topbar-backend-dropdown"
+					aria-label="Topbar logo menu dropdown">
+					<li><a href="https://goobi.io" target="_blank" rel="noopener">#{msg.admin__about_goobi}</a></li>
+					<li><a href="https://docs.goobi.io/" target="_blank"
+						rel="noopener">#{msg.admin__documentation}</a></li>
+					<li><a href="https://community.goobi.io/" target="_blank"
+						rel="noopener">#{msg.admin__community}</a></li>
+					<li><a href="https://github.com/intranda/" target="_blank"
+						rel="noopener">#{msg.admin__sourcecode}</a></li>
+					<li><a href="https://www.intranda.com/contact/"
+						target="_blank" rel="noopener">#{msg.admin__support}</a></li>
+				</ul>
+			</div>
 
 			<!-- GO TO FRONTEND VIEW -->
-            <a class="admin__topbar-backend-view-frontend-link" href="#{request.contextPath}/" title="#{msg.admin__view_frontend}" aria-label="#{msg.admin__view_frontend}">
-                <i class="fa fa-home" aria-hidden="true"></i> #{adminThemesBean.getThemeLabel(configurationBean.name)}
-    		</a>
+			<a class="admin__topbar-backend-view-frontend-link"
+				href="#{request.contextPath}/" title="#{msg.admin__view_frontend}"
+				aria-label="#{msg.admin__view_frontend}"> <i class="fa fa-home"
+				aria-hidden="true"></i>
+				#{adminThemesBean.getThemeLabel(configurationBean.name)}
+			</a>
 
-    		<!-- ADD SOMETHING NEW -->
-    		<ui:fragment rendered="#{userBean.user.superuser}">
-    		<div class="admin__topbar-backend-add -dropdown">
-	    		<i class="fa fa-plus" aria-hidden="true"></i><span>#{msg.admin__new}</span>
-	   			<ul class="admin__topbar-backend-dropdown">
-	    			<li><a href="#{request.contextPath}/admin/cms/pages/templates/" target="_self">#{msg.page}</a></li>
-	    			<li><a href="#{request.contextPath}/admin/users/new/" target="_self">#{msg.admin__user}</a></li>
-	    			<li><a href="#{request.contextPath}/admin/groups/new/" target="_self">#{msg.admin__group}</a></li>
-	    			<li><a href="#{request.contextPath}/admin/ipranges/new/" target="_self">#{msg.admin__ip_range}</a></li>
-	    			<li><a href="#{request.contextPath}/admin/rights/new/" target="_self">#{msg.admin__right}</a></li>
-	    			<li><a href="#{request.contextPath}/admin/cms/categories/new/" target="_self">#{msg.admin__category}</a></li>
-	   			</ul>
-    		</div>
-    		</ui:fragment>
+			<!-- ADD SOMETHING NEW -->
+			<ui:fragment rendered="#{userBean.user.superuser}">
+				<div class="admin__topbar-backend-add -dropdown">
+					<i class="fa fa-plus" aria-hidden="true"></i><span
+						class="admin__topbar-backend-add-text">#{msg.admin__new}</span>
+					<ul class="admin__topbar-backend-dropdown">
+						<li><a
+							href="#{request.contextPath}/admin/cms/pages/templates/"
+							target="_self">#{msg.page}</a></li>
+						<li><a href="#{request.contextPath}/admin/users/new/"
+							target="_self">#{msg.admin__user}</a></li>
+						<li><a href="#{request.contextPath}/admin/groups/new/"
+							target="_self">#{msg.admin__group}</a></li>
+						<li><a href="#{request.contextPath}/admin/ipranges/new/"
+							target="_self">#{msg.admin__ip_range}</a></li>
+						<li><a href="#{request.contextPath}/admin/rights/new/"
+							target="_self">#{msg.admin__right}</a></li>
+						<li><a
+							href="#{request.contextPath}/admin/cms/categories/new/"
+							target="_self">#{msg.admin__category}</a></li>
+					</ul>
+				</div>
+			</ui:fragment>
 
 			<!-- RIGHT AREA TOPBAR -->
 			<div class="admin__topbar-backend-right">
 
-	            <div class="admin__topbar-frontend-hotfolder">
-	            	<!-- COUNT FILES PROCESSING -->
-	            	<h:panelGroup layout="block" id="hotfolderFileCountGroup">
-                    <ui:fragment rendered="#{userBean.admin and adminBean.hotfolderFileCount > 0}">
-						<div class="admin__topbar-frontend-hotfolder-files-action">
-						    <i class="fa fa-spinner fa-pulse" aria-hidden="true"></i>
-						    <span>#{adminBean.hotfolderFileCount}</span> <span>#{msg.admin__files_in_hotfolder}...</span>
-						</div>
-					</ui:fragment>
+				<ui:include src="../../../includes/topbar/backgroundTaskMonitor.xhtml"></ui:include>
+
+				<div class="admin__topbar-frontend-hotfolder">
+					<!-- COUNT FILES PROCESSING -->
+					<h:panelGroup layout="block" id="hotfolderFileCountGroup">
+						<ui:fragment
+							rendered="#{userBean.admin and adminBean.hotfolderFileCount > 0}">
+							<div class="admin__topbar-frontend-hotfolder-files-action">
+								<i class="fa fa-spinner fa-pulse" aria-hidden="true"></i> <span
+									class="admin__topbar-hotfolder-files-action-count">#{adminBean.hotfolderFileCount}</span>
+								<span class="admin__topbar-hotfolder-files-action-text">#{msg.admin__files_in_hotfolder}...</span>
+							</div>
+						</ui:fragment>
 					</h:panelGroup>
-<!-- 					<f:websocket channel="hotfolderFileCount" scope="view"> -->
-<!--                         <f:ajax event="update" render="hotfolderFileCountGroup" /> -->
-<!--                     </f:websocket> -->
-                    <o:socket channel="hotfolderFileCount">
-                        <f:ajax event="update" render="hotfolderFileCountGroup" />
-                    </o:socket>
-	            </div>
-	            <!-- CHANGE LANGUAGE -->
-				<ui:fragment rendered="#{fn:length(navigationHelper.supportedLanguages) > 1}">
+					<o:socket channel="hotfolderFileCount">
+						<f:ajax event="update" render="hotfolderFileCountGroup" />
+					</o:socket>
+				</div>
+				<!-- CHANGE LANGUAGE -->
+				<ui:fragment
+					rendered="#{fn:length(navigationHelper.supportedLanguages) > 1}">
 					<div class="admin__topbar-backend-language -dropdown">
-						<i class="fa fa-globe" aria-hidden="true"></i><span>#{msg.MD_LANGUAGE}</span>
+						<i class="fa fa-globe" aria-hidden="true"></i><span
+							class="admin__topbar-backend-language-text">#{msg.MD_LANGUAGE}</span>
 						<h:form id="changeLocalForm1" prependId="false">
-			                <ul class="admin__topbar-backend-dropdown">
-			                    <ui:repeat var="lang" value="#{navigationHelper.supportedLanguages}">
-			                        <li class="#{navigationHelper.localeString == lang ?'activeLang':''}">
-			                             <h:commandLink>
-			                                 <h:outputText value="#{msg['changeLocal_long_' += lang]}" />
-			                                 <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="#{lang}" />
-			                             </h:commandLink>
-			                         </li>
-			                     </ui:repeat>
-			                 </ul>
-		                 </h:form>
-		            </div>
+							<ul class="admin__topbar-backend-dropdown">
+								<ui:repeat var="lang"
+									value="#{navigationHelper.supportedLanguages}">
+									<li
+										class="#{navigationHelper.localeString == lang ?'activeLang':''}">
+										<h:commandLink>
+											<h:outputText value="#{msg['changeLocal_long_' += lang]}" />
+											<f:setPropertyActionListener
+												target="#{navigationHelper.localeString}" value="#{lang}" />
+										</h:commandLink>
+									</li>
+								</ui:repeat>
+							</ul>
+						</h:form>
+					</div>
 				</ui:fragment>
-				
-               <!-- SESSION TIMEOUT COUNTER -->
-               <!--
+
+				<!-- SESSION TIMEOUT COUNTER -->
+				<!--
 			   <div class="admin__topbar-frontend-session">
                     <h:panelGroup layout="block" id="sessionTimeoutCounterGroup">
                     <ui:fragment>
@@ -114,63 +137,65 @@
                 </div>
                 -->
 
-	            <!-- LOGOUT -->
-	            <div class="admin__topbar-backend-logout">
-	                <h:form>
-						<h:commandLink styleClass="admin__topbar-backend-logout-link" action="#{userBean.logout}">
-						    <span>#{msg.logout}</span>
-						    <i class="fa fa-power-off" aria-hidden="true"></i>
+				<!-- LOGOUT -->
+				<div class="admin__topbar-backend-logout">
+					<h:form>
+						<h:commandLink styleClass="admin__topbar-backend-logout-link"
+							action="#{userBean.logout}">
+							<span>#{msg.logout}</span>
+							<i class="fa fa-power-off" aria-hidden="true"></i>
 						</h:commandLink>
-	                </h:form>
-	            </div>
-            </div>
+					</h:form>
+				</div>
+			</div>
 
-    	</div>
+		</div>
 
-        <!-- SIDEBAR BACKGROUND -->
-        <div class="admin__sidebar-background"></div>
+		<!-- SIDEBAR BACKGROUND -->
+		<div class="admin__sidebar-background"></div>
 
-        <!-- SIDEBAR -->
-        <aside id="adminSidebar" class="admin__sidebar" aria-label="Admin sidebar">
-            <div class="admin__sidebar-inner -refreshHCsticky">
-              <div class="admin__sidebar-inner__title">
-            	  <a href="#{request.contextPath}/admin/">Goobi viewer</a>
-              </div>
+		<!-- SIDEBAR -->
+		<aside id="adminSidebar" class="admin__sidebar"
+			aria-label="Admin sidebar">
+			<div class="admin__sidebar-inner -refreshHCsticky">
+				<div class="admin__sidebar-inner__title">
+					<a href="#{request.contextPath}/admin/">Goobi viewer</a>
+				</div>
 
-                <!-- DASHBOARD -->
-                <ui:fragment rendered="#{userBean.hasAdminBackendAccess}">
-                    <div class="admin__sidebar-dashboard admin-widget">
-                        <div class="admin-widget__header">#{msg.admin__general_title}</div>
-                        <ul>
-                            <li class="#{navigationHelper.currentPage == 'adminDashboard' ? 'active' : ''}">
-                                <a href="#{request.contextPath}/admin/">
-                                    <i class="fa fa-tachometer" aria-hidden="true"></i>
-                                    <span>#{msg.admin__dashboard}</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </ui:fragment>
+				<!-- DASHBOARD -->
+				<ui:fragment rendered="#{userBean.hasAdminBackendAccess}">
+					<div class="admin__sidebar-dashboard admin-widget">
+						<div class="admin-widget__header">#{msg.admin__general_title}</div>
+						<ul>
+							<li
+								class="#{navigationHelper.currentPage == 'adminDashboard' ? 'active' : ''}">
+								<a href="#{request.contextPath}/admin/"> <i
+									class="fa fa-tachometer" aria-hidden="true"></i> <span>#{msg.admin__dashboard}</span>
+							</a>
+							</li>
+						</ul>
+					</div>
+				</ui:fragment>
 
-                <!-- WIDGETS -->
-                <div class="admin__sidebar-widgets">
-                    <adminWidget:widget_admin id="sidebarAdminWidget" />
-                    <adminWidget:widget_legal />
-                    <adminWidget:widget_crowdsourcing />
-                    <adminWidget:widget_cms />
-                </div>
+				<!-- WIDGETS -->
+				<div class="admin__sidebar-widgets">
+					<adminWidget:widget_admin id="sidebarAdminWidget" />
+					<adminWidget:widget_legal />
+					<adminWidget:widget_crowdsourcing />
+					<adminWidget:widget_cms />
+				</div>
 
-            </div>
-        </aside>
+			</div>
+		</aside>
 
-        <!-- CONTENT BACKGROUND -->
-        <div class="admin__content-background"></div>
+		<!-- CONTENT BACKGROUND -->
+		<div class="admin__content-background"></div>
 
-        <!-- CONTENT -->
-        <main id="adminContent" class="admin__content">
-            <div class="admin__content-inner -h100">
-                <ui:insert name="content" />
-            </div>
-        </main>
-    </div>
+		<!-- CONTENT -->
+		<main id="adminContent" class="admin__content">
+			<div class="admin__content-inner -h100">
+				<ui:insert name="content" />
+			</div>
+		</main>
+	</div>
 </ui:composition>
