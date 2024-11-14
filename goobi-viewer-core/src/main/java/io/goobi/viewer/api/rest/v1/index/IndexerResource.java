@@ -26,15 +26,14 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEXER;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -76,6 +75,12 @@ public class IndexerResource {
         try {
             DataManager.getInstance().setIndexerVersion(new ObjectMapper().writeValueAsString(params));
             DataManager.getInstance().setHotfolderFileCount(params.getHotfolderFileCount());
+            if (params.getRecordIdentifiers() != null && !params.getRecordIdentifiers().isEmpty()) {
+                // TODO
+                for(String pi : params.getRecordIdentifiers()) {
+                    logger.trace("Received PI: {}", pi);
+                }
+            }
             AdminBean ab = BeanUtils.getAdminBean();
             if (ab != null) {
                 ab.updateHotfolderFileCount();
