@@ -556,7 +556,8 @@ public class ArchiveEntry implements Serializable {
 
         try {
             boolean ret = AccessConditionUtils
-                    .checkAccessPermissionByIdentifierAndLogId(getAssociatedRecordPi(), null, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, BeanUtils.getRequest())
+                    .checkAccessPermissionByIdentifierAndLogId(getAssociatedRecordPi(), null, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS,
+                            BeanUtils.getRequest())
                     .isGranted();
             if (!ret) {
                 logger.trace("Image access denied to {}", label);
