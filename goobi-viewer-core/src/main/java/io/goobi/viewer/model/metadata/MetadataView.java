@@ -34,6 +34,23 @@ import io.goobi.viewer.model.viewer.StructElement;
  */
 public class MetadataView {
 
+    public enum MetadataViewLocation {
+        OBJECTVIEW,
+        SIDEBAR;
+
+        public static MetadataViewLocation getByName(String name) {
+            if (name != null) {
+                for (MetadataViewLocation loc : MetadataViewLocation.values()) {
+                    if (loc.name().equalsIgnoreCase(name)) {
+                        return loc;
+                    }
+                }
+            }
+
+            return null;
+        }
+    }
+
     /** Logger for this class. */
     private static final Logger logger = LogManager.getLogger(MetadataView.class);
 
@@ -45,6 +62,8 @@ public class MetadataView {
     private String url = "";
     /** Optional condition for link display. May contain a Solr field name or name:value pair. */
     private String condition;
+    /** Display location for the metadata. */
+    private MetadataViewLocation location = MetadataViewLocation.SIDEBAR;
 
     /**
      * Checks link visibility conditions.
@@ -82,6 +101,14 @@ public class MetadataView {
 
         // Just field name
         return se.getMetadataValue(condition) != null;
+    }
+
+    public boolean isDisplayInSidebar() {
+        return MetadataViewLocation.SIDEBAR.equals(location);
+    }
+
+    public boolean isDisplayInObjectView() {
+        return MetadataViewLocation.OBJECTVIEW.equals(location);
     }
 
     /**
@@ -145,6 +172,22 @@ public class MetadataView {
      */
     public MetadataView setCondition(String condition) {
         this.condition = condition;
+        return this;
+    }
+
+    /**
+     * @return the location
+     */
+    public MetadataViewLocation getLocation() {
+        return location;
+    }
+
+    /**
+     * @param location the location to set
+     * @return this
+     */
+    public MetadataView setLocation(MetadataViewLocation location) {
+        this.location = location;
         return this;
     }
 }

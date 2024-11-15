@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -1418,7 +1419,7 @@ public class ViewManager implements Serializable {
             // Reset LOGID so that the same TOC element doesn't stay highlighted when flipping pages
             logId = null;
         }
-        if (currentStructElement == null || currentStructElement.getLuceneId() != currentStructElementIddoc) {
+        if (currentStructElement == null || !Objects.equals(currentStructElement.getLuceneId(), currentStructElementIddoc)) {
             setCurrentStructElement(new StructElement(currentStructElementIddoc));
         }
     }
@@ -3086,7 +3087,7 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      */
     private StructElement loadTopStructElement() throws IndexUnreachableException {
-        if (topStructElement == null || topStructElement.getLuceneId() != topStructElementIddoc) {
+        if (topStructElement == null || !Objects.equals(topStructElement.getLuceneId(), topStructElementIddoc)) {
             topStructElement = new StructElement(topStructElementIddoc, null);
         }
         return topStructElement;
@@ -3150,7 +3151,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getCurrentStructElement() throws IndexUnreachableException {
-        if (currentStructElement == null || currentStructElement.getLuceneId() != currentStructElementIddoc) {
+        if (currentStructElement == null || !Objects.equals(currentStructElement.getLuceneId(), currentStructElementIddoc)) {
             logger.trace("Creating new currentDocument from IDDOC {}, old currentDocumentIddoc: {}", currentStructElementIddoc,
                     currentStructElementIddoc);
             currentStructElement = new StructElement(currentStructElementIddoc);
@@ -3881,7 +3882,7 @@ public class ViewManager implements Serializable {
      */
     public boolean isDisplayCiteLinkDocstruct() {
         return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks() && currentStructElement != null
-                && currentStructElement.getLuceneId() != topStructElement.getLuceneId();
+                && !Objects.equals(currentStructElement.getLuceneId(), topStructElement.getLuceneId());
     }
 
     /**

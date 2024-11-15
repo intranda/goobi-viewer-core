@@ -607,6 +607,7 @@ public final class DataManager {
     }
 
     /**
+     * @return {@link ThreadPoolManager}
      * @deprecated apparently shut down but never used
      */
     @Deprecated(since = "24.10")

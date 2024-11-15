@@ -469,6 +469,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * <p>
      * populateDescriptions.
      * </p>
+     * 
+     * @param languages
      */
     public void populateDescriptions(List<String> languages) {
         logger.trace("populateDescriptions");

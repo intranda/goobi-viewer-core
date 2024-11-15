@@ -1391,6 +1391,14 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * 
+     * @return true if result groups enabled; false otherwise
+     */
+    public boolean isSearchResultGroupsEnabled() {
+        return DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled();
+    }
+
+    /**
+     * 
      * @return List of names of the configured search result groups
      * @should return all values
      */

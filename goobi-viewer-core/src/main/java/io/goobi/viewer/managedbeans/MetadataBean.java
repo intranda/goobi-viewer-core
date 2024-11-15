@@ -51,6 +51,7 @@ import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataElement;
 import io.goobi.viewer.model.metadata.MetadataValue;
 import io.goobi.viewer.model.metadata.MetadataView;
+import io.goobi.viewer.model.metadata.MetadataView.MetadataViewLocation;
 import io.goobi.viewer.model.viewer.EventElement;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -340,6 +341,27 @@ public class MetadataBean {
     }
 
     /**
+     * Sets activeMetadataView to the first configured MetadataView with location="location".
+     * 
+     * @param location Location name
+     */
+    public void selectFirstMetadataViewOfLocation(String location) {
+        logger.trace("selectFirstMetadataViewOfLocation: {}", location);
+        MetadataViewLocation loc = MetadataViewLocation.getByName(location);
+        if (loc != null) {
+            for (MetadataView view : DataManager.getInstance().getConfiguration().getMetadataViews()) {
+                if (loc.equals(view.getLocation())) {
+                    activeMetadataView = view;
+                    logger.trace("Set activeMetadataView: {}", activeMetadataView.getIndex());
+                    return;
+                }
+            }
+        }
+
+        activeMetadataView = null;
+    }
+
+    /**
      * @return the activeMetadataView
      */
     public MetadataView getActiveMetadataView() {
@@ -465,5 +487,18 @@ public class MetadataBean {
         }
 
         return ret;
+    }
+
+    public List<Metadata> getMetadataList(StructElement struct, String type) {
+        String template = struct.getDocStructType();
+        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getMetadataConfigurationForTemplate(type, template, true, true);
+        metadataList.forEach(metadata -> {
+            try {
+                metadata.populate(struct, struct.getLuceneId(), metadata.getSortFields(), currentMetadataLocale);
+            } catch (IndexUnreachableException | PresentationException e) {
+                logger.error("Error populationg metadata {} with  docStruct {}", metadata, struct, e);
+            }
+        });
+        return metadataList;
     }
 }
