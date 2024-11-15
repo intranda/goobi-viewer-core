@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -22,6 +20,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
+import jakarta.servlet.http.HttpServletRequest;
 
 class VisibilityConditionTest {
 
