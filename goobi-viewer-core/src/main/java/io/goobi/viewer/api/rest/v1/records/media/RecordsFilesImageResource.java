@@ -98,8 +98,6 @@ public class RecordsFilesImageResource extends ImageResource {
             @Parameter(description = "Filename of the image") @PathParam("filename") String filename,
             @Context ContentServerCacheManager cacheManager) {
         super(context, request, response, pi, filename, cacheManager);
-        //TODO: remove debugging logging
-        logger.error("init RecordsFilesImageResource with PI {} and filename {}", pi, filename);
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename);
         //Privilege must be PRIV_BORN_DIGITAL for born digital PDFs, and PRIV_VIEW_IMAGES otherwise (i.e. for images)
@@ -149,8 +147,6 @@ public class RecordsFilesImageResource extends ImageResource {
     public StreamingOutput getPdf() throws ContentLibException {
         String pi = request.getAttribute("pi").toString();
         String filename = request.getAttribute("filename").toString();
-        //TODO: remove debugging logging
-        logger.error("Enter RecordsFilesImageResource#getPdf() with PI {} and filename {}", pi, filename);
         logger.trace("getPdf: {}/{}", pi, filename);
         filename = FilenameUtils.getBaseName(filename);
         filename = pi + "_" + filename + ".pdf";
