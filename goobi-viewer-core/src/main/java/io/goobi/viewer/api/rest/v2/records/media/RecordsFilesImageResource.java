@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.api.rest.v2.records.media;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_IMAGE_PDF;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_IMAGE;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_IMAGE_PDF;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -52,7 +52,7 @@ import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
 import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
 import io.goobi.viewer.api.rest.filters.FilterTools;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.api.rest.v2.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -99,6 +99,7 @@ public class RecordsFilesImageResource extends ImageResource {
         super(context, request, response, pi, filename, cacheManager);
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename);
+        request.setAttribute(ImageResource.IIIF_VERSION, "3.0");
         //Privilege must be PRIV_BORN_DIGITAL for born digital PDFs, and PRIV_VIEW_IMAGES otherwise (i.e. for images)
         if (ImageFileFormat.PDF.equals(ImageFileFormat.getImageFileFormatFromFileExtension(filename))) {
             request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
