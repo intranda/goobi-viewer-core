@@ -45,7 +45,7 @@
     "leaflet-draw": "~1.0.4",
     "leaflet-extra-markers": "~1.2.1",
     "leaflet.markercluster": "~1.5.3",
-    "luxon": "~3.3.0",
+    "luxon": "~3.5.0",
     "mapbox-gl": "~2.9.1",
     "masonry-layout": "~4.2.2",
     "mirador": "~3.3.0",
