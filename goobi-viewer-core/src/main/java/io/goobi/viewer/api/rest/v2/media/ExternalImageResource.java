@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.api.rest.v2.media;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.EXTERNAL_IMAGES;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.EXTERNAL_IMAGES;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_FILES_IMAGE_PDF;
 
 import java.io.UnsupportedEncodingException;
@@ -33,23 +33,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.inject.Inject;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.StreamingOutput;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.image.v3.ImageInformation3;
@@ -72,6 +59,17 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * @author florian
