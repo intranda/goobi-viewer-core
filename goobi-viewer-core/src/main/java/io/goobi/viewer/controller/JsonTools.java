@@ -493,10 +493,14 @@ public final class JsonTools {
     }
 
     /**
+     * Return the string value of the given key in the json object or within another json object nested somewhere within the original object. If the
+     * key is not found anywhere within the object, an empty string is returned. If the value to the key is anything other than a string, a
+     * stringified version of the object is returned. This method cannot parse arrays within array. If the key is within that, an empty string is also
+     * returned
      * 
-     * @param json
-     * @param key
-     * @return {@link String}
+     * @param json The json object to parse
+     * @param key the key to find
+     * @return a {@link String}. May be empty if the key is not found
      */
     public static String getNestedValue(JSONObject json, String key) {
         boolean found = json.has(key);
@@ -507,19 +511,25 @@ public final class JsonTools {
             while (keys.hasNext()) {
                 nextKey = (String) keys.next();
                 if (json.get(nextKey) instanceof JSONObject) {
-                    return getNestedValue(json.getJSONObject(nextKey), key);
+                    String foundValue = getNestedValue(json.getJSONObject(nextKey), key);
+                    if (StringUtils.isNotBlank(foundValue)) {
+                        return foundValue;
+                    }
                 } else if (json.get(nextKey) instanceof JSONArray) {
                     JSONArray jsonArray = json.getJSONArray(nextKey);
-                    int n = 0;
-                    while (n < jsonArray.length()) {
-                        String jsonArrayString = jsonArray.get(n).toString();
-                        JSONObject innerJson = new JSONObject(jsonArrayString);
-                        n++;
-                        return getNestedValue(innerJson, key);
+                    for (Object entry : jsonArray) {
+                        if (entry instanceof JSONObject object) {
+                            String foundValue = getNestedValue(object, key);
+                            if (StringUtils.isNotBlank(foundValue)) {
+                                return foundValue;
+                            }
+                        }
                     }
                 }
             }
+            return "";
+        } else {
+            return json.get(key).toString();
         }
-        return json.getString(key).toString();
     }
 }
