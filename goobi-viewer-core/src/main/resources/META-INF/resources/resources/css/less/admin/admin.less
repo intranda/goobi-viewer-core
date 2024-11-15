@@ -1329,8 +1329,8 @@
 		padding: 0 2rem;
 		transition: all 0.2s ease;
 		cursor: default;
+		gap: 0.9rem;
 		.fa {
-			margin-right: 0.9rem;
 			font-size: 1.6rem;
 		}
 		&:hover {
@@ -1347,6 +1347,8 @@
 		align-items: center;
 		padding: 0 20px;
 		transition: all 0.2s ease;
+		gap: 0.9rem;
+		position: relative;
 		cursor: default;
 		.activeLang {
 			font-weight: 700;
@@ -1357,7 +1359,7 @@
 					content: "\f00c";
 					margin-left: .7rem;
 				}
-			}
+			} 
 			&:hover {
 				background: @adminBackend-active-state;
 			}
@@ -1372,8 +1374,12 @@
 			color: @white;
 		}
 		.fa {
-			margin-right: 0.9rem;
 			font-size: 1.6rem;
+		}
+		form {
+			position: absolute;
+			left: 0;
+			bottom: 0;
 		}
 		ul {
 			opacity: 0;
@@ -1394,7 +1400,7 @@
 	}
 	&__topbar-backend-logout-link {
 		padding: 0 2rem;
-		color: @adminBackend-menu-text;;
+		color: @adminBackend-menu-text;
 		transition: all 0.2s ease;
 		display: flex;
 		justify-content: center;
@@ -1612,6 +1618,7 @@
 				visibility: visible;
 			}
 		}
+		
 	}
 	&__topbar-frontend-right {
 		margin-left: auto;
@@ -1666,7 +1673,7 @@
 	}
 	&__topbar-frontend-view-dashboard-link {
 		padding: 0 2rem;
-		color: @white;
+		color: @adminBackend-menu-text;
 		transition: all 0.2s ease;
 		display: flex;
 		justify-content: center;
@@ -1722,7 +1729,7 @@
 		}
 	}
 	&__topbar-frontend-hotfolder-files-action {
-		color: @white;
+		color: @adminBackend-menu-text;
 		.fa {
 			color: @greenBar;
 		}
@@ -1736,38 +1743,62 @@
 			color: @white;
 		}
 	}
+	&__topbar-queue-state-wrapper {
+		display: flex;
+	}
 	&__topbar-queue-warning-wrapper {
 		display: flex;
 	}
-
-// MIGHT BE OBSOLETE
-//	&__topbar-queue-warning-icon-wrapper {
-//		background: #ff6f00;
-//		border-radius: 10px;
-//		width: 20px;
-//		height: 20px;
-//		display: flex;
-//		justify-content: center;
-//		align-items: center;
-//		text-align: center;
-//		line-height: 1;
-//	}
-//	&__topbar-queue-warning-link {
-//		display: flex;
-//		gap: 0 10px;
-//		align-items: center;
-//		color: white;
-//		&:hover {
-//			color: white;
-//		}
-//	}
-//	&__topbar-queue-warning-icon {
-//		color: white;
-//		font-size: 12px;
-//	}
-//	&__topbar-queue-warning-text {
-//		
-//	}
+	&__topbar-queue-info-icon-wrapper {
+		// background: @adminBackend-menu-text;
+		border-radius: 10px;
+		width: 20px;
+		height: 20px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		line-height: 1;
+	}
+	&__topbar-queue-info-icon {
+		// color: @adminBackend-bg;
+		.fa-spinner {
+			color: #ffe34c;
+  			font-size: 1.6rem;
+		}
+	}
+	&__topbar-queue-warning-icon-wrapper {
+		background: #f44336;
+		border-radius: 10px;
+		width: 20px;
+		height: 20px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		line-height: 1;
+	}
+	&__topbar-queue-link {
+		display: flex;
+		gap: 0 10px;
+		align-items: center;
+		color: @adminBackend-menu-text;
+		padding: 0 20px;
+		&:hover,
+		&:focus,
+		&:active {
+			background: rgba(255,255,255,0.1);
+  			color: white;
+  			text-decoration: none;
+		}
+	}
+	&__topbar-queue-warning-icon {
+		color: @adminBackend-menu-text;
+		font-size: 12px;
+	}
+	&__topbar-queue-warning-text {
+		
+	}
 	&__topbar-frontend-logout {
 		display: flex;
 		justify-content: center;
@@ -1782,7 +1813,7 @@
 	}
 	&__topbar-frontend-logout-link {
 		padding: 0 2rem;
-		color: @white;
+		color: @adminBackend-menu-text;
 		transition: all 0.2s ease;
 		display: flex;
 		justify-content: center;
@@ -2925,11 +2956,24 @@ html[lang="es"] .admin__radio-switch {
 
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {}
+@media screen and (max-width: @largeBreakpoint) {
+	.admin {
+			&__topbar-backend-language-text {
+				display: none;
+			}
+		&__topbar-backend-logout {
+			margin-right: 4px;
+		}
+	}
+}
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
 	.admin {
+		&__topbar-backend-add-text,
+		&__topbar-hotfolder-files-action-text {
+			display: none;
+		}
 		&__topbar-frontend {
 			display: none;
 		}

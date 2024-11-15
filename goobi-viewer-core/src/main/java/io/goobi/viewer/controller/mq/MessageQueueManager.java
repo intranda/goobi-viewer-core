@@ -278,7 +278,7 @@ public class MessageQueueManager {
             logger.error(e);
             return false;
         }
-        this.queueRunning = true;
+        setQueueRunning(true);
         return true;
     }
 
@@ -418,6 +418,11 @@ public class MessageQueueManager {
         return queueRunning;
     }
 
+    public void setQueueRunning(boolean running) {
+        this.queueRunning = running;
+        notifyMessageQueueStateUpdate();
+    }
+
     public Map<String, Integer> countMessagesInQueue(String queueName) {
         Map<String, Integer> fastQueueContent = new TreeMap<>();
         try (QueueConnection connection = startConnection();
@@ -475,7 +480,7 @@ public class MessageQueueManager {
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(config.getConnectorURI());
         connectionFactory.setTrustedPackages(Arrays.asList("io.goobi.viewer.managedbeans", "io.goobi.viewer.model.job.mq"));
         return (ActiveMQConnection) connectionFactory.createConnection(this.config.getUsernameAdmin(),
-                        this.config.getPasswordAdmin());
+                this.config.getPasswordAdmin());
     }
 
     public boolean pauseQueue(String queueName) {
