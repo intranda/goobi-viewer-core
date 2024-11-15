@@ -392,18 +392,12 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return this.loginResult.isRedirected(getTimeoutMillis());
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#logout()
-     */
     /** {@inheritDoc} */
     @Override
     public void logout() throws AuthenticationProviderException {
         //noop
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean allowsPasswordChange() {

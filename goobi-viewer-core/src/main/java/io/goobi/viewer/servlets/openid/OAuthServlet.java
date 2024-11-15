@@ -256,6 +256,7 @@ public class OAuthServlet extends HttpServlet {
         }
 
         String nonce = (String) request.getSession().getAttribute("openIDNonce");
+        String idToken = response .getParam("id_token");
         if (error == null) {
             // no error - we should have a token. Verify it.
             DecodedJWT jwt = verifyOpenIdToken(idToken);
@@ -266,9 +267,9 @@ public class OAuthServlet extends HttpServlet {
                     UserBean userBean = BeanUtils.getUserBean();
 
                     // get the user by the configured claim from the JWT
-                    String login = jwt.getClaim(config.getOIDCIdClaim()).asString();
+                    String login = jwt.getClaim(provider.getScope()).asString();
                     if (StringUtils.isBlank(login)) {
-                        log.error("The configured claim '{}' is not present in the response.", config.getOIDCIdClaim());
+                        log.error("The configured claim '{}' is not present in the response.", provider.getScope());
                     } else {
                         log.debug("logging in user ");
                         User user = UserManager.getUserBySsoId(login);

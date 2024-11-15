@@ -22,8 +22,15 @@
 package io.goobi.viewer.api.rest.v1.authentication;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.security.PublicKey;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -40,22 +47,41 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import com.auth0.jwk.InvalidPublicKeyException;
+import com.auth0.jwk.JwkException;
+import com.auth0.jwk.JwkProvider;
+import com.auth0.jwk.UrlJwkProvider;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.RSAKeyProvider;
 
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.AuthenticationException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.security.authentication.AuthResponseListener;
+import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
 import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
+import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * <p>
@@ -66,6 +92,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 public class AuthenticationEndpoint {
 
     private static final Logger logger = LogManager.getLogger(AuthenticationEndpoint.class);
+    
+    private static final BCrypt BCRYPT = new BCrypt();
 
     static final String REASON_PHRASE_ILLEGAL_REDIRECT_URL = "Illegal redirect URL or URL cannot be checked.";
     static final String REASON_PHRASE_NO_PROVIDERS_CONFIGURED = "No authentication providers of type 'httpHeader' configured.";
@@ -159,8 +187,8 @@ public class AuthenticationEndpoint {
         HttpHeaderProvider useProvider = null;
 
         UserBean userBean = BeanUtils.getUserBean();
-        if (userBean != null && userBean.getAuthenticationProvider() instanceof HttpHeaderProvider) {
-            useProvider = (HttpHeaderProvider) userBean.getAuthenticationProvider();
+        if (userBean != null && userBean.getAuthenticationProvider() instanceof HttpHeaderProvider httpHeaderProvider) {
+            useProvider = httpHeaderProvider;
         }
 
         String ssoId = null;
@@ -169,8 +197,8 @@ public class AuthenticationEndpoint {
         if (useProvider == null) {
             List<HttpHeaderProvider> providers = new ArrayList<>();
             for (IAuthenticationProvider p : DataManager.getInstance().getConfiguration().getAuthenticationProviders()) {
-                if (p instanceof HttpHeaderProvider) {
-                    providers.add((HttpHeaderProvider) p);
+                if (p instanceof HttpHeaderProvider httpHeaderProvider) {
+                    providers.add(httpHeaderProvider);
                     break;
                 }
             }
@@ -228,5 +256,150 @@ public class AuthenticationEndpoint {
 
         logger.trace("endpoint end");
         return Response.ok("").build();
+    }
+    
+    @POST
+    @Path(ApiUrls.AUTH_OAUTH)
+    @Operation(summary = "OpenID Connect callback", description = "Verifies an openID claim and starts a session for the user")
+    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "400", description = "Bad request")
+    @ApiResponse(responseCode = "500", description = "Internal error")
+    @Tag(name = "login")
+    public Response openIdLogin(@FormParam("error") String error, @FormParam("id_token") String idToken) throws IOException {
+        AuthResponseListener<OpenIdProvider> listener = DataManager.getInstance().getOAuthResponseListener();
+        OpenIdProvider provider = null;
+        for (OpenIdProvider p : listener.getProviders()) {
+            if (p.getoAuthState() != null ||   .equals(p.getoAuthState())) {
+                provider = p;
+                break;
+            }
+        }
+        if(provider == null) {
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_ILLEGAL_REDIRECT_URL)
+                    .build();
+        }
+        
+        String nonce = (String) servletRequest.getSession().getAttribute("openIDNonce");
+        if (error == null) {
+            // no error - we should have a token. Verify it.
+            DecodedJWT jwt = verifyOpenIdToken(idToken);
+            if (jwt != null) {
+                // now check if the nonce is the same as in the old session
+                if (nonce.equals(jwt.getClaim("nonce").asString()) && provider.getClientId().equals(jwt.getClaim("aud").asString())) {
+                    //all OK, login the user
+                    UserBean userBean = BeanUtils.getUserBean();
+
+                    // get the user by the configured claim from the JWT
+                    String login = jwt.getClaim(provider.getScope()).asString();
+                    if (StringUtils.isBlank(login)) {
+                        logger.error("The configured claim '{}' is not present in the response.", provider.getScope());
+                    } else {
+                        logger.debug("logging in user ");
+                        
+                        String payload = new String(new Base64(true).decode(idToken), StandardCharsets.UTF_8);
+                        JSONTokener tokener = new JSONTokener(payload);
+                        JSONObject jsonPayload = new JSONObject(tokener);
+                        provider.completeLogin(jsonPayload, servletRequest, servletResponse);
+                    }
+                } else {
+                    if (!nonce.equals(jwt.getClaim("nonce").asString())) {
+                        logger.error("nonce does not match. Not logging user in");
+                    }
+                    if (!provider.getClientId().equals(jwt.getClaim("aud").asString())) {
+                        logger.error("clientID does not match aud. Not logging user in");
+                    }
+                }
+            } else {
+                logger.error("could not verify JWT");
+            }
+        } else {
+            logger.error(error);
+        }
+        servletResponse.sendRedirect("/goobi/index.xhtml");
+    }
+    
+    /**
+     * 
+     * @param email
+     * @param password
+     * @return Optional<User>
+     * @throws AuthenticationProviderException
+     */
+    private static Optional<User> loginUser(String email, String password) throws AuthenticationProviderException {
+        if (StringUtils.isNotEmpty(email)) {
+            try {
+                User user = DataManager.getInstance().getDao().getUserByEmail(email);
+                boolean refused = true;
+                if (user != null && StringUtils.isNotBlank(password) && user.getPasswordHash() != null
+                        && BCRYPT.checkpw(password, user.getPasswordHash())) {
+                    refused = false;
+                }
+                return refused ? Optional.empty() : Optional.ofNullable(user);
+            } catch (DAOException e) {
+                throw new AuthenticationProviderException(e);
+            }
+        }
+
+        return Optional.empty();
+    }
+    
+    /**
+     * 
+     * @param token
+     * @return {@link DecodedJWT}
+     */
+    static DecodedJWT verifyOpenIdToken(String token) {
+        RSAKeyProvider keyProvider = null;
+        try {
+            final JwkProvider provider = new UrlJwkProvider(new URL(config.getOIDCJWKSet()));
+
+            keyProvider = new RSAKeyProvider() {
+                @Override
+                public RSAPublicKey getPublicKeyById(String kid) {
+                    //Received 'kid' value might be null if it wasn't defined in the Token's header
+                    PublicKey publicKey;
+                    try {
+                        publicKey = provider.get(kid).getPublicKey();
+                        return (RSAPublicKey) publicKey;
+                    } catch (InvalidPublicKeyException e) {
+                        logger.error(e.getMessage(), e);
+                    } catch (JwkException e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                    return null;
+                }
+
+                @Override
+                public RSAPrivateKey getPrivateKey() {
+                    return null;
+                }
+
+                @Override
+                public String getPrivateKeyId() {
+                    return null;
+                }
+            };
+        } catch (MalformedURLException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        DecodedJWT decodedJwt = JWT.decode(token);
+        String strAlgorithm = decodedJwt.getAlgorithm();
+
+        Algorithm algorithm = null;
+        if ("RS256".equals(strAlgorithm)) {
+            algorithm = Algorithm.RSA256(keyProvider);
+        } else {
+            logger.error("JWT algorithm not supported: \"" + strAlgorithm + "\"");
+            return null;
+        }
+
+        try {
+            JWTVerifier verifier = JWT.require(algorithm).withIssuer(config.getOIDCIssuer()).build();
+            return verifier.verify(decodedJwt);
+        } catch (JWTVerificationException exception) {
+            logger.error(exception);
+            return null;
+        }
     }
 }
