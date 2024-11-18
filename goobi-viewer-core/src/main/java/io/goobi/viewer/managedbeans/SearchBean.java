@@ -2711,7 +2711,6 @@ public class SearchBean implements SearchInterface, Serializable {
         } catch (TimeoutException e) {
             logger.debug("Downloadtimed out");
             Messages.error("download_timeout");
-
         } finally {
             if (downloadReady != null && !downloadReady.isDone()) {
                 downloadReady.cancel(true);

@@ -48,6 +48,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PageType;
@@ -186,9 +187,11 @@ public class DisplayConditions implements Serializable {
      * @throws DAOException An exception occured communicating with the viewer sql database
      * @throws RecordNotFoundException The current record could not be found in the viewer data index when checking access conditions
      * @throws PresentationException Any other exception encountered while checking file system resources or the SOLR database
+     * @throws ViewerConfigurationException
      */
     public boolean matchRecord(String json)
-            throws IOException, IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException {
+            throws IOException, IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException,
+            ViewerConfigurationException {
         String cleanedJson = json.replaceAll(":\\s*!\\[", ":[!,");
         VisibilityConditionInfo info = JsonStringConverter.of(VisibilityConditionInfo.class).convert(cleanedJson);
         VisibilityCondition condition = new VisibilityCondition(info);
