@@ -336,7 +336,7 @@ public class DisplayConditions implements Serializable {
         private static boolean isRendered(UIComponent child) {
             try {
                 return child != null && child.isRendered() && isHasValuesIfRepeat(child);
-            } catch (ConcurrentModificationException e) {
+            } catch (ConcurrentModificationException | NullPointerException e) {
                 //possibly happens when rendered conditions are tested on child with 'displayConditions.matchPage/matchRecord', according to log entry
                 logger.warn("Cannot detect rendered state of child compnent {} because of {}", child.getClientId(), e.toString());
                 return true;
