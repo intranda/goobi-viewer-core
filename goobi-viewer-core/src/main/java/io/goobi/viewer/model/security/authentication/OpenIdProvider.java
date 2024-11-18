@@ -227,8 +227,10 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         session.setAttribute("openIDNonce", nonce);
 
         try {
-            //            oAuthState =
-            //                    new StringBuilder(String.valueOf(System.nanoTime())).append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).toString();
+            // TODO UUID instead of timestamp?
+            oAuthState =
+                    new StringBuilder(String.valueOf(System.nanoTime())).append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).toString();
+
             //            OAuthClientRequest request = OAuthClientRequest.authorizationLocation(getUrl())
             //                    .setResponseType(ResponseType.CODE.name().toLowerCase())
             //                    .setClientId(getClientId())
@@ -245,6 +247,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
             builder.addParameter("redirect_uri", redirectionEndpoint);
             builder.addParameter("response_mode", "form_post");
             builder.addParameter("scope", scope);
+            builder.addParameter("state", oAuthState);
             builder.addParameter("nonce", nonce);
 
             ec.redirect(builder.build().toString());

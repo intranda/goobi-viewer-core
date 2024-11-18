@@ -30,7 +30,6 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -74,7 +73,6 @@ import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.authentication.AuthResponseListener;
-import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
 import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
@@ -92,7 +90,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class AuthenticationEndpoint {
 
     private static final Logger logger = LogManager.getLogger(AuthenticationEndpoint.class);
-    
+
     private static final BCrypt BCRYPT = new BCrypt();
 
     static final String REASON_PHRASE_ILLEGAL_REDIRECT_URL = "Illegal redirect URL or URL cannot be checked.";
@@ -257,7 +255,7 @@ public class AuthenticationEndpoint {
         logger.trace("endpoint end");
         return Response.ok("").build();
     }
-    
+
     @POST
     @Path(ApiUrls.AUTH_OAUTH)
     @Operation(summary = "OpenID Connect callback", description = "Verifies an openID claim and starts a session for the user")
@@ -265,20 +263,21 @@ public class AuthenticationEndpoint {
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "Internal error")
     @Tag(name = "login")
-    public Response openIdLogin(@FormParam("error") String error, @FormParam("id_token") String idToken) throws IOException {
+    public Response openIdLogin(@FormParam("error") String error, @FormParam("id_token") String idToken, @QueryParam("state") String state)
+            throws IOException {
         AuthResponseListener<OpenIdProvider> listener = DataManager.getInstance().getOAuthResponseListener();
         OpenIdProvider provider = null;
         for (OpenIdProvider p : listener.getProviders()) {
-            if (p.getoAuthState() != null ||   .equals(p.getoAuthState())) {
+            if (state != null && state.equals(p.getoAuthState())) {
                 provider = p;
                 break;
             }
         }
-        if(provider == null) {
+        if (provider == null) {
             return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_ILLEGAL_REDIRECT_URL)
                     .build();
         }
-        
+
         String nonce = (String) servletRequest.getSession().getAttribute("openIDNonce");
         if (error == null) {
             // no error - we should have a token. Verify it.
@@ -287,7 +286,6 @@ public class AuthenticationEndpoint {
                 // now check if the nonce is the same as in the old session
                 if (nonce.equals(jwt.getClaim("nonce").asString()) && provider.getClientId().equals(jwt.getClaim("aud").asString())) {
                     //all OK, login the user
-                    UserBean userBean = BeanUtils.getUserBean();
 
                     // get the user by the configured claim from the JWT
                     String login = jwt.getClaim(provider.getScope()).asString();
@@ -295,7 +293,7 @@ public class AuthenticationEndpoint {
                         logger.error("The configured claim '{}' is not present in the response.", provider.getScope());
                     } else {
                         logger.debug("logging in user ");
-                        
+
                         String payload = new String(new Base64(true).decode(idToken), StandardCharsets.UTF_8);
                         JSONTokener tokener = new JSONTokener(payload);
                         JSONObject jsonPayload = new JSONObject(tokener);
@@ -316,33 +314,10 @@ public class AuthenticationEndpoint {
             logger.error(error);
         }
         servletResponse.sendRedirect("/goobi/index.xhtml");
-    }
-    
-    /**
-     * 
-     * @param email
-     * @param password
-     * @return Optional<User>
-     * @throws AuthenticationProviderException
-     */
-    private static Optional<User> loginUser(String email, String password) throws AuthenticationProviderException {
-        if (StringUtils.isNotEmpty(email)) {
-            try {
-                User user = DataManager.getInstance().getDao().getUserByEmail(email);
-                boolean refused = true;
-                if (user != null && StringUtils.isNotBlank(password) && user.getPasswordHash() != null
-                        && BCRYPT.checkpw(password, user.getPasswordHash())) {
-                    refused = false;
-                }
-                return refused ? Optional.empty() : Optional.ofNullable(user);
-            } catch (DAOException e) {
-                throw new AuthenticationProviderException(e);
-            }
-        }
 
-        return Optional.empty();
+        return Response.ok("").build();
     }
-    
+
     /**
      * 
      * @param token
@@ -351,7 +326,7 @@ public class AuthenticationEndpoint {
     static DecodedJWT verifyOpenIdToken(String token) {
         RSAKeyProvider keyProvider = null;
         try {
-            final JwkProvider provider = new UrlJwkProvider(new URL(config.getOIDCJWKSet()));
+            final JwkProvider provider = new UrlJwkProvider(new URL("TODO OIDCJWKSet"));
 
             keyProvider = new RSAKeyProvider() {
                 @Override
@@ -395,7 +370,7 @@ public class AuthenticationEndpoint {
         }
 
         try {
-            JWTVerifier verifier = JWT.require(algorithm).withIssuer(config.getOIDCIssuer()).build();
+            JWTVerifier verifier = JWT.require(algorithm).withIssuer("TODO OIDCIssuer").build();
             return verifier.verify(decodedJwt);
         } catch (JWTVerificationException exception) {
             logger.error(exception);
