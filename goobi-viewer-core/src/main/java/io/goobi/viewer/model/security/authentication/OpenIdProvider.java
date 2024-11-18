@@ -40,11 +40,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.servlets.openid.OAuthServlet;
 
 /**
  * <p>
@@ -65,7 +65,8 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /** Token endpoint URI. */
     private String tokenEndpoint = url + "/token";
     /** OpenID servlet URI. Not to be confused with <code>HttpAuthenticationProvider.redirectUrl</code> */
-    private String redirectionEndpoint = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL;
+    private String redirectionEndpoint =
+            BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/api/v1/" + ApiUrls.AUTH + "/" + ApiUrls.AUTH_OAUTH + "/";
     /** Scope. */
     private String scope = "openid email";
 
@@ -250,7 +251,10 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
             builder.addParameter("state", oAuthState);
             builder.addParameter("nonce", nonce);
 
-            ec.redirect(builder.build().toString());
+            String uri = builder.build().toString();
+            logger.trace("uri: {}", uri);
+
+            ec.redirect(uri);
 
             return CompletableFuture.supplyAsync(() -> {
                 synchronized (responseLock) {
