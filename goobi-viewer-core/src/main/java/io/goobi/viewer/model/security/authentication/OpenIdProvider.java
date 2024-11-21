@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
@@ -42,7 +43,9 @@ import org.json.JSONObject;
 
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
 
@@ -58,6 +61,8 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /** Constant <code>TYPE_OPENID="openId"</code> */
     public static final String TYPE_OPENID = "openId";
 
+    /** OAuth discovery URL. */
+    private String discoveryUrl;
     /** OAuth client ID. */
     private String clientId;
     /** OAuth client secret. */
@@ -66,9 +71,17 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     private String tokenEndpoint = url + "/token";
     /** OpenID servlet URI. Not to be confused with <code>HttpAuthenticationProvider.redirectUrl</code> */
     private String redirectionEndpoint =
-            BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/api/v1/" + ApiUrls.AUTH + "/" + ApiUrls.AUTH_OAUTH + "/";
-    /** Scope. */
+            BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/api/v1" + ApiUrls.AUTH + ApiUrls.AUTH_OAUTH;
+    /** OAuth parameter jwks_uri. */
+    private String jwksUri;
+    /** OAuth parameter scope. */
     private String scope = "openid email";
+    /** OAuth parameter response_type. */
+    private String responseType = "code";
+    /** OAuth parameter response_mode. */
+    private String responseMode;
+    /** OAuth parameter issuer. */
+    private String issuer;
 
     private String thirdPartyLoginUrl;
     private String thirdPartyLoginApiKey;
@@ -101,124 +114,13 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         super(name, label, TYPE_OPENID, url, image, timeoutMillis);
         this.clientId = clientId;
         this.clientSecret = clientSecret;
+
+        doDiscovery();
     }
 
-    /**
-     * <p>
-     * Getter for the field <code>clientId</code>.
-     * </p>
-     *
-     * @return the clientId
-     */
-    public String getClientId() {
-        return clientId;
-    }
-
-    /**
-     * <p>
-     * Getter for the field <code>clientSecret</code>.
-     * </p>
-     *
-     * @return the clientSecret
-     */
-    public String getClientSecret() {
-        return clientSecret;
-    }
-
-    /**
-     * @return the tokenEndpoint
-     */
-    public String getTokenEndpoint() {
-        return tokenEndpoint;
-    }
-
-    /**
-     * @param tokenEndpoint the tokenEndpoint to set
-     * @return this
-     */
-    public OpenIdProvider setTokenEndpoint(String tokenEndpoint) {
-        if (tokenEndpoint != null) {
-            this.tokenEndpoint = tokenEndpoint;
-        }
-        return this;
-    }
-
-    /**
-     * @return the redirectionEndpoint
-     */
-    public String getRedirectionEndpoint() {
-        return redirectionEndpoint;
-    }
-
-    /**
-     * @param redirectionEndpoint the redirectionEndpoint to set
-     * @return this
-     */
-    public OpenIdProvider setRedirectionEndpoint(String redirectionEndpoint) {
-        if (redirectionEndpoint != null) {
-            this.redirectionEndpoint = redirectionEndpoint;
-        }
-        return this;
-    }
-
-    /**
-     * @return the scope
-     */
-    public String getScope() {
-        return scope;
-    }
-
-    /**
-     * @param scope the scope to set
-     * @return this
-     */
-    public OpenIdProvider setScope(String scope) {
-        if (scope != null) {
-            this.scope = scope;
-        }
-        return this;
-    }
-
-    public String getThirdPartyLoginUrl() {
-        return thirdPartyLoginUrl;
-    }
-
-    public String getThirdPartyLoginApiKey() {
-        return thirdPartyLoginApiKey;
-    }
-
-    public String getThirdPartyLoginScope() {
-        return thirdPartyLoginScope;
-    }
-
-    public String getThirdPartyLoginReqParamDef() {
-        return thirdPartyLoginReqParamDef;
-    }
-
-    public String getThirdPartyLoginClaim() {
-        return thirdPartyLoginClaim;
-    }
-
-    public IAuthenticationProvider setThirdPartyVariables(String thirdPartyLoginUrl, String thirdPartyLoginApiKey,
-            String thirdPartyLoginScope, String thirdPartyLoginReqParamDef, String thirdPartyLoginClaim) {
-        if ((thirdPartyLoginUrl != null) && (thirdPartyLoginApiKey != null) && (thirdPartyLoginScope != null)) {
-            this.thirdPartyLoginUrl = thirdPartyLoginUrl;
-            this.thirdPartyLoginApiKey = thirdPartyLoginApiKey;
-            this.thirdPartyLoginScope = thirdPartyLoginScope;
-            this.thirdPartyLoginReqParamDef = thirdPartyLoginReqParamDef;
-            this.thirdPartyLoginClaim = thirdPartyLoginClaim;
-        }
-
-        return this;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#login(java.lang.String, java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException {
-
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
 
         byte[] secureBytes = new byte[64];
@@ -228,25 +130,15 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         session.setAttribute("openIDNonce", nonce);
 
         try {
-            // TODO UUID instead of timestamp?
             oAuthState =
-                    new StringBuilder(String.valueOf(System.nanoTime())).append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).toString();
-
-            //            OAuthClientRequest request = OAuthClientRequest.authorizationLocation(getUrl())
-            //                    .setResponseType(ResponseType.CODE.name().toLowerCase())
-            //                    .setClientId(getClientId())
-            //                    .setRedirectURI(redirectionEndpoint)
-            //                    .setState(oAuthState)
-            //                    .setScope(scope)
-            //                    .buildQueryMessage();
-
+                    new StringBuilder(UUID.randomUUID().toString()).append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).toString();
             DataManager.getInstance().getOAuthResponseListener().register(this);
 
             URIBuilder builder = new URIBuilder(getUrl());
             builder.addParameter("client_id", clientId);
-            builder.addParameter("response_type", "id_token");
+            builder.addParameter("response_type", responseType);
             builder.addParameter("redirect_uri", redirectionEndpoint);
-            builder.addParameter("response_mode", "form_post");
+            // builder.addParameter("response_mode", "form_post");
             builder.addParameter("scope", scope);
             builder.addParameter("state", oAuthState);
             builder.addParameter("nonce", nonce);
@@ -399,6 +291,42 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return this.loginResult.isRedirected(getTimeoutMillis());
     }
 
+    void doDiscovery() {
+        if (this.discoveryUrl == null) {
+            return;
+        }
+
+        logger.trace("OpenID discovery URL: {}", this.discoveryUrl);
+        try {
+            String responseBody = NetTools.getWebContentGET(this.discoveryUrl);
+            JSONObject discoveryObj = new JSONObject(responseBody);
+            for (String field : discoveryObj.keySet()) {
+                logger.trace("{}:{}", field, discoveryObj.get(field));
+                switch (field) {
+                    case "authorization_endpoint":
+                        this.url = discoveryObj.getString(field);
+                        logger.trace("set {}:{}", field, url);
+                        break;
+                    case "issuer":
+                        this.issuer = discoveryObj.getString(field);
+                        logger.trace("set {}:{}", field, issuer);
+                        break;
+                    case "jwks_uri":
+                        this.jwksUri = discoveryObj.getString(field);
+                        logger.trace("set {}:{}", field, jwksUri);
+                        break;
+                    case "token_endpoint":
+                        this.tokenEndpoint = discoveryObj.getString(field);
+                        logger.trace("set {}:{}", field, tokenEndpoint);
+                        break;
+                }
+            }
+        } catch (IOException | HTTPException e) {
+            logger.error(e.getMessage());
+        }
+
+    }
+
     /** {@inheritDoc} */
     @Override
     public void logout() throws AuthenticationProviderException {
@@ -409,6 +337,207 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     @Override
     public boolean allowsPasswordChange() {
         return false;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean allowsNicknameChange() {
+        return true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean allowsEmailChange() {
+        return false;
+    }
+
+    /**
+     * @return the discoveryUrl
+     */
+    public String getDiscoveryUrl() {
+        return discoveryUrl;
+    }
+
+    /**
+     * @param discoveryUrl the discoveryUrl to set
+     * @return this
+     */
+    public OpenIdProvider setDiscoveryUrl(String discoveryUrl) {
+        this.discoveryUrl = discoveryUrl;
+        return this;
+    }
+
+    /**
+     * <p>
+     * Getter for the field <code>clientId</code>.
+     * </p>
+     *
+     * @return the clientId
+     */
+    public String getClientId() {
+        return clientId;
+    }
+
+    /**
+     * <p>
+     * Getter for the field <code>clientSecret</code>.
+     * </p>
+     *
+     * @return the clientSecret
+     */
+    public String getClientSecret() {
+        return clientSecret;
+    }
+
+    /**
+     * @return the tokenEndpoint
+     */
+    public String getTokenEndpoint() {
+        return tokenEndpoint;
+    }
+
+    /**
+     * @param tokenEndpoint the tokenEndpoint to set
+     * @return this
+     */
+    public OpenIdProvider setTokenEndpoint(String tokenEndpoint) {
+        if (tokenEndpoint != null) {
+            this.tokenEndpoint = tokenEndpoint;
+        }
+        return this;
+    }
+
+    /**
+     * @return the jwksUri
+     */
+    public String getJwksUri() {
+        return jwksUri;
+    }
+
+    /**
+     * @param jwksUri the jwksUri to set
+     * @return this
+     */
+    public OpenIdProvider setJwksUri(String jwksUri) {
+        this.jwksUri = jwksUri;
+        return this;
+    }
+
+    /**
+     * @return the redirectionEndpoint
+     */
+    public String getRedirectionEndpoint() {
+        return redirectionEndpoint;
+    }
+
+    /**
+     * @param redirectionEndpoint the redirectionEndpoint to set
+     * @return this
+     */
+    public OpenIdProvider setRedirectionEndpoint(String redirectionEndpoint) {
+        if (redirectionEndpoint != null) {
+            this.redirectionEndpoint = redirectionEndpoint;
+        }
+        return this;
+    }
+
+    /**
+     * @return the scope
+     */
+    public String getScope() {
+        return scope;
+    }
+
+    /**
+     * @param scope the scope to set
+     * @return this
+     */
+    public OpenIdProvider setScope(String scope) {
+        if (scope != null) {
+            this.scope = scope;
+        }
+        return this;
+    }
+
+    /**
+     * @return the responseType
+     */
+    public String getResponseType() {
+        return responseType;
+    }
+
+    /**
+     * @param responseType the responseType to set
+     * @return this
+     */
+    public OpenIdProvider setResponseType(String responseType) {
+        this.responseType = responseType;
+        return this;
+    }
+
+    /**
+     * @return the responseMode
+     */
+    public String getResponseMode() {
+        return responseMode;
+    }
+
+    /**
+     * @param responseMode the responseMode to set
+     * @return this
+     */
+    public OpenIdProvider setResponseMode(String responseMode) {
+        this.responseMode = responseMode;
+        return this;
+    }
+
+    /**
+     * @return the issuer
+     */
+    public String getIssuer() {
+        return issuer;
+    }
+
+    /**
+     * @param issuer the issuer to set
+     * @return this
+     */
+    public OpenIdProvider setIssuer(String issuer) {
+        this.issuer = issuer;
+        return this;
+    }
+
+    public String getThirdPartyLoginUrl() {
+        return thirdPartyLoginUrl;
+    }
+
+    public String getThirdPartyLoginApiKey() {
+        return thirdPartyLoginApiKey;
+    }
+
+    public String getThirdPartyLoginScope() {
+        return thirdPartyLoginScope;
+    }
+
+    public String getThirdPartyLoginReqParamDef() {
+        return thirdPartyLoginReqParamDef;
+    }
+
+    public String getThirdPartyLoginClaim() {
+        return thirdPartyLoginClaim;
+    }
+
+    public IAuthenticationProvider setThirdPartyVariables(String thirdPartyLoginUrl, String thirdPartyLoginApiKey,
+            String thirdPartyLoginScope, String thirdPartyLoginReqParamDef, String thirdPartyLoginClaim) {
+        if ((thirdPartyLoginUrl != null) && (thirdPartyLoginApiKey != null) && (thirdPartyLoginScope != null)) {
+            this.thirdPartyLoginUrl = thirdPartyLoginUrl;
+            this.thirdPartyLoginApiKey = thirdPartyLoginApiKey;
+            this.thirdPartyLoginScope = thirdPartyLoginScope;
+            this.thirdPartyLoginReqParamDef = thirdPartyLoginReqParamDef;
+            this.thirdPartyLoginClaim = thirdPartyLoginClaim;
+        }
+
+        return this;
     }
 
     /**
@@ -454,23 +583,4 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     public void setoAuthAccessToken(String oAuthAccessToken) {
         this.oAuthAccessToken = oAuthAccessToken;
     }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsNicknameChange()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean allowsNicknameChange() {
-        return true;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsEmailChange()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean allowsEmailChange() {
-        return false;
-    }
-
 }

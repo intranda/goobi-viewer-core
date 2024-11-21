@@ -29,7 +29,9 @@ import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -53,7 +55,6 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import com.auth0.jwk.InvalidPublicKeyException;
 import com.auth0.jwk.JwkException;
 import com.auth0.jwk.JwkProvider;
 import com.auth0.jwk.UrlJwkProvider;
@@ -65,8 +66,8 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.AuthenticationException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
@@ -90,8 +91,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class AuthenticationEndpoint {
 
     private static final Logger logger = LogManager.getLogger(AuthenticationEndpoint.class);
-
-    private static final BCrypt BCRYPT = new BCrypt();
 
     static final String REASON_PHRASE_ILLEGAL_REDIRECT_URL = "Illegal redirect URL or URL cannot be checked.";
     static final String REASON_PHRASE_NO_PROVIDERS_CONFIGURED = "No authentication providers of type 'httpHeader' configured.";
@@ -219,7 +218,6 @@ public class AuthenticationEndpoint {
                     }
                     break;
                 }
-
             }
         }
 
@@ -256,6 +254,23 @@ public class AuthenticationEndpoint {
         return Response.ok("").build();
     }
 
+    @GET
+    @Path(ApiUrls.AUTH_OAUTH)
+    @Operation(summary = "OpenID Connect callback", description = "Verifies an openID claim and starts a session for the user")
+    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "400", description = "Bad request")
+    @ApiResponse(responseCode = "500", description = "Internal error")
+    @Tag(name = "login")
+    public Response openIdLoginGET(@QueryParam("error") String error, @QueryParam("code") String authCode,
+            @QueryParam("access_token") String accessToken,
+            @QueryParam("state") String state) throws IOException {
+        logger.trace("openIdLoginGET");
+        for (String key : servletRequest.getParameterMap().keySet()) {
+            logger.trace("{}:{}", key, servletRequest.getParameterMap().get(key));
+        }
+        return openIdLogin(state, error, authCode);
+    }
+
     @POST
     @Path(ApiUrls.AUTH_OAUTH)
     @Operation(summary = "OpenID Connect callback", description = "Verifies an openID claim and starts a session for the user")
@@ -263,70 +278,94 @@ public class AuthenticationEndpoint {
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "Internal error")
     @Tag(name = "login")
-    public Response openIdLogin(@FormParam("error") String error, @FormParam("id_token") String idToken, @QueryParam("state") String state)
+    public Response openIdLoginPOST(@FormParam("error") String error, @FormParam("code") String authCode, @FormParam("state") String state)
             throws IOException {
+        logger.trace("openIdLoginPOST");
+        return openIdLogin(state, error, authCode);
+    }
+
+    Response openIdLogin(String state, String error, String authCode) throws IOException {
+        logger.trace("state: {}", state);
+        logger.trace("error: {}", error);
+        logger.trace("code: {}", authCode);
         AuthResponseListener<OpenIdProvider> listener = DataManager.getInstance().getOAuthResponseListener();
         OpenIdProvider provider = null;
         for (OpenIdProvider p : listener.getProviders()) {
             if (state != null && state.equals(p.getoAuthState())) {
                 provider = p;
+                listener.unregister(provider);
                 break;
             }
         }
         if (provider == null) {
-            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_ILLEGAL_REDIRECT_URL)
-                    .build();
+            logger.trace("No provider found for given state.");
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_NO_PROVIDER_FOUND).build();
         }
 
         String nonce = (String) servletRequest.getSession().getAttribute("openIDNonce");
-        if (error == null) {
-            // no error - we should have a token. Verify it.
-            DecodedJWT jwt = verifyOpenIdToken(idToken);
-            if (jwt != null) {
-                // now check if the nonce is the same as in the old session
-                if (nonce.equals(jwt.getClaim("nonce").asString()) && provider.getClientId().equals(jwt.getClaim("aud").asString())) {
-                    //all OK, login the user
+        if (error != null) {
+            logger.trace("Error: {}", error);
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), error).build();
+        }
 
-                    // get the user by the configured claim from the JWT
-                    String login = jwt.getClaim(provider.getScope()).asString();
-                    if (StringUtils.isBlank(login)) {
-                        logger.error("The configured claim '{}' is not present in the response.", provider.getScope());
-                    } else {
-                        logger.debug("logging in user ");
+        if (authCode != null) {
+            Map<String, String> params = new HashMap<>(5);
+            params.put("grant_type", "authorization_code");
+            params.put("code", authCode);
+            params.put("client_id", provider.getClientId());
+            params.put("client_secret", provider.getClientSecret());
+            params.put("redirect_uri", provider.getRedirectionEndpoint());
+            String responseBody = NetTools.getWebContentPOST(provider.getTokenEndpoint(), null, params, null, null, null, null);
+            logger.trace(responseBody);
 
-                        String payload = new String(new Base64(true).decode(idToken), StandardCharsets.UTF_8);
-                        JSONTokener tokener = new JSONTokener(payload);
-                        JSONObject jsonPayload = new JSONObject(tokener);
-                        provider.completeLogin(jsonPayload, servletRequest, servletResponse);
-                    }
+            JSONObject responseObj = new JSONObject(responseBody);
+            String idToken = responseObj.getString("id_token");
+            DecodedJWT jwt = verifyOpenIdToken(idToken, provider.getJwksUri(), provider.getIssuer());
+            if (jwt == null) {
+                return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "Could not verify token.").build();
+            }
+
+            // now check if the nonce is the same as in the old session
+            if (nonce.equals(jwt.getClaim("nonce").asString()) && provider.getClientId().equals(jwt.getClaim("aud").asString())) {
+                //all OK, login the user
+
+                // get the user by the configured claim from the JWT
+                String login = jwt.getClaim(provider.getScope()).asString();
+                if (StringUtils.isBlank(login)) {
+                    logger.error("The configured claim '{}' is not present in the response.", provider.getScope());
                 } else {
-                    if (!nonce.equals(jwt.getClaim("nonce").asString())) {
-                        logger.error("nonce does not match. Not logging user in");
-                    }
-                    if (!provider.getClientId().equals(jwt.getClaim("aud").asString())) {
-                        logger.error("clientID does not match aud. Not logging user in");
-                    }
+                    logger.debug("logging in user ");
+
+                    String payload = new String(new Base64(true).decode(idToken), StandardCharsets.UTF_8);
+                    JSONTokener tokener = new JSONTokener(payload);
+                    JSONObject jsonPayload = new JSONObject(tokener);
+                    provider.completeLogin(jsonPayload, servletRequest, servletResponse);
+                    return Response.ok("").build();
                 }
             } else {
-                logger.error("could not verify JWT");
+                if (!nonce.equals(jwt.getClaim("nonce").asString())) {
+                    logger.error("nonce does not match. Not logging user in");
+                }
+                if (!provider.getClientId().equals(jwt.getClaim("aud").asString())) {
+                    logger.error("clientID does not match aud. Not logging user in");
+                }
             }
-        } else {
-            logger.error(error);
         }
-        servletResponse.sendRedirect("/goobi/index.xhtml");
 
-        return Response.ok("").build();
+        return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "???").build();
     }
 
     /**
      * 
      * @param token
+     * @param jwksUri
+     * @param issuer
      * @return {@link DecodedJWT}
      */
-    static DecodedJWT verifyOpenIdToken(String token) {
+    static DecodedJWT verifyOpenIdToken(String token, String jwksUri, String issuer) {
         RSAKeyProvider keyProvider = null;
         try {
-            final JwkProvider provider = new UrlJwkProvider(new URL("TODO OIDCJWKSet"));
+            final JwkProvider provider = new UrlJwkProvider(new URL(jwksUri));
 
             keyProvider = new RSAKeyProvider() {
                 @Override
@@ -336,8 +375,6 @@ public class AuthenticationEndpoint {
                     try {
                         publicKey = provider.get(kid).getPublicKey();
                         return (RSAPublicKey) publicKey;
-                    } catch (InvalidPublicKeyException e) {
-                        logger.error(e.getMessage(), e);
                     } catch (JwkException e) {
                         logger.error(e.getMessage(), e);
                     }
@@ -365,12 +402,12 @@ public class AuthenticationEndpoint {
         if ("RS256".equals(strAlgorithm)) {
             algorithm = Algorithm.RSA256(keyProvider);
         } else {
-            logger.error("JWT algorithm not supported: \"" + strAlgorithm + "\"");
+            logger.error("JWT algorithm not supported: {}", strAlgorithm);
             return null;
         }
 
         try {
-            JWTVerifier verifier = JWT.require(algorithm).withIssuer("TODO OIDCIssuer").build();
+            JWTVerifier verifier = JWT.require(algorithm).withIssuer(issuer).build();
             return verifier.verify(decodedJwt);
         } catch (JWTVerificationException exception) {
             logger.error(exception);
