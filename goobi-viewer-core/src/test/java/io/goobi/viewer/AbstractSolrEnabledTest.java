@@ -47,6 +47,7 @@ public abstract class AbstractSolrEnabledTest extends AbstractTest {
     }
 
     @BeforeEach
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         client = SolrSearchIndex.getNewSolrClient();
@@ -56,7 +57,7 @@ public abstract class AbstractSolrEnabledTest extends AbstractTest {
         if (iddocKleiuniv == null) {
             iddocKleiuniv = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(PI_KLEIUNIV);
         }
-        Assertions.assertNotEquals(0, iddocKleiuniv);
+        Assertions.assertNotNull(iddocKleiuniv);
     }
 
     @AfterEach

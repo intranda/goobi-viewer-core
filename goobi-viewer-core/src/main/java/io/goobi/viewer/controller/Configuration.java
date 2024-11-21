@@ -85,6 +85,7 @@ import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataView;
+import io.goobi.viewer.model.metadata.MetadataView.MetadataViewLocation;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.SearchFilter;
@@ -550,7 +551,8 @@ public class Configuration extends AbstractConfiguration {
             String label = metadataView.getString(XML_PATH_ATTRIBUTE_LABEL);
             String url = metadataView.getString(XML_PATH_ATTRIBUTE_URL, "");
             String condition = metadataView.getString(XML_PATH_ATTRIBUTE_CONDITION);
-            MetadataView view = new MetadataView().setIndex(index).setLabel(label).setUrl(url).setCondition(condition);
+            MetadataViewLocation location = MetadataViewLocation.getByName(metadataView.getString("[@location]", "sidebar"));
+            MetadataView view = new MetadataView().setIndex(index).setLabel(label).setUrl(url).setCondition(condition).setLocation(location);
             ret.add(view);
         }
 
@@ -721,6 +723,7 @@ public class Configuration extends AbstractConfiguration {
         String masterValue = sub.getString("[@value]");
         String citationTemplate = sub.getString("[@citationTemplate]");
         boolean group = sub.getBoolean("[@group]", false);
+        String key = sub.getString("[@key]", label);
         boolean singleString = sub.getBoolean("[@singleString]", true);
         boolean topstructOnly = sub.getBoolean("[@topstructOnly]", false);
         int number = sub.getInt("[@number]", -1);
@@ -729,6 +732,7 @@ public class Configuration extends AbstractConfiguration {
         String labelField = sub.getString("[@labelField]");
         String sortField = sub.getString("[@sortField]");
         String separator = sub.getString("[@separator]");
+        String filterQuery = sub.getString("filterQuery", "");
         List<HierarchicalConfiguration<ImmutableNode>> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
         if (params != null) {
@@ -738,7 +742,7 @@ public class Configuration extends AbstractConfiguration {
             }
         }
 
-        Metadata ret = new Metadata(label, masterValue, paramList)
+        Metadata ret = new Metadata(label, key, masterValue, paramList)
                 .setType(type)
                 .setGroup(group)
                 .setNumber(number)
@@ -749,7 +753,9 @@ public class Configuration extends AbstractConfiguration {
                 .setLabelField(labelField)
                 .setSortField(sortField)
                 .setSeparator(separator)
-                .setIndentation(indentation);
+                .setIndentation(indentation)
+                .setFilterQuery(filterQuery);
+        ;
 
         // Recursively add nested metadata configurations
         List<HierarchicalConfiguration<ImmutableNode>> children = sub.configurationsAt("metadata");
@@ -2488,8 +2494,10 @@ public class Configuration extends AbstractConfiguration {
             String thirdPartyLoginUrl = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginUrl]", null);
             String thirdPartyLoginApiKey = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginApiKey]", null);
             String thirdPartyLoginScope = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginScope]", null);
-            String thirdPartyLoginReqParamDef = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginReqParamDef]", null);;
-            String thirdPartyLoginClaim = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginClaim]", null);;
+            String thirdPartyLoginReqParamDef = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginReqParamDef]", null);
+            ;
+            String thirdPartyLoginClaim = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginClaim]", null);
+            ;
             long timeoutMillis = myConfigToUse.getLong(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@timeout]", 60000);
 
             if (enabled) {
@@ -2504,7 +2512,8 @@ public class Configuration extends AbstractConfiguration {
                                         .setTokenEndpoint(tokenEndpoint)
                                         .setRedirectionEndpoint(redirectionEndpoint)
                                         .setScope(scope)
-                                        .setThirdPartyVariables(thirdPartyLoginUrl, thirdPartyLoginApiKey, thirdPartyLoginScope, thirdPartyLoginReqParamDef, thirdPartyLoginClaim));
+                                        .setThirdPartyVariables(thirdPartyLoginUrl, thirdPartyLoginApiKey, thirdPartyLoginScope,
+                                                thirdPartyLoginReqParamDef, thirdPartyLoginClaim));
                         break;
                     case "userpassword":
                         switch (name.toLowerCase()) {

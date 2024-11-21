@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -36,7 +37,9 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.security.AccessPermission;
+import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -125,7 +128,7 @@ public class VisibilityCondition {
     }
 
     public boolean matchesRecord(PageType pageType, ViewManager viewManager, HttpServletRequest request, RecordPropertyCache properties)
-            throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException {
+            throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException, ViewerConfigurationException {
 
         if (viewManager == null || viewManager.getTopStructElement() == null) {
             return false;
@@ -149,7 +152,7 @@ public class VisibilityCondition {
         if (viewManager.getTopStructElement().isWork()) {
             docTypes.add("record");
         }
-        if (viewManager.getTopStructElementIddoc() != viewManager.getCurrentStructElementIddoc()) {
+        if (!Objects.equals(viewManager.getTopStructElementIddoc(), viewManager.getCurrentStructElementIddoc())) {
             docTypes.add("subStruct");
         }
 
@@ -167,7 +170,27 @@ public class VisibilityCondition {
                 && this.views.matches(List.of(pageType))
                 && this.docTypes.matches(docTypes)
                 && this.numPages.matches(viewManager.getPageLoader().getNumPages())
-                && this.tocSize.matches(viewManager.getToc().getTocElements().size());
+                && this.tocSize.matches(getToc(viewManager).getTocElements().size());
+    }
+
+    protected TOC getToc(ViewManager viewManager)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        if (viewManager.getToc() == null) {
+            viewManager.setToc(createTOC(viewManager));
+        }
+        return viewManager.getToc();
+    }
+
+    private TOC createTOC(ViewManager viewManager)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        TOC toc = new TOC();
+        synchronized (toc) {
+            if (viewManager != null) {
+                toc.generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMimeType(),
+                        viewManager.getCurrentImageOrder());
+            }
+        }
+        return toc;
     }
 
     public boolean checkAccess(ViewManager viewManager, HttpServletRequest request, RecordPropertyCache properties)

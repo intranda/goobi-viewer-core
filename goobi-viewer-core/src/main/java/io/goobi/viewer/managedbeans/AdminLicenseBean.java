@@ -438,10 +438,9 @@ public class AdminLicenseBean implements Serializable {
      * @return Navigation outcome
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws DAOException
-     * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public String saveCurrentLicenseAction() throws DAOException, IndexUnreachableException, PresentationException {
+    public String saveCurrentLicenseAction() throws DAOException, PresentationException {
         logger.trace("saveCurrentLicenseAction");
         if (currentLicense == null) {
             Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);

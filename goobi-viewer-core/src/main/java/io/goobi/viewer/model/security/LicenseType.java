@@ -148,11 +148,6 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         this.name = name;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -162,11 +157,6 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -582,18 +572,12 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         return privilegesCopy.contains(privilege);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsPages()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean isPrivCmsPages() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_PAGES);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCmsPages(boolean)
-     */
     /** {@inheritDoc} */
     @Override
     public void setPrivCmsPages(boolean priv) {
@@ -604,18 +588,12 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsAllSubthemes()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean isPrivCmsAllSubthemes() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_SUBTHEMES);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCmsAllSubthemes(boolean)
-     */
     /** {@inheritDoc} */
     @Override
     public void setPrivCmsAllSubthemes(boolean priv) {
@@ -626,18 +604,12 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsAllCategories()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean isPrivCmsAllCategories() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_CATEGORIES);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCmsAllCategories(boolean)
-     */
     /** {@inheritDoc} */
     @Override
     public void setPrivCmsAllCategories(boolean priv) {
@@ -648,18 +620,12 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsAllTemplates()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean isPrivCmsAllTemplates() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_ALL_TEMPLATES);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCmsAllTemplates(boolean)
-     */
     /** {@inheritDoc} */
     @Override
     public void setPrivCmsAllTemplates(boolean priv) {
@@ -670,18 +636,12 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsMenu()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean isPrivCmsMenu() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_MENU);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCmsMenu(boolean)
-     */
     /** {@inheritDoc} */
     @Override
     public void setPrivCmsMenu(boolean priv) {
@@ -692,18 +652,12 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsStaticPages()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean isPrivCmsStaticPages() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_STATIC_PAGES);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCmsStaticPages(boolean)
-     */
     /** {@inheritDoc} */
     @Override
     public void setPrivCmsStaticPages(boolean priv) {
@@ -714,18 +668,12 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsCollections()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean isPrivCmsCollections() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_COLLECTIONS);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCmsCollections(boolean)
-     */
     /** {@inheritDoc} */
     @Override
     public void setPrivCmsCollections(boolean priv) {
@@ -736,18 +684,12 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCmsCategories()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean isPrivCmsCategories() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CMS_CATEGORIES);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCmsCategories(boolean)
-     */
     /** {@inheritDoc} */
     @Override
     public void setPrivCmsCategories(boolean priv) {
@@ -758,18 +700,12 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCrowdsourcingAllCampaigns()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean isPrivCrowdsourcingAllCampaigns() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_ALL_CAMPAIGNS);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCrowdsourcingAllCampaigns(boolean)
-     */
     /** {@inheritDoc} */
     @Override
     public void setPrivCrowdsourcingAllCampaigns(boolean priv) {
@@ -780,18 +716,12 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCrowdsourcingAnnotateCampaign()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean isPrivCrowdsourcingAnnotateCampaign() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_ANNOTATE_CAMPAIGN);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCrowdsourcingAnnotateCampaign(boolean)
-     */
     /** {@inheritDoc} */
     @Override
     public void setPrivCrowdsourcingAnnotateCampaign(boolean priv) {
@@ -802,18 +732,12 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivCrowdsourcingReviewCampaign()
-     */
     /** {@inheritDoc} */
     @Override
     public boolean isPrivCrowdsourcingReviewCampaign() {
         return hasPrivilege(IPrivilegeHolder.PRIV_CROWDSOURCING_REVIEW_CAMPAIGN);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivCrowdsourcingReviewCampaign(boolean)
-     */
     /** {@inheritDoc} */
     @Override
     public void setPrivCrowdsourcingReviewCampaign(boolean priv) {
@@ -824,17 +748,11 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
         }
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#isPrivViewUgc()
-     */
     @Override
     public boolean isPrivViewUgc() {
         return hasPrivilege(IPrivilegeHolder.PRIV_VIEW_UGC);
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.IPrivilegeHolder#setPrivViewUgc(boolean)
-     */
     @Override
     public void setPrivViewUgc(boolean priv) {
         if (priv) {
@@ -1010,9 +928,6 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
                 .toString();
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {

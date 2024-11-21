@@ -47,7 +47,7 @@ class MetadataTest extends AbstractSolrEnabledTest {
      * @verifies return language-specific version of a field
      */
     @Test
-    void filterMetadata_shouldReturnLanguagespecificVersionOfAField() throws Exception {
+    void filterMetadata_shouldReturnLanguagespecificVersionOfAField() {
         List<Metadata> metadataList = new ArrayList<>();
         metadataList.add(new Metadata("", "MD_TITLE_LANG_DE", "", "föö"));
         metadataList.add(new Metadata("", "MD_TITLE_LANG_EN", "", "foo"));
@@ -62,7 +62,7 @@ class MetadataTest extends AbstractSolrEnabledTest {
      * @verifies return generic version if no language specific version is found
      */
     @Test
-    void filterMetadata_shouldReturnGenericVersionIfNoLanguageSpecificVersionIsFound() throws Exception {
+    void filterMetadata_shouldReturnGenericVersionIfNoLanguageSpecificVersionIsFound() {
         List<Metadata> metadataList = new ArrayList<>();
         metadataList.add(new Metadata("", "MD_TITLE_LANG_DE", "", "foo"));
         metadataList.add(new Metadata("", "MD_TITLE", "", "bar"));
@@ -76,7 +76,7 @@ class MetadataTest extends AbstractSolrEnabledTest {
      * @verifies preserve metadata field order
      */
     @Test
-    void filterMetadata_shouldPreserveMetadataFieldOrder() throws Exception {
+    void filterMetadata_shouldPreserveMetadataFieldOrder() {
         List<Metadata> metadataList = new ArrayList<>();
         metadataList.add(new Metadata("", "MD_TITLE_LANG_EN", "", "foo"));
         metadataList.add(new Metadata("", "MD_TITLE_LANG_DE", "", "foo"));
@@ -94,7 +94,7 @@ class MetadataTest extends AbstractSolrEnabledTest {
      * @verifies filter by desired field name correctly
      */
     @Test
-    void filterMetadata_shouldFilterByDesiredFieldNameCorrectly() throws Exception {
+    void filterMetadata_shouldFilterByDesiredFieldNameCorrectly() {
         List<Metadata> metadataList = new ArrayList<>();
         metadataList.add(new Metadata("", "MD_TITLE_LANG_EN", "", "foo"));
         metadataList.add(new Metadata("", "MD_TITLE_LANG_DE", "", "foo"));
@@ -110,7 +110,7 @@ class MetadataTest extends AbstractSolrEnabledTest {
      * @verifies build value correctly
      */
     @Test
-    void buildHierarchicalValue_shouldBuildValueCorrectly() throws Exception {
+    void buildHierarchicalValue_shouldBuildValueCorrectly() {
         {
             String value = Metadata.buildHierarchicalValue("DC", "a.b", null, "http://localhost:8080/");
             assertEquals(
@@ -129,7 +129,7 @@ class MetadataTest extends AbstractSolrEnabledTest {
      * @verifies add configured collection sort field
      */
     @Test
-    void buildHierarchicalValue_shouldAddConfiguredCollectionSortField() throws Exception {
+    void buildHierarchicalValue_shouldAddConfiguredCollectionSortField() {
         String value = Metadata.buildHierarchicalValue("DC", "collection1", null, "http://localhost:8080/");
         assertEquals("<a href=\"http://localhost:8080/browse/-/1/SORT_TITLE/DC:collection1/\">collection1</a>", value);
     }
@@ -139,7 +139,7 @@ class MetadataTest extends AbstractSolrEnabledTest {
      * @verifies return true if all paramValues are empty
      */
     @Test
-    void isBlank_shouldReturnTrueIfAllParamValuesAreEmpty() throws Exception {
+    void isBlank_shouldReturnTrueIfAllParamValuesAreEmpty() {
         Metadata metadata = new Metadata("", "MD_FIELD", "", "");
         assertEquals(1, metadata.getValues().size());
         Assertions.assertTrue(metadata.isBlank(null));
@@ -150,7 +150,7 @@ class MetadataTest extends AbstractSolrEnabledTest {
      * @verifies return false if at least one paramValue is not empty
      */
     @Test
-    void isBlank_shouldReturnFalseIfAtLeastOneParamValueIsNotEmpty() throws Exception {
+    void isBlank_shouldReturnFalseIfAtLeastOneParamValueIsNotEmpty() {
         Metadata metadata = new Metadata("", "MD_FIELD", "", "val");
         assertEquals(1, metadata.getValues().size());
         Assertions.assertFalse(metadata.isBlank(null));
@@ -161,8 +161,8 @@ class MetadataTest extends AbstractSolrEnabledTest {
      * @verifies return true if all values have different ownerIddoc
      */
     @Test
-    void isBlank_shouldReturnTrueIfAllValuesHaveDifferentOwnerIddoc() throws Exception {
-        Metadata metadata = new Metadata("", "MD_FIELD", "", null);
+    void isBlank_shouldReturnTrueIfAllValuesHaveDifferentOwnerIddoc() {
+        Metadata metadata = new Metadata("", "MD_FIELD", "", "");
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
         String[] values = new String[] { "val1", "val2" };
         metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
@@ -180,7 +180,7 @@ class MetadataTest extends AbstractSolrEnabledTest {
      */
     @Test
     void isBlank_shouldReturnTrueIfAtLeastOneValueHasSameOwnerIddoc() {
-        Metadata metadata = new Metadata("", "MD_FIELD", "", null);
+        Metadata metadata = new Metadata("", "MD_FIELD", "", "");
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
         String[] values = new String[] { "val1", "val2" };
         metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
@@ -199,7 +199,7 @@ class MetadataTest extends AbstractSolrEnabledTest {
      */
     @Test
     void populateGroup_shouldPopulateGroupCorrectly() throws IndexUnreachableException {
-        Metadata metadata = new Metadata("", "MD_CREATOR", "{1}{3}", null);
+        Metadata metadata = new Metadata("", "MD_CREATOR", "{1}{3}", "");
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_VALUE"));
         metadata.getParams()
                 .add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_LIFEPERIOD").setPrefix(" (").setSuffix(")"));
@@ -217,7 +217,7 @@ class MetadataTest extends AbstractSolrEnabledTest {
      */
     @Test
     void populateGroup_shouldApplyDefaultValueIfNoneFound() throws IndexUnreachableException {
-        Metadata metadata = new Metadata("", "MD_PLACEPUBLISH", "{1}{3}", null);
+        Metadata metadata = new Metadata("", "MD_PLACEPUBLISH", "{1}{3}", "");
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_VALUE"));
         metadata.getParams()
                 .add(new MetadataParameter().setType(MetadataParameterType.FIELD)
@@ -240,7 +240,7 @@ class MetadataTest extends AbstractSolrEnabledTest {
      */
     @Test
     void setParamValue_shouldAddMultivaluedParamValuesCorrectly() {
-        Metadata metadata = new Metadata("", "MD_FIELD", "", null);
+        Metadata metadata = new Metadata("", "MD_FIELD", "", "");
         String[] values = new String[] { "val1", "val2" };
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setPrefix("pre_").setSuffix("_suf"));
         metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
@@ -257,7 +257,7 @@ class MetadataTest extends AbstractSolrEnabledTest {
      */
     @Test
     void setParamValue_shouldSetGroupTypeCorrectly() {
-        Metadata metadata = new Metadata("", "MD_FIELD", "", null);
+        Metadata metadata = new Metadata("", "MD_FIELD", "", "");
         String[] values = new String[] { "val1", "val2" };
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setPrefix("pre_").setSuffix("_suf"));
         metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, MetadataGroupType.CORPORATION.name(), null);
@@ -271,7 +271,7 @@ class MetadataTest extends AbstractSolrEnabledTest {
      */
     @Test
     void getValuesForOwner_shouldReturnAllValuesIfOwnerIddocNull() {
-        Metadata metadata = new Metadata("", "MD_FIELD", "", null);
+        Metadata metadata = new Metadata("", "MD_FIELD", "", "");
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
         String[] values = new String[] { "val1", "val2" };
         metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);
@@ -289,7 +289,7 @@ class MetadataTest extends AbstractSolrEnabledTest {
      */
     @Test
     void getValuesForOwner_shouldReturnOnlyValuesForTheGivenOwnerIddoc() {
-        Metadata metadata = new Metadata("", "MD_FIELD", "", null);
+        Metadata metadata = new Metadata("", "MD_FIELD", "", "");
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
         String[] values = new String[] { "val1", "val2" };
         metadata.setParamValue(0, 0, Arrays.asList(values), "", null, null, null, null);

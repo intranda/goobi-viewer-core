@@ -27,15 +27,19 @@ var viewerJS = ( function ( viewer ) {
     var _debug = false;
     var _defaults = {};
 
+	const filterAjaxEvents = event => {
+		return event.source.dataset.jsfUpdateType !== "ignore";
+	}
+
     viewer.jsfAjax = {
     	/**
     	 * @description Method to initialize the jsf ajax listener.
     	 * @method init 
     	 * */
-        begin: new rxjs.Subject(),
-        complete: new rxjs.Subject(),
-        success: new rxjs.Subject(),
-        error: new rxjs.Subject(),
+        begin: new rxjs.Subject().pipe(rxjs.operators.filter(filterAjaxEvents)),
+        complete: new rxjs.Subject().pipe(rxjs.operators.filter(filterAjaxEvents)),
+        success: new rxjs.Subject().pipe(rxjs.operators.filter(filterAjaxEvents)),
+        error: new rxjs.Subject().pipe(rxjs.operators.filter(filterAjaxEvents)),
         handleResponse: function(success, error) {
         	this.complete
 		    .pipe(rxjs.operators.first())
@@ -52,6 +56,7 @@ var viewerJS = ( function ( viewer ) {
 						}						
 		        }
 		    });
+
         },
     	init: function( config ) {
     		if (_debug) {

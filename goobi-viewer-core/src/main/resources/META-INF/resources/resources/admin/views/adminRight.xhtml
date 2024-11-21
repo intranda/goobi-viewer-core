@@ -53,7 +53,7 @@
                                             <f:selectItem itemLabel="#{msg.admin__groups}" itemValue="group" />
                                             <f:selectItem itemLabel="#{msg.admin__ip_ranges}" itemValue="iprange" />
                                             <f:selectItem itemLabel="#{msg.admin__clients}" itemValue="client" />
-                                            <f:ajax render="licenseeGroup infoGroup licenseTypeGroup" />
+                                            <f:ajax render="licenseeGroup infoGroup licenseTypeGroup saveButtonGroup" />
                                             <!-- Reset all set licensee values so that the lower menus are reset as well -->
                                             <f:ajax listener="#{adminLicenseBean.currentLicense.setUser(null)}" />
                                             <f:ajax listener="#{adminLicenseBean.currentLicense.setUserGroup(null)}" />
@@ -79,7 +79,7 @@
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                              <f:selectItems var="user" value="#{adminBean.allUsers}" itemLabel="#{user.displayName}" />
-                                             <f:ajax render="licenseTypeGroup infoGroup" />
+                                             <f:ajax render="licenseTypeGroup infoGroup saveButtonGroup" />
                                          </h:selectOneMenu>
                                          <h:selectOneMenu
                                              rendered="#{adminLicenseBean.currentLicense.type == 'group' or adminLicenseBean.currentLicense.userGroup != null}"
@@ -91,7 +91,7 @@
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                              <f:selectItems value="#{adminBean.allUserGroups}" />
-                                             <f:ajax render="licenseTypeGroup infoGroup" />
+                                             <f:ajax render="licenseTypeGroup infoGroup saveButtonGroup" />
                                          </h:selectOneMenu>
                                          <h:selectOneMenu
                                              rendered="#{adminLicenseBean.currentLicense.type == 'iprange' or adminLicenseBean.currentLicense.ipRange != null}"
@@ -103,7 +103,7 @@
                                              <f:passThroughAttribute name="aria-label" value="#{msg.admin__license_licensee_select_label}" />
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                              <f:selectItems var="ipRange" value="#{adminBean.allIpRanges}" itemLabel="#{ipRange.name} (#{ipRange.subnetMask})" />
-                                             <f:ajax render="licenseTypeGroup infoGroup" />
+                                             <f:ajax render="licenseTypeGroup infoGroup saveButtonGroup" />
                                          </h:selectOneMenu>
                                          <h:selectOneMenu
                                              rendered="#{adminLicenseBean.currentLicense.type == 'client' or adminLicenseBean.currentLicense.client != null}"
@@ -115,7 +115,7 @@
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                              <f:selectItem itemLabel="#{msg.admin__right_all_clients}" itemValue="#{adminClientsBean.allClients.id}"/>
                                              <f:selectItems var="client" value="#{adminClientsBean.allAcceptedClients}" itemLabel="#{client.name} (#{client.clientIdentifier})" itemValue="#{client.id}" />
-                                             <f:ajax render="licenseTypeGroup infoGroup" />
+                                             <f:ajax render="licenseTypeGroup infoGroup saveButtonGroup" />
                                          </h:selectOneMenu>
                                      </div>
                                 </h:panelGroup>
@@ -137,7 +137,7 @@
                                              <f:selectItem itemLabel="#{msg.select}" itemValue="#{null}" noSelectionOption="true" />
                                              <f:selectItems var="item" value="#{adminLicenseBean.groupedLicenseTypeSelectItems}"
                                                     itemLabel="#{msg[item.value.name]}" itemValue="#{item.value}"/>
-                                             <f:ajax render="infoGroup functionsGroup" />
+                                             <f:ajax render="infoGroup functionsGroup saveButtonGroup" />
                                          </h:selectOneMenu>
                                      </div>
                                 </h:panelGroup>
@@ -668,11 +668,14 @@
                             <div
 								class="row no-gutters justify-content-end admin__final-actions">
                                 <h:commandLink action="pretty:adminRights" value="#{msg.cancel}" styleClass="btn admin__cancel-button" immediate="true" />
-                                <button 
-                                    jsf:action="#{adminLicenseBean.saveCurrentLicenseAction}" value="" 
-                                    class="btn btn--success">
-                                    #{msg.save}
-                                </button>
+                                <h:panelGroup id="saveButtonGroup">
+                                    <button 
+                                        jsf:action="#{adminLicenseBean.saveCurrentLicenseAction}" value="" 
+                                        class="btn btn--success"
+                                        disabled="#{adminLicenseBean.currentLicense.disabledStatus}">
+                                        #{msg.save}
+                                    </button>
+                                </h:panelGroup>
                             </div>
                         </div>
                     </h:form>
