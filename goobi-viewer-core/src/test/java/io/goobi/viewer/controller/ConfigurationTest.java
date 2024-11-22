@@ -2099,6 +2099,26 @@ class ConfigurationTest extends AbstractTest {
     void isAdvancedSearchEnabled_shouldReturnCorrectValue() {
         assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchEnabled());
     }
+    
+    /**
+     * @see Configuration#getAdvancedSearchTemplateNames()
+     * @verifies return all configured values
+     */
+    @Test
+    void getAdvancedSearchTemplateNames_shouldReturnCorrectValue() {
+        List<String> result = DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateNames();
+        Assertions.assertNotNull(result);
+        assertEquals(2, result.size());
+    }
+    
+    /**
+     * @see Configuration#getAdvancedSearchTemplateQuery(String)
+     * @verifies return correct value
+     */
+    @Test
+    void getAdvancedSearchTemplateQuery_shouldReturnCorrectValue() {
+        assertEquals("DOCSTRCT:person", DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateQuery("person"));
+    }
 
     /**
      * @see Configuration#isCalendarSearchEnabled()
@@ -3495,7 +3515,6 @@ class ConfigurationTest extends AbstractTest {
 
         assertEquals("lido_objects", groups.get(0).getName());
         assertEquals("SOURCEDOCFORMAT:LIDO", groups.get(0).getQuery());
-        assertTrue(groups.get(0).isUseAsAdvancedSearchTemplate());
     }
 
     /**

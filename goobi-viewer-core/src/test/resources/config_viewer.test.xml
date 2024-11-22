@@ -474,6 +474,10 @@
 				    <field>MD_FOO_LANG_ES</field>
                     <field displaySelectItemsThreshold="20" selectType="badges">DOCSTRCT</field>
                 </template>
+                <template name="person" query="DOCSTRCT:person">
+                    <field untokenizeForPhraseSearch="true" visible="true">MD_NAME</field>
+                    <field>MD_BIRTHPLACE</field>
+                </template>
 			</searchFields>
 		</advanced>
         <!-- @enabled: Enables the timeline search (default is true) -->
