@@ -2490,7 +2490,7 @@ public class Configuration extends AbstractConfiguration {
             String responseMode = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@responseMode]");
             String image = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@image]", null);
             boolean enabled = myConfigToUse.getBoolean(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@enabled]", true);
-            String discoveryUrl = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@discoveryUrl]");
+            String discoveryUri = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@discoveryUri]");
             String clientId = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@clientId]", null);
             String clientSecret = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@clientSecret]", null);
             String parameterType = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@parameterType]", null);
@@ -2512,7 +2512,7 @@ public class Configuration extends AbstractConfiguration {
                     case "openid":
                         providers.add(
                                 new OpenIdProvider(name, label, endpoint, image, timeoutMillis, clientId, clientSecret)
-                                        .setDiscoveryUrl(discoveryUrl)
+                                        .setDiscoveryUri(discoveryUri)
                                         .setTokenEndpoint(tokenEndpoint)
                                         .setRedirectionEndpoint(redirectionEndpoint)
                                         .setJwksUri(jwksUri)

@@ -41,6 +41,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
+
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -61,14 +63,14 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /** Constant <code>TYPE_OPENID="openId"</code> */
     public static final String TYPE_OPENID = "openId";
 
-    /** OAuth discovery URL. */
-    private String discoveryUrl;
+    /** OAuth discovery URI. */
+    private String discoveryUri;
     /** OAuth client ID. */
     private String clientId;
     /** OAuth client secret. */
     private String clientSecret;
     /** Token endpoint URI. */
-    private String tokenEndpoint = url + "/token";
+    private String tokenEndpoint;
     /** OpenID servlet URI. Not to be confused with <code>HttpAuthenticationProvider.redirectUrl</code> */
     private String redirectionEndpoint =
             BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/api/v1" + ApiUrls.AUTH + ApiUrls.AUTH_OAUTH;
@@ -114,8 +116,6 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         super(name, label, TYPE_OPENID, url, image, timeoutMillis);
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-
-        doDiscovery();
     }
 
     /** {@inheritDoc} */
@@ -123,28 +123,40 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException {
         ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
 
+        // Generate nonce
         byte[] secureBytes = new byte[64];
         new SecureRandom().nextBytes(secureBytes);
         String nonce = Base64.getUrlEncoder().encodeToString(secureBytes);
         HttpSession session = (HttpSession) ec.getSession(false);
         session.setAttribute("openIDNonce", nonce);
 
+        // Populate parameters via OpenID Discovery, if not yet set
+        doDiscovery();
+
+        if (url == null) {
+            throw new AuthenticationProviderException("endpoint not configured");
+        }
+
         try {
             oAuthState =
                     new StringBuilder(UUID.randomUUID().toString()).append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).toString();
             DataManager.getInstance().getOAuthResponseListener().register(this);
 
-            URIBuilder builder = new URIBuilder(getUrl());
+            URIBuilder builder = new URIBuilder(url);
             builder.addParameter("client_id", clientId);
             builder.addParameter("response_type", responseType);
-            builder.addParameter("redirect_uri", redirectionEndpoint);
-            // builder.addParameter("response_mode", "form_post");
             builder.addParameter("scope", scope);
             builder.addParameter("state", oAuthState);
             builder.addParameter("nonce", nonce);
+            if (redirectionEndpoint != null) {
+                builder.addParameter("redirect_uri", redirectionEndpoint);
+            }
+            if (responseMode != null) {
+                builder.addParameter("response_mode", responseMode);
+            }
 
             String uri = builder.build().toString();
-            logger.trace("uri: {}", uri);
+            // logger.trace("uri: {}", uri);
 
             ec.redirect(uri);
 
@@ -176,69 +188,26 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
      * {@link #login(String, String)}, a loginResponse is created containing an appropriate exception. In any case, the future returned by
      * {@link #login(String, String)} is resolved.
      *
-     * @param json The server response as json object. If null, the login request is resolved as failure
+     * @param jwt {@link DecodedJWT}
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
      * @param response a {@link javax.servlet.http.HttpServletResponse} object.
      * @return a {@link java.util.concurrent.Future} object.
      */
-    public Future<Boolean> completeLogin(JSONObject json, HttpServletRequest request, HttpServletResponse response) {
+    public Future<Boolean> completeLogin(DecodedJWT jwt, HttpServletRequest request, HttpServletResponse response) {
         try {
-            if (json == null) {
-                throw new AuthenticationProviderException("received no json object");
+            if (jwt == null) {
+                throw new AuthenticationProviderException("received no jwt object");
             }
+
             String email = null;
             String sub = null;
-            switch (getName().toLowerCase()) {
-                case "google":
-                    // Validate id_token
-                    if (!json.has("iss")) {
-                        logger.error("Google id_token validation failed - 'iss' value missing");
-                        break;
-                    }
-                    if (!"accounts.google.com".equals(json.get("iss"))) {
-                        logger.error("Google id_token validation failed - 'iss' value: {}", json.get("iss"));
-                        break;
-                    }
-                    if (!json.has("aud")) {
-                        logger.error("Google id_token validation failed - 'aud' value missing");
-                        break;
-                    }
-                    if (!getClientId().equals(json.get("aud"))) {
-                        logger.error("Google id_token validation failed - 'aud' value: {}", json.get("aud"));
-                        break;
-                    }
-                    if (json.has("email")) {
-                        email = (String) json.get("email");
-                    }
-                    if (json.has("sub")) {
-                        sub = (String) json.get("sub");
-                    }
-                    break;
-                case "facebook":
-                    if (json.has("email")) {
-                        email = (String) json.get("email");
-                    }
-                    if (json.has("sub")) {
-                        sub = (String) json.get("sub");
-                    }
-                    break;
-                case "thirdpartyloginapi":
-                    if (json.has("email")) {
-                        email = (String) json.get("email");
-                    }
-                    if (json.has("sub")) {
-                        sub = json.getString("sub");
-                    }
-                    break;
-                default:
-                    if (json.has("email")) {
-                        email = (String) json.get("email");
-                    }
-                    if (json.has("sub")) {
-                        sub = (String) json.get("sub");
-                    }
-                    break;
+            if (jwt.getClaim("email") != null) {
+                email = jwt.getClaim("email").asString();
             }
+            if (jwt.getClaim("sub") != null) {
+                sub = jwt.getClaim("sub").asString();
+            }
+
             User user = null;
             if (email != null) {
                 String comboSub = getName().toLowerCase() + ":" + sub;
@@ -292,32 +261,42 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     void doDiscovery() {
-        if (this.discoveryUrl == null) {
+        if (this.discoveryUri == null) {
             return;
         }
 
-        logger.trace("OpenID discovery URL: {}", this.discoveryUrl);
+        logger.trace("OpenID discovery URI: {}", this.discoveryUri);
         try {
-            String responseBody = NetTools.getWebContentGET(this.discoveryUrl);
+            String responseBody = NetTools.getWebContentGET(this.discoveryUri);
             JSONObject discoveryObj = new JSONObject(responseBody);
             for (String field : discoveryObj.keySet()) {
-                logger.trace("{}:{}", field, discoveryObj.get(field));
+                // logger.trace("{}:{}", field, discoveryObj.get(field));
                 switch (field) {
                     case "authorization_endpoint":
-                        this.url = discoveryObj.getString(field);
-                        logger.trace("set {}:{}", field, url);
+                        if (this.url == null) {
+                            this.url = discoveryObj.getString(field);
+                            logger.trace("Using {} from discovery: {}", field, url);
+                        }
                         break;
                     case "issuer":
-                        this.issuer = discoveryObj.getString(field);
-                        logger.trace("set {}:{}", field, issuer);
+                        if (this.issuer == null) {
+                            this.issuer = discoveryObj.getString(field);
+                            logger.trace("Using {} from discovery: {}", field, issuer);
+                        }
                         break;
                     case "jwks_uri":
-                        this.jwksUri = discoveryObj.getString(field);
-                        logger.trace("set {}:{}", field, jwksUri);
+                        if (this.jwksUri == null) {
+                            this.jwksUri = discoveryObj.getString(field);
+                            logger.trace("Using {} from discovery: {}", field, jwksUri);
+                        }
                         break;
                     case "token_endpoint":
-                        this.tokenEndpoint = discoveryObj.getString(field);
-                        logger.trace("set {}:{}", field, tokenEndpoint);
+                        if (this.tokenEndpoint == null) {
+                            this.tokenEndpoint = discoveryObj.getString(field);
+                            logger.trace("Using {} from discovery: {}", field, tokenEndpoint);
+                        }
+                        break;
+                    default:
                         break;
                 }
             }
@@ -352,18 +331,18 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
-     * @return the discoveryUrl
+     * @return the discoveryUri
      */
-    public String getDiscoveryUrl() {
-        return discoveryUrl;
+    public String getDiscoveryUri() {
+        return discoveryUri;
     }
 
     /**
-     * @param discoveryUrl the discoveryUrl to set
+     * @param discoveryUri the discoveryUri to set
      * @return this
      */
-    public OpenIdProvider setDiscoveryUrl(String discoveryUrl) {
-        this.discoveryUrl = discoveryUrl;
+    public OpenIdProvider setDiscoveryUri(String discoveryUri) {
+        this.discoveryUri = discoveryUri;
         return this;
     }
 

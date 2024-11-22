@@ -23,8 +23,8 @@ package io.goobi.viewer.api.rest.v1.authentication;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,12 +50,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import com.auth0.jwk.JwkException;
 import com.auth0.jwk.JwkProvider;
@@ -100,6 +100,12 @@ public class AuthenticationEndpoint {
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
+
+    /**
+     * This future gets fulfilled once the {@link UserBean} has finished setting up the session and redirecting the request. Completing the request
+     * should wait after the redirect, otherwise it will not have any effect
+     */
+    private static Future<Boolean> redirected = null;
 
     /**
      * <p>
@@ -254,26 +260,42 @@ public class AuthenticationEndpoint {
         return Response.ok("").build();
     }
 
+    /**
+     * 
+     * @param error
+     * @param authCode
+     * @param accessToken
+     * @param state
+     * @return {@link Response}
+     * @throws IOException
+     */
     @GET
     @Path(ApiUrls.AUTH_OAUTH)
-    @Operation(summary = "OpenID Connect callback", description = "Verifies an openID claim and starts a session for the user")
+    @Operation(summary = "OpenID Connect callback (GET method)", description = "Verifies an openID claim and starts a session for the user")
     @ApiResponse(responseCode = "200", description = "OK")
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "Internal error")
-    @Tag(name = "login")
+    //    @Tag(name = "login")
     public Response openIdLoginGET(@QueryParam("error") String error, @QueryParam("code") String authCode,
-            @QueryParam("access_token") String accessToken,
-            @QueryParam("state") String state) throws IOException {
+            @QueryParam("access_token") String accessToken, @QueryParam("state") String state) throws IOException {
         logger.trace("openIdLoginGET");
-        for (String key : servletRequest.getParameterMap().keySet()) {
-            logger.trace("{}:{}", key, servletRequest.getParameterMap().get(key));
-        }
+        //        for (String key : servletRequest.getParameterMap().keySet()) {
+        //            logger.trace("{}:{}", key, servletRequest.getParameterMap().get(key));
+        //        }
         return openIdLogin(state, error, authCode);
     }
 
+    /**
+     * 
+     * @param error
+     * @param authCode
+     * @param state
+     * @return {@link Response}
+     * @throws IOException
+     */
     @POST
     @Path(ApiUrls.AUTH_OAUTH)
-    @Operation(summary = "OpenID Connect callback", description = "Verifies an openID claim and starts a session for the user")
+    @Operation(summary = "OpenID Connect callback (POST method)", description = "Verifies an openID claim and starts a session for the user")
     @ApiResponse(responseCode = "200", description = "OK")
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "Internal error")
@@ -284,75 +306,91 @@ public class AuthenticationEndpoint {
         return openIdLogin(state, error, authCode);
     }
 
-    Response openIdLogin(String state, String error, String authCode) throws IOException {
-        logger.trace("state: {}", state);
-        logger.trace("error: {}", error);
-        logger.trace("code: {}", authCode);
-        AuthResponseListener<OpenIdProvider> listener = DataManager.getInstance().getOAuthResponseListener();
-        OpenIdProvider provider = null;
-        for (OpenIdProvider p : listener.getProviders()) {
-            if (state != null && state.equals(p.getoAuthState())) {
-                provider = p;
-                listener.unregister(provider);
-                break;
-            }
-        }
-        if (provider == null) {
-            logger.trace("No provider found for given state.");
-            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_NO_PROVIDER_FOUND).build();
-        }
-
-        String nonce = (String) servletRequest.getSession().getAttribute("openIDNonce");
+    /**
+     * 
+     * @param state
+     * @param error
+     * @param authCode
+     * @return {@link Response}
+     * @throws IOException
+     */
+    private Response openIdLogin(String state, String error, String authCode) throws IOException {
         if (error != null) {
             logger.trace("Error: {}", error);
             return Response.status(Response.Status.FORBIDDEN.getStatusCode(), error).build();
         }
 
-        if (authCode != null) {
+        if (authCode == null) {
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "No auth code received.").build();
+        }
+
+        AuthResponseListener<OpenIdProvider> listener = DataManager.getInstance().getOAuthResponseListener();
+        OpenIdProvider provider = null;
+        try {
+            for (OpenIdProvider p : listener.getProviders()) {
+                if (state != null && state.equals(p.getoAuthState())) {
+                    provider = p;
+                    listener.unregister(provider);
+                    break;
+                }
+            }
+            if (provider == null) {
+                logger.trace("No provider found for given state.");
+                return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_NO_PROVIDER_FOUND).build();
+            }
+
+            Map<String, String> headers = new HashMap<>(2);
+            headers.put("Accept-Charset", "utf-8");
+            headers.put("Content-Type", "application/x-www-form-urlencoded");
+
             Map<String, String> params = new HashMap<>(5);
             params.put("grant_type", "authorization_code");
             params.put("code", authCode);
             params.put("client_id", provider.getClientId());
             params.put("client_secret", provider.getClientSecret());
             params.put("redirect_uri", provider.getRedirectionEndpoint());
-            String responseBody = NetTools.getWebContentPOST(provider.getTokenEndpoint(), null, params, null, null, null, null);
-            logger.trace(responseBody);
+
+            String responseBody = NetTools.getWebContentPOST(provider.getTokenEndpoint(), headers, params, null, null, null, null);
+            // logger.trace(responseBody);
 
             JSONObject responseObj = new JSONObject(responseBody);
-            String idToken = responseObj.getString("id_token");
-            DecodedJWT jwt = verifyOpenIdToken(idToken, provider.getJwksUri(), provider.getIssuer());
+            String idTokenEncoded = responseObj.getString("id_token");
+            DecodedJWT jwt = verifyOpenIdToken(idTokenEncoded, provider.getJwksUri(), provider.getIssuer());
             if (jwt == null) {
-                return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "Could not verify token.").build();
+                return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "Could not verify authentication token.").build();
             }
 
             // now check if the nonce is the same as in the old session
-            if (nonce.equals(jwt.getClaim("nonce").asString()) && provider.getClientId().equals(jwt.getClaim("aud").asString())) {
-                //all OK, login the user
+            String nonce = (String) servletRequest.getSession().getAttribute("openIDNonce");
+            if (!nonce.equals(jwt.getClaim("nonce").asString())) {
+                logger.error("nonce does not match. Not logging user in");
+                return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "Nonce mismatch.").build();
+            }
+            if (!provider.getClientId().equals(jwt.getClaim("aud").asString())) {
+                logger.error("clientId does not match aud. Not logging user in");
+                return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "cliendId mismatch.").build();
+            }
 
-                // get the user by the configured claim from the JWT
-                String login = jwt.getClaim(provider.getScope()).asString();
-                if (StringUtils.isBlank(login)) {
-                    logger.error("The configured claim '{}' is not present in the response.", provider.getScope());
-                } else {
-                    logger.debug("logging in user ");
-
-                    String payload = new String(new Base64(true).decode(idToken), StandardCharsets.UTF_8);
-                    JSONTokener tokener = new JSONTokener(payload);
-                    JSONObject jsonPayload = new JSONObject(tokener);
-                    provider.completeLogin(jsonPayload, servletRequest, servletResponse);
-                    return Response.ok("").build();
-                }
-            } else {
-                if (!nonce.equals(jwt.getClaim("nonce").asString())) {
-                    logger.error("nonce does not match. Not logging user in");
-                }
-                if (!provider.getClientId().equals(jwt.getClaim("aud").asString())) {
-                    logger.error("clientID does not match aud. Not logging user in");
+            redirected = provider.completeLogin(jwt, servletRequest, servletResponse);
+            if (redirected != null) {
+                try {
+                    // redirected has an internal timeout, so this get() should never run into a timeout, but you never know
+                    redirected.get(1, TimeUnit.MINUTES);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.warn("Waiting for redirect after login interrupted unexpectedly");
+                } catch (TimeoutException e) {
+                    logger.error("Waiting for redirect after login took longer than a minute. This should not happen. Redirect will not take place");
+                } catch (ExecutionException e) {
+                    logger.error("Unexpected error while waiting for redirect", e);
                 }
             }
+            return Response.ok("").build();
+        } finally {
+            if (provider != null) {
+                listener.unregister(provider);
+            }
         }
-
-        return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "???").build();
     }
 
     /**
@@ -365,7 +403,7 @@ public class AuthenticationEndpoint {
     static DecodedJWT verifyOpenIdToken(String token, String jwksUri, String issuer) {
         RSAKeyProvider keyProvider = null;
         try {
-            final JwkProvider provider = new UrlJwkProvider(new URL(jwksUri));
+            final JwkProvider provider = new UrlJwkProvider(new URI(jwksUri).toURL());
 
             keyProvider = new RSAKeyProvider() {
                 @Override
@@ -391,7 +429,7 @@ public class AuthenticationEndpoint {
                     return null;
                 }
             };
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | URISyntaxException e) {
             logger.error(e.getMessage(), e);
         }
 
