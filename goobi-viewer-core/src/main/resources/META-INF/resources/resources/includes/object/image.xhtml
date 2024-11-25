@@ -66,6 +66,7 @@
         var configViewer = {
         	global: {
         		divId: "imageMap",
+        		viewMode: "sequence", //single, double
         		bottomMargin: () => #{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)},
         		adaptContainerHeight: true,
         		persistZoom: #{configurationBean.rememberImageZoom},
@@ -81,6 +82,9 @@
         		    rotateLeft: '.rotate-left',
         		    rotateRight: '.rotate-right',
         		    reset: '.reset',
+        		},
+        		sequence : {
+        			nextImageOffset: 100
         		},
         		overlayGroups: [ {
                     name: "searchHighlighting",
@@ -101,7 +105,7 @@
         	},
         	image: {
         		mimeType: "#{activeDocumentBean.viewManager.currentPage.displayMimeType}",
-	       		tileSource : '#{activeDocumentBean.viewManager.currentImageInfo}',
+	       		tileSource : #{activeDocumentBean.viewManager.getImageInfos()},
         		baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}",
         		highlightCoords: [
         			{
@@ -190,6 +194,9 @@
        	// desktop object view
        	if ( access && configViewer) {
            	var viewImage = new ImageView.Image( configViewer )
+           	
+           	viewImage.sequence.onCurrentImageChange.subscribe (index => console.log("current image is now ", index))
+           	
            	viewImage.load().then( function( image ) {
            	    $(".openseadragon-canvas").get(0).focus = () => {
            	       //prevent focus on os-div to avoid scrolling down on click

@@ -3871,6 +3871,11 @@ public class Configuration extends AbstractConfiguration {
         return getZoomImageViewConfig(view, image).getBoolean("navigator[@enabled]", false);
     }
 
+    public String getViewMode(PageType view, ImageType image) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(view, image).getString("[@viewMode]", "single");
+
+    }
+
     /**
      * <p>
      * getFooterHeight.
@@ -5146,13 +5151,46 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return correct value
      * @return a boolean.
+     * @throws ViewerConfigurationException
      */
-    public boolean isDoublePageNavigationEnabled() {
-        return getLocalBoolean("viewer.doublePageNavigation[@enabled]", false);
+    public boolean isDoublePageNavigationEnabled(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
+        return getEnabledImageViewModes(pageType, imageType).contains("double");
     }
 
-    public boolean isDoublePageNavigationDefault() {
-        return isDoublePageNavigationEnabled() && getLocalBoolean("viewer.doublePageNavigation[@default]", false);
+    public boolean isSinglePageNavigationEnabled(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
+        return getEnabledImageViewModes(pageType, imageType).contains("single");
+    }
+
+    public boolean isSequencePageNavigationEnabled(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
+        return getEnabledImageViewModes(pageType, imageType).contains("sequence");
+    }
+
+    public boolean isDoublePageNavigationDefault(PageType currentPageType, ImageType imageType) {
+        try {
+            return "double".equals(getDefaultImageViewMode(currentPageType, imageType));
+        } catch (ViewerConfigurationException e) {
+            logger.error("Error reading configuration: {}", e.toString());
+            return false;
+        }
+    }
+
+    public String getDefaultImageViewMode(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(pageType, imageType).configurationsAt("viewMode", true)
+                .stream()
+                .filter(conf -> conf.getBoolean("[@default]", false))
+                .map(conf -> conf.getString(".", ""))
+                .filter(StringUtils::isNotBlank)
+                .findFirst()
+                .orElse("single");
+    }
+
+    public List<String> getEnabledImageViewModes(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(pageType, imageType).configurationsAt("viewMode", true)
+                .stream()
+                .filter(conf -> conf.getBoolean("[@enabled]", false))
+                .map(conf -> conf.getString(".", ""))
+                .filter(StringUtils::isNotBlank)
+                .toList();
     }
 
     /**

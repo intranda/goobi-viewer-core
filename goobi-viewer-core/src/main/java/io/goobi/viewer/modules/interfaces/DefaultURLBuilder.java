@@ -145,7 +145,7 @@ public class DefaultURLBuilder implements IURLBuilder {
                 .append(pi)
                 .append('/');
         if (!topStruct || imageNo > 1) {
-            if (DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault()) {
+            if (DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault(pageType, null)) {
                 sb.append(imageNo).append("-").append(imageNo).append("/");
             } else {
                 sb.append(imageNo)

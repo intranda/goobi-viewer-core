@@ -154,7 +154,7 @@ public class ActiveDocumentBean implements Serializable {
     /** URL parameter 'action'. */
     private String action = "";
     /** URL parameter 'imageToShow'. */
-    private String imageToShow = DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault() ? "1-1" : "1";
+    private String imageToShow = "1";
     /** URL parameter 'logid'. */
     private String logid = "";
     /** URL parameter 'tocCurrentPage'. */
@@ -583,7 +583,7 @@ public class ActiveDocumentBean implements Serializable {
      *         expected
      */
     private boolean isDoublePageUrl() {
-        return (StringUtils.isBlank(imageToShow) && DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault())
+        return (StringUtils.isBlank(imageToShow) && getViewManager().isDoublePageMode())
                 || (StringUtils.isNotBlank(imageToShow) && imageToShow.matches(DOUBLE_PAGE_PATTERN));
     }
 
@@ -783,8 +783,9 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @throws io.goobi.viewer.exceptions.PresentationException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws ViewerConfigurationException
      */
-    public void setRepresentativeImage() throws PresentationException, IndexUnreachableException {
+    public void setRepresentativeImage() throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         logger.trace("setRepresentativeImage"); //NOSONAR Debug
         synchronized (lock) {
             String image = "1";
@@ -799,7 +800,10 @@ public class ActiveDocumentBean implements Serializable {
                     logger.trace("{}  not found, using {}", SolrConstants.THUMBPAGENO, image);
                 }
             }
-            if (DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault()) {
+            if (DataManager.getInstance()
+                    .getConfiguration()
+                    .isDoublePageNavigationDefault(BeanUtils.getNavigationHelper().getCurrentPageType(),
+                            getViewManager().getCurrentPage().getImageType())) {
                 image = String.format("%s-%s", image, image);
             }
             setImageToShow(image);

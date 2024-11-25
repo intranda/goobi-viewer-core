@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.annotation.FacesConfig;
@@ -1018,17 +1017,6 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isSearchRisExportEnabled() {
         return DataManager.getInstance().getConfiguration().isSearchRisExportEnabled();
-    }
-
-    /**
-     * <p>
-     * isDoublePageNavigationEnabled.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isDoublePageNavigationEnabled() {
-        return DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled();
     }
 
     /**

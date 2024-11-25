@@ -194,7 +194,6 @@ public class ViewManager implements Serializable {
     private String contextObject = null;
     private List<String> versionHistory = null;
     private PageOrientation firstPageOrientation = PageOrientation.RIGHT;
-    private boolean doublePageMode;
     private int firstPdfPage;
     private int lastPdfPage;
     private CalendarView calendarView;
@@ -210,6 +209,8 @@ public class ViewManager implements Serializable {
     private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
     private Map<CitationLinkLevel, List<CitationLink>> citationLinks = new HashMap<>();
     private List<String> externalResourceUrls = null;
+
+    private ViewMode viewMode = ViewMode.SINGLE;
 
     /**
      * <p>
@@ -234,7 +235,6 @@ public class ViewManager implements Serializable {
         this.pageLoader = pageLoader;
         this.currentStructElementIddoc = currentDocumentIddoc;
         this.logId = logId;
-        this.doublePageMode = DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault();
         if (topStructElementIddoc.equals(currentDocumentIddoc)) {
             currentStructElement = topDocument;
         } else {
@@ -353,6 +353,18 @@ public class ViewManager implements Serializable {
         }
 
         return "{}";
+    }
+
+    public List<String> getImageInfos() throws IndexUnreachableException, DAOException {
+        return getImageInfos(BeanUtils.getNavigationHelper().getCurrentPageType());
+    }
+
+    public List<String> getImageInfos(PageType pageType) throws IndexUnreachableException, DAOException {
+        List<String> infos = new ArrayList<>();
+        for (PhysicalElement page : this.getAllPages()) {
+            infos.add("\"" + getImageInfo(page, pageType) + "\"");
+        }
+        return infos;
     }
 
     /**
@@ -1422,6 +1434,23 @@ public class ViewManager implements Serializable {
         if (currentStructElement == null || !Objects.equals(currentStructElement.getLuceneId(), currentStructElementIddoc)) {
             setCurrentStructElement(new StructElement(currentStructElementIddoc));
         }
+        //set image view mode
+        setViewMode();
+    }
+
+    protected void setViewMode(ViewMode viewMode) {
+        this.viewMode = viewMode;
+    }
+
+    protected void setViewMode() {
+        try {
+            String modeString = DataManager.getInstance()
+                    .getConfiguration()
+                    .getDefaultImageViewMode(BeanUtils.getNavigationHelper().getCurrentPageType(), getCurrentPage().getImageType());
+            setViewMode(ViewMode.valueOf(modeString.toUpperCase()));
+        } catch (ViewerConfigurationException | NullPointerException | IllegalArgumentException e) {
+            logger.error("Failed to set view mode: {}", e.toString());
+        }
     }
 
     /**
@@ -1769,11 +1798,15 @@ public class ViewManager implements Serializable {
      * </p>
      */
     public void updateDropdownSelected() {
-        if (doublePageMode) {
+        if (ViewMode.DOUBLE.equals(getViewMode())) {
             setDropdownSelected(String.valueOf(currentImageOrder) + "-" + currentImageOrder);
         } else {
             setDropdownSelected(String.valueOf(currentImageOrder));
         }
+    }
+
+    public ViewMode getViewMode() {
+        return viewMode;
     }
 
     /**
@@ -3561,7 +3594,7 @@ public class ViewManager implements Serializable {
      * @param doublePageMode the doublePageMode to set
      */
     public void setDoublePageMode(boolean doublePageMode) {
-        this.doublePageMode = doublePageMode;
+        setViewMode();
         this.setDoublePageModeForDropDown(doublePageMode);
     }
 
@@ -3573,7 +3606,7 @@ public class ViewManager implements Serializable {
      * @return the doublePageMode
      */
     public boolean isDoublePageMode() {
-        return doublePageMode;
+        return ViewMode.DOUBLE.equals(getViewMode());
     }
 
     /**
@@ -4267,6 +4300,12 @@ public class ViewManager implements Serializable {
         value = StringTools.convertToSingleWord(value, MAX_STYLECLASS_LENGTH, STYLE_CLASS_WORD_SEPARATOR).toLowerCase();
 
         return value;
+    }
+
+    public boolean isDoublePageNavigationEnabled() throws ViewerConfigurationException {
+        return DataManager.getInstance()
+                .getConfiguration()
+                .isDoublePageNavigationEnabled(BeanUtils.getNavigationHelper().getCurrentPageType(), getCurrentPage().getImageType());
     }
 
 }
