@@ -1695,7 +1695,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * 
      * @param template
-     * @return Value of the query attribute; null if none found
+     * @return Value of the query attribute; empty string if none found
      * @should return correct value
      */
     public String getAdvancedSearchTemplateQuery(String template) {
@@ -1708,7 +1708,7 @@ public class Configuration extends AbstractConfiguration {
             return null;
         }
 
-        return usingTemplate.getString("[@query]");
+        return usingTemplate.getString("[@query]", "");
     }
 
     /**

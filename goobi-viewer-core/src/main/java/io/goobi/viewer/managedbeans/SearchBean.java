@@ -920,8 +920,17 @@ public class SearchBean implements SearchInterface, Serializable {
         currentSearch.setPage(currentPage);
         currentSearch.setSortString(searchSortingOption != null ? searchSortingOption.getSortString() : null);
         currentSearch.setFacetString(facets.getActiveFacetString());
-        currentSearch.setCustomFilterQuery(filterQuery);
         currentSearch.setProximitySearchDistance(proximitySearchDistance);
+        StringBuilder sbFilterQuery = new StringBuilder();
+        String templateQuery = DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateQuery(advancedSearchFieldTemplate);
+        if (StringUtils.isNotEmpty(templateQuery)) {
+            sbFilterQuery.append(" +(").append(templateQuery).append(")");
+        }
+        if (StringUtils.isNotEmpty(filterQuery)) {
+            sbFilterQuery.append(" +(").append(filterQuery).append(")");
+        }
+        currentSearch.setCustomFilterQuery(sbFilterQuery.toString().trim());
+        // logger.trace("Custom filter query: {}", sbFilterQuery.toString().trim());
 
         // When searching in MONTHDAY, add a term so that an expand query is created
         if (searchStringInternal.startsWith(SolrConstants.MONTHDAY)) {
@@ -1709,6 +1718,13 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         activeResultGroup = null;
+    }
+
+    /**
+     * @return the advancedSearchFieldTemplate
+     */
+    public String getAdvancedSearchFieldTemplate() {
+        return advancedSearchFieldTemplate;
     }
 
     /**
