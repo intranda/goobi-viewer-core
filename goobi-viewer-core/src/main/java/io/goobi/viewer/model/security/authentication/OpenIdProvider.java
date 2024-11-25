@@ -36,15 +36,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
@@ -208,6 +216,29 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                 sub = jwt.getClaim("sub").asString();
             }
 
+            // Third party fallback
+            if (email == null && thirdPartyLoginScope != null && jwt.getClaim(thirdPartyLoginScope) != null && thirdPartyLoginApiKey != null
+                    && thirdPartyLoginReqParamDef != null && thirdPartyLoginUrl != null) {
+                String data = jwt.getClaim(thirdPartyLoginScope).asString();
+                JSONArray array = new JSONArray();
+                JSONObject json = new JSONObject();
+                array.put(data);
+                json.put(thirdPartyLoginReqParamDef, array);
+                final StringEntity entity = new StringEntity(json.toString());
+
+                HttpPost externalRequest = new HttpPost(thirdPartyLoginUrl);
+                String[] thirdPartyLoginApiKeyParams = thirdPartyLoginApiKey.split(" ");
+                externalRequest.addHeader(thirdPartyLoginApiKeyParams[0], thirdPartyLoginApiKeyParams[1]);
+                externalRequest.addHeader("content-type", "application/json");
+                externalRequest.setEntity(entity);
+
+                CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+                HttpResponse externalResponse = httpClient.execute(externalRequest);
+
+                JSONObject externalResponseObj = new JSONObject(EntityUtils.toString(externalResponse.getEntity()));
+                email = JsonTools.getNestedValue(externalResponseObj, thirdPartyLoginClaim);
+            }
+
             User user = null;
             if (email != null) {
                 String comboSub = getName().toLowerCase() + ":" + sub;
@@ -248,7 +279,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                 }
             }
             this.loginResult = new LoginResult(request, response, Optional.ofNullable(user), false);
-        } catch (DAOException e) {
+        } catch (DAOException | IOException e) {
             this.loginResult = new LoginResult(request, response, new AuthenticationProviderException(e));
         } catch (AuthenticationProviderException e) {
             this.loginResult = new LoginResult(request, response, e);
