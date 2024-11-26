@@ -106,6 +106,7 @@ import io.goobi.viewer.model.toc.TOCElement;
 import io.goobi.viewer.model.toc.export.pdf.TocWriter;
 import io.goobi.viewer.model.toc.export.pdf.WriteTocException;
 import io.goobi.viewer.model.translations.language.Language;
+import io.goobi.viewer.model.viewer.PageNavigation;
 import io.goobi.viewer.model.viewer.PageOrientation;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -800,10 +801,11 @@ public class ActiveDocumentBean implements Serializable {
                     logger.trace("{}  not found, using {}", SolrConstants.THUMBPAGENO, image);
                 }
             }
-            if (DataManager.getInstance()
-                    .getConfiguration()
-                    .isDoublePageNavigationDefault(BeanUtils.getNavigationHelper().getCurrentPageType(),
-                            getViewManager().getCurrentPage().getImageType())) {
+            if (PageNavigation.DOUBLE.name()
+                    .equalsIgnoreCase(DataManager.getInstance()
+                            .getConfiguration()
+                            .getDefaultPageNavigation(BeanUtils.getNavigationHelper().getCurrentPageType(),
+                                    getViewManager().getCurrentPage().getImageType()))) {
                 image = String.format("%s-%s", image, image);
             }
             setImageToShow(image);

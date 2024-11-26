@@ -18,7 +18,7 @@
         <!-- MOBILE IMAGE OVERLAY -->
         <div id="imageContainerMobileOverlay" class="view-object__image-mobile-overlay"></div>
     </div>
-
+    
 	<popover id="share-image-area-popup">
 
 	<div class="share-image-area">
@@ -66,7 +66,7 @@
         var configViewer = {
         	global: {
         		divId: "imageMap",
-        		viewMode: "sequence", //single, double
+        		viewMode: "#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase()}",
         		bottomMargin: () => #{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)},
         		adaptContainerHeight: true,
         		persistZoom: #{configurationBean.rememberImageZoom},
@@ -105,7 +105,8 @@
         	},
         	image: {
         		mimeType: "#{activeDocumentBean.viewManager.currentPage.displayMimeType}",
-	       		tileSource : #{activeDocumentBean.viewManager.getImageInfos()},
+	       		tileSource : #{activeDocumentBean.viewManager.imageInfos},
+	       		currentImageIndex : #{activeDocumentBean.viewManager.currentImageOrder - 1},
         		baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}",
         		highlightCoords: [
         			{
@@ -195,7 +196,34 @@
        	if ( access && configViewer) {
            	var viewImage = new ImageView.Image( configViewer )
            	
-           	viewImage.sequence.onCurrentImageChange.subscribe (index => console.log("current image is now ", index))
+           	if(viewImage.sequence) {
+	           	viewImage.sequence.onCurrentImageChange
+	           	.pipe(rxjs.operators.debounceTime(300))
+	           	.subscribe (index => {
+	           		const pageNo = index+1;
+	           		console.log("viewing page " + pageNo);
+	           		const url = new URL(window.location.href);
+	           		let pathArray = url.pathname.split("/");
+	           		let replacedPathPart = false;
+	           		for (var i = pathArray.length-1; i >= 0; i--) {
+						if(/^\d+$/.test(pathArray[i])) {
+							//this is presumably the page number
+							pathArray[i] = pageNo;
+							replacedPathPart = true;
+							break;
+						}
+					}
+	           		if(!replacedPathPart) {
+	           			if(pathArray[pathArray.length-1].length == 0) {
+	           				pathArray.pop();
+	           			}
+	           			pathArray.push(pageNo)
+	           		}
+	           		url.pathname = pathArray.join("/");
+	           	 	//alternatively use history.addState to add an entry to the browser history, so navigating back leads to the previous page
+	           		window.history.replaceState(null, "", url.toString());
+	           	});
+             	}
            	
            	viewImage.load().then( function( image ) {
            	    $(".openseadragon-canvas").get(0).focus = () => {

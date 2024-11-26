@@ -210,7 +210,7 @@ public class ViewManager implements Serializable {
     private Map<CitationLinkLevel, List<CitationLink>> citationLinks = new HashMap<>();
     private List<String> externalResourceUrls = null;
 
-    private ViewMode viewMode = ViewMode.SINGLE;
+    private PageNavigation pageNavigation = PageNavigation.SINGLE;
 
     /**
      * <p>
@@ -361,9 +361,23 @@ public class ViewManager implements Serializable {
 
     public List<String> getImageInfos(PageType pageType) throws IndexUnreachableException, DAOException {
         List<String> infos = new ArrayList<>();
-        for (PhysicalElement page : this.getAllPages()) {
-            infos.add("\"" + getImageInfo(page, pageType) + "\"");
+
+        switch (getPageNavigation()) {
+            case SINGLE:
+                infos.add("\"" + getImageInfo(getCurrentPage(), pageType) + "\"");
+                break;
+            case DOUBLE:
+                getCurrentLeftPage().filter(p -> !p.isDoubleImage()).ifPresent(p -> infos.add("\"" + getImageInfo(p, pageType) + "\""));
+                getCurrentRightPage().filter(p -> !p.isDoubleImage() || infos.isEmpty())
+                        .ifPresent(p -> infos.add("\"" + getImageInfo(p, pageType) + "\""));
+                break;
+            case SEQUENCE:
+                for (PhysicalElement page : this.getAllPages()) {
+                    infos.add("\"" + getImageInfo(page, pageType) + "\"");
+                }
+                break;
         }
+
         return infos;
     }
 
@@ -1435,19 +1449,19 @@ public class ViewManager implements Serializable {
             setCurrentStructElement(new StructElement(currentStructElementIddoc));
         }
         //set image view mode
-        setViewMode();
+        setPageNavigation();
     }
 
-    protected void setViewMode(ViewMode viewMode) {
-        this.viewMode = viewMode;
+    protected void setPageNavigation(PageNavigation navigation) {
+        this.pageNavigation = navigation;
     }
 
-    protected void setViewMode() {
+    protected void setPageNavigation() {
         try {
-            String modeString = DataManager.getInstance()
+            String navigation = DataManager.getInstance()
                     .getConfiguration()
-                    .getDefaultImageViewMode(BeanUtils.getNavigationHelper().getCurrentPageType(), getCurrentPage().getImageType());
-            setViewMode(ViewMode.valueOf(modeString.toUpperCase()));
+                    .getDefaultPageNavigation(BeanUtils.getNavigationHelper().getCurrentPageType(), getCurrentPage().getImageType());
+            setPageNavigation(PageNavigation.valueOf(navigation.toUpperCase()));
         } catch (ViewerConfigurationException | NullPointerException | IllegalArgumentException e) {
             logger.error("Failed to set view mode: {}", e.toString());
         }
@@ -1798,15 +1812,15 @@ public class ViewManager implements Serializable {
      * </p>
      */
     public void updateDropdownSelected() {
-        if (ViewMode.DOUBLE.equals(getViewMode())) {
+        if (PageNavigation.DOUBLE.equals(getPageNavigation())) {
             setDropdownSelected(String.valueOf(currentImageOrder) + "-" + currentImageOrder);
         } else {
             setDropdownSelected(String.valueOf(currentImageOrder));
         }
     }
 
-    public ViewMode getViewMode() {
-        return viewMode;
+    public PageNavigation getPageNavigation() {
+        return pageNavigation;
     }
 
     /**
@@ -3594,7 +3608,7 @@ public class ViewManager implements Serializable {
      * @param doublePageMode the doublePageMode to set
      */
     public void setDoublePageMode(boolean doublePageMode) {
-        setViewMode();
+        setPageNavigation();
         this.setDoublePageModeForDropDown(doublePageMode);
     }
 
@@ -3606,7 +3620,7 @@ public class ViewManager implements Serializable {
      * @return the doublePageMode
      */
     public boolean isDoublePageMode() {
-        return ViewMode.DOUBLE.equals(getViewMode());
+        return PageNavigation.DOUBLE.equals(getPageNavigation());
     }
 
     /**

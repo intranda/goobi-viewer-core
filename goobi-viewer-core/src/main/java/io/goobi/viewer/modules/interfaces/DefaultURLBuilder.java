@@ -30,11 +30,13 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.translations.language.Language;
+import io.goobi.viewer.model.viewer.PageNavigation;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
@@ -145,11 +147,16 @@ public class DefaultURLBuilder implements IURLBuilder {
                 .append(pi)
                 .append('/');
         if (!topStruct || imageNo > 1) {
-            if (DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault(pageType, null)) {
-                sb.append(imageNo).append("-").append(imageNo).append("/");
-            } else {
-                sb.append(imageNo)
-                        .append('/');
+            try {
+                if (PageNavigation.DOUBLE.name()
+                        .equalsIgnoreCase(DataManager.getInstance().getConfiguration().getDefaultPageNavigation(pageType, null))) {
+                    sb.append(imageNo).append("-").append(imageNo).append("/");
+                } else {
+                    sb.append(imageNo)
+                            .append('/');
+                }
+            } catch (ViewerConfigurationException e) {
+                logger.error("Error setting page number in url: {}", e.toString());
             }
         }
         if (!topStruct) {

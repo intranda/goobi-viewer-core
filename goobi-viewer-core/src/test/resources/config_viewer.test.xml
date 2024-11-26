@@ -252,6 +252,11 @@
 				<scaleFactors>2;4;8</scaleFactors>
 				<size>1024</size>
 			</tileSize>
+			<pageNavigation>
+				<single enabled="true"/>
+				<double enabled="false"></double>
+				<sequence enabled="true" default="true"></sequence>
+			</pageNavigation>
 		</zoomImageView>
 
 		<zoomImageView type="openLayers" tileImage="false"
@@ -276,9 +281,6 @@
 				<scaleFactors>1;2;3</scaleFactors>
 				<size>512</size>
 			</tileSize>
-			<viewMode enabled="true" default="true">single</viewMode>
-			<viewMode enabled="true">double</viewMode>
-			<viewMode enabled="false">sequence</viewMode>
 		</zoomImageView>
 		
 		<!-- limitImageHeight: If true, the image width is divided by the

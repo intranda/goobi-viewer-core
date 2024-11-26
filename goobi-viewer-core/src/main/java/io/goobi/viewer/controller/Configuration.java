@@ -5145,52 +5145,62 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
-     * isDoublePageNavigationEnabled.
-     * </p>
+     * Return true if single page navigation is enabled for the given {@link PageType} and {@link ImageType}. Default is true
      *
      * @should return correct value
+     * @param pageType The type of viewer page to which the configuration should apply
+     * @param imageType the mimetype to which the configuration should apply
+     * @return a boolean.
+     * @throws ViewerConfigurationException
+     */
+    public boolean isSinglePageNavigationEnabled(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(pageType, imageType).getBoolean("pageNavigation.single[@enabled]", true);
+    }
+
+    /**
+     * Return true if double page navigation is enabled for the given {@link PageType} and {@link ImageType}. Default is false
+     *
+     * @should return correct value
+     * @param pageType The type of viewer page to which the configuration should apply
+     * @param imageType the mimetype to which the configuration should apply
      * @return a boolean.
      * @throws ViewerConfigurationException
      */
     public boolean isDoublePageNavigationEnabled(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
-        return getEnabledImageViewModes(pageType, imageType).contains("double");
+        return getZoomImageViewConfig(pageType, imageType).getBoolean("pageNavigation.double[@enabled]", false);
     }
 
-    public boolean isSinglePageNavigationEnabled(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
-        return getEnabledImageViewModes(pageType, imageType).contains("single");
-    }
-
+    /**
+     * Return true if sequence page navigation is enabled for the given {@link PageType} and {@link ImageType}. Default is false
+     *
+     * @should return correct value
+     * @param pageType The type of viewer page to which the configuration should apply
+     * @param imageType the mimetype to which the configuration should apply
+     * @return a boolean.
+     * @throws ViewerConfigurationException
+     */
     public boolean isSequencePageNavigationEnabled(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
-        return getEnabledImageViewModes(pageType, imageType).contains("sequence");
+        return getZoomImageViewConfig(pageType, imageType).getBoolean("pageNavigation.sequence[@enabled]", false);
     }
 
-    public boolean isDoublePageNavigationDefault(PageType currentPageType, ImageType imageType) {
-        try {
-            return "double".equals(getDefaultImageViewMode(currentPageType, imageType));
-        } catch (ViewerConfigurationException e) {
-            logger.error("Error reading configuration: {}", e.toString());
-            return false;
+    /**
+     * Return the default page navigation for the given {@link PageType} and {@link ImageType}. If neither 'double' nor 'sequence' is configured as
+     * the default, 'single' is returned
+     * 
+     * @param pageType The type of viewer page to which the configuration should apply
+     * @param imageType the mimetype to which the configuration should apply
+     * @return a string, either 'single', 'double' or 'sequence'
+     * @throws ViewerConfigurationException
+     */
+    public String getDefaultPageNavigation(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
+        HierarchicalConfiguration<ImmutableNode> imageConfig = getZoomImageViewConfig(pageType, imageType);
+        if (imageConfig.getBoolean("pageNavigation.double[@default]", false)) {
+            return "double";
+        } else if (imageConfig.getBoolean("pageNavigation.sequence[@default]", false)) {
+            return "sequence";
+        } else {
+            return "single";
         }
-    }
-
-    public String getDefaultImageViewMode(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(pageType, imageType).configurationsAt("viewMode", true)
-                .stream()
-                .filter(conf -> conf.getBoolean("[@default]", false))
-                .map(conf -> conf.getString(".", ""))
-                .filter(StringUtils::isNotBlank)
-                .findFirst()
-                .orElse("single");
-    }
-
-    public List<String> getEnabledImageViewModes(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(pageType, imageType).configurationsAt("viewMode", true)
-                .stream()
-                .filter(conf -> conf.getBoolean("[@enabled]", false))
-                .map(conf -> conf.getString(".", ""))
-                .filter(StringUtils::isNotBlank)
-                .toList();
     }
 
     /**

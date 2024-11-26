@@ -24,7 +24,7 @@ package io.goobi.viewer.model.viewer;
 /**
  * Describes different ways in which the sequence of images within a record is presented
  */
-public enum ViewMode {
+public enum PageNavigation {
 
     /**
      * Display a single image at a time, navigating to other images means loading a new page for that image
