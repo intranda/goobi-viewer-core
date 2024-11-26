@@ -52,6 +52,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.omnifaces.util.Faces;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
@@ -749,6 +750,12 @@ public class ActiveDocumentBean implements Serializable {
         }
 
         return null;
+    }
+
+    public void setCurrentImageOrderPerScript()
+            throws NumberFormatException, IndexUnreachableException, PresentationException, IDDOCNotFoundException {
+        String order = Faces.getRequestParameter("order");
+        setImageToShow(order);
     }
 
     /**

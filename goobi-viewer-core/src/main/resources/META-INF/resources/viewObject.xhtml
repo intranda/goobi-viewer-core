@@ -5,6 +5,7 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
@@ -66,14 +67,20 @@
 					</div>
 				</div>
 
+	
+	<h:form>
+		<o:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" render=":imageControlsForm"></o:commandScript>
+	</h:form>
 
 
 
                 <!-- IMAGE CONTROLS -->
-                <h:panelGroup
-                    rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'video' and activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'audio'}">
-                    <viewerComponent:imageControls />
-                </h:panelGroup>
+                <h:form id="imageControlsForm" prependId="false">
+	                <h:panelGroup
+	                    rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'video' and activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'audio'}">
+	                    <viewerComponent:imageControls />
+	                </h:panelGroup>
+                </h:form>
 
                 <!-- VIEW IMAGE -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image'}">

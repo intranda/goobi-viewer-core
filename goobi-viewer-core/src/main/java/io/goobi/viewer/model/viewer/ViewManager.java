@@ -1398,6 +1398,16 @@ public class ViewManager implements Serializable {
         return currentImageOrder;
     }
 
+    public void setCurrentImageOrderPerScript()
+            throws NumberFormatException, IndexUnreachableException, PresentationException, IDDOCNotFoundException {
+        String order = Faces.getRequestParameter("order");
+        if (StringUtils.isNotBlank(order) && order.matches("\\d+")) {
+            setCurrentImageOrder(Integer.parseInt(order));
+        } else {
+            throw new PresentationException("Order parameter invalid: " + order);
+        }
+    }
+
     /**
      * <p>
      * currentPageOrder.

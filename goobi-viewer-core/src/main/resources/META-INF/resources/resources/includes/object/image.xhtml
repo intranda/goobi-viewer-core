@@ -6,6 +6,7 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core" 
     xmlns:jsf="http://xmlns.jcp.org/jsf" 
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:o="http://omnifaces.org/ui"
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
@@ -222,6 +223,7 @@
 	           		url.pathname = pathArray.join("/");
 	           	 	//alternatively use history.addState to add an entry to the browser history, so navigating back leads to the previous page
 	           		window.history.replaceState(null, "", url.toString());
+	           		setCurrentImageOrder({"order": pageNo});
 	           	});
              	}
            	
