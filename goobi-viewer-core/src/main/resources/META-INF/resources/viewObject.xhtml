@@ -68,9 +68,9 @@
 				</div>
 
 	
-	<h:form>
-		<o:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" render=":imageControlsForm"></o:commandScript>
-	</h:form>
+				<h:form>
+					<o:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" render=":imageControlsForm :sidebarGroup :userGeneratedContentGroup :paginatorGroup :commentGroup"></o:commandScript>
+				</h:form>
 
 
 
@@ -119,14 +119,16 @@
                 </h:panelGroup>
                 
                 <!-- PAGINATOR -->
-                <viewerComponent:simplePaginator
-                    itemCount="#{activeDocumentBean.viewManager.imagesCount}"
-                    itemActive="#{activeDocumentBean.viewManager.currentImageOrderForPaginator}"
-                    firstItem="#{activeDocumentBean.viewManager.firstPageOrder}"
-                    lastItem="#{activeDocumentBean.viewManager.lastPageOrder}"
-                    urlPrefix="#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/"
-                    urlSuffix="#topDocAnchor"
-                    rtl="#{activeDocumentBean.viewManager.topStructElement.rtl}" />
+                <h:panelGroup id="paginatorGroup">
+	                <viewerComponent:simplePaginator
+	                    itemCount="#{activeDocumentBean.viewManager.imagesCount}"
+	                    itemActive="#{activeDocumentBean.viewManager.currentImageOrderForPaginator}"
+	                    firstItem="#{activeDocumentBean.viewManager.firstPageOrder}"
+	                    lastItem="#{activeDocumentBean.viewManager.lastPageOrder}"
+	                    urlPrefix="#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/"
+	                    urlSuffix="#topDocAnchor"
+	                    rtl="#{activeDocumentBean.viewManager.topStructElement.rtl}" />
+                </h:panelGroup>
                     
                 <!-- METADATA (FIRST GROUP WITH location="objectview" -->    
                 <ui:fragment rendered="#{metadataBean.activeMetadataView != null}">
@@ -149,16 +151,18 @@
                 </c:forEach>
 
 				<!-- USER GENERATED CONTENT -->
- 				<h:panelGroup rendered="#{configurationBean.displayUserGeneratedContentBelowImage and contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage).size() > 0}"> 
+ 				<h:panelGroup id="userGeneratedContentGroup" rendered="#{configurationBean.displayUserGeneratedContentBelowImage and contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage).size() > 0}"> 
 					<div id="view_image_user_generated_content">
 						<viewerComponent:annotationList contentList="#{contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage)}" sidebar="false"/>
 					</div>
  				</h:panelGroup>
 
                 <!-- USER COMMENTS -->
-                <ui:insert name="userComments">
-                    <ui:include src="/resources/includes/user/userComments.xhtml" />
-                </ui:insert>
+                <h:panelGroup id="commentGroup">
+	                <ui:insert name="userComments">
+	                    <ui:include src="/resources/includes/user/userComments.xhtml" />
+	                </ui:insert>
+                </h:panelGroup>
             </div>
 
             <h:panelGroup rendered="#{userBean.loggedIn}">
@@ -199,7 +203,9 @@
 
     <ui:define name="sidebar">
 
-        <viewerComponent:record_sidebar/>
+		<h:panelGroup id="sidebarGroup">
+	        <viewerComponent:record_sidebar/>
+		</h:panelGroup>
 
     </ui:define>
 

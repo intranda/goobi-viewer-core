@@ -753,9 +753,11 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     public void setCurrentImageOrderPerScript()
-            throws NumberFormatException, IndexUnreachableException, PresentationException, IDDOCNotFoundException {
+            throws NumberFormatException, IndexUnreachableException, PresentationException, IDDOCNotFoundException, RecordNotFoundException,
+            RecordDeletedException, DAOException, ViewerConfigurationException, RecordLimitExceededException {
         String order = Faces.getRequestParameter("order");
         setImageToShow(order);
+        update();
     }
 
     /**
