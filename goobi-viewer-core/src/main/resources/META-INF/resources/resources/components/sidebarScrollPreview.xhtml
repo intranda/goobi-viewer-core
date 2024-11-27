@@ -1,0 +1,49 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" xmlns:o="http://omnifaces.org/ui"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface />
+
+	<composite:interface>
+		<composite:attribute name="currentPageOrder" required="true"
+			type="java.lang.Integer" />
+		<composite:attribute name="range" required="false" default="2"
+			type="java.lang.Integer" />
+			<composite:attribute name="imageSize" required="false" default="200"
+			type="java.lang.Integer" />
+	</composite:interface>
+
+	<composite:implementation>
+		<div class="sidebar-scroll-preview">
+			<div class="sidebar-scroll-preview__inner">
+				<div class="sidebar-scroll-preview__grid" data-target="sidebarScrollPreviewContainer">
+					<ui:repeat varStatus="status" var="order" value="#{activeDocumentBean.viewManager.getPageRangeAroundPage(cc.attrs.currentPageOrder, cc.attrs.range, true)}">
+						<ui:param name="page" value="#{activeDocumentBean.viewManager.getPage(order).orElse(null)}"></ui:param>
+						<div class="sidebar-scroll-preview__item #{order == cc.attrs.currentPageOrder ? '-activePage' : ''}">
+							<ui:fragment rendered="#{page != null}">
+								<h:outputLink styleClass="sidebar-scroll-preview__link" value="#{activeDocumentBean.getPageUrl(order)}">
+									<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image" src="#{page.getImageUrl(cc.attrs.imageSize)}" />
+									<span class="sidebar-scroll-preview__link-text">#{page.order}:#{page.orderLabel}</span>
+									<f:passThroughAttribute name="data-target" value="pageNumber-#{status.index + 1}" />
+								</h:outputLink>
+							</ui:fragment>
+						</div>
+					</ui:repeat>
+				</div>
+			</div>
+		</div>
+		
+		<script>
+			 // fade in lazy loaded images
+			 $('[data-script="fadeIn"]').on('load', function(){
+			    $(this).addClass('-loaded');
+			 });
+ 		</script>
+
+	</composite:implementation>
+</ui:composition>
