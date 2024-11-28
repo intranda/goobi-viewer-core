@@ -2310,6 +2310,7 @@ public final class SearchHelper {
                         continue;
                     }
                     currentField = field;
+                    value = value.trim();
 
                     // Remove operators before field name
                     if (currentField.charAt(0) == '+' || currentField.charAt(0) == '-') {
