@@ -214,6 +214,14 @@ public class ViewerMessage {
         this.maxRetries = maxRetries;
     }
 
+    /**
+     * Call this method to set the max number of allowed retries to the number of retries already done, effectively preventing any further retries.
+     * This is useful if the ticket runs into an error which it cannot reasonably recover from, so further retries are futile
+     */
+    public void setDoNotRetry() {
+        this.maxRetries = this.retryCount;
+    }
+
     public boolean shouldRetry() {
         return this.retryCount < this.maxRetries;
     }
