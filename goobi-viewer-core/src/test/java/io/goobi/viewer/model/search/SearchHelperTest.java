@@ -636,6 +636,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 SearchHelper.extractSearchTermsFromQuery(
                         " (+(SUPERDEFAULT:(berlin) SUPERFULLTEXT:(berlin) SUPERUGCTERMS:(berlin)) +(MD_AUTHOR:(karl)))",
                         null);
+        System.out.println(result.size());
         Assertions.assertTrue(result.containsKey("MD_AUTHOR"));
 
     }
@@ -1237,6 +1238,15 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             terms.add("Γ qu 4");
             String highlightedPhrase = SearchHelper.applyHighlightingToPhrase(phrase, terms);
             Assertions.assertEquals(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "Γ qu 4" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END,
+                    highlightedPhrase);
+        }
+        {
+            String phrase = "Auszehrung (Tuberkulose)";
+            Set<String> terms = new HashSet<>();
+            terms.add("Auszehrung  Tuberkulose");
+            String highlightedPhrase = SearchHelper.applyHighlightingToPhrase(phrase, terms);
+            Assertions.assertEquals(
+                    SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "Auszehrung (Tuberkulose" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + ")",
                     highlightedPhrase);
         }
     }
