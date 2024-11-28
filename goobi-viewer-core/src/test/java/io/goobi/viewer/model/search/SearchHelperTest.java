@@ -636,7 +636,6 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 SearchHelper.extractSearchTermsFromQuery(
                         " (+(SUPERDEFAULT:(berlin) SUPERFULLTEXT:(berlin) SUPERUGCTERMS:(berlin)) +(MD_AUTHOR:(karl)))",
                         null);
-        System.out.println(result.size());
         Assertions.assertTrue(result.containsKey("MD_AUTHOR"));
 
     }
