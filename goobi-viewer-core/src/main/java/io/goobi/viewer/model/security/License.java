@@ -30,7 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -122,7 +121,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     @Column(name = "license_id")
     private Long id;
 
-    @JoinColumn(name = "license_type_id")
+    @JoinColumn(name = "license_type_id") // TODO nullable = false?
     private LicenseType licenseType;
 
     @ManyToOne
@@ -610,7 +609,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
             selectableSubthemes =
                     allSubthemes.stream()
                             .map(sub -> new Selectable<>(sub, this.subthemeDiscriminatorValues.contains(sub)))
-                            .collect(Collectors.toList());
+                            .toList();
         }
         return selectableSubthemes;
     }
@@ -624,7 +623,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
         if (selectableCategories == null) {
             List<CMSCategory> allCategories = DataManager.getInstance().getDao().getAllCategories();
             selectableCategories =
-                    allCategories.stream().map(cat -> new Selectable<>(cat, this.allowedCategories.contains(cat))).collect(Collectors.toList());
+                    allCategories.stream().map(cat -> new Selectable<>(cat, this.allowedCategories.contains(cat))).toList();
         }
         return selectableCategories;
     }
@@ -640,7 +639,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
             selectableTemplates =
                     allTemplates.stream()
                             .map(template -> new Selectable<>(template, this.allowedCmsTemplates.contains(template)))
-                            .collect(Collectors.toList());
+                            .toList();
         }
         return selectableTemplates;
     }
@@ -1060,5 +1059,17 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
         if (clientId != null) {
             this.client = DataManager.getInstance().getDao().getClientApplication(clientId);
         }
+    }
+
+    /**
+     * Convenience method for disabling the save button.
+     * 
+     * @return "disabled" if any required values are missing; null otherwise
+     * @should return null if all relevant fields filled
+     */
+    public String getDisabledStatus() {
+        return (this.getType() == null
+                || (this.getUser() == null && this.getUserGroup() == null && this.getIpRange() == null && this.getClient() == null)
+                || this.getLicenseType() == null) ? "disabled" : null;
     }
 }

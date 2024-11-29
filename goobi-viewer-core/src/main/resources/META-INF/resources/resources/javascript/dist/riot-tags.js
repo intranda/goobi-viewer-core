@@ -2815,7 +2815,7 @@ riot.tag2('external-resource-download', '<div class="download-external-resource_
       	this.ws = this.initWebSocket();
       	this.ws.onOpen.subscribe(() => {
       		rxjs.from(this.urls).pipe(
-      			rxjs.operators.flatMap(url => this.sendMessage(this.createSocketMessage(this.pi, url, "update")))
+      			rxjs.operators.flatMap(url => this.sendMessage(this.createSocketMessage(this.pi, url, "status")))
       		).subscribe(() => {});
       	})
       	console.log("mount download external resources for urls ", this.urls);
@@ -2858,7 +2858,7 @@ riot.tag2('external-resource-download', '<div class="download-external-resource_
     		if(this.updateListeners.has(urlToDownload)) {
     			this.updateListeners.get(urlToDownload).cancel();
     		}
-	      	this.sendMessage({pi: this.pi, url: urlToDownload, action: 'startdownload'});
+	      	this.sendMessage({pi: this.pi, url: urlToDownload, action: 'startdownload'})
 	        const listener = viewerJS.helper.repeatPromise(() => this.sendMessage(this.createSocketMessage(this.pi, urlToDownload, "update")), this.updateDelay);
 	        this.updateListeners.set(urlToDownload, listener);
 	        listener.then(() => {});

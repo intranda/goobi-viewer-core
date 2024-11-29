@@ -59,10 +59,12 @@ public class DeleteResourceHandler implements MessageHandler<MessageStatus> {
                 }
             } else {
                 logger.error("Cannot delete resource at  {}. file location does not exist", path);
+                ticket.setDoNotRetry();
                 return MessageStatus.ERROR;
             }
         } else {
             logger.error("Error deleting path. Path is empty");
+            ticket.setDoNotRetry();
             return MessageStatus.ERROR;
         }
 

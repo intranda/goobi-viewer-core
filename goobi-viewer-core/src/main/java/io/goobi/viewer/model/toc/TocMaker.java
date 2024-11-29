@@ -546,19 +546,21 @@ public final class TocMaker {
 
                 String volumeIddoc = (String) volumeDoc.getFieldValue(SolrConstants.IDDOC);
                 String volumeLogId = (String) volumeDoc.getFieldValue(SolrConstants.LOGID);
-                String thumbnailUrl = (String) volumeDoc.getFieldValue(SolrConstants.THUMBNAIL);
                 String volumeMimeType = (String) volumeDoc.getFieldValue(SolrConstants.MIMETYPE);
                 logger.trace("volume mime type: {}", volumeMimeType);
 
                 ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
                 StructElement struct = new StructElement(volumeIddoc, volumeDoc);
-                thumbnailUrl = thumbs.getThumbnailUrl(struct, ANCHOR_THUMBNAIL_WIDTH, ANCHOR_THUMBNAIL_HEIGHT);
+                String thumbnailUrl = thumbs.getThumbnailUrl(struct, ANCHOR_THUMBNAIL_WIDTH, ANCHOR_THUMBNAIL_HEIGHT);
+                int thumbPageNo =
+                        volumeDoc.getFieldValue(SolrConstants.THUMBPAGENO) != null ? (int) volumeDoc.getFieldValue(SolrConstants.THUMBPAGENO) : 1;
+                String thumbPageNoLabel = (String) volumeDoc.getFieldValue(SolrConstants.THUMBPAGENOLABEL);
 
                 String footerId = getFooterId(volumeDoc, DataManager.getInstance().getConfiguration().getWatermarkIdField());
                 String docStructType = (String) volumeDoc.getFieldValue(SolrConstants.DOCSTRCT);
 
                 IMetadataValue volumeLabel = buildLabel(volumeDoc, docStructType);
-                volumeLabel.mapEach(l -> StringEscapeUtils.unescapeHtml4(l));
+                volumeLabel.mapEach(StringEscapeUtils::unescapeHtml4);
                 boolean accessPermissionPdf;
                 try {
                     accessPermissionPdf = sourceFormatPdfAllowed && AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi,
@@ -567,8 +569,10 @@ public final class TocMaker {
                     logger.error("Record not found in index: {}", topStructPi);
                     continue;
                 }
-                TOCElement tocElement = new TOCElement(volumeLabel, "1", null, volumeIddoc, volumeLogId, 1, topStructPi, thumbnailUrl,
-                        accessPermissionPdf, false, thumbnailUrl != null, volumeMimeType, docStructType, footerId);
+
+                TOCElement tocElement =
+                        new TOCElement(volumeLabel, String.valueOf(thumbPageNo), thumbPageNoLabel, volumeIddoc, volumeLogId, 1, topStructPi, thumbnailUrl,
+                                accessPermissionPdf, false, thumbnailUrl != null, volumeMimeType, docStructType, footerId);
                 tocElement.getMetadata().put(SolrConstants.DOCSTRCT, docStructType);
                 tocElement.getMetadata().put(SolrConstants.CURRENTNO, (String) volumeDoc.getFieldValue(SolrConstants.CURRENTNO));
                 tocElement.getMetadata().put(SolrConstants.TITLE, (String) volumeDoc.getFirstValue(SolrConstants.TITLE));

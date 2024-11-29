@@ -1060,6 +1060,18 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      *
+     * @return Map containing mappings DOCSTRCT -> citeproc type
+     * @should return all configured values
+     */
+    public Map<String, String> getSidebarWidgetUsageCitationRecommendationDocstructMapping() {
+        Map<String, String> ret = new HashMap<>();
+        this.getLocalConfigurationsAt("sidebar.sidebarWidgetUsage.citationRecommendation.source.csltypes.csltype")
+                .forEach(conf -> ret.put(conf.getString("[@docstrct]"), conf.getString(".")));
+        return ret;
+    }
+
+    /**
+     *
      * @return Boolean value
      * @should return correct value
      */

@@ -641,14 +641,14 @@ public class BrowseElement implements Serializable {
             String germanTitle = null;
             String anyTitle = null;
             for (String key : se.getMetadataFields().keySet()) {
-                if (key.equals(SolrConstants.TITLE + "_LANG_" + locale.getLanguage().toUpperCase())) {
+                if (key.equals(SolrConstants.TITLE + SolrConstants.MIDFIX_LANG + locale.getLanguage().toUpperCase())) {
                     ret = se.getMetadataValue(key);
                     break;
-                } else if (key.equals(SolrConstants.TITLE + "_LANG_DE")) {
+                } else if (key.equals(SolrConstants.TITLE + SolrConstants.MIDFIX_LANG + "DE")) {
                     germanTitle = se.getMetadataValue(key);
-                } else if (key.equals(SolrConstants.TITLE + "_LANG_EN")) {
+                } else if (key.equals(SolrConstants.TITLE + SolrConstants.MIDFIX_LANG + "EN")) {
                     englishTitle = se.getMetadataValue(key);
-                } else if (key.matches(SolrConstants.TITLE + "_LANG_[A-Z][A-Z]")) {
+                } else if (key.matches(SolrConstants.TITLE + SolrConstants.MIDFIX_LANG + "[A-Z][A-Z]")) {
                     anyTitle = se.getMetadataValue(key);
                 }
             }

@@ -14,7 +14,7 @@
 	</composite:interface>
 
 	<composite:implementation>
-			<div jsf:id="widgetDownloads" class="widget widget-downloads" rendered="#{displayConditions.getTag('widgetDownloads').getChildCount('widget-element') > 0}"
+			<div jsf:id="widgetDownloads" class="widget widget-downloads" rendered="#{activeDocumentBean.viewManager != null and displayConditions.getTag('widgetDownloads').getChildCount('widget-element') > 0}"
 			data-numChildren="#{displayConditions.getTag('widgetDownloadsBody').getChildCount('widget-element')}">
 				<div class="widget-downloads__topbar widget__topbar">
 					<!-- WIDGET TITLE -->
@@ -339,7 +339,7 @@
 
 					<!-- PAGE -->
 							<!-- PAGE DOWNLOADS -->
-							<div jsf:id="pageDownloads" rendered="#{displayConditions.getTag('pageDownloads').getChildCount('widget-element') > 0}"
+							<div jsf:id="pageDownloads" rendered="#{activeDocumentBean.viewManager.currentPage != null and displayConditions.getTag('pageDownloads').getChildCount('widget-element') > 0}"
 							class="widget-downloads__page-downloads widget__badge-container">
 
 								<h3 id="titleImage"

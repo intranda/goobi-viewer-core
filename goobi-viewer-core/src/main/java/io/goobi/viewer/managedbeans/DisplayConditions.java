@@ -43,6 +43,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PageType;
@@ -186,9 +187,11 @@ public class DisplayConditions implements Serializable {
      * @throws DAOException An exception occured communicating with the viewer sql database
      * @throws RecordNotFoundException The current record could not be found in the viewer data index when checking access conditions
      * @throws PresentationException Any other exception encountered while checking file system resources or the SOLR database
+     * @throws ViewerConfigurationException
      */
     public boolean matchRecord(String json)
-            throws IOException, IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException {
+            throws IOException, IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException,
+            ViewerConfigurationException {
         String cleanedJson = json.replaceAll(":\\s*!\\[", ":[!,");
         VisibilityConditionInfo info = JsonStringConverter.of(VisibilityConditionInfo.class).convert(cleanedJson);
         VisibilityCondition condition = new VisibilityCondition(info);
@@ -333,7 +336,7 @@ public class DisplayConditions implements Serializable {
         private static boolean isRendered(UIComponent child) {
             try {
                 return child != null && child.isRendered() && isHasValuesIfRepeat(child);
-            } catch (ConcurrentModificationException e) {
+            } catch (ConcurrentModificationException | NullPointerException e) {
                 //possibly happens when rendered conditions are tested on child with 'displayConditions.matchPage/matchRecord', according to log entry
                 logger.warn("Cannot detect rendered state of child compnent {} because of {}", child.getClientId(), e.toString());
                 return true;

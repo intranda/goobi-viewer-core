@@ -13,6 +13,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.PageType;
@@ -60,7 +61,8 @@ class VisibilityConditionTest {
     }
 
     @Test
-    void test_matchesRecord_mimeType() throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException {
+    void test_matchesRecord_mimeType()
+            throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException, ViewerConfigurationException {
 
         RecordPropertyCache cache = new RecordPropertyCache();
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
@@ -73,7 +75,8 @@ class VisibilityConditionTest {
     }
 
     @Test
-    void test_matchesRecord_docType() throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException {
+    void test_matchesRecord_docType()
+            throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException, ViewerConfigurationException {
 
         RecordPropertyCache cache = new RecordPropertyCache();
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
