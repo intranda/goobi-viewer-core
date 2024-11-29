@@ -50,6 +50,8 @@ public interface IPrivilegeHolder {
     public static final String PRIV_VIEW_AUDIO = "VIEW_AUDIO";
     /** Constant <code>PRIV_VIEW_UGC="PRIV_VIEW_UGC"</code> */
     public static final String PRIV_VIEW_UGC = "VIEW_UGC";
+    /** Constant <code>PRIV_VIEW_UGC="PRIV_VIEW_METADATA"</code> */
+    public static final String PRIV_VIEW_METADATA = "VIEW_METADATA";
     /** Constant <code>PRIV_DOWNLOAD_PDF="DOWNLOAD_PDF"</code> */
     public static final String PRIV_DOWNLOAD_PDF = "DOWNLOAD_PDF";
     /** Constant <code>PRIV_DOWNLOAD_PAGE_PDF="DOWNLOAD_PAGE_PDF"</code> */
