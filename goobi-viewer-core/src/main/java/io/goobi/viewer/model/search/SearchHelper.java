@@ -1550,7 +1550,7 @@ public final class SearchHelper {
         }
 
         // Highlighting single-character terms can take a long time, so skip them
-        if (term.length() < 2) {
+        if (term.length() < 2 || phrase.length() < 2) {
             return phrase;
         }
 
@@ -1563,6 +1563,7 @@ public final class SearchHelper {
         }
         int endIndex = startIndex + term.length();
         String before = phrase.substring(0, startIndex);
+        
         String highlightedTerm = applyHighlightingToTerm(phrase.substring(startIndex, endIndex));
         // logger.trace("highlighted term: {}", highlightedTerm); //NOSONAR Debug
         String after = phrase.substring(endIndex);
@@ -2242,7 +2243,7 @@ public final class SearchHelper {
         }
 
         // Remove parentheses, ANDs and ORs
-        q = q.replace("(", "").replace(")", "").replace(SolrConstants.SOLR_QUERY_AND, " ").replace(SolrConstants.SOLR_QUERY_OR, " ");
+        q = q.replace("(", "@").replace(")", "@").replace(SolrConstants.SOLR_QUERY_AND, " ").replace(SolrConstants.SOLR_QUERY_OR, " ");
 
         Map<String, Set<String>> ret = new HashMap<>();
         ret.put(TITLE_TERMS, new HashSet<>());
@@ -2297,8 +2298,8 @@ public final class SearchHelper {
         String[] querySplit = q.split(SEARCH_TERM_SPLIT_REGEX);
         String currentField = null;
         for (final String queryPart : querySplit) {
-            String s = queryPart.trim();
-            // logger.trace("term: {}", s); //NOSONAR Debug
+            String s = queryPart.replace("@", " ").trim();
+            // logger.error("term: {}", s); //NOSONAR Debug
             // Extract the value part
             if (s.contains(":") && !s.startsWith(":")) {
                 int split = s.indexOf(':');
@@ -2309,10 +2310,11 @@ public final class SearchHelper {
                         continue;
                     }
                     currentField = field;
+                    value = value.trim();
 
                     // Remove operators before field name
                     if (currentField.charAt(0) == '+' || currentField.charAt(0) == '-') {
-                        currentField = currentField.substring(1);
+                        currentField = currentField.substring(1).trim();
                     }
 
                     switch (currentField) {
