@@ -34,7 +34,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
@@ -60,7 +59,6 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -110,7 +108,7 @@ public class UserAvatarResource extends ImageResource {
         String imageRequestPath = requestUrl.replace(baseImageUrl, "");
         this.resourceURI = URI.create(baseImageUrl);
 
-        List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+        List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).toList();
         if (parts.size() == 4) {
             //image request
             request.setAttribute("iiif-info", false);
@@ -131,9 +129,15 @@ public class UserAvatarResource extends ImageResource {
      */
     public static URI getMediaFileUrl(Long userId) throws WebApplicationException {
         try {
-            return getUserAvatarFile(userId).map(PathConverter::toURI)
-                    .orElseThrow(() -> new ContentNotFoundException("No avatar file found for user " + userId));
-        } catch (ContentLibException | IOException e) {
+            Optional<URI> ret = getUserAvatarFile(userId).map(PathConverter::toURI);
+            if (ret.isPresent()) {
+                return ret.get();
+            }
+            logger.debug("No avatar file found for user {}", userId);
+            //            return getUserAvatarFile(userId).map(PathConverter::toURI)
+            //                    .orElseThrow(() -> new ContentNotFoundException("No avatar file found for user " + userId));
+            return URI.create("");
+        } catch (IOException e) {
             throw new WebApplicationException(e);
         }
     }
@@ -230,12 +234,11 @@ public class UserAvatarResource extends ImageResource {
         ImageFileFormat fileFormat = ImageFileFormat.getImageFileFormatFromFileExtension(uploadFilename);
         if (fileFormat != null) {
             String filename = FILENAME_TEMPLATE.replace("{id}", userId.toString()) + "." + fileFormat.getFileExtension();
-            return getUserAvatarFolder().resolve(filename);            
-        } else {
-            String filename = FILENAME_TEMPLATE.replace("{id}", userId.toString()) + "." + FilenameUtils.getExtension(uploadFilename);
-            return getUserAvatarFolder().resolve(filename);      
+            return getUserAvatarFolder().resolve(filename);
         }
-
+        
+        String filename = FILENAME_TEMPLATE.replace("{id}", userId.toString()) + "." + FilenameUtils.getExtension(uploadFilename);
+        return getUserAvatarFolder().resolve(filename);
     }
 
     /**
