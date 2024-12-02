@@ -44,7 +44,7 @@ class UserAvatarResourceTest extends AbstractRestApiTest {
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals(400, response.getStatus(), "Should return status 400");
+            assertEquals(404, response.getStatus(), "Should return status 404");
         }
     }
 }
