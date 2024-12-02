@@ -59,6 +59,7 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -129,15 +130,15 @@ public class UserAvatarResource extends ImageResource {
      */
     public static URI getMediaFileUrl(Long userId) throws WebApplicationException {
         try {
-            Optional<URI> ret = getUserAvatarFile(userId).map(PathConverter::toURI);
-            if (ret.isPresent()) {
-                return ret.get();
-            }
+            //            Optional<URI> ret = getUserAvatarFile(userId).map(PathConverter::toURI);
+            //            if (ret.isPresent()) {
+            //                return ret.get();
+            //            }
             logger.debug("No avatar file found for user {}", userId);
-            //            return getUserAvatarFile(userId).map(PathConverter::toURI)
-            //                    .orElseThrow(() -> new ContentNotFoundException("No avatar file found for user " + userId));
-            return URI.create("");
-        } catch (IOException e) {
+            return getUserAvatarFile(userId).map(PathConverter::toURI)
+                    .orElseThrow(() -> new ContentNotFoundException("No avatar file found for user " + userId));
+            //            return URI.create("");
+        } catch (IOException | ContentNotFoundException e) {
             throw new WebApplicationException(e);
         }
     }
@@ -236,7 +237,7 @@ public class UserAvatarResource extends ImageResource {
             String filename = FILENAME_TEMPLATE.replace("{id}", userId.toString()) + "." + fileFormat.getFileExtension();
             return getUserAvatarFolder().resolve(filename);
         }
-        
+
         String filename = FILENAME_TEMPLATE.replace("{id}", userId.toString()) + "." + FilenameUtils.getExtension(uploadFilename);
         return getUserAvatarFolder().resolve(filename);
     }
