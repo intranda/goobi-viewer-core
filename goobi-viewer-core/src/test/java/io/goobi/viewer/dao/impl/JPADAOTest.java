@@ -263,7 +263,6 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(1, user.getLicenses().get(0).getPrivileges().size());
         for (String priv : user.getLicenses().get(0).getPrivileges()) {
             Assertions.assertEquals(IPrivilegeHolder.PRIV_LIST, priv);
-            break;
         }
 
         // Saving the licensee should not create any extra licenses
@@ -456,7 +455,6 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(1, userGroup.getLicenses().get(0).getPrivileges().size());
         for (String priv : userGroup.getLicenses().get(0).getPrivileges()) {
             Assertions.assertEquals("license 2 priv 1", priv);
-            break;
         }
 
         // Saving the licensee should not create any extra licenses
@@ -633,7 +631,6 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(1, ipRange.getLicenses().get(0).getPrivileges().size());
         for (String priv : ipRange.getLicenses().get(0).getPrivileges()) {
             Assertions.assertEquals(IPrivilegeHolder.PRIV_LIST, priv);
-            break;
         }
 
         // Saving the licensee should not create any extra licenses
