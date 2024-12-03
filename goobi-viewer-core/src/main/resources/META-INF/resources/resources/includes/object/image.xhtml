@@ -207,6 +207,8 @@
            	var viewImage = new ImageView.Image( configViewer )
            	
            	if(viewImage.sequence) {
+           		
+           		//js updates
 	           	viewImage.sequence.onCurrentImageChange
 	           	.pipe(rxjs.operators.debounceTime(300))
 	           	.subscribe (index => {
@@ -230,11 +232,25 @@
 	           			pathArray.push(pageNo)
 	           		}
 	           		url.pathname = pathArray.join("/");
+	           		
+	           		//update tab url
 	           	 	//alternatively use history.addState to add an entry to the browser history, so navigating back leads to the previous page
 	           		window.history.replaceState(null, "", url.toString());
+	           		
+	           		//update dropdown selector
+	           		document.querySelector(".custom-control.custom-control--select select").value = pageNo;
+	           	});
+           		
+           		//ajax updates
+           		viewImage.sequence.onCurrentImageChange
+	           	.pipe(rxjs.operators.debounceTime(1500))
+	           	.subscribe (index => {
+	           		const pageNo = index+1;
 	           		setCurrentImageOrder({"order": pageNo});
 	           	});
-             	}
+           		
+           		
+             }
            	
            	viewImage.load().then( function( image ) {
            	    $(".openseadragon-canvas").get(0).focus = () => {
