@@ -12,13 +12,12 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <!-- IMAGE CONTAINER -->
-    <div id="imageContainer" class="view-object__image #{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE' ? '-sequenceScrolling' : ''}">
-
+    <div id="imageContainer" class="view-object__image #{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE' and activeDocumentBean.viewManager.imagesCount ge 2 ? '-sequenceScrolling' : ''}">
 
 		<!-- SHOW SCROLLING SIDEBAR IMAGE THUMBNAIL PREVIEW FOR INFINITE SCROLLING -->
-		<ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE'}">
+		<ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE' and activeDocumentBean.viewManager.imagesCount ge 2}">
 
-			<viewerComponent:sidebarScrollPreview range="300" imageSize="350" currentPageOrder="#{activeDocumentBean.viewManager.currentImageOrder}" />
+			<viewerComponent:sidebarScrollPreview range="300" imageSize="200" currentPageOrder="#{activeDocumentBean.viewManager.currentImageOrder}" />
 		
 		</ui:fragment>
 
@@ -477,70 +476,7 @@
   		
     </script>
     
-    <!--  SCROLL SIDEBAR PREVIEW THUMBNAILS FUNCTIONS ONLY INSERTED IF SEQUENCE SCROLLING ACTIVE -->
-    <ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE'}">
-  		
-  		<script>
-	  	
-		    console.log('current picture is:' + #{activeDocumentBean.viewManager.currentImageOrder})
-		    
-		    // DEFINE PREVIEW SIDEBAR VARIABLES AND SIMPLEBAR SCROLLBAR
-	  		const sidebarScrollPreviewContainer = $('[data-target="sidebarScrollPreviewContainer"]');
-		    const loadPageSelector = '[data-target="pageNumber-' + #{activeDocumentBean.viewManager.currentImageOrder} + '"]';
-			new SimpleBar($(sidebarScrollPreviewContainer)[0], { autoHide: false, scrollbarMinSize: 30, }); 
-			const sidebarScrollPreviewSimplebarContainer = $('.simplebar-content-wrapper');
-	  		
-	  		// FUNCTION TO SCROLL SIDEBAR THUMBNAIL PREVIEW
-		    function scrollSidebarPreviewFunction(imageIndexSidebar, jumpStraight) {
 
-	  			// JUMP STRAIGHT WITHOUT SCROLL ANIMATION
-	  			if (jumpStraight == 1) {
-		            $(sidebarScrollPreviewSimplebarContainer).animate({scrollTop: $(sidebarScrollPreviewSimplebarContainer).scrollTop() 
-		            	+ ($(imageIndexSidebar).offset().top 
-		            	- $(sidebarScrollPreviewSimplebarContainer).offset().top
-		        	)}, 0); 
-	  				}
-	  			// SCROLL ANIMATION WHILE SCROLLING DOWN IN CANVAS
-	  			else {
-		            $(sidebarScrollPreviewSimplebarContainer).animate({scrollTop: $(sidebarScrollPreviewSimplebarContainer).scrollTop() 
-		            	+ ($(imageIndexSidebar).offset().top 
-		            	- $(sidebarScrollPreviewSimplebarContainer).offset().top
-		        	)}, 180);
-	  			}
-
-				// HIGHLIGHT THE ACTUAL THUMBNAIL WHILE SCROLLING DOWN IN CANVAS
-	            $('[data-target^=pageNumber-]').removeClass('-highlighted');
-	            $(imageIndexSidebar).addClass('-highlighted');
-		    }
- 
-	  		// JUMP TO PAGE IN PREVIEW SIDEBAR AT PAGE LOAD
-		    scrollSidebarPreviewFunction(loadPageSelector, jumpStraight = 1);
-		    
-	  		// SCROLL SIDEBAR WHEN SEADRAGON SCROLLED
-			viewImage.sequence.onCurrentImageChange.subscribe (imageIndex => {
-				const pageNo = imageIndex+1;
-				    pageNumberSelector = '[data-target="pageNumber-' + pageNo + '"]';
-				    scrollSidebarPreviewFunction(pageNumberSelector, jumpStraight = 0);
-			});
-	  		
-	  		// SCROLL TO PAGE NUMBER INSIDE CANVAS WHEN THUMBNAIL CLICKED
-			$( '[data-target^=pageNumber-]' ).on( "click", function() {
-				// console.log($(this).data());
-				
-				var setTargetPageOnClickVar = $(this).attr("data-target");
-				console.log(setTargetPageOnClickVar);
-				
-				viewImage.sequence.setCurrentImage(pageNo-1, true);
-				
-				
-// 				[data-target="pageNumber-#{status.index + 1}]
-			} );
-	  		
-	  		
-	  		
-		</script>
-
-    </ui:fragment>
     
     <ui:repeat var="se" value="#{activeDocumentBean.viewManager.currentPage.containedStructElements}">
     	<ui:fragment rendered="#{se.hasShapeMetadata()}">
