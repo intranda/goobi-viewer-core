@@ -26,11 +26,20 @@
 						<ui:param name="page" value="#{activeDocumentBean.viewManager.getPage(order).orElse(null)}"></ui:param>
 						<div class="sidebar-scroll-preview__item #{order == cc.attrs.currentPageOrder ? '-activePage' : ''}">
 							<ui:fragment rendered="#{page != null}">
-								<h:outputLink styleClass="sidebar-scroll-preview__link" value="#{activeDocumentBean.getPageUrl(order)}">
+								
+<!-- 								<h:outputLink styleClass="sidebar-scroll-preview__link" value="#{activeDocumentBean.getPageUrl(order)}"> -->
+<!-- 									<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image" src="#{page.getImageUrl(cc.attrs.imageSize)}" /> -->
+<!-- 									<span class="sidebar-scroll-preview__link-text">#{page.order}:#{page.orderLabel}</span> -->
+<!-- 									<f:passThroughAttribute name="data-target" value="pageNumber-#{status.index + 1}" /> -->
+<!-- 								</h:outputLink> -->
+								
+								
+								<button type="button" class="sidebar-scroll-preview__button" data-target="pageNumber-#{status.index + 1}">
 									<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image" src="#{page.getImageUrl(cc.attrs.imageSize)}" />
-									<span class="sidebar-scroll-preview__link-text">#{page.order}:#{page.orderLabel}</span>
-									<f:passThroughAttribute name="data-target" value="pageNumber-#{status.index + 1}" />
-								</h:outputLink>
+									<span class="sidebar-scroll-preview__button-text">#{page.order}:#{page.orderLabel}</span>
+								</button>
+								
+								
 							</ui:fragment>
 						</div>
 					</ui:repeat>

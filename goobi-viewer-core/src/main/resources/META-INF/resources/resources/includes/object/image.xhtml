@@ -459,38 +459,72 @@
 		       	
       	//]]>
   		
-  		// SCROLL SIDEBAR AUTOMATICALLY
-  		
-	    console.log('current picture is:' + #{activeDocumentBean.viewManager.currentImageOrder})
-
-	    
-  		const sidebarScrollPreviewContainer = $('[data-target="sidebarScrollPreviewContainer"]');
-	    const startingPageSelector = '[data-target="pageNumber-' + #{activeDocumentBean.viewManager.currentImageOrder} + '"]';
-  		
-  		// FUNCTION TO SCROLL SIDEBAR THUMBNAIL PREVIEW
-	    function scrollSidebarPreviewFunction(imageIndexSidebar) {
-            $(sidebarScrollPreviewContainer).animate({scrollTop: $(sidebarScrollPreviewContainer).scrollTop() 
-            	+ ($(imageIndexSidebar).offset().top 
-            	- $(sidebarScrollPreviewContainer).offset().top
-        	)}, 180);
-            $('[data-target^=pageNumber-]').removeClass('-highlighted');
-            $(imageIndexSidebar).addClass('-highlighted');
-	    }
-  		
-	    
-	    
-	    scrollSidebarPreviewFunction(startingPageSelector);
-	    
-
-  		// SCROLL SIDEBAR WHEN SEADRAGON SCROLLED
-		viewImage.sequence.onCurrentImageChange.subscribe (imageIndex => {
-			const pageNo = imageIndex+1;
-			    pageNumberSelector = '[data-target="pageNumber-' + pageNo + '"]';
-			    scrollSidebarPreviewFunction(pageNumberSelector);
-			    console.log('current picture2 is:' + pageNo);
-			    
-		});
     </script>
+    
+    <!--  SCROLL SIDEBAR PREVIEW THUMBNAILS FUNCTIONS ONLY INSERTED IF SEQUENCE SCROLLING ACTIVE -->
+    <ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE'}">
+  		
+  		<script>
+	  	
+		    console.log('current picture is:' + #{activeDocumentBean.viewManager.currentImageOrder})
+		    
+		    // DEFINE PREVIEW SIDEBAR VARIABLES AND SIMPLEBAR SCROLLBAR
+	  		const sidebarScrollPreviewContainer = $('[data-target="sidebarScrollPreviewContainer"]');
+		    const loadPageSelector = '[data-target="pageNumber-' + #{activeDocumentBean.viewManager.currentImageOrder} + '"]';
+			new SimpleBar($(sidebarScrollPreviewContainer)[0], { autoHide: false, scrollbarMinSize: 30, }); 
+			const sidebarScrollPreviewSimplebarContainer = $('.simplebar-content-wrapper');
+	  		
+	  		// FUNCTION TO SCROLL SIDEBAR THUMBNAIL PREVIEW
+		    function scrollSidebarPreviewFunction(imageIndexSidebar, jumpStraight) {
+
+	  			// JUMP STRAIGHT WITHOUT SCROLL ANIMATION
+	  			if (jumpStraight == 1) {
+		            $(sidebarScrollPreviewSimplebarContainer).animate({scrollTop: $(sidebarScrollPreviewSimplebarContainer).scrollTop() 
+		            	+ ($(imageIndexSidebar).offset().top 
+		            	- $(sidebarScrollPreviewSimplebarContainer).offset().top
+		        	)}, 0); 
+	  				}
+	  			// SCROLL ANIMATION WHILE SCROLLING DOWN IN CANVAS
+	  			else {
+		            $(sidebarScrollPreviewSimplebarContainer).animate({scrollTop: $(sidebarScrollPreviewSimplebarContainer).scrollTop() 
+		            	+ ($(imageIndexSidebar).offset().top 
+		            	- $(sidebarScrollPreviewSimplebarContainer).offset().top
+		        	)}, 180);
+	  			}
+
+				// HIGHLIGHT THE ACTUAL THUMBNAIL WHILE SCROLLING DOWN IN CANVAS
+	            $('[data-target^=pageNumber-]').removeClass('-highlighted');
+	            $(imageIndexSidebar).addClass('-highlighted');
+		    }
+ 
+	  		// JUMP TO PAGE IN PREVIEW SIDEBAR AT PAGE LOAD
+		    scrollSidebarPreviewFunction(loadPageSelector, jumpStraight = 1);
+		    
+	  		// SCROLL SIDEBAR WHEN SEADRAGON SCROLLED
+			viewImage.sequence.onCurrentImageChange.subscribe (imageIndex => {
+				const pageNo = imageIndex+1;
+				    pageNumberSelector = '[data-target="pageNumber-' + pageNo + '"]';
+				    scrollSidebarPreviewFunction(pageNumberSelector, jumpStraight = 0);
+			});
+	  		
+	  		// SCROLL TO PAGE NUMBER INSIDE CANVAS WHEN THUMBNAIL CLICKED
+			$( '[data-target^=pageNumber-]' ).on( "click", function() {
+				// console.log($(this).data());
+				
+				var setTargetPageOnClickVar = $(this).attr("data-target");
+				console.log(setTargetPageOnClickVar);
+				
+				viewImage.sequence.setCurrentImage(pageNo-1, true);
+				
+				
+// 				[data-target="pageNumber-#{status.index + 1}]
+			} );
+	  		
+	  		
+	  		
+		</script>
+
+    </ui:fragment>
     
     <ui:repeat var="se" value="#{activeDocumentBean.viewManager.currentPage.containedStructElements}">
     	<ui:fragment rendered="#{se.hasShapeMetadata()}">
