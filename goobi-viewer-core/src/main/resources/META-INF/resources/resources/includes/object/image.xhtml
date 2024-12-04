@@ -243,7 +243,7 @@
            		
            		//ajax updates
            		viewImage.sequence.onCurrentImageChange
-	           	.pipe(rxjs.operators.debounceTime(1500))
+	           	.pipe(rxjs.operators.debounceTime(600))
 	           	.subscribe (index => {
 	           		const pageNo = index+1;
 	           		setCurrentImageOrder({"order": pageNo});
