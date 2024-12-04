@@ -23,7 +23,7 @@
 			<div class="sidebar-scroll-preview__inner">
 				<div class="sidebar-scroll-preview__grid" data-target="sidebarScrollPreviewContainer">
 					<ui:repeat varStatus="status" var="page" value="#{activeDocumentBean.viewManager.allPages}">
-						<div class="sidebar-scroll-preview__item #{page.order == cc.attrs.currentPageOrder ? '-activePage' : ''}">
+						<div class="sidebar-scroll-preview__item">
 							<ui:fragment rendered="#{page != null}">
 
 								
