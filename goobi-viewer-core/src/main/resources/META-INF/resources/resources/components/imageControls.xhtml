@@ -41,7 +41,7 @@
                                             <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.rtl}">
                                                 <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-last-page.svg')}" />
                                             </ui:fragment>
-                                            <span id="firstImageLabel" class="labeltext">#{msg.firstImage}</span>
+                                            <span id="firstImageLabel" class="labeltext">#{msg.firstImage}-LABEL</span>
                                             <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                             <f:passThroughAttribute name="data-placement" value="#{cc.attrs.tooltipPlacement}" />
                                             <f:passThroughAttribute name="aria-labelledby" value="firstImageLabel" />

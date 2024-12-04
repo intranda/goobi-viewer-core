@@ -69,7 +69,7 @@
 
 	
 				<h:form>
-					<o:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" render=":imageControlsForm :sidebarGroup :userGeneratedContentGroup :paginatorGroup :commentGroup"></o:commandScript>
+					<o:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" render=":sidebarGroup :userGeneratedContentGroup :commentGroup"></o:commandScript>
 				</h:form>
 
 
@@ -194,7 +194,38 @@
                         saveBtn: "#{msg.downloadGenerateFile}",
                     }
                 };
-				$(document).ready(() => viewerJS.downloadModal.init( downloadModalConfig ));
+				$(document).ready(() => {
+					viewerJS.downloadModal.init( downloadModalConfig );
+					riot.mount("imageControlsTag", "imagecontrols", {
+						navigationMode: "#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase()}",
+						rtl: #{activeDocumentBean.viewManager.topStructElement.rtl},
+						enablePageNavigation: #{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)},
+						showDropdown: #{activeDocumentBean.viewManager.imagesCount ge configurationBean.pageSelectDropdownDisplayMinPages},
+						currentPageNumber: #{activeDocumentBean.viewManager.currentImageOrder},
+						firstPageNumber: #{activeDocumentBean.viewManager.firstPageOrder},
+						lastPageNumber: #{activeDocumentBean.viewManager.lastPageOrder},
+						numPages: #{activeDocumentBean.viewManager.imagesCount},
+						pageList: #{activeDocumentBean.viewManager.dropdownPageAsJson},
+						tooltipPlacement: "top",
+						navigationSteps: #{configurationBean.pageBrowseEnabled ? '[]' : configurationBean.pageBrowseSteps},
+						pageUrlTemplate : (page) => `#{request.contextPath}/#{navigationHelper.getCurrentView()}/${page}/`,
+						update: viewImage?.sequence?.onCurrentImageChange.pipe(rxjs.operators.debounceTime(300), rxjs.operators.map(index => index+1)),
+						onUpdate: (pageNumber) => viewImage?.sequence?.setCurrentImage(pageNumber-1),
+						msg: {
+							aria_label__nav_image_controls: "#{msg.aria_label__nav_image_controls}",
+							firstImage: "#{msg.firstImage}",
+							lastPage: "#{msg.lastPage}",
+							stepBack: "#{msg.stepBack}",
+							stepForward: "#{msg.stepForward}"
+						},
+						icons: {
+							first: "#{navigationHelper.getResource('images/icons/icon_ic-first-page.svg')}",
+							last: "#{navigationHelper.getResource('images/icons/icon_ic-last-page.svg')}",
+							prev: "#{navigationHelper.getResource('images/icons/icon_ic-prev-page.svg')}",
+							next: "#{navigationHelper.getResource('images/icons/icon_ic-next-page.svg')}"
+						}
+					})
+				});
 
                 // viewerJS.clipboard.init( '[data-copy]' );
             </script>

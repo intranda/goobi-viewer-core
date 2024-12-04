@@ -207,6 +207,17 @@
            	
            	if(viewImage.sequence) {
            		
+           		
+           		//ajax updates
+           		viewImage.sequence.onScroll
+           		.pipe(
+           			rxjs.operators.withLatestFrom(viewImage.sequence.onCurrentImageChange),
+           			rxjs.operators.map(e => e[1]),
+           			rxjs.operators.distinctUntilChanged(),
+           			rxjs.operators.debounceTime(800)		
+           		)
+           		.subscribe(index => setCurrentImageOrder({"order": index+1}));
+
            		//js updates
 	           	viewImage.sequence.onCurrentImageChange
 	           	.pipe(rxjs.operators.debounceTime(300))
@@ -238,14 +249,6 @@
 	           		
 	           		//update dropdown selector
 	           		document.querySelector(".custom-control.custom-control--select select").value = pageNo;
-	           	});
-           		
-           		//ajax updates
-           		viewImage.sequence.onCurrentImageChange
-	           	.pipe(rxjs.operators.debounceTime(600))
-	           	.subscribe (index => {
-	           		const pageNo = index+1;
-	           		setCurrentImageOrder({"order": pageNo});
 	           	});
            		
            		

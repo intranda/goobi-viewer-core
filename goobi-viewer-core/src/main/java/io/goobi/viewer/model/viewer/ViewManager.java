@@ -1644,6 +1644,16 @@ public class ViewManager implements Serializable {
         return dropdownPages;
     }
 
+    public List<String> getDropdownPagesAsJson() {
+        return getDropdownPages().stream().map(item -> {
+            JSONObject obj = new JSONObject();
+            obj.put("label", item.getLabel());
+            obj.put("description", item.getDescription());
+            obj.put("value", item.getValue());
+            return obj.toString();
+        }).toList();
+    }
+
     /**
      * <p>
      * Getter for the field <code>dropdownFulltext</code>.
@@ -1653,6 +1663,16 @@ public class ViewManager implements Serializable {
      */
     public List<SelectPageItem> getDropdownFulltext() {
         return dropdownFulltext;
+    }
+
+    public List<String> getDropdownFulltextAsJson() {
+        return getDropdownFulltext().stream().map(item -> {
+            JSONObject obj = new JSONObject();
+            obj.put("label", item.getLabel());
+            obj.put("description", item.getDescription());
+            obj.put("value", item.getValue());
+            return obj.toString();
+        }).toList();
     }
 
     /**

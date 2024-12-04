@@ -809,6 +809,10 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isPageBrowseEnabled();
     }
 
+    public List<Integer> getPageBrowseSteps() {
+        return DataManager.getInstance().getConfiguration().getPageBrowseSteps();
+    }
+
     /**
      * <p>
      * isPageBrowseStep1Visible.
