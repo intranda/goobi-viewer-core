@@ -19,18 +19,27 @@
 	</composite:interface>
 
 	<composite:implementation>
-		<div class="sidebar-scroll-preview">
+		<div class="sidebar-scroll-preview"> 
 			<div class="sidebar-scroll-preview__inner">
 				<div class="sidebar-scroll-preview__grid" data-target="sidebarScrollPreviewContainer">
-					<ui:repeat varStatus="status" var="order" value="#{activeDocumentBean.viewManager.getPageRangeAroundPage(cc.attrs.currentPageOrder, cc.attrs.range, true)}">
-						<ui:param name="page" value="#{activeDocumentBean.viewManager.getPage(order).orElse(null)}"></ui:param>
-						<div class="sidebar-scroll-preview__item #{order == cc.attrs.currentPageOrder ? '-activePage' : ''}">
+					<ui:repeat varStatus="status" var="page" value="#{activeDocumentBean.viewManager.allPages}">
+						<div class="sidebar-scroll-preview__item #{page.order == cc.attrs.currentPageOrder ? '-activePage' : ''}">
 							<ui:fragment rendered="#{page != null}">
-								<h:outputLink styleClass="sidebar-scroll-preview__link" value="#{activeDocumentBean.getPageUrl(order)}">
+
+								
+<!-- 								<h:outputLink styleClass="sidebar-scroll-preview__link" value="#{activeDocumentBean.getPageUrl(order)}"> -->
+<!-- 									<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image" src="#{page.getImageUrl(cc.attrs.imageSize)}" /> -->
+<!-- 									<span class="sidebar-scroll-preview__link-text">#{page.order}:#{page.orderLabel}</span> -->
+<!-- 									<f:passThroughAttribute name="data-target" value="pageNumber-#{status.index + 1}" /> -->
+<!-- 								</h:outputLink> -->
+								
+								
+								<button type="button" class="sidebar-scroll-preview__button" data-target="pageNumber-#{status.index + 1}">
 									<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image" src="#{page.getImageUrl(cc.attrs.imageSize)}" />
-									<span class="sidebar-scroll-preview__link-text">#{page.order}:#{page.orderLabel}</span>
-									<f:passThroughAttribute name="data-target" value="pageNumber-#{status.index + 1}" />
-								</h:outputLink>
+									<span class="sidebar-scroll-preview__button-text">#{page.order}:#{page.orderLabel}</span>
+								</button>
+								
+								
 							</ui:fragment>
 						</div>
 					</ui:repeat>
@@ -43,7 +52,81 @@
 			 $('[data-script="fadeIn"]').on('load', function(){
 			    $(this).addClass('-loaded');
 			 });
- 		</script>
+	  	
+			$( document ).ready(function() {
+			 
+		    // console.log('current picture is:' + #{activeDocumentBean.viewManager.currentImageOrder})
+		    
+		    // DEFINE PREVIEW SIDEBAR VARIABLES AND SIMPLEBAR SCROLLBAR
+	  		const sidebarScrollPreviewContainer = $('[data-target="sidebarScrollPreviewContainer"]');
+		    const loadPageSelector = '[data-target="pageNumber-' + #{activeDocumentBean.viewManager.currentImageOrder} + '"]';
+			new SimpleBar($(sidebarScrollPreviewContainer)[0], { autoHide: false, scrollbarMinSize: 30, }); 
+			const sidebarScrollPreviewSimplebarContainer = $('.simplebar-content-wrapper');
+	  		
+	  		// FUNCTION TO SCROLL SIDEBAR THUMBNAIL PREVIEW
+		    function scrollSidebarPreviewFunction(imageIndexSidebar, jumpStraight) {
+
+	  			// JUMP STRAIGHT WITHOUT SCROLL ANIMATION
+	  			if (jumpStraight == 1) {
+		            $(sidebarScrollPreviewSimplebarContainer).animate({scrollTop: $(sidebarScrollPreviewSimplebarContainer).scrollTop() 
+		            	+ ($(imageIndexSidebar).offset().top 
+		            	- $(sidebarScrollPreviewSimplebarContainer).offset().top
+		        	)}, 0); 
+	  				}
+	  			// SCROLL ANIMATION WHILE SCROLLING DOWN IN CANVAS
+	  			else {
+		            $(sidebarScrollPreviewSimplebarContainer).animate({scrollTop: $(sidebarScrollPreviewSimplebarContainer).scrollTop() 
+		            	+ ($(imageIndexSidebar).offset().top 
+		            	- $(sidebarScrollPreviewSimplebarContainer).offset().top
+		        	)}, 180);
+	  			}
+
+				// HIGHLIGHT THE ACTUAL THUMBNAIL WHILE SCROLLING DOWN IN CANVAS
+	            $('[data-target^=pageNumber-]').removeClass('-highlighted');
+	            $(imageIndexSidebar).addClass('-highlighted');
+		    }
+ 
+	  		// JUMP TO PAGE IN PREVIEW SIDEBAR AT PAGE LOAD
+		    scrollSidebarPreviewFunction(loadPageSelector, jumpStraight = 1);
+		    
+	  		// SCROLL SIDEBAR WHEN SEADRAGON SCROLLED
+			viewImage.sequence.onCurrentImageChange.subscribe (imageIndex => {
+				const pageNo = imageIndex+1;
+				    pageNumberSelector = '[data-target="pageNumber-' + pageNo + '"]';
+				    scrollSidebarPreviewFunction(pageNumberSelector, jumpStraight = 0);
+			});
+	  		
+	  		// SCROLL TO PAGE NUMBER INSIDE CANVAS ON THUMBNAIL CLICK
+			$( '[data-target^=pageNumber-]' ).on( "click", function() {
+				// console.log($(this).data());
+				
+				// GET DATA TARGET 
+				var setDataTargetOnClickVarValue = $(this).attr("data-target");
+				
+				// console.log('x: ' + setDataTargetOnClickVarValue);
+
+			    var extractedPageNumber = setDataTargetOnClickVarValue.replace(/[^0-9]/gi, '');
+				
+				viewImage.sequence.setCurrentImage(extractedPageNumber - 1, true);
+				// console.log(extractedPageNumber);
+				// console.log(extractedPageNumber);
+	            
+				// SCROLL SIDEBAR TO PAGE NUMBER POSITION
+				var scrollOnClickPageNumberTarget = '[data-target="pageNumber-' + extractedPageNumber + '"]';
+			    scrollSidebarPreviewFunction(scrollOnClickPageNumberTarget, jumpStraight = 0);
+			    // console.log(scrollOnClickPageNumberTarget);
+				
+				// HIGHLIGHT THE ACTUAL THUMBNAIL WHILE SCROLLING DOWN IN CANVAS
+	            $('[data-target^=pageNumber-]').removeClass('-highlighted');
+	            $(this).addClass('-highlighted');
+
+			} );
+	  		
+			});
+
+		</script>
+
+
 
 	</composite:implementation>
 </ui:composition>

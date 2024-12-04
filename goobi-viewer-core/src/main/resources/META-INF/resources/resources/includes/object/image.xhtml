@@ -12,13 +12,12 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <!-- IMAGE CONTAINER -->
-    <div id="imageContainer" class="view-object__image #{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE' ? '-sequenceScrolling' : ''}">
-
+    <div id="imageContainer" class="view-object__image #{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE' and activeDocumentBean.viewManager.imagesCount ge 2 ? '-sequenceScrolling' : ''}">
 
 		<!-- SHOW SCROLLING SIDEBAR IMAGE THUMBNAIL PREVIEW FOR INFINITE SCROLLING -->
-		<ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE'}">
+		<ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE' and activeDocumentBean.viewManager.imagesCount ge 2}">
 
-			<viewerComponent:sidebarScrollPreview range="300" imageSize="350" currentPageOrder="#{activeDocumentBean.viewManager.currentImageOrder}" />
+			<viewerComponent:sidebarScrollPreview range="300" imageSize="200" currentPageOrder="#{activeDocumentBean.viewManager.currentImageOrder}" />
 		
 		</ui:fragment>
 
@@ -475,38 +474,9 @@
 		       	
       	//]]>
   		
-  		// SCROLL SIDEBAR AUTOMATICALLY
-  		
-	    console.log('current picture is:' + #{activeDocumentBean.viewManager.currentImageOrder})
-
-	    
-  		const sidebarScrollPreviewContainer = $('[data-target="sidebarScrollPreviewContainer"]');
-	    const startingPageSelector = '[data-target="pageNumber-' + #{activeDocumentBean.viewManager.currentImageOrder} + '"]';
-  		
-  		// FUNCTION TO SCROLL SIDEBAR THUMBNAIL PREVIEW
-	    function scrollSidebarPreviewFunction(imageIndexSidebar) {
-            $(sidebarScrollPreviewContainer).animate({scrollTop: $(sidebarScrollPreviewContainer).scrollTop() 
-            	+ ($(imageIndexSidebar).offset().top 
-            	- $(sidebarScrollPreviewContainer).offset().top
-        	)}, 180);
-            $('[data-target^=pageNumber-]').removeClass('-highlighted');
-            $(imageIndexSidebar).addClass('-highlighted');
-	    }
-  		
-	    
-	    
-	    scrollSidebarPreviewFunction(startingPageSelector);
-	    
-
-  		// SCROLL SIDEBAR WHEN SEADRAGON SCROLLED
-		viewImage.sequence.onCurrentImageChange.subscribe (imageIndex => {
-			const pageNo = imageIndex+1;
-			    pageNumberSelector = '[data-target="pageNumber-' + pageNo + '"]';
-			    scrollSidebarPreviewFunction(pageNumberSelector);
-			    console.log('current picture2 is:' + pageNo);
-			    
-		});
     </script>
+    
+
     
     <ui:repeat var="se" value="#{activeDocumentBean.viewManager.currentPage.containedStructElements}">
     	<ui:fragment rendered="#{se.hasShapeMetadata()}">
