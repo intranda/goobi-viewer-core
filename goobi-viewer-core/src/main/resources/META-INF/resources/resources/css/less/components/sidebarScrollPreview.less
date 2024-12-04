@@ -35,9 +35,6 @@
 	&__item {
 		min-width: 0;
 		max-width: 100%;
-		&.-activePage {
-			pointer-events: none;
-		}
 	}
 	&__button {
 		width: 100%;
@@ -58,8 +55,9 @@
 		}
 		&.-highlighted {
 			border: 3px solid #a3f97c;
+			pointer-events: none;
 		}
-	}
+	} 
 	&__button-text {
 	  max-width: 100%;
 	  white-space: nowrap;
