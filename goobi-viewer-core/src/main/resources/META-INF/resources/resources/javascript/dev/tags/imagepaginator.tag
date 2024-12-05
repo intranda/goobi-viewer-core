@@ -108,7 +108,6 @@
             this.msg = this.opts.msg;
             if(this.opts.update) {
                 this.opts.update.subscribe(pageNumber => {
-                    console.log("update page number", pageNumber);
                     this.currentPageNumber = pageNumber;
                     this.update();
                 });
@@ -117,6 +116,7 @@
         });
 
         this.on("update", () => {
+            //hide all tooltips. Otherwise if elements are replaced after the update, old tooltips may be shown indefinitely
             $("[data-toggle='tooltip']").tooltip('hide');
             if(this.refs.dropdown) {
                 this.refs.dropdown.value = this.currentPageNumber;
@@ -124,7 +124,6 @@
         });
 
         getPageUrl(pageNo) {
-            console.log("page url ", pageNo, this.opts.pageUrlTemplate(pageNo));
             return this.opts.pageUrlTemplate(pageNo);
         }
 
@@ -137,19 +136,16 @@
         }
 
         navigateBack(e) {
-            console.log("navigate back ", e);
             const step = e.item.step;
             this.gotoPage(this.currentPageNumber - step);
         }
 
         navigateForward(e) {
-            console.log("navigate forward ", e);
             const step = e.item.step;
             this.gotoPage(this.currentPageNumber + step);
         }
 
         gotoPage(pageNumber) {
-            console.log("goto page ", pageNumber );
             this.currentPageNumber = pageNumber;
             if(this.opts.onUpdate) {
                 this.opts.onUpdate(pageNumber);
@@ -157,7 +153,6 @@
         }
 
         changeDropdownValue(e) {
-            console.log("dropdown value changed", e, e.target.value);
             let pageNo = e.target.value;
             if(this.isSequenceMode()) {
                 this.gotoPage(pageNo);
@@ -179,7 +174,6 @@
         }
 
         isFirstPage() {
-            console.log("check is first page", this.currentPageNumber, this.opts.firstPageNumber, this.currentPageNumber == this.opts.firstPageNumber);
             return this.currentPageNumber == this.opts.firstPageNumber;
         }
 

@@ -118,14 +118,34 @@
                 
                 <!-- PAGINATOR -->
                 <h:panelGroup id="paginatorGroup">
-	                <viewerComponent:simplePaginator
-	                    itemCount="#{activeDocumentBean.viewManager.imagesCount}"
-	                    itemActive="#{activeDocumentBean.viewManager.currentImageOrderForPaginator}"
-	                    firstItem="#{activeDocumentBean.viewManager.firstPageOrder}"
-	                    lastItem="#{activeDocumentBean.viewManager.lastPageOrder}"
-	                    urlPrefix="#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/"
-	                    urlSuffix="#topDocAnchor"
-	                    rtl="#{activeDocumentBean.viewManager.topStructElement.rtl}" />
+	                    <div id="simplePaginator"/>
+	                    <script>
+	                    	$(document).ready(() => {
+	                    		riot.mount("#simplePaginator", "simplepaginator", {
+	                    			navigationMode: "#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase() == 'sequence' ? 'buttons' : 'links'}",
+	                    			itemCount: #{activeDocumentBean.viewManager.imagesCount},
+	            	                itemActive: #{activeDocumentBean.viewManager.currentImageOrderForPaginator},
+	            	                firstItem: #{activeDocumentBean.viewManager.firstPageOrder},
+	            	                lastItem: #{activeDocumentBean.viewManager.lastPageOrder},
+	            	                urlTemplate: (pageNo) => `#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/\${pageNo}#topDocAnchor`,
+	            	                rtl: #{activeDocumentBean.viewManager.topStructElement.rtl},
+	            	                classSuffix: "",
+	            	                positionBottom: false,
+	            	                update: viewImage?.sequence?.onCurrentImageChange.pipe(rxjs.operators.debounceTime(300), rxjs.operators.map(index => index+1)),
+									onUpdate: (pageNumber) => viewImage?.sequence?.setCurrentImage(pageNumber-1, true),
+	            	             	msg: {
+	            	             		aria_label__pagination_bottom: "#{msg.aria_label__pagination_bottom}",
+	            	             		aria_label__pagination_pages: "#{msg.aria_label__pagination_pages}",
+	            	             		aria_label__pagination_previous: "#{msg.aria_label__pagination_previous}",
+	            	             		aria_label__pagination_next: "#{msg.aria_label__pagination_next}",
+	            	             		numericPaginator_prev: "#{msg.numericPaginator_prev}",
+	            	             		numericPaginator_next: "#{msg.numericPaginator_next}",
+	            	             		aria__label_pagination_goto: "#{msg.aria__label_pagination_goto}"
+	            	             	}
+	                    		})
+	                    	})
+	                    
+	                    </script>
                 </h:panelGroup>
                     
                 <!-- METADATA (FIRST GROUP WITH location="objectview" -->    

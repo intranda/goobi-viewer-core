@@ -3850,7 +3850,6 @@ riot.tag2('imagepaginator', '<virtual if="{opts.enablePageNavigation}"><li if="{
             this.msg = this.opts.msg;
             if(this.opts.update) {
                 this.opts.update.subscribe(pageNumber => {
-                    console.log("update page number", pageNumber);
                     this.currentPageNumber = pageNumber;
                     this.update();
                 });
@@ -3859,6 +3858,7 @@ riot.tag2('imagepaginator', '<virtual if="{opts.enablePageNavigation}"><li if="{
         });
 
         this.on("update", () => {
+
             $("[data-toggle='tooltip']").tooltip('hide');
             if(this.refs.dropdown) {
                 this.refs.dropdown.value = this.currentPageNumber;
@@ -3866,7 +3866,6 @@ riot.tag2('imagepaginator', '<virtual if="{opts.enablePageNavigation}"><li if="{
         });
 
         this.getPageUrl = function(pageNo) {
-            console.log("page url ", pageNo, this.opts.pageUrlTemplate(pageNo));
             return this.opts.pageUrlTemplate(pageNo);
         }.bind(this)
 
@@ -3879,19 +3878,16 @@ riot.tag2('imagepaginator', '<virtual if="{opts.enablePageNavigation}"><li if="{
         }.bind(this)
 
         this.navigateBack = function(e) {
-            console.log("navigate back ", e);
             const step = e.item.step;
             this.gotoPage(this.currentPageNumber - step);
         }.bind(this)
 
         this.navigateForward = function(e) {
-            console.log("navigate forward ", e);
             const step = e.item.step;
             this.gotoPage(this.currentPageNumber + step);
         }.bind(this)
 
         this.gotoPage = function(pageNumber) {
-            console.log("goto page ", pageNumber );
             this.currentPageNumber = pageNumber;
             if(this.opts.onUpdate) {
                 this.opts.onUpdate(pageNumber);
@@ -3899,7 +3895,6 @@ riot.tag2('imagepaginator', '<virtual if="{opts.enablePageNavigation}"><li if="{
         }.bind(this)
 
         this.changeDropdownValue = function(e) {
-            console.log("dropdown value changed", e, e.target.value);
             let pageNo = e.target.value;
             if(this.isSequenceMode()) {
                 this.gotoPage(pageNo);
@@ -3921,7 +3916,6 @@ riot.tag2('imagepaginator', '<virtual if="{opts.enablePageNavigation}"><li if="{
         }.bind(this)
 
         this.isFirstPage = function() {
-            console.log("check is first page", this.currentPageNumber, this.opts.firstPageNumber, this.currentPageNumber == this.opts.firstPageNumber);
             return this.currentPageNumber == this.opts.firstPageNumber;
         }.bind(this)
 
@@ -4166,6 +4160,130 @@ riot.tag2('rawhtml', '', '', '', function(opts) {
   this.on("updated", () => {
     this.root.innerHTML = opts.content;
   })
+});
+riot.tag2('simplepaginator', '<div if="{opts.itemCount > 1}" class="{opts.rtl ? \'numeric-paginator -rtl\' : \'numeric-paginator -ltr\'} {opts.classSuffix}"><nav aria-label="{opts.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}"><ul><li if="{this.currentItem > this.opts.firstItem}" class="numeric-paginator__navigate navigate_prev"><a if="{isRenderLinks()}" href="{getItemUrl(currentItem-1)}" aria-label="{msg.aria_label__pagination_previous}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i></a><button if="{isRenderButtons()}" onclick="{navigateToPrevItem}" aria-label="{msg.aria_label__pagination_previous}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i></button></li><li each="{item in getFirstItems()}" class="numeric-paginator__navigate"><a if="{isRenderLinks()}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></a><button if="{isRenderButtons()}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></button></li><li class="numeric-paginator__dots" if="{isShowDotsAfterFirstItems()}"><span>...</span></li><li each="{item in getCenterItems()}" class="numeric-paginator__navigate {item == currentItem ? \'-active\' : \'\'}"><a if="{isRenderLinks() && item != currentItem}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></a><button if="{isRenderButtons() && item != currentItem}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></button><span if="{item == currentItem}">{item}</span></li><li class="numeric-paginator__dots" if="{isShowDotsBeforeLastItems()}"><span>...</span></li><li each="{item in getLastItems()}" class="numeric-paginator__navigate"><a if="{isRenderLinks()}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></a><button if="{isRenderButtons()}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></button></li><li if="{this.currentItem < this.opts.lastItem}" class="numeric-paginator__navigate navigate_next"><a if="{isRenderLinks()}" href="{getItemUrl(currentItem+1)}" aria-label="{msg.aria_label__pagination_next}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i></a><button if="{isRenderButtons()}" onclick="{navigateToNextItem}" aria-label="{msg.aria_label__pagination_next}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i></button></li></ul></nav></div>', '', '', function(opts) {
+
+        this.currentItem = 0;
+        this.msg = {};
+        this.range = 2;
+
+        this.on("mount", () => {
+            this.msg = opts.msg;
+            this.currentItem = opts.itemActive;
+            if(this.opts.range) {
+                this.range = this.opts.range;
+            }
+            if(this.opts.update) {
+                this.opts.update.subscribe(itemNumber => {
+                    console.log("update item number", itemNumber);
+                    this.currentItem = itemNumber;
+                    this.update();
+                });
+            }
+            this.update();
+        });
+
+        this.on("update", () => {
+
+            $("[data-toggle='tooltip']").tooltip('hide');
+            if(this.refs.dropdown) {
+                this.refs.dropdown.value = this.currentItem;
+            }
+        });
+
+        this.getItemUrl = function(itemNumber) {
+            console.log("Item url ", itemNumber, this.opts.urlTemplate(itemNumber));
+            return this.opts.urlTemplate(itemNumber);
+        }.bind(this)
+
+        this.gotoFirstItem = function() {
+            this.gotoItem(this.opts.firstItem);
+        }.bind(this)
+
+        this.gotoLastItem = function() {
+            this.gotoItem(this.opts.lastItem);
+        }.bind(this)
+
+        this.navigateToItem = function(e) {
+            console.log("navigate to Item ", e);
+            const item = e.item.item;
+            this.gotoItem(item);
+        }.bind(this)
+
+        this.navigateToPrevItem = function() {
+            this.gotoItem(this.currentItem-1);
+        }.bind(this)
+
+        this.navigateToNextItem = function() {
+            this.gotoItem(this.currentItem+1);
+        }.bind(this)
+
+        this.gotoItem = function(itemNumber) {
+            console.log("goto Item ", itemNumber );
+            this.currentItem = itemNumber;
+            if(this.opts.onUpdate) {
+                this.opts.onUpdate(itemNumber);
+            }
+        }.bind(this)
+
+        this.isShowDotsAfterFirstItems = function() {
+            return this.currentItem - this.range > this.opts.firstItem + this.range + 1
+        }.bind(this)
+
+        this.isShowDotsBeforeLastItems = function() {
+            return this.currentItem + this.range < this.opts.lastItem - this.range - 1
+        }.bind(this)
+
+        this.getFirstItems = function() {
+            let result = [];
+            let startRange = Math.min(this.range, this.getCenterItems()[0]-1);
+            if(startRange > 0) {
+                for (let i = this.opts.firstItem; i < this.opts.firstItem + startRange; i++) {
+                    result.push(i);
+                }
+            }
+            return result;
+        }.bind(this)
+
+        this.getLastItems = function() {
+            let result = [];
+            let centerItems = this.getCenterItems();
+            let endRange = Math.min(this.range, this.opts.lastItem - centerItems[centerItems.length-1]);
+            if(endRange > 0) {
+                for (let i = this.opts.lastItem - endRange + 1; i <= this.opts.lastItem; i++) {
+                    result.push(i);
+                }
+            }
+            return result;
+        }.bind(this)
+
+        this.getCenterItems = function() {
+            let result = [];
+            console.log("center items ", this.currentItem, this.range)
+            for (let i = this.currentItem - this.range; i <= this.currentItem + this.range; i++) {
+                if(i >= this.opts.firstItem && i <= this.opts.lastItem) {
+                    console.log("add item ", i);
+                    result.push(i);
+                }
+            }
+            return result;
+        }.bind(this)
+
+        this.isRenderLinks = function() {
+            return this.opts.navigationMode != "buttons";
+        }.bind(this)
+
+        this.isRenderButtons = function() {
+            return this.opts.navigationMode == "buttons";
+        }.bind(this)
+
+        this.isFirstItem = function() {
+            return this.currentItem == this.opts.firstItem;
+        }.bind(this)
+
+        this.isLastItem = function() {
+            return this.currentItem == this.opts.lastItem;
+        }.bind(this)
 });
 riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><img class="swiper-image slider-{this.opts.stylename}__image" riot-src="{this.opts.image}" alt="{this.opts.alttext}"><div class="swiper-description slider-{this.opts.stylename}__description" ref="description"></div></a>', '', '', function(opts) {
 		this.on("mount", () => {
