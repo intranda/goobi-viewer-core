@@ -145,11 +145,17 @@ public class MetsResolver extends HttpServlet {
 
         // If the user has no listing privilege for this record, act as if it does not exist
         boolean access = false;
-        boolean nonShareableMetadataFound = false; // TODO
+        boolean nonShareableMetadataFound = false;
         try {
             access =
                     AccessConditionUtils.checkAccessPermissionBySolrDoc(doc, query, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request).isGranted();
-        } catch (IndexUnreachableException | DAOException e) {
+            if (access) {
+                // Check whether there are restricted metadata values in this record
+                String restrictionQuery = "+" + SolrConstants.PI_TOPSTRUCT + ":\"" + id + "\" +" + SolrConstants.ACCESSCONDITION + ":\""
+                        + StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED + "\"";
+                nonShareableMetadataFound = DataManager.getInstance().getSearchIndex().getHitCount(restrictionQuery) > 0;
+            }
+        } catch (IndexUnreachableException | DAOException | PresentationException e) {
             logger.error(e.getMessage(), e);
             try {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -179,7 +185,6 @@ public class MetsResolver extends HttpServlet {
         File file = new File(filePath);
         logger.error(filePath);
         response.setHeader("Content-Disposition", "filename=\"" + file.getName() + "\"");
-        nonShareableMetadataFound = false; // TODO
         if (nonShareableMetadataFound && SolrConstants.SOURCEDOCFORMAT_METS.equals(format)) {
             try {
                 Document metsDoc = XmlTools.readXmlFile(filePath);
