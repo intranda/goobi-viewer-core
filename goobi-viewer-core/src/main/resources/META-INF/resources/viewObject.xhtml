@@ -69,7 +69,7 @@
 
 	
 				<h:form>
-					<o:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" render=":sidebarGroup :userGeneratedContentGroup :commentGroup"></o:commandScript>
+					<o:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" render=":sidebar:widgetViews:widgetViewsForm"></o:commandScript>
 				</h:form>
 
 
@@ -149,7 +149,7 @@
                 </h:panelGroup>
                     
                 <!-- METADATA (FIRST GROUP WITH location="objectview" -->    
-                <ui:fragment rendered="#{metadataBean.activeMetadataView != null}">
+                <h:panelGroup id="viewMetadata" rendered="#{metadataBean.activeMetadataView != null}">
                     <div id="view_metadata" class="view-metadata view-object__metadata">
                         <ui:insert name="viewMetadataMetadata">
                             <ui:include src="/resources/includes/metadata/metadata.xhtml">
@@ -159,7 +159,7 @@
                             </ui:include>
                         </ui:insert>
                     </div>
-                </ui:fragment>
+                </h:panelGroup>
 
 				<!-- MODULE CONTRIBUTIONS -->
                 <c:forEach var="module" items="#{configurationBean.modules}">
@@ -224,7 +224,7 @@
     <ui:define name="sidebar">
 
 		<h:panelGroup id="sidebarGroup">
-	        <viewerComponent:record_sidebar/>
+	        <viewerComponent:record_sidebar id="sidebar"/>
 		</h:panelGroup>
 
     </ui:define>

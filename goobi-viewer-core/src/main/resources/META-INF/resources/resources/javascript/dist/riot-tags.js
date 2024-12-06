@@ -4175,7 +4175,6 @@ riot.tag2('simplepaginator', '<div if="{opts.itemCount > 1}" class="{opts.rtl ? 
             }
             if(this.opts.update) {
                 this.opts.update.subscribe(itemNumber => {
-                    console.log("update item number", itemNumber);
                     this.currentItem = itemNumber;
                     this.update();
                 });
@@ -4192,7 +4191,6 @@ riot.tag2('simplepaginator', '<div if="{opts.itemCount > 1}" class="{opts.rtl ? 
         });
 
         this.getItemUrl = function(itemNumber) {
-            console.log("Item url ", itemNumber, this.opts.urlTemplate(itemNumber));
             return this.opts.urlTemplate(itemNumber);
         }.bind(this)
 
@@ -4205,7 +4203,6 @@ riot.tag2('simplepaginator', '<div if="{opts.itemCount > 1}" class="{opts.rtl ? 
         }.bind(this)
 
         this.navigateToItem = function(e) {
-            console.log("navigate to Item ", e);
             const item = e.item.item;
             this.gotoItem(item);
         }.bind(this)
@@ -4219,7 +4216,6 @@ riot.tag2('simplepaginator', '<div if="{opts.itemCount > 1}" class="{opts.rtl ? 
         }.bind(this)
 
         this.gotoItem = function(itemNumber) {
-            console.log("goto Item ", itemNumber );
             this.currentItem = itemNumber;
             if(this.opts.onUpdate) {
                 this.opts.onUpdate(itemNumber);
@@ -4259,10 +4255,8 @@ riot.tag2('simplepaginator', '<div if="{opts.itemCount > 1}" class="{opts.rtl ? 
 
         this.getCenterItems = function() {
             let result = [];
-            console.log("center items ", this.currentItem, this.range)
             for (let i = this.currentItem - this.range; i <= this.currentItem + this.range; i++) {
                 if(i >= this.opts.firstItem && i <= this.opts.lastItem) {
-                    console.log("add item ", i);
                     result.push(i);
                 }
             }
