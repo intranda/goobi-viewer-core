@@ -34,6 +34,7 @@ public class MonitoringStatus {
     public static final String KEY_SOLR = "solr";
     public static final String KEY_SOLRSCHEMA = "solrschema";
 
+    public static final String STATUS_DISABLED = "disabled";
     public static final String STATUS_ERROR = "error";
     public static final String STATUS_OK = "ok";
 

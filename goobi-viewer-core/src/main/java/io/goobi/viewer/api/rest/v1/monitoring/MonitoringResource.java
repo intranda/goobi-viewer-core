@@ -114,9 +114,14 @@ public class MonitoringResource {
 
         // Check message queue status
         if (messageBroker != null) {
-            ret.getMonitoring()
-                    .put(MonitoringStatus.KEY_MESSAGE_QUEUE,
-                            messageBroker.isQueueRunning() ? MonitoringStatus.STATUS_OK : MonitoringStatus.STATUS_ERROR);
+            if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
+                ret.getMonitoring()
+                        .put(MonitoringStatus.KEY_MESSAGE_QUEUE,
+                                messageBroker.isQueueRunning() ? MonitoringStatus.STATUS_OK : MonitoringStatus.STATUS_ERROR);
+            } else {
+                ret.getMonitoring()
+                        .put(MonitoringStatus.KEY_MESSAGE_QUEUE, MonitoringStatus.STATUS_DISABLED);
+            }
         } else {
             logger.warn("MessageQueueManager injection failed.");
         }
