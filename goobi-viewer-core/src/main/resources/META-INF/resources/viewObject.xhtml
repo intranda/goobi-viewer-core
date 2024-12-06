@@ -72,7 +72,7 @@
 					<o:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" 
 					onbegin="document.querySelectorAll('.ajax_loader__image_update').forEach(loader => loader.classList.remove('-hidden'))"
 					oncomplete="document.querySelectorAll('.ajax_loader__image_update').forEach(loader => loader.classList.add('-hidden'))"
-					render=":userCommentsForm :sidebar:widgetViews:widgetViewsForm :sidebar:widgetMetadata:sidebarMetadataList :sidebar:widgetDownloads:pageDownloads :sidebar:widgetCitations:pageCitations :sidebar:widgetAnnotations:widgetAnnotationList:annotationList :sidebar:widgetTechnical:technicalMetadataList"></o:commandScript>
+					render=":userCommentsForm :userGeneratedContentGroup :sidebar:widgetViews:widgetViewsForm :sidebar:widgetMetadata:sidebarMetadataList :sidebar:widgetDownloads:pageDownloads :sidebar:widgetCitations:pageCitations :sidebar:widgetAnnotations:widgetAnnotationList:annotationList :sidebar:widgetTechnical:technicalMetadataList"></o:commandScript>
 				</h:form>
 
 
@@ -171,11 +171,19 @@
                     </c:forEach>
                 </c:forEach>
 
-				<!-- USER GENERATED CONTENT -->
- 				<h:panelGroup id="userGeneratedContentGroup" rendered="#{configurationBean.displayUserGeneratedContentBelowImage and contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage).size() > 0}"> 
-					<div id="view_image_user_generated_content">
-						<viewerComponent:annotationList contentList="#{contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage)}" sidebar="false"/>
-					</div>
+				<!-- USER GENERATED CONTENT (ANNOTATIONS) -->
+ 				<h:panelGroup id="userGeneratedContentGroup"> 
+					<ui:fragment rendered="#{configurationBean.displayUserGeneratedContentBelowImage and contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage).size() > 0}">
+						<div id="view_image_user_generated_content" class="view-object__user_generated_content">
+						<h2>
+							<span>#{msg.admin__crowdsourcing_annotations}</span>
+							<div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
+								<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+							</div>
+						</h2>
+							<viewerComponent:annotationList contentList="#{contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage)}" sidebar="false"/>
+						</div>
+					</ui:fragment>
  				</h:panelGroup>
 
                 <!-- USER COMMENTS -->
