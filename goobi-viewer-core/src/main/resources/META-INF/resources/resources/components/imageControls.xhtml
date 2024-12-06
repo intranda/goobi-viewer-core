@@ -25,7 +25,14 @@
                         <!-- START -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge 2}">
                         
-							<ul id="imageNavigation"/>
+							<ul id="imageNavigation">
+								<yield to="first-page">
+									<ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-first-page.svg')}"/>
+								</yield>
+								<yield to="last-page">
+									<ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-last-page.svg')}"/>
+								</yield>
+							</ul>
 	
 							<script>
 								$(document).ready( () => {

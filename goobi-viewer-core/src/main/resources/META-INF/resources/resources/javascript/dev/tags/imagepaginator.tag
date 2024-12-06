@@ -5,13 +5,25 @@
         <li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? 'end' : 'start'} {isFirstPage() ? 'inactive' : ''}">
            
             <a if="{!isFirstPage() && !isSequenceMode()}" href="{getPageUrl(opts.firstPageNumber)}" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel">
-                <img if="{!opts.rtl}" src="{opts.icons.first}"/>
-                <img if="{opts.rtl}" src="{opts.icons.last}"/>
+                <virtual if="{!opts.rtl}">
+                	<yield from="first-page"/>
+                </virtual>
+                <virtual if="{opts.rtl}">
+                	<yield from="last-page"/>
+                </virtual>
+<!--                 <img if="{!opts.rtl}" src="{opts.icons.first}"/> -->
+<!--                 <img if="{opts.rtl}" src="{opts.icons.last}"/> --> 
                 <span id="firstImageLabel" class="labeltext">{msg.firstImage}</span>
             </a>
             <button if="{!isFirstPage() && isSequenceMode()}" onclick="{gotoFirstPage}" type="button" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel">
-                <img if="{!opts.rtl}" src="{opts.icons.first}"/>
-                <img if="{opts.rtl}" src="{opts.icons.last}"/>
+				<virtual if="{!opts.rtl}">
+                	<yield from="first-page"/>
+                </virtual>
+                <virtual if="{opts.rtl}">
+                	<yield from="last-page"/>
+                </virtual>
+<!--                 <img if="{!opts.rtl}" src="{opts.icons.first}"/> -->
+<!--                 <img if="{opts.rtl}" src="{opts.icons.last}"/> -->
                 <span id="firstImageLabel" class="labeltext">{msg.firstImage}</span>
             </button>
             <span if="{isFirstPage()}">
@@ -104,6 +116,7 @@
         this.msg = {};
 
         this.on("mount", () => {
+        	console.log("this", this);
             this.currentPageNumber = this.opts.currentPageNumber;
             this.msg = this.opts.msg;
             if(this.opts.update) {
