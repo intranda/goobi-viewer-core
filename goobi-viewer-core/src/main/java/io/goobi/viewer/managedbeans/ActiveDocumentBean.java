@@ -52,6 +52,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.json.JSONObject;
+import org.omnifaces.cdi.Push;
+import org.omnifaces.cdi.PushContext;
 import org.omnifaces.util.Faces;
 
 import com.ocpsoft.pretty.PrettyContext;
@@ -194,6 +197,10 @@ public class ActiveDocumentBean implements Serializable {
     private Map<String, String> prevDocstructUrlCache = new HashMap<>();
     /* Next docstruct URL cache. TODO Implement differently once other views beside full-screen are used. */
     private Map<String, String> nextDocstructUrlCache = new HashMap<>();
+
+    @Inject
+    @Push
+    private PushContext tocUpdateChannel;
 
     /**
      * Empty constructor.
@@ -758,6 +765,12 @@ public class ActiveDocumentBean implements Serializable {
         String order = Faces.getRequestParameter("order");
         setImageToShow(order);
         update();
+        Optional.ofNullable(this.viewManager).ifPresent(viewManager -> {
+            JSONObject json = new JSONObject();
+            json.put("iddoc", viewManager.getCurrentStructElementIddoc());
+            json.put("page", viewManager.getCurrentImageOrder());
+            this.tocUpdateChannel.send(json.toString());
+        });
     }
 
     /**
