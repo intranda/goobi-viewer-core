@@ -20,7 +20,11 @@
 					<!-- WIDGET TITLE -->
 					<h2 tabindex="0" role="button"
 						class="widget__title widget-downloads__title #{cc.attrs.collapsible  ? 'collapseable' : ''}">
-						<span>#{msg.widget__downloads__title}</span> <i class="fa fa-angle-down"
+						<span>#{msg.widget__downloads__title}</span> 
+						<div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
+							<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+						</div>
+						<i class="fa fa-angle-down"
 							aria-hidden="true"></i>
 					</h2>
 				</div>

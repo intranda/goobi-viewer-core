@@ -2,6 +2,8 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
     <composite:interface>
@@ -20,7 +22,12 @@
 		    	<h:form id="widgetTocForm" prependId="false">
                     <!-- TITLE -->
                     <div class="widget-toc__title">
-                        <h2 >#{msg.sidebarTocAnchor}</h2>
+                        <h2 class="widget__title">
+                        	<span>#{msg.sidebarTocAnchor}</span>
+                        </h2>
+                       	<div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
+							<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+						</div>	
 
                         <!-- EXPAND ALL -->
                         <ui:fragment rendered="#{configurationBean.sidebarTocTreeView and activeDocumentBean.toc.maxTocDepth > 0}">
@@ -51,7 +58,7 @@
                     </div>
 
                     <!-- ELEMENTS -->
-                    <div class="widget-toc__elements">
+                    <div jsf:id="sidebarTocTree" class="widget-toc__elements">
                         <!-- TREE VIEW -->
 		            	<ui:fragment rendered="#{configurationBean.sidebarTocTreeView}">
 							<ul>

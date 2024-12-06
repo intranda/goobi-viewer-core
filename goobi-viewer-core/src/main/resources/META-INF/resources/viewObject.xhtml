@@ -67,9 +67,12 @@
 					</div>
 				</div>
 
-	
+				<!-- Update pagenumber and all relevant html areas with ajax when changing image in sequence mode -->
 				<h:form>
-					<o:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" render=":sidebar:widgetViews:widgetViewsForm"></o:commandScript>
+					<o:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" 
+					onbegin="document.querySelectorAll('.ajax_loader__image_update').forEach(loader => loader.classList.remove('-hidden'))"
+					oncomplete="document.querySelectorAll('.ajax_loader__image_update').forEach(loader => loader.classList.add('-hidden'))"
+					render=":userCommentsForm :sidebar:widgetViews:widgetViewsForm :sidebar:widgetMetadata:sidebarMetadataList :sidebar:widgetDownloads:pageDownloads :sidebar:widgetCitations:pageCitations :sidebar:widgetAnnotations:widgetAnnotationList:annotationList :sidebar:widgetTechnical:technicalMetadataList"></o:commandScript>
 				</h:form>
 
 
@@ -176,11 +179,9 @@
  				</h:panelGroup>
 
                 <!-- USER COMMENTS -->
-                <h:panelGroup id="commentGroup">
-	                <ui:insert name="userComments">
-	                    <ui:include src="/resources/includes/user/userComments.xhtml" />
-	                </ui:insert>
-                </h:panelGroup>
+                <ui:insert name="userComments">
+                    <ui:include src="/resources/includes/user/userComments.xhtml" />
+                </ui:insert>
             </div>
 
             <h:panelGroup rendered="#{userBean.loggedIn}">
