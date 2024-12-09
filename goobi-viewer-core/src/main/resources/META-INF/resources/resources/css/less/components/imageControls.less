@@ -29,6 +29,7 @@
 	}
 	/* DOCUMENT OPTIONS */
 	&__options {
+		margin-left: auto;
 		gap: 10px;
 		ul {
 			display: flex;
@@ -87,7 +88,7 @@
 	}
     /* ACTIONS */
     &__actions {
-		margin-right: auto;
+		// margin-right: auto;
     	flex-grow: 1;
     	ul {
 		}
@@ -150,6 +151,10 @@
     	.custom-control--select::after {
     		border-top-color: @gray;
     	}
+    	button {
+			white-space: nowrap;
+			font-size: 12px;
+		}
 		span {
 			cursor: default;
 		}
@@ -278,11 +283,6 @@
 				font-style: normal;
 			}
 		}
-	}
-	&__step-text {
-		white-space: nowrap;
-		padding: 0;
-		font-size: 14px;
 	}
     /* MODIFICATION */
 	.labeltext {
