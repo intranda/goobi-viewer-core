@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -162,6 +163,15 @@ public final class CitationTools {
             return CSLType.ARTICLE;
         }
 
+        // Use configured mapping, if available
+        Map<String, String> docstructMap = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationDocstructMapping();
+        if (docstructMap != null && docstructMap.containsKey(docstruct)) {
+            CSLType ret = CSLType.fromString(docstructMap.get(docstruct));
+            logger.trace("Mapped CSL type: {}", ret.name());
+            return ret;
+        }
+
+        // Hardcoded mapping
         switch (docstruct.toLowerCase()) {
             case "monograph":
             case "volume":

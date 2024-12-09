@@ -2815,7 +2815,7 @@ riot.tag2('external-resource-download', '<div class="download-external-resource_
       	this.ws = this.initWebSocket();
       	this.ws.onOpen.subscribe(() => {
       		rxjs.from(this.urls).pipe(
-      			rxjs.operators.flatMap(url => this.sendMessage(this.createSocketMessage(this.pi, url, "update")))
+      			rxjs.operators.flatMap(url => this.sendMessage(this.createSocketMessage(this.pi, url, "status")))
       		).subscribe(() => {});
       	})
       	console.log("mount download external resources for urls ", this.urls);
@@ -2858,7 +2858,7 @@ riot.tag2('external-resource-download', '<div class="download-external-resource_
     		if(this.updateListeners.has(urlToDownload)) {
     			this.updateListeners.get(urlToDownload).cancel();
     		}
-	      	this.sendMessage({pi: this.pi, url: urlToDownload, action: 'startdownload'});
+	      	this.sendMessage({pi: this.pi, url: urlToDownload, action: 'startdownload'})
 	        const listener = viewerJS.helper.repeatPromise(() => this.sendMessage(this.createSocketMessage(this.pi, urlToDownload, "update")), this.updateDelay);
 	        this.updateListeners.set(urlToDownload, listener);
 	        listener.then(() => {});
@@ -3075,6 +3075,7 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     	this.wrapper = document.getElementsByClassName( 'fullscreen__view-image-thumbs-wrapper' );
     	this.controls = document.getElementsByClassName( 'image-controls' );
     	this.image = document.getElementById( 'imageContainer' );
+    	this.object = document.getElementById( 'objectContainer' );
     	this.viewportWidth;
     	this.sidebarWidth;
     	this.thumbsWidth;
@@ -3108,6 +3109,13 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
             		$( this.image ).css('visibility','visible');
             	} else {
             		$( this.image ).css('visibility','hidden');
+            	}
+
+            	let objVisibility = $( this.object ).css('visibility');
+            	if(objVisibility == 'hidden') {
+            		$( this.object ).css('visibility','visible');
+            	} else {
+            		$( this.object ).css('visibility','hidden');
             	}
 
         		$( this.wrapper ).outerWidth( this.thumbsWidth ).fadeToggle( 'fast' );

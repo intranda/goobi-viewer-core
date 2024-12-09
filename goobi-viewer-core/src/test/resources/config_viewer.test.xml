@@ -1052,6 +1052,10 @@
                         <param type="field" key="LABEL" />
                         <param type="translatedfield" key="ACCESSCONDITION" />
                     </metadata>
+                    <csltypes>
+                        <csltype docstrct="other_monograph">book</csltype>
+                        <csltype docstrct="other_manuscript">manuscript</csltype>
+                    </csltypes>
                 </source>
             </citationRecommendation>
             <citationLinks enabled="false" docstructIntroText="docstruct intro text" imageIntroText="image intro text">

@@ -187,7 +187,7 @@ public class VisibilityCondition {
         synchronized (toc) {
             if (viewManager != null) {
                 toc.generate(viewManager.getTopStructElement(), viewManager.isListAllVolumesInTOC(), viewManager.getMimeType(),
-                        viewManager.getCurrentImageOrder());
+                        Math.max(1, viewManager.getCurrentImageOrder()));
             }
         }
         return toc;

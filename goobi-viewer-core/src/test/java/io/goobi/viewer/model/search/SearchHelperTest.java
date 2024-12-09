@@ -1239,6 +1239,15 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             Assertions.assertEquals(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "Γ qu 4" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END,
                     highlightedPhrase);
         }
+        {
+            String phrase = "Auszehrung (Tuberkulose)";
+            Set<String> terms = new HashSet<>();
+            terms.add("Auszehrung  Tuberkulose");
+            String highlightedPhrase = SearchHelper.applyHighlightingToPhrase(phrase, terms);
+            Assertions.assertEquals(
+                    SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "Auszehrung (Tuberkulose" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + ")",
+                    highlightedPhrase);
+        }
     }
 
     @Test
@@ -1497,8 +1506,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             previousSize = terms.size();
             for (BrowseTerm term : terms) {
                 if (previousCounts.containsKey(term.getTerm())) {
-                    Assertions.assertEquals(Long.valueOf(previousCounts.get(term.getTerm())), Long.valueOf(term.getHitCount()),
-                            "Token '" + term.getTerm() + "' - ");
+                    Assertions.assertEquals(previousCounts.get(term.getTerm()), term.getHitCount(), "Token '" + term.getTerm() + "' - ");
                 }
                 previousCounts.put(term.getTerm(), term.getHitCount());
             }
