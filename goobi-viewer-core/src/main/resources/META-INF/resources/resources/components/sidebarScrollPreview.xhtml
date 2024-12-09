@@ -63,26 +63,29 @@
 			const sidebarScrollPreviewSimplebarContainer = $('.simplebar-content-wrapper');
 	  		
 	  		// FUNCTION TO SCROLL SIDEBAR THUMBNAIL PREVIEW
-		    function scrollSidebarPreviewFunction(imageIndexSidebar, jumpStraight) {
+		    function scrollSidebarPreviewFunction(imageActiveIndexSidebar, jumpStraight) {
 
 	  			// JUMP STRAIGHT WITHOUT SCROLL ANIMATION
 	  			if (jumpStraight == 1) {
 		            $(sidebarScrollPreviewSimplebarContainer).animate({scrollTop: $(sidebarScrollPreviewSimplebarContainer).scrollTop() 
-		            	+ ($(imageIndexSidebar).offset().top 
+		            	+ ($(imageActiveIndexSidebar).offset().top 
 		            	- $(sidebarScrollPreviewSimplebarContainer).offset().top
 		        	)}, 0); 
 	  				}
 	  			// SCROLL ANIMATION WHILE SCROLLING DOWN IN CANVAS
 	  			else {
 		            $(sidebarScrollPreviewSimplebarContainer).animate({scrollTop: $(sidebarScrollPreviewSimplebarContainer).scrollTop() 
-		            	+ ($(imageIndexSidebar).offset().top 
+		            	+ ($(imageActiveIndexSidebar).offset().top 
 		            	- $(sidebarScrollPreviewSimplebarContainer).offset().top
 		        	)}, 180);
 	  			}
 
 				// HIGHLIGHT THE ACTUAL THUMBNAIL WHILE SCROLLING DOWN IN CANVAS
 	            $('[data-target^=pageNumber-]').removeClass('-highlighted');
-	            $(imageIndexSidebar).addClass('-highlighted');
+	            $(imageActiveIndexSidebar).addClass('-highlighted');
+	         	
+	            $('[data-target^=pageNumber-]').removeAttr("aria-label");
+	            $(imageActiveIndexSidebar).attr('aria-label', '#{msg.a11y__active_page}');
 		    }
  
 	  		// JUMP TO PAGE IN PREVIEW SIDEBAR AT PAGE LOAD

@@ -41,38 +41,38 @@
             <virtual if="{opts.numPages > step}">
             	<!-- NOT SEQUENCE MODE -->
                 <a if="{currentPageNumber - step >= opts.firstPageNumber && !isSequenceMode()}" href="{getPageUrl(opts.currentPageNumber - step)}" title="{step + " " + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}">
-	                <virtual if="{!opts.rtl}">
+	                <virtual if="{!opts.rtl && step == 1}">
 	                	<yield from="prev-page"/>
 	                </virtual>
-	                <virtual if="{opts.rtl}">
+	                <virtual if="{opts.rtl && step == 1}">
 	                	<yield from="prev-page"/>
 	                </virtual>
-                    <span if="{!opts.rtl && step > 1}">-{step}</span>
-                    <span if="{opts.rtl && step > 1}">+{step}</span>
+                    <span class="image-controls__step-text" if="{!opts.rtl && step > 1}">- {step}</span>
+                    <span class="image-controls__step-text" if="{opts.rtl && step > 1}">+ {step}</span>
                     <span id="imageLabel-back-{step}" class="labeltext">{step + msg.stepBack}</span>
                 </a>
                 <!-- SEQUENCE MODE -->
                 <button if="{currentPageNumber - step >= opts.firstPageNumber && isSequenceMode()}" onclick="{navigateBack}"  type="button" title="{step + " " + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}">
-	                <virtual if="{!opts.rtl}">
+	                <virtual if="{!opts.rtl && step == 1}">
 	                	<yield from="prev-page"/>
 	                </virtual>
-	                <virtual if="{opts.rtl}">
+	                <virtual if="{opts.rtl && step == 1}">
 	                	<yield from="prev-page"/>
 	                </virtual>
-                    <span if="{!opts.rtl && step > 1}">-{step}</span>
-                    <span if="{opts.rtl && step > 1}">+{step}</span>
-                    <span id="imageLabel-back-{step}" class="labeltext">{step + msg.stepBack}</span>
+                    <span class="image-controls__step-text" if="{!opts.rtl && step > 1}">- {step}</span>
+                    <span class="image-controls__step-text" if="{opts.rtl && step > 1}">+ {step}</span>
+                    <span id="imageLabel-back-{step}" class="labeltext">{step} {msg.stepBack}</span>
                 </button>
                 <!-- DISABLED -->
                 <span if="{currentPageNumber - step < opts.firstPageNumber}">
-	                <virtual if="{!opts.rtl}">
+	                <virtual if="{!opts.rtl && step == 1}">
 	                	<yield from="prev-page"/>
 	                </virtual>
-	                <virtual if="{opts.rtl}">
+	                <virtual if="{opts.rtl && step == 1}">
 	                	<yield from="prev-page"/>
 	                </virtual>
-                    <span if="{!opts.rtl && step > 1}">-{step}</span>
-                    <span if="{opts.rtl && step > 1}">+{step}</span>
+                    <span class="image-controls__step-text" if="{!opts.rtl && step > 1}">- {step}</span>
+                    <span class="image-controls__step-text" if="{opts.rtl && step > 1}">+ {step}</span>
                 </span>
             </virtual>
             
@@ -95,38 +95,38 @@
             	<virtual if="{opts.numPages > step}">
                 <!-- NOT SEQUENCE MODE -->
                 <a if="{currentPageNumber + step < opts.lastPageNumber && !isSequenceMode()}" href="{getPageUrl(opts.currentPageNumber + step)}" title="{step + " " + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}">
-	                <virtual if="{!opts.rtl}">
+	                <virtual if="{!opts.rtl && step == 1}">
 	                	<yield from="next-page"/>
 	                </virtual>
-	                <virtual if="{opts.rtl}">
+	                <virtual if="{opts.rtl && step == 1}">
 	                	<yield from="next-page"/>
 	                </virtual>
-                    <span if="{!opts.rtl && step > 1}">+{step}</span>
-                    <span if="{opts.rtl && step > 1}">-{step}</span>
-                    <span id="imageLabel-forward-{step}" class="labeltext">{step + msg.stepForward}</span>
+                    <span class="image-controls__step-text" if="{!opts.rtl && step > 1}">+ {step}</span>
+                    <span class="image-controls__step-text" if="{opts.rtl && step > 1}">- {step}</span>
+                    <span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span>
                 </a>
                 <!-- SEQUENCE MODE -->
                 <button if="{currentPageNumber + step <= opts.lastPageNumber && isSequenceMode()}" onclick="{navigateForward}" type="button" title="{step + " " + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}">
-	                <virtual if="{!opts.rtl}">
+	                <virtual if="{!opts.rtl && step == 1}">
 	                	<yield from="next-page"/>
 	                </virtual>
-	                <virtual if="{opts.rtl}">
+	                <virtual if="{opts.rtl && step == 1}">
 	                	<yield from="next-page"/>
 	                </virtual>
-                    <span if="{!opts.rtl && step > 1}">+{step}</span>
-                    <span if="{opts.rtl && step > 1}">-{step}</span>
-                    <span id="imageLabel-forward-{step}" class="labeltext">{step + msg.stepForward}</span>
+                    <span class="image-controls__step-text" if="{!opts.rtl && step > 1}">+ {step}</span>
+                    <span class="image-controls__step-text" if="{opts.rtl && step > 1}">- {step}</span>
+                    <span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span>
                 </button>
                 <!-- DISABLED -->
                 <span if="{currentPageNumber + step > opts.lastPageNumber}">
-	                <virtual if="{!opts.rtl}">
+	                <virtual if="{!opts.rtl && step == 1}">
 	                	<yield from="next-page"/>
 	                </virtual>
-	                <virtual if="{opts.rtl}">
+	                <virtual if="{opts.rtl && step == 1}">
 	                	<yield from="next-page"/>
 	                </virtual>
-                    <span if="{!opts.rtl && step > 1}">+{step}</span>
-                    <span if="{opts.rtl && step > 1}">-{step}</span>
+                    <span class="image-controls__step-text" if="{!opts.rtl && step > 1}">+ {step}</span>
+                    <span class="image-controls__step-text" if="{opts.rtl && step > 1}">- {step}</span>
                 </span>
             </virtual>
         </li>

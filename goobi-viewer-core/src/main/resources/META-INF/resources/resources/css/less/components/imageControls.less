@@ -15,7 +15,7 @@
     }
 	&__inner {
 		display: flex;
-		flex-wrap: wrap-reverse;
+		flex-wrap: wrap;
 		gap: 5px;
 	}
 	// GRID/GAP SIZING FOR THE IMAGE ACTIONS/CONTROLS + (DOC) OPTIONS
@@ -30,7 +30,6 @@
 	/* DOCUMENT OPTIONS */
 	&__options {
 		gap: 10px;
-		margin-left: auto;
 		ul {
 			display: flex;
 			flex-wrap: wrap;
@@ -88,7 +87,7 @@
 	}
     /* ACTIONS */
     &__actions {
-	
+		margin-right: auto;
     	flex-grow: 1;
     	ul {
 		}
@@ -153,10 +152,6 @@
     	}
 		span {
 			cursor: default;
-		}
-		[class*="image-"] {
-			position: relative;
-			font-size: @fontXLarge;
 		}
 		&.inactive {
 			opacity: 0.4;
@@ -283,6 +278,11 @@
 				font-style: normal;
 			}
 		}
+	}
+	&__step-text {
+		white-space: nowrap;
+		padding: 0;
+		font-size: 14px;
 	}
     /* MODIFICATION */
 	.labeltext {
