@@ -15,17 +15,17 @@
 		justify-content: center;
 		flex-wrap: wrap;
 		width: 100%;
+		gap: 4px;
 	}
 	li {
 		min-width: 32px;
 		height: 32px;
-		margin: 0px 3px 5px 0;
 		border: 1px solid @middlegray;
 	}
 	button, a, span {
 		display: block;
 		line-height: 30px;
-		padding: 0 3px;
+		padding: 0 2px;
 		text-align: center;
 	}
 	button, a {
@@ -38,7 +38,7 @@
 	}
 	span {}
 	&.-active {
-		a, span {
+		a, span, button {
 			background-color: @middlegray;
 		}
 	}

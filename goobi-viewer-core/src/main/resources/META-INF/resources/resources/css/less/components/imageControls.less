@@ -5,6 +5,7 @@
 /* CONTROLS */
 /* BLOCK */
 .image-controls {
+	padding: 10px;
 	position: relative;
     &.-ltr, .-ltr {
         direction: ltr;
@@ -12,14 +13,23 @@
     &.-rtl, .-rtl {
         direction: rtl;
     }
-	form {
+	&__inner {
 		display: flex;
 		flex-wrap: wrap-reverse;
+		gap: 5px;
+	}
+	// GRID/GAP SIZING FOR THE IMAGE ACTIONS/CONTROLS + (DOC) OPTIONS
+    &__actions,
+    &__actions-nav,
+    &__actions-additional,
+	&__options {
+		display: flex;
+		gap: 6px;
+		flex-wrap: wrap;
 	}
 	/* DOCUMENT OPTIONS */
 	&__options {
-		padding: 0 10px;
-		margin-top: 10px;
+		gap: 10px;
 		margin-left: auto;
 		ul {
 			display: flex;
@@ -30,8 +40,6 @@
 	    }
 	}
 	&__option {
-		margin: 6px;
-		
 		a, 
 		span, 
 		button {
@@ -80,14 +88,9 @@
 	}
     /* ACTIONS */
     &__actions {
-    	padding: 0 10px;
-    	margin-top: 10px;
+	
     	flex-grow: 1;
-    	display: flex;
     	ul {
-			display: flex;
-			flex-wrap: wrap;
-/* 			justify-content: center; */
 		}
 	    li {
 	    	align-self: center;
@@ -107,7 +110,6 @@
     &__action {
 		width: 32px;
 		height: 32px;
-		margin: 3px;
 		border: 1px solid @gray;
 		display: flex;
 		justify-content: center;
@@ -377,7 +379,6 @@
 			}
 		}
 		&__action {
-			margin: 0 5px 10px 5px;
 			&.select {
 				width: 74px;
 			}

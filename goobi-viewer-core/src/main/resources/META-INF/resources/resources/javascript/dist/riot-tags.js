@@ -3075,6 +3075,7 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     	this.wrapper = document.getElementsByClassName( 'fullscreen__view-image-thumbs-wrapper' );
     	this.controls = document.getElementsByClassName( 'image-controls' );
     	this.image = document.getElementById( 'imageContainer' );
+    	this.sidebarScrollPreview = document.getElementById( 'sidebarScrollPreview' );
     	this.viewportWidth;
     	this.sidebarWidth;
     	this.thumbsWidth;
@@ -3106,8 +3107,11 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
             	let visibility = $( this.image ).css('visibility');
             	if(visibility == 'hidden') {
             		$( this.image ).css('visibility','visible');
+            		$( this.sidebarScrollPreview ).show();
+
             	} else {
             		$( this.image ).css('visibility','hidden');
+            		$( this.sidebarScrollPreview ).hide();
             	}
 
         		$( this.wrapper ).outerWidth( this.thumbsWidth ).fadeToggle( 'fast' );

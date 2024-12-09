@@ -13,10 +13,13 @@
 		position: relative;
 		border: 1px solid @lightgray;
 		overflow: hidden;
+		padding: 10px;
+		padding-top: 0;
 		&.-sequenceScrolling {
-			padding-left: 0 !important;
-			display: flex;
+			display: grid;
+			grid-template-columns: 20% 1fr;
 			gap: 10px;
+			padding-inline-start: 0;
 		}
 	}
 
@@ -276,11 +279,29 @@ popover [data-copy] {
 	z-index: 10; //must be >1 to be visible
 }
 
+//@{RTL} {
+//	.view-object {
+//		&__image {
+//			&.-sequenceScrolling {
+//				padding-left: 10px !important;
+//				padding-right: 10px !important;
+//			}
+//		}
+//	}
+//}
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {}
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
+	.view-object {
+		 &__image {
+			&.-sequenceScrolling {
+				grid-template-columns: 1fr;
+			}
+		}
+	}
 	.view-object-content {
 		&__thumb {
 			display: none;

@@ -19,21 +19,21 @@
 	</composite:interface>
 
 	<composite:implementation>
-		<div class="sidebar-scroll-preview"> 
+		<div id="sidebarScrollPreview" class="sidebar-scroll-preview"> 
 			<div class="sidebar-scroll-preview__inner">
 				<div class="sidebar-scroll-preview__grid" data-target="sidebarScrollPreviewContainer">
 					<ui:repeat varStatus="status" var="page" value="#{activeDocumentBean.viewManager.allPages}">
 						<div class="sidebar-scroll-preview__item">
 							<ui:fragment rendered="#{page != null}">
 
-								
+								<!-- NON SEQUENCE MODE LINKS -->
 <!-- 								<h:outputLink styleClass="sidebar-scroll-preview__link" value="#{activeDocumentBean.getPageUrl(order)}"> -->
 <!-- 									<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image" src="#{page.getImageUrl(cc.attrs.imageSize)}" /> -->
 <!-- 									<span class="sidebar-scroll-preview__link-text">#{page.order}:#{page.orderLabel}</span> -->
 <!-- 									<f:passThroughAttribute name="data-target" value="pageNumber-#{status.index + 1}" /> -->
 <!-- 								</h:outputLink> -->
 								
-								
+								<!-- SEQUENCE MODE BUTTONS -->
 								<button type="button" class="sidebar-scroll-preview__button" data-target="pageNumber-#{status.index + 1}">
 									<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image" src="#{page.getImageUrl(cc.attrs.imageSize)}" />
 									<span class="sidebar-scroll-preview__button-text">#{page.order}:#{page.orderLabel}</span>
@@ -54,7 +54,6 @@
 			 });
 	  	
 			$( document ).ready(function() {
-			 
 		    // console.log('current picture is:' + #{activeDocumentBean.viewManager.currentImageOrder})
 		    
 		    // DEFINE PREVIEW SIDEBAR VARIABLES AND SIMPLEBAR SCROLLBAR
@@ -98,17 +97,15 @@
 	  		
 	  		// SCROLL TO PAGE NUMBER INSIDE CANVAS ON THUMBNAIL CLICK
 			$( '[data-target^=pageNumber-]' ).on( "click", function() {
-				// console.log($(this).data());
 				
 				// GET DATA TARGET 
 				var setDataTargetOnClickVarValue = $(this).attr("data-target");
 				
-				// console.log('x: ' + setDataTargetOnClickVarValue);
+				// console.log('targetValueOnClick: ' + setDataTargetOnClickVarValue);
 
 			    var extractedPageNumber = setDataTargetOnClickVarValue.replace(/[^0-9]/gi, '');
 				
 				viewImage.sequence.setCurrentImage(extractedPageNumber - 1, true);
-				// console.log(extractedPageNumber);
 				// console.log(extractedPageNumber);
 	            
 				// SCROLL SIDEBAR TO PAGE NUMBER POSITION

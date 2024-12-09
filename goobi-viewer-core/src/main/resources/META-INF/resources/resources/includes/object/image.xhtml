@@ -12,10 +12,10 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <!-- IMAGE CONTAINER -->
-    <div id="imageContainer" class="view-object__image #{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE' and activeDocumentBean.viewManager.imagesCount ge 2 ? '-sequenceScrolling' : ''}">
+    <div id="imageContainer" class="view-object__image #{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE' and activeDocumentBean.viewManager.imagesCount ge 1 ? '-sequenceScrolling' : ''}">
 
 		<!-- SHOW SCROLLING SIDEBAR IMAGE THUMBNAIL PREVIEW FOR INFINITE SCROLLING -->
-		<ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE' and activeDocumentBean.viewManager.imagesCount ge 2}">
+		<ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE' and activeDocumentBean.viewManager.imagesCount ge 1}">
 
 			<viewerComponent:sidebarScrollPreview range="300" imageSize="200" currentPageOrder="#{activeDocumentBean.viewManager.currentImageOrder}" />
 		
