@@ -226,9 +226,11 @@ public class AdminBean implements Serializable {
      *
      * @return a {@link java.lang.String} object
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @deprecated Seems to be unused
      */
+    @Deprecated(since = "24.12")
     public String saveCurrentUserAction() throws DAOException {
-        if (this.saveUserAction(getCurrentUser())) {
+        if (this.saveUser(getCurrentUser(), true)) {
             return "pretty:adminUsers";
         }
 
@@ -241,12 +243,13 @@ public class AdminBean implements Serializable {
      * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object
+     * @param forceCheckCurrentPassword If true, even if an admin is changing their own password
      * @param returnPage a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String saveUserAction(User user, String returnPage) throws DAOException {
-        if (this.saveUserAction(user)) {
+    public String saveUserAction(User user, boolean forceCheckCurrentPassword, String returnPage) throws DAOException {
+        if (this.saveUser(user, forceCheckCurrentPassword)) {
             return returnPage;
         }
         return "";
@@ -272,10 +275,11 @@ public class AdminBean implements Serializable {
      * </p>
      *
      * @param user User to save
+     * @param forceCheckCurrentPassword If true, even if an admin is changing their own password
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean saveUserAction(User user) throws DAOException {
+    public boolean saveUser(User user, boolean forceCheckCurrentPassword) throws DAOException {
 
         //first check if current user has the right to edit the given user
         User activeUser = BeanUtils.getUserBean().getUser();
@@ -300,9 +304,8 @@ public class AdminBean implements Serializable {
             // Existing user
             if (StringUtils.isNotEmpty(passwordOne) || StringUtils.isNotEmpty(passwordTwo)) {
                 // Only match current password if not an admin
-                // TODO Current logic will omit current password check for superuser accounts even when operating outside the admin backend
-                if (!activeUser.isSuperuser() && activeUser.getId().equals(user.getId()) && currentPassword != null
-                        && !new BCrypt().checkpw(currentPassword, user.getPasswordHash())) {
+                if ((forceCheckCurrentPassword || (!activeUser.isSuperuser() && activeUser.getId().equals(user.getId())))
+                        && (currentPassword == null || !new BCrypt().checkpw(currentPassword, user.getPasswordHash()))) {
                     Messages.error("user_currentPasswordWrong");
                     return false;
                 }
