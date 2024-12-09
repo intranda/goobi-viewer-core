@@ -47,8 +47,8 @@
 	                <virtual if="{opts.rtl && step == 1}">
 	                	<yield from="prev-page"/>
 	                </virtual>
-                    <virtual if="{!opts.rtl && step > 1}">- {step}</virtual>
-                    <virtual if="{opts.rtl && step > 1}">+ {step}</virtual>
+                    <virtual if="{!opts.rtl && step > 1}">-{step}</virtual>
+                    <virtual if="{opts.rtl && step > 1}">+{step}</virtual>
                     <span id="imageLabel-back-{step}" class="labeltext">{step + msg.stepBack}</span>
                 </a>
                 <!-- SEQUENCE MODE -->
@@ -59,8 +59,8 @@
 	                <virtual if="{opts.rtl && step == 1}">
 	                	<yield from="prev-page"/>
 	                </virtual>
-                    <virtual if="{!opts.rtl && step > 1}">- {step}</virtual>
-                    <virtual if="{opts.rtl && step > 1}">+ {step}</virtual>
+                    <virtual if="{!opts.rtl && step > 1}">-{step}</virtual>
+                    <virtual if="{opts.rtl && step > 1}">+{step}</virtual>
                     <span id="imageLabel-back-{step}" class="labeltext">{step} {msg.stepBack}</span>
                 </button>
                 <!-- DISABLED -->
@@ -71,8 +71,8 @@
 	                <virtual if="{opts.rtl && step == 1}">
 	                	<yield from="prev-page"/>
 	                </virtual>
-                     <virtual if="{!opts.rtl && step > 1}">- {step}</virtual>
-                     <virtual if="{opts.rtl && step > 1}">+ {step}</virtual>
+                     <virtual if="{!opts.rtl && step > 1}">-{step}</virtual>
+                     <virtual if="{opts.rtl && step > 1}">+{step}</virtual>
                 </span>
             </virtual>
             
@@ -101,8 +101,8 @@
 	                <virtual if="{opts.rtl && step == 1}">
 	                	<yield from="next-page"/>
 	                </virtual>
-                    <virtual if="{!opts.rtl && step > 1}">+ {step}</virtual>
-                    <virtual if="{opts.rtl && step > 1}">- {step}</virtual>
+                    <virtual if="{!opts.rtl && step > 1}">+{step}</virtual>
+                    <virtual if="{opts.rtl && step > 1}">-{step}</virtual>
                     <span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span>
                 </a>
                 <!-- SEQUENCE MODE -->
@@ -113,8 +113,8 @@
 	                <virtual if="{opts.rtl && step == 1}">
 	                	<yield from="next-page"/>
 	                </virtual>
-                    <virtual if="{!opts.rtl && step > 1}">+ {step}</virtual>
-                    <virtual if="{opts.rtl && step > 1}">- {step}</virtual>
+                    <virtual if="{!opts.rtl && step > 1}">+{step}</virtual>
+                    <virtual if="{opts.rtl && step > 1}">-{step}</virtual>
                     <span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span>
                 </button>
                 <!-- DISABLED -->
@@ -125,8 +125,8 @@
 	                <virtual if="{opts.rtl && step == 1}">
 	                	<yield from="next-page"/>
 	                </virtual>
-                    <virtual if="{!opts.rtl && step > 1}">+ {step}</virtual>
-                    <virtual if="{opts.rtl && step > 1}">- {step}</virtual>
+                    <virtual if="{!opts.rtl && step > 1}">+{step}</virtual>
+                    <virtual if="{opts.rtl && step > 1}">-{step}</virtual>
                 </span>
             </virtual>
         </li>
