@@ -303,7 +303,7 @@ public class AdminBean implements Serializable {
         if (user.getId() != null) {
             // Existing user
             if (StringUtils.isNotEmpty(passwordOne) || StringUtils.isNotEmpty(passwordTwo)) {
-                // Only match current password if not an admin
+                // Check current password entry if user not an admin or forceCheckCurrentPassword==true
                 if ((forceCheckCurrentPassword || (!activeUser.isSuperuser() && activeUser.getId().equals(user.getId())))
                         && (currentPassword == null || !new BCrypt().checkpw(currentPassword, user.getPasswordHash()))) {
                     Messages.error("user_currentPasswordWrong");
