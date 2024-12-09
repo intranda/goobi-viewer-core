@@ -4,6 +4,7 @@
         <!-- FIRST PAGE -->
         <li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? 'end' : 'start'} {isFirstPage() ? 'inactive' : ''}">
            
+           	<!-- NOT SEQUENCE MODE -->
             <a if="{!isFirstPage() && !isSequenceMode()}" href="{getPageUrl(opts.firstPageNumber)}" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel">
                 <virtual if="{!opts.rtl}">
                 	<yield from="first-page"/>
@@ -11,50 +12,74 @@
                 <virtual if="{opts.rtl}">
                 	<yield from="last-page"/>
                 </virtual>
-<!--                 <img if="{!opts.rtl}" src="{opts.icons.first}"/> -->
-<!--                 <img if="{opts.rtl}" src="{opts.icons.last}"/> --> 
                 <span id="firstImageLabel" class="labeltext">{msg.firstImage}</span>
             </a>
+            <!-- SEQUENCE MODE -->
             <button if="{!isFirstPage() && isSequenceMode()}" onclick="{gotoFirstPage}" type="button" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel">
-				<virtual if="{!opts.rtl}">
+                <virtual if="{!opts.rtl}">
                 	<yield from="first-page"/>
                 </virtual>
                 <virtual if="{opts.rtl}">
                 	<yield from="last-page"/>
                 </virtual>
-<!--                 <img if="{!opts.rtl}" src="{opts.icons.first}"/> -->
-<!--                 <img if="{opts.rtl}" src="{opts.icons.last}"/> -->
                 <span id="firstImageLabel" class="labeltext">{msg.firstImage}</span>
             </button>
+            <!-- DISABLED -->
             <span if="{isFirstPage()}">
-                <img if="{!opts.rtl}" src="{opts.icons.first}"/>
-                <img if="{opts.rtl}" src="{opts.icons.last}"/>
+                <virtual if="{!opts.rtl}">
+                	<yield from="first-page"/>
+                </virtual>
+                <virtual if="{opts.rtl}">
+                	<yield from="last-page"/>
+                </virtual>
             </span>
         </li>
 
-        <li each="{step in opts.navigationSteps.slice().reverse()}" class="image-controls__action {currentPageNumber - step > opts.firstPageNumber ? '' : 'inactive'}">
+		<!-- PREV PAGE -->
+        <li each="{step in opts.navigationSteps.slice().reverse()}" class="image-controls__action {currentPageNumber - step < opts.firstPageNumber ? 'inactive' : ''}">
+
             <virtual if="{opts.numPages > step}">
-                <a if="{currentPageNumber - step > opts.firstPageNumber && !isSequenceMode()}" href="{getPageUrl(opts.currentPageNumber - step)}" title="{step + " " + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}">
-                    <img if="{!opts.rtl && step == 1}" src="{opts.icons.prev}"/>
-                    <img if="{opts.rtl && step == 1}" src="{opts.icons.next}"/>
+            	<!-- NOT SEQUENCE MODE -->
+                <a if="{currentPageNumber - step >= opts.firstPageNumber && !isSequenceMode()}" href="{getPageUrl(opts.currentPageNumber - step)}" title="{step + " " + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}">
+	                <virtual if="{!opts.rtl}">
+	                	<yield from="prev-page"/>
+	                </virtual>
+	                <virtual if="{opts.rtl}">
+	                	<yield from="prev-page"/>
+	                </virtual>
                     <span if="{!opts.rtl && step > 1}">-{step}</span>
                     <span if="{opts.rtl && step > 1}">+{step}</span>
                     <span id="imageLabel-back-{step}" class="labeltext">{step + msg.stepBack}</span>
                 </a>
-                <button if="{currentPageNumber - step > opts.firstPageNumber && isSequenceMode()}" onclick="{navigateBack}"  type="button" title="{step + " " + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}">
-                    <img if="{!opts.rtl && step == 1}" src="{opts.icons.prev}"/>
-                    <img if="{opts.rtl && step == 1}" src="{opts.icons.next}"/>
+                <!-- SEQUENCE MODE -->
+                <button if="{currentPageNumber - step >= opts.firstPageNumber && isSequenceMode()}" onclick="{navigateBack}"  type="button" title="{step + " " + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}">
+	                <virtual if="{!opts.rtl}">
+	                	<yield from="prev-page"/>
+	                </virtual>
+	                <virtual if="{opts.rtl}">
+	                	<yield from="prev-page"/>
+	                </virtual>
                     <span if="{!opts.rtl && step > 1}">-{step}</span>
                     <span if="{opts.rtl && step > 1}">+{step}</span>
                     <span id="imageLabel-back-{step}" class="labeltext">{step + msg.stepBack}</span>
                 </button>
-                <span if="{currentPageNumber - step <= opts.firstPageNumber}">
-                    <img if="{!opts.rtl && step == 1}" src="{opts.icons.prev}"/>
-                    <img if="{opts.rtl && step == 1}" src="{opts.icons.next}"/>
+                <!-- DISABLED -->
+                <span if="{currentPageNumber - step < opts.firstPageNumber}">
+	                <virtual if="{!opts.rtl}">
+	                	<yield from="prev-page"/>
+	                </virtual>
+	                <virtual if="{opts.rtl}">
+	                	<yield from="prev-page"/>
+	                </virtual>
                     <span if="{!opts.rtl && step > 1}">-{step}</span>
                     <span if="{opts.rtl && step > 1}">+{step}</span>
                 </span>
             </virtual>
+            
+            
+            
+            
+            
         </li>
 
         <li if="{opts.showDropdown}" class="image-controls__action select">
@@ -65,25 +90,41 @@
             </div>
         </li>
 
-        <li each="{step in opts.navigationSteps}" class="image-controls__action {currentPageNumber + step < opts.lastPageNumber ? '' : 'inactive'}">
-            <virtual if="{opts.numPages > step}">
+		<!-- NEXT PAGE -->
+        <li each="{step in opts.navigationSteps}" class="image-controls__action {currentPageNumber + step > opts.lastPageNumber ? 'inactive' : ''}">
+            	<virtual if="{opts.numPages > step}">
+                <!-- NOT SEQUENCE MODE -->
                 <a if="{currentPageNumber + step < opts.lastPageNumber && !isSequenceMode()}" href="{getPageUrl(opts.currentPageNumber + step)}" title="{step + " " + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}">
-                    <img if="{!opts.rtl && step == 1}" src="{opts.icons.next}"/>
-                    <img if="{opts.rtl && step == 1}" src="{opts.icons.prev}"/>
+	                <virtual if="{!opts.rtl}">
+	                	<yield from="next-page"/>
+	                </virtual>
+	                <virtual if="{opts.rtl}">
+	                	<yield from="next-page"/>
+	                </virtual>
                     <span if="{!opts.rtl && step > 1}">+{step}</span>
                     <span if="{opts.rtl && step > 1}">-{step}</span>
                     <span id="imageLabel-forward-{step}" class="labeltext">{step + msg.stepForward}</span>
                 </a>
-                <button if="{currentPageNumber + step < opts.lastPageNumber && isSequenceMode()}" onclick="{navigateForward}" type="button" title="{step + " " + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}">
-                    <img if="{!opts.rtl && step == 1}" src="{opts.icons.next}"/>
-                    <img if="{opts.rtl && step == 1}" src="{opts.icons.prev}"/>
+                <!-- SEQUENCE MODE -->
+                <button if="{currentPageNumber + step <= opts.lastPageNumber && isSequenceMode()}" onclick="{navigateForward}" type="button" title="{step + " " + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}">
+	                <virtual if="{!opts.rtl}">
+	                	<yield from="next-page"/>
+	                </virtual>
+	                <virtual if="{opts.rtl}">
+	                	<yield from="next-page"/>
+	                </virtual>
                     <span if="{!opts.rtl && step > 1}">+{step}</span>
                     <span if="{opts.rtl && step > 1}">-{step}</span>
                     <span id="imageLabel-forward-{step}" class="labeltext">{step + msg.stepForward}</span>
                 </button>
-                <span if="{currentPageNumber + step >= opts.lastPageNumber}">
-                    <img if="{!opts.rtl && step == 1}" src="{opts.icons.next}"/>
-                    <img if="{opts.rtl && step == 1}" src="{opts.icons.prev}"/>
+                <!-- DISABLED -->
+                <span if="{currentPageNumber + step > opts.lastPageNumber}">
+	                <virtual if="{!opts.rtl}">
+	                	<yield from="next-page"/>
+	                </virtual>
+	                <virtual if="{opts.rtl}">
+	                	<yield from="next-page"/>
+	                </virtual>
                     <span if="{!opts.rtl && step > 1}">+{step}</span>
                     <span if="{opts.rtl && step > 1}">-{step}</span>
                 </span>
@@ -92,19 +133,34 @@
 
         <!-- LAST PAGE -->
         <li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? 'start' : 'end'} {isLastPage() ? 'inactive' : ''}">
+            <!-- NOT SEQUENCE MODE -->
             <a if="{!isLastPage() && !isSequenceMode()}" href="{getPageUrl(opts.lastPageNumber)}" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel">
-                <img if="{!opts.rtl}" src="{opts.icons.last}"/>
-                <img if="{opts.rtl}" src="{opts.icons.first}"/>
+                <virtual if="{!opts.rtl}">
+                	<yield from="last-page"/>
+                </virtual>
+                <virtual if="{opts.rtl}">
+                	<yield from="last-page"/>
+                </virtual>
                 <span id="lastImageLabel" class="labeltext">{msg.lastImage}</span>
             </a>
+            <!-- SEQUENCE MODE -->
             <button if="{!isLastPage() && isSequenceMode()}" onclick="{gotoLastPage}" type="button" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel">
-                <img if="{!opts.rtl}" src="{opts.icons.last}"/>
-                <img if="{opts.rtl}" src="{opts.icons.first}"/>
+                <virtual if="{!opts.rtl}">
+                	<yield from="last-page"/>
+                </virtual>
+                <virtual if="{opts.rtl}">
+                	<yield from="last-page"/>
+                </virtual>
                 <span id="lastImageLabel" class="labeltext">{msg.lastImage}</span>
             </button>
+            <!-- DISABLED -->
             <span if="{isLastPage()}">
-                <img if="{!opts.rtl}" src="{opts.icons.last}"/>
-                <img if="{opts.rtl}" src="{opts.icons.first}"/>
+                <virtual if="{!opts.rtl}">
+                	<yield from="last-page"/>
+                </virtual>
+                <virtual if="{opts.rtl}">
+                	<yield from="last-page"/>
+                </virtual>
             </span>
         </li>
 

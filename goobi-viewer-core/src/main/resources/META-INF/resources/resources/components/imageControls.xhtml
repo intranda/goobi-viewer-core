@@ -26,12 +26,30 @@
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge 2}">
                         
 							<ul id="imageNavigation">
-								<yield to="first-page">
-									<ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-first-page.svg')}"/>
-								</yield>
-								<yield to="last-page">
-									<ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-last-page.svg')}"/>
-								</yield>
+								
+								
+								<!-- HIDDEN CONTAINER JUST FOR SVG FILES IN RIOT -->
+								<div class="image-controls__includes-container">
+									<!-- FIRST PAGE ICON INCLUDE -->
+									<yield to="first-page">
+										<ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-first-page.svg')}"/>
+									</yield>
+									
+									<!-- LAST PAGE ICON INCLUDE -->
+									<yield to="last-page">
+										<ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-last-page.svg')}"/>
+									</yield>
+									
+									<!-- PREV PAGE ICON INCLUDE -->
+									<yield to="prev-page">
+										<ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-prev-page.svg')}"/>
+									</yield>
+									<!-- NEXT PAGE ICON INCLUDE -->
+									<yield to="next-page">
+										<ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-next-page.svg')}"/>
+									</yield>
+								</div>
+								
 							</ul>
 	
 							<script>
