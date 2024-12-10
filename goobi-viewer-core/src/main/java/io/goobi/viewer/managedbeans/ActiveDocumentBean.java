@@ -756,14 +756,16 @@ public class ActiveDocumentBean implements Serializable {
      * </p>
      *
      * @param imageToShow Single page number (1) or range (2-3)
+     * @throws PresentationException
      */
-    public void setImageToShow(String imageToShow) {
+    public void setImageToShow(String imageToShow) throws PresentationException {
         synchronized (lock) {
             if (StringUtils.isNotEmpty(imageToShow) && imageToShow.matches("^\\d+(-\\d+)?$")) {
                 this.imageToShow = imageToShow;
             } else {
-                logger.warn("The passed image number '{}' contains illegal characters, setting to '1'...", imageToShow);
-                this.imageToShow = "1";
+                //                logger.warn("The passed image number '{}' contains illegal characters, setting to '1'...", imageToShow);
+                //                this.imageToShow = "1";
+                throw new PresentationException("Illegal page number(s).");
             }
             if (viewManager != null) {
                 viewManager.setDropdownSelected(String.valueOf(this.imageToShow));
