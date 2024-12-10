@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -355,30 +356,34 @@ public class ViewManager implements Serializable {
         return "{}";
     }
 
-    public List<String> getImageInfos() throws IndexUnreachableException, DAOException {
+    public Map<Integer, String> getImageInfos() throws IndexUnreachableException, DAOException {
         return getImageInfos(BeanUtils.getNavigationHelper().getCurrentPageType());
     }
 
-    public List<String> getImageInfos(PageType pageType) throws IndexUnreachableException, DAOException {
-        List<String> infos = new ArrayList<>();
+    public Map<Integer, String> getImageInfos(PageType pageType) throws IndexUnreachableException, DAOException {
+        Map<Integer, String> infos = new LinkedHashMap<>();
 
         switch (getPageNavigation()) {
             case SINGLE:
-                infos.add("\"" + getImageInfo(getCurrentPage(), pageType) + "\"");
+                infos.put(getCurrentImageOrder(), getImageInfo(getCurrentPage(), pageType));
                 break;
             case DOUBLE:
-                getCurrentLeftPage().filter(p -> !p.isDoubleImage()).ifPresent(p -> infos.add("\"" + getImageInfo(p, pageType) + "\""));
+                getCurrentLeftPage().filter(p -> !p.isDoubleImage()).ifPresent(p -> infos.put(p.getOrder(), getImageInfo(p, pageType)));
                 getCurrentRightPage().filter(p -> !p.isDoubleImage() || infos.isEmpty())
-                        .ifPresent(p -> infos.add("\"" + getImageInfo(p, pageType) + "\""));
+                        .ifPresent(p -> infos.put(p.getOrder(), getImageInfo(p, pageType)));
                 break;
             case SEQUENCE:
                 for (PhysicalElement page : this.getAllPages()) {
-                    infos.add("\"" + getImageInfo(page, pageType) + "\"");
+                    infos.put(page.getOrder(), getImageInfo(page, pageType));
                 }
                 break;
         }
 
         return infos;
+    }
+
+    public String getImageInfosAsJson() throws IndexUnreachableException, DAOException {
+        return JSONObject.wrap(getImageInfos()).toString();
     }
 
     /**
@@ -1468,11 +1473,16 @@ public class ViewManager implements Serializable {
 
     protected void setPageNavigation() {
         try {
-            String navigation = DataManager.getInstance()
-                    .getConfiguration()
-                    .getDefaultPageNavigation(BeanUtils.getNavigationHelper().getCurrentPageType(), getCurrentPage().getImageType());
-            setPageNavigation(PageNavigation.valueOf(navigation.toUpperCase()));
-        } catch (ViewerConfigurationException | NullPointerException | IllegalArgumentException e) {
+            PhysicalElement currentPage = Optional.ofNullable(getCurrentPage()).orElse(getFirstPage());
+            if (currentPage != null) {
+                String navigation = DataManager.getInstance()
+                        .getConfiguration()
+                        .getDefaultPageNavigation(BeanUtils.getNavigationHelper().getCurrentPageType(), currentPage.getImageType());
+                setPageNavigation(PageNavigation.valueOf(navigation.toUpperCase()));
+            } else {
+                logger.debug("Cannot load page. pageLoader possibly not initialized yet");
+            }
+        } catch (ViewerConfigurationException | NullPointerException | IllegalArgumentException | IndexUnreachableException | DAOException e) {
             logger.error("Failed to set view mode: {}", e.toString());
         }
     }

@@ -68,8 +68,8 @@
 										tooltipPlacement: "top",
 										navigationSteps: #{configurationBean.pageBrowseEnabled ? configurationBean.pageBrowseSteps : '[1]' },
 										pageUrlTemplate : (page) => `#{request.contextPath}/#{navigationHelper.currentPageType.name}/#{activeDocumentBean.viewManager.pi}/\${page}/`,
-										update: viewImage?.sequence?.onCurrentImageChange.pipe(rxjs.operators.debounceTime(300), rxjs.operators.map(index => index+1)),
-										onUpdate: (pageNumber) => viewImage?.sequence?.setCurrentImage(pageNumber-1, true),
+										update: imageOrderChanged,
+										onUpdate: (pageNumber) => changeImageOrder.next(pageNumber),
 										msg: {
 											aria_label__nav_image_controls: "#{msg.aria_label__nav_image_controls}",
 											firstImage: "#{msg.firstImage}",

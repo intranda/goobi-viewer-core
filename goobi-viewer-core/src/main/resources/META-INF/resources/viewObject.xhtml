@@ -72,7 +72,7 @@
 					<o:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" 
 					onbegin="document.querySelectorAll('.ajax_loader__image_update').forEach(loader => loader.classList.remove('-hidden'))"
 					oncomplete="document.querySelectorAll('.ajax_loader__image_update').forEach(loader => loader.classList.add('-hidden'))"
-					render=":userCommentsForm :userGeneratedContentGroup :sidebar:widgetViews:widgetViewsForm :sidebar:widgetMetadata:sidebarMetadataList :sidebar:widgetDownloads:pageDownloads :sidebar:widgetCitations:pageCitations :sidebar:widgetAnnotations:widgetAnnotationList:annotationList :sidebar:widgetTechnical:technicalMetadataList"></o:commandScript>
+					render=":viewMetadata :userCommentsForm :userGeneratedContentGroup :sidebar:widgetViews:widgetViewsForm :sidebar:widgetMetadata:sidebarMetadataList :sidebar:widgetDownloads:pageDownloads :sidebar:widgetCitations:pageCitations :sidebar:widgetAnnotations:widgetAnnotationList:annotationList :sidebar:widgetTechnical:technicalMetadataList"></o:commandScript>
 				</h:form>
 
 
@@ -133,8 +133,8 @@
 	            	                rtl: #{activeDocumentBean.viewManager.topStructElement.rtl},
 	            	                classSuffix: "",
 	            	                positionBottom: false,
-	            	                update: viewImage?.sequence?.onCurrentImageChange.pipe(rxjs.operators.debounceTime(300), rxjs.operators.map(index => index+1)),
-									onUpdate: (pageNumber) => viewImage?.sequence?.setCurrentImage(pageNumber-1, true),
+	            	                update: imageOrderChanged,
+									onUpdate: (pageNumber) => changeImageOrder.next(pageNumber),
 	            	             	msg: {
 	            	             		aria_label__pagination_bottom: "#{msg.aria_label__pagination_bottom}",
 	            	             		aria_label__pagination_pages: "#{msg.aria_label__pagination_pages}",
@@ -153,6 +153,9 @@
                 <!-- METADATA (FIRST GROUP WITH location="objectview" -->    
                 <h:panelGroup id="viewMetadata" rendered="#{metadataBean.activeMetadataView != null}">
                     <div id="view_metadata" class="view-metadata view-object__metadata">
+                        <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
+								<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+							</div>
                         <ui:insert name="viewMetadataMetadata">
                             <ui:include src="/resources/includes/metadata/metadata.xhtml">
                                 <ui:param name="metadataViewIndex" value="#{metadataBean.activeMetadataView.index}"/>

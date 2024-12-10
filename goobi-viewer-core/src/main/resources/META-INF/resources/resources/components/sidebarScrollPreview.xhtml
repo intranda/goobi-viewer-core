@@ -34,7 +34,7 @@
 <!-- 								</h:outputLink> -->
 								
 								<!-- SEQUENCE MODE BUTTONS -->
-								<button type="button" class="sidebar-scroll-preview__button" data-target="pageNumber-#{status.index + 1}">
+								<button type="button" class="sidebar-scroll-preview__button" data-target="pageNumber-#{page.order}">
 									<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image" src="#{page.getImageUrl(cc.attrs.imageSize)}" />
 									<span class="sidebar-scroll-preview__button-text">#{page.order}:#{page.orderLabel}</span>
 								</button>
@@ -64,7 +64,7 @@
 	  		
 	  		// FUNCTION TO SCROLL SIDEBAR THUMBNAIL PREVIEW
 		    function scrollSidebarPreviewFunction(imageActiveIndexSidebar, jumpStraight) {
-
+				console.log("scrollSidebarPreviewFunction", imageActiveIndexSidebar, jumpStraight);
 	  			// JUMP STRAIGHT WITHOUT SCROLL ANIMATION
 	  			if (jumpStraight == 1) {
 		            $(sidebarScrollPreviewSimplebarContainer).animate({scrollTop: $(sidebarScrollPreviewSimplebarContainer).scrollTop() 
@@ -89,11 +89,11 @@
 		    }
  
 	  		// JUMP TO PAGE IN PREVIEW SIDEBAR AT PAGE LOAD
+	  		console.log("loadPageSelector", loadPageSelector);
 		    scrollSidebarPreviewFunction(loadPageSelector, jumpStraight = 1);
 		    
 	  		// SCROLL SIDEBAR WHEN SEADRAGON SCROLLED
-			viewImage.sequence.onCurrentImageChange.subscribe (imageIndex => {
-				const pageNo = imageIndex+1;
+			imageOrderChanged.subscribe (pageNo => {
 				    pageNumberSelector = '[data-target="pageNumber-' + pageNo + '"]';
 				    scrollSidebarPreviewFunction(pageNumberSelector, jumpStraight = 0);
 			});
@@ -108,13 +108,13 @@
 
 			    var extractedPageNumber = setDataTargetOnClickVarValue.replace(/[^0-9]/gi, '');
 				
-				viewImage.sequence.setCurrentImage(extractedPageNumber - 1, true);
-				// console.log(extractedPageNumber);
+			    changeImageOrder.next(extractedPageNumber);
+				 console.log("extractedPageNumber",extractedPageNumber, setDataTargetOnClickVarValue);
 	            
 				// SCROLL SIDEBAR TO PAGE NUMBER POSITION
 				var scrollOnClickPageNumberTarget = '[data-target="pageNumber-' + extractedPageNumber + '"]';
+			     console.log("scrollOnClickPageNumberTarget", scrollOnClickPageNumberTarget);
 			    scrollSidebarPreviewFunction(scrollOnClickPageNumberTarget, jumpStraight = 0);
-			    // console.log(scrollOnClickPageNumberTarget);
 				
 				// HIGHLIGHT THE ACTUAL THUMBNAIL WHILE SCROLLING DOWN IN CANVAS
 	            $('[data-target^=pageNumber-]').removeClass('-highlighted');

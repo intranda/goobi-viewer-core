@@ -65,13 +65,30 @@
     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/imageView.min.js"></script>
     <script type="text/javascript">
   		//<![CDATA[
-  		      		    
-    	var imageMap = $( "#imageMap" );
-        var access = #{activeDocumentBean.viewManager.currentPage.accessPermissionImage};
-        var accessDeniedMessage = $( "<div />" ).addClass( "view-object__access-denied" ).html( '#{msg.noImage_accessDenied}' );
-        var page = "#{navigationHelper.currentPage}";
-        var allowZoom = #{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom};
-
+  			
+  			    
+      	function getId(url) {
+      	 	let lastIndex = url.lastIndexOf('?');
+      	  	let id = lastIndex !== -1 ? url.slice(0, lastIndex) : url;
+      	  
+      	  	lastIndex = id.lastIndexOf('/info.json');
+    	  	id = lastIndex !== -1 ? id.slice(0, lastIndex) : id;
+    	  	
+    	  	return id;
+      	}
+  			
+  		const changeImageOrder = new rxjs.Subject();	//call next() to set image in canvas, pass image order as parameter
+       	const imageOrderChanged = new rxjs.Subject();	//Called when image is changed from within the canvas. subscribe to get notified of changes. image order is passed as parameter
+      		    
+    	const imageElement = $( "#imageMap" );
+        const access = #{activeDocumentBean.viewManager.currentPage.accessPermissionImage};
+        const accessDeniedMessage = $( "<div />" ).addClass( "view-object__access-denied" ).html( '#{msg.noImage_accessDenied}' );
+        const page = "#{navigationHelper.currentPage}";
+        const allowZoom = #{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom};
+        const imageOrderToUrlMap = new Map(Object.entries(#{activeDocumentBean.viewManager.imageInfosAsJson}).map(([key, value]) => [Number(key), value]));
+        const imageIdToOrderMap = new Map(Object.entries(#{activeDocumentBean.viewManager.imageInfosAsJson}).map(([key, value]) => [getId(value), Number(key)]));
+        const currentImageOrder = #{activeDocumentBean.viewManager.currentImageOrder}
+        console.log("images ", imageMap);
         var configViewer = {
         	global: {
         		divId: "imageMap",
@@ -114,8 +131,8 @@
         	},
         	image: {
         		mimeType: "#{activeDocumentBean.viewManager.currentPage.displayMimeType}",
-	       		tileSource : #{activeDocumentBean.viewManager.imageInfos},
-	       		currentImageIndex : #{activeDocumentBean.viewManager.currentImageOrder - 1},
+	       		tileSource : Array.from(imageOrderToUrlMap.values()),
+	       		currentImageId : getId(imageOrderToUrlMap.get(currentImageOrder)),
         		baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}",
         		highlightCoords: [
         			{
@@ -216,42 +233,28 @@
            			rxjs.operators.distinctUntilChanged(),
            			rxjs.operators.debounceTime(800)		
            		)
-           		.subscribe(index => setCurrentImageOrder({"order": index+1}));
+           		.subscribe(imageId => setCurrentImageOrder({"order": imageIdToOrderMap.get(imageId)}));
 
            		//js updates
 	           	viewImage.sequence.onCurrentImageChange
 	           	.pipe(rxjs.operators.debounceTime(300))
-	           	.subscribe (index => {
-	           		const pageNo = index+1;
-	           		console.log("viewing page " + pageNo);
-	           		const url = new URL(window.location.href);
-	           		let pathArray = url.pathname.split("/");
-	           		let replacedPathPart = false;
-	           		for (var i = pathArray.length-1; i >= 0; i--) {
-						if(/^\d+$/.test(pathArray[i])) {
-							//this is presumably the page number
-							pathArray[i] = pageNo;
-							replacedPathPart = true;
-							break;
-						}
-					}
-	           		if(!replacedPathPart) {
-	           			if(pathArray[pathArray.length-1].length == 0) {
-	           				pathArray.pop();
-	           			}
-	           			pathArray.push(pageNo)
+	           	.subscribe (imageId => {
+	           		const pageNo = imageIdToOrderMap.get(imageId);
+	           		console.log("image changed to " + pageNo, imageId);
+	           		if(pageNo != undefined) {	           			
+		           		setBrowserLocation(pageNo);
+		           		imageOrderChanged.next(pageNo);
 	           		}
-	           		url.pathname = pathArray.join("/");
-	           		
-	           		//update tab url
-	           	 	//alternatively use history.addState to add an entry to the browser history, so navigating back leads to the previous page
-	           		window.history.replaceState(null, "", url.toString());
-	           		
 	           		//update dropdown selector
-	           		document.querySelector(".custom-control.custom-control--select select").value = pageNo;
+	           		//document.querySelector(".custom-control.custom-control--select select").value = pageNo;
 	           	});
            		
-           		
+	           	changeImageOrder.subscribe(pageNo => {	    
+	           		console.log("set image to " + pageNo, imageOrderToUrlMap.get(Number(pageNo)));
+	           		if(pageNo != undefined ) {
+	            		viewImage.sequence.setCurrentImage(getId(imageOrderToUrlMap.get(Number(pageNo))), true)
+	           		}
+	           	})
              }
            	
            	viewImage.load().then( function( image ) {
@@ -262,8 +265,8 @@
            		shareImageFragment.initImageFragmentLinks();
            	} ).catch( function( error ) {
            		console.error( "viewObject.xhtml - viewImage.init: Error opening image", error );
-           		if(imageMap.lenth > 0) {           		    
-           			imageMap.get(0).innerHTML = viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false );
+           		if(imageElement.lenth > 0) {           		    
+           			imageElement.get(0).innerHTML = viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false );
            		}
            		
            		// reload image footer in fullscreen
@@ -275,7 +278,7 @@
            	} );
         } 
        	else {
-       		imageMap.append( accessDeniedMessage );
+       		imageElement.append( accessDeniedMessage );
        	}
 
        	// mobile overlay
@@ -316,6 +319,7 @@
 				    });
        	 	    }
        	 	});
+	
        	 	
 		    //init page areas
        	 	function drawPageAreas(config, imageView) {
@@ -355,6 +359,31 @@
 				}
 
 		    }
+		    function setBrowserLocation(pageNo) {
+		    	const url = new URL(window.location.href);
+           		let pathArray = url.pathname.split("/");
+           		let replacedPathPart = false;
+           		for (var i = pathArray.length-1; i >= 0; i--) {
+					if(/^\d+$/.test(pathArray[i])) {
+						//this is presumably the page number
+						pathArray[i] = pageNo;
+						replacedPathPart = true;
+						break;
+					}
+				}
+           		if(!replacedPathPart) {
+           			if(pathArray[pathArray.length-1].length == 0) {
+           				pathArray.pop();
+           			}
+           			pathArray.push(pageNo)
+           		}
+           		url.pathname = pathArray.join("/");
+           		
+           		//update tab url
+           	 	//alternatively use history.addState to add an entry to the browser history, so navigating back leads to the previous page
+           		window.history.replaceState(null, "", url.toString());
+		    }
+		    
 		    function drawActiveAreas(activeAreas, imageView) {
 		    	let areasOnCanvas = [];
 				activeAreas.forEach((activeArea, index) => {				        
