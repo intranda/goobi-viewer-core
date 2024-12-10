@@ -172,7 +172,7 @@
         this.msg = {};
 
         this.on("mount", () => {
-        	console.log("this", this);
+        	// console.log("this", this);
             this.currentPageNumber = this.opts.currentPageNumber;
             this.msg = this.opts.msg;
             if(this.opts.update) {

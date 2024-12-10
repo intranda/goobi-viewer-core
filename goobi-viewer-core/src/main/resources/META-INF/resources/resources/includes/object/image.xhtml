@@ -12,7 +12,7 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <!-- IMAGE CONTAINER -->
-    <div id="imageContainer" class="view-object__image #{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE' and activeDocumentBean.viewManager.imagesCount ge 1 ? '-sequenceScrolling' : ''}">
+    <div id="imageContainer" class="view-object__image #{activeDocumentBean.viewManager.showImageThumbnailGallery() and activeDocumentBean.viewManager.imagesCount ge 1 ? '-thumbnailPreviewGallery' : ''}">
 
 		<!-- SHOW SCROLLING SIDEBAR IMAGE THUMBNAIL PREVIEW FOR INFINITE SCROLLING -->
 		<ui:fragment rendered="#{activeDocumentBean.viewManager.showImageThumbnailGallery() and activeDocumentBean.viewManager.imagesCount ge 1}">
@@ -223,7 +223,7 @@
 	           	.pipe(rxjs.operators.debounceTime(300))
 	           	.subscribe (index => {
 	           		const pageNo = index+1;
-	           		console.log("viewing page " + pageNo);
+	           		// console.log("viewing page " + pageNo);
 	           		const url = new URL(window.location.href);
 	           		let pathArray = url.pathname.split("/");
 	           		let replacedPathPart = false;
