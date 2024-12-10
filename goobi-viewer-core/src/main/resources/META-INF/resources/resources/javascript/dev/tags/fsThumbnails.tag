@@ -27,6 +27,7 @@
     	this.controls = document.getElementsByClassName( 'image-controls' );
     	this.image = document.getElementById( 'imageContainer' );
     	this.sidebarScrollPreview = document.getElementById( 'sidebarScrollPreview' );
+    	this.object = document.getElementById( 'objectContainer' );
     	this.viewportWidth;
     	this.sidebarWidth;
     	this.thumbsWidth;
@@ -68,6 +69,13 @@
             	} else {            	    
             		$( this.image ).css('visibility','hidden');
             		$( this.sidebarScrollPreview ).hide();
+            	}
+            	// toggle object
+            	let objVisibility = $( this.object ).css('visibility');
+            	if(objVisibility == 'hidden') {
+            		$( this.object ).css('visibility','visible');
+            	} else {            	    
+            		$( this.object ).css('visibility','hidden');
             	}
             	
             	// show thumb wrapper

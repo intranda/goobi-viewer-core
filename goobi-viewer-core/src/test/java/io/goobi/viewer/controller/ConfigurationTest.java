@@ -45,6 +45,8 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import com.mchange.v2.sql.filter.SynchronizedFilterDataSource;
+
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
@@ -3169,6 +3171,18 @@ class ConfigurationTest extends AbstractTest {
     void getSidebarWidgetUsageCitationRecommendationStyles_shouldReturnAllConfiguredValues() {
         List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationStyles();
         assertEquals(3, result.size());
+    }
+    
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationRecommendationDocstructMapping()
+     * @verifies return all configured values
+     */
+    @Test
+    void getSidebarWidgetUsageCitationRecommendationDocstructMapping_shouldReturnAllConfiguredValues() {
+        Map<String, String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationDocstructMapping();
+        assertEquals(2, result.size());
+        assertEquals("book", result.get("other_monograph"));
+        assertEquals("manuscript", result.get("other_manuscript"));
     }
 
     /**
