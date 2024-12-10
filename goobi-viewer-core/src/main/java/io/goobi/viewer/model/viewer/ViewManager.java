@@ -4352,4 +4352,10 @@ public class ViewManager implements Serializable {
                 .isDoublePageNavigationEnabled(BeanUtils.getNavigationHelper().getCurrentPageType(), getCurrentPage().getImageType());
     }
 
+    public boolean showImageThumbnailGallery() throws ViewerConfigurationException {
+        return DataManager.getInstance()
+                .getConfiguration()
+                .showImageThumbnailGallery(BeanUtils.getNavigationHelper().getCurrentPageType(), getCurrentPage().getImageType());
+    }
+
 }

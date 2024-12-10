@@ -3888,6 +3888,10 @@ public class Configuration extends AbstractConfiguration {
 
     }
 
+    public boolean showImageThumbnailGallery(PageType view, ImageType image) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(view, image).getBoolean("thumbnailGallery[@enabled]", false);
+    }
+
     /**
      * <p>
      * getFooterHeight.
