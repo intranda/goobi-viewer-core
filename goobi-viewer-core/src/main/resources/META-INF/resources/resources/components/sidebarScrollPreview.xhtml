@@ -89,7 +89,6 @@
 		    }
  
 	  		// JUMP TO PAGE IN PREVIEW SIDEBAR AT PAGE LOAD
-	  		console.log("loadPageSelector", loadPageSelector);
 		    scrollSidebarPreviewFunction(loadPageSelector, jumpStraight = 1);
 		    
 	  		// SCROLL SIDEBAR WHEN SEADRAGON SCROLLED
@@ -104,7 +103,7 @@
 				// GET DATA TARGET 
 				var setDataTargetOnClickVarValue = $(this).attr("data-target");
 				
-				// console.log('targetValueOnClick: ' + setDataTargetOnClickVarValue);
+				 //console.log('targetValueOnClick: ' + setDataTargetOnClickVarValue);
 
 			    var extractedPageNumber = setDataTargetOnClickVarValue.replace(/[^0-9]/gi, '');
 				
@@ -113,7 +112,7 @@
 	            
 				// SCROLL SIDEBAR TO PAGE NUMBER POSITION
 				var scrollOnClickPageNumberTarget = '[data-target="pageNumber-' + extractedPageNumber + '"]';
-			     console.log("scrollOnClickPageNumberTarget", scrollOnClickPageNumberTarget);
+			     //console.log("scrollOnClickPageNumberTarget", scrollOnClickPageNumberTarget);
 			    scrollSidebarPreviewFunction(scrollOnClickPageNumberTarget, jumpStraight = 0);
 				
 				// HIGHLIGHT THE ACTUAL THUMBNAIL WHILE SCROLLING DOWN IN CANVAS

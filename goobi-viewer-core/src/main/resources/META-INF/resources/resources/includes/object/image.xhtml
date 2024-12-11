@@ -217,47 +217,12 @@
         	    }
         	}
         }
-
        	// desktop object view
        	if ( access && configViewer) {
            	var viewImage = new ImageView.Image( configViewer )
            	
-           	if(viewImage.sequence) {
-           		
-           		
-           		//ajax updates
-           		viewImage.sequence.onScroll
-           		.pipe(
-           			rxjs.operators.withLatestFrom(viewImage.sequence.onCurrentImageChange),
-           			rxjs.operators.map(e => e[1]),
-           			rxjs.operators.distinctUntilChanged(),
-           			rxjs.operators.debounceTime(800)		
-           		)
-           		.subscribe(imageId => setCurrentImageOrder({"order": imageIdToOrderMap.get(imageId)}));
-
-           		//js updates
-	           	viewImage.sequence.onCurrentImageChange
-	           	.pipe(rxjs.operators.debounceTime(300))
-	           	.subscribe (imageId => {
-	           		const pageNo = imageIdToOrderMap.get(imageId);
-	           		console.log("image changed to " + pageNo, imageId);
-	           		if(pageNo != undefined) {	           			
-		           		setBrowserLocation(pageNo);
-		           		imageOrderChanged.next(pageNo);
-	           		}
-	           		//update dropdown selector
-	           		//document.querySelector(".custom-control.custom-control--select select").value = pageNo;
-	           	});
-           		
-	           	changeImageOrder.subscribe(pageNo => {	    
-	           		console.log("set image to " + pageNo, imageOrderToUrlMap.get(Number(pageNo)));
-	           		if(pageNo != undefined ) {
-	            		viewImage.sequence.setCurrentImage(getId(imageOrderToUrlMap.get(Number(pageNo))), true)
-	           		}
-	           	})
-             }
-           	
            	viewImage.load().then( function( image ) {
+           		initializeSequence();
            	    $(".openseadragon-canvas").get(0).focus = () => {
            	       //prevent focus on os-div to avoid scrolling down on click
            	    }
@@ -320,6 +285,41 @@
        	 	    }
        	 	});
 	
+		    function initializeSequence() {
+	           	if(viewImage.sequence) {
+	           		
+	           		//ajax updates
+	           		viewImage.sequence.onScroll
+	           		.pipe(
+	           			rxjs.operators.withLatestFrom(viewImage.sequence.onCurrentImageChange),
+	           			rxjs.operators.map(e => e[1]),
+	           			rxjs.operators.distinctUntilChanged(),
+	           			rxjs.operators.debounceTime(800)		
+	           		)
+	           		.subscribe(imageId => setCurrentImageOrder({"order": imageIdToOrderMap.get(imageId)}));
+
+	           		//js updates
+		           	viewImage.sequence.onCurrentImageChange
+		           	.pipe(rxjs.operators.debounceTime(300))
+		           	.subscribe (imageId => {
+		           		const pageNo = imageIdToOrderMap.get(imageId);
+		           		console.log("image changed to " + pageNo, imageId);
+		           		if(pageNo != undefined) {	           			
+			           		setBrowserLocation(pageNo);
+			           		imageOrderChanged.next(pageNo);
+		           		}
+		           		//update dropdown selector
+		           		//document.querySelector(".custom-control.custom-control--select select").value = pageNo;
+		           	});
+	           		
+		           	changeImageOrder.subscribe(pageNo => {	    
+		           		console.log("set image to " + pageNo, imageOrderToUrlMap.get(Number(pageNo)));
+		           		if(pageNo != undefined ) {
+		            		viewImage.sequence.setCurrentImage(getId(imageOrderToUrlMap.get(Number(pageNo))), true)
+		           		}
+		           	})
+	             }
+		    }
        	 	
 		    //init page areas
        	 	function drawPageAreas(config, imageView) {
