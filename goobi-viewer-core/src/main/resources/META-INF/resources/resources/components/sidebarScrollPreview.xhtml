@@ -25,20 +25,23 @@
 					<ui:repeat varStatus="status" var="page" value="#{activeDocumentBean.viewManager.allPages}">
 						<div class="sidebar-scroll-preview__item">
 							<ui:fragment rendered="#{page != null}">
-
+								
 								<!-- NON SEQUENCE MODE LINKS -->
-<!-- 								<h:outputLink styleClass="sidebar-scroll-preview__link" value="#{activeDocumentBean.getPageUrl(order)}"> -->
-<!-- 									<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image" src="#{page.getImageUrl(cc.attrs.imageSize)}" /> -->
-<!-- 									<span class="sidebar-scroll-preview__link-text">#{page.order}:#{page.orderLabel}</span> -->
-<!-- 									<f:passThroughAttribute name="data-target" value="pageNumber-#{status.index + 1}" /> -->
-<!-- 								</h:outputLink> -->
-								
+								<ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() != 'SEQUENCE'}">
+									<h:outputLink styleClass="sidebar-scroll-preview__link" value="">
+										<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image" src="#{page.getImageUrl(cc.attrs.imageSize)}" />
+										<span class="sidebar-scroll-preview__button-text">#{page.order}:#{page.orderLabel}</span>
+										<f:passThroughAttribute name="data-target" value="pageNumber-#{status.index + 1}" />
+									</h:outputLink>								
+								</ui:fragment>	
+									
 								<!-- SEQUENCE MODE BUTTONS -->
-								<button type="button" class="sidebar-scroll-preview__button" data-target="pageNumber-#{page.order}">
-									<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image" src="#{page.getImageUrl(cc.attrs.imageSize)}" />
-									<span class="sidebar-scroll-preview__button-text">#{page.order}:#{page.orderLabel}</span>
-								</button>
-								
+								<ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE'}">
+									<button type="button" class="sidebar-scroll-preview__button" data-target="pageNumber-#{page.order}">
+										<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image" src="#{page.getImageUrl(cc.attrs.imageSize)}" />
+										<span class="sidebar-scroll-preview__button-text">#{page.order}:#{page.orderLabel}</span>
+									</button>
+								</ui:fragment>
 								
 							</ui:fragment>
 						</div>

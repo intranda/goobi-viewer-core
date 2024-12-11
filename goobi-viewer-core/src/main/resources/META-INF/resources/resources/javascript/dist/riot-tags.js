@@ -3858,7 +3858,7 @@ riot.tag2('imagepaginator', '<virtual if="{opts.enablePageNavigation}"><li if="{
         this.msg = {};
 
         this.on("mount", () => {
-        	console.log("this", this);
+
             this.currentPageNumber = this.opts.currentPageNumber;
             this.msg = this.opts.msg;
             if(this.opts.update) {
