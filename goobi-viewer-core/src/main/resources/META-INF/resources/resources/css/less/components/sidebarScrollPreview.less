@@ -15,8 +15,7 @@
 	&__grid {
 		position: relative;
 		height: 100%;
-		overflow-y: scroll;
-		display: grid;
+		display: grid; 
 		grid-template-columns: 1fr;
 		gap: 3px;
 		padding-inline-start: 11px;
@@ -39,28 +38,30 @@
 		width: 100%;
 		background: transparent;
 		border: none;
-		padding: 0;
+		padding: 4px;
 		display: flex;
  		flex-direction: column;
 		max-width: 100%;
 		overflow: hidden;
-		border: 3px solid transparent;
-		text-align: left;
 		color: #212529;
+		text-align: center;
+		margin-bottom: 2px;
 		&:hover,
 		&:active,
 		&:focus {
 			text-decoration: none;
 		}
 		&.-highlighted {
-			border: 3px solid #a3f97c;
+			outline: 3px solid #a3f97c;
+			outline-offset: -3px;
 			pointer-events: none;
 		}
 	} 
 	&__button-text {
 	  max-width: 100%;
 	  white-space: nowrap;
-	  margin-top: 1rem;
+	  margin: 0.4rem 0;
+	  margin-top: 0.7rem;
 	  text-overflow: ellipsis;
 	  display: block;
 	  overflow: hidden;
@@ -69,11 +70,14 @@
 	  word-break: break-all;
 	}
 	&__image {
+		flex: 1;
 		object-fit: cover;
   		object-position: top;
 		max-width: 100%;
 		opacity: 0;
 		height: 160px;
+		max-height: 160px;
+		width: 100%;
 		transition: 0.25s ease all;
 		&.-loaded {
 			opacity: 1;
@@ -124,19 +128,7 @@
 }
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {
-	.thumbnail-paginator {
-		&__item {
-			&.-activePage {
-				.thumbnail-paginator__image {
-				}
-			}
-		}
-		&__image {
-			height: 160px;
-		}
-	}
-}
+@media screen and (max-width: @smallBreakpoint) {}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}

@@ -299,9 +299,7 @@
 	           		.subscribe(imageId => setCurrentImageOrder({"order": imageIdToOrderMap.get(imageId)}));
 
 	           		//js updates
-		           	viewImage.sequence.onCurrentImageChange
-		           	.pipe(rxjs.operators.debounceTime(300))
-		           	.subscribe (imageId => {
+		           	viewImage.sequence.onCurrentImageChange.subscribe (imageId => {
 		           		const pageNo = imageIdToOrderMap.get(imageId);
 		           		console.log("image changed to " + pageNo, imageId);
 		           		if(pageNo != undefined) {	           			
