@@ -154,8 +154,8 @@
                 <h:panelGroup id="viewMetadata" rendered="#{metadataBean.activeMetadataView != null}">
                     <div id="view_metadata" class="view-metadata view-object__metadata">
                         <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
-								<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
-							</div>
+							<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+						</div>
                         <ui:insert name="viewMetadataMetadata">
                             <ui:include src="/resources/includes/metadata/metadata.xhtml">
                                 <ui:param name="metadataViewIndex" value="#{metadataBean.activeMetadataView.index}"/>
