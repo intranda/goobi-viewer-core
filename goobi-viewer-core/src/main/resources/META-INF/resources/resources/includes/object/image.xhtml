@@ -14,15 +14,15 @@
     <!-- IMAGE CONTAINER -->
     <div id="imageContainer" class="view-object__image #{activeDocumentBean.viewManager.showImageThumbnailGallery() and activeDocumentBean.viewManager.imagesCount ge 1 ? '-thumbnailPreviewGallery' : ''}">
 
+        <!-- MAP -->
+        <div id="imageMap" class="view-object__image-map" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}"></div>
+
 		<!-- SHOW SCROLLING SIDEBAR IMAGE THUMBNAIL PREVIEW FOR INFINITE SCROLLING -->
 		<ui:fragment rendered="#{activeDocumentBean.viewManager.showImageThumbnailGallery() and activeDocumentBean.viewManager.imagesCount ge 1}">
 
 			<viewerComponent:sidebarScrollPreview range="300" imageSize="200" currentPageOrder="#{activeDocumentBean.viewManager.currentImageOrder}" />
 		
 		</ui:fragment>
-
-        <!-- MAP -->
-        <div id="imageMap" class="view-object__image-map" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}"></div>
 
         <!-- MOBILE IMAGE OVERLAY -->
         <div id="imageContainerMobileOverlay" class="view-object__image-mobile-overlay"></div>
