@@ -28,7 +28,7 @@
 								
 								<!-- NON SEQUENCE MODE LINKS -->
 								<ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() != 'SEQUENCE'}">
-									<h:outputLink styleClass="sidebar-scroll-preview__link" value="">
+									<h:outputLink styleClass="sidebar-scroll-preview__link" value="#{activeDocumentBean.getPageUrl(page.order)}">
 										<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image" src="#{page.getImageUrl(cc.attrs.imageSize)}" />
 										<span class="sidebar-scroll-preview__button-text">#{page.order}:#{page.orderLabel}</span>
 										<f:passThroughAttribute name="data-target" value="pageNumber-#{status.index + 1}" />
