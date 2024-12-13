@@ -24,6 +24,7 @@ package io.goobi.viewer.api.rest.v1.authentication;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -150,8 +151,8 @@ public class AuthenticationEndpoint {
     @ApiResponse(responseCode = "500", description = "Internal error")
     public Response headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) {
         logger.debug("headerParameterLogin");
-        NavigationHelper nh = BeanUtils.getNavigationHelper();
-        if (redirectUrl != null && (nh == null || !redirectUrl.startsWith(nh.getApplicationUrl()))) {
+        Optional<NavigationHelper> nh =  BeanUtils.getBeanFromRequest(servletRequest, "navigationHelper", NavigationHelper.class);
+        if (redirectUrl != null && (!nh.isPresent() || !redirectUrl.startsWith(nh.get().getApplicationUrl()))) {
             return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_ILLEGAL_REDIRECT_URL)
                     .build();
         }
