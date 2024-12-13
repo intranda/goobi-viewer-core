@@ -22,7 +22,6 @@
 package io.goobi.viewer.model.security.authentication;
 
 import java.io.IOException;
-import java.util.Base64;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
@@ -30,13 +29,13 @@ import java.util.concurrent.Future;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
 import org.apache.oltu.oauth2.common.OAuthProviderType;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.types.ResponseType;
 import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -261,7 +260,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                     break;
             }
 
-            DataManager.getInstance().getOAuthResponseListener().register(this);
+            DataManager.getInstance().getAuthResponseListener().register(this);
             if (request != null) {
                 BeanUtils.getResponse().sendRedirect(request.getLocationUri());
             }
