@@ -148,7 +148,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         try {
             oAuthState =
                     new StringBuilder(UUID.randomUUID().toString()).append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).toString();
-            DataManager.getInstance().getOAuthResponseListener().register(this);
+            DataManager.getInstance().getAuthResponseListener().register(this);
 
             URIBuilder builder = new URIBuilder(url);
             builder.addParameter("client_id", clientId);
