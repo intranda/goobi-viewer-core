@@ -109,9 +109,6 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
         return timeoutMillis;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#getName()
-     */
     /** {@inheritDoc} */
     @Override
     public String getName() {
@@ -179,18 +176,12 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
         return type;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#getAddUserToGroups()
-     */
     /** {@inheritDoc} */
     @Override
     public List<String> getAddUserToGroups() {
         return addUserToGroups;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#setAddUserToGroups(java.util.List)
-     */
     /** {@inheritDoc} */
     @Override
     public void setAddUserToGroups(List<String> addUserToGroups) {
