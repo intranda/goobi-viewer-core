@@ -58,7 +58,7 @@
                                                 <li>
                                                     <h:outputLink value="#{navigationHelper.getSearchUrl(0,cmsBean.currentPage)}/-/#{empty cc.attrs.widget.filterQuery ? '-' : cc.attrs.widget.filterQuery}/1/-/#{facet.urlEscapedLink}/">
                                                         #{msg[facet.label]} (#{facet.count})
-                                                        <f:passThroughAttribute name="aria-label" value="#{msg[field.concat('_DD')]}: #{msg[facet.label]}" />
+                                                        <f:passThroughAttribute name="aria-label" value="#{msg[field.concat('_DD')]}: #{facet.translatedLabel}" />
                                                     </h:outputLink>
                                                 </li>
                                         </ui:repeat>
