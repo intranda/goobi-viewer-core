@@ -279,12 +279,12 @@ public class AuthenticationEndpoint {
     @ApiResponse(responseCode = "500", description = "Internal error")
     //    @Tag(name = "login")
     public Response openIdLoginGET(@QueryParam("error") String error, @QueryParam("code") String authCode,
-            @QueryParam("access_token") String accessToken, @QueryParam("state") String state) throws IOException {
+            @QueryParam("id_token") String accessToken, @QueryParam("state") String state) throws IOException {
         logger.trace("openIdLoginGET");
         //        for (String key : servletRequest.getParameterMap().keySet()) {
         //            logger.trace("{}:{}", key, servletRequest.getParameterMap().get(key));
         //        }
-        return openIdLogin(state, error, authCode);
+        return openIdLogin(state, error, authCode, accessToken);
     }
 
     /**
@@ -305,7 +305,7 @@ public class AuthenticationEndpoint {
     public Response openIdLoginPOST(@FormParam("error") String error, @FormParam("code") String authCode, @FormParam("state") String state)
             throws IOException {
         logger.trace("openIdLoginPOST");
-        return openIdLogin(state, error, authCode);
+        return openIdLogin(state, error, authCode, null);
     }
 
     /**
@@ -313,17 +313,18 @@ public class AuthenticationEndpoint {
      * @param state
      * @param error
      * @param authCode
+     * @param accessToken
      * @return {@link Response}
      * @throws IOException
      */
-    private Response openIdLogin(String state, String error, String authCode) throws IOException {
+    private Response openIdLogin(String state, String error, String authCode, String accessToken) throws IOException {
         if (error != null) {
             logger.trace("Error: {}", error);
             return Response.status(Response.Status.FORBIDDEN.getStatusCode(), error).build();
         }
 
-        if (authCode == null) {
-            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "No auth code received.").build();
+        if (authCode == null && accessToken == null) {
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "No auth code or token received.").build();
         }
 
         AuthResponseListener<HttpAuthenticationProvider> listener = DataManager.getInstance().getAuthResponseListener();
@@ -341,22 +342,38 @@ public class AuthenticationEndpoint {
                 return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_NO_PROVIDER_FOUND).build();
             }
 
-            Map<String, String> headers = new HashMap<>(2);
-            headers.put("Accept-Charset", "utf-8");
-            headers.put("Content-Type", "application/x-www-form-urlencoded");
+            String idTokenEncoded = accessToken;
+            if (idTokenEncoded == null) {
+                // Fetch token from token endpoint
+                Map<String, String> headers = new HashMap<>(2);
+                headers.put("Accept-Charset", "utf-8");
+                headers.put("Content-Type", "application/x-www-form-urlencoded");
 
-            Map<String, String> params = new HashMap<>(5);
-            params.put("grant_type", "authorization_code");
-            params.put("code", authCode);
-            params.put("client_id", provider.getClientId());
-            params.put("client_secret", provider.getClientSecret());
-            params.put("redirect_uri", provider.getRedirectionEndpoint());
+                Map<String, String> params = new HashMap<>(5);
+                params.put("grant_type", "authorization_code");
+                params.put("code", authCode);
+                params.put("client_id", provider.getClientId());
+                params.put("client_secret", provider.getClientSecret());
+                params.put("redirect_uri", provider.getRedirectionEndpoint());
 
-            String responseBody = NetTools.getWebContentPOST(provider.getTokenEndpoint(), headers, params, null, null, null, null);
-            // logger.trace(responseBody);
+                String responseBody = NetTools.getWebContentPOST(provider.getTokenEndpoint(), headers, params, null, null, null, null);
+                // logger.trace(responseBody);
 
-            JSONObject responseObj = new JSONObject(responseBody);
-            String idTokenEncoded = responseObj.getString("id_token");
+                JSONObject responseObj = new JSONObject(responseBody);
+                idTokenEncoded = responseObj.getString("id_token");
+            }
+
+            // Artificial delay because sometimes token validity starts after the current time
+            if (provider.getTokenCheckDelay() > 0) {
+                logger.debug("Applying token check delay of {} ms", provider.getTokenCheckDelay());
+                try {
+                    Thread.sleep(provider.getTokenCheckDelay());
+                } catch (InterruptedException e) {
+                    logger.error(e.getMessage());
+                    Thread.currentThread().interrupt();
+                }
+            }
+
             DecodedJWT jwt = verifyOpenIdToken(idTokenEncoded, provider.getJwksUri(), provider.getIssuer());
             if (jwt == null) {
                 return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "Could not verify authentication token.").build();
@@ -403,6 +420,7 @@ public class AuthenticationEndpoint {
      * @return {@link DecodedJWT}
      */
     static DecodedJWT verifyOpenIdToken(String token, String jwksUri, String issuer) {
+        // logger.trace(token);
         RSAKeyProvider keyProvider = null;
         try {
             final JwkProvider provider = new UrlJwkProvider(new URI(jwksUri).toURL());

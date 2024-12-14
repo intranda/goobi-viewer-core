@@ -2508,6 +2508,7 @@ public class Configuration extends AbstractConfiguration {
             String parameterType = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@parameterType]", null);
             String parameterName = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@parameterName]", null);
             String issuer = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@issuer]");
+            long tokenCheckDelay = myConfigToUse.getLong(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tokenCheckDelay]", 0);
             String thirdPartyLoginUrl = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginUrl]", null);
             String thirdPartyLoginApiKey = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginApiKey]", null);
             String thirdPartyLoginScope = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginScope]", null);
@@ -2532,6 +2533,7 @@ public class Configuration extends AbstractConfiguration {
                                         .setResponseType(responseType)
                                         .setResponseMode(responseMode)
                                         .setIssuer(issuer)
+                                        .setTokenCheckDelay(tokenCheckDelay)
                                         .setThirdPartyVariables(thirdPartyLoginUrl, thirdPartyLoginApiKey, thirdPartyLoginScope,
                                                 thirdPartyLoginReqParamDef, thirdPartyLoginClaim));
                         break;

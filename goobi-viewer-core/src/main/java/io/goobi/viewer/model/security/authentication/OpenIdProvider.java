@@ -92,6 +92,8 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     private String responseMode;
     /** OAuth parameter issuer. */
     private String issuer;
+    /** Token check delay (milliseconds). */
+    private long tokenCheckDelay = 0;
 
     private String thirdPartyLoginUrl;
     private String thirdPartyLoginApiKey;
@@ -514,6 +516,22 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
      */
     public OpenIdProvider setIssuer(String issuer) {
         this.issuer = issuer;
+        return this;
+    }
+
+    /**
+     * @return the tokenCheckDelay
+     */
+    public long getTokenCheckDelay() {
+        return tokenCheckDelay;
+    }
+
+    /**
+     * @param tokenCheckDelay the tokenCheckDelay to set
+     * @return this
+     */
+    public OpenIdProvider setTokenCheckDelay(long tokenCheckDelay) {
+        this.tokenCheckDelay = tokenCheckDelay;
         return this;
     }
 
