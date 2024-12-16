@@ -54,6 +54,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
@@ -63,6 +64,9 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessPermission;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -103,6 +107,8 @@ public class Metadata implements Serializable {
     private boolean hideIfOnlyMetadataField = false;
     private boolean topstructOnly = false;
     private String filterQuery = "";
+    private final Set<String> accessConditions = new HashSet<>();
+    private boolean accessGranted = true;
 
     // Data
 
@@ -913,6 +919,13 @@ public class Metadata implements Serializable {
                         }
                         found = true;
                         String value = val;
+
+                        // Set value to empty for restricted access metadata values when configured as non-grouped
+                        if (StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED.equals(value)) {
+                            logger.trace("Removing hidden value");
+                            value = "";
+                        }
+
                         // Apply replace rules
                         if (!param.getReplaceRules().isEmpty()) {
                             value = MetadataTools.applyReplaceRules(value, param.getReplaceRules(), se.getPi());
@@ -993,11 +1006,11 @@ public class Metadata implements Serializable {
         if (ownerIddoc == null) {
             return false;
         }
-        String filterQuery = StringUtils.isNotBlank(this.filterQuery) ? String.format("+(%s)", this.filterQuery) : "";
+        String fq = StringUtils.isNotBlank(this.filterQuery) ? String.format("+(%s)", this.filterQuery) : "";
         boolean found = false;
         try {
             SolrDocumentList groupedMdList =
-                    MetadataTools.getGroupedMetadata(ownerIddoc, '+' + SolrConstants.LABEL + ":" + key + " " + filterQuery, sortFields);
+                    MetadataTools.getGroupedMetadata(ownerIddoc, '+' + SolrConstants.LABEL + ":" + key + " " + fq, sortFields);
             if (groupedMdList == null || groupedMdList.isEmpty()) {
                 return false;
             }
@@ -1014,22 +1027,33 @@ public class Metadata implements Serializable {
                 Map<String, List<String>> groupFieldMap = new HashMap<>();
                 // Collect values for all fields in this metadata doc
                 for (String fieldName : doc.getFieldNames()) {
-                    List<String> vals = groupFieldMap.get(fieldName);
-                    if (vals == null) {
-                        vals = new ArrayList<>();
-                        groupFieldMap.put(fieldName, vals);
-                    }
+                    List<String> valueMap = groupFieldMap.computeIfAbsent(fieldName, k -> new ArrayList<>());
                     // logger.trace(fieldName + ":" + doc.getFieldValue(fieldName).toString()); //NOSONAR Debug
                     if (doc.getFieldValue(fieldName) instanceof String value) {
-                        vals.add(value);
+                        valueMap.add(value);
                     } else if (doc.getFieldValue(fieldName) instanceof Collection) {
-                        vals.addAll(SolrTools.getMetadataValues(doc, fieldName));
+                        List<String> vals = SolrTools.getMetadataValues(doc, fieldName);
+                        valueMap.addAll(vals);
+                        if (SolrConstants.ACCESSCONDITION.equals(fieldName)) {
+                            this.accessConditions.addAll(vals);
+                            logger.trace("Metadata field {} has access conditions.", key);
+                        }
                     }
                     // Collect IDDOC value for use as owner IDDOC for child metadata
                     if (fieldName.equals(SolrConstants.IDDOC)) {
                         metadataDocIddoc = (String) doc.getFieldValue(fieldName);
                     }
                 }
+
+                // Check metadata access permission; do not load if denied
+                accessGranted =
+                        AccessConditionUtils.checkAccessPermissionBySolrDoc(doc, null, IPrivilegeHolder.PRIV_VIEW_METADATA, BeanUtils.getRequest())
+                                .isGranted();
+                if (!accessGranted) {
+                    logger.trace("Access denied to metadata field {}", key);
+                    return false;
+                }
+
                 String groupType = null;
                 if (groupFieldMap.containsKey(SolrConstants.METADATATYPE) && !groupFieldMap.get(SolrConstants.METADATATYPE).isEmpty()) {
                     groupType = groupFieldMap.get(SolrConstants.METADATATYPE).get(0);
@@ -1103,6 +1127,8 @@ public class Metadata implements Serializable {
             // logger.trace("GROUP QUERY END"); //NOSONAR Debug
         } catch (PresentationException e) {
             logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
+        } catch (DAOException e) {
+            logger.error(e.getMessage());
         }
 
         return found;
@@ -1302,6 +1328,36 @@ public class Metadata implements Serializable {
 
     public String getFilterQuery() {
         return filterQuery;
+    }
+
+    /**
+     * 
+     * @return true if thids.accessConditions not empty; false otherwise
+     */
+    public boolean isHasAccessConditions() {
+        logger.trace("access conditions for {}: {}", label, !this.accessConditions.isEmpty());
+        return !this.accessConditions.isEmpty();
+    }
+
+    /**
+     * @return the accessConditions
+     */
+    public Set<String> getAccessConditions() {
+        return accessConditions;
+    }
+
+    /**
+     * @return the accessGranted
+     */
+    public boolean isAccessGranted() {
+        return accessGranted;
+    }
+
+    /**
+     * @param accessGranted the accessGranted to set
+     */
+    public void setAccessGranted(boolean accessGranted) {
+        this.accessGranted = accessGranted;
     }
 
     /**

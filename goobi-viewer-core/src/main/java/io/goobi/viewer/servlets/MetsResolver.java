@@ -33,14 +33,21 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.jdom2.Document;
+import org.jdom2.JDOMException;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.transform.XSLTransformException;
+import org.jdom2.transform.XSLTransformer;
 
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
+import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -67,6 +74,7 @@ public class MetsResolver extends HttpServlet {
 
     /**
      * {@inheritDoc}
+     * 
      * @should return METS file correctly via pi
      * @should return METS file correctly via urn
      * @should return LIDO file correctly
@@ -137,10 +145,17 @@ public class MetsResolver extends HttpServlet {
 
         // If the user has no listing privilege for this record, act as if it does not exist
         boolean access = false;
+        boolean nonShareableMetadataFound = false;
         try {
             access =
                     AccessConditionUtils.checkAccessPermissionBySolrDoc(doc, query, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request).isGranted();
-        } catch (IndexUnreachableException | DAOException e) {
+            if (access) {
+                // Check whether there are restricted metadata values in this record
+                String restrictionQuery = "+" + SolrConstants.PI_TOPSTRUCT + ":\"" + id + "\" +" + SolrConstants.ACCESSCONDITION + ":\""
+                        + StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED + "\"";
+                nonShareableMetadataFound = DataManager.getInstance().getSearchIndex().getHitCount(restrictionQuery) > 0;
+            }
+        } catch (IndexUnreachableException | DAOException | PresentationException e) {
             logger.error(e.getMessage(), e);
             try {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -168,32 +183,66 @@ public class MetsResolver extends HttpServlet {
 
         response.setContentType(StringConstants.MIMETYPE_TEXT_XML);
         File file = new File(filePath);
+        logger.error(filePath);
         response.setHeader("Content-Disposition", "filename=\"" + file.getName() + "\"");
-        try (FileInputStream fis = new FileInputStream(file); ServletOutputStream out = response.getOutputStream()) {
-            int bytesRead = 0;
-            byte[] byteArray = new byte[300];
+        if (nonShareableMetadataFound && SolrConstants.SOURCEDOCFORMAT_METS.equals(format)) {
             try {
-                while ((bytesRead = fis.read(byteArray)) != -1) {
-                    out.write(byteArray, 0, bytesRead);
+                Document metsDoc = XmlTools.readXmlFile(filePath);
+                Document cleanDoc = filterRestrictedMetadata(metsDoc);
+                if (cleanDoc != null) {
+                    XMLOutputter outputter = XmlTools.getXMLOutputter();
+                    outputter.setFormat(Format.getPrettyFormat());
+                    outputter.output(cleanDoc, response.getOutputStream());
                 }
-                out.flush();
-            } catch (IOException e) {
+            } catch (IOException | JDOMException e) {
                 logger.error(e.getMessage());
             }
-        } catch (FileNotFoundException e) {
-            logger.debug(e.getMessage());
-            try {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found: " + file.getName());
-            } catch (IOException e1) {
-                logger.error(e1.getMessage());
-            }
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-            try {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-            } catch (IOException e1) {
-                logger.error(e1.getMessage());
+        } else {
+            try (FileInputStream fis = new FileInputStream(file); ServletOutputStream out = response.getOutputStream()) {
+                int bytesRead = 0;
+                byte[] byteArray = new byte[300];
+                try {
+                    while ((bytesRead = fis.read(byteArray)) != -1) {
+                        out.write(byteArray, 0, bytesRead);
+                    }
+                    out.flush();
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                }
+            } catch (FileNotFoundException e) {
+                logger.debug(e.getMessage());
+                try {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found: " + file.getName());
+                } catch (IOException e1) {
+                    logger.error(e1.getMessage());
+                }
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+                try {
+                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                } catch (IOException e1) {
+                    logger.error(e1.getMessage());
+                }
             }
         }
+    }
+
+    /**
+     * 
+     * @param metsDoc
+     * @return {@link Document} without restricted metadata elements
+     */
+    static Document filterRestrictedMetadata(Document metsDoc) {
+        String stylesheetFilePath = DataManager.getInstance().getConfiguration().getConfigLocalPath() + "METS_metadata_filter.xsl";
+        try (FileInputStream fis = new FileInputStream(stylesheetFilePath)) {
+            XSLTransformer transformer = new XSLTransformer(fis);
+            return transformer.transform(metsDoc);
+        } catch (FileNotFoundException e) {
+            logger.error(e.getMessage());
+        } catch (IOException | XSLTransformException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return null;
     }
 }

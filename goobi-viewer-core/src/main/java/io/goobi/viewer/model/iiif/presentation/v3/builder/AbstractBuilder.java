@@ -82,6 +82,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -291,6 +292,7 @@ public abstract class AbstractBuilder {
                 String label = StringUtils.isNotBlank(configuredLabel) ? configuredLabel
                         : (field.contains("/") ? field.substring(field.indexOf("/") + 1) : field);
                 SolrTools.getTranslations(field, ele, this.translationLocales, (s1, s2) -> s1 + "; " + s2)
+                        .filter(value -> !StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED.equals(value.getValue().get()))
                         .map(value -> new Metadata(getLabel(label), value))
                         .ifPresent(manifest::addMetadata);
             }

@@ -257,7 +257,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                     break;
             }
 
-            DataManager.getInstance().getOAuthResponseListener().register(this);
+            DataManager.getInstance().getAuthResponseListener().register(this);
             if (request != null) {
                 // request.addHeader("Accept", "application/json");
                 // request.addHeader("Content-Type", "application/json");

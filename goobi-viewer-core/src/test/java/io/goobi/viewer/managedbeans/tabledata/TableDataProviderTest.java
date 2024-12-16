@@ -49,7 +49,7 @@ class TableDataProviderTest {
      * @throws java.lang.Exception
      */
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         sourceList = IntStream.rangeClosed(1, 2005).boxed().collect(Collectors.toList());
         Collections.shuffle(sourceList);
 
@@ -70,13 +70,13 @@ class TableDataProviderTest {
                         default:
                             return 0;
                     }
-                }).filter(i -> matches(i, filters)).skip(first).limit(pageSize).collect(Collectors.toList());
+                }).filter(i -> matches(i, filters)).skip(first).limit(pageSize).toList();
             }
 
             @Override
             public long getTotalNumberOfRecords(Map<String, String> filters) {
                 if (!totalDataSize.isPresent()) {
-                    totalDataSize = Optional.of(sourceList.stream().filter(i -> matches(i, filters)).count()).map(i -> Long.valueOf(i));
+                    totalDataSize = Optional.of(sourceList.stream().filter(i -> matches(i, filters)).count());
                 }
                 return totalDataSize.orElse(0l);
             }

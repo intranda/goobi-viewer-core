@@ -50,7 +50,7 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
         MetsResolver resolver = new MetsResolver();
         resolver.doGet(request, response);
-        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus(), response.getErrorMessage());
         String xml = response.getContentAsString();
         Document mets = XmlTools.getDocumentFromString(xml, StandardCharsets.UTF_8.name());
         Assertions.assertNotNull(mets);
@@ -68,7 +68,7 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
         MetsResolver resolver = new MetsResolver();
         resolver.doGet(request, response);
-        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus(), response.getErrorMessage());
         String xml = response.getContentAsString();
         Document mets = XmlTools.getDocumentFromString(xml, StandardCharsets.UTF_8.name());
         Assertions.assertNotNull(mets);
@@ -86,7 +86,7 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
         MetsResolver resolver = new MetsResolver();
         resolver.doGet(request, response);
-        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus(), response.getErrorMessage());
         String xml = response.getContentAsString();
         Document lido = XmlTools.getDocumentFromString(xml, StandardCharsets.UTF_8.name());
         Assertions.assertNotNull(lido);
@@ -105,7 +105,7 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
         MetsResolver resolver = new MetsResolver();
         resolver.doGet(request, response);
-        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus(), response.getErrorMessage());
         String xml = response.getContentAsString();
         Document ead = XmlTools.getDocumentFromString(xml, StandardCharsets.UTF_8.name());
         Assertions.assertNotNull(ead);

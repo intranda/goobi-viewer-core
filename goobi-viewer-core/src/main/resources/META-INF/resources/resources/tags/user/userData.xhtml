@@ -165,7 +165,7 @@
 						<p>#{msg.admin__user_password_info_text}</p>
 						<div class="form-horizontal" role="form">
                             <!-- Current password (only when changing own password) -->
-                            <ui:fragment rendered="#{user.id == userBean.user.id}">
+                            <ui:fragment rendered="#{user.id == userBean.user.id and userBean.user.id != adminBean.currentUser.id}">
                                 <div class="form-group form-row">
                                     <h:outputLabel for="currentPassword"
                                         styleClass="col-12 col-lg-2 control-label"

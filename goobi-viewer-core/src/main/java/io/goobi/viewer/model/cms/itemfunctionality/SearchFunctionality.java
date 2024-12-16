@@ -227,10 +227,12 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * The part of the search url before the page number
      *
      * @return a {@link java.lang.String} object.
+     * @should construct url prefix correctly
      */
     public String getUrlPrefix() {
         StringBuilder sb = new StringBuilder();
         sb.append(getBaseUrl());
+        sb.append(getActiveResultGroupName()).append("/");
         sb.append(getQueryString()).append("/");
         return sb.toString();
     }

@@ -31,6 +31,9 @@
                                         <dd>
                                             <!-- Metadata value -->
                                             <h:panelGroup rendered="#{metadata.singleString}">
+                                                <ui:fragment rendered="#{metadata.hasAccessConditions}">
+                                                    <i class="fa fa-unlock" />
+                                                </ui:fragment>
                                                 <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}" escape="false">
                                                 </h:outputFormat>
                                             </h:panelGroup>
@@ -62,6 +65,9 @@
                                                 <h:outputText value="#{val.getParamLabelWithColon(ind0)}" escape="false" />
                                             </dt>
                                             <dd>
+                                                <ui:fragment rendered="#{metadata.hasAccessConditions}">
+                                                    <i class="fa fa-unlock" />
+                                                </ui:fragment>
                                                 <h:outputText value="#{val.getComboValueShort(ind0)}" escape="false" />
                                             </dd>
                                         </ui:fragment>
