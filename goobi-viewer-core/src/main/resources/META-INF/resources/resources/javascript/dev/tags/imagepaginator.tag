@@ -185,12 +185,12 @@
         });
 
         this.on("update", () => {
-        	console.log("UPDATE");
+        	// console.log("UPDATE");
             //hide all tooltips. Otherwise if elements are replaced after the update, old tooltips may be shown indefinitely
             $("[data-toggle='tooltip']").tooltip('hide');
             if(this.refs.dropdown) {
                 this.refs.dropdown.value = this.isDoublePageMode() ? (this.currentPageNumbers[0] + "-" + this.currentPageNumbers[0]) : this.currentPageNumbers[0];
-                console.log("set ", this.refs.dropdown.value, " to ", this.currentPageNumbers[0] + "-" + this.currentPageNumbers[0], this.isDoublePageMode());
+                // console.log("set ", this.refs.dropdown.value, " to ", this.currentPageNumbers[0] + "-" + this.currentPageNumbers[0], this.isDoublePageMode());
             }
         });
 

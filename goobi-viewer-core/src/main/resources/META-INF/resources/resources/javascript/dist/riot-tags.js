@@ -3871,12 +3871,11 @@ riot.tag2('imagepaginator', '<virtual if="{opts.enablePageNavigation}"><li if="{
         });
 
         this.on("update", () => {
-        	console.log("UPDATE");
 
             $("[data-toggle='tooltip']").tooltip('hide');
             if(this.refs.dropdown) {
                 this.refs.dropdown.value = this.isDoublePageMode() ? (this.currentPageNumbers[0] + "-" + this.currentPageNumbers[0]) : this.currentPageNumbers[0];
-                console.log("set ", this.refs.dropdown.value, " to ", this.currentPageNumbers[0] + "-" + this.currentPageNumbers[0], this.isDoublePageMode());
+
             }
         });
 

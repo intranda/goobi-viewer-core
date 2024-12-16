@@ -88,10 +88,10 @@
         const imageOrderToUrlMap = new Map(Object.entries(#{activeDocumentBean.viewManager.imageInfosAsJson}).map(([key, value]) => [Number(key), value]));
         const imageIdToOrderMap = new Map(Object.entries(#{activeDocumentBean.viewManager.imageInfosAsJson}).map(([key, value]) => [getId(value), Number(key)]));
         const currentImageOrder = #{activeDocumentBean.viewManager.currentImageOrder}
-        console.log("images ", imageMap);
-        var configViewer = {
+        // console.log("images ", imageMap); 
+        var configViewer = { 
         	global: {
-        		divId: "imageMap",
+        		divId: "imageMap", 
         		viewMode: "#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase()}",
         		bottomMargin: () => #{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)},
         		adaptContainerHeight: true,
