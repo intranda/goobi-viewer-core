@@ -20,6 +20,12 @@
 			grid-template-columns: 20% 1fr;
 			gap: 10px;
 			padding-inline-start: 0;
+			.view-object__image-map {
+				order: 2;
+			}
+			.sidebar-scroll-preview {
+				order: 1;
+			}
 		}
 	}
 
@@ -141,9 +147,15 @@
 	}
 	// METADATA BELOW IMAGE ON OBJECT PAGE - ONLY VISIBLE WITH CONFIGURATION
 	&__metadata {
+		position: relative;
 		margin-top: 40px;
 		.metadata__title-wrapper {
 			display: none;
+		}
+		.ajax_loader {
+			position: absolute;
+			right: 0;
+			top: 0;
 		}
 	} 
 	
