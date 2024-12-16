@@ -3960,7 +3960,7 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -4045,7 +4045,7 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return a {@link java.util.Map} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
