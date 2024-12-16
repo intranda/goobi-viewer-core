@@ -261,6 +261,8 @@ public class ViewManager implements Serializable {
         this.mimeType = mimeType;
         logger.trace("mimeType: {}", mimeType);
 
+        this.pageNavigation = getDefaultPageNavigation();
+
         // Linked archive node
         try {
             String archiveId = getArchiveEntryIdentifier();
@@ -271,6 +273,23 @@ public class ViewManager implements Serializable {
             }
         } catch (ArchiveException e) {
             logger.error("Error creating archive link for {}: {}", this.pi, e.getMessage());
+        }
+    }
+
+    protected PageNavigation getDefaultPageNavigation() {
+        try {
+            String navType = DataManager.getInstance()
+                    .getConfiguration()
+                    .getDefaultPageNavigation(BeanUtils.getNavigationHelper().getCurrentPageType(), this.mimeType);
+            try {
+                return PageNavigation.fromString(navType);
+            } catch (NullPointerException e) {
+                logger.error("Error reading default page navigation from config: {} is not a known PageNavigation", navType);
+                return PageNavigation.SINGLE;
+            }
+        } catch (ViewerConfigurationException e) {
+            logger.error("Error reading default page navigation from config", e);
+            return PageNavigation.SINGLE;
         }
     }
 
@@ -582,7 +601,11 @@ public class ViewManager implements Serializable {
 
         int size = DataManager.getInstance()
                 .getConfiguration()
-                .getImageViewZoomScales(view, Optional.ofNullable(getCurrentPage()).map(page -> page.getImageType()).orElse(null))
+                .getImageViewZoomScales(view,
+                        Optional.ofNullable(getCurrentPage())
+                                .map(page -> page.getImageType())
+                                .map(type -> type.getFormat().getMimeType())
+                                .orElse(null))
                 .stream()
                 .map(string -> "max".equalsIgnoreCase(string) ? 0 : Integer.parseInt(string))
                 .sorted((s1, s2) -> s1 == 0 ? -1 : (s2 == 0 ? 1 : Integer.compare(s2, s1)))
@@ -639,7 +662,7 @@ public class ViewManager implements Serializable {
         StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getFullImageUrl(page, scale, "MASTER"));
         logger.trace("Master image URL: {}", sb);
         try {
-            if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, page.getImageType()) > 0) {
+            if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, page.getImageType().getFormat().getMimeType()) > 0) {
                 sb.append("?ignoreWatermark=false");
                 sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(page).map(text -> {
                     try {
@@ -677,7 +700,7 @@ public class ViewManager implements Serializable {
 
         StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getThumbnailUrl(page, scale));
         try {
-            if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, page.getImageType()) > 0) {
+            if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, page.getImageType().getFormat().getMimeType()) > 0) {
                 sb.append("?ignoreWatermark=false");
                 sb.append(imageDeliveryBean.getFooter()
                         .getWatermarkTextIfExists(page)
@@ -706,7 +729,7 @@ public class ViewManager implements Serializable {
     private String getCurrentImageUrl(PageType view, int size) {
         StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getThumbnailUrl(getCurrentPage(), size, size));
         try {
-            if (DataManager.getInstance().getConfiguration().getFooterHeight(view, getCurrentPage().getImageType()) > 0) {
+            if (DataManager.getInstance().getConfiguration().getFooterHeight(view, getCurrentPage().getImageType().getFormat().getMimeType()) > 0) {
                 sb.append("?ignoreWatermark=false");
                 sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> {
                     try {
@@ -1463,27 +1486,37 @@ public class ViewManager implements Serializable {
         if (currentStructElement == null || !Objects.equals(currentStructElement.getLuceneId(), currentStructElementIddoc)) {
             setCurrentStructElement(new StructElement(currentStructElementIddoc));
         }
-        //set image view mode
-        setPageNavigation();
     }
 
     protected void setPageNavigation(PageNavigation navigation) {
         this.pageNavigation = navigation;
     }
 
-    protected void setPageNavigation() {
+    public void updatePageNavigation() {
+        this.pageNavigation = calculateCurrentPageNavigation();
+    }
+
+    protected PageNavigation calculateCurrentPageNavigation() {
         try {
-            PhysicalElement currentPage = Optional.ofNullable(getCurrentPage()).orElse(getFirstPage());
-            if (currentPage != null) {
-                String navigation = DataManager.getInstance()
-                        .getConfiguration()
-                        .getDefaultPageNavigation(BeanUtils.getNavigationHelper().getCurrentPageType(), currentPage.getImageType());
-                setPageNavigation(PageNavigation.valueOf(navigation.toUpperCase()));
+            NavigationHelper nh = BeanUtils.getNavigationHelper();
+            PageNavigation defaultPageNavigation = getDefaultPageNavigation();
+            if (this.pageNavigation == defaultPageNavigation) {
+                return this.pageNavigation;
+            } else if (defaultPageNavigation == PageNavigation.SEQUENCE) {
+                return defaultPageNavigation;
+            } else if (this.pageNavigation == PageNavigation.SINGLE
+                    && DataManager.getInstance().getConfiguration().isSinglePageNavigationEnabled(nh.getCurrentPageType(), this.mimeType)) {
+                return this.pageNavigation;
+            } else if (this.pageNavigation == PageNavigation.DOUBLE
+                    && DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(nh.getCurrentPageType(), this.mimeType)) {
+                return this.pageNavigation;
             } else {
-                logger.debug("Cannot load page. pageLoader possibly not initialized yet");
+                return defaultPageNavigation;
             }
-        } catch (ViewerConfigurationException | NullPointerException | IllegalArgumentException | IndexUnreachableException | DAOException e) {
+
+        } catch (ViewerConfigurationException | NullPointerException | IllegalArgumentException e) {
             logger.error("Failed to set view mode: {}", e.toString());
+            return PageNavigation.SINGLE;
         }
     }
 
@@ -3648,7 +3681,7 @@ public class ViewManager implements Serializable {
      * @param doublePageMode the doublePageMode to set
      */
     public void setDoublePageMode(boolean doublePageMode) {
-        setPageNavigation();
+        setPageNavigation(doublePageMode ? pageNavigation.DOUBLE : pageNavigation.SINGLE);
         this.setDoublePageModeForDropDown(doublePageMode);
     }
 
@@ -4359,13 +4392,15 @@ public class ViewManager implements Serializable {
     public boolean isDoublePageNavigationEnabled() throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .isDoublePageNavigationEnabled(BeanUtils.getNavigationHelper().getCurrentPageType(), getCurrentPage().getImageType());
+                .isDoublePageNavigationEnabled(BeanUtils.getNavigationHelper().getCurrentPageType(),
+                        getCurrentPage().getImageType().getFormat().getMimeType());
     }
 
     public boolean showImageThumbnailGallery() throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .showImageThumbnailGallery(BeanUtils.getNavigationHelper().getCurrentPageType(), getCurrentPage().getImageType());
+                .showImageThumbnailGallery(BeanUtils.getNavigationHelper().getCurrentPageType(),
+                        getCurrentPage().getImageType().getFormat().getMimeType());
     }
 
 }

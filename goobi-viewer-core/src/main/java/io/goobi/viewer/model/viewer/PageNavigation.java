@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.viewer;
 
+import software.amazon.awssdk.utils.StringUtils;
+
 /**
  * Describes different ways in which the sequence of images within a record is presented
  */
@@ -38,5 +40,13 @@ public enum PageNavigation {
      * Display all images of a record within the same page. Keeps track of the current image to update the page information accordingly
      */
     SEQUENCE;
+
+    public static PageNavigation fromString(String string) {
+        if (StringUtils.isNotBlank(string)) {
+            return valueOf(string.toUpperCase());
+        } else {
+            return null;
+        }
+    }
 
 }
