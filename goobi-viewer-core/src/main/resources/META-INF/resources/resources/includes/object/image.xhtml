@@ -12,13 +12,13 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <!-- IMAGE CONTAINER -->
-    <div id="imageContainer" class="view-object__image #{activeDocumentBean.viewManager.showImageThumbnailGallery() and activeDocumentBean.viewManager.imagesCount ge 1 ? '-thumbnailPreviewGallery' : ''}">
+    <div id="imageContainer" class="view-object__image #{activeDocumentBean.viewManager.showImageThumbnailGallery() and activeDocumentBean.viewManager.imagesCount ge 3 ? '-thumbnailPreviewGallery' : ''}">
 
         <!-- MAP -->
         <div id="imageMap" class="view-object__image-map" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}"></div>
 
 		<!-- SHOW SCROLLING SIDEBAR IMAGE THUMBNAIL PREVIEW FOR INFINITE SCROLLING -->
-		<ui:fragment rendered="#{activeDocumentBean.viewManager.showImageThumbnailGallery() and activeDocumentBean.viewManager.imagesCount ge 1}">
+		<ui:fragment rendered="#{activeDocumentBean.viewManager.showImageThumbnailGallery() and activeDocumentBean.viewManager.imagesCount ge 3}">
 
 			<viewerComponent:sidebarScrollPreview range="300" imageSize="200" currentPageOrder="#{activeDocumentBean.viewManager.currentImageOrder}" />
 		
@@ -225,7 +225,7 @@
            		initializeSequence();
            	    $(".openseadragon-canvas").get(0).focus = () => {
            	       //prevent focus on os-div to avoid scrolling down on click
-           	    }
+           	    } 
            		let shareImageFragment = new viewerJS.ShareImageFragment(image);
            		shareImageFragment.initImageFragmentLinks();
            	} ).catch( function( error ) {
