@@ -1331,6 +1331,15 @@ public class Metadata implements Serializable {
     }
 
     /**
+     * 
+     * @return true if thids.accessConditions not empty; false otherwise
+     */
+    public boolean isHasAccessConditions() {
+        logger.trace("access conditions for {}: {}", label, !this.accessConditions.isEmpty());
+        return !this.accessConditions.isEmpty();
+    }
+
+    /**
      * @return the accessConditions
      */
     public Set<String> getAccessConditions() {
