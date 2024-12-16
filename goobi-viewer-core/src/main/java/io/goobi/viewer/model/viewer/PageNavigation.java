@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.model.viewer;
 
-import software.amazon.awssdk.utils.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Describes different ways in which the sequence of images within a record is presented
