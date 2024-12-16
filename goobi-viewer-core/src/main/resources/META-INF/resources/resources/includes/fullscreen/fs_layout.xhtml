@@ -6,6 +6,7 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:o="http://omnifaces.org/ui"
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
@@ -18,6 +19,15 @@
 
         <!-- IMAGE -->
         <main id="fullscreenViewImage" class="fullscreen__view-image">
+	
+			<!-- Update pagenumber and all relevant html areas with ajax when changing image in sequence mode -->
+			<h:form>
+				<o:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" 
+				onbegin="document.querySelectorAll('.ajax_loader__image_update').forEach(loader => loader.classList.remove('-hidden'))"
+				onsuccess="document.querySelectorAll('.ajax_loader__image_update').forEach(loader => loader.classList.add('-hidden'))"
+				oncomplete="document.querySelectorAll('.ajax_loader__image_update').forEach(loader => loader.classList.add('-hidden'))"
+				render=":sidebarMetadata :sidebarMetadataTech :sidebarDownloads:pageDownloads :sidebarFormatLinks:widgetSectionLinks :sidebarCitation:pageCitations :sidebarFulltext :sidebarGeomap :sidebarAnnotations:widgetAnnotationList:annotationList"></o:commandScript>
+			</h:form>
 
         	<!-- heading for screen readers -->
         	<!--
@@ -118,10 +128,15 @@
                     <div id="panel-1" class="fullscreen__view-sidebar-accordeon-panel fs-metadata">
                         <h2 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                             <span>#{msg.bibData}</span>
+                            <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
+								<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+							</div>
                         </h2>
 
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
-                            <ui:include src="/resources/includes/metadata/metadata.xhtml" />
+                        	<div jsf:id="sidebarMetadata">
+	                            <ui:include src="/resources/includes/metadata/metadata.xhtml" />
+                        	</div>
                         </div>
                     </div>
                     <!-- METADATA TECH -->
@@ -129,10 +144,15 @@
 	                    <div id="panel-12" class="fullscreen__view-sidebar-accordeon-panel fs-metadata-tech">
 	                        <h2 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
 	                            <span>#{msg.metadataTech}</span>
+	                            <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
+									<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+								</div>
 	                        </h2>
 	
 	                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
-								<widgetComponent:widget_metadataTech />
+								<div jsf:id="sidebarMetadataTech">
+									<widgetComponent:widget_metadataTech />
+								</div>
 	                        </div>
 	                    </div>
                     </ui:fragment>
@@ -155,10 +175,15 @@
                         <div id="panel-3" class="fullscreen__view-sidebar-accordeon-panel fs-fulltext">
                             <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                                 <span>#{msg.fulltext}</span>
+                                <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
+									<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+								</div>
                             </h3>
 
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
-                                <ui:include src="/resources/includes/object/fulltext.xhtml" />
+                            	<div jsf:id="sidebarFulltext">
+	                                <ui:include src="/resources/includes/object/fulltext.xhtml" />
+                            	</div>
                             </div>
                         </div>
                     </ui:fragment>
@@ -169,9 +194,12 @@
                         <div id="panel-11" class="fullscreen__view-sidebar-accordeon-panel fs-location">
                             <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                                 <span>#{msg.NORM_LOCATION}</span>
+                                <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
+									<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+								</div>
                             </h3>
 							<div class="fullscreen__view-sidebar-accordeon-panel-body in">
-							        <widgetComponent:widget_geoMap 
+							        <widgetComponent:widget_geoMap id="sidebarGeomap"
 								        geoMap="#{activeDocumentBean.geoMap}" 
 								        title="" 
 								        allowFullscreen="false" 
@@ -189,10 +217,13 @@
 	                    <div id="panel-9" class="fullscreen__view-sidebar-accordeon-panel fs-annotations">
 	                        <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
 	                            <span>#{msg.admin__crowdsourcing_annotations}</span>
+	                            <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
+									<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+								</div>
 	                        </h3>
 
 	                        <div class="fullscreen__view-sidebar-accordeon-panel-body">
-	                            <widgetComponent:widget_annotations collapsible="false" />
+	                            <widgetComponent:widget_annotations id="sidebarAnnotations" collapsible="false" />
 	                        </div>
 	                    </div>
 					</c:if>
@@ -269,10 +300,13 @@
                     <div id="panel-4" class="fullscreen__view-sidebar-accordeon-panel fs-downloads">
                         <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                             <span>#{msg.downloads}</span>
+                            <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
+								<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+							</div>
                         </h3>
 
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
-                            <widgetComponent:widget_downloads collapsible="false" />
+                            <widgetComponent:widget_downloads id="sidebarDownloads" collapsible="false" />
                         </div>
                     </div>
                     
@@ -280,10 +314,13 @@
                     <div id="panel-5" class="fullscreen__view-sidebar-accordeon-panel fs-downloads">
                         <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                             <span>#{msg.widget_formatsLinks}</span>
+                            <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
+								<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+							</div>
                         </h3>
 
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
-                             <widgetComponent:widget_formatsLinks collapsible="false"/>
+                             <widgetComponent:widget_formatsLinks id="sidebarFormatLinks" collapsible="false"/>
                         </div>
                     </div>
                     
@@ -291,10 +328,13 @@
                     <div id="panel-6" class="fullscreen__view-sidebar-accordeon-panel fs-downloads">
                         <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                             <span>#{msg.widget_citation}</span>
+                            <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
+								<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+							</div>
                         </h3>
 
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
-                            <widgetComponent:widget_citation collapsible="false"/>
+                            <widgetComponent:widget_citation id="sidebarCitation" collapsible="false"/>
                         </div>
                     </div>
                     

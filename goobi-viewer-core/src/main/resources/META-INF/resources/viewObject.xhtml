@@ -15,6 +15,7 @@
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('object')}" />
             <f:event type="preRenderView" listener="#{metadataBean.selectFirstMetadataViewOfLocation('objectview')}" />
+        	<f:event type="preRenderView" listener="#{activeDocumentBean.viewManager.updatePageNavigation()}"/>
         </f:metadata>
     </ui:define>
 

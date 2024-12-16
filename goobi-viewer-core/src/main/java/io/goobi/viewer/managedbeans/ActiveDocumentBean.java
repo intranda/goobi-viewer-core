@@ -567,9 +567,6 @@ public class ActiveDocumentBean implements Serializable {
                 }
             }
 
-            //check if the current page navigation is still valid or needs to be changed
-            this.viewManager.updatePageNavigation();
-
             // Metadata language versions
             recordLanguages = viewManager.getTopStructElement().getMetadataValues(SolrConstants.LANGUAGE);
             // If the record has metadata language versions, pre-select the current locale as the record language
