@@ -36,11 +36,11 @@
         </li>
 
 		<!-- PREV PAGE -->
-        <li each="{step in opts.navigationSteps.slice().reverse()}" class="image-controls__action {currentPageNumber - step < opts.firstPageNumber ? 'inactive' : ''}">
+        <li each="{step in opts.navigationSteps.slice().reverse()}" class="image-controls__action {getPageNumberMinus(step) < opts.firstPageNumber ? 'inactive' : ''}">
 
             <virtual if="{opts.numPages > step}">
             	<!-- NOT SEQUENCE MODE -->
-                <a if="{currentPageNumber - step >= opts.firstPageNumber && !isSequenceMode()}" href="{getPageUrl(opts.currentPageNumber - step)}" title="{step + " " + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}">
+                <a if="{getPageNumberMinus(step) >= opts.firstPageNumber && !isSequenceMode()}" href="{getPageUrl(getPageNumberMinus(step))}" title="{step + " " + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}">
 	                <virtual if="{!opts.rtl && step == 1}">
 	                	<yield from="prev-page"/>
 	                </virtual>
@@ -52,7 +52,7 @@
                     <span id="imageLabel-back-{step}" class="labeltext">{step + msg.stepBack}</span>
                 </a>
                 <!-- SEQUENCE MODE -->
-                <button if="{currentPageNumber - step >= opts.firstPageNumber && isSequenceMode()}" onclick="{navigateBack}"  type="button" title="{step + " " + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}">
+                <button if="{getPageNumberMinus(step) >= opts.firstPageNumber && isSequenceMode()}" onclick="{navigateBack}"  type="button" title="{step + " " + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}">
 	                <virtual if="{!opts.rtl && step == 1}">
 	                	<yield from="prev-page"/>
 	                </virtual>
@@ -64,7 +64,7 @@
                     <span id="imageLabel-back-{step}" class="labeltext">{step} {msg.stepBack}</span>
                 </button>
                 <!-- DISABLED -->
-                <span if="{currentPageNumber - step < opts.firstPageNumber}">
+                <span if="{getPageNumberMinus(step) < opts.firstPageNumber}">
 	                <virtual if="{!opts.rtl && step == 1}">
 	                	<yield from="prev-page"/>
 	                </virtual>
@@ -91,13 +91,13 @@
         </li>
 
 		<!-- NEXT PAGE -->
-        <li each="{step in opts.navigationSteps}" class="image-controls__action {currentPageNumber + step > opts.lastPageNumber ? 'inactive' : ''}">
+        <li each="{step in opts.navigationSteps}" class="image-controls__action {getPageNumberPlus(step) > opts.lastPageNumber ? 'inactive' : ''}">
             	<virtual if="{opts.numPages > step}">
                 <!-- NOT SEQUENCE MODE -->
-                <a if="{currentPageNumber + step < opts.lastPageNumber && !isSequenceMode()}" href="{getPageUrl(opts.currentPageNumber + step)}" title="{step + " " + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}">
+                <a if="{getPageNumberPlus(step) <= opts.lastPageNumber && !isSequenceMode()}" href="{getPageUrl(getPageNumberPlus(step))}" title="{step + " " + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}">
 	                <virtual if="{!opts.rtl && step == 1}">
 	                	<yield from="next-page"/>
-	                </virtual>
+	                </virtual> 
 	                <virtual if="{opts.rtl && step == 1}">
 	                	<yield from="next-page"/>
 	                </virtual>
@@ -106,7 +106,7 @@
                     <span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span>
                 </a>
                 <!-- SEQUENCE MODE -->
-                <button if="{currentPageNumber + step <= opts.lastPageNumber && isSequenceMode()}" onclick="{navigateForward}" type="button" title="{step + " " + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}">
+                <button if="{getPageNumberPlus(step) <= opts.lastPageNumber && isSequenceMode()}" onclick="{navigateForward}" type="button" title="{step + " " + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}">
 	                <virtual if="{!opts.rtl && step == 1}">
 	                	<yield from="next-page"/>
 	                </virtual>
@@ -118,7 +118,7 @@
                     <span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span>
                 </button>
                 <!-- DISABLED -->
-                <span if="{currentPageNumber + step > opts.lastPageNumber}">
+                <span if="{getPageNumberPlus(step) > opts.lastPageNumber}">
 	                <virtual if="{!opts.rtl && step == 1}">
 	                	<yield from="next-page"/>
 	                </virtual>
@@ -168,16 +168,16 @@
 
     <script>
 
-        this.currentPageNumber = 0;
+        this.currentPageNumbers = [0];
         this.msg = {};
 
         this.on("mount", () => {
         	// console.log("this", this);
-            this.currentPageNumber = this.opts.currentPageNumber;
+            this.currentPageNumbers = this.parsePageNumbers(this.opts.currentPageNumber);
             this.msg = this.opts.msg;
             if(this.opts.update) {
                 this.opts.update.subscribe(pageNumber => {
-                    this.currentPageNumber = pageNumber;
+                    this.currentPageNumbers = this.isDoublePageMode() ? [pageNumber, pageNumber+1] : [pageNumber];
                     this.update();
                 });
             }
@@ -185,15 +185,41 @@
         });
 
         this.on("update", () => {
+        	console.log("UPDATE");
             //hide all tooltips. Otherwise if elements are replaced after the update, old tooltips may be shown indefinitely
             $("[data-toggle='tooltip']").tooltip('hide');
             if(this.refs.dropdown) {
-                this.refs.dropdown.value = this.currentPageNumber;
+                this.refs.dropdown.value = this.isDoublePageMode() ? (this.currentPageNumbers[0] + "-" + this.currentPageNumbers[0]) : this.currentPageNumbers[0];
+                console.log("set ", this.refs.dropdown.value, " to ", this.currentPageNumbers[0] + "-" + this.currentPageNumbers[0], this.isDoublePageMode());
             }
         });
 
+        parsePageNumbers(pageNoString) {
+        	return pageNoString.match(/\d+/g).map(s => Number(s));
+        }
+        
+        getPageNumberMinus(step) {
+        	if(this.isDoublePageMode()) {
+        		return this.currentPageNumbers[0] - 2 * step;
+        	} else {
+        		return this.currentPageNumbers[0] - step;
+        	}
+        }
+        
+        getPageNumberPlus(step) {
+        	if(this.isDoublePageMode()) {
+        		return this.currentPageNumbers[0] + 2 * step;
+        	} else {
+        		return this.currentPageNumbers[0] + step;
+        	}
+        }
+        
         getPageUrl(pageNo) {
-            return this.opts.pageUrlTemplate(pageNo);
+        	if(this.isDoublePageMode()) {
+        		return this.opts.pageUrlTemplate(pageNo + "-" + (pageNo+1));
+        	} else {        		
+            	return this.opts.pageUrlTemplate(pageNo);
+        	}
         }
 
         gotoFirstPage() {
@@ -206,16 +232,28 @@
 
         navigateBack(e) {
             const step = e.item.step;
-            this.gotoPage(this.currentPageNumber - step);
+            if(this.isDoublePageMode()) {
+            	this.gotoPage(this.currentPageNumbers[0] - 2 * step);
+            } else {            	
+            	this.gotoPage(this.currentPageNumbers[0] - step);
+            }
         }
 
         navigateForward(e) {
             const step = e.item.step;
-            this.gotoPage(this.currentPageNumber + step);
+            if(this.isDoublePageMode()) {
+            	this.gotoPage(this.currentPageNumbers[0] + 2 * step);
+            } else {            	
+            	this.gotoPage(this.currentPageNumbers[0] + step);
+            }
         }
 
         gotoPage(pageNumber) {
-            this.currentPageNumber = pageNumber;
+        	if(this.isDoublePageMode()) {
+        		this.currentPageNumbers = [pageNumber, pageNumber+1];
+        	} else {
+				this.currentPageNumbers = [pageNumber];
+        	}
             if(this.opts.onUpdate) {
                 this.opts.onUpdate(pageNumber);
             }

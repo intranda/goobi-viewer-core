@@ -567,6 +567,9 @@ public class ActiveDocumentBean implements Serializable {
                 }
             }
 
+            //check if the current page navigation is still valid or needs to be changed
+            this.viewManager.updatePageNavigation();
+
             // Metadata language versions
             recordLanguages = viewManager.getTopStructElement().getMetadataValues(SolrConstants.LANGUAGE);
             // If the record has metadata language versions, pre-select the current locale as the record language
@@ -823,11 +826,13 @@ public class ActiveDocumentBean implements Serializable {
                     logger.trace("{}  not found, using {}", SolrConstants.THUMBPAGENO, image);
                 }
             }
-            if (PageNavigation.DOUBLE.name()
-                    .equalsIgnoreCase(DataManager.getInstance()
+            PageNavigation currentPageNavigation = Optional.ofNullable(this.viewManager)
+                    .map(ViewManager::getPageNavigation)
+                    .orElse(PageNavigation.fromString(DataManager.getInstance()
                             .getConfiguration()
                             .getDefaultPageNavigation(BeanUtils.getNavigationHelper().getCurrentPageType(),
-                                    getViewManager().getCurrentPage().getImageType()))) {
+                                    this.getViewManager().getMimeType())));
+            if (PageNavigation.DOUBLE == currentPageNavigation) {
                 image = String.format("%s-%s", image, image);
             }
             setImageToShow(image);

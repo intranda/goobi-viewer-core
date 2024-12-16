@@ -3867,8 +3867,8 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public boolean useTiles(PageType view, ImageType image) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(view, image).getBoolean("[@tileImage]", false);
+    public boolean useTiles(PageType view, String imageMimeType) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(view, imageMimeType).getBoolean("[@tileImage]", false);
     }
 
     /**
@@ -3879,17 +3879,17 @@ public class Configuration extends AbstractConfiguration {
      * @return true if navigator should be shown
      * @throws ViewerConfigurationException
      */
-    public boolean showImageNavigator(PageType view, ImageType image) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(view, image).getBoolean("navigator[@enabled]", false);
+    public boolean showImageNavigator(PageType view, String imageMimeType) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(view, imageMimeType).getBoolean("navigator[@enabled]", false);
     }
 
-    public String getViewMode(PageType view, ImageType image) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(view, image).getString("[@viewMode]", "single");
+    public String getViewMode(PageType view, String imageMimeType) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(view, imageMimeType).getString("[@viewMode]", "single");
 
     }
 
-    public boolean showImageThumbnailGallery(PageType view, ImageType image) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(view, image).getBoolean("thumbnailGallery[@enabled]", false);
+    public boolean showImageThumbnailGallery(PageType view, String imageMimeType) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(view, imageMimeType).getBoolean("thumbnailGallery[@enabled]", false);
     }
 
     /**
@@ -3926,8 +3926,8 @@ public class Configuration extends AbstractConfiguration {
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public int getFooterHeight(PageType view, ImageType image) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(view, image).getInt("[@footerHeight]", 50);
+    public int getFooterHeight(PageType view, String imageMimeType) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(view, imageMimeType).getInt("[@footerHeight]", 50);
     }
 
     /**
@@ -3964,8 +3964,8 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public String getZoomImageViewType(PageType view, ImageType image) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(view, image).getString(XML_PATH_ATTRIBUTE_TYPE);
+    public String getZoomImageViewType(PageType view, String imageMimeType) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(view, imageMimeType).getString(XML_PATH_ATTRIBUTE_TYPE);
     }
 
     /**
@@ -4015,9 +4015,9 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public List<String> getImageViewZoomScales(PageType view, ImageType image) throws ViewerConfigurationException {
+    public List<String> getImageViewZoomScales(PageType view, String imageMimeType) throws ViewerConfigurationException {
         List<String> defaultList = new ArrayList<>();
-        BaseHierarchicalConfiguration zoomImageViewConfig = getZoomImageViewConfig(view, image);
+        BaseHierarchicalConfiguration zoomImageViewConfig = getZoomImageViewConfig(view, imageMimeType);
         if (zoomImageViewConfig != null) {
             String[] scales = zoomImageViewConfig.getStringArray("scale");
             if (scales != null) {
@@ -4049,9 +4049,9 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link java.util.Map} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public Map<Integer, List<Integer>> getTileSizes(PageType view, ImageType image) throws ViewerConfigurationException {
+    public Map<Integer, List<Integer>> getTileSizes(PageType view, String imageMimeType) throws ViewerConfigurationException {
         Map<Integer, List<Integer>> map = new HashMap<>();
-        List<HierarchicalConfiguration<ImmutableNode>> sizes = getZoomImageViewConfig(view, image).configurationsAt("tileSize");
+        List<HierarchicalConfiguration<ImmutableNode>> sizes = getZoomImageViewConfig(view, imageMimeType).configurationsAt("tileSize");
         if (sizes != null && !sizes.isEmpty()) {
             for (HierarchicalConfiguration<ImmutableNode> sizeConfig : sizes) {
                 int size = sizeConfig.getInt("size", 0);
@@ -4084,7 +4084,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a {@link org.apache.commons.configuration2.SubnodeConfiguration} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public BaseHierarchicalConfiguration getZoomImageViewConfig(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
+    public BaseHierarchicalConfiguration getZoomImageViewConfig(PageType pageType, String imageMimeType) throws ViewerConfigurationException {
         List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("viewer.zoomImageView");
 
         for (HierarchicalConfiguration<ImmutableNode> subConfig : configs) {
@@ -4096,9 +4096,9 @@ public class Configuration extends AbstractConfiguration {
                 }
             }
 
-            if (imageType != null && imageType.getFormat() != null) {
+            if (StringUtils.isNotBlank(imageMimeType)) {
                 List<Object> mimeTypes = subConfig.getList("useFor.mimeType");
-                if (!mimeTypes.isEmpty() && !mimeTypes.contains(imageType.getFormat().getMimeType())) {
+                if (!mimeTypes.isEmpty() && !mimeTypes.contains(imageMimeType)) {
                     continue;
                 }
             }
@@ -5169,8 +5169,8 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      * @throws ViewerConfigurationException
      */
-    public boolean isSinglePageNavigationEnabled(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(pageType, imageType).getBoolean("pageNavigation.single[@enabled]", true);
+    public boolean isSinglePageNavigationEnabled(PageType pageType, String imageMimeType) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(pageType, imageMimeType).getBoolean("pageNavigation.single[@enabled]", true);
     }
 
     /**
@@ -5182,8 +5182,8 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      * @throws ViewerConfigurationException
      */
-    public boolean isDoublePageNavigationEnabled(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(pageType, imageType).getBoolean("pageNavigation.double[@enabled]", false);
+    public boolean isDoublePageNavigationEnabled(PageType pageType, String imageMimeType) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(pageType, imageMimeType).getBoolean("pageNavigation.double[@enabled]", false);
     }
 
     /**
@@ -5195,8 +5195,8 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      * @throws ViewerConfigurationException
      */
-    public boolean isSequencePageNavigationEnabled(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(pageType, imageType).getBoolean("pageNavigation.sequence[@enabled]", false);
+    public boolean isSequencePageNavigationEnabled(PageType pageType, String imageMimeType) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(pageType, imageMimeType).getBoolean("pageNavigation.sequence[@enabled]", false);
     }
 
     /**
@@ -5208,8 +5208,8 @@ public class Configuration extends AbstractConfiguration {
      * @return a string, either 'single', 'double' or 'sequence'
      * @throws ViewerConfigurationException
      */
-    public String getDefaultPageNavigation(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
-        HierarchicalConfiguration<ImmutableNode> imageConfig = getZoomImageViewConfig(pageType, imageType);
+    public String getDefaultPageNavigation(PageType pageType, String imageMimeType) throws ViewerConfigurationException {
+        HierarchicalConfiguration<ImmutableNode> imageConfig = getZoomImageViewConfig(pageType, imageMimeType);
         if (imageConfig.getBoolean("pageNavigation.double[@default]", false)) {
             return "double";
         } else if (imageConfig.getBoolean("pageNavigation.sequence[@default]", false)) {

@@ -60,7 +60,7 @@
 										rtl: #{activeDocumentBean.viewManager.topStructElement.rtl},
 										enablePageNavigation: #{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)},
 										showDropdown: #{activeDocumentBean.viewManager.imagesCount ge configurationBean.pageSelectDropdownDisplayMinPages},
-										currentPageNumber: #{activeDocumentBean.viewManager.currentImageOrder},
+										currentPageNumber: "#{activeDocumentBean.imageToShow}",
 										firstPageNumber: #{activeDocumentBean.viewManager.firstPageOrder},
 										lastPageNumber: #{activeDocumentBean.viewManager.lastPageOrder},
 										numPages: #{activeDocumentBean.viewManager.imagesCount},
@@ -89,10 +89,11 @@
 							</script>
 
                         </ui:fragment>
-							<ul id="imageAdditionalOptions" class="image-controls__actions-additional">
+                        
+						<ul id="imageAdditionalOptions" class="image-controls__actions-additional">
                             <!-- DOUBLE PAGE VIEW -->
                             <ui:fragment
-                                rendered="#{activeDocumentBean.viewManager.doublePageNavigationEnabled and pageCount gt 1 and activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image' and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and !activeDocumentBean.viewManager.currentPage.doubleImage}">
+                                rendered="#{activeDocumentBean.viewManager.doublePageNavigationEnabled and activeDocumentBean.viewManager.imagesCount gt 1 and activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image' and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and !activeDocumentBean.viewManager.currentPage.doubleImage}">
                                 <li class="image-controls__action double-page-view">
                                     <h:commandLink action="#{activeDocumentBean.setDoublePageModeAction(true)}" title="#{msg.doublePageView}">
                                         <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-double-page.svg')}"/>
