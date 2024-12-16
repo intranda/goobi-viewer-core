@@ -135,15 +135,6 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>OAuthServlet</servlet-name>
-        <servlet-class>io.goobi.viewer.servlets.openid.OAuthServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>OAuthServlet</servlet-name>
-        <url-pattern>/oauth</url-pattern>
-        <url-pattern>/oauth/</url-pattern>
-    </servlet-mapping>
-    <servlet>
         <servlet-name>SAMLAssertionServlet</servlet-name>
         <servlet-class>io.goobi.viewer.servlets.saml.SAMLAssertionServlet</servlet-class>
     </servlet>

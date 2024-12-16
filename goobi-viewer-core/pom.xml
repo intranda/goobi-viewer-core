@@ -119,6 +119,8 @@
 		<jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
 		<jakarta.websocket.version>1.1.2</jakarta.websocket.version>
 		<jakarta.ws.rs-api.version>3.1.0</jakarta.ws.rs-api.version>
+		<java-jwt.version>3.19.1</java-jwt.version>
+		<jwks-rsa.version>0.21.2</jwks-rsa.version>
 		<jaxen.version>2.0.0</jaxen.version>
 		<jaxb-api.version>4.0.2</jaxb-api.version>
 		<jaxb-runtime.version>4.0.5</jaxb-runtime.version>
@@ -133,7 +135,6 @@
 		<mariadb-java-client.version>3.5.0</mariadb-java-client.version>
 		<mockito.version>5.14.2</mockito.version>
 		<mockserver.version>5.15.0</mockserver.version>
-		<oauth.version>1.0.3-INJAED</oauth.version>
 		<omnifaces.version>4.5.1</omnifaces.version>
 		<openpdf.version>2.0.3</openpdf.version>
 		<poi.version>5.3.0</poi.version>
@@ -227,24 +228,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
-		<dependency>
-			<groupId>de.intranda.other</groupId>
-			<artifactId>org.apache.oltu.oauth2.common</artifactId>
-			<version>1.0.3-INJAED</version>
-		</dependency>
-		<dependency>
-			<groupId>de.intranda.other</groupId>
-			<artifactId>org.apache.oltu.oauth2.client</artifactId>
-			<version>1.0.3-INJAED</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
-		</dependency>
-
 
 		<!-- other libraries -->
 		<dependency>
@@ -419,6 +402,18 @@
 			<artifactId>jakarta.xml.bind-api</artifactId>
 			<version>${jaxb-api.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>${java-jwt.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>jwks-rsa</artifactId>
+            <version>${jwks-rsa.version}</version>
+            <scope>compile</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom2</artifactId>

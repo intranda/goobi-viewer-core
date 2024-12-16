@@ -312,9 +312,6 @@ public final class NetTools {
                 default:
                     return "";
             }
-            //            if (StringUtils.isNotEmpty(contentType)) {
-            //                requestBase.setHeader("Content-Type", contentType);
-            //            }
             if (headers != null && !headers.isEmpty()) {
                 for (String key : headers.keySet()) {
                     requestBase.addHeader(key, headers.get(key));
