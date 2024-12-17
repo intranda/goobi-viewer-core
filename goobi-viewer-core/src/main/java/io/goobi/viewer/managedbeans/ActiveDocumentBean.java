@@ -827,7 +827,7 @@ public class ActiveDocumentBean implements Serializable {
                     .map(ViewManager::getPageNavigation)
                     .orElse(PageNavigation.fromString(DataManager.getInstance()
                             .getConfiguration()
-                            .getDefaultPageNavigation(BeanUtils.getNavigationHelper().getCurrentPageType(),
+                            .getDefaultPageNavigation(this.navigationHelper.getCurrentPageType(),
                                     this.getViewManager().getMimeType())));
             if (PageNavigation.DOUBLE == currentPageNavigation) {
                 image = String.format("%s-%s", image, image);

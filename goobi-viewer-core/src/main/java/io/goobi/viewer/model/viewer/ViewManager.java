@@ -261,7 +261,7 @@ public class ViewManager implements Serializable {
         this.mimeType = mimeType;
         logger.trace("mimeType: {}", mimeType);
 
-        this.pageNavigation = getDefaultPageNavigation();
+        this.pageNavigation = getDefaultPageNavigation(null);
 
         // Linked archive node
         try {
@@ -276,11 +276,11 @@ public class ViewManager implements Serializable {
         }
     }
 
-    protected PageNavigation getDefaultPageNavigation() {
+    protected PageNavigation getDefaultPageNavigation(PageType pageType) {
         try {
             String navType = DataManager.getInstance()
                     .getConfiguration()
-                    .getDefaultPageNavigation(BeanUtils.getNavigationHelper().getCurrentPageType(), this.mimeType);
+                    .getDefaultPageNavigation(pageType, this.mimeType);
             try {
                 return PageNavigation.fromString(navType);
             } catch (NullPointerException e) {
@@ -358,27 +358,6 @@ public class ViewManager implements Serializable {
         return imageDeliveryBean.getImages().getImageUrl(null, pi, representative.getFileName());
     }
 
-    /**
-     * <p>
-     * getCurrentImageInfo.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public String getCurrentImageInfo() throws IndexUnreachableException, DAOException {
-        if (getCurrentPage() != null && getCurrentPage().getMimeType().startsWith("image")) {
-            return getCurrentImageInfo(BeanUtils.getNavigationHelper().getCurrentPageType());
-        }
-
-        return "{}";
-    }
-
-    public Map<Integer, String> getImageInfos() throws IndexUnreachableException, DAOException {
-        return getImageInfos(BeanUtils.getNavigationHelper().getCurrentPageType());
-    }
-
     public Map<Integer, String> getImageInfos(PageType pageType) throws IndexUnreachableException, DAOException {
         Map<Integer, String> infos = new LinkedHashMap<>();
 
@@ -401,8 +380,8 @@ public class ViewManager implements Serializable {
         return infos;
     }
 
-    public String getImageInfosAsJson() throws IndexUnreachableException, DAOException {
-        return JSONObject.wrap(getImageInfos()).toString();
+    public String getImageInfosAsJson(PageType pageType) throws IndexUnreachableException, DAOException {
+        return JSONObject.wrap(getImageInfos(pageType)).toString();
     }
 
     /**
@@ -1492,14 +1471,14 @@ public class ViewManager implements Serializable {
         this.pageNavigation = navigation;
     }
 
-    public void updatePageNavigation() {
-        this.pageNavigation = calculateCurrentPageNavigation();
+    public void updatePageNavigation(PageType pageType) {
+        this.pageNavigation = calculateCurrentPageNavigation(pageType);
     }
 
-    protected PageNavigation calculateCurrentPageNavigation() {
+    protected PageNavigation calculateCurrentPageNavigation(PageType pageType) {
         try {
             NavigationHelper nh = BeanUtils.getNavigationHelper();
-            PageNavigation defaultPageNavigation = getDefaultPageNavigation();
+            PageNavigation defaultPageNavigation = getDefaultPageNavigation(pageType);
             if (this.pageNavigation == defaultPageNavigation) {
                 return this.pageNavigation;
             } else if (defaultPageNavigation == PageNavigation.SEQUENCE) {
@@ -4389,17 +4368,17 @@ public class ViewManager implements Serializable {
         return value;
     }
 
-    public boolean isDoublePageNavigationEnabled() throws ViewerConfigurationException {
+    public boolean isDoublePageNavigationEnabled(PageType pageType) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .isDoublePageNavigationEnabled(BeanUtils.getNavigationHelper().getCurrentPageType(),
+                .isDoublePageNavigationEnabled(pageType,
                         getCurrentPage().getImageType().getFormat().getMimeType());
     }
 
-    public boolean showImageThumbnailGallery() throws ViewerConfigurationException {
+    public boolean showImageThumbnailGallery(PageType pageType) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .showImageThumbnailGallery(BeanUtils.getNavigationHelper().getCurrentPageType(),
+                .showImageThumbnailGallery(pageType,
                         getCurrentPage().getImageType().getFormat().getMimeType());
     }
 
