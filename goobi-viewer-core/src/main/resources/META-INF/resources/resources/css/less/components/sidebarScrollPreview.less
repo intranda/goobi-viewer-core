@@ -46,6 +46,11 @@
 		color: #212529;
 		text-align: center;
 		margin-bottom: 2px;
+		&:hover {
+			.sidebar-scroll-preview__image {
+				transform: scale(1.08);
+			}
+		}
 		&:hover,
 		&:active,
 		&:focus {
@@ -69,14 +74,18 @@
 	  word-wrap: anywhere;
 	  word-break: break-all;
 	}
+	&__image-wrapper {
+		width: 100%;
+		// overflow: hidden;
+	}
 	&__image {
-		flex: 1;
+		display: block;
 		object-fit: cover;
   		object-position: top;
 		max-width: 100%;
 		opacity: 0;
-		height: 160px;
-		max-height: 160px;
+		height: 172px;
+		max-height: 172px;
 		width: 100%;
 		transition: 0.25s ease all;
 		&.-loaded {

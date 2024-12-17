@@ -3863,7 +3863,7 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -3875,7 +3875,7 @@ public class Configuration extends AbstractConfiguration {
      * whether to show a navigator element in the openseadragon viewe
      * 
      * @param view get settings for this pageType
-     * @param image get settings for this image type
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return true if navigator should be shown
      * @throws ViewerConfigurationException
      */
@@ -3922,7 +3922,7 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -3960,7 +3960,7 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -4011,7 +4011,7 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -4045,7 +4045,7 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return a {@link java.util.Map} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -4080,7 +4080,7 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param imageType a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return a {@link org.apache.commons.configuration2.SubnodeConfiguration} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -5165,7 +5165,7 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return correct value
      * @param pageType The type of viewer page to which the configuration should apply
-     * @param imageType the mimetype to which the configuration should apply
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return a boolean.
      * @throws ViewerConfigurationException
      */
@@ -5178,7 +5178,7 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return correct value
      * @param pageType The type of viewer page to which the configuration should apply
-     * @param imageType the mimetype to which the configuration should apply
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return a boolean.
      * @throws ViewerConfigurationException
      */
@@ -5191,7 +5191,7 @@ public class Configuration extends AbstractConfiguration {
      *
      * @should return correct value
      * @param pageType The type of viewer page to which the configuration should apply
-     * @param imageType the mimetype to which the configuration should apply
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return a boolean.
      * @throws ViewerConfigurationException
      */
@@ -5204,7 +5204,7 @@ public class Configuration extends AbstractConfiguration {
      * the default, 'single' is returned
      * 
      * @param pageType The type of viewer page to which the configuration should apply
-     * @param imageType the mimetype to which the configuration should apply
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return a string, either 'single', 'double' or 'sequence'
      * @throws ViewerConfigurationException
      */
