@@ -96,7 +96,7 @@
 		<commons-jxpath.version>1.3</commons-jxpath.version>
 		<commons-lang3.version>3.17.0</commons-lang3.version>
 		<commons-net.version>3.11.1</commons-net.version>
-		<commons-text.version>1.12.0</commons-text.version>
+		<commons-text.version>1.13.0</commons-text.version>
 		<dbunit.version>2.8.0</dbunit.version>
 		<eclipselink.version>4.0.4</eclipselink.version>
 		<h2.version>1.4.200</h2.version>
@@ -127,7 +127,7 @@
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20240303</json.version>
 		<jsoup.version>1.18.3</jsoup.version>
-		<junit.version>5.11.3</junit.version>
+		<junit.version>5.11.4</junit.version>
 		<mariadb-java-client.version>3.5.1</mariadb-java-client.version>
 		<mockito.version>5.14.2</mockito.version>
 		<mockserver.version>5.15.0</mockserver.version>
@@ -137,9 +137,9 @@
 		<poi.version>5.3.0</poi.version>
 		<prettyfaces.version>3.5.2.Final</prettyfaces.version>
 		<rome.version>2.1.0</rome.version>
-		<log4j.version>2.24.2</log4j.version>
+		<log4j.version>2.24.3</log4j.version>
 		<solr.version>9.7.0</solr.version>
-		<swagger.version>2.2.26</swagger.version>
+		<swagger.version>2.2.27</swagger.version>
 		<tomcat.version>9.0.58</tomcat.version>
 		<weld-servlet-shaded.version>3.1.9.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
@@ -1145,7 +1145,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>10.20.2</version>
+						<version>10.21.0</version>
 					</dependency>
 				</dependencies>
 				<executions>

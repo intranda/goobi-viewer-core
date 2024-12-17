@@ -1333,10 +1333,14 @@ public class Metadata implements Serializable {
     /**
      * 
      * @return true if thids.accessConditions not empty; false otherwise
+     * @should return false if accessConditions empty
+     * @should return false if only value is open access
+     * @should return true if other values are contained
      */
     public boolean isHasAccessConditions() {
         logger.trace("access conditions for {}: {}", label, !this.accessConditions.isEmpty());
-        return !this.accessConditions.isEmpty();
+        return !this.accessConditions.isEmpty()
+                && !(this.accessConditions.size() == 1 && SolrConstants.OPEN_ACCESS_VALUE.equals(this.accessConditions.iterator().next()));
     }
 
     /**
