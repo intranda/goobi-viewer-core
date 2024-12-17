@@ -734,7 +734,7 @@ this.msg = function(key) {
 });
 
 
-riot.tag2('bookmarkspopup', '<div class="bookmark-popup__body-loader"></div><div if="{opts.data.page !== undefined}" class="bookmark-popup__radio-buttons"><div><label><input type="radio" __checked="{opts.bookmarks.isTypeRecord()}" name="bookmarkType" value="{msg(\'bookmarkList_typeRecord\')}" onclick="{setBookmarkTypeRecord}">{msg(\'bookmarkList_typeRecord\')}</label></div><div><label><input type="radio" __checked="{opts.bookmarks.isTypePage()}" name="bookmarkType" value="{msg(\'bookmarkList_typePage\')}" onclick="{setBookmarkTypePage}">{msg(\'bookmarkList_typePage\')}</label></div></div><div class="bookmark-popup__header"> {msg(\'bookmarkList_selectBookmarkList\')} </div><div class="bookmark-popup__body"><bookmarklist data="{this.opts.data}" loader="{this.opts.loader}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList></div><div class="bookmark-popup__footer"><div class="row no-margin"><div class="col-11 no-padding"><input ref="inputValue" type="text" placeholder="{msg(\'bookmarkList_addNewBookmarkList\')}" aria-label="{msg(\'bookmarkList_addNewBookmarkList\')}"></div><div class="col-1 no-padding"><button class="btn btn-clean" type="button" aria-label="{msg(\'bookmarkList_addNewBookmarkList\')}" onclick="{add}"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 41.57 41.57"><g id="icon-bs-add" transform="translate(-27.5 -243.5)"><line id="Linie_12" data-name="Linie 12" class="cls-1" x2="41.57" transform="translate(27.5 264.285)"></line><line id="Linie_13" data-name="Linie 13" class="cls-1" x2="41.57" transform="translate(48.285 243.5) rotate(90)"></line></g></svg></button></div></div></div>', '', 'class="bookmark-popup bottom" role="region" aria-label="{msg(\'bookmarks\')}"', function(opts) {
+riot.tag2('bookmarkspopup', '<div class="bookmark-popup__body-loader"></div><div if="{opts.data.page !== undefined}" class="bookmark-popup__radio-buttons"><div><label><input type="radio" checked="{opts.bookmarks.isTypeRecord()}" name="bookmarkType" riot-value="{msg(\'bookmarkList_typeRecord\')}" onclick="{setBookmarkTypeRecord}">{msg(\'bookmarkList_typeRecord\')}</label></div><div><label><input type="radio" checked="{opts.bookmarks.isTypePage()}" name="bookmarkType" riot-value="{msg(\'bookmarkList_typePage\')}" onclick="{setBookmarkTypePage}">{msg(\'bookmarkList_typePage\')}</label></div></div><div class="bookmark-popup__header"> {msg(\'bookmarkList_selectBookmarkList\')} </div><div class="bookmark-popup__body"><bookmarklist data="{this.opts.data}" loader="{this.opts.loader}" button="{this.opts.button}" bookmarks="{this.opts.bookmarks}"></bookmarkList></div><div class="bookmark-popup__footer"><div class="row no-margin"><div class="col-11 no-padding"><input ref="inputValue" type="text" placeholder="{msg(\'bookmarkList_addNewBookmarkList\')}" aria-label="{msg(\'bookmarkList_addNewBookmarkList\')}"></div><div class="col-1 no-padding"><button class="btn btn-clean" type="button" aria-label="{msg(\'bookmarkList_addNewBookmarkList\')}" onclick="{add}"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 41.57 41.57"><g id="icon-bs-add" transform="translate(-27.5 -243.5)"><line id="Linie_12" data-name="Linie 12" class="cls-1" x2="41.57" transform="translate(27.5 264.285)"></line><line id="Linie_13" data-name="Linie 13" class="cls-1" x2="41.57" transform="translate(48.285 243.5) rotate(90)"></line></g></svg></button></div></div></div>', '', 'class="bookmark-popup bottom" role="region" aria-label="{msg(\'bookmarks\')}"', function(opts) {
 
 const popupOffset = 6;
 
@@ -806,7 +806,7 @@ this.msg = function(key) {
 }.bind(this)
 
 });
-riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronology-slider" if="{this.yearList.length > 0}"><div class="chronology-slider__container" ref="container"><canvas class="chronology-slider__chart" ref="chart"></canvas><canvas class="chronology-slider__draw" ref="draw"></canvas></div><div class="chronology-slider__input-wrapper"><input onchange="{setStartYear}" data-input="number" aria-label="Start" class="form-control chronology-slider__input-start" ref="input_start" value="{startYear}"></input><div class="chronology-slider__between-year-symbol">-</div><input onchange="{setEndYear}" data-input="number" aria-label="End" class="form-control chronology-slider__input-end" ref="input_end" value="{endYear}"></input><button ref="button_search" class="btn btn--full chronology-slider__ok-button" data-trigger="triggerFacettingGraph" onclick="{setRange}">{msg.ok}</button></div></div><div hidden ref="line" class="chronology-slider__graph-line"></div><div hidden ref="area" class="chronology-slider__graph-area"></div><div hidden ref="range" class="chronology-slider__graph-range"></div>', '', '', function(opts) {
+riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronology-slider" if="{this.yearList.length > 0}"><div class="chronology-slider__container" ref="container"><canvas class="chronology-slider__chart" ref="chart"></canvas><canvas class="chronology-slider__draw" ref="draw"></canvas></div><div class="chronology-slider__input-wrapper"><input onchange="{setStartYear}" data-input="number" aria-label="Start" class="form-control chronology-slider__input-start" ref="input_start" riot-value="{startYear}"></input><div class="chronology-slider__between-year-symbol">-</div><input onchange="{setEndYear}" data-input="number" aria-label="End" class="form-control chronology-slider__input-end" ref="input_end" riot-value="{endYear}"></input><button ref="button_search" class="btn btn--full chronology-slider__ok-button" data-trigger="triggerFacettingGraph" onclick="{setRange}">{msg.ok}</button></div></div><div hidden ref="line" class="chronology-slider__graph-line"></div><div hidden ref="area" class="chronology-slider__graph-area"></div><div hidden ref="range" class="chronology-slider__graph-range"></div>', '', '', function(opts) {
 
 
 		this.yearList = [1];
@@ -1094,7 +1094,7 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 	  })
 
 });
-riot.tag2('chronologyslider', '<div class="widget-chronology-slider__item chronology-slider-start"><input ref="inputStart" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" value="{startYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider-end"><input ref="inputEnd" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" value="{endYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider"><div class="widget-chronology-slider__slider" ref="slider"></div></div>', '', '', function(opts) {
+riot.tag2('chronologyslider', '<div class="widget-chronology-slider__item chronology-slider-start"><input ref="inputStart" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{startYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider-end"><input ref="inputEnd" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{endYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider"><div class="widget-chronology-slider__slider" ref="slider"></div></div>', '', '', function(opts) {
 
 this.msg={}
 this.on("mount", () => {
@@ -1421,7 +1421,7 @@ this.addToMap = function(map, key, value) {
 }.bind(this)
 
 });
-riot.tag2('authorityresourcequestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area -small"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div if="{!this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__question-text-input"><span class="crowdsourcing-annotations__gnd-text">https://d-nb.info/gnd/</span><input class="crowdsourcing-annotations__gnd-id form-control" onchange="{setIdFromEvent}" value="{question.authorityData.baseUri && getIdAsNumber(anno)}"></input></div><div if="{this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__question-text-input"><input class="form-control pl-1" __disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" value="{question.authorityData.baseUri}{getIdAsNumber(anno)}"></input><div if="{this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__jump-to-gnd"><a target="_blank" href="{question.authorityData.baseUri}{getIdAsNumber(anno)}">{Crowdsourcing.translate(⁗cms_menu_create_item_new_tab⁗)}</a></div></div><div class="cms-module__actions crowdsourcing-annotations__annotation-action"><button if="{!this.opts.item.isReviewMode()}" onclick="{deleteAnnotationFromEvent}" class="crowdsourcing-annotations__delete-annotation btn btn--clean delete">{Crowdsourcing.translate(⁗action__delete_annotation⁗)} </button></div></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
+riot.tag2('authorityresourcequestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area -small"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div if="{!this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__question-text-input"><span class="crowdsourcing-annotations__gnd-text">https://d-nb.info/gnd/</span><input class="crowdsourcing-annotations__gnd-id form-control" onchange="{setIdFromEvent}" riot-value="{question.authorityData.baseUri && getIdAsNumber(anno)}"></input></div><div if="{this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__question-text-input"><input class="form-control pl-1" disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" riot-value="{question.authorityData.baseUri}{getIdAsNumber(anno)}"></input><div if="{this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__jump-to-gnd"><a target="_blank" href="{question.authorityData.baseUri}{getIdAsNumber(anno)}">{Crowdsourcing.translate(⁗cms_menu_create_item_new_tab⁗)}</a></div></div><div class="cms-module__actions crowdsourcing-annotations__annotation-action"><button if="{!this.opts.item.isReviewMode()}" onclick="{deleteAnnotationFromEvent}" class="crowdsourcing-annotations__delete-annotation btn btn--clean delete">{Crowdsourcing.translate(⁗action__delete_annotation⁗)} </button></div></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
 
 	this.question = this.opts.question;
 
@@ -2450,7 +2450,7 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 });
 
 
-riot.tag2('metadataquestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div class="crowdsourcing-annotations__question-metadata-list"><div each="{field, fieldindex in this.metadataFields}" class="crowdsourcing-annotations__question-metadata-list-item mb-2"><label class="crowdsourcing-annotations__question-metadata-list-item-label">{Crowdsourcing.translate(field)}:</label><div class="crowdsourcing-annotations__question-metadata-list-item-field" if="{this.hasOriginalValue(field)}">{this.getOriginalValue(field)}</div><input class="crowdsourcing-annotations__question-metadata-list-item-input form-control" if="{!this.hasOriginalValue(field)}" __disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" ref="input_{index}_{fieldindex}" type="text" data-annotationindex="{index}" value="{anno.getValue(field)}" onchange="{setValueFromEvent}"></input></div></div></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
+riot.tag2('metadataquestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div class="crowdsourcing-annotations__question-metadata-list"><div each="{field, fieldindex in this.metadataFields}" class="crowdsourcing-annotations__question-metadata-list-item mb-2"><label class="crowdsourcing-annotations__question-metadata-list-item-label">{Crowdsourcing.translate(field)}:</label><div class="crowdsourcing-annotations__question-metadata-list-item-field" if="{this.hasOriginalValue(field)}">{this.getOriginalValue(field)}</div><input class="crowdsourcing-annotations__question-metadata-list-item-input form-control" if="{!this.hasOriginalValue(field)}" disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" ref="input_{index}_{fieldindex}" type="text" data-annotationindex="{index}" riot-value="{anno.getValue(field)}" onchange="{setValueFromEvent}"></input></div></div></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
 
 	this.question = this.opts.question;
 
@@ -2555,7 +2555,7 @@ riot.tag2('metadataquestion', '<div if="{this.showInstructions()}" class="crowds
 
 });
 
-riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div class="crowdsourcing-annotations__question-text-input"><textarea __disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" onchange="{setTextFromEvent}" value="{anno.getText()}"></textarea></div></div><div class="cms-module__actions crowdsourcing-annotations__annotation-action"><button if="{!this.opts.item.isReviewMode()}" onclick="{deleteAnnotationFromEvent}" class="crowdsourcing-annotations__delete-annotation btn btn--clean delete">{Crowdsourcing.translate(⁗action__delete_annotation⁗)} </button></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
+riot.tag2('plaintextquestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div class="crowdsourcing-annotations__question-text-input"><textarea disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" onchange="{setTextFromEvent}" riot-value="{anno.getText()}"></textarea></div></div><div class="cms-module__actions crowdsourcing-annotations__annotation-action"><button if="{!this.opts.item.isReviewMode()}" onclick="{deleteAnnotationFromEvent}" class="crowdsourcing-annotations__delete-annotation btn btn--clean delete">{Crowdsourcing.translate(⁗action__delete_annotation⁗)} </button></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
 
 	this.question = this.opts.question;
 
@@ -2692,7 +2692,7 @@ this.addAnnotation = function() {
 });
 
 
-riot.tag2('richtextquestion', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div class="crowdsourcing-annotations__question-text-input"><textarea class="tinyMCE" __disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" onchange="{setTextFromEvent}" value="{anno.getText()}"></textarea></div></div><div class="cms-module__actions crowdsourcing-annotations__annotation-action"><button if="{!this.opts.item.isReviewMode()}" onclick="{deleteAnnotationFromEvent}" class="annotation_area__button btn btn--clean delete">{Crowdsourcing.translate(⁗action__delete_annotation⁗)} </button></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
+riot.tag2('richtextquestion', '<div if="{this.showInstructions()}" class="annotation_instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div class="crowdsourcing-annotations__question-text-input"><textarea class="tinyMCE" disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" onchange="{setTextFromEvent}" riot-value="{anno.getText()}"></textarea></div></div><div class="cms-module__actions crowdsourcing-annotations__annotation-action"><button if="{!this.opts.item.isReviewMode()}" onclick="{deleteAnnotationFromEvent}" class="annotation_area__button btn btn--clean delete">{Crowdsourcing.translate(⁗action__delete_annotation⁗)} </button></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
 
 	this.question = this.opts.question;
 
@@ -2784,7 +2784,7 @@ riot.tag2('richtextquestion', '<div if="{this.showInstructions()}" class="annota
 
 
 
-riot.tag2('external-resource-download', '<div class="download-external-resource__list"><div class="download-external-resource__item" each="{url in urls}"><div class="download-external-resource__error_wrapper {isError(url) ? \'-active\' : \'\'}"><i class="fa fa-exclamation-triangle"></i><label class="download-external-resource__error">{getErrorMessage(url)}</label></div><div class="download-external-resource__inner-wrapper {isFinished(url) ? \'\' : \'-active\'}"><span class="download-external-resource__label">{url}</span><div class="download-external-resource__button-wrapper"><button class="download-external-resource__order download-external-resource__button btn btn--full {isRequested(url)|isError(url)|isFinished(url) ? \'\' : \'-active\'}" onclick="{startDownloadTask}">{msg.downloadButton}</button></div><div class="download-external-resource__waiting_animation {isWaiting(url) ? \'-active\' : \'\'}"><img riot-src="{preloader}" class="img-responsive" alt="{msg.action__external_files__download_in_queue}" title="{msg.action__external_files__download_in_queue}"></div><div class="download-external-resource__loading_animation {isDownloading(url) ? \'-active\' : \'\'}"><progress value="{getDownloadProgress(url)}" max="{getDownloadSize(url)}" title="{getDownloadProgressLabel(url)}">{getDownloadProgressLabel(url)}</progress></div></div><div class="download-external-resource__results {isFinished(url) ? \'-active\' : \'\'}"><virtual each="{object in getFiles(url)}"><div class="born-digital__items-wrapper"><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filename}</span></div><div class="born-digital__item"><span>{object.path}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filedescription}</span></div><div class="born-digital__item"><span>{object.description}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filesize}</span></div><div class="born-digital__item"><span>{object.size}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__fileformat}</span></div><div class="born-digital__item"><span>{msg[object.mimeType]}</span></div><div class="born-digital__item-download-last"><a class="born-digital__item__download btn btn--full" href="{object.url}" target="_blank">{msg.action__born_digital__download}</a></div></div></virtual></div></div></div>', '', '', function(opts) {
+riot.tag2('external-resource-download', '<div class="download-external-resource__list"><div class="download-external-resource__item" each="{url in urls}"><div class="download-external-resource__error_wrapper {isError(url) ? \'-active\' : \'\'}"><i class="fa fa-exclamation-triangle"></i><label class="download-external-resource__error">{getErrorMessage(url)}</label></div><div class="download-external-resource__inner-wrapper {isFinished(url) ? \'\' : \'-active\'}"><span class="download-external-resource__label">{url}</span><div class="download-external-resource__button-wrapper"><button class="download-external-resource__order download-external-resource__button btn btn--full {isRequested(url)|isError(url)|isFinished(url) ? \'\' : \'-active\'}" onclick="{startDownloadTask}">{msg.downloadButton}</button></div><div class="download-external-resource__waiting_animation {isWaiting(url) ? \'-active\' : \'\'}"><img riot-src="{preloader}" class="img-responsive" alt="{msg.action__external_files__download_in_queue}" title="{msg.action__external_files__download_in_queue}"></div><div class="download-external-resource__loading_animation {isDownloading(url) ? \'-active\' : \'\'}"><progress riot-value="{getDownloadProgress(url)}" max="{getDownloadSize(url)}" title="{getDownloadProgressLabel(url)}">{getDownloadProgressLabel(url)}</progress></div></div><div class="download-external-resource__results {isFinished(url) ? \'-active\' : \'\'}"><virtual each="{object in getFiles(url)}"><div class="born-digital__items-wrapper"><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filename}</span></div><div class="born-digital__item"><span>{object.path}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filedescription}</span></div><div class="born-digital__item"><span>{object.description}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__filesize}</span></div><div class="born-digital__item"><span>{object.size}</span></div><div class="born-digital__head-mobile"><span>{msg.label__born_digital__fileformat}</span></div><div class="born-digital__item"><span>{msg[object.mimeType]}</span></div><div class="born-digital__item-download-last"><a class="born-digital__item__download btn btn--full" href="{object.url}" target="_blank">{msg.action__born_digital__download}</a></div></div></virtual></div></div></div>', '', '', function(opts) {
       this.urls = [];
       this.downloads = new Map();
       this.updateListeners = new Map();
@@ -3075,6 +3075,7 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     	this.wrapper = document.getElementsByClassName( 'fullscreen__view-image-thumbs-wrapper' );
     	this.controls = document.getElementsByClassName( 'image-controls' );
     	this.image = document.getElementById( 'imageContainer' );
+    	this.sidebarScrollPreview = document.getElementById( 'sidebarScrollPreview' );
     	this.object = document.getElementById( 'objectContainer' );
     	this.viewportWidth;
     	this.sidebarWidth;
@@ -3107,8 +3108,11 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
             	let visibility = $( this.image ).css('visibility');
             	if(visibility == 'hidden') {
             		$( this.image ).css('visibility','visible');
+            		$( this.sidebarScrollPreview ).show();
+
             	} else {
             		$( this.image ).css('visibility','hidden');
+            		$( this.sidebarScrollPreview ).hide();
             	}
 
             	let objVisibility = $( this.object ).css('visibility');
@@ -3149,7 +3153,7 @@ riot.tag2('fsthumbnails', '<div class="fullscreen__view-image-thumbs" ref="thumb
     	    }
     	}.bind(this)
 });
-riot.tag2('featuresetfilter', '<ul if="{filters.length > 0}"><li each="{filter in filters}" class="{filter.styleClass}"><label>{filter.label}</label><div><input type="radio" name="options_{filter.field}" id="options_{filter.field}_all" value="" checked onclick="{resetFilter}"><label for="options_{filter.field}_all">{opts.msg.alle}</label></div><div each="{option, index in filter.options}"><input type="radio" name="options_{filter.field}" id="options_{filter.field}_{index}" value="{option.name}" onclick="{setFilter}"><label for="options_{filter.field}_{index}">{option.name}</label></div></li></ul>', '', '', function(opts) {
+riot.tag2('featuresetfilter', '<ul if="{filters.length > 0}"><li each="{filter in filters}" class="{filter.styleClass}"><label>{filter.label}</label><div><input type="radio" name="options_{filter.field}" id="options_{filter.field}_all" value="" checked onclick="{resetFilter}"><label for="options_{filter.field}_all">{opts.msg.alle}</label></div><div each="{option, index in filter.options}"><input type="radio" name="options_{filter.field}" id="options_{filter.field}_{index}" riot-value="{option.name}" onclick="{setFilter}"><label for="options_{filter.field}_{index}">{option.name}</label></div></li></ul>', '', '', function(opts) {
 
 this.filters = [];
 
@@ -3670,7 +3674,7 @@ this.initHeatmap = function(hitsLayer) {
 }.bind(this)
 
 });
-riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="imagefilters__filter" each="{filter in filters}"><span class="imagefilters__label {filter.config.slider ? \'\' : \'imagefilters__label-long\'}">{filter.config.label}</span><input __disabled="{filter.disabled ? \'disabled=\' : \'\'}" class="imagefilters__checkbox" if="{filter.config.checkbox}" type="checkbox" onchange="{apply}" __checked="{filter.isActive() ? \'checked\' : \'\'}" aria-label="{filter.config.label}"><input __disabled="{filter.disabled ? \'disabled=\' : \'\'}" class="imagefilters__slider" title="{filter.getValue()}" if="{filter.config.slider}" type="range" oninput="{apply}" value="{filter.getValue()}" min="{filter.config.min}" max="{filter.config.max}" step="{filter.config.step}" orient="horizontal" aria-label="{filter.config.label}: {filter.getValue()}"></div></div><div class="imagefilters__options"><button type="button" class="btn btn--full" onclick="{resetAll}">{this.config.messages.clearAll}</button></div>', '', '', function(opts) {
+riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="imagefilters__filter" each="{filter in filters}"><span class="imagefilters__label {filter.config.slider ? \'\' : \'imagefilters__label-long\'}">{filter.config.label}</span><input disabled="{filter.disabled ? \'disabled=\' : \'\'}" class="imagefilters__checkbox" if="{filter.config.checkbox}" type="checkbox" onchange="{apply}" checked="{filter.isActive() ? \'checked\' : \'\'}" aria-label="{filter.config.label}"><input disabled="{filter.disabled ? \'disabled=\' : \'\'}" class="imagefilters__slider" title="{filter.getValue()}" if="{filter.config.slider}" type="range" oninput="{apply}" riot-value="{filter.getValue()}" min="{filter.config.min}" max="{filter.config.max}" step="{filter.config.step}" orient="horizontal" aria-label="{filter.config.label}: {filter.getValue()}"></div></div><div class="imagefilters__options"><button type="button" class="btn btn--full" onclick="{resetAll}">{this.config.messages.clearAll}</button></div>', '', '', function(opts) {
 
 		if(!this.opts.image) {
 		    throw "ImageView object must be defined for imageFilters";
@@ -3848,8 +3852,130 @@ riot.tag2('imagefilters', '<div class="imagefilters__filter-list"><div class="im
 		}.bind(this)
 
 });
+riot.tag2('imagepaginator', '<virtual if="{opts.enablePageNavigation}"><li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? \'end\' : \'start\'} {isFirstPage() ? \'inactive\' : \'\'}"><a if="{!isFirstPage() && !isSequenceMode()}" href="{getPageUrl(opts.firstPageNumber)}" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual><span id="firstImageLabel" class="labeltext">{msg.firstImage}</span></a><button if="{!isFirstPage() && isSequenceMode()}" onclick="{gotoFirstPage}" type="button" title="{msg.firstImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="firstImageLabel"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual><span id="firstImageLabel" class="labeltext">{msg.firstImage}</span></button><span if="{isFirstPage()}"><virtual if="{!opts.rtl}"><yield from="first-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual></span></li><li each="{step in opts.navigationSteps.slice().reverse()}" class="image-controls__action {getPageNumberMinus(step) < opts.firstPageNumber ? \'inactive\' : \'\'}"><virtual if="{opts.numPages > step}"><a if="{getPageNumberMinus(step) >= opts.firstPageNumber && !isSequenceMode()}" href="{getPageUrl(getPageNumberMinus(step))}" title="{step + ⁗ ⁗ + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual><span id="imageLabel-back-{step}" class="labeltext">{step + msg.stepBack}</span></a><button if="{getPageNumberMinus(step) >= opts.firstPageNumber && isSequenceMode()}" onclick="{navigateBack}" type="button" title="{step + ⁗ ⁗ + msg.stepBack}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-back-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual><span id="imageLabel-back-{step}" class="labeltext">{step} {msg.stepBack}</span></button><span if="{getPageNumberMinus(step) < opts.firstPageNumber}"><virtual if="{!opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="prev-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">-{step}</virtual><virtual if="{opts.rtl && step > 1}">+{step}</virtual></span></virtual></li><li if="{opts.showDropdown}" class="image-controls__action select"><div class="custom-control custom-control--select"><select ref="dropdown" id="pageDropdown" aria-label="{msg.aria_label__select_page}" onchange="{changeDropdownValue}"><option each="{item in opts.pageList}" riot-value="{item.value}" title="{item.description ? item.description : item.label}">{item.label}</option></select></div></li><li each="{step in opts.navigationSteps}" class="image-controls__action {getPageNumberPlus(step) > opts.lastPageNumber ? \'inactive\' : \'\'}"><virtual if="{opts.numPages > step}"><a if="{getPageNumberPlus(step) <= opts.lastPageNumber && !isSequenceMode()}" href="{getPageUrl(getPageNumberPlus(step))}" title="{step + ⁗ ⁗ + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual><span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span></a><button if="{getPageNumberPlus(step) <= opts.lastPageNumber && isSequenceMode()}" onclick="{navigateForward}" type="button" title="{step + ⁗ ⁗ + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual><span id="imageLabel-forward-{step}" class="labeltext">{step} {msg.stepForward}</span></button><span if="{getPageNumberPlus(step) > opts.lastPageNumber}"><virtual if="{!opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{opts.rtl && step == 1}"><yield from="next-page"></yield></virtual><virtual if="{!opts.rtl && step > 1}">+{step}</virtual><virtual if="{opts.rtl && step > 1}">-{step}</virtual></span></virtual></li><li if="{opts.numPages > 2}" class="image-controls__action {opts.rtl ? \'start\' : \'end\'} {isLastPage() ? \'inactive\' : \'\'}"><a if="{!isLastPage() && !isSequenceMode()}" href="{getPageUrl(opts.lastPageNumber)}" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual><span id="lastImageLabel" class="labeltext">{msg.lastImage}</span></a><button if="{!isLastPage() && isSequenceMode()}" onclick="{gotoLastPage}" type="button" title="{msg.lastImage}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="lastImageLabel"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual><span id="lastImageLabel" class="labeltext">{msg.lastImage}</span></button><span if="{isLastPage()}"><virtual if="{!opts.rtl}"><yield from="last-page"></yield></virtual><virtual if="{opts.rtl}"><yield from="last-page"></yield></virtual></span></li></virtual>', '', '', function(opts) {
 
-riot.tag2('metadataeditor', '<div if="{this.metadataList}"><h2>Pin content</h2><div class="admin__language-tabs"><ul class="nav nav-tabs"><li each="{language, index in this.opts.languages}" class="admin__language-tab {language == this.currentLanguage ? \'active\' : \'\'}"><a onclick="{this.setCurrentLanguage}">{language}</a></li></ul></div><div class="cms__geomap__featureset_panel "><div class="active"><div class="input_form"><div each="{metadata, index in this.metadataList}" class="input_form__option_group"><div class="input_form__option_label"><label for="input-{metadata.property}">{metadata.label}:</label></div><div class="input_form__option_marker {metadata.required ? \'in\' : \'\'}"><label>*</label></div><div class="input_form__option_control"><input tabindex="{index+1}" __disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type != \'longtext\'}" type="{metadata.type}" id="input-{metadata.property}" class="form-control" value="{getValue(metadata)}" oninput="{this.updateMetadata}"><textarea tabindex="{index+1}" __disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type == \'longtext\'}" id="input-{metadata.property}" class="form-control" value="{getValue(metadata)}" oninput="{this.updateMetadata}"></textarea></div><div if="{metadata.helptext}" class="input_form__option_help"><button type="button" class="btn btn--clean" data-toggle="helptext" for="help_{metadata.property}"><i class="fa fa-question-circle" aria-hidden="true"></i></button></div><div if="{metadata.helptext}" id="help_{metadata.property}" class="input_form__option_control_helptext">{metadata.helptext}</div></div><div class="admin__geomap-edit-delete-wrapper"><a if="{this.opts.deleteListener}" __disabled="{this.mayDelete() ? \'\' : \'disabled\'}" class="btn btn--clean -redlink" onclick="{this.notifyDelete}">{this.opts.deleteLabel}</a></div></div></div></div></div>', '', '', function(opts) {
+        this.currentPageNumbers = [0];
+        this.msg = {};
+
+        this.on("mount", () => {
+
+            this.currentPageNumbers = this.parsePageNumbers(this.opts.currentPageNumber);
+            this.msg = this.opts.msg;
+            if(this.opts.update) {
+                this.opts.update.subscribe(pageNumber => {
+                    this.currentPageNumbers = this.isDoublePageMode() ? [pageNumber, pageNumber+1] : [pageNumber];
+                    this.update();
+                });
+            }
+            this.update();
+        });
+
+        this.on("update", () => {
+
+            $("[data-toggle='tooltip']").tooltip('hide');
+            if(this.refs.dropdown) {
+                this.refs.dropdown.value = this.isDoublePageMode() ? (this.currentPageNumbers[0] + "-" + this.currentPageNumbers[0]) : this.currentPageNumbers[0];
+
+            }
+        });
+
+        this.parsePageNumbers = function(pageNoString) {
+        	return pageNoString.match(/\d+/g).map(s => Number(s));
+        }.bind(this)
+
+        this.getPageNumberMinus = function(step) {
+        	if(this.isDoublePageMode()) {
+        		return this.currentPageNumbers[0] - 2 * step;
+        	} else {
+        		return this.currentPageNumbers[0] - step;
+        	}
+        }.bind(this)
+
+        this.getPageNumberPlus = function(step) {
+        	if(this.isDoublePageMode()) {
+        		return this.currentPageNumbers[0] + 2 * step;
+        	} else {
+        		return this.currentPageNumbers[0] + step;
+        	}
+        }.bind(this)
+
+        this.getPageUrl = function(pageNo) {
+        	if(this.isDoublePageMode()) {
+        		return this.opts.pageUrlTemplate(pageNo + "-" + (pageNo+1));
+        	} else {
+            	return this.opts.pageUrlTemplate(pageNo);
+        	}
+        }.bind(this)
+
+        this.gotoFirstPage = function() {
+            this.gotoPage(this.opts.firstPageNumber);
+        }.bind(this)
+
+        this.gotoLastPage = function() {
+            this.gotoPage(this.opts.lastPageNumber);
+        }.bind(this)
+
+        this.navigateBack = function(e) {
+            const step = e.item.step;
+            if(this.isDoublePageMode()) {
+            	this.gotoPage(this.currentPageNumbers[0] - 2 * step);
+            } else {
+            	this.gotoPage(this.currentPageNumbers[0] - step);
+            }
+        }.bind(this)
+
+        this.navigateForward = function(e) {
+            const step = e.item.step;
+            if(this.isDoublePageMode()) {
+            	this.gotoPage(this.currentPageNumbers[0] + 2 * step);
+            } else {
+            	this.gotoPage(this.currentPageNumbers[0] + step);
+            }
+        }.bind(this)
+
+        this.gotoPage = function(pageNumber) {
+        	if(this.isDoublePageMode()) {
+        		this.currentPageNumbers = [pageNumber, pageNumber+1];
+        	} else {
+				this.currentPageNumbers = [pageNumber];
+        	}
+            if(this.opts.onUpdate) {
+                this.opts.onUpdate(pageNumber);
+            }
+        }.bind(this)
+
+        this.changeDropdownValue = function(e) {
+            let pageNo = e.target.value;
+            if(this.isSequenceMode()) {
+                this.gotoPage(pageNo);
+            } else {
+                window.location.assign(this.getPageUrl(pageNo));
+            }
+        }.bind(this)
+
+        this.isSequenceMode = function() {
+            return this.opts.navigationMode.toLowerCase() == 'sequence'
+        }.bind(this)
+
+        this.isDoublePageMode = function() {
+            return this.opts.navigationMode.toLowerCase() == 'double'
+        }.bind(this)
+
+        this.isSinglePageMode = function() {
+            return this.opts.navigationMode.toLowerCase() == 'single'
+        }.bind(this)
+
+        this.isFirstPage = function() {
+            return this.currentPageNumber == this.opts.firstPageNumber;
+        }.bind(this)
+
+        this.isLastPage = function() {
+            return this.currentPageNumber == this.opts.lastPageNumber;
+        }.bind(this)
+
+});
+
+riot.tag2('metadataeditor', '<div if="{this.metadataList}"><h2>Pin content</h2><div class="admin__language-tabs"><ul class="nav nav-tabs"><li each="{language, index in this.opts.languages}" class="admin__language-tab {language == this.currentLanguage ? \'active\' : \'\'}"><a onclick="{this.setCurrentLanguage}">{language}</a></li></ul></div><div class="cms__geomap__featureset_panel "><div class="active"><div class="input_form"><div each="{metadata, index in this.metadataList}" class="input_form__option_group"><div class="input_form__option_label"><label for="input-{metadata.property}">{metadata.label}:</label></div><div class="input_form__option_marker {metadata.required ? \'in\' : \'\'}"><label>*</label></div><div class="input_form__option_control"><input tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type != \'longtext\'}" type="{metadata.type}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"><textarea tabindex="{index+1}" disabled="{this.isEditable(metadata) ? \'\' : \'disabled\'}" ref="input" if="{metadata.type == \'longtext\'}" id="input-{metadata.property}" class="form-control" riot-value="{getValue(metadata)}" oninput="{this.updateMetadata}"></textarea></div><div if="{metadata.helptext}" class="input_form__option_help"><button type="button" class="btn btn--clean" data-toggle="helptext" for="help_{metadata.property}"><i class="fa fa-question-circle" aria-hidden="true"></i></button></div><div if="{metadata.helptext}" id="help_{metadata.property}" class="input_form__option_control_helptext">{metadata.helptext}</div></div><div class="admin__geomap-edit-delete-wrapper"><a if="{this.opts.deleteListener}" disabled="{this.mayDelete() ? \'\' : \'disabled\'}" class="btn btn--clean -redlink" onclick="{this.notifyDelete}">{this.opts.deleteLabel}</a></div></div></div></div></div>', '', '', function(opts) {
 
  	this.on("mount", () => {
  	    this.currentLanguage = this.opts.currentLanguage;
@@ -4084,6 +4210,124 @@ riot.tag2('rawhtml', '', '', '', function(opts) {
   this.on("updated", () => {
     this.root.innerHTML = opts.content;
   })
+});
+riot.tag2('simplepaginator', '<div if="{opts.itemCount > 1}" class="{opts.rtl ? \'numeric-paginator -rtl\' : \'numeric-paginator -ltr\'} {opts.classSuffix}"><nav aria-label="{opts.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}"><ul><li if="{this.currentItem > this.opts.firstItem}" class="numeric-paginator__navigate navigate_prev"><a if="{isRenderLinks()}" href="{getItemUrl(currentItem-1)}" aria-label="{msg.aria_label__pagination_previous}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i></a><button if="{isRenderButtons()}" onclick="{navigateToPrevItem}" aria-label="{msg.aria_label__pagination_previous}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i></button></li><li each="{item in getFirstItems()}" class="numeric-paginator__navigate"><a if="{isRenderLinks()}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></a><button if="{isRenderButtons()}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></button></li><li class="numeric-paginator__dots" if="{isShowDotsAfterFirstItems()}"><span>...</span></li><li each="{item in getCenterItems()}" class="numeric-paginator__navigate {item == currentItem ? \'-active\' : \'\'}"><a if="{isRenderLinks() && item != currentItem}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></a><button if="{isRenderButtons() && item != currentItem}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></button><span if="{item == currentItem}">{item}</span></li><li class="numeric-paginator__dots" if="{isShowDotsBeforeLastItems()}"><span>...</span></li><li each="{item in getLastItems()}" class="numeric-paginator__navigate"><a if="{isRenderLinks()}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></a><button if="{isRenderButtons()}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}"><span>{item}</span></button></li><li if="{this.currentItem < this.opts.lastItem}" class="numeric-paginator__navigate navigate_next"><a if="{isRenderLinks()}" href="{getItemUrl(currentItem+1)}" aria-label="{msg.aria_label__pagination_next}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i></a><button if="{isRenderButtons()}" onclick="{navigateToNextItem}" aria-label="{msg.aria_label__pagination_next}"><i if="{!opts.rtl}" class="fa {msg.numericPaginator_next}" aria-hidden="true"></i><i if="{opts.rtl}" class="fa {msg.numericPaginator_prev}" aria-hidden="true"></i></button></li></ul></nav></div>', '', '', function(opts) {
+
+        this.currentItem = 0;
+        this.msg = {};
+        this.range = 2;
+
+        this.on("mount", () => {
+            this.msg = opts.msg;
+            this.currentItem = opts.itemActive;
+            if(this.opts.range) {
+                this.range = this.opts.range;
+            }
+            if(this.opts.update) {
+                this.opts.update.subscribe(itemNumber => {
+                    this.currentItem = itemNumber;
+                    this.update();
+                });
+            }
+            this.update();
+        });
+
+        this.on("update", () => {
+
+            $("[data-toggle='tooltip']").tooltip('hide');
+            if(this.refs.dropdown) {
+                this.refs.dropdown.value = this.currentItem;
+            }
+        });
+
+        this.getItemUrl = function(itemNumber) {
+            return this.opts.urlTemplate(itemNumber);
+        }.bind(this)
+
+        this.gotoFirstItem = function() {
+            this.gotoItem(this.opts.firstItem);
+        }.bind(this)
+
+        this.gotoLastItem = function() {
+            this.gotoItem(this.opts.lastItem);
+        }.bind(this)
+
+        this.navigateToItem = function(e) {
+            const item = e.item.item;
+            this.gotoItem(item);
+        }.bind(this)
+
+        this.navigateToPrevItem = function() {
+            this.gotoItem(this.currentItem-1);
+        }.bind(this)
+
+        this.navigateToNextItem = function() {
+            this.gotoItem(this.currentItem+1);
+        }.bind(this)
+
+        this.gotoItem = function(itemNumber) {
+            this.currentItem = itemNumber;
+            if(this.opts.onUpdate) {
+                this.opts.onUpdate(itemNumber);
+            }
+        }.bind(this)
+
+        this.isShowDotsAfterFirstItems = function() {
+            return this.currentItem - this.range > this.opts.firstItem + this.range + 1
+        }.bind(this)
+
+        this.isShowDotsBeforeLastItems = function() {
+            return this.currentItem + this.range < this.opts.lastItem - this.range - 1
+        }.bind(this)
+
+        this.getFirstItems = function() {
+            let result = [];
+            let startRange = Math.min(this.range, this.getCenterItems()[0]-1);
+            if(startRange > 0) {
+                for (let i = this.opts.firstItem; i < this.opts.firstItem + startRange; i++) {
+                    result.push(i);
+                }
+            }
+            return result;
+        }.bind(this)
+
+        this.getLastItems = function() {
+            let result = [];
+            let centerItems = this.getCenterItems();
+            let endRange = Math.min(this.range, this.opts.lastItem - centerItems[centerItems.length-1]);
+            if(endRange > 0) {
+                for (let i = this.opts.lastItem - endRange + 1; i <= this.opts.lastItem; i++) {
+                    result.push(i);
+                }
+            }
+            return result;
+        }.bind(this)
+
+        this.getCenterItems = function() {
+            let result = [];
+            for (let i = this.currentItem - this.range; i <= this.currentItem + this.range; i++) {
+                if(i >= this.opts.firstItem && i <= this.opts.lastItem) {
+                    result.push(i);
+                }
+            }
+            return result;
+        }.bind(this)
+
+        this.isRenderLinks = function() {
+            return this.opts.navigationMode != "buttons";
+        }.bind(this)
+
+        this.isRenderButtons = function() {
+            return this.opts.navigationMode == "buttons";
+        }.bind(this)
+
+        this.isFirstItem = function() {
+            return this.currentItem == this.opts.firstItem;
+        }.bind(this)
+
+        this.isLastItem = function() {
+            return this.currentItem == this.opts.lastItem;
+        }.bind(this)
 });
 riot.tag2('slide_default', '<a class="swiper-link slider-{this.opts.stylename}__link" href="{this.opts.link}" target="{this.opts.link_target}" rel="noopener"><div class="swiper-heading slider-{this.opts.stylename}__header">{this.opts.label}</div><img class="swiper-image slider-{this.opts.stylename}__image" riot-src="{this.opts.image}" alt="{this.opts.alttext}"><div class="swiper-description slider-{this.opts.stylename}__description" ref="description"></div></a>', '', '', function(opts) {
 		this.on("mount", () => {
@@ -4755,7 +4999,7 @@ this.getPageStatus = function(index) {
 }.bind(this)
 
 });
-riot.tag2('timematrix', '<div class="timematrix__subarea"><span class="timematrix__loader" ref="loader"><img if="{loading}" riot-src="{opts.contextPath}resources/images/infinity_loader.svg" class="img-fluid" alt="Timematrix Loader"></span></div><div class="timematrix__selection"><div id="locateTimematrix"><div class="timematrix__bar"><div class="timematrix__period"><span>{translate(⁗timematrix__timePeriod⁗)}:</span>&#xA0; <input tabindex="0" aria-label="{translate(\'aria_label__timeline_period_start\')}" class="timematrix__selectionRangeInput" ref="inputStartYear" value="{this.startYear}" maxlength="4"> &#xA0;<span>-</span>&#xA0; <input tabindex="0" aria-label="{translate(\'aria_label__timeline_period_end\')}" class="timematrix__selectionRangeInput" ref="inputEndYear" value="{this.endYear}" maxlength="4"></div><div class="timematrix__hitsForm"><div class="timematrix__hitsInput"><span>{translate(⁗timematrix__maxResults⁗)}: &#xA0;</span><input onchange="{updateHitsPerPage}" type="text" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" value="{this.maxHits}" placeholder="" maxlength="5" aria-label="{translate(\'aria_label__timeline_hits\')}"></div></div></div><div id="slider-range" ref="sliderRange"></div><button type="submit" ref="setTimematrix" class="btn btn--full setTimematrix">{translate(⁗timematrix__calculate⁗)}</button></div></div><div class="timematrix__objects"><label if="{!loading && manifests.length == 0}">{translate(⁗hitsZero⁗)}</label><div each="{manifest in manifests}" class="timematrix__content"><div class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img ref="image" data-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" alt="" aria-hidden="true" onload="$(this).parents(\'.timematrix__img\').css(\'background\', \'transparent\')"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
+riot.tag2('timematrix', '<div class="timematrix__subarea"><span class="timematrix__loader" ref="loader"><img if="{loading}" riot-src="{opts.contextPath}resources/images/infinity_loader.svg" class="img-fluid" alt="Timematrix Loader"></span></div><div class="timematrix__selection"><div id="locateTimematrix"><div class="timematrix__bar"><div class="timematrix__period"><span>{translate(⁗timematrix__timePeriod⁗)}:</span>&#xA0; <input tabindex="0" aria-label="{translate(\'aria_label__timeline_period_start\')}" class="timematrix__selectionRangeInput" ref="inputStartYear" riot-value="{this.startYear}" maxlength="4"> &#xA0;<span>-</span>&#xA0; <input tabindex="0" aria-label="{translate(\'aria_label__timeline_period_end\')}" class="timematrix__selectionRangeInput" ref="inputEndYear" riot-value="{this.endYear}" maxlength="4"></div><div class="timematrix__hitsForm"><div class="timematrix__hitsInput"><span>{translate(⁗timematrix__maxResults⁗)}: &#xA0;</span><input onchange="{updateHitsPerPage}" type="text" id="hitsPerPage" class="hitsPerPage" name="hitsPerPage" riot-value="{this.maxHits}" placeholder="" maxlength="5" aria-label="{translate(\'aria_label__timeline_hits\')}"></div></div></div><div id="slider-range" ref="sliderRange"></div><button type="submit" ref="setTimematrix" class="btn btn--full setTimematrix">{translate(⁗timematrix__calculate⁗)}</button></div></div><div class="timematrix__objects"><label if="{!loading && manifests.length == 0}">{translate(⁗hitsZero⁗)}</label><div each="{manifest in manifests}" class="timematrix__content"><div class="timematrix__img"><a href="{getViewerUrl(manifest)}"><img ref="image" data-src="{getImageUrl(manifest)}" class="timematrix__image" data-viewer-thumbnail="thumbnail" alt="" aria-hidden="true" onload="$(this).parents(\'.timematrix__img\').css(\'background\', \'transparent\')"><div class="timematrix__text"><p if="{hasTitle(manifest)}" name="timetext" class="timetext">{getDisplayTitle(manifest)}</p></div></a></div></div></div>', '', '', function(opts) {
 		this.manifests = [];
 		this.loading = true;
 

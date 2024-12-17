@@ -16,6 +16,10 @@
 
     <!-- METADATA -->
     <div id="metadataElementWrapper" class="metadata">
+        
+        <!-- force reload if current metadata elements here and use this value for the entire request -->
+        <c:set scope="request" var="metadataElementList" value="#{metadataBean.getMetadataElementList(metadataViewIndex, true)}"/>
+    
 	    <div class="metadata__title-wrapper">
 	    	<div id="title" class="title">
 	    		<!-- TITLE HEADER -->
@@ -60,7 +64,8 @@
             <div class="clearfix"></div>
         </h:panelGroup>
 
-        <c:forEach items="#{metadataBean.getMetadataElementList(metadataViewIndex)}" var="metadataElement" varStatus="status">
+
+        <c:forEach items="#{metadataElementList}" var="metadataElement" varStatus="status">
             <ui:include src="/resources/includes/metadata/metadataElement.xhtml">
             	<ui:param name="metadataElement" value="#{metadataElement}"/>
             </ui:include>

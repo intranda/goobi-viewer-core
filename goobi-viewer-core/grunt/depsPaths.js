@@ -184,6 +184,17 @@ const depsPathsJS = [
     dest:`${jsLibsDir}simpleLightbox/`
   },
 
+  { // Simplebar
+    expand: true,
+    cwd: nodeModules,
+    src:  [
+      'simplebar/dist/simplebar.min.js', 
+      'simplebar/LICENSE'
+    ],
+    flatten: true,
+    dest:`${jsLibsDir}simplebar/`
+  },
+
   { // MAPBOX GL
     expand: true,
     cwd: nodeModules,
@@ -469,6 +480,14 @@ const depsPathsCSS = [
     src: 'simple-lightbox/dist/simpleLightbox.min.css',
     flatten: true,
     dest:`${cssLibsDir}simpleLightbox/`
+  },
+
+  { // Simplebar
+    expand: true,
+    cwd: nodeModules,
+    src: 'simplebar/dist/simplebar.min.css',
+    flatten: true,
+    dest:`${cssLibsDir}simplebar/`
   },
 
   { // MAPBOX GL
