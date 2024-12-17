@@ -300,7 +300,6 @@
 	           		//js updates
 		           	viewImage.sequence.onCurrentImageChange.subscribe (imageId => {
 		           		const pageNo = imageIdToOrderMap.get(imageId);
-		           		console.log("image changed to " + pageNo, imageId);
 		           		if(pageNo != undefined) {	           			
 			           		setBrowserLocation(pageNo);
 			           		imageOrderChanged.next(pageNo);
@@ -310,7 +309,6 @@
 		           	});
 	           		
 		           	changeImageOrder.subscribe(pageNo => {	    
-		           		console.log("set image to " + pageNo, imageOrderToUrlMap.get(Number(pageNo)));
 		           		if(pageNo != undefined ) {
 		            		viewImage.sequence.setCurrentImage(getId(imageOrderToUrlMap.get(Number(pageNo))), true)
 		           		}
