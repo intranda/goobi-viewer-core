@@ -95,6 +95,9 @@
 										<ui:fragment rendered="#{metadata.group}">
 											<c:forEach items="#{metadata.values}" var="val">
 												<dd>
+                                                    <ui:fragment rendered="#{metadata.hasAccessConditions}">
+                                                        <i class="fa fa-unlock" />
+                                                    </ui:fragment>
 													<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}"
 														escape="false">
 													</h:outputFormat>

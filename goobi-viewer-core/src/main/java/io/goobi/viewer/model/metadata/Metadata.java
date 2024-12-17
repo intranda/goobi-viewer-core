@@ -919,6 +919,13 @@ public class Metadata implements Serializable {
                         }
                         found = true;
                         String value = val;
+
+                        // Set value to empty for restricted access metadata values when configured as non-grouped
+                        if (StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED.equals(value)) {
+                            logger.trace("Removing hidden value");
+                            value = "";
+                        }
+
                         // Apply replace rules
                         if (!param.getReplaceRules().isEmpty()) {
                             value = MetadataTools.applyReplaceRules(value, param.getReplaceRules(), se.getPi());
@@ -1321,6 +1328,15 @@ public class Metadata implements Serializable {
 
     public String getFilterQuery() {
         return filterQuery;
+    }
+
+    /**
+     * 
+     * @return true if thids.accessConditions not empty; false otherwise
+     */
+    public boolean isHasAccessConditions() {
+        logger.trace("access conditions for {}: {}", label, !this.accessConditions.isEmpty());
+        return !this.accessConditions.isEmpty();
     }
 
     /**

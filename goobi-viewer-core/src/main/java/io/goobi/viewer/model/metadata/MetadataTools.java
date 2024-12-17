@@ -37,6 +37,7 @@ import org.apache.solr.common.SolrDocumentList;
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.Record;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -405,7 +406,7 @@ public final class MetadataTools {
             int count = 1;
             Set<String> usedValues = new HashSet<>(values.size());
             for (String value : values) {
-                if (usedValues.contains(value)) {
+                if (usedValues.contains(value) || StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED.equals(value)) {
                     continue;
                 }
                 String useRisTag = risTag;
