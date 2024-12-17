@@ -3883,11 +3883,6 @@ public class Configuration extends AbstractConfiguration {
         return getZoomImageViewConfig(view, imageMimeType).getBoolean("navigator[@enabled]", false);
     }
 
-    public String getViewMode(PageType view, String imageMimeType) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(view, imageMimeType).getString("[@viewMode]", "single");
-
-    }
-
     public boolean showImageThumbnailGallery(PageType view, String imageMimeType) throws ViewerConfigurationException {
         return getZoomImageViewConfig(view, imageMimeType).getBoolean("thumbnailGallery[@enabled]", false);
     }
@@ -3928,56 +3923,6 @@ public class Configuration extends AbstractConfiguration {
      */
     public int getFooterHeight(PageType view, String imageMimeType) throws ViewerConfigurationException {
         return getZoomImageViewConfig(view, imageMimeType).getInt("[@footerHeight]", 50);
-    }
-
-    /**
-     * <p>
-     * getImageViewType.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    public String getImageViewType() throws ViewerConfigurationException {
-        return getZoomImageViewType(PageType.viewImage, null);
-    }
-
-    /**
-     * <p>
-     * getZoomFullscreenViewType.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    public String getZoomFullscreenViewType() throws ViewerConfigurationException {
-        return getZoomImageViewType(PageType.viewFullscreen, null);
-    }
-
-    /**
-     * <p>
-     * getZoomImageViewType.
-     * </p>
-     *
-     * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param imageMimeType the mimetype to which the configuration should apply.
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    public String getZoomImageViewType(PageType view, String imageMimeType) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(view, imageMimeType).getString(XML_PATH_ATTRIBUTE_TYPE);
-    }
-
-    /**
-     * <p>
-     * useOpenSeadragon.
-     * </p>
-     *
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    public boolean useOpenSeadragon() throws ViewerConfigurationException {
-        return "openseadragon".equalsIgnoreCase(getImageViewType());
     }
 
     /**
@@ -5161,19 +5106,6 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Return true if single page navigation is enabled for the given {@link PageType} and {@link ImageType}. Default is true
-     *
-     * @should return correct value
-     * @param pageType The type of viewer page to which the configuration should apply
-     * @param imageMimeType the mimetype to which the configuration should apply.
-     * @return a boolean.
-     * @throws ViewerConfigurationException
-     */
-    public boolean isSinglePageNavigationEnabled(PageType pageType, String imageMimeType) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(pageType, imageMimeType).getBoolean("pageNavigation.single[@enabled]", true);
-    }
-
-    /**
      * Return true if double page navigation is enabled for the given {@link PageType} and {@link ImageType}. Default is false
      *
      * @should return correct value
@@ -5183,7 +5115,22 @@ public class Configuration extends AbstractConfiguration {
      * @throws ViewerConfigurationException
      */
     public boolean isDoublePageNavigationEnabled(PageType pageType, String imageMimeType) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(pageType, imageMimeType).getBoolean("pageNavigation.double[@enabled]", false);
+        return !isSequencePageNavigationEnabled(pageType, imageMimeType)
+                && getZoomImageViewConfig(pageType, imageMimeType).getBoolean("doublePageNavigation[@enabled]", false);
+    }
+
+    /**
+     * Return true if double page navigation should be used per default for the given {@link PageType} and {@link ImageType}. Default is false
+     *
+     * @should return correct value
+     * @param pageType The type of viewer page to which the configuration should apply
+     * @param imageMimeType the mimetype to which the configuration should apply.
+     * @return a boolean.
+     * @throws ViewerConfigurationException
+     */
+    public boolean isDoublePageNavigationDefault(PageType pageType, String imageMimeType) throws ViewerConfigurationException {
+        return isDoublePageNavigationEnabled(pageType, imageMimeType)
+                && getZoomImageViewConfig(pageType, imageMimeType).getBoolean("doublePageNavigation[@default]", false);
     }
 
     /**
@@ -5196,27 +5143,7 @@ public class Configuration extends AbstractConfiguration {
      * @throws ViewerConfigurationException
      */
     public boolean isSequencePageNavigationEnabled(PageType pageType, String imageMimeType) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(pageType, imageMimeType).getBoolean("pageNavigation.sequence[@enabled]", false);
-    }
-
-    /**
-     * Return the default page navigation for the given {@link PageType} and {@link ImageType}. If neither 'double' nor 'sequence' is configured as
-     * the default, 'single' is returned
-     * 
-     * @param pageType The type of viewer page to which the configuration should apply
-     * @param imageMimeType the mimetype to which the configuration should apply.
-     * @return a string, either 'single', 'double' or 'sequence'
-     * @throws ViewerConfigurationException
-     */
-    public String getDefaultPageNavigation(PageType pageType, String imageMimeType) throws ViewerConfigurationException {
-        HierarchicalConfiguration<ImmutableNode> imageConfig = getZoomImageViewConfig(pageType, imageMimeType);
-        if (imageConfig.getBoolean("pageNavigation.double[@default]", false)) {
-            return "double";
-        } else if (imageConfig.getBoolean("pageNavigation.sequence[@default]", false)) {
-            return "sequence";
-        } else {
-            return "single";
-        }
+        return getZoomImageViewConfig(pageType, imageMimeType).getString("[@type]", "default").equalsIgnoreCase("sequence");
     }
 
     /**

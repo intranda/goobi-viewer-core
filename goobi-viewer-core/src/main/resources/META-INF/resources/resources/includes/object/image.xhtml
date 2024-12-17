@@ -203,7 +203,7 @@
         	configViewer.global.topMargin = () => {
         	    var $header = $('#fullscreenHeader');
         	    if($header.is(":visible")) {
-        	        return $header.height();
+        	        return $header.outerHeight();
         	    } else {
         	        return 0;
         	    }

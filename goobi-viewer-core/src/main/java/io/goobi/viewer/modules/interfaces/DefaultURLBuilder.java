@@ -36,7 +36,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.translations.language.Language;
-import io.goobi.viewer.model.viewer.PageNavigation;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
@@ -148,8 +147,8 @@ public class DefaultURLBuilder implements IURLBuilder {
                 .append('/');
         if (!topStruct || imageNo > 1) {
             try {
-                if (PageNavigation.DOUBLE.name()
-                        .equalsIgnoreCase(DataManager.getInstance().getConfiguration().getDefaultPageNavigation(pageType, null))) {
+                if (!DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(pageType, null)
+                        && DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault(pageType, null)) {
                     sb.append(imageNo).append("-").append(imageNo).append("/");
                 } else {
                     sb.append(imageNo)

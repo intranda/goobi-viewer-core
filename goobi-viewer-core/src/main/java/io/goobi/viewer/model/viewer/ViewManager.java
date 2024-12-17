@@ -278,13 +278,11 @@ public class ViewManager implements Serializable {
 
     protected PageNavigation getDefaultPageNavigation(PageType pageType) {
         try {
-            String navType = DataManager.getInstance()
-                    .getConfiguration()
-                    .getDefaultPageNavigation(pageType, this.mimeType);
-            try {
-                return PageNavigation.fromString(navType);
-            } catch (NullPointerException e) {
-                logger.error("Error reading default page navigation from config: {} is not a known PageNavigation", navType);
+            if (DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(pageType, this.mimeType)) {
+                return PageNavigation.SEQUENCE;
+            } else if (DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault(pageType, this.mimeType)) {
+                return PageNavigation.DOUBLE;
+            } else {
                 return PageNavigation.SINGLE;
             }
         } catch (ViewerConfigurationException e) {
@@ -1477,17 +1475,15 @@ public class ViewManager implements Serializable {
 
     protected PageNavigation calculateCurrentPageNavigation(PageType pageType) {
         try {
-            NavigationHelper nh = BeanUtils.getNavigationHelper();
             PageNavigation defaultPageNavigation = getDefaultPageNavigation(pageType);
             if (this.pageNavigation == defaultPageNavigation) {
                 return this.pageNavigation;
             } else if (defaultPageNavigation == PageNavigation.SEQUENCE) {
                 return defaultPageNavigation;
-            } else if (this.pageNavigation == PageNavigation.SINGLE
-                    && DataManager.getInstance().getConfiguration().isSinglePageNavigationEnabled(nh.getCurrentPageType(), this.mimeType)) {
+            } else if (this.pageNavigation == PageNavigation.SINGLE) {
                 return this.pageNavigation;
             } else if (this.pageNavigation == PageNavigation.DOUBLE
-                    && DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(nh.getCurrentPageType(), this.mimeType)) {
+                    && DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(pageType, this.mimeType)) {
                 return this.pageNavigation;
             } else {
                 return defaultPageNavigation;

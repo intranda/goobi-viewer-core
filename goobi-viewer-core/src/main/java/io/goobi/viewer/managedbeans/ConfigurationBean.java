@@ -119,18 +119,6 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * useOpenSeadragon.
-     * </p>
-     *
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    public boolean useOpenSeadragon() throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().useOpenSeadragon();
-    }
-
-    /**
-     * <p>
      * useTiles.
      * </p>
      *

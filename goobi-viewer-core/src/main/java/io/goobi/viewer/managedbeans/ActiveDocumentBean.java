@@ -825,13 +825,14 @@ public class ActiveDocumentBean implements Serializable {
                     logger.trace("{}  not found, using {}", SolrConstants.THUMBPAGENO, image);
                 }
             }
-            PageNavigation currentPageNavigation = Optional.ofNullable(this.viewManager)
+            boolean isDoublePageNavigation = Optional.ofNullable(this.viewManager)
                     .map(ViewManager::getPageNavigation)
-                    .orElse(PageNavigation.fromString(DataManager.getInstance()
+                    .map(pageNavigation -> PageNavigation.DOUBLE == pageNavigation)
+                    .orElse(DataManager.getInstance()
                             .getConfiguration()
-                            .getDefaultPageNavigation(this.navigationHelper.getCurrentPageType(),
-                                    this.getViewManager().getMimeType())));
-            if (PageNavigation.DOUBLE == currentPageNavigation) {
+                            .isDoublePageNavigationDefault(this.navigationHelper.getCurrentPageType(),
+                                    this.getViewManager().getMimeType()));
+            if (isDoublePageNavigation) {
                 image = String.format("%s-%s", image, image);
             }
             setImageToShow(image);
