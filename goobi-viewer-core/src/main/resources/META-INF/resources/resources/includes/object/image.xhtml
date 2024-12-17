@@ -210,11 +210,10 @@
         	}
         	configViewer.global.rightMargin = () => {
         	    var $sidebar = $('#fullscreenViewSidebar');
-        	    if(parseInt($sidebar.css("right")) < 0) {
-        	        return 0;
-        	    } else {
-        	        return $sidebar.width();
-        	    }
+//         	    var $scrollPreview = $('#sidebarScrollPreview');
+//         	    leftMargin = $scrollPreview.width() == undefined ? 0 : $scrollPreview.width();
+        	    rightMargin = $sidebar.width() == undefined ? 0 : $sidebar.width();
+        	    return rightMargin;// + leftMargin;
         	}
         }
        	// desktop object view
