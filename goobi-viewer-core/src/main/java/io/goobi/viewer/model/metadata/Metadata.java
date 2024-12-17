@@ -923,7 +923,7 @@ public class Metadata implements Serializable {
                         // Set value to empty for restricted access metadata values when configured as non-grouped
                         if (StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED.equals(value)) {
                             logger.trace("Removing hidden value");
-                            value = "";
+                            continue;
                         }
 
                         // Apply replace rules
