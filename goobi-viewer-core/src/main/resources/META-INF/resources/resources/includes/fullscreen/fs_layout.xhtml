@@ -387,7 +387,7 @@
                     </ui:fragment>
 
                     <!-- SHARE IMAGE AREA -->
-                    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image' and !activeDocumentBean.viewManager.doublePageMode}">
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image' and !activeDocumentBean.viewManager.doublePageMode and !activeDocumentBean.viewManager.sequenceMode}">
                         <div id="panel-10" class="fullscreen__view-sidebar-accordeon-panel share-image-area">
                             <h3 class="fullscreen__view-sidebar-accordeon-panel-title" tabindex="0">
                                 <span>#{msg.action__share_image_region}</span>

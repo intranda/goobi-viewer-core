@@ -3671,6 +3671,10 @@ public class ViewManager implements Serializable {
         return PageNavigation.DOUBLE.equals(getPageNavigation());
     }
 
+    public boolean isSequenceMode() {
+        return PageNavigation.SEQUENCE.equals(getPageNavigation());
+    }
+
     /**
      * <p>
      * Getter for the field <code>firstPdfPage</code>.

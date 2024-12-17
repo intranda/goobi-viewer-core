@@ -256,7 +256,7 @@
                         </ui:fragment>
 
                         <!-- SHARE IMAGE REGION -->
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image' and !activeDocumentBean.viewManager.doublePageMode}">
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image' and !activeDocumentBean.viewManager.doublePageMode and !activeDocumentBean.viewManager.sequenceMode}">
                             <li class="image-controls__option share-image-region">
                                 <a role="button" title="#{msg.action__share_image_region}" data-toggle="tooltip" data-placement="top"
                                 data-popover-element="#share-image-area-popup" aria-label="#{msg.action__share_image_region}">
