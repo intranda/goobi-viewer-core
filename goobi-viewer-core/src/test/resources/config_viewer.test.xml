@@ -240,7 +240,7 @@
         <!--zoomImageView and zoomFullscreenView: define the different viewer options for the standard view and fullscreen view, respecively. Possibilities for
             the "type" attribute are: classic and openlayers "Width" and "height" attributes define the size of the image display, in pixel set the attribute "tileImage"
             to true to use tiled images if possible (only possible when type=openlayers) -->
-		<zoomImageView type="classic" tileImage="true"
+		<zoomImageView type="default" tileImage="true"
 			footerHeight="50">
 			<useFor>
 				<view>viewFullscreen</view>
@@ -252,14 +252,10 @@
 				<scaleFactors>2;4;8</scaleFactors>
 				<size>1024</size>
 			</tileSize>
-			<pageNavigation>
-				<single enabled="true"/>
-				<double enabled="false"></double>
-				<sequence enabled="true" default="false"></sequence>
-			</pageNavigation>
+			<doublePageNavigation enabled="true"/>
 		</zoomImageView>
 
-		<zoomImageView type="openLayers" tileImage="false"
+		<zoomImageView type="default" tileImage="false"
 			footerHeight="0">
 			<useFor>
 				<view>editContent</view>
@@ -271,7 +267,7 @@
 			<scale>400</scale>
 		</zoomImageView>
 
-		<zoomImageView type="openSeadragon" tileImage="true"
+		<zoomImageView type="default" tileImage="true"
 			footerHeight="50">
 			<scale>600</scale>
 			<scale>1000</scale>
@@ -281,6 +277,7 @@
 				<scaleFactors>1;2;3</scaleFactors>
 				<size>512</size>
 			</tileSize>
+			<doublePageNavigation enabled="true"/>
 		</zoomImageView>
 		
 		<!-- limitImageHeight: If true, the image width is divided by the

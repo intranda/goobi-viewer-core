@@ -2738,12 +2738,12 @@ class ConfigurationTest extends AbstractTest {
 
     @Test
     void isDoublePageNavigationEnabled_shouldReturnCorrectValue() throws ViewerConfigurationException {
-        assertFalse(DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(null, null));
+        assertTrue(DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(null, null));
     }
 
     @Test
     void isSequencePageNavigationEnabled_shouldReturnCorrectValue() throws ViewerConfigurationException {
-        assertTrue(DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(null, null));
+        assertFalse(DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(null, null));
     }
 
     /**
