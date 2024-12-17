@@ -255,7 +255,7 @@
 			<pageNavigation>
 				<single enabled="true"/>
 				<double enabled="false"></double>
-				<sequence enabled="true" default="true"></sequence>
+				<sequence enabled="true" default="false"></sequence>
 			</pageNavigation>
 		</zoomImageView>
 
