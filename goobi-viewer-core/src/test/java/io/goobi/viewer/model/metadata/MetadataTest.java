@@ -33,7 +33,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
-import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
@@ -191,38 +190,6 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
         metadata.getValues().get(1).setOwnerIddoc("456");
 
         Assertions.assertFalse(metadata.isBlank("456"));
-    }
-
-    /**
-     * @see Metadata#isHasAccessConditions()
-     * @verifies return false if accessConditions empty
-     */
-    @Test
-    void isHasAccessConditions_shouldReturnFalseIfAccessConditionsEmpty() {
-        Metadata metadata = new Metadata("", "MD_FIELD", "", "");
-        Assertions.assertFalse(metadata.isHasAccessConditions());
-    }
-
-    /**
-     * @see Metadata#isHasAccessConditions()
-     * @verifies return false if only value is open access
-     */
-    @Test
-    void isHasAccessConditions_shouldReturnFalseIfOnlyValueIsOpenAccess() {
-        Metadata metadata = new Metadata("", "MD_FIELD", "", "");
-        metadata.getAccessConditions().add(SolrConstants.OPEN_ACCESS_VALUE);
-        Assertions.assertFalse(metadata.isHasAccessConditions());
-    }
-
-    /**
-     * @see Metadata#isHasAccessConditions()
-     * @verifies return true if other values are contained
-     */
-    @Test
-    void isHasAccessConditions_shouldReturnTrueIfOtherValuesAreContained() {
-        Metadata metadata = new Metadata("", "MD_FIELD", "", "");
-        metadata.getAccessConditions().add(StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED);
-        Assertions.assertTrue(metadata.isHasAccessConditions());
     }
 
     /**
