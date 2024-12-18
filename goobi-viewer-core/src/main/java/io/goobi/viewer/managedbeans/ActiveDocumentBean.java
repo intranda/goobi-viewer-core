@@ -823,9 +823,10 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @throws ViewerConfigurationException
-     * @throws IllegalUrlParameterException 
+     * @throws IllegalUrlParameterException
      */
-    public void setRepresentativeImage() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IllegalUrlParameterException {
+    public void setRepresentativeImage()
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IllegalUrlParameterException {
         logger.trace("setRepresentativeImage"); //NOSONAR Debug
         synchronized (lock) {
             String image = "1";
@@ -1743,7 +1744,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getTitleBarLabel() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         Locale locale = BeanUtils.getLocale();
-        if (locale != null) {
+        if (locale != null && StringUtils.isNotEmpty(locale.getLanguage())) {
             return getTitleBarLabel(locale.getLanguage());
         }
 
@@ -1768,15 +1769,15 @@ public class ActiveDocumentBean implements Serializable {
             return null;
         }
 
-        if (PageType.getByName(navigationHelper.getCurrentPage()) != null
-                && PageType.getByName(navigationHelper.getCurrentPage()).isDocumentPage() && viewManager != null) {
+        if (navigationHelper.getCurrentPage() != null && PageType.getByName(navigationHelper.getCurrentPage()) != null
+                && PageType.getByName(navigationHelper.getCurrentPage()).isDocumentPage() && getViewManager() != null) {
             // Prefer the label of the current TOC element
             TOC toc = getToc();
             if (toc != null && toc.getTocElements() != null && !toc.getTocElements().isEmpty()) {
                 String label = null;
                 String labelTemplate = StringConstants.DEFAULT_NAME;
-                if (getViewManager() != null) {
-                    labelTemplate = getViewManager().getTopStructElement().getDocStructType();
+                if (viewManager.getTopStructElement() != null) {
+                    labelTemplate = viewManager.getTopStructElement().getDocStructType();
                 }
                 if (DataManager.getInstance().getConfiguration().isDisplayAnchorLabelInTitleBar(labelTemplate)
                         && StringUtils.isNotBlank(viewManager.getAnchorPi())) {
