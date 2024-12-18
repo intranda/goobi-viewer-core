@@ -27,29 +27,34 @@
 				</div>
 				
 				<script type="text/javascript">
-			//<![CDATA[   
-			var url = "#{cc.attrs.cmsContent.url}";
-                if ( url ) {
-                    if ( url.toLowerCase().endsWith( ".pdf" ) ) {
-                        riot.mount( "#documentWrapper_#{cc.clientId}", 'pdfdocument', {
-                        	data:"#{cc.attrs.cmsContent.url}",
-                        	loaderSelector: "#documentLoader_#{cc.clientId}"
-                        } );
-                    }
-                    else {
-                        $.ajax( {
-                            url: url,
-                            type: "GET",
-                            datatype: "HTML"
-                        } ).then( function( data ) {
-                            document.getElementById('literature').innerHTML = data;
-                            $( '#documentLoader_#{cc.clientId}' ).hide();
-                        } );
-                    }
-                }
-                else {
-                    $( '#documentLoader_#{cc.clientId}' ).hide();
-                }
+			//<![CDATA[  
+				
+				function loadPdf(pdfUrl, element, loader) {
+					console.log("loading pdf from ", pdfUrl, " into element ", element)
+	                if ( pdfUrl ) {
+	                    if ( pdfUrl.toLowerCase().endsWith( ".pdf" ) ) {
+	                        riot.mount( element, 'pdfdocument', {
+	                        	data: pdfUrl,
+	                        	loaderSelector: loader
+	                        } );
+	                    }
+	                    else {
+	                        $.ajax( {
+	                            url: pdfUrl,
+	                            type: "GET",
+	                            datatype: "HTML"
+	                        } ).then( function( data ) {
+	                            document.getElementById('literature').innerHTML = data;
+	                            $( loader ).hide();
+	                        } );
+	                    }
+	                }
+	                else {
+	                    $( '#documentLoader_#{cc.clientId}' ).hide();
+	                }
+				}
+				
+				loadPdf("#{cc.attrs.cmsContent.url}", "#documentWrapper_#{cc.clientId}", "#documentLoader_#{cc.clientId}")
                 
               //]]>
             </script>
