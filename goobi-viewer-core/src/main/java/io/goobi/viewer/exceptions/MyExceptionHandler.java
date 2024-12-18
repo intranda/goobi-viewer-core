@@ -166,9 +166,10 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     }
                     handleError(msg, "download");
                 } else if (t instanceof IllegalUrlParameterException || isCausedByExceptionType(t, IllegalUrlParameterException.class.getName())) {
-                    logger.warn(t.getMessage());
-                    String msg = LocalDateTime.now().format(DateTools.FORMATTERISO8601DATETIME) + ": " + t.getMessage();
-                    handleError(msg, "general");
+                    // Illegal URL parameter input, do not output illegal value on error page
+                    String msg = getRootCause(t).getMessage();
+                    logger.warn(msg);
+                    handleError("Illegal URL parameter.", "general_no_url");
                 } else {
                     // All other exceptions
                     logger.error(t.getMessage(), t);
