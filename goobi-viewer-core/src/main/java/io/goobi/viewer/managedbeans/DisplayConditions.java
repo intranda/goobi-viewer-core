@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
+import javax.el.ELException;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UINamingContainer;
@@ -336,7 +337,7 @@ public class DisplayConditions implements Serializable {
         private static boolean isRendered(UIComponent child) {
             try {
                 return child != null && child.isRendered() && isHasValuesIfRepeat(child);
-            } catch (ConcurrentModificationException | NullPointerException e) {
+            } catch (ConcurrentModificationException | NullPointerException | ELException e) {
                 //possibly happens when rendered conditions are tested on child with 'displayConditions.matchPage/matchRecord', according to log entry
                 logger.warn("Cannot detect rendered state of child compnent {} because of {}", child.getClientId(), e.toString());
                 return true;
