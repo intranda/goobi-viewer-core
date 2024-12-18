@@ -831,7 +831,7 @@ public class ActiveDocumentBean implements Serializable {
                     .orElse(DataManager.getInstance()
                             .getConfiguration()
                             .isDoublePageNavigationDefault(this.navigationHelper.getCurrentPageType(),
-                                    this.getViewManager().getMimeType()));
+                                    Optional.ofNullable(this.getViewManager()).map(ViewManager::getMimeType).orElse(null)));
             if (isDoublePageNavigation) {
                 image = String.format("%s-%s", image, image);
             }
