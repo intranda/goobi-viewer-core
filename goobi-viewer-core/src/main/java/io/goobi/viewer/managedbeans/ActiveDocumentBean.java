@@ -72,6 +72,7 @@ import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
+import io.goobi.viewer.exceptions.IllegalUrlParameterException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordDeletedException;
@@ -759,9 +760,22 @@ public class ActiveDocumentBean implements Serializable {
         return null;
     }
 
+    /**
+     * 
+     * @throws NumberFormatException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws IDDOCNotFoundException
+     * @throws RecordNotFoundException
+     * @throws RecordDeletedException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     * @throws RecordLimitExceededException
+     * @throws IllegalUrlParameterException
+     */
     public void setCurrentImageOrderPerScript()
             throws NumberFormatException, IndexUnreachableException, PresentationException, IDDOCNotFoundException, RecordNotFoundException,
-            RecordDeletedException, DAOException, ViewerConfigurationException, RecordLimitExceededException {
+            RecordDeletedException, DAOException, ViewerConfigurationException, RecordLimitExceededException, IllegalUrlParameterException {
         String order = Faces.getRequestParameter("order");
         setImageToShow(order);
         update();
@@ -779,16 +793,16 @@ public class ActiveDocumentBean implements Serializable {
      * </p>
      *
      * @param imageToShow Single page number (1) or range (2-3)
-     * @throws PresentationException
+     * @throws IllegalUrlParameterException
      */
-    public void setImageToShow(String imageToShow) throws PresentationException {
+    public void setImageToShow(String imageToShow) throws IllegalUrlParameterException {
         synchronized (lock) {
             if (StringUtils.isNotEmpty(imageToShow) && imageToShow.matches("^\\d+(-\\d+)?$")) {
                 this.imageToShow = imageToShow;
             } else {
                 //                logger.warn("The passed image number '{}' contains illegal characters, setting to '1'...", imageToShow);
                 //                this.imageToShow = "1";
-                throw new PresentationException("Illegal page number(s).");
+                throw new IllegalUrlParameterException("Illegal page number(s).");
             }
             if (viewManager != null) {
                 viewManager.setDropdownSelected(String.valueOf(this.imageToShow));
@@ -809,8 +823,9 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @throws ViewerConfigurationException
+     * @throws IllegalUrlParameterException 
      */
-    public void setRepresentativeImage() throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
+    public void setRepresentativeImage() throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IllegalUrlParameterException {
         logger.trace("setRepresentativeImage"); //NOSONAR Debug
         synchronized (lock) {
             String image = "1";
