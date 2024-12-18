@@ -1696,6 +1696,34 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @return List of configured template names
+     * @should return all values
+     */
+    public List<String> getAdvancedSearchTemplateNames() {
+        return getLocalList(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE + "[@name]", Collections.emptyList());
+    }
+
+    /**
+     * 
+     * @param template
+     * @return Value of the query attribute; empty string if none found
+     * @should return correct value
+     */
+    public String getAdvancedSearchTemplateQuery(String template) {
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
+        if (templateList == null) {
+            return null;
+        }
+        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, false);
+        if (usingTemplate == null) {
+            return null;
+        }
+
+        return usingTemplate.getString("[@query]", "");
+    }
+
+    /**
      * <p>
      * getAdvancedSearchFields.
      * </p>
@@ -5999,8 +6027,7 @@ public class Configuration extends AbstractConfiguration {
                 continue;
             }
             int previewHitCount = groupNode.getInt("[@previewHitCount]", 10);
-            boolean useAsAdvancedSearchTemplate = groupNode.getBoolean("[@useAsAdvancedSearchTemplate]", false);
-            ret.add(new SearchResultGroup(name, query, previewHitCount, useAsAdvancedSearchTemplate));
+            ret.add(new SearchResultGroup(name, query, previewHitCount));
         }
 
         return ret;

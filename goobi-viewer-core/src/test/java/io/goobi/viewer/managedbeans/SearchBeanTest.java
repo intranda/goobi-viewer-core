@@ -77,7 +77,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies reset variables correctly
      */
     @Test
-    void resetSimpleSearchParameters_shouldResetVariablesCorrectly() throws Exception {
+    void resetSimpleSearchParameters_shouldResetVariablesCorrectly() {
         searchBean.setSearchString("test");
         assertEquals("test", searchBean.getSearchString());
         assertEquals("test", searchBean.getSearchStringForUrl());
@@ -92,7 +92,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies reset variables correctly
      */
     @Test
-    void resetAdvancedSearchParameters_shouldResetVariablesCorrectly() throws Exception {
+    void resetAdvancedSearchParameters_shouldResetVariablesCorrectly() {
         searchBean.resetAdvancedSearchParameters();
         assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
     }
@@ -102,7 +102,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies re-select collection correctly
      */
     @Test
-    void resetAdvancedSearchParameters_shouldReselectCollectionCorrectly() throws Exception {
+    void resetAdvancedSearchParameters_shouldReselectCollectionCorrectly() {
         searchBean.getFacets().setActiveFacetString("DC:col");
 
         searchBean.resetAdvancedSearchParameters();
@@ -118,7 +118,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct Pretty URL ID
      */
     @Test
-    void resetSearchAction_shouldReturnCorrectPrettyURLID() throws Exception {
+    void resetSearchAction_shouldReturnCorrectPrettyURLID() {
         DataManager.getInstance().getConfiguration().overrideValue("search.advanced[@enabled]", true);
         DataManager.getInstance().getConfiguration().overrideValue("search.calendar[@enabled]", true);
 
@@ -135,7 +135,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies set collection item correctly
      */
     @Test
-    void mirrorAdvancedSearchCurrentCollection_shouldSetCollectionItemCorrectly() throws Exception {
+    void mirrorAdvancedSearchCurrentCollection_shouldSetCollectionItemCorrectly() {
         searchBean.resetAdvancedSearchParameters();
         assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
         SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
@@ -152,7 +152,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies reset collection item correctly
      */
     @Test
-    void mirrorAdvancedSearchCurrentCollection_shouldResetCollectionItemCorrectly() throws Exception {
+    void mirrorAdvancedSearchCurrentCollection_shouldResetCollectionItemCorrectly() {
         searchBean.resetAdvancedSearchParameters();
         assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
         SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
@@ -173,7 +173,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies mirror facet items to search query items correctly
      */
     @Test
-    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldMirrorFacetItemsToSearchQueryItemsCorrectly() throws Exception {
+    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldMirrorFacetItemsToSearchQueryItemsCorrectly() {
         searchBean.resetAdvancedSearchParameters();
         assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
         SearchQueryItem item1 = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
@@ -194,7 +194,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not replace query items already in use
      */
     @Test
-    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldNotReplaceQueryItemsAlreadyInUse() throws Exception {
+    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldNotReplaceQueryItemsAlreadyInUse() {
         searchBean.resetAdvancedSearchParameters();
         SearchQueryItem item1 = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
         SearchQueryItem item2 = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
@@ -217,7 +217,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies not add identical hierarchical query items
      */
     @Test
-    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldNotAddIdenticalHierarchicalQueryItems() throws Exception {
+    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldNotAddIdenticalHierarchicalQueryItems() {
         searchBean.resetAdvancedSearchParameters();
         SearchQueryItem item1 = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
 
@@ -236,7 +236,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies generate phrase search query without filter correctly
      */
     @Test
-    void generateSimpleSearchString_shouldGeneratePhraseSearchQueryWithoutFilterCorrectly() throws Exception {
+    void generateSimpleSearchString_shouldGeneratePhraseSearchQueryWithoutFilterCorrectly() {
         searchBean.generateSimpleSearchString("\"foo bar\"");
         assertEquals(
                 "SUPERDEFAULT:(\"foo bar\") OR SUPERFULLTEXT:(\"foo bar\") OR SUPERUGCTERMS:(\"foo bar\") OR SUPERSEARCHTERMS_ARCHIVE:(\"foo bar\")"
@@ -250,7 +250,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies generate phrase search query with specific filter correctly
      */
     @Test
-    void generateSimpleSearchString_shouldGeneratePhraseSearchQueryWithSpecificFilterCorrectly() throws Exception {
+    void generateSimpleSearchString_shouldGeneratePhraseSearchQueryWithSpecificFilterCorrectly() {
         searchBean.setCurrentSearchFilterString("filter_FULLTEXT");
         searchBean.generateSimpleSearchString("\"foo bar\"");
         assertEquals("SUPERFULLTEXT:(\"foo bar\") OR FULLTEXT:(\"foo bar\")", searchBean.getSearchStringInternal());
@@ -261,7 +261,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies generate non-phrase search query without filter correctly
      */
     @Test
-    void generateSimpleSearchString_shouldGenerateNonphraseSearchQueryWithoutFilterCorrectly() throws Exception {
+    void generateSimpleSearchString_shouldGenerateNonphraseSearchQueryWithoutFilterCorrectly() {
         searchBean.generateSimpleSearchString("foo bar");
         assertEquals(
                 "SUPERDEFAULT:(foo AND bar) SUPERFULLTEXT:(foo AND bar) SUPERUGCTERMS:(foo AND bar) SUPERSEARCHTERMS_ARCHIVE:(foo AND bar)"
@@ -275,7 +275,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies generate non-phrase search query with specific filter correctly
      */
     @Test
-    void generateSimpleSearchString_shouldGenerateNonphraseSearchQueryWithSpecificFilterCorrectly() throws Exception {
+    void generateSimpleSearchString_shouldGenerateNonphraseSearchQueryWithSpecificFilterCorrectly() {
         searchBean.setCurrentSearchFilterString("filter_FULLTEXT");
         searchBean.generateSimpleSearchString("foo bar");
         assertEquals("SUPERFULLTEXT:(foo AND bar) OR FULLTEXT:(foo AND bar)", searchBean.getSearchStringInternal());
@@ -286,7 +286,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies add proximity search token correctly
      */
     @Test
-    void generateSimpleSearchString_shouldAddProximitySearchTokenCorrectly() throws Exception {
+    void generateSimpleSearchString_shouldAddProximitySearchTokenCorrectly() {
         // All
         searchBean.generateSimpleSearchString("\"foo bar\"~20");
         Assertions.assertTrue(searchBean.getSearchStringInternal().contains("SUPERFULLTEXT:(\"foo bar\"~20)"));
@@ -303,7 +303,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies reset exactSearchString if input empty
      */
     @Test
-    void generateSimpleSearchString_shouldResetExactSearchStringIfInputEmpty() throws Exception {
+    void generateSimpleSearchString_shouldResetExactSearchStringIfInputEmpty() {
         searchBean.setExactSearchString("PI:*");
         assertEquals("PI%3A*", searchBean.getExactSearchString());
         searchBean.generateSimpleSearchString("");
@@ -315,7 +315,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct query correctly
      */
     @Test
-    void generateAdvancedSearchString_shouldConstructQueryCorrectly() throws Exception {
+    void generateAdvancedSearchString_shouldConstructQueryCorrectly() {
         searchBean.resetAdvancedSearchParameters();
 
         // First group
@@ -345,7 +345,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies construct query info correctly
      */
     @Test
-    void generateAdvancedSearchString_shouldConstructQueryInfoCorrectly() throws Exception {
+    void generateAdvancedSearchString_shouldConstructQueryInfoCorrectly() {
         searchBean.resetAdvancedSearchParameters();
 
         // First group
@@ -541,7 +541,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return correct url
      */
     @Test
-    void getSearchUrl_shouldReturnCorrectUrl() throws Exception {
+    void getSearchUrl_shouldReturnCorrectUrl() {
         NavigationHelper nh = new NavigationHelper();
         searchBean.setNavigationHelper(nh);
 
@@ -557,7 +557,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return null if navigationHelper is null
      */
     @Test
-    void getSearchUrl_shouldReturnNullIfNavigationHelperIsNull() throws Exception {
+    void getSearchUrl_shouldReturnNullIfNavigationHelperIsNull() {
         Assertions.assertNull(searchBean.getSearchUrl());
     }
 
@@ -566,7 +566,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies increase index correctly
      */
     @Test
-    void increaseCurrentHitIndex_shouldIncreaseIndexCorrectly() throws Exception {
+    void increaseCurrentHitIndex_shouldIncreaseIndexCorrectly() {
         searchBean.setCurrentSearch(new Search());
         searchBean.getCurrentSearch().setHitsCount(10);
 
@@ -594,7 +594,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies decrease index correctly
      */
     @Test
-    void increaseCurrentHitIndex_shouldDecreaseIndexCorrectly() throws Exception {
+    void increaseCurrentHitIndex_shouldDecreaseIndexCorrectly() {
         searchBean.setCurrentSearch(new Search());
         searchBean.getCurrentSearch().setHitsCount(10);
 
@@ -622,7 +622,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies reset operand afterwards
      */
     @Test
-    void increaseCurrentHitIndex_shouldResetOperandAfterwards() throws Exception {
+    void increaseCurrentHitIndex_shouldResetOperandAfterwards() {
         searchBean.setCurrentSearch(new Search());
         searchBean.getCurrentSearch().setHitsCount(10);
 
@@ -638,7 +638,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies do nothing if hit index at the last hit
      */
     @Test
-    void increaseCurrentHitIndex_shouldDoNothingIfHitIndexAtTheLastHit() throws Exception {
+    void increaseCurrentHitIndex_shouldDoNothingIfHitIndexAtTheLastHit() {
         searchBean.setCurrentSearch(new Search());
         searchBean.getCurrentSearch().setHitsCount(10);
         searchBean.setHitIndexOperand(1);
@@ -653,7 +653,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies do nothing if hit index at 0
      */
     @Test
-    void increaseCurrentHitIndex_shouldDoNothingIfHitIndexAt0() throws Exception {
+    void increaseCurrentHitIndex_shouldDoNothingIfHitIndexAt0() {
         searchBean.setCurrentSearch(new Search());
         searchBean.getCurrentSearch().setHitsCount(10);
         searchBean.setHitIndexOperand(-1);
@@ -679,7 +679,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies omit languaged fields for other languages
      */
     @Test
-    void getAdvancedSearchAllowedFields_shouldOmitLanguagedFieldsForOtherLanguages() throws Exception {
+    void getAdvancedSearchAllowedFields_shouldOmitLanguagedFieldsForOtherLanguages() {
         List<AdvancedSearchFieldConfiguration> fields = SearchBean.getAdvancedSearchAllowedFields("en", StringConstants.DEFAULT_NAME, false);
         boolean en = false;
         boolean de = false;
@@ -709,7 +709,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies addSearchFilters
      */
     @Test
-    void getAdvancedSearchAllowedFields_shouldAddSearchFilters() throws Exception {
+    void getAdvancedSearchAllowedFields_shouldAddSearchFilters() {
         List<AdvancedSearchFieldConfiguration> fields = SearchBean.getAdvancedSearchAllowedFields("en", StringConstants.DEFAULT_NAME, true);
         assertEquals(17, fields.size());
         assertEquals(SearchHelper.SEARCH_FILTER_ALL.getField(), fields.get(0).getField());
@@ -726,7 +726,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies set currentHitIndex to minus one if no search hits
      */
     @Test
-    void findCurrentHitIndex_shouldSetCurrentHitIndexToMinusOneIfNoSearchHits() throws Exception {
+    void findCurrentHitIndex_shouldSetCurrentHitIndexToMinusOneIfNoSearchHits() {
         searchBean.findCurrentHitIndex("PPN123", 1, true);
         assertEquals(-1, searchBean.getCurrentHitIndex());
 
@@ -823,7 +823,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies url escape string
      */
     @Test
-    void getExactSearchString_shouldUrlEscapeString() throws Exception {
+    void getExactSearchString_shouldUrlEscapeString() {
         searchBean.setExactSearchString("PI:*");
         assertEquals("PI%3A*", searchBean.getExactSearchString());
     }
@@ -833,7 +833,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies escape critical chars
      */
     @Test
-    void getExactSearchString_shouldEscapeCriticalChars() throws Exception {
+    void getExactSearchString_shouldEscapeCriticalChars() {
         searchBean.setExactSearchString("PI:foo/bar");
         assertEquals("PI%3Afoo" + StringTools.SLASH_REPLACEMENT + "bar", searchBean.getExactSearchString());
     }
@@ -843,7 +843,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies perform double unescaping if necessary
      */
     @Test
-    void setExactSearchString_shouldPerformDoubleUnescapingIfNecessary() throws Exception {
+    void setExactSearchString_shouldPerformDoubleUnescapingIfNecessary() {
         searchBean.setExactSearchString("SUPERDEFAULT%25253A%2525281234xyz%252529");
         assertEquals("SUPERDEFAULT%3A%281234xyz%29", searchBean.getExactSearchString()); // getter should return single encoding
     }
@@ -853,7 +853,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return options correctly
      */
     @Test
-    void getSearchSortingOptions_shouldReturnOptionsCorrectly() throws Exception {
+    void getSearchSortingOptions_shouldReturnOptionsCorrectly() {
         Collection<SearchSortingOption> options = searchBean.getSearchSortingOptions("en");
         String defaultSorting = DataManager.getInstance().getConfiguration().getDefaultSortField("en");
         assertEquals("SORT_TITLE_LANG_EN", defaultSorting);
@@ -871,7 +871,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies use current random seed option instead of default
      */
     @Test
-    void getSearchSortingOptions_shouldUseCurrentRandomSeedOptionInsteadOfDefault() throws Exception {
+    void getSearchSortingOptions_shouldUseCurrentRandomSeedOptionInsteadOfDefault() {
         searchBean.setSearchSortingOption(new SearchSortingOption("random_12345"));
         Collection<SearchSortingOption> options = searchBean.getSearchSortingOptions(null);
         Iterator<SearchSortingOption> iterator = options.iterator();
@@ -890,7 +890,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies generate search string correctly
      */
     @Test
-    void searchAdvanced_shouldGenerateSearchStringCorrectly() throws Exception {
+    void searchAdvanced_shouldGenerateSearchStringCorrectly() {
         Assertions.assertTrue(StringUtils.isEmpty(searchBean.getSearchStringInternal()));
         searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0).setField(SolrConstants.PI);
         searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0).setValue(PI_KLEIUNIV);
@@ -903,7 +903,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies reset search parameters
      */
     @Test
-    void searchAdvanced_shouldResetSearchParameters() throws Exception {
+    void searchAdvanced_shouldResetSearchParameters() {
         DataManager.getInstance().getConfiguration().overrideValue("search.advanced[@enabled]", true);
         searchBean.setActiveSearchType(1);
         assertEquals(1, searchBean.getActiveSearchType());
@@ -917,7 +917,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies set search string correctly
      */
     @Test
-    void searchToday_shouldSetSearchStringCorrectly() throws Exception {
+    void searchToday_shouldSetSearchStringCorrectly() {
         searchBean.searchToday();
         Assertions.assertTrue(searchBean.getSearchStringInternal().startsWith(SolrConstants.MONTHDAY));
     }
@@ -927,7 +927,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies select result group correctly
      */
     @Test
-    void setActiveResultGroupName_shouldSelectResultGroupCorrectly() throws Exception {
+    void setActiveResultGroupName_shouldSelectResultGroupCorrectly() {
         SearchBean sb = new SearchBean();
         assertEquals("-", sb.getActiveResultGroupName());
 
@@ -940,7 +940,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies reset result group if new name not configured
      */
     @Test
-    void setActiveResultGroupName_shouldResetResultGroupIfNewNameNotConfigured() throws Exception {
+    void setActiveResultGroupName_shouldResetResultGroupIfNewNameNotConfigured() {
         SearchBean sb = new SearchBean();
         sb.setActiveResultGroupName("stories");
         assertEquals("stories", sb.getActiveResultGroupName());
@@ -954,7 +954,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies reset result group if empty name given
      */
     @Test
-    void setActiveResultGroupName_shouldResetResultGroupIfEmptyNameGiven() throws Exception {
+    void setActiveResultGroupName_shouldResetResultGroupIfEmptyNameGiven() {
         SearchBean sb = new SearchBean();
         sb.setActiveResultGroupName("stories");
         assertEquals("stories", sb.getActiveResultGroupName());
@@ -965,60 +965,10 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#setActiveResultGroupName(String)
-     * @verifies reset advanced search query items if new group used as field template
-     */
-    @Test
-    void setActiveResultGroupName_shouldResetAdvancedSearchQueryItemsIfNewGroupUsedAsFieldTemplate() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.setActiveResultGroupName("stories");
-
-        List<SearchQueryItem> items = sb.getAdvancedSearchQueryGroup().getQueryItems();
-        Assertions.assertFalse(items.isEmpty());
-        items.get(0).setOperator(SearchItemOperator.NOT);
-        items.get(0).setValue("foo bar");
-
-        // Same group, no reset
-        sb.setActiveResultGroupName("stories");
-        assertEquals(SearchItemOperator.NOT, items.get(0).getOperator());
-        assertEquals("foo bar", items.get(0).getValue());
-
-        // Non-template group, no reset
-        sb.setActiveResultGroupName("monographs");
-        assertEquals(SearchItemOperator.NOT, items.get(0).getOperator());
-        assertEquals("foo bar", items.get(0).getValue());
-
-        // Template group, reset
-        sb.setActiveResultGroupName("lido_objects");
-        assertEquals(SearchItemOperator.AND, items.get(0).getOperator());
-        Assertions.assertNull(items.get(0).getValue());
-    }
-
-    /**
-     * @see SearchBean#setActiveResultGroupName(String)
-     * @verifies reset advanced search query items if old group used as field template
-     */
-    @Test
-    void setActiveResultGroupName_shouldResetAdvancedSearchQueryItemsIfOldGroupUsedAsFieldTemplate() throws Exception {
-        SearchBean sb = new SearchBean();
-        sb.setActiveResultGroupName("lido_objects");
-
-        List<SearchQueryItem> items = sb.getAdvancedSearchQueryGroup().getQueryItems();
-        Assertions.assertFalse(items.isEmpty());
-        items.get(0).setOperator(SearchItemOperator.NOT);
-        items.get(0).setValue("foo bar");
-
-        // No group, reset
-        sb.setActiveResultGroupName("-");
-        assertEquals(SearchItemOperator.AND, items.get(0).getOperator());
-        Assertions.assertNull(items.get(0).getValue());
-    }
-
-    /**
-     * @see SearchBean#setActiveResultGroupName(String)
      * @verifies not change hitsPerPageSetterCalled value
      */
     @Test
-    void setHitsPerPageNoTrigger_shouldNotChangeHitsPerPageSetterCalledValue() throws Exception {
+    void setHitsPerPageNoTrigger_shouldNotChangeHitsPerPageSetterCalledValue() {
         SearchBean sb = new SearchBean();
         Assertions.assertFalse(sb.isHitsPerPageSetterCalled());
 
