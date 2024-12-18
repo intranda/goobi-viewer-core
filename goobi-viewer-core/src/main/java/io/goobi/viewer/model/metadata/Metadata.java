@@ -107,7 +107,6 @@ public class Metadata implements Serializable {
     private boolean hideIfOnlyMetadataField = false;
     private boolean topstructOnly = false;
     private String filterQuery = "";
-    private final Set<String> accessConditions = new HashSet<>();
     private boolean accessGranted = true;
 
     // Data
@@ -923,7 +922,7 @@ public class Metadata implements Serializable {
                         // Set value to empty for restricted access metadata values when configured as non-grouped
                         if (StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED.equals(value)) {
                             logger.trace("Removing hidden value");
-                            value = "";
+                            continue;
                         }
 
                         // Apply replace rules
@@ -1025,6 +1024,7 @@ public class Metadata implements Serializable {
             for (SolrDocument doc : groupedMdList) {
                 String metadataDocIddoc = null;
                 Map<String, List<String>> groupFieldMap = new HashMap<>();
+                Set<String> accessConditions = new HashSet<>();
                 // Collect values for all fields in this metadata doc
                 for (String fieldName : doc.getFieldNames()) {
                     List<String> valueMap = groupFieldMap.computeIfAbsent(fieldName, k -> new ArrayList<>());
@@ -1035,8 +1035,14 @@ public class Metadata implements Serializable {
                         List<String> vals = SolrTools.getMetadataValues(doc, fieldName);
                         valueMap.addAll(vals);
                         if (SolrConstants.ACCESSCONDITION.equals(fieldName)) {
-                            this.accessConditions.addAll(vals);
-                            logger.trace("Metadata field {} has access conditions.", key);
+                            for (String ac : vals) {
+                                if (!SolrConstants.OPEN_ACCESS_VALUE.equals(ac)) {
+                                    accessConditions.addAll(vals);
+                                }
+                            }
+                            if (!accessConditions.isEmpty()) {
+                                logger.trace("Metadata field {} has access conditions.", key);
+                            }
                         }
                     }
                     // Collect IDDOC value for use as owner IDDOC for child metadata
@@ -1051,7 +1057,7 @@ public class Metadata implements Serializable {
                                 .isGranted();
                 if (!accessGranted) {
                     logger.trace("Access denied to metadata field {}", key);
-                    return false;
+                    continue;
                 }
 
                 String groupType = null;
@@ -1113,6 +1119,7 @@ public class Metadata implements Serializable {
                     MetadataValue val = values.get(count);
                     val.setIddoc(metadataDocIddoc);
                     val.setOwnerIddoc(ownerIddoc);
+                    val.getAccessConditions().addAll(accessConditions);
 
                     if (!getChildMetadata().isEmpty()) {
                         for (Metadata child : getChildMetadata()) {
@@ -1328,26 +1335,6 @@ public class Metadata implements Serializable {
 
     public String getFilterQuery() {
         return filterQuery;
-    }
-
-    /**
-     * 
-     * @return true if thids.accessConditions not empty; false otherwise
-     * @should return false if accessConditions empty
-     * @should return false if only value is open access
-     * @should return true if other values are contained
-     */
-    public boolean isHasAccessConditions() {
-        logger.trace("access conditions for {}: {}", label, !this.accessConditions.isEmpty());
-        return !this.accessConditions.isEmpty()
-                && !(this.accessConditions.size() == 1 && SolrConstants.OPEN_ACCESS_VALUE.equals(this.accessConditions.iterator().next()));
-    }
-
-    /**
-     * @return the accessConditions
-     */
-    public Set<String> getAccessConditions() {
-        return accessConditions;
     }
 
     /**

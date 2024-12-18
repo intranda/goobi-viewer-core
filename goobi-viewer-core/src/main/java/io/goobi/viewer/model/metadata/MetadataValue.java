@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -44,6 +45,7 @@ import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * Wrapper class for metadata parameter value groups, so that JSF can iterate through them properly.
@@ -69,6 +71,7 @@ public class MetadataValue implements Serializable {
     private final Map<String, String> normDataUrls = new HashMap<>();
     private final Map<String, List<String>> citationValues = new HashMap<>();
     private final List<MetadataValue> childValues = new ArrayList<>();
+    private final Set<String> accessConditions = new HashSet<>();
     /** Unique ID for citation item generation */
     private String id;
     /** IDDOC of the grouped metadata Solr doc. */
@@ -351,6 +354,26 @@ public class MetadataValue implements Serializable {
      */
     public List<MetadataValue> getChildValues() {
         return childValues;
+    }
+
+    /**
+     * 
+     * @return true if thids.accessConditions not empty; false otherwise
+     * @should return false if accessConditions empty
+     * @should return false if only value is open access
+     * @should return true if other values are contained
+     */
+    public boolean isHasAccessConditions() {
+        logger.trace("access conditions for {}: {}", label, !this.accessConditions.isEmpty());
+        return !this.accessConditions.isEmpty()
+                && !(this.accessConditions.size() == 1 && SolrConstants.OPEN_ACCESS_VALUE.equals(this.accessConditions.iterator().next()));
+    }
+
+    /**
+     * @return the accessConditions
+     */
+    public Set<String> getAccessConditions() {
+        return accessConditions;
     }
 
     /**

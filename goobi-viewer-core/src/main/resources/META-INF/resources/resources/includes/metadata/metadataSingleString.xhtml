@@ -27,7 +27,7 @@
 						<dd>
 								<!-- Metadata value -->
 								<h:panelGroup rendered="#{metadata.singleString}">
-                                    <ui:fragment rendered="#{metadata.hasAccessConditions}">
+                                    <ui:fragment rendered="#{val.hasAccessConditions}">
                                         <i class="fa fa-unlock" />
                                     </ui:fragment>
                                     <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}" escape="false">
