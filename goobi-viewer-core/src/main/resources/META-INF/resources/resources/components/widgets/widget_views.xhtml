@@ -26,6 +26,9 @@
 					<ui:fragment rendered="#{cc.attrs.collapsible == false}">
 						<h2 class="widget__title #{cc.attrs.collapsible ? 'collapseable' : ''}">
 							<span>#{cc.attrs.widgetTitle}</span>
+							<div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
+								<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+							</div>
 						</h2>
 					</ui:fragment>
 					
@@ -40,7 +43,7 @@
 					</ui:fragment>
 
 					<ul  class="widget__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
-						<h:form>
+						<h:form prependId="false" id="widgetViewsForm">
 						<!-- Object -->
 						<h:panelGroup  visibility-class="widget-element"
 							rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, mimeType: [image, video, audio, model]}')}">

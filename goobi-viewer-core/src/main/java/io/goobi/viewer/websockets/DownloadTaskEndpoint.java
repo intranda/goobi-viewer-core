@@ -44,6 +44,7 @@ import javax.websocket.server.ServerEndpoint;
 import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -91,7 +92,7 @@ public class DownloadTaskEndpoint {
     }
 
     @OnMessage
-    public void onMessage(String messageString) {
+    public synchronized void onMessage(String messageString) {
         try {
             SocketMessage message = JsonTools.getAsObject(messageString, SocketMessage.class);
             switch (message.action) {
@@ -101,8 +102,11 @@ public class DownloadTaskEndpoint {
                 case CANCELDOWNLOAD:
                     cancelDownload(message);
                     break;
+                case STATUS:
+                    sendUpdate(message, false);
+                    break;
                 case UPDATE:
-                    sendUpdate(message);
+                    sendUpdate(message, true);
                     break;
                 case LISTFILES:
                 default:
@@ -170,13 +174,14 @@ public class DownloadTaskEndpoint {
         sendMessage(answer);
     }
 
-    private void sendUpdate(SocketMessage message) throws JsonProcessingException {
+    private void sendUpdate(SocketMessage message, boolean startDownloadIfDormant) throws JsonProcessingException {
         SocketMessage answer = SocketMessage.buildAnswer(message, Status.DORMANT);
         ExternalFilesDownloadJob job = Optional.ofNullable(storageBean)
                 .flatMap(bean -> bean.getIfRecentOrRemove(message.url, 1, ChronoUnit.DAYS))
                 .map(ExternalFilesDownloadJob.class::cast)
                 .orElse(null);
         ViewerMessage queueMessage = queueManager.getMessageById(message.messageQueueId).orElse(null);
+
         if (queueMessage != null && job == null) {
             answer.status = Status.WAITING;
         } else if (job != null) {
@@ -208,6 +213,11 @@ public class DownloadTaskEndpoint {
             }
         } else if (isFilesExist(message.pi, message.url)) {
             answer.status = Status.COMPLETE;
+        } else if (startDownloadIfDormant && StringUtils.isNotBlank(message.messageQueueId)) {
+            //no job, but also no files. Either job finished without generating files or the files have been deleted after the job finished
+            //try downloading again
+            startDownload(message);
+            return; // don't send the original messagehere. #startDownload(message) takes care of that
         }
         sendMessage(answer);
     }
@@ -299,7 +309,11 @@ public class DownloadTaskEndpoint {
     }
 
     private synchronized void sendMessage(SocketMessage message) throws JsonProcessingException {
-        session.getAsyncRemote().sendText(JsonTools.getAsJson(message));
+        try {
+            session.getBasicRemote().sendText(JsonTools.getAsJson(message));
+        } catch (IOException e) {
+            logger.error("Experienced Exception while sending text {}", message, e);
+        }
     }
 
     public String getMimetype(String path) {
@@ -322,18 +336,19 @@ public class DownloadTaskEndpoint {
 
     @OnClose
     public void onClose(Session session) {
-        logger.info("Closing socket for sessio {}", this.httpSession);
+        logger.debug("Closing socket for session {}", this.httpSession);
     }
 
     @OnError
     public void onError(Session session, Throwable t) {
-        logger.warn(t, t);
+        logger.error(t, t);
     }
 
     public enum Action {
         STARTDOWNLOAD,
         CANCELDOWNLOAD,
         UPDATE,
+        STATUS,
         LISTFILES;
 
         @Override

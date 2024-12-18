@@ -301,29 +301,31 @@ public class BCrypt {
      * @param off the position in the array of the blocks
      */
     private final void encipher(int[] lr, int off) {
-        int i;
-        int n;
-        int l = lr[off];
-        int r = lr[off + 1];
+        if (off < lr.length - 1 && p.length > 0) {
+            int i;
+            int n;
+            int l = lr[off];
+            int r = lr[off + 1];
 
-        l ^= p[0];
-        for (i = 0; i <= BLOWFISH_NUM_ROUNDS - 2;) {
-            // Feistel substitution on left word
-            n = s[(l >> 24) & 0xff];
-            n += s[0x100 | ((l >> 16) & 0xff)];
-            n ^= s[0x200 | ((l >> 8) & 0xff)];
-            n += s[0x300 | (l & 0xff)];
-            r ^= n ^ p[++i];
+            l ^= p[0];
+            for (i = 0; i <= BLOWFISH_NUM_ROUNDS - 2;) {
+                // Feistel substitution on left word
+                n = s[(l >> 24) & 0xff];
+                n += s[0x100 | ((l >> 16) & 0xff)];
+                n ^= s[0x200 | ((l >> 8) & 0xff)];
+                n += s[0x300 | (l & 0xff)];
+                r ^= n ^ p[++i];
 
-            // Feistel substitution on right word
-            n = s[(r >> 24) & 0xff];
-            n += s[0x100 | ((r >> 16) & 0xff)];
-            n ^= s[0x200 | ((r >> 8) & 0xff)];
-            n += s[0x300 | (r & 0xff)];
-            l ^= n ^ p[++i];
+                // Feistel substitution on right word
+                n = s[(r >> 24) & 0xff];
+                n += s[0x100 | ((r >> 16) & 0xff)];
+                n ^= s[0x200 | ((r >> 8) & 0xff)];
+                n += s[0x300 | (r & 0xff)];
+                l ^= n ^ p[++i];
+            }
+            lr[off] = r ^ p[BLOWFISH_NUM_ROUNDS + 1];
+            lr[off + 1] = l;
         }
-        lr[off] = r ^ p[BLOWFISH_NUM_ROUNDS + 1];
-        lr[off + 1] = l;
     }
 
     /**

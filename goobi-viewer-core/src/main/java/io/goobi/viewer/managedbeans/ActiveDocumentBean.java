@@ -52,6 +52,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.json.JSONObject;
+import org.omnifaces.cdi.Push;
+import org.omnifaces.cdi.PushContext;
+import org.omnifaces.util.Faces;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
@@ -106,6 +110,7 @@ import io.goobi.viewer.model.toc.TOCElement;
 import io.goobi.viewer.model.toc.export.pdf.TocWriter;
 import io.goobi.viewer.model.toc.export.pdf.WriteTocException;
 import io.goobi.viewer.model.translations.language.Language;
+import io.goobi.viewer.model.viewer.PageNavigation;
 import io.goobi.viewer.model.viewer.PageOrientation;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -154,7 +159,7 @@ public class ActiveDocumentBean implements Serializable {
     /** URL parameter 'action'. */
     private String action = "";
     /** URL parameter 'imageToShow'. */
-    private String imageToShow = DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault() ? "1-1" : "1";
+    private String imageToShow = "1";
     /** URL parameter 'logid'. */
     private String logid = "";
     /** URL parameter 'tocCurrentPage'. */
@@ -192,6 +197,10 @@ public class ActiveDocumentBean implements Serializable {
     private Map<String, String> prevDocstructUrlCache = new HashMap<>();
     /* Next docstruct URL cache. TODO Implement differently once other views beside full-screen are used. */
     private Map<String, String> nextDocstructUrlCache = new HashMap<>();
+
+    @Inject
+    @Push
+    private PushContext tocUpdateChannel;
 
     /**
      * Empty constructor.
@@ -583,7 +592,7 @@ public class ActiveDocumentBean implements Serializable {
      *         expected
      */
     private boolean isDoublePageUrl() {
-        return (StringUtils.isBlank(imageToShow) && DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault())
+        return (StringUtils.isBlank(imageToShow) && getViewManager().isDoublePageMode())
                 || (StringUtils.isNotBlank(imageToShow) && imageToShow.matches(DOUBLE_PAGE_PATTERN));
     }
 
@@ -750,20 +759,36 @@ public class ActiveDocumentBean implements Serializable {
         return null;
     }
 
+    public void setCurrentImageOrderPerScript()
+            throws NumberFormatException, IndexUnreachableException, PresentationException, IDDOCNotFoundException, RecordNotFoundException,
+            RecordDeletedException, DAOException, ViewerConfigurationException, RecordLimitExceededException {
+        String order = Faces.getRequestParameter("order");
+        setImageToShow(order);
+        update();
+        Optional.ofNullable(this.viewManager).ifPresent(viewManager -> {
+            JSONObject json = new JSONObject();
+            json.put("iddoc", viewManager.getCurrentStructElementIddoc());
+            json.put("page", viewManager.getCurrentImageOrder());
+            this.tocUpdateChannel.send(json.toString());
+        });
+    }
+
     /**
      * <p>
      * Setter for the field <code>imageToShow</code>.
      * </p>
      *
      * @param imageToShow Single page number (1) or range (2-3)
+     * @throws PresentationException
      */
-    public void setImageToShow(String imageToShow) {
+    public void setImageToShow(String imageToShow) throws PresentationException {
         synchronized (lock) {
             if (StringUtils.isNotEmpty(imageToShow) && imageToShow.matches("^\\d+(-\\d+)?$")) {
                 this.imageToShow = imageToShow;
             } else {
-                logger.warn("The passed image number '{}' contains illegal characters, setting to '1'...", imageToShow);
-                this.imageToShow = "1";
+                //                logger.warn("The passed image number '{}' contains illegal characters, setting to '1'...", imageToShow);
+                //                this.imageToShow = "1";
+                throw new PresentationException("Illegal page number(s).");
             }
             if (viewManager != null) {
                 viewManager.setDropdownSelected(String.valueOf(this.imageToShow));
@@ -783,8 +808,9 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @throws io.goobi.viewer.exceptions.PresentationException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws ViewerConfigurationException
      */
-    public void setRepresentativeImage() throws PresentationException, IndexUnreachableException {
+    public void setRepresentativeImage() throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         logger.trace("setRepresentativeImage"); //NOSONAR Debug
         synchronized (lock) {
             String image = "1";
@@ -799,7 +825,14 @@ public class ActiveDocumentBean implements Serializable {
                     logger.trace("{}  not found, using {}", SolrConstants.THUMBPAGENO, image);
                 }
             }
-            if (DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault()) {
+            boolean isDoublePageNavigation = Optional.ofNullable(this.viewManager)
+                    .map(ViewManager::getPageNavigation)
+                    .map(pageNavigation -> PageNavigation.DOUBLE == pageNavigation)
+                    .orElse(DataManager.getInstance()
+                            .getConfiguration()
+                            .isDoublePageNavigationDefault(this.navigationHelper.getCurrentPageType(),
+                                    this.getViewManager().getMimeType()));
+            if (isDoublePageNavigation) {
                 image = String.format("%s-%s", image, image);
             }
             setImageToShow(image);

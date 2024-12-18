@@ -1154,24 +1154,6 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getZoomFullscreenViewType()
-     * @verifies return correct value
-     */
-    @Test
-    void getZoomFullscreenViewType_shouldReturnCorrectValue() throws Exception {
-        assertEquals("classic", DataManager.getInstance().getConfiguration().getZoomFullscreenViewType());
-    }
-
-    /**
-     * @see Configuration#getZoomImageViewType()
-     * @verifies return correct value
-     */
-    @Test
-    void getZoomImageViewType_shouldReturnCorrectValue() throws Exception {
-        assertEquals("openSeadragon", DataManager.getInstance().getConfiguration().getImageViewType());
-    }
-
-    /**
      * @see Configuration#isBookmarksEnabled()
      * @verifies return correct value
      */
@@ -2775,8 +2757,13 @@ class ConfigurationTest extends AbstractTest {
     }
 
     @Test
-    void isDoublePageNavigationEnabled_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled());
+    void isDoublePageNavigationEnabled_shouldReturnCorrectValue() throws ViewerConfigurationException {
+        assertTrue(DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(null, null));
+    }
+
+    @Test
+    void isSequencePageNavigationEnabled_shouldReturnCorrectValue() throws ViewerConfigurationException {
+        assertFalse(DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(null, null));
     }
 
     /**
@@ -3179,6 +3166,18 @@ class ConfigurationTest extends AbstractTest {
     void getSidebarWidgetUsageCitationRecommendationStyles_shouldReturnAllConfiguredValues() {
         List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationStyles();
         assertEquals(3, result.size());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetUsageCitationRecommendationDocstructMapping()
+     * @verifies return all configured values
+     */
+    @Test
+    void getSidebarWidgetUsageCitationRecommendationDocstructMapping_shouldReturnAllConfiguredValues() {
+        Map<String, String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationDocstructMapping();
+        assertEquals(2, result.size());
+        assertEquals("book", result.get("other_monograph"));
+        assertEquals("manuscript", result.get("other_manuscript"));
     }
 
     /**

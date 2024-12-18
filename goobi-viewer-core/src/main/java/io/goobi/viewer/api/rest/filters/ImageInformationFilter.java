@@ -289,7 +289,10 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      */
     private List<Integer> getImageSizesFromConfig(boolean mayZoom) throws ViewerConfigurationException {
 
-        List<String> sizeStrings = DataManager.getInstance().getConfiguration().getImageViewZoomScales(pageType, imageType);
+        List<String> sizeStrings = DataManager.getInstance()
+                .getConfiguration()
+                .getImageViewZoomScales(pageType,
+                        Optional.ofNullable(imageType).map(ImageType::getFormat).map(ImageFileFormat::getMimeType).orElse(""));
         List<Integer> sizes = new ArrayList<>();
         int maxWidth = mayZoom ? Integer.MAX_VALUE : DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth();
         for (String string : sizeStrings) {
@@ -314,8 +317,12 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      */
     private List<ImageTile> getTileSizesFromConfig() throws ViewerConfigurationException {
         Map<Integer, List<Integer>> configSizes = Collections.emptyMap();
-        if (DataManager.getInstance().getConfiguration().useTiles(pageType, imageType)) {
-            configSizes = DataManager.getInstance().getConfiguration().getTileSizes(pageType, imageType);
+        if (DataManager.getInstance()
+                .getConfiguration()
+                .useTiles(pageType, Optional.ofNullable(imageType).map(ImageType::getFormat).map(ImageFileFormat::getMimeType).orElse(""))) {
+            configSizes = DataManager.getInstance()
+                    .getConfiguration()
+                    .getTileSizes(pageType, Optional.ofNullable(imageType).map(ImageType::getFormat).map(ImageFileFormat::getMimeType).orElse(""));
         }
         List<ImageTile> tiles = new ArrayList<>();
         for (Integer size : configSizes.keySet()) {

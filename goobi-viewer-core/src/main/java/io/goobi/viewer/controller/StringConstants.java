@@ -23,6 +23,8 @@ package io.goobi.viewer.controller;
 
 public final class StringConstants {
 
+    public static final String ACCESSCONDITION_METADATA_ACCESS_RESTRICTED = "metadata_access_restricted";
+
     public static final String DEFAULT = "default";
     public static final String DEFAULT_NAME = "_DEFAULT";
 

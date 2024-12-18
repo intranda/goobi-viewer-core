@@ -80,6 +80,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -322,6 +323,7 @@ public abstract class AbstractBuilder {
                         : (field.contains("/") ? field.substring(field.indexOf("/") + 1) : field);
                 SolrTools.getTranslations(field, ele, this.translationLocales, (s1, s2) -> s1 + "; " + s2)
                         .map(value -> new Metadata(getLabel(label), value))
+                        .filter(value -> !StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED.equals(value.getValue().getValue().get()))
                         .ifPresent(md -> {
                             md.getLabel().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
                             md.getValue().removeTranslation(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
