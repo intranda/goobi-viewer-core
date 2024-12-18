@@ -26,7 +26,7 @@
 					
 					<dl jsf:id="sidebarMetadataList">
 						<c:forEach items="#{metadataBean.getBottomMetadataElement(0).sidebarMetadataList}" var="metadata">
-							<dt title="#{msg[metadata.label]}">
+							<dt title="#{metadata.label}">
 								<h:outputText value="#{msg[metadata.label]}:" escape="false" />
 							</dt>
 	

@@ -27,7 +27,7 @@
                     
                     <dl jsf:id="technicalMetadataList">
                         <c:forEach items="#{activeDocumentBean.viewManager.currentPage.metadata}" var="metadata">
-                            <dt title="#{msg[metadata.label]}">
+                            <dt title="#{metadata.label}">
                                 <h:outputText value="#{msg[metadata.label]}:" escape="false" />
                             </dt>
     
