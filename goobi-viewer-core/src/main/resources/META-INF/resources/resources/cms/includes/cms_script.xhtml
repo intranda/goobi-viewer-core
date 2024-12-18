@@ -19,12 +19,16 @@
 
 		<!-- ADDITIONAL CMS LOGIC IN HEADER -->
 		<script>
-			let prettyUrl = "#{request.contextPath}#{navigationHelper.currentViewPrettyUrl}";
-			let url = new URL(location.origin + prettyUrl);
-			if(!url.pathname.endsWith("/")) {
-				url.pathname += "/";
+		
+			function setLocationToPrettyPageUrl(prettyUrl) {
+				let url = new URL(location.origin + prettyUrl);
+				if(!url.pathname.endsWith("/")) {
+					url.pathname += "/";
+				}
+				window.history.pushState({}, '', url.href);
 			}
-			window.history.pushState({}, '', url.href);
+			setLocationToPrettyPageUrl("#{request.contextPath}#{navigationHelper.currentViewPrettyUrl}")
+			
 		
 		</script>
 

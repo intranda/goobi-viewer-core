@@ -26,6 +26,9 @@
 						role="button"
 						class="widget__title widget-citation__title #{cc.attrs.collapsible ? 'collapseable' : ''}">
 	                    <span>#{msg.widget_citation}</span>
+	                    <div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
+							<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+						</div>
 	                    <i class="fa fa-angle-down" aria-hidden="true"></i>
 	                </h2>
 				</div>

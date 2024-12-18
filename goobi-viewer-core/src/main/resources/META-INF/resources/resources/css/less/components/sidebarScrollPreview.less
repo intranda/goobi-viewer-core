@@ -1,0 +1,143 @@
+/* ==============================================================
+   Thumbnail paginator
+   Style declarations for thumbnailPaginator.xhtml
+   ==============================================================*/
+
+/* THUMBNAIL PAGINATOR */
+
+.sidebar-scroll-preview {
+	position: relative;
+	&__inner {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	} 
+	&__grid {
+		position: relative;
+		height: 100%;
+		display: grid; 
+		grid-template-columns: 1fr;
+		gap: 3px;
+		padding-inline-start: 11px;
+		.simplebar-track {
+			right: unset;
+			left: 0;
+		}
+		.simplebar-scrollbar {
+			&:before {
+				border-radius: 0;
+			}
+		}
+	}
+	&__item {
+		min-width: 0;
+		max-width: 100%;
+	}
+	&__button, 
+	&__link {
+		width: 100%;
+		background: transparent;
+		border: none;
+		padding: 4px;
+		display: flex;
+ 		flex-direction: column;
+		max-width: 100%;
+		overflow: hidden;
+		color: #212529;
+		text-align: center;
+		margin-bottom: 2px;
+		&:hover {
+			.sidebar-scroll-preview__image {
+				transform: scale(1.08);
+			}
+		}
+		&:hover,
+		&:active,
+		&:focus {
+			text-decoration: none;
+		}
+		&.-highlighted {
+			outline: 3px solid #a3f97c;
+			outline-offset: -3px;
+			pointer-events: none;
+		}
+	} 
+	&__button-text {
+	  max-width: 100%;
+	  white-space: nowrap;
+	  margin: 0.4rem 0;
+	  margin-top: 0.7rem;
+	  text-overflow: ellipsis;
+	  display: block;
+	  overflow: hidden;
+	  width: 100%;
+	  word-wrap: anywhere;
+	  word-break: break-all;
+	}
+	&__image-wrapper {
+		width: 100%;
+		// overflow: hidden;
+	}
+	&__image {
+		display: block;
+		object-fit: cover;
+  		object-position: top;
+		max-width: 100%;
+		opacity: 0;
+		height: 172px;
+		max-height: 172px;
+		width: 100%;
+		transition: 0.25s ease all;
+		&.-loaded {
+			opacity: 1;
+		}
+	}
+}
+
+@{RTL} {
+	.sidebar-scroll-preview {
+		&__grid {
+			.simplebar-track {
+				left: unset;
+				right: 0;
+			}
+		}
+	}
+}
+
+// FULLSCREEN STYLES
+.fullscreen {
+	.sidebar-scroll-preview {
+		padding-top: 80px;
+		width: 200px;
+		height: calc(~"100vh - 80px");
+		&__button {
+			color: white;
+		}
+		.simplebar-scrollbar::before {
+			background: white;
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+	.fullscreen {
+		.sidebar-scroll-preview {
+			display: none;
+		}
+	}
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+	.sidebar-scroll-preview {
+		display: none;
+	}
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

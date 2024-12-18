@@ -45,8 +45,6 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.mchange.v2.sql.filter.SynchronizedFilterDataSource;
-
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
@@ -1153,24 +1151,6 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getWatermarkTextConfiguration_shouldReturnAllConfiguredElementsInTheCorrectOrder() {
         assertEquals(3, DataManager.getInstance().getConfiguration().getWatermarkTextConfiguration().size());
-    }
-
-    /**
-     * @see Configuration#getZoomFullscreenViewType()
-     * @verifies return correct value
-     */
-    @Test
-    void getZoomFullscreenViewType_shouldReturnCorrectValue() throws Exception {
-        assertEquals("classic", DataManager.getInstance().getConfiguration().getZoomFullscreenViewType());
-    }
-
-    /**
-     * @see Configuration#getZoomImageViewType()
-     * @verifies return correct value
-     */
-    @Test
-    void getZoomImageViewType_shouldReturnCorrectValue() throws Exception {
-        assertEquals("openSeadragon", DataManager.getInstance().getConfiguration().getImageViewType());
     }
 
     /**
@@ -2757,8 +2737,13 @@ class ConfigurationTest extends AbstractTest {
     }
 
     @Test
-    void isDoublePageNavigationEnabled_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled());
+    void isDoublePageNavigationEnabled_shouldReturnCorrectValue() throws ViewerConfigurationException {
+        assertTrue(DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(null, null));
+    }
+
+    @Test
+    void isSequencePageNavigationEnabled_shouldReturnCorrectValue() throws ViewerConfigurationException {
+        assertFalse(DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(null, null));
     }
 
     /**
@@ -3162,7 +3147,7 @@ class ConfigurationTest extends AbstractTest {
         List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationStyles();
         assertEquals(3, result.size());
     }
-    
+
     /**
      * @see Configuration#getSidebarWidgetUsageCitationRecommendationDocstructMapping()
      * @verifies return all configured values

@@ -16,6 +16,10 @@
 
     <!-- METADATA -->
     <div id="metadataElementWrapper" class="metadata">
+        
+        <!-- force reload if current metadata elements here and use this value for the entire request -->
+        <c:set scope="request" var="metadataElementList" value="#{metadataBean.getMetadataElementList(metadataViewIndex, true)}"/>
+    
 	    <div class="metadata__title-wrapper">
 	    	<div id="title" class="title">
 	    		<!-- TITLE HEADER -->
@@ -60,7 +64,8 @@
             <div class="clearfix"></div>
         </h:panelGroup>
 
-        <c:forEach items="#{metadataBean.getMetadataElementList(metadataViewIndex)}" var="metadataElement" varStatus="status">
+
+        <c:forEach items="#{metadataElementList}" var="metadataElement" varStatus="status">
             <ui:include src="/resources/includes/metadata/metadataElement.xhtml">
             	<ui:param name="metadataElement" value="#{metadataElement}"/>
             </ui:include>
@@ -90,6 +95,9 @@
 										<ui:fragment rendered="#{metadata.group}">
 											<c:forEach items="#{metadata.values}" var="val">
 												<dd>
+                                                    <ui:fragment rendered="#{val.hasAccessConditions}">
+                                                        <i class="fa fa-unlock" />
+                                                    </ui:fragment>
 													<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}"
 														escape="false">
 													</h:outputFormat>

@@ -60,7 +60,7 @@
 											id="saveNewUserCreationButton"
 											styleClass="btn btn--success"
 											value="#{msg.save}"
-											action="#{adminBean.saveUserAction(adminBean.currentUser.copy, 'pretty:adminUsers')}">
+											action="#{adminBean.saveUserAction(adminBean.currentUser.copy, false, 'pretty:adminUsers')}">
 											<f:ajax execute="@all" render="@all"></f:ajax>
 										</h:commandButton>
 									</div>

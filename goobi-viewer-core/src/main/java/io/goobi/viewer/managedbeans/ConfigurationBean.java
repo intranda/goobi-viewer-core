@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.faces.annotation.FacesConfig;
@@ -120,18 +119,6 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * useOpenSeadragon.
-     * </p>
-     *
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    public boolean useOpenSeadragon() throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().useOpenSeadragon();
-    }
-
-    /**
-     * <p>
      * useTiles.
      * </p>
      *
@@ -141,7 +128,7 @@ public class ConfigurationBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean useTiles(String pageType, String mimeType) throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().useTiles(PageType.getByName(pageType), getImageType(mimeType));
+        return DataManager.getInstance().getConfiguration().useTiles(PageType.getByName(pageType), getImageType(mimeType).getFormat().getMimeType());
     }
 
     /**
@@ -153,7 +140,9 @@ public class ConfigurationBean implements Serializable {
      * @throws ViewerConfigurationException
      */
     public boolean showImageNavigator(String pageType, String mimeType) throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().showImageNavigator(PageType.getByName(pageType), getImageType(mimeType));
+        return DataManager.getInstance()
+                .getConfiguration()
+                .showImageNavigator(PageType.getByName(pageType), getImageType(mimeType).getFormat().getMimeType());
     }
 
     /**
@@ -167,7 +156,9 @@ public class ConfigurationBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public int getFooterHeight(String pageType, String mimeType) throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(pageType), getImageType(mimeType));
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getFooterHeight(PageType.getByName(pageType), getImageType(mimeType).getFormat().getMimeType());
     }
 
     /**
@@ -181,7 +172,9 @@ public class ConfigurationBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public List<String> getImageSizes(String pageType, String mimeType) throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().getImageViewZoomScales(PageType.getByName(pageType), getImageType(mimeType));
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getImageViewZoomScales(PageType.getByName(pageType), getImageType(mimeType).getFormat().getMimeType());
     }
 
     /**
@@ -195,7 +188,9 @@ public class ConfigurationBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public Map<Integer, List<Integer>> getTileSizes(String pageType, String mimeType) throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().getTileSizes(PageType.getByName(pageType), getImageType(mimeType));
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getTileSizes(PageType.getByName(pageType), getImageType(mimeType).getFormat().getMimeType());
     }
 
     /**
@@ -810,6 +805,10 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isPageBrowseEnabled();
     }
 
+    public List<Integer> getPageBrowseSteps() {
+        return DataManager.getInstance().getConfiguration().getPageBrowseSteps();
+    }
+
     /**
      * <p>
      * isPageBrowseStep1Visible.
@@ -1018,17 +1017,6 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isSearchRisExportEnabled() {
         return DataManager.getInstance().getConfiguration().isSearchRisExportEnabled();
-    }
-
-    /**
-     * <p>
-     * isDoublePageNavigationEnabled.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isDoublePageNavigationEnabled() {
-        return DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled();
     }
 
     /**

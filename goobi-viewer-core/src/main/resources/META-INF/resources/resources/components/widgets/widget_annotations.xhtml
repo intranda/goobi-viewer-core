@@ -23,13 +23,16 @@
 				<!-- TODO: IF MORE THAN 3 annotations > ELEMENT COLLAPSED -->
 				<h2
 					class="widget__title #{(cc.attrs.collapsible and contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() gt 3) ? 'collapseable' : ''}">
-					<span>#{msg.admin__crowdsourcing_annotations}</span> <i
-						class="fa fa-angle-down" aria-hidden="true"></i>
+					<span>#{msg.admin__crowdsourcing_annotations}</span> 
+					<div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
+						<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+					</div>	
+					<i class="fa fa-angle-down" aria-hidden="true"></i>
 				</h2>
 
-				<h:panelGroup layout="block"
+				<h:panelGroup layout="block" 
 					styleClass="widget__body #{(cc.attrs.collapsible and contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() gt 3) ? 'collapseable' : ''}">
-					<viewerComponent:annotationList contentList="#{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi)}" sidebar="true"/>
+					<viewerComponent:annotationList id="widgetAnnotationList" contentList="#{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi)}" sidebar="true"/>
 				</h:panelGroup>
 			</div>
 		</h:panelGroup>

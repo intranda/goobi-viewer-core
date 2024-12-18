@@ -15,20 +15,20 @@
 		justify-content: center;
 		flex-wrap: wrap;
 		width: 100%;
+		gap: 4px;
 	}
 	li {
 		min-width: 32px;
 		height: 32px;
-		margin: 0px 3px 5px 0;
 		border: 1px solid @middlegray;
 	}
-	a, span {
+	button, a, span {
 		display: block;
 		line-height: 30px;
-		padding: 0 3px;
+		padding: 0 2px;
 		text-align: center;
 	}
-	a {
+	button, a {
 		text-decoration: none;
 		&:hover,
 		&:active,
@@ -37,8 +37,8 @@
 		}
 	}
 	span {}
-	&__active {
-		a, span {
+	&.-active {
+		a, span, button {
 			background-color: @middlegray;
 		}
 	}
@@ -46,8 +46,19 @@
 		a, span {}
 	}
 	&__navigate {
+		button {
+			border: none;
+			width: 100%;
+			background-color: transparent;
+		}
+		&.-active {
+			span {
+				background-color: var(--ci-color1);
+				color: var(--bg-content-box);
+			}
+		}
 		&.inactive {
-			a {
+			button, a {
 				pointer-events: none;
 				i {				
 					color: black;

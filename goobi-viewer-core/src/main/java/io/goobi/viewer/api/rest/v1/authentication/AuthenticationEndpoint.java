@@ -24,6 +24,7 @@ package io.goobi.viewer.api.rest.v1.authentication;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -51,8 +52,8 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
-import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -150,8 +151,8 @@ public class AuthenticationEndpoint {
     @ApiResponse(responseCode = "500", description = "Internal error")
     public Response headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) {
         logger.debug("headerParameterLogin");
-        NavigationHelper nh = BeanUtils.getNavigationHelper();
-        if (redirectUrl != null && (nh == null || !redirectUrl.startsWith(nh.getApplicationUrl()))) {
+        Optional<NavigationHelper> nh =  BeanUtils.getBeanFromRequest(servletRequest, "navigationHelper", NavigationHelper.class);
+        if (redirectUrl != null && (!nh.isPresent() || !redirectUrl.startsWith(nh.get().getApplicationUrl()))) {
             return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_ILLEGAL_REDIRECT_URL)
                     .build();
         }
@@ -159,8 +160,8 @@ public class AuthenticationEndpoint {
         HttpHeaderProvider useProvider = null;
 
         UserBean userBean = BeanUtils.getUserBean();
-        if (userBean != null && userBean.getAuthenticationProvider() instanceof HttpHeaderProvider) {
-            useProvider = (HttpHeaderProvider) userBean.getAuthenticationProvider();
+        if (userBean != null && userBean.getAuthenticationProvider() instanceof HttpHeaderProvider httpHeaderProvider) {
+            useProvider = httpHeaderProvider;
         }
 
         String ssoId = null;
@@ -168,9 +169,9 @@ public class AuthenticationEndpoint {
         // If the login wasn't triggered by the user, find an appropriate provider
         if (useProvider == null) {
             List<HttpHeaderProvider> providers = new ArrayList<>();
-            for (IAuthenticationProvider p : DataManager.getInstance().getConfiguration().getAuthenticationProviders()) {
-                if (p instanceof HttpHeaderProvider) {
-                    providers.add((HttpHeaderProvider) p);
+            for (HttpAuthenticationProvider provider : DataManager.getInstance().getAuthResponseListener().getProviders()) {
+                if (provider instanceof HttpHeaderProvider httpHeaderProvider) {
+                    providers.add(httpHeaderProvider);
                     break;
                 }
             }
@@ -209,6 +210,7 @@ public class AuthenticationEndpoint {
                 : (String) servletRequest.getAttribute(useProvider.getParameterName());
 
         Future<Boolean> loginSuccess = useProvider.completeLogin(ssoId, servletRequest, servletResponse);
+        DataManager.getInstance().getAuthResponseListener().unregister(useProvider);
         try {
             // Before sending response, wait until UserBean.completeLogin() has finished and released the result
             if (Boolean.FALSE.equals(loginSuccess.get())) {

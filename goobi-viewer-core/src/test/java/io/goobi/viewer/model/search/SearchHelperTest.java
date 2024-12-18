@@ -1506,8 +1506,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             previousSize = terms.size();
             for (BrowseTerm term : terms) {
                 if (previousCounts.containsKey(term.getTerm())) {
-                    Assertions.assertEquals(Long.valueOf(previousCounts.get(term.getTerm())), Long.valueOf(term.getHitCount()),
-                            "Token '" + term.getTerm() + "' - ");
+                    Assertions.assertEquals(previousCounts.get(term.getTerm()), term.getHitCount(), "Token '" + term.getTerm() + "' - ");
                 }
                 previousCounts.put(term.getTerm(), term.getHitCount());
             }

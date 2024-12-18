@@ -30,6 +30,7 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.CMSPage;
@@ -145,11 +146,16 @@ public class DefaultURLBuilder implements IURLBuilder {
                 .append(pi)
                 .append('/');
         if (!topStruct || imageNo > 1) {
-            if (DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault()) {
-                sb.append(imageNo).append("-").append(imageNo).append("/");
-            } else {
-                sb.append(imageNo)
-                        .append('/');
+            try {
+                if (!DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(pageType, null)
+                        && DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault(pageType, null)) {
+                    sb.append(imageNo).append("-").append(imageNo).append("/");
+                } else {
+                    sb.append(imageNo)
+                            .append('/');
+                }
+            } catch (ViewerConfigurationException e) {
+                logger.error("Error setting page number in url: {}", e.toString());
             }
         }
         if (!topStruct) {
