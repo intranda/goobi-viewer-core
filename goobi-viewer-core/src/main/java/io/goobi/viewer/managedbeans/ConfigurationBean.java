@@ -1376,6 +1376,22 @@ public class ConfigurationBean implements Serializable {
     public String getSearchSortingDescendingKey(String field) {
         return DataManager.getInstance().getConfiguration().getSearchSortingKeyDescending(field).orElse("searchSortingDropdown_descending");
     }
+    
+    /**
+     * 
+     * @return List of configured advanced search template names
+     */
+    public List<String> getAdvancedSearchTemplateNames() {
+        return DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateNames();
+    }
+
+    /**
+     * 
+     * @return true if number of configured advanced search templates greater than 1; false otherwise
+     */
+    public boolean isAdvancedSearchTemplatesEnabled() {
+        return DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateNames().size() > 1;
+    }
 
     /**
      * 
