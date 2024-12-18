@@ -2831,4 +2831,8 @@ public class ActiveDocumentBean implements Serializable {
         return List.of("MD_METADATATYPE", "MD_GENRE").stream().map(s -> "'" + s + "'").collect(Collectors.toList());
     }
 
+    public void updatePageNavigation(PageType pageType) {
+        Optional.ofNullable(this.viewManager).ifPresent(vm -> vm.updatePageNavigation(pageType));
+    }
+
 }
