@@ -19,7 +19,7 @@
 			<ui:fragment rendered="#{!browseElementMetadata.blank}">
 
 				<!-- Metadata label -->
-				<dt data-metadata-field="#{browseElementMetadata.label}" class="search-list__hit-text-label">#{msg[browseElementMetadata.label]}: </dt>
+				<dt data-metadata-field="#{browseElementMetadata.label}" title="#{browseElementMetadata.label}" class="search-list__hit-text-label">#{msg[browseElementMetadata.label]}: </dt>
 
 					<!-- grouped="true" -->
 					<ui:fragment rendered="#{browseElementMetadata.group}">
@@ -155,7 +155,7 @@
 		<ui:repeat value="#{event.searchHitMetadataForCurrentLocale}"
 			var="eventMetadata">
 			<h:panelGroup rendered="#{!eventMetadata.blank}">
-					<dt data-metadata-field="#{eventMetadata.label}" class="search-list__hit-text-label">
+					<dt data-metadata-field="#{eventMetadata.label}" title="#{eventMetadata.label}" class="search-list__hit-text-label">
 						<h:outputFormat value="#{msg[eventMetadata.label]}: " escape="false"/>
 					</dt>
 
@@ -198,7 +198,7 @@
             <ui:repeat value="#{browseElement.secondaryMetadataListForCurrentLocale}" var="browseElementMetadata">
                 <h:panelGroup rendered="#{!browseElementMetadata.blank}">
 						
-						<dt data-metadata-field="#{browseElementMetadata.label}" class="search-list__hit-text-label">
+						<dt data-metadata-field="#{browseElementMetadata.label}" title="#{browseElementMetadata.label}" class="search-list__hit-text-label">
                         	<h:outputFormat value="#{msg[browseElementMetadata.label]}: " escape="false" styleClass="search-list__hit-text-label" />
                         </dt>
                         <!-- Default multivalue separator (new line) -->
