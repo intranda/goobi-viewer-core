@@ -91,7 +91,11 @@ public class Citation {
                 ids[i] = items[i].getId();
                 // logger.trace("Item data id: {}", items[i].getId()); //NOSONAR Debug
             }
-            processor.registerCitationItems(ids);
+            try {
+                processor.registerCitationItems(ids);
+            } catch (IllegalArgumentException e) {
+                logger.warn(e.getMessage());
+            }
 
             return processor.makeBibliography();
         }
