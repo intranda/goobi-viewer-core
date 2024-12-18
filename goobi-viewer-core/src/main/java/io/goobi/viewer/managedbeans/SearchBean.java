@@ -1710,7 +1710,8 @@ public class SearchBean implements SearchInterface, Serializable {
     public void mirrorAdvancedSearchCurrentHierarchicalFacets() {
         logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets");
         if (facets.getActiveFacets().isEmpty()) {
-            for (SearchQueryItem item : advancedSearchQueryGroup.getQueryItems()) {
+            List<SearchQueryItem> queryItems = new ArrayList<>(advancedSearchQueryGroup.getQueryItems());
+            for (SearchQueryItem item : queryItems) {
                 if (item.isHierarchical()) {
                     logger.trace("resetting current field value in advanced search: {}", item.getField());
                     item.setValue(null);
