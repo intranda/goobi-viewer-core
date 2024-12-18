@@ -17,7 +17,7 @@
 
 		<nav id="imageControls" aria-label="#{msg.aria_label__nav_image_controls}" class="#{activeDocumentBean.viewManager.topStructElement.rtl ? 'image-controls -rtl' : 'image-controls -ltr'}">
             <!-- FORM -->
-   			<h:form id="imageControlsForm" styleClass="image-controls__inner" prependId="false">
+   			<h:form id="imageControlsForm" styleClass="image-controls__inner" prependId="false" rendered="#{activeDocumentBean.viewManager != null and activeDocumentBean.viewManager.currentPage != null}">
                 <!-- ACTIONS -->
                 <div class="image-controls__actions">
                 <!-- USE OF CUSTOM ICONS FOR IMAGE CONTROLS
@@ -89,11 +89,10 @@
 							</script>
 
                         </ui:fragment>
-                        
 						<ul id="imageAdditionalOptions" class="image-controls__actions-additional">
                             <!-- DOUBLE PAGE VIEW -->
                             <ui:fragment
-                                rendered="#{activeDocumentBean.viewManager.isDoublePageNavigationEnabled(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount gt 1 and activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image' and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and !activeDocumentBean.viewManager.currentPage.doubleImage}">
+                                rendered="#{activeDocumentBean.viewManager.isDoublePageNavigationEnabled(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount gt 1 and activeDocumentBean.viewManager.currentPage.baseMimeType == 'IMAGE' and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and !activeDocumentBean.viewManager.currentPage.doubleImage}">
                                 <li class="image-controls__action double-page-view">
                                     <h:commandLink action="#{activeDocumentBean.setDoublePageModeAction(true)}" title="#{msg.doublePageView}">
                                         <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-double-page.svg')}"/>
