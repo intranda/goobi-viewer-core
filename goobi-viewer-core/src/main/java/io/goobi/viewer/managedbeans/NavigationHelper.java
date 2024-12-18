@@ -1322,7 +1322,7 @@ public class NavigationHelper implements Serializable {
     public String getPageUrl(PageType page) {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + page.getName();
     }
-
+    
     /**
      * <p>
      * getSearchUrl.

@@ -788,7 +788,7 @@ public class ActiveDocumentBean implements Serializable {
             } else {
                 //                logger.warn("The passed image number '{}' contains illegal characters, setting to '1'...", imageToShow);
                 //                this.imageToShow = "1";
-                throw new PresentationException("Illegal page number(s).");
+                throw new PresentationException("Illegal page number(s): " + imageToShow);
             }
             if (viewManager != null) {
                 viewManager.setDropdownSelected(String.valueOf(this.imageToShow));
