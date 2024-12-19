@@ -92,7 +92,7 @@ public final class ALTOTools {
     public static final String TAG_LABEL_IGNORE_REGEX =
             "(^[^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+)|([^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+$)";
     /** Characters that can cause an "Invalid UTF-8 middle byte" error in the parser. */
-    public static final String ALTO_PROBLEMATIC_CHARS = "[ﬅ|ﬆ|ﬃ|ﬄ|ﬂ|ﬁ|�]";
+    public static final String ALTO_PROBLEMATIC_CHARS = "[ﬅﬆﬃﬄﬂﬁ�]";
 
     /**
      * Private constructor.
@@ -391,6 +391,7 @@ public final class ALTOTools {
         } catch (UnsupportedCharsetException | WstxIOException e) {
             // Wrong charset can result in an exception being thrown by the underlying parser implementation
             logger.warn(e.getMessage());
+            strings.append("\n\n[COULD NOT PARSE THE REST OF THE ALTO DOCUMENT, PLEASE CHECK FILE ENCODING]");
         } finally {
             if (parser != null) {
                 parser.close();
