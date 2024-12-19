@@ -1101,21 +1101,6 @@ public class SearchFacets implements Serializable {
         }
     }
 
-    public static void main(String[] args) {
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("a", null);
-        map.put("b", "2");
-
-        String vala = map.computeIfAbsent("a", s -> "1.1");
-        System.out.println("Value for a is " + vala);
-
-        String valb = map.computeIfAbsent("b", s -> "2.1");
-        System.out.println("Value for b is " + valb);
-
-        String valc = map.computeIfAbsent("c", s -> "3.1");
-        System.out.println("Value for c is " + valc);
-    }
-
     /**
      * <p>
      * getConfiguredSubelementFacetFields.
