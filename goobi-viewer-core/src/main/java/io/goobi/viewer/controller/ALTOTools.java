@@ -49,8 +49,6 @@ import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 
-import com.ctc.wstx.exc.WstxIOException;
-
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.Utils;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Line;
@@ -386,13 +384,9 @@ public final class ALTOTools {
                         break;
 
                 }
-                //                try {
                 parser.next();
-                //                } catch (WstxIOException e) {
-                //                    logger.warn(e.getMessage());
-                //                }
             }
-        } catch (UnsupportedCharsetException | WstxIOException e) {
+        } catch (UnsupportedCharsetException e) {
             // Wrong charset can result in an exception being thrown by the underlying parser implementation
             logger.warn(e.getMessage());
         } finally {
