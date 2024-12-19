@@ -121,7 +121,7 @@
 		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
 		<jaxb-runtime.version>2.3.9</jaxb-runtime.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
-		<jersey.version>2.45</jersey.version>
+		<jersey.version>2.46</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20240303</json.version>
