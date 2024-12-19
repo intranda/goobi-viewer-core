@@ -170,7 +170,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     private SearchResultGroup activeResultGroup;
     /** Selected advanced search field configuration template. */
-    private String advancedSearchFieldTemplate = StringConstants.DEFAULT_NAME;
+    private String advancedSearchFieldTemplate = DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultTemplateName();
     private boolean phraseSearch = false;
     /** Current search result page. */
     private int currentPage = 1;
@@ -1748,7 +1748,7 @@ public class SearchBean implements SearchInterface, Serializable {
             return;
         }
 
-        this.advancedSearchFieldTemplate = StringConstants.DEFAULT_NAME;
+        this.advancedSearchFieldTemplate = DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultTemplateName();
         // Reset query items and slider ranges if active group is used as item field template
         resetAdvancedSearchParameters();
         facets.resetSliderRange();

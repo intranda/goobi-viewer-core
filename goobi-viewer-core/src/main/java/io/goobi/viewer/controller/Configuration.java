@@ -1706,6 +1706,35 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * 
+     * @return _DEFAULT or the name of the first template in the list
+     */
+    public String getAdvancedSearchDefaultTemplateName() {
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
+        if (templateList == null || templateList.isEmpty()) {
+            logger.error("No advanced search template configurations found.");
+            return StringConstants.DEFAULT_NAME;
+        }
+
+        String ret = null;
+        for (HierarchicalConfiguration<ImmutableNode> subElement : templateList) {
+            String name = subElement.getString(XML_PATH_ATTRIBUTE_NAME);
+            if (StringConstants.DEFAULT_NAME.equals(name)) {
+                logger.trace("Found _DEFAULT template.");
+                return name;
+            }
+        }
+
+        String firstTemplateName = templateList.get(0).getString(XML_PATH_ATTRIBUTE_NAME);
+        if (StringUtils.isNotEmpty(firstTemplateName)) {
+            logger.trace("Returning first template name: {}", firstTemplateName);
+            return firstTemplateName;
+        }
+
+        return StringConstants.DEFAULT_NAME;
+    }
+
+    /**
+     * 
      * @param template
      * @return Value of the query attribute; empty string if none found
      * @should return correct value
