@@ -65,17 +65,7 @@
     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/imageView.min.js"></script>
     <script type="text/javascript">
   		//<![CDATA[
-  			
-  			    
-      	function getId(url) {
-      	 	let lastIndex = url.lastIndexOf('?');
-      	  	let id = lastIndex !== -1 ? url.slice(0, lastIndex) : url;
-      	  
-      	  	lastIndex = id.lastIndexOf('/info.json');
-    	  	id = lastIndex !== -1 ? id.slice(0, lastIndex) : id;
-    	  	
-    	  	return id;
-      	}
+
   			
   		const changeImageOrder = new rxjs.Subject();	//call next() to set image in canvas, pass image order as parameter
        	const imageOrderChanged = new rxjs.Subject();	//Called when image is changed from within the canvas. subscribe to get notified of changes. image order is passed as parameter
@@ -85,8 +75,8 @@
         const accessDeniedMessage = $( "<div />" ).addClass( "view-object__access-denied" ).html( '#{msg.noImage_accessDenied}' );
         const page = "#{navigationHelper.currentPage}";
         const allowZoom = #{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom};
-        const imageOrderToUrlMap = new Map(Object.entries(#{activeDocumentBean.viewManager.getImageInfosAsJson(navigationHelper.currentPageType)}).map(([key, value]) => [Number(key), value]));
-        const imageIdToOrderMap = new Map(Object.entries(#{activeDocumentBean.viewManager.getImageInfosAsJson(navigationHelper.currentPageType)}).map(([key, value]) => [getId(value), Number(key)]));
+        const imageSources = #{activeDocumentBean.viewManager.getImageInfosAsJson(navigationHelper.currentPageType)};
+        const imageIdToOrderMap = new Map(Object.entries(imageSources).map( ([key, value]) => [sources.iiif.getId(value), Number(key)]));
         const currentImageOrder = #{activeDocumentBean.viewManager.currentImageOrder}
         // console.log("images ", imageMap); 
         var configViewer = { 
@@ -131,8 +121,14 @@
         	},
         	image: {
         		mimeType: "#{activeDocumentBean.viewManager.currentPage.displayMimeType}",
-	       		tileSource : Array.from(imageOrderToUrlMap.values()),
-	       		currentImageId : getId(imageOrderToUrlMap.get(currentImageOrder)),
+	       		tileSource : Object.values(imageSources).map(source => {
+	       			if(!source.height || !source.width) {
+	       				return sources.iiif.getId(source);
+	       			} else {
+	       				return source;
+	       			}
+	       		}),
+	       		currentImageId : sources.iiif.getId(imageSources[currentImageOrder]),
         		baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}",
         		highlightCoords: [
         			{
@@ -310,7 +306,7 @@
 	           		
 		           	changeImageOrder.subscribe(pageNo => {	    
 		           		if(pageNo != undefined ) {
-		            		viewImage.sequence.setCurrentImage(getId(imageOrderToUrlMap.get(Number(pageNo))), true)
+		            		viewImage.sequence.setCurrentImage(sources.iiif.getId(imageSources[Number(pageNo)]), true);
 		           		}
 		           	})
 	             }

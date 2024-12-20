@@ -47,6 +47,7 @@ import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.model.ner.NERTag;
 import io.goobi.viewer.api.rest.model.ner.TagCount;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import software.amazon.awssdk.utils.StringUtils;
 
 class ALTOToolsTest extends AbstractTest {
 
@@ -261,5 +262,12 @@ class ALTOToolsTest extends AbstractTest {
         assertEquals(3, hits.size());
         List<String> hits2 = ALTOTools.getWordCoords(altoString, "utf-8", words, 0, 0);
         assertEquals(0, hits2.size());
+    }
+
+    @Test
+    void test_readAltoFileIllegalCharacters() throws IOException {
+        File testFile = new File("/home/florian/testdata/alto/00000318.xml");
+        String text = ALTOTools.getFulltext(testFile.toPath(), StringTools.DEFAULT_ENCODING);
+        Assertions.assertTrue(StringUtils.isNotBlank(text));
     }
 }

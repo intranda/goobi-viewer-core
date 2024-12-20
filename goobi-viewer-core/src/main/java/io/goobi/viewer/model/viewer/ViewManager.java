@@ -73,6 +73,9 @@ import org.jdom2.JDOMException;
 import org.json.JSONObject;
 import org.omnifaces.util.Faces;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import de.intranda.api.iiif.image.ImageInformation;
 import de.undercouch.citeproc.CSL;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -89,6 +92,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.controller.StringConstants;
@@ -464,9 +468,25 @@ public class ViewManager implements Serializable {
      * @param page
      * @param pageType
      * @return Image URL
+     * @throws ViewerConfigurationException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws URISyntaxException
+     * @throws ContentLibException
+     * @throws JsonProcessingException
      */
     private String getImageInfo(PhysicalElement page, PageType pageType) {
-        return imageDeliveryBean.getImages().getImageUrl(page, pageType);
+        try {
+            ImageInformation info = imageDeliveryBean.getImages().getImageInformation(page, pageType);
+            if (info.getWidth() * info.getHeight() == 0) {
+                return info.getId().toString();
+            } else {
+                return JsonTools.getAsJson(info);
+            }
+        } catch (ContentLibException | ViewerConfigurationException | URISyntaxException | JsonProcessingException e) {
+            logger.warn("Error creating image information for {}: {}", page, e.toString());
+            return imageDeliveryBean.getImages().getImageUrl(page, pageType);
+        }
     }
 
     /**

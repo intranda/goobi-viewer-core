@@ -21,12 +21,16 @@
  */
 package io.goobi.viewer.controller.imaging;
 
+import java.awt.Dimension;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
@@ -34,17 +38,23 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.iiif.image.ImageInformation;
+import de.intranda.api.iiif.image.ImageTile;
+import de.intranda.api.iiif.image.v3.ImageInformation3;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageManager;
+import de.unigoettingen.sub.commons.util.PathConverter;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.RestApiManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 
@@ -141,6 +151,58 @@ public class ImageHandler {
      */
     public String getImageUrl(PhysicalElement page) {
         return getImageUrl(page, PageType.viewImage);
+    }
+
+    /**
+     * <p>
+     * getImageInformation.
+     * </p>
+     *
+     * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @return The image information for the image file of the given page
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws ViewerConfigurationException
+     */
+    public ImageInformation getImageInformation(PhysicalElement page, PageType pageType)
+            throws ContentLibException, ViewerConfigurationException, URISyntaxException {
+
+        URI fileUri = new URI(page.getFilepath());
+        if (fileUri.getScheme() != null && fileUri.getScheme().matches("^http.*")) {
+            return new ImageInformation(fileUri);
+        } else {
+            URI apiUri =
+                    urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), PathConverter.getPath(fileUri).getFileName().toString()).buildURI();
+            int width = page.getImageWidth(); //0 if width is not known
+            int height = page.getImageHeight(); //0 if height is not known
+            Map<Integer, List<Integer>> tileSizes = DataManager.getInstance().getConfiguration().getTileSizes(pageType, page.getMimeType());
+            List<Integer> sizes = DataManager.getInstance()
+                    .getConfiguration()
+                    .getImageViewZoomScales(pageType, page.getMimeType())
+                    .stream()
+                    .filter(s -> s.matches("\\d{1,9}"))
+                    .map(Integer::parseInt)
+                    .toList();
+
+            ImageInformation info = (Version.v2 == RestApiManager.getVersionToUseForIIIF()) ? new ImageInformation(apiUri)
+                    : new ImageInformation3(apiUri);
+            info.setWidth(width);
+            info.setHeight(height);
+            info.setTiles(tileSizes.entrySet()
+                    .stream()
+                    .sorted((e1, e2) -> Integer.compare(e1.getKey(), e2.getKey()))
+                    .map(entry -> new ImageTile(entry.getKey(), entry.getKey(), entry.getValue()))
+                    .toList());
+            info.setSizesFromDimensions(
+                    new ArrayList<>(sizes.stream()
+                            .sorted()
+                            .map(scale -> new Dimension(scale, Double.valueOf(scale * height / (double) width).intValue()))
+                            .toList()));
+
+            return info;
+        }
     }
 
     /**
