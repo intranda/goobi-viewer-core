@@ -639,7 +639,9 @@ public class ViewManager implements Serializable {
         StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getFullImageUrl(page, scale, "MASTER"));
         logger.trace("Master image URL: {}", sb);
         try {
-            if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, page.getImageType().getFormat().getMimeType()) > 0) {
+            if (DataManager.getInstance()
+                    .getConfiguration()
+                    .getFooterHeight(pageType, Optional.ofNullable(page).map(PhysicalElement::getMimeType).orElse(null)) > 0) {
                 sb.append("?ignoreWatermark=false");
                 sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(page).map(text -> {
                     try {
@@ -677,7 +679,9 @@ public class ViewManager implements Serializable {
 
         StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getThumbnailUrl(page, scale));
         try {
-            if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, page.getImageType().getFormat().getMimeType()) > 0) {
+            if (DataManager.getInstance()
+                    .getConfiguration()
+                    .getFooterHeight(pageType, Optional.ofNullable(page).map(PhysicalElement::getMimeType).orElse(null)) > 0) {
                 sb.append("?ignoreWatermark=false");
                 sb.append(imageDeliveryBean.getFooter()
                         .getWatermarkTextIfExists(page)
@@ -4371,15 +4375,13 @@ public class ViewManager implements Serializable {
     public boolean isDoublePageNavigationEnabled(PageType pageType) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .isDoublePageNavigationEnabled(pageType,
-                        getCurrentPage().getImageType().getFormat().getMimeType());
+                .isDoublePageNavigationEnabled(pageType, Optional.ofNullable(getCurrentPage()).map(PhysicalElement::getMimeType).orElse(null));
     }
 
     public boolean showImageThumbnailGallery(PageType pageType) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .showImageThumbnailGallery(pageType,
-                        getCurrentPage().getImageType().getFormat().getMimeType());
-    }
+                .showImageThumbnailGallery(pageType, Optional.ofNullable(getCurrentPage()).map(PhysicalElement::getMimeType).orElse(null));
 
+    }
 }
