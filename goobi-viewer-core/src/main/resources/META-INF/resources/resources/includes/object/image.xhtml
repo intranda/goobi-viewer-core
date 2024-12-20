@@ -76,6 +76,12 @@
         const page = "#{navigationHelper.currentPage}";
         const allowZoom = #{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom};
         const imageSources = #{activeDocumentBean.viewManager.getImageInfosAsJson(navigationHelper.currentPageType)};
+        Object.keys(imageSources).forEach((key) => {
+        	let value = imageSources[key];
+            if(typeof value == "string" && (value.startsWith("{") || value.startsWith("["))) {
+            	imageSources[key] = JSON.parse(value);
+            }
+        });
         const imageIdToOrderMap = new Map(Object.entries(imageSources).map( ([key, value]) => [sources.iiif.getId(value), Number(key)]));
         const currentImageOrder = #{activeDocumentBean.viewManager.currentImageOrder}
         // console.log("images ", imageMap); 
@@ -287,7 +293,8 @@
 	           		)
 	           		.subscribe(imageId => {
 	           			const pageOrder = imageIdToOrderMap.get(imageId);
-	           			if(pageOrder != undefined) {	           				
+	           			if(pageOrder != undefined) {	          
+	           				console.log("onCurrentImageChange", imageId, pageOrder)
 	           				setCurrentImageOrder({"order": pageOrder});
 	           			}
 	           		});
@@ -295,6 +302,8 @@
 	           		//js updates
 		           	viewImage.sequence.onCurrentImageChange.subscribe (imageId => {
 		           		const pageNo = imageIdToOrderMap.get(imageId);
+           				console.log("onCurrentImageChange2", imageId, pageNo)
+
 		           		if(pageNo != undefined) {	           			
 			           		setBrowserLocation(pageNo);
 			           		imageOrderChanged.next(pageNo);
@@ -304,6 +313,7 @@
 		           	changeImageOrder.subscribe(pageNo => {	    
 		           		if(pageNo != undefined ) {
 		           			const id = sources.iiif.getId(imageSources[Number(pageNo)]);
+		           			console.log("changeImageOrder", pageNo, id);
 		           			if(id != undefined) {		           				
 		            			viewImage.sequence.setCurrentImage(id, true);
 		           			}
