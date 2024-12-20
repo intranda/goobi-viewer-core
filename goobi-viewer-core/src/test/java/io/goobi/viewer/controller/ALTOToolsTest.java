@@ -35,6 +35,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +48,6 @@ import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.model.ner.NERTag;
 import io.goobi.viewer.api.rest.model.ner.TagCount;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import software.amazon.awssdk.utils.StringUtils;
 
 class ALTOToolsTest extends AbstractTest {
 
