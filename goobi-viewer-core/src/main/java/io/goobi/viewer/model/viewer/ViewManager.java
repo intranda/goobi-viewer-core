@@ -2922,7 +2922,7 @@ public class ViewManager implements Serializable {
     /**
      * 
      * @param localFilesOnly
-     * @return Map<String, List<String>>
+     * @return Map with mime type and file names for each
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
