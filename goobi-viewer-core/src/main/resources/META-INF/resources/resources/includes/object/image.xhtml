@@ -286,8 +286,10 @@
 	           			rxjs.operators.debounceTime(800)		
 	           		)
 	           		.subscribe(imageId => {
-	           			console.log("set current image order ", imageId, imageIdToOrderMap.get(imageId));
-	           			setCurrentImageOrder({"order": imageIdToOrderMap.get(imageId)});
+	           			const pageOrder = imageIdToOrderMap.get(imageId);
+	           			if(pageOrder != undefined) {	           				
+	           				setCurrentImageOrder({"order": pageOrder});
+	           			}
 	           		});
 
 	           		//js updates
@@ -297,13 +299,14 @@
 			           		setBrowserLocation(pageNo);
 			           		imageOrderChanged.next(pageNo);
 		           		}
-		           		//update dropdown selector
-		           		//document.querySelector(".custom-control.custom-control--select select").value = pageNo;
 		           	});
 	           		
 		           	changeImageOrder.subscribe(pageNo => {	    
 		           		if(pageNo != undefined ) {
-		            		viewImage.sequence.setCurrentImage(sources.iiif.getId(imageSources[Number(pageNo)]), true);
+		           			const id = sources.iiif.getId(imageSources[Number(pageNo)];
+		           			if(id != undefined) {		           				
+		            			viewImage.sequence.setCurrentImage(id), true);
+		           			}
 		           		}
 		           	})
 	             }
