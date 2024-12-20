@@ -164,12 +164,11 @@ public final class FileTools {
      */
     public static String getCharset(InputStream input) throws IOException {
         CharsetDetector cd = new CharsetDetector();
-        try (BufferedInputStream bis = new BufferedInputStream(input)) {
-            cd.setText(bis);
-            CharsetMatch cm = cd.detect();
-            if (cm != null) {
-                return cm.getName();
-            }
+        BufferedInputStream bis = new BufferedInputStream(input);
+        cd.setText(bis);
+        CharsetMatch cm = cd.detect();
+        if (cm != null) {
+            return cm.getName();
         }
 
         return null;
@@ -686,7 +685,7 @@ public final class FileTools {
         if (urlStringLocal.contains(":")) {
             try {
                 // logger.trace("url string: {}", urlString); //NOSONAR Debug
-                URL url = new URI(urlStringLocal).toURL();
+                URL url = new URL(urlStringLocal);
                 URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(),
                         url.getQuery(), url.getRef());
                 if (urlStringLocal.endsWith("/") && Paths.get(uri.getPath()).getFileName().toString().contains(".")) {
