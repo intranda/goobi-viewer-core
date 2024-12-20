@@ -1630,7 +1630,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public int getFooterHeight(String pageType) throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(pageType), getImageType().getFormat().getMimeType());
+        return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(pageType), getMimeType());
     }
 
     /**

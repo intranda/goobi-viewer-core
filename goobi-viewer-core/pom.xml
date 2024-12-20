@@ -870,7 +870,7 @@
 						<configuration>
 							<failOnWarning>true</failOnWarning>
 							<ignoredUsedUndeclaredDependencies>
-								<!-- FALSE POSITIVE, SWITCHES WITH -jakarta PACKAGE IF DECLARED OTHER WAY ROUND -->
+                                <ignoredUsedUndeclaredDependency>com.fasterxml.woodstox:woodstox-core</ignoredUsedUndeclaredDependency>
 								<ignoredUnusedDeclaredDependency>io.swagger.core.v3:swagger-annotations-jakarta</ignoredUnusedDeclaredDependency>
 							</ignoredUsedUndeclaredDependencies>
 
