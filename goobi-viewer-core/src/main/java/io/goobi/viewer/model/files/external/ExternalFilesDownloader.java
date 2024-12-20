@@ -90,8 +90,7 @@ public class ExternalFilesDownloader {
     public static boolean resourceExists(URI uri) {
         logger.trace("checking url {}", uri);
         switch (uri.getScheme()) {
-            case "http":
-            case "https":
+            case "http", "https":
                 try {
                     return checkHttpResource(uri);
                 } catch (IOException e) {
