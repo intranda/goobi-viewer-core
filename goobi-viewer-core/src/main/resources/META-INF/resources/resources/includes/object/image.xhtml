@@ -303,9 +303,9 @@
 	           		
 		           	changeImageOrder.subscribe(pageNo => {	    
 		           		if(pageNo != undefined ) {
-		           			const id = sources.iiif.getId(imageSources[Number(pageNo)];
+		           			const id = sources.iiif.getId(imageSources[Number(pageNo)]);
 		           			if(id != undefined) {		           				
-		            			viewImage.sequence.setCurrentImage(id), true);
+		            			viewImage.sequence.setCurrentImage(id, true);
 		           			}
 		           		}
 		           	})
