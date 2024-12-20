@@ -480,9 +480,8 @@ public class ViewManager implements Serializable {
             ImageInformation info = imageDeliveryBean.getImages().getImageInformation(page, pageType);
             if (info.getWidth() * info.getHeight() == 0) {
                 return info.getId().toString();
-            } else {
-                return JsonTools.getAsJson(info);
             }
+            return JsonTools.getAsJson(info);
         } catch (ContentLibException | ViewerConfigurationException | URISyntaxException | JsonProcessingException e) {
             logger.warn("Error creating image information for {}: {}", page, e.toString());
             return imageDeliveryBean.getImages().getImageUrl(page, pageType);
@@ -2920,6 +2919,13 @@ public class ViewManager implements Serializable {
         return pagesWithAlto >= threshold;
     }
 
+    /**
+     * 
+     * @param localFilesOnly
+     * @return Map with mime type and file names for each
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
     public Map<String, List<String>> getFilenamesByMimeType(boolean localFilesOnly) throws IndexUnreachableException, PresentationException {
         List<SolrDocument> pageDocs = DataManager.getInstance()
                 .getSearchIndex()
@@ -2938,14 +2944,19 @@ public class ViewManager implements Serializable {
                 .stream()
                 .map(doc -> doc.getFieldValue(SolrConstants.FILENAME))
                 .map(Object::toString)
-                .filter(path -> localFilesOnly ? !path.matches("(?i)^https?:.*") : true)
+                .filter(path -> !localFilesOnly || !path.matches("(?i)^https?:.*"))
                 .collect(Collectors.toMap(
-                        filename -> getMimetype((String) filename),
-                        filename -> List.of(filename),
-                        (set1, set2) -> new ArrayList<>(CollectionUtils.union((List<? extends String>) set1, (List<? extends String>) set2))));
+                        this::getMimeTypeViaFileName,
+                        List::of,
+                        (set1, set2) -> new ArrayList<>(CollectionUtils.union(set1, set2))));
     }
 
-    public String getMimetype(String filename) {
+    /**
+     * 
+     * @param filename
+     * @return {@link String}
+     */
+    public String getMimeTypeViaFileName(String filename) {
         try {
             return MimeType.getMimeTypeFromExtension(filename);
         } catch (UnknownMimeTypeException e) {
@@ -3680,7 +3691,7 @@ public class ViewManager implements Serializable {
      * @param doublePageMode the doublePageMode to set
      */
     public void setDoublePageMode(boolean doublePageMode) {
-        setPageNavigation(doublePageMode ? pageNavigation.DOUBLE : pageNavigation.SINGLE);
+        setPageNavigation(doublePageMode ? PageNavigation.DOUBLE : PageNavigation.SINGLE);
         this.setDoublePageModeForDropDown(doublePageMode);
     }
 

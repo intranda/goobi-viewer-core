@@ -176,37 +176,36 @@ public class ImageHandler {
         URI fileUri = new URI(page.getFilepath());
         if (fileUri.getScheme() != null && fileUri.getScheme().matches("^http.*")) {
             return new ImageInformation(fileUri);
-        } else {
-            URI apiUri =
-                    urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), PathConverter.getPath(fileUri).getFileName().toString()).buildURI();
-            int width = page.getImageWidth(); //0 if width is not known
-            int height = page.getImageHeight(); //0 if height is not known
-            Map<Integer, List<Integer>> tileSizes = DataManager.getInstance().getConfiguration().getTileSizes(pageType, page.getMimeType());
-            List<Integer> sizes = DataManager.getInstance()
-                    .getConfiguration()
-                    .getImageViewZoomScales(pageType, page.getMimeType())
-                    .stream()
-                    .filter(s -> s.matches("\\d{1,9}"))
-                    .map(Integer::parseInt)
-                    .toList();
-
-            ImageInformation info = (Version.v2 == RestApiManager.getVersionToUseForIIIF()) ? new ImageInformation(apiUri)
-                    : new ImageInformation3(apiUri);
-            info.setWidth(width);
-            info.setHeight(height);
-            info.setTiles(tileSizes.entrySet()
-                    .stream()
-                    .sorted((e1, e2) -> Integer.compare(e1.getKey(), e2.getKey()))
-                    .map(entry -> new ImageTile(entry.getKey(), entry.getKey(), entry.getValue()))
-                    .toList());
-            info.setSizesFromDimensions(
-                    new ArrayList<>(sizes.stream()
-                            .sorted()
-                            .map(scale -> new Dimension(scale, Double.valueOf(scale * height / (double) width).intValue()))
-                            .toList()));
-
-            return info;
         }
+        URI apiUri =
+                urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), PathConverter.getPath(fileUri).getFileName().toString()).buildURI();
+        int width = page.getImageWidth(); //0 if width is not known
+        int height = page.getImageHeight(); //0 if height is not known
+        Map<Integer, List<Integer>> tileSizes = DataManager.getInstance().getConfiguration().getTileSizes(pageType, page.getMimeType());
+        List<Integer> sizes = DataManager.getInstance()
+                .getConfiguration()
+                .getImageViewZoomScales(pageType, page.getMimeType())
+                .stream()
+                .filter(s -> s.matches("\\d{1,9}"))
+                .map(Integer::parseInt)
+                .toList();
+
+        ImageInformation info = (Version.v2 == RestApiManager.getVersionToUseForIIIF()) ? new ImageInformation(apiUri)
+                : new ImageInformation3(apiUri);
+        info.setWidth(width);
+        info.setHeight(height);
+        info.setTiles(tileSizes.entrySet()
+                .stream()
+                .sorted((e1, e2) -> Integer.compare(e1.getKey(), e2.getKey()))
+                .map(entry -> new ImageTile(entry.getKey(), entry.getKey(), entry.getValue()))
+                .toList());
+        info.setSizesFromDimensions(
+                new ArrayList<>(sizes.stream()
+                        .sorted()
+                        .map(scale -> new Dimension(scale, (int) (scale * height / (double) width)))
+                        .toList()));
+
+        return info;
     }
 
     /**
