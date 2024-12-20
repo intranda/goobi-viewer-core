@@ -121,13 +121,7 @@
         	},
         	image: {
         		mimeType: "#{activeDocumentBean.viewManager.currentPage.displayMimeType}",
-	       		tileSource : Object.values(imageSources).map(source => {
-	       			if(!source.height || !source.width) {
-	       				return sources.iiif.getId(source);
-	       			} else {
-	       				return source;
-	       			}
-	       		}),
+	       		tileSource : Object.values(imageSources),
 	       		currentImageId : sources.iiif.getId(imageSources[currentImageOrder]),
         		baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}",
         		highlightCoords: [
@@ -282,7 +276,7 @@
 	
 		    function initializeSequence() {
 	           	if(viewImage.sequence) {
-	           		
+	           			           		
 	           		//ajax updates
 	           		viewImage.sequence.onScroll
 	           		.pipe(
@@ -291,7 +285,10 @@
 	           			rxjs.operators.distinctUntilChanged(),
 	           			rxjs.operators.debounceTime(800)		
 	           		)
-	           		.subscribe(imageId => setCurrentImageOrder({"order": imageIdToOrderMap.get(imageId)}));
+	           		.subscribe(imageId => {
+	           			console.log("set current image order ", imageId, imageIdToOrderMap.get(imageId));
+	           			setCurrentImageOrder({"order": imageIdToOrderMap.get(imageId)});
+	           		});
 
 	           		//js updates
 		           	viewImage.sequence.onCurrentImageChange.subscribe (imageId => {
