@@ -35,7 +35,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -262,12 +261,5 @@ class ALTOToolsTest extends AbstractTest {
         assertEquals(3, hits.size());
         List<String> hits2 = ALTOTools.getWordCoords(altoString, "utf-8", words, 0, 0);
         assertEquals(0, hits2.size());
-    }
-
-    @Test
-    void test_readAltoFileIllegalCharacters() throws IOException {
-        File testFile = new File("/home/florian/testdata/alto/00000318.xml");
-        String text = ALTOTools.getFulltext(testFile.toPath(), StringTools.DEFAULT_ENCODING);
-        Assertions.assertTrue(StringUtils.isNotBlank(text));
     }
 }
