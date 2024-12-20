@@ -122,7 +122,11 @@ public class ImageHandler {
         if (isRestrictedUrl(filepath)) {
             String escFilepath = StringTools.escapeCriticalUrlChracters(filepath, true);
             if (this.urls != null) {
-                return this.urls.path(ApiUrls.EXTERNAL_IMAGES).params(escFilepath).build();
+                ApiPath path = this.urls.path(ApiUrls.EXTERNAL_IMAGES, "/info.json").params(escFilepath);
+                if (pageType != null) {
+                    path = path.query("pageType", pageType.name());
+                }
+                return path.build();
             }
             StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIIIFApiUrl());
             sb.append("image/-/").append(escFilepath).append("/info.json");

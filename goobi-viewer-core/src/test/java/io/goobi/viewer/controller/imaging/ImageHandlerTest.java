@@ -90,7 +90,7 @@ class ImageHandlerTest extends AbstractTest {
                 .build();
 
         String url = handler.getImageUrl(page);
-        Assertions.assertEquals(TestUtils.APPLICATION_ROOT_URL + "api/v1/image/1234/00000001.tif/info.json", url);
+        Assertions.assertEquals(TestUtils.APPLICATION_ROOT_URL + "api/v1/records/1234/files/images/00000001.tif/info.json", url);
     }
 
     @Test
@@ -108,7 +108,7 @@ class ImageHandlerTest extends AbstractTest {
 
         String url = handler.getImageUrl(page);
         URI uri = URI.create(url);
-        Assertions.assertEquals(TestUtils.APPLICATION_ROOT_URL + "api/v1/image/PI+1234/ab+00000001.tif/info.json", url);
+        Assertions.assertEquals(TestUtils.APPLICATION_ROOT_URL + "api/v1/records/PI+1234/files/images/ab+00000001.tif/info.json", url);
         Assertions.assertEquals(url, uri.toString());
 
     }
@@ -145,7 +145,8 @@ class ImageHandlerTest extends AbstractTest {
 
         String url = handler.getImageUrl(page);
         Assertions.assertEquals(
-                TestUtils.APPLICATION_ROOT_URL + "api/v1/image/-/http:U002FU002FexteralU002FrestrictedU002FimagesU002F00000001.tif/info.json",
+                TestUtils.APPLICATION_ROOT_URL
+                        + "api/v1/images/external/http:U002FU002FexteralU002FrestrictedU002FimagesU002F00000001.tif/info.json?pageType=viewImage",
                 url);
     }
 
