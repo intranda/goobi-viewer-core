@@ -202,10 +202,10 @@ public class TextResourceBuilder {
         }
 
         try {
-            String charset = FileTools.getCharset(file);
-            // logger.trace(file.toAbsolutePath().toString()); //NOSONAR Debug
-            logger.debug("ALTO file '{}' charset detected: {}", file.getFileName(), charset);
-            String alto = FileTools.getStringFromFile(file.toFile(), charset != null ? charset : StringTools.DEFAULT_ENCODING);
+            // String charset = FileTools.getCharset(file);
+            // logger.debug("ALTO file '{}' charset detected: {}", file.getFileName(), charset);
+            String charset = StringTools.DEFAULT_ENCODING;
+            String alto = FileTools.getStringFromFile(file.toFile(), charset);
             return new StringPair(alto, charset);
         } catch (FileNotFoundException e) {
             logger.debug(e.getMessage());
