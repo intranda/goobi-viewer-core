@@ -315,7 +315,7 @@ public final class DataManager {
     public SolrSearchIndex getSearchIndex() {
         if (searchIndex == null) {
             synchronized (LOCK) {
-                searchIndex = new SolrSearchIndex(null, false);
+                searchIndex = new SolrSearchIndex(null);
             }
         }
         searchIndex.checkReloadNeeded();

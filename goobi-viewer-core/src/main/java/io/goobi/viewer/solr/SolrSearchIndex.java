@@ -103,7 +103,6 @@ public class SolrSearchIndex {
     private Map<String, String> dataRepositoryNames = new HashMap<>();
 
     private SolrClient client;
-    private final boolean testMode;
 
     private List<String> solrFields = null;
     /**
@@ -117,10 +116,8 @@ public class SolrSearchIndex {
      * </p>
      *
      * @param client a {@link org.apache.solr.client.solrj.SolrClient} object.
-     * @param testMode
      */
-    public SolrSearchIndex(SolrClient client, boolean testMode) {
-        this.testMode = testMode;
+    public SolrSearchIndex(SolrClient client) {
         if (client == null) {
             this.client = getNewSolrClient();
         } else {
@@ -132,7 +129,7 @@ public class SolrSearchIndex {
      * Checks whether the server's configured URL matches that in the config file. If not, a new server instance is created.
      */
     public void checkReloadNeeded() {
-        if (testMode || !(client instanceof Http2SolrClient)) {
+        if (!(client instanceof Http2SolrClient)) {
             return;
         }
 
@@ -173,6 +170,17 @@ public class SolrSearchIndex {
      * @return New {@link SolrClient}
      */
     public static SolrClient getNewSolrClient() {
+        return getNewHttp2SolrClient();
+    }
+
+    /**
+     * <p>
+     * getNewHttp2SolrClient.
+     * </p>
+     *
+     * @return a {@link org.apache.solr.client.solrj.impl.HttpSolrServer} object.
+     */
+    static Http2SolrClient getNewHttp2SolrClient() {
         return new Http2SolrClient.Builder(DataManager.getInstance().getConfiguration().getSolrUrl())
                 .withIdleTimeout(TIMEOUT_SO, TimeUnit.MILLISECONDS)
                 .withConnectionTimeout(TIMEOUT_CONNECTION, TimeUnit.MILLISECONDS)
