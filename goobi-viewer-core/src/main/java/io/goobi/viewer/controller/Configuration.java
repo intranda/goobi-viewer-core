@@ -961,18 +961,6 @@ public class Configuration extends AbstractConfiguration {
         return getLocalBoolean("sidebar.sidebarRssFeed[@enabled]", true);
     }
 
-    /**
-     * <p>
-     * isOriginalContentDownload.
-     * </p>
-     *
-     * @return a boolean.
-     * @deprecated Use Configuration.isDisplaySidebarWidgetAdditionalFiles()
-     */
-    @Deprecated(since = "2023.11")
-    public boolean isDisplaySidebarWidgetDownloads() {
-        return isDisplaySidebarWidgetAdditionalFiles();
-    }
 
     /**
      * <p>
@@ -4336,34 +4324,6 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isSolrUseHttp2() {
         return getLocalBoolean(("performance.solr.useHttp2"), true);
-    }
-
-    /**
-     * <p>
-     * isSolrCompressionEnabled.
-     * </p>
-     *
-     * @return a boolean
-     * @should return correct value
-     * @deprecated Not supported when using HTTP2
-     */
-    @Deprecated(since = "24.01")
-    public boolean isSolrCompressionEnabled() {
-        return getLocalBoolean(("performance.solr.compressionEnabled"), true);
-    }
-
-    /**
-     * <p>
-     * isSolrBackwardsCompatible.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     * @deprecated Not supported when using HTTP2
-     */
-    @Deprecated(since = "24.01")
-    public boolean isSolrBackwardsCompatible() {
-        return getLocalBoolean(("performance.solr.backwardsCompatible"), false);
     }
 
     /**
