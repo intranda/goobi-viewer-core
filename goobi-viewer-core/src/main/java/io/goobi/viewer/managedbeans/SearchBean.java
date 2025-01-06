@@ -1814,21 +1814,6 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * <p>
-     * removeChronologyFacetAction.
-     * </p>
-     *
-     * @return Navigation outcome
-     * @deprecated No longer relevant for current implementation
-     */
-    @Deprecated(since = "2023.01")
-    public String removeChronologyFacetAction() {
-        String facet = SolrConstants.YEAR + ":" + facets.getTempValue();
-        facets.setTempValue("");
-        return removeFacetAction(facet);
-    }
-
-    /**
-     * <p>
      * removeRangeFacetAction.
      * </p>
      *
