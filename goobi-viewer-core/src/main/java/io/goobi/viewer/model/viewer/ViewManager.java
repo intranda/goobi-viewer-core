@@ -73,6 +73,9 @@ import org.jdom2.JDOMException;
 import org.json.JSONObject;
 import org.omnifaces.util.Faces;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import de.intranda.api.iiif.image.ImageInformation;
 import de.undercouch.citeproc.CSL;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -89,6 +92,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.controller.StringConstants;
@@ -464,9 +468,24 @@ public class ViewManager implements Serializable {
      * @param page
      * @param pageType
      * @return Image URL
+     * @throws ViewerConfigurationException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws URISyntaxException
+     * @throws ContentLibException
+     * @throws JsonProcessingException
      */
     private String getImageInfo(PhysicalElement page, PageType pageType) {
-        return imageDeliveryBean.getImages().getImageUrl(page, pageType);
+        try {
+            ImageInformation info = imageDeliveryBean.getImages().getImageInformation(page, pageType);
+            if (info.getWidth() * info.getHeight() == 0) {
+                return info.getId().toString();
+            }
+            return JsonTools.getAsJson(info);
+        } catch (ContentLibException | ViewerConfigurationException | URISyntaxException | JsonProcessingException e) {
+            logger.warn("Error creating image information for {}: {}", page, e.toString());
+            return imageDeliveryBean.getImages().getImageUrl(page, pageType);
+        }
     }
 
     /**
@@ -639,7 +658,9 @@ public class ViewManager implements Serializable {
         StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getFullImageUrl(page, scale, "MASTER"));
         logger.trace("Master image URL: {}", sb);
         try {
-            if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, page.getImageType().getFormat().getMimeType()) > 0) {
+            if (DataManager.getInstance()
+                    .getConfiguration()
+                    .getFooterHeight(pageType, Optional.ofNullable(page).map(PhysicalElement::getMimeType).orElse(null)) > 0) {
                 sb.append("?ignoreWatermark=false");
                 sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(page).map(text -> {
                     try {
@@ -677,7 +698,9 @@ public class ViewManager implements Serializable {
 
         StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getThumbnailUrl(page, scale));
         try {
-            if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, page.getImageType().getFormat().getMimeType()) > 0) {
+            if (DataManager.getInstance()
+                    .getConfiguration()
+                    .getFooterHeight(pageType, Optional.ofNullable(page).map(PhysicalElement::getMimeType).orElse(null)) > 0) {
                 sb.append("?ignoreWatermark=false");
                 sb.append(imageDeliveryBean.getFooter()
                         .getWatermarkTextIfExists(page)
@@ -2440,19 +2463,6 @@ public class ViewManager implements Serializable {
 
     /**
      * <p>
-     * isDisplayTitleBarPdfLink.
-     * </p>
-     *
-     * @return a boolean.
-     * @deprecated title.xhtml no longer exists
-     */
-    @Deprecated(since = "22.08")
-    public boolean isDisplayTitleBarPdfLink() {
-        return DataManager.getInstance().getConfiguration().isTitlePdfEnabled() && isAccessPermissionPdf();
-    }
-
-    /**
-     * <p>
      * isDisplayMetadataPdfLink.
      * </p>
      *
@@ -2896,6 +2906,13 @@ public class ViewManager implements Serializable {
         return pagesWithAlto >= threshold;
     }
 
+    /**
+     * 
+     * @param localFilesOnly
+     * @return Map with mime type and file names for each
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
     public Map<String, List<String>> getFilenamesByMimeType(boolean localFilesOnly) throws IndexUnreachableException, PresentationException {
         List<SolrDocument> pageDocs = DataManager.getInstance()
                 .getSearchIndex()
@@ -2914,14 +2931,19 @@ public class ViewManager implements Serializable {
                 .stream()
                 .map(doc -> doc.getFieldValue(SolrConstants.FILENAME))
                 .map(Object::toString)
-                .filter(path -> localFilesOnly ? !path.matches("(?i)^https?:.*") : true)
+                .filter(path -> !localFilesOnly || !path.matches("(?i)^https?:.*"))
                 .collect(Collectors.toMap(
-                        filename -> getMimetype((String) filename),
-                        filename -> List.of(filename),
-                        (set1, set2) -> new ArrayList<>(CollectionUtils.union((List<? extends String>) set1, (List<? extends String>) set2))));
+                        this::getMimeTypeViaFileName,
+                        List::of,
+                        (set1, set2) -> new ArrayList<>(CollectionUtils.union(set1, set2))));
     }
 
-    public String getMimetype(String filename) {
+    /**
+     * 
+     * @param filename
+     * @return {@link String}
+     */
+    public String getMimeTypeViaFileName(String filename) {
         try {
             return MimeType.getMimeTypeFromExtension(filename);
         } catch (UnknownMimeTypeException e) {
@@ -3656,7 +3678,7 @@ public class ViewManager implements Serializable {
      * @param doublePageMode the doublePageMode to set
      */
     public void setDoublePageMode(boolean doublePageMode) {
-        setPageNavigation(doublePageMode ? pageNavigation.DOUBLE : pageNavigation.SINGLE);
+        setPageNavigation(doublePageMode ? PageNavigation.DOUBLE : PageNavigation.SINGLE);
         this.setDoublePageModeForDropDown(doublePageMode);
     }
 
@@ -4371,15 +4393,13 @@ public class ViewManager implements Serializable {
     public boolean isDoublePageNavigationEnabled(PageType pageType) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .isDoublePageNavigationEnabled(pageType,
-                        getCurrentPage().getImageType().getFormat().getMimeType());
+                .isDoublePageNavigationEnabled(pageType, Optional.ofNullable(getCurrentPage()).map(PhysicalElement::getMimeType).orElse(null));
     }
 
     public boolean showImageThumbnailGallery(PageType pageType) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .showImageThumbnailGallery(pageType,
-                        getCurrentPage().getImageType().getFormat().getMimeType());
-    }
+                .showImageThumbnailGallery(pageType, Optional.ofNullable(getCurrentPage()).map(PhysicalElement::getMimeType).orElse(null));
 
+    }
 }

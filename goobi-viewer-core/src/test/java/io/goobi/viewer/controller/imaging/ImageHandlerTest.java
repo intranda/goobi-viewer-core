@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import de.intranda.api.iiif.image.ImageInformation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
@@ -35,6 +36,12 @@ import de.unigoettingen.sub.commons.util.PathConverter;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.TestUtils;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.PhysicalElementBuilder;
 
@@ -52,7 +59,8 @@ class ImageHandlerTest extends AbstractTest {
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
-        handler = new ImageHandler();
+        AbstractApiUrlManager urls = new ApiUrls(TestUtils.APPLICATION_ROOT_URL + "api/v1/");
+        handler = new ImageHandler(urls);
     }
 
     //    @Test
@@ -82,7 +90,7 @@ class ImageHandlerTest extends AbstractTest {
                 .build();
 
         String url = handler.getImageUrl(page);
-        Assertions.assertEquals(TestUtils.APPLICATION_ROOT_URL + "api/v1/image/1234/00000001.tif/info.json", url);
+        Assertions.assertEquals(TestUtils.APPLICATION_ROOT_URL + "api/v1/records/1234/files/images/00000001.tif/info.json?pageType=viewImage", url);
     }
 
     @Test
@@ -100,7 +108,8 @@ class ImageHandlerTest extends AbstractTest {
 
         String url = handler.getImageUrl(page);
         URI uri = URI.create(url);
-        Assertions.assertEquals(TestUtils.APPLICATION_ROOT_URL + "api/v1/image/PI+1234/ab+00000001.tif/info.json", url);
+        Assertions.assertEquals(TestUtils.APPLICATION_ROOT_URL + "api/v1/records/PI+1234/files/images/ab+00000001.tif/info.json?pageType=viewImage",
+                url);
         Assertions.assertEquals(url, uri.toString());
 
     }
@@ -137,8 +146,29 @@ class ImageHandlerTest extends AbstractTest {
 
         String url = handler.getImageUrl(page);
         Assertions.assertEquals(
-                TestUtils.APPLICATION_ROOT_URL + "api/v1/image/-/http:U002FU002FexteralU002FrestrictedU002FimagesU002F00000001.tif/info.json",
+                TestUtils.APPLICATION_ROOT_URL
+                        + "api/v1/images/external/http:U002FU002FexteralU002FrestrictedU002FimagesU002F00000001.tif/info.json?pageType=viewImage",
                 url);
+    }
+
+    @Test
+    void testGetImageInformationFromPage()
+            throws URISyntaxException, ContentLibException, PresentationException, IndexUnreachableException, ViewerConfigurationException {
+        PhysicalElement page = Mockito.mock(PhysicalElement.class);
+        Mockito.when(page.getFilepath()).thenReturn("00000318.tif");
+        Mockito.when(page.getImageWidth()).thenReturn(800);
+        Mockito.when(page.getImageHeight()).thenReturn(1200);
+        Mockito.when(page.getMimeType()).thenReturn("image/tiff");
+        Mockito.when(page.getPi()).thenReturn("PPN1234");
+
+        ImageInformation info = handler.getImageInformation(page, PageType.viewObject);
+        Assertions.assertEquals(TestUtils.APPLICATION_ROOT_URL + "api/v1/records/PPN1234/files/images/00000318.tif", info.getId().toString());
+        Assertions.assertEquals(page.getImageWidth(), info.getWidth());
+        Assertions.assertEquals(page.getImageHeight(), info.getHeight());
+        Assertions.assertEquals(600, info.getSizes().get(0).getWidth());
+        Assertions.assertEquals(900, info.getSizes().get(0).getHeight());
+        Assertions.assertEquals(512, info.getTiles().get(0).getWidth());
+        Assertions.assertEquals(3, info.getTiles().get(0).getScaleFactors().get(2));
     }
 
     @Test

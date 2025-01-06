@@ -39,8 +39,6 @@ public class SearchResultGroup implements Serializable {
     private final String name;
     private final String query;
     private final int previewHitCount;
-    /** If true, the name of this group will be used as the advanced search field configuration template name. */
-    private final boolean useAsAdvancedSearchTemplate;
 
     /** Total hits count for the current search. */
     private long hitsCount = 0;
@@ -58,13 +56,11 @@ public class SearchResultGroup implements Serializable {
      * @param name
      * @param query
      * @param previewHitCount
-     * @param useAsAdvancedSearchTemplate
      */
-    public SearchResultGroup(String name, String query, int previewHitCount, boolean useAsAdvancedSearchTemplate) {
+    public SearchResultGroup(String name, String query, int previewHitCount) {
         this.name = name;
         this.query = query;
         this.previewHitCount = previewHitCount;
-        this.useAsAdvancedSearchTemplate = useAsAdvancedSearchTemplate;
     }
 
     /**
@@ -76,7 +72,6 @@ public class SearchResultGroup implements Serializable {
         this.name = blueprint.name;
         this.query = blueprint.query;
         this.previewHitCount = blueprint.previewHitCount;
-        this.useAsAdvancedSearchTemplate = blueprint.useAsAdvancedSearchTemplate;
     }
 
     /**
@@ -92,7 +87,7 @@ public class SearchResultGroup implements Serializable {
      * @return Created {@link SearchResultGroup}
      */
     public static SearchResultGroup createDefaultGroup(String query) {
-        return new SearchResultGroup(StringConstants.DEFAULT_NAME, query, -1, false);
+        return new SearchResultGroup(StringConstants.DEFAULT_NAME, query, -1);
     }
 
     /**
@@ -143,13 +138,6 @@ public class SearchResultGroup implements Serializable {
      */
     public int getPreviewHitCount() {
         return previewHitCount;
-    }
-
-    /**
-     * @return the useAsAdvancedSearchTemplate
-     */
-    public boolean isUseAsAdvancedSearchTemplate() {
-        return useAsAdvancedSearchTemplate;
     }
 
     /**

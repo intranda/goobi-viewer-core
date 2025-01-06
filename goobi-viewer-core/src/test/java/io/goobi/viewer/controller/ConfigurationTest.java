@@ -1360,24 +1360,6 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSolrCompressionEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    void isSolrCompressionEnabled_shouldReturnCorrectValue() {
-        assertFalse(DataManager.getInstance().getConfiguration().isSolrCompressionEnabled());
-    }
-
-    /**
-     * @see Configuration#isSolrBackwardsCompatible()
-     * @verifies return correct value
-     */
-    @Test
-    void isSolrBackwardsCompatible_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isSolrBackwardsCompatible());
-    }
-
-    /**
      * @see Configuration#isSidebarFulltextLinkVisible()
      * @verifies return correct value
      */
@@ -2080,6 +2062,26 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void isAdvancedSearchEnabled_shouldReturnCorrectValue() {
         assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchEnabled());
+    }
+
+    /**
+     * @see Configuration#getAdvancedSearchTemplateNames()
+     * @verifies return all configured values
+     */
+    @Test
+    void getAdvancedSearchTemplateNames_shouldReturnCorrectValue() {
+        List<String> result = DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateNames();
+        Assertions.assertNotNull(result);
+        assertEquals(2, result.size());
+    }
+
+    /**
+     * @see Configuration#getAdvancedSearchTemplateQuery(String)
+     * @verifies return correct value
+     */
+    @Test
+    void getAdvancedSearchTemplateQuery_shouldReturnCorrectValue() {
+        assertEquals("DOCSTRCT:person", DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateQuery("person"));
     }
 
     /**
@@ -3494,7 +3496,6 @@ class ConfigurationTest extends AbstractTest {
 
         assertEquals("lido_objects", groups.get(0).getName());
         assertEquals("SOURCEDOCFORMAT:LIDO", groups.get(0).getQuery());
-        assertTrue(groups.get(0).isUseAsAdvancedSearchTemplate());
     }
 
     /**

@@ -39,7 +39,7 @@
                                             <!-- Metadata value -->
                                             <h:panelGroup rendered="#{metadata.singleString}">
                                                 <ui:fragment rendered="#{val.hasAccessConditions}">
-                                                    <i class="fa fa-unlock" />
+                                                    <span class="metadata__locked-value-icon" data-toggle="tooltip" title="#{msg.metadata__restricted_value_tooltip}"><i class="fa fa-unlock" /></span>
                                                 </ui:fragment>
                                                 <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}" escape="false">
                                                 </h:outputFormat>
@@ -73,7 +73,7 @@
                                             </dt>
                                             <dd>
                                                 <ui:fragment rendered="#{val.hasAccessConditions}">
-                                                    <i class="fa fa-unlock" />
+                                                    <span class="metadata__locked-value-icon" data-toggle="tooltip" title="#{msg.metadata__restricted_value_tooltip}"><i class="fa fa-unlock" /></span>
                                                 </ui:fragment>
                                                 <h:outputText value="#{val.getComboValueShort(ind0)}" escape="false" />
                                             </dd>

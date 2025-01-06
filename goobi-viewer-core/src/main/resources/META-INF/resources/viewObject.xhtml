@@ -15,7 +15,7 @@
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('object')}" />
             <f:event type="preRenderView" listener="#{metadataBean.selectFirstMetadataViewOfLocation('objectview')}" />
-        	<f:event type="preRenderView" listener="#{activeDocumentBean.viewManager.updatePageNavigation(navigationHelper.currentPageType)}"/>
+        	<f:event type="preRenderView" listener="#{activeDocumentBean.updatePageNavigation(navigationHelper.currentPageType)}"/>
         </f:metadata>
     </ui:define>
 
@@ -70,10 +70,20 @@
 
 				<!-- Update pagenumber and all relevant html areas with ajax when changing image in sequence mode -->
 				<h:form>
-					<o:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" 
-					onbegin="document.querySelectorAll('.ajax_loader__image_update').forEach(loader => loader.classList.remove('-hidden'))"
-					oncomplete="document.querySelectorAll('.ajax_loader__image_update').forEach(loader => loader.classList.add('-hidden'))"
-					render=":viewMetadata :userCommentsForm :userGeneratedContentGroup :sidebar:widgetViews:widgetViewsForm :sidebar:widgetMetadata:sidebarMetadataList :sidebar:widgetDownloads:pageDownloads :sidebar:widgetCitations:pageCitations :sidebar:widgetAnnotations:widgetAnnotationList:annotationList :sidebar:widgetTechnical:technicalMetadataList"></o:commandScript>
+					<h:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" 
+					onevent="onPageUpdateEvent" onerror="onPageUpdateEvent"
+					render=":viewMetadata :userCommentsForm :userGeneratedContentGroup :sidebar:widgetViews:widgetViewsForm :sidebar:widgetMetadata:sidebarMetadataList :sidebar:widgetDownloads:pageDownloads :sidebar:widgetCitations:pageCitations :sidebar:widgetAnnotations:widgetAnnotationList:annotationList :sidebar:widgetTechnical:technicalMetadataList"></h:commandScript>
+					
+					<script>
+						function onPageUpdateEvent(data) {
+							if(data.status === "begin") {
+								document.querySelectorAll('.ajax_loader__image_update').forEach(loader => loader.classList.remove('-hidden'))
+							} else {
+								document.querySelectorAll('.ajax_loader__image_update').forEach(loader => loader.classList.add('-hidden'))
+							}
+						}
+					</script>
+		
 				</h:form>
 
 

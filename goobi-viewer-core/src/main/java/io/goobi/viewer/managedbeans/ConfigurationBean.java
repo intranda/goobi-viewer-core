@@ -142,7 +142,7 @@ public class ConfigurationBean implements Serializable {
     public boolean showImageNavigator(String pageType, String mimeType) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .showImageNavigator(PageType.getByName(pageType), getImageType(mimeType).getFormat().getMimeType());
+                .showImageNavigator(PageType.getByName(pageType), mimeType);
     }
 
     /**
@@ -158,7 +158,7 @@ public class ConfigurationBean implements Serializable {
     public int getFooterHeight(String pageType, String mimeType) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .getFooterHeight(PageType.getByName(pageType), getImageType(mimeType).getFormat().getMimeType());
+                .getFooterHeight(PageType.getByName(pageType), mimeType);
     }
 
     /**
@@ -174,7 +174,7 @@ public class ConfigurationBean implements Serializable {
     public List<String> getImageSizes(String pageType, String mimeType) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .getImageViewZoomScales(PageType.getByName(pageType), getImageType(mimeType).getFormat().getMimeType());
+                .getImageViewZoomScales(PageType.getByName(pageType), mimeType);
     }
 
     /**
@@ -190,7 +190,7 @@ public class ConfigurationBean implements Serializable {
     public Map<Integer, List<Integer>> getTileSizes(String pageType, String mimeType) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .getTileSizes(PageType.getByName(pageType), getImageType(mimeType).getFormat().getMimeType());
+                .getTileSizes(PageType.getByName(pageType), mimeType);
     }
 
     /**
@@ -1375,6 +1375,22 @@ public class ConfigurationBean implements Serializable {
      */
     public String getSearchSortingDescendingKey(String field) {
         return DataManager.getInstance().getConfiguration().getSearchSortingKeyDescending(field).orElse("searchSortingDropdown_descending");
+    }
+    
+    /**
+     * 
+     * @return List of configured advanced search template names
+     */
+    public List<String> getAdvancedSearchTemplateNames() {
+        return DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateNames();
+    }
+
+    /**
+     * 
+     * @return true if number of configured advanced search templates greater than 1; false otherwise
+     */
+    public boolean isAdvancedSearchTemplatesEnabled() {
+        return DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateNames().size() > 1;
     }
 
     /**

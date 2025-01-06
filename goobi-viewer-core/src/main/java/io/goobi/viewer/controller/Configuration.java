@@ -966,19 +966,6 @@ public class Configuration extends AbstractConfiguration {
      * isOriginalContentDownload.
      * </p>
      *
-     * @return a boolean.
-     * @deprecated Use Configuration.isDisplaySidebarWidgetAdditionalFiles()
-     */
-    @Deprecated(since = "2023.11")
-    public boolean isDisplaySidebarWidgetDownloads() {
-        return isDisplaySidebarWidgetAdditionalFiles();
-    }
-
-    /**
-     * <p>
-     * isOriginalContentDownload.
-     * </p>
-     *
      * @return true if enabled; false otherwise
      * @should return correct value
      */
@@ -1693,6 +1680,63 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isAdvancedSearchEnabled() {
         return getLocalBoolean("search.advanced[@enabled]", true);
+    }
+
+    /**
+     * 
+     * @return List of configured template names
+     * @should return all values
+     */
+    public List<String> getAdvancedSearchTemplateNames() {
+        return getLocalList(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE + "[@name]", Collections.emptyList());
+    }
+
+    /**
+     * 
+     * @return _DEFAULT or the name of the first template in the list
+     */
+    public String getAdvancedSearchDefaultTemplateName() {
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
+        if (templateList == null || templateList.isEmpty()) {
+            logger.error("No advanced search template configurations found.");
+            return StringConstants.DEFAULT_NAME;
+        }
+
+        String ret = null;
+        for (HierarchicalConfiguration<ImmutableNode> subElement : templateList) {
+            String name = subElement.getString(XML_PATH_ATTRIBUTE_NAME);
+            if (StringConstants.DEFAULT_NAME.equals(name)) {
+                logger.trace("Found _DEFAULT template.");
+                return name;
+            }
+        }
+
+        String firstTemplateName = templateList.get(0).getString(XML_PATH_ATTRIBUTE_NAME);
+        if (StringUtils.isNotEmpty(firstTemplateName)) {
+            logger.trace("Returning first template name: {}", firstTemplateName);
+            return firstTemplateName;
+        }
+
+        return StringConstants.DEFAULT_NAME;
+    }
+
+    /**
+     * 
+     * @param template
+     * @return Value of the query attribute; empty string if none found
+     * @should return correct value
+     */
+    public String getAdvancedSearchTemplateQuery(String template) {
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
+        if (templateList == null) {
+            return null;
+        }
+        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, false);
+        if (usingTemplate == null) {
+            return null;
+        }
+
+        return usingTemplate.getString("[@query]", "");
     }
 
     /**
@@ -4270,46 +4314,6 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
-     * isSolrUseHttp2.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isSolrUseHttp2() {
-        return getLocalBoolean(("performance.solr.useHttp2"), true);
-    }
-
-    /**
-     * <p>
-     * isSolrCompressionEnabled.
-     * </p>
-     *
-     * @return a boolean
-     * @should return correct value
-     * @deprecated Not supported when using HTTP2
-     */
-    @Deprecated(since = "24.01")
-    public boolean isSolrCompressionEnabled() {
-        return getLocalBoolean(("performance.solr.compressionEnabled"), true);
-    }
-
-    /**
-     * <p>
-     * isSolrBackwardsCompatible.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     * @deprecated Not supported when using HTTP2
-     */
-    @Deprecated(since = "24.01")
-    public boolean isSolrBackwardsCompatible() {
-        return getLocalBoolean(("performance.solr.backwardsCompatible"), false);
-    }
-
-    /**
      * @return Configured value
      */
     public boolean reviewEnabledForComments() {
@@ -5999,8 +6003,7 @@ public class Configuration extends AbstractConfiguration {
                 continue;
             }
             int previewHitCount = groupNode.getInt("[@previewHitCount]", 10);
-            boolean useAsAdvancedSearchTemplate = groupNode.getBoolean("[@useAsAdvancedSearchTemplate]", false);
-            ret.add(new SearchResultGroup(name, query, previewHitCount, useAsAdvancedSearchTemplate));
+            ret.add(new SearchResultGroup(name, query, previewHitCount));
         }
 
         return ret;

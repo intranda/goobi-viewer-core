@@ -72,6 +72,7 @@ import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
+import io.goobi.viewer.exceptions.IllegalUrlParameterException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordDeletedException;
@@ -759,9 +760,22 @@ public class ActiveDocumentBean implements Serializable {
         return null;
     }
 
+    /**
+     * 
+     * @throws NumberFormatException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws IDDOCNotFoundException
+     * @throws RecordNotFoundException
+     * @throws RecordDeletedException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     * @throws RecordLimitExceededException
+     * @throws IllegalUrlParameterException
+     */
     public void setCurrentImageOrderPerScript()
             throws NumberFormatException, IndexUnreachableException, PresentationException, IDDOCNotFoundException, RecordNotFoundException,
-            RecordDeletedException, DAOException, ViewerConfigurationException, RecordLimitExceededException {
+            RecordDeletedException, DAOException, ViewerConfigurationException, RecordLimitExceededException, IllegalUrlParameterException {
         String order = Faces.getRequestParameter("order");
         setImageToShow(order);
         update();
@@ -779,16 +793,16 @@ public class ActiveDocumentBean implements Serializable {
      * </p>
      *
      * @param imageToShow Single page number (1) or range (2-3)
-     * @throws PresentationException
+     * @throws IllegalUrlParameterException
      */
-    public void setImageToShow(String imageToShow) throws PresentationException {
+    public void setImageToShow(String imageToShow) throws IllegalUrlParameterException {
         synchronized (lock) {
             if (StringUtils.isNotEmpty(imageToShow) && imageToShow.matches("^\\d+(-\\d+)?$")) {
                 this.imageToShow = imageToShow;
             } else {
                 //                logger.warn("The passed image number '{}' contains illegal characters, setting to '1'...", imageToShow);
                 //                this.imageToShow = "1";
-                throw new PresentationException("Illegal page number(s).");
+                throw new IllegalUrlParameterException("Illegal page number(s): " + imageToShow);
             }
             if (viewManager != null) {
                 viewManager.setDropdownSelected(String.valueOf(this.imageToShow));
@@ -809,8 +823,10 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @throws ViewerConfigurationException
+     * @throws IllegalUrlParameterException
      */
-    public void setRepresentativeImage() throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
+    public void setRepresentativeImage()
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IllegalUrlParameterException {
         logger.trace("setRepresentativeImage"); //NOSONAR Debug
         synchronized (lock) {
             String image = "1";
@@ -831,7 +847,7 @@ public class ActiveDocumentBean implements Serializable {
                     .orElse(DataManager.getInstance()
                             .getConfiguration()
                             .isDoublePageNavigationDefault(this.navigationHelper.getCurrentPageType(),
-                                    this.getViewManager().getMimeType()));
+                                    Optional.ofNullable(this.getViewManager()).map(ViewManager::getMimeType).orElse(null)));
             if (isDoublePageNavigation) {
                 image = String.format("%s-%s", image, image);
             }
@@ -1041,48 +1057,6 @@ public class ActiveDocumentBean implements Serializable {
             }
             return "-";
         }
-    }
-
-    /**
-     * <p>
-     * getThumbPart.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @deprecated URL is now build in HTML
-     */
-    @Deprecated(since = "23.11")
-    public String getThumbPart() throws IndexUnreachableException {
-        if (viewManager != null) {
-            return new StringBuilder("/").append(getPersistentIdentifier())
-                    .append('/')
-                    .append(viewManager.getCurrentThumbnailPage())
-                    .append('/')
-                    .toString();
-        }
-
-        return "";
-    }
-
-    /**
-     * <p>
-     * getLogPart.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @deprecated URL is now build in HTML
-     */
-    @Deprecated(since = "23.11")
-    public String getLogPart() throws IndexUnreachableException {
-        return new StringBuilder("/").append(getPersistentIdentifier())
-                .append('/')
-                .append(imageToShow)
-                .append('/')
-                .append(getLogid())
-                .append('/')
-                .toString();
     }
 
     // navigation in work
@@ -1728,7 +1702,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getTitleBarLabel() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         Locale locale = BeanUtils.getLocale();
-        if (locale != null) {
+        if (locale != null && StringUtils.isNotEmpty(locale.getLanguage())) {
             return getTitleBarLabel(locale.getLanguage());
         }
 
@@ -1753,15 +1727,15 @@ public class ActiveDocumentBean implements Serializable {
             return null;
         }
 
-        if (PageType.getByName(navigationHelper.getCurrentPage()) != null
-                && PageType.getByName(navigationHelper.getCurrentPage()).isDocumentPage() && viewManager != null) {
+        if (navigationHelper.getCurrentPage() != null && PageType.getByName(navigationHelper.getCurrentPage()) != null
+                && PageType.getByName(navigationHelper.getCurrentPage()).isDocumentPage() && getViewManager() != null) {
             // Prefer the label of the current TOC element
             TOC toc = getToc();
             if (toc != null && toc.getTocElements() != null && !toc.getTocElements().isEmpty()) {
                 String label = null;
                 String labelTemplate = StringConstants.DEFAULT_NAME;
-                if (getViewManager() != null) {
-                    labelTemplate = getViewManager().getTopStructElement().getDocStructType();
+                if (viewManager.getTopStructElement() != null) {
+                    labelTemplate = viewManager.getTopStructElement().getDocStructType();
                 }
                 if (DataManager.getInstance().getConfiguration().isDisplayAnchorLabelInTitleBar(labelTemplate)
                         && StringUtils.isNotBlank(viewManager.getAnchorPi())) {
@@ -2829,6 +2803,10 @@ public class ActiveDocumentBean implements Serializable {
      */
     public List<String> getGeomapFilters() {
         return List.of("MD_METADATATYPE", "MD_GENRE").stream().map(s -> "'" + s + "'").collect(Collectors.toList());
+    }
+
+    public void updatePageNavigation(PageType pageType) {
+        Optional.ofNullable(this.viewManager).ifPresent(vm -> vm.updatePageNavigation(pageType));
     }
 
 }

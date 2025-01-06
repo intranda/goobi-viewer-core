@@ -1089,7 +1089,7 @@ public class SearchFacets implements Serializable {
                 //Is this code still relevant then? Aren't all other facets included in allFacetFields and availableFacets?
                 if (!"geo".equals(fieldType) && !"range".equals(fieldType)) {
                     // Make a copy of the list to avoid concurrent modification
-                    List<IFacetItem> availableFacetItems = new ArrayList<>(ret.getOrDefault(currentItem.getField(), new ArrayList<>()));
+                    List<IFacetItem> availableFacetItems = new ArrayList<>(ret.computeIfAbsent(currentItem.getField(), x -> new ArrayList<>()));
                     if (!availableFacetItems.contains(currentItem)) {
                         availableFacetItems.add(currentItem);
                         ret.put(currentItem.getField(), availableFacetItems);
