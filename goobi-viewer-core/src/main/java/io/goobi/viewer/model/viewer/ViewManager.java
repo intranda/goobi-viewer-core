@@ -2463,19 +2463,6 @@ public class ViewManager implements Serializable {
 
     /**
      * <p>
-     * isDisplayTitleBarPdfLink.
-     * </p>
-     *
-     * @return a boolean.
-     * @deprecated title.xhtml no longer exists
-     */
-    @Deprecated(since = "22.08")
-    public boolean isDisplayTitleBarPdfLink() {
-        return DataManager.getInstance().getConfiguration().isTitlePdfEnabled() && isAccessPermissionPdf();
-    }
-
-    /**
-     * <p>
      * isDisplayMetadataPdfLink.
      * </p>
      *
