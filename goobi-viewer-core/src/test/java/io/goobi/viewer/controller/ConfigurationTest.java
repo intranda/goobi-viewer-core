@@ -1360,24 +1360,6 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSolrCompressionEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    void isSolrCompressionEnabled_shouldReturnCorrectValue() {
-        assertFalse(DataManager.getInstance().getConfiguration().isSolrCompressionEnabled());
-    }
-
-    /**
-     * @see Configuration#isSolrBackwardsCompatible()
-     * @verifies return correct value
-     */
-    @Test
-    void isSolrBackwardsCompatible_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isSolrBackwardsCompatible());
-    }
-
-    /**
      * @see Configuration#isSidebarFulltextLinkVisible()
      * @verifies return correct value
      */
@@ -2081,7 +2063,7 @@ class ConfigurationTest extends AbstractTest {
     void isAdvancedSearchEnabled_shouldReturnCorrectValue() {
         assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchEnabled());
     }
-    
+
     /**
      * @see Configuration#getAdvancedSearchTemplateNames()
      * @verifies return all configured values
@@ -2092,7 +2074,7 @@ class ConfigurationTest extends AbstractTest {
         Assertions.assertNotNull(result);
         assertEquals(2, result.size());
     }
-    
+
     /**
      * @see Configuration#getAdvancedSearchTemplateQuery(String)
      * @verifies return correct value
