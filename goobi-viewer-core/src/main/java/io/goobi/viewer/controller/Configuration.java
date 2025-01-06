@@ -961,7 +961,6 @@ public class Configuration extends AbstractConfiguration {
         return getLocalBoolean("sidebar.sidebarRssFeed[@enabled]", true);
     }
 
-
     /**
      * <p>
      * isOriginalContentDownload.
@@ -4312,18 +4311,6 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isPreventProxyCaching() {
         return getLocalBoolean(("performance.preventProxyCaching"), false);
-    }
-
-    /**
-     * <p>
-     * isSolrUseHttp2.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isSolrUseHttp2() {
-        return getLocalBoolean(("performance.solr.useHttp2"), true);
     }
 
     /**
