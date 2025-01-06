@@ -51,7 +51,7 @@ public abstract class AbstractSolrEnabledTest extends AbstractTest {
     public void setUp() throws Exception {
         super.setUp();
         client = SolrSearchIndex.getNewSolrClient();
-        DataManager.getInstance().injectSearchIndex(new SolrSearchIndex(client));
+        DataManager.getInstance().injectSearchIndex(new SolrSearchIndex(client, true));
 
         // Load current IDDOC for PPN517154005, which is used in many tests
         if (iddocKleiuniv == null) {
