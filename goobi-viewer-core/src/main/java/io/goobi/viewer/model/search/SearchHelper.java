@@ -1565,7 +1565,7 @@ public final class SearchHelper {
         }
         int endIndex = startIndex + term.length();
         String before = phrase.substring(0, startIndex);
-        
+
         String highlightedTerm = applyHighlightingToTerm(phrase.substring(startIndex, endIndex));
         // logger.trace("highlighted term: {}", highlightedTerm); //NOSONAR Debug
         String after = phrase.substring(endIndex);
@@ -2260,11 +2260,10 @@ public final class SearchHelper {
         String queryCopy = q;
 
         // Extract phrases and add them directly
-        logger.trace("checking for phrases: " + queryCopy);
+        logger.trace("checking for phrases in: {}", queryCopy);
         Matcher mPhrases = PATTERN_FIELD_PHRASE.matcher(queryCopy);
         while (mPhrases.find()) {
             String phrase = queryCopy.substring(mPhrases.start(), mPhrases.end());
-            logger.trace("phrase: "+ phrase);
             String[] phraseSplit = phrase.split(":");
             String field = phraseSplit[0];
             switch (field) {
@@ -2286,13 +2285,14 @@ public final class SearchHelper {
                     }
                     break;
             }
-            String phraseWithoutQuotation = phraseSplit[1].replace("\"", "");
+            String phraseWithoutQuotation = phraseSplit[1].replace("@", "").replace("\"", "");
             if (!phraseWithoutQuotation.isEmpty() && !stopwords.contains(phraseWithoutQuotation)) {
                 if (ret.get(field) == null) {
                     ret.put(field, new HashSet<>());
                 }
                 // logger.trace("term: {}:{}", field, phraseWithoutQuotation); //NOSONAR Debug
-                ret.get(field).add(phraseWithoutQuotation);
+                // TODO Check why quotes where removed here, they're needed for the expand query
+                ret.get(field).add("\"" + phraseWithoutQuotation + "\""); 
             }
             q = q.replace(phrase, "");
             ret.get(TITLE_TERMS).add("\"" + phraseWithoutQuotation + "\"");
@@ -2368,7 +2368,7 @@ public final class SearchHelper {
                 }
             } else if (s.length() > 0 && !stopwords.contains(s)) {
                 // single values w/o a field
-                
+
                 // Skip duplicates for fuzzy search
                 if (s.trim().equals("+") || s.matches(".*~[1-2]$")) {
                     continue;
@@ -2885,7 +2885,6 @@ public final class SearchHelper {
      *
      * @param fields a {@link java.util.List} object.
      * @param searchTerms a {@link java.util.Map} object.
-     * @param phraseSearch If true, quotation marks are added to terms
      * @param proximitySearchDistance
      * @return a {@link java.lang.String} object.
      * @should generate query correctly
@@ -2897,8 +2896,7 @@ public final class SearchHelper {
      * @should add quotation marks if phraseSearch is true
      * @should add proximity search token correctly
      */
-    public static String generateExpandQuery(List<String> fields, Map<String, Set<String>> searchTerms, boolean phraseSearch,
-            int proximitySearchDistance) {
+    public static String generateExpandQuery(List<String> fields, Map<String, Set<String>> searchTerms, int proximitySearchDistance) {
         logger.trace("generateExpandQuery");
         if (searchTerms.isEmpty()) {
             return "";
@@ -2935,7 +2933,7 @@ public final class SearchHelper {
             boolean multipleTerms = false;
             for (final String t : terms) {
                 if (sbInner.length() > 0) {
-                    sbInner.append(SolrConstants.SOLR_QUERY_OR);
+//                    sbInner.append(SolrConstants.SOLR_QUERY_OR);
                     multipleTerms = true;
                 }
                 String term = t;
@@ -2944,14 +2942,16 @@ public final class SearchHelper {
                     if ((term.startsWith("\"") && term.endsWith("\""))) {
                         quotationMarksApplied = true;
                     }
-                    term = ClientUtils.escapeQueryChars(term);
+                    if (!quotationMarksApplied) {
+                        term = ClientUtils.escapeQueryChars(term);
+                    }
                     term = term.replace("\\*", "*");
                     //unescape fuzzy search token
                     term = term.replaceAll("\\\\~(\\d)", "~$1");
                     // logger.trace("term: {}", term); //NOSONAR Debug
-                    if (phraseSearch && !quotationMarksApplied) {
-                        term = '"' + term + '"';
-                    }
+//                    if (phraseSearch && !quotationMarksApplied) {
+//                        term = '"' + term + '"';
+//                    }
                 }
                 if (SolrConstants.FULLTEXT.equals(field) && proximitySearchDistance > 0) {
                     term = term.replace("\\\"", "\""); // unescape quotation marks
