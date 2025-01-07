@@ -26,6 +26,7 @@
     	this.wrapper = document.getElementsByClassName( 'fullscreen__view-image-thumbs-wrapper' );
     	this.controls = document.getElementsByClassName( 'image-controls' );
     	this.image = document.getElementById( 'imageContainer' );
+    	this.sidebarScrollPreview = document.getElementById( 'sidebarScrollPreview' );
     	this.object = document.getElementById( 'objectContainer' );
     	this.viewportWidth;
     	this.sidebarWidth;
@@ -62,8 +63,12 @@
             	let visibility = $( this.image ).css('visibility');
             	if(visibility == 'hidden') {
             		$( this.image ).css('visibility','visible');
+            		$( this.sidebarScrollPreview ).show();
+            		
+            		
             	} else {            	    
             		$( this.image ).css('visibility','hidden');
+            		$( this.sidebarScrollPreview ).hide();
             	}
             	// toggle object
             	let objVisibility = $( this.object ).css('visibility');

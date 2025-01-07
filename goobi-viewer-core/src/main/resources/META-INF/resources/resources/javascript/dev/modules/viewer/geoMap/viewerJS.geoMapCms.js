@@ -63,10 +63,10 @@
 			layer.language = this.config.map.language;
 			//when clicking on features with an associated link, open that link
 	    	layer.onFeatureClick.subscribe(feature => {
-//				console.log("click on feature ", feature);
+				//console.log("click on feature ", feature);
 	   	       if(feature.properties?.link && !feature.properties.entities?.filter(e => e.visible !== false).filter(e => e.title != undefined && (typeof e.title == 'object' || e.title.length > 0)).length && !feature.properties.highlighted) {
 	   	           $(layer.config.search.loader).show();
-	   	           //window.location.assign(feature.properties.link);
+	   	           window.location.assign(feature.properties.link);
 	   	       }
 	   	    });
 	   	    //link to search url on feature click

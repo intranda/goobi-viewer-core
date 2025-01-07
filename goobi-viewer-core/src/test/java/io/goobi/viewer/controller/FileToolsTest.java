@@ -24,17 +24,13 @@ package io.goobi.viewer.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.AbstractTest;
 
 class FileToolsTest extends AbstractTest {
@@ -56,7 +52,7 @@ class FileToolsTest extends AbstractTest {
      * @verifies throw FileNotFoundException if file not found
      */
     @Test
-    void getStringFromFile_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
+    void getStringFromFile_shouldThrowFileNotFoundExceptionIfFileNotFound() {
         File file = new File("notfound.txt");
         Assertions.assertFalse(file.exists());
         Assertions.assertThrows(FileNotFoundException.class, () -> FileTools.getStringFromFile(file, null));
@@ -77,7 +73,7 @@ class FileToolsTest extends AbstractTest {
      * @verifies throw FileNotFoundException if file not found
      */
     @Test
-    void getStringFromFilePath_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
+    void getStringFromFilePath_shouldThrowFileNotFoundExceptionIfFileNotFound() {
         File file = new File("notfound.txt");
         Assertions.assertFalse(file.exists());
         Assertions.assertThrows(FileNotFoundException.class, () -> FileTools.getStringFromFilePath(file.getPath()));
@@ -88,7 +84,7 @@ class FileToolsTest extends AbstractTest {
      * @verifies throw FileNotFoundException if file not found
      */
     @Test
-    void compressGzipFile_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
+    void compressGzipFile_shouldThrowFileNotFoundExceptionIfFileNotFound() {
         File file = new File("notfound.txt");
         Assertions.assertFalse(file.exists());
         Assertions.assertThrows(FileNotFoundException.class, () -> FileTools.compressGzipFile(file, new File("target/test.tar.gz")));
@@ -99,7 +95,7 @@ class FileToolsTest extends AbstractTest {
      * @verifies throw FileNotFoundException if file not found
      */
     @Test
-    void decompressGzipFile_shouldThrowFileNotFoundExceptionIfFileNotFound() throws Exception {
+    void decompressGzipFile_shouldThrowFileNotFoundExceptionIfFileNotFound() {
         File gzipFile = new File("notfound.tar.gz");
         Assertions.assertFalse(gzipFile.exists());
         Assertions.assertThrows(FileNotFoundException.class, () -> FileTools.decompressGzipFile(gzipFile, new File("target/target.bla")));
@@ -145,61 +141,11 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * @see FileTools#getCharset(InputStream)
-     * @verifies not close stream
-     */
-    @SuppressWarnings("resource")
-    @Test
-    void getCharset_shouldNotCloseStream() throws Exception {
-        File file = new File("src/test/resources/stopwords.txt");
-        FileInputStream fis = new FileInputStream(file);
-        try {
-            Assertions.assertEquals("UTF-8", FileTools.getCharset(fis));
-            try {
-                fis.available();
-            } catch (IOException e) {
-                Assertions.fail("Stream closed");
-            }
-        } finally {
-            fis.close();
-        }
-    }
-
-    @Test
-    void testProbeContentType() throws FileNotFoundException, IOException {
-        Path resourceFolder = Paths.get("src/test/resources/data/viewer/fulltext");
-
-        //        Assertions.assertEquals("text/plain",
-        //                FileTools.probeContentType(FileTools.getStringFromFilePath(resourceFolder.resolve("ascii.txt").toString())));
-        //        Assertions.assertEquals("text/html",
-        //                FileTools.probeContentType(FileTools.getStringFromFilePath(resourceFolder.resolve("html_ascii_crlf.txt").toString())));
-        //        Assertions.assertEquals("text/html",
-        //                FileTools.probeContentType(FileTools.getStringFromFilePath(resourceFolder.resolve("html_ascii.txt").toString())));
-        //        Assertions.assertEquals("application/xml",
-        //                FileTools.probeContentType(FileTools.getStringFromFilePath(resourceFolder.resolve("xml_utf8_crlf.txt").toString())));
-        //        Assertions.assertEquals("text/plain",
-        //                FileTools.probeContentType(FileTools.getStringFromFilePath(resourceFolder.resolve("IZT_Text_4-2018_Fairphone.txt").toString())));
-
-        //        Assertions.assertEquals("text/plain", FileTools.probeContentType((PathConverter.toURI(resourceFolder.resolve("ascii.txt")))));
-        Assertions.assertEquals("text/html", FileTools.probeContentType((PathConverter.toURI(resourceFolder.resolve("html_ascii_crlf.txt")))));
-        //        Assertions.assertEquals("text/html", FileTools.probeContentType((PathConverter.toURI(resourceFolder.resolve("html_ascii.txt")))));
-        //        Assertions.assertEquals("application/xml", FileTools.probeContentType((PathConverter.toURI(resourceFolder.resolve("xml_utf8_crlf.txt")))));
-        //        Assertions.assertEquals("text/plain", FileTools.probeContentType((PathConverter.toURI(resourceFolder.resolve("IZT_Text_4-2018_Fairphone.txt")))));
-
-        //        Assertions.assertEquals("text/plain", FileTools.probeContentType(URI.create("https://viewer.goobi.io/rest/content/fulltext/AC03343066/00000001.txt")));
-        //        Assertions.assertEquals("application/xml", FileTools.probeContentType(URI.create("https://viewer.goobi.io/rest/content/alto/AC03343066/00000001.xml")));
-        //
-        //        Assertions.assertEquals("text/plain", FileTools.probeContentType(URI.create("http://localhost:8082/viewer/rest/content/document/fulltext/02008070428708/00000013.txt")));
-        //        Assertions.assertEquals("application/xml", FileTools.probeContentType(URI.create("http://localhost:8082/viewer/rest/content/document/alto/AC03343066/00000012.xml")));
-
-    }
-
-    /**
      * @see FileTools#getBottomFolderFromPathString(String)
      * @verifies return folder name correctly
      */
     @Test
-    void getBottomFolderFromPathString_shouldReturnFolderNameCorrectly() throws Exception {
+    void getBottomFolderFromPathString_shouldReturnFolderNameCorrectly() {
         Assertions.assertEquals("PPN123", FileTools.getBottomFolderFromPathString("data/1/alto/PPN123/00000001.xml"));
     }
 
@@ -208,7 +154,7 @@ class FileToolsTest extends AbstractTest {
      * @verifies return empty string if no folder in path
      */
     @Test
-    void getBottomFolderFromPathString_shouldReturnEmptyStringIfNoFolderInPath() throws Exception {
+    void getBottomFolderFromPathString_shouldReturnEmptyStringIfNoFolderInPath() {
         Assertions.assertEquals("", FileTools.getBottomFolderFromPathString("00000001.xml"));
     }
 

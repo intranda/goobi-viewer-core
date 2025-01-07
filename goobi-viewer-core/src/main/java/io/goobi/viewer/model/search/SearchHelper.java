@@ -1724,7 +1724,7 @@ public final class SearchHelper {
      */
     public static List<String> getFacetValues(String query, String facetFieldName, int facetMinCount)
             throws PresentationException, IndexUnreachableException {
-        logger.trace("getFacetValues: {} / {}", query, facetFieldName);
+        // logger.trace("getFacetValues: {} / {}", query, facetFieldName);
         return getFacetValues(query, facetifyField(facetFieldName), null, facetMinCount, null);
     }
 

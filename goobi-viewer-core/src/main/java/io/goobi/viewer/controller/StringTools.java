@@ -725,7 +725,7 @@ public final class StringTools {
             return path + "/";
         }
     }
-
+    
     public static String removeTrailingSlashes(String path) {
         if (path != null && (path.endsWith("/") || path.endsWith("\\"))) {
             return removeTrailingSlashes(path.substring(0, path.length() - 1));

@@ -6,19 +6,28 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core" 
     xmlns:jsf="http://xmlns.jcp.org/jsf" 
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:o="http://omnifaces.org/ui"
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <!-- IMAGE CONTAINER -->
-    <div id="imageContainer" class="view-object__image">        
+    <div id="imageContainer" class="view-object__image #{activeDocumentBean.viewManager.showImageThumbnailGallery(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount ge 3 ? '-thumbnailPreviewGallery' : ''}">
+
         <!-- MAP -->
         <div id="imageMap" class="view-object__image-map" data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}"></div>
+
+		<!-- SHOW SCROLLING SIDEBAR IMAGE THUMBNAIL PREVIEW FOR INFINITE SCROLLING -->
+		<ui:fragment rendered="#{activeDocumentBean.viewManager.showImageThumbnailGallery(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount ge 3}">
+
+			<viewerComponent:sidebarScrollPreview range="300" imageSize="200" currentPageOrder="#{activeDocumentBean.viewManager.currentImageOrder}" />
+		
+		</ui:fragment>
 
         <!-- MOBILE IMAGE OVERLAY -->
         <div id="imageContainerMobileOverlay" class="view-object__image-mobile-overlay"></div>
     </div>
-
+    
 	<popover id="share-image-area-popup">
 
 	<div class="share-image-area">
@@ -56,16 +65,30 @@
     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/imageView.min.js"></script>
     <script type="text/javascript">
   		//<![CDATA[
-  		      		    
-    	var imageMap = $( "#imageMap" );
-        var access = #{activeDocumentBean.viewManager.currentPage.accessPermissionImage};
-        var accessDeniedMessage = $( "<div />" ).addClass( "view-object__access-denied" ).html( '#{msg.noImage_accessDenied}' );
-        var page = "#{navigationHelper.currentPage}";
-        var allowZoom = #{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom};
 
-        var configViewer = {
+  			
+  		const changeImageOrder = new rxjs.Subject();	//call next() to set image in canvas, pass image order as parameter
+       	const imageOrderChanged = new rxjs.Subject();	//Called when image is changed from within the canvas. subscribe to get notified of changes. image order is passed as parameter
+      		    
+    	const imageElement = $( "#imageMap" );
+        const access = #{activeDocumentBean.viewManager.currentPage.accessPermissionImage};
+        const accessDeniedMessage = $( "<div />" ).addClass( "view-object__access-denied" ).html( '#{msg.noImage_accessDenied}' );
+        const page = "#{navigationHelper.currentPage}";
+        const allowZoom = #{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom};
+        const imageSources = #{activeDocumentBean.viewManager.getImageInfosAsJson(navigationHelper.currentPageType)};
+        Object.keys(imageSources).forEach((key) => {
+        	let value = imageSources[key];
+            if(typeof value == "string" && (value.startsWith("{") || value.startsWith("["))) {
+            	imageSources[key] = JSON.parse(value);
+            }
+        });
+        const imageIdToOrderMap = new Map(Object.entries(imageSources).map( ([key, value]) => [sources.iiif.getId(value), Number(key)]));
+        const currentImageOrder = #{activeDocumentBean.viewManager.currentImageOrder}
+        // console.log("images ", imageMap); 
+        var configViewer = { 
         	global: {
-        		divId: "imageMap",
+        		divId: "imageMap", 
+        		viewMode: "#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase()}",
         		bottomMargin: () => #{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)},
         		adaptContainerHeight: true,
         		persistZoom: #{configurationBean.rememberImageZoom},
@@ -81,6 +104,9 @@
         		    rotateLeft: '.rotate-left',
         		    rotateRight: '.rotate-right',
         		    reset: '.reset',
+        		},
+        		sequence : {
+        			nextImageOffset: 100
         		},
         		overlayGroups: [ {
                     name: "searchHighlighting",
@@ -101,7 +127,8 @@
         	},
         	image: {
         		mimeType: "#{activeDocumentBean.viewManager.currentPage.displayMimeType}",
-	       		tileSource : '#{activeDocumentBean.viewManager.currentImageInfo}',
+	       		tileSource : Object.values(imageSources),
+	       		currentImageId : sources.iiif.getId(imageSources[currentImageOrder]),
         		baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}",
         		highlightCoords: [
         			{
@@ -172,34 +199,34 @@
         	configViewer.global.topMargin = () => {
         	    var $header = $('#fullscreenHeader');
         	    if($header.is(":visible")) {
-        	        return $header.height();
+        	        return $header.outerHeight();
         	    } else {
         	        return 0;
         	    }
         	}
         	configViewer.global.rightMargin = () => {
         	    var $sidebar = $('#fullscreenViewSidebar');
-        	    if(parseInt($sidebar.css("right")) < 0) {
-        	        return 0;
-        	    } else {
-        	        return $sidebar.width();
-        	    }
+//         	    var $scrollPreview = $('#sidebarScrollPreview');
+//         	    leftMargin = $scrollPreview.width() == undefined ? 0 : $scrollPreview.width();
+        	    rightMargin = $sidebar.width() == undefined ? 0 : $sidebar.width();
+        	    return rightMargin;// + leftMargin;
         	}
         }
-
        	// desktop object view
        	if ( access && configViewer) {
            	var viewImage = new ImageView.Image( configViewer )
+           	
            	viewImage.load().then( function( image ) {
+           		initializeSequence();
            	    $(".openseadragon-canvas").get(0).focus = () => {
            	       //prevent focus on os-div to avoid scrolling down on click
-           	    }
+           	    } 
            		let shareImageFragment = new viewerJS.ShareImageFragment(image);
            		shareImageFragment.initImageFragmentLinks();
            	} ).catch( function( error ) {
            		console.error( "viewObject.xhtml - viewImage.init: Error opening image", error );
-           		if(imageMap.lenth > 0) {           		    
-           			imageMap.get(0).innerHTML = viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false );
+           		if(imageElement.lenth > 0) {           		    
+           			imageElement.get(0).innerHTML = viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false );
            		}
            		
            		// reload image footer in fullscreen
@@ -211,7 +238,7 @@
            	} );
         } 
        	else {
-       		imageMap.append( accessDeniedMessage );
+       		imageElement.append( accessDeniedMessage );
        	}
 
        	// mobile overlay
@@ -252,6 +279,48 @@
 				    });
        	 	    }
        	 	});
+	
+		    function initializeSequence() {
+	           	if(viewImage.sequence) {
+	           			           		
+	           		//ajax updates
+	           		viewImage.sequence.onScroll
+	           		.pipe(
+	           			rxjs.operators.withLatestFrom(viewImage.sequence.onCurrentImageChange),
+	           			rxjs.operators.map(e => e[1]),
+	           			rxjs.operators.distinctUntilChanged(),
+	           			rxjs.operators.debounceTime(800)		
+	           		)
+	           		.subscribe(imageId => {
+	           			const pageOrder = imageIdToOrderMap.get(imageId);
+	           			if(pageOrder != undefined) {	          
+	           				console.log("onCurrentImageChange", imageId, pageOrder)
+	           				setCurrentImageOrder({"order": pageOrder});
+	           			}
+	           		});
+
+	           		//js updates
+		           	viewImage.sequence.onCurrentImageChange.subscribe (imageId => {
+		           		const pageNo = imageIdToOrderMap.get(imageId);
+           				console.log("onCurrentImageChange2", imageId, pageNo)
+
+		           		if(pageNo != undefined) {	           			
+			           		setBrowserLocation(pageNo);
+			           		imageOrderChanged.next(pageNo);
+		           		}
+		           	});
+	           		
+		           	changeImageOrder.subscribe(pageNo => {	    
+		           		if(pageNo != undefined ) {
+		           			const id = sources.iiif.getId(imageSources[Number(pageNo)]);
+		           			console.log("changeImageOrder", pageNo, id);
+		           			if(id != undefined) {		           				
+		            			viewImage.sequence.setCurrentImage(id, true);
+		           			}
+		           		}
+		           	})
+	             }
+		    }
        	 	
 		    //init page areas
        	 	function drawPageAreas(config, imageView) {
@@ -291,6 +360,31 @@
 				}
 
 		    }
+		    function setBrowserLocation(pageNo) {
+		    	const url = new URL(window.location.href);
+           		let pathArray = url.pathname.split("/");
+           		let replacedPathPart = false;
+           		for (var i = pathArray.length-1; i >= 0; i--) {
+					if(/^\d+$/.test(pathArray[i])) {
+						//this is presumably the page number
+						pathArray[i] = pageNo;
+						replacedPathPart = true;
+						break;
+					}
+				}
+           		if(!replacedPathPart) {
+           			if(pathArray[pathArray.length-1].length == 0) {
+           				pathArray.pop();
+           			}
+           			pathArray.push(pageNo)
+           		}
+           		url.pathname = pathArray.join("/");
+           		
+           		//update tab url
+           	 	//alternatively use history.addState to add an entry to the browser history, so navigating back leads to the previous page
+           		window.history.replaceState(null, "", url.toString());
+		    }
+		    
 		    function drawActiveAreas(activeAreas, imageView) {
 		    	let areasOnCanvas = [];
 				activeAreas.forEach((activeArea, index) => {				        
@@ -412,7 +506,10 @@
         
 		       	
       	//]]>
+  		
     </script>
+    
+
     
     <ui:repeat var="se" value="#{activeDocumentBean.viewManager.currentPage.containedStructElements}">
     	<ui:fragment rendered="#{se.hasShapeMetadata()}">

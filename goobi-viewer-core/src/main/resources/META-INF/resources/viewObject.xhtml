@@ -5,6 +5,7 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
@@ -14,6 +15,7 @@
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('object')}" />
             <f:event type="preRenderView" listener="#{metadataBean.selectFirstMetadataViewOfLocation('objectview')}" />
+        	<f:event type="preRenderView" listener="#{activeDocumentBean.updatePageNavigation(navigationHelper.currentPageType)}"/>
         </f:metadata>
     </ui:define>
 
@@ -40,10 +42,10 @@
 
             <!-- TOP DOC ANCHOR -->
             <a name="topDocAnchor"></a>
-
+ 
             <!-- VIEW OBJECT -->
             <div id="viewObject" class="view-object #{activeDocumentBean.viewManager.cssClass}">
-                        
+
 		    	<div id="title" class="title">
 		    		<!-- TITLE HEADER -->
 					<div class="title__header">
@@ -66,14 +68,30 @@
 					</div>
 				</div>
 
-
+				<!-- Update pagenumber and all relevant html areas with ajax when changing image in sequence mode -->
+				<h:form>
+					<h:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" 
+					onevent="onPageUpdateEvent" onerror="onPageUpdateEvent"
+					render=":viewMetadata :userCommentsForm :userGeneratedContentGroup :sidebar:widgetViews:widgetViewsForm :sidebar:widgetMetadata:sidebarMetadataList :sidebar:widgetDownloads:pageDownloads :sidebar:widgetCitations:pageCitations :sidebar:widgetAnnotations:widgetAnnotationList:annotationList :sidebar:widgetTechnical:technicalMetadataList"></h:commandScript>
+					
+					<script>
+						function onPageUpdateEvent(data) {
+							if(data.status === "begin") {
+								document.querySelectorAll('.ajax_loader__image_update').forEach(loader => loader.classList.remove('-hidden'))
+							} else {
+								document.querySelectorAll('.ajax_loader__image_update').forEach(loader => loader.classList.add('-hidden'))
+							}
+						}
+					</script>
+		
+				</h:form>
 
 
                 <!-- IMAGE CONTROLS -->
-                <h:panelGroup
-                    rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'video' and activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'audio'}">
-                    <viewerComponent:imageControls />
-                </h:panelGroup>
+	                <h:panelGroup
+	                    rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'video' and activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'audio'}">
+	                    <viewerComponent:imageControls />
+	                </h:panelGroup>
 
                 <!-- VIEW IMAGE -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image'}">
@@ -112,18 +130,43 @@
                 </h:panelGroup>
                 
                 <!-- PAGINATOR -->
-                <viewerComponent:simplePaginator
-                    itemCount="#{activeDocumentBean.viewManager.imagesCount}"
-                    itemActive="#{activeDocumentBean.viewManager.currentImageOrderForPaginator}"
-                    firstItem="#{activeDocumentBean.viewManager.firstPageOrder}"
-                    lastItem="#{activeDocumentBean.viewManager.lastPageOrder}"
-                    urlPrefix="#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/"
-                    urlSuffix="#topDocAnchor"
-                    rtl="#{activeDocumentBean.viewManager.topStructElement.rtl}" />
+                <h:panelGroup id="paginatorGroup">
+	                    <div id="simplePaginator"/>
+	                    <script>
+	                    	$(document).ready(() => {
+	                    		riot.mount("#simplePaginator", "simplepaginator", {
+	                    			navigationMode: "#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase() == 'sequence' ? 'buttons' : 'links'}",
+	                    			itemCount: #{activeDocumentBean.viewManager.imagesCount},
+	            	                itemActive: #{activeDocumentBean.viewManager.currentImageOrderForPaginator},
+	            	                firstItem: #{activeDocumentBean.viewManager.firstPageOrder},
+	            	                lastItem: #{activeDocumentBean.viewManager.lastPageOrder},
+	            	                urlTemplate: (pageNo) => `#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/\${pageNo}#topDocAnchor`,
+	            	                rtl: #{activeDocumentBean.viewManager.topStructElement.rtl},
+	            	                classSuffix: "",
+	            	                positionBottom: false,
+	            	                update: imageOrderChanged,
+									onUpdate: (pageNumber) => changeImageOrder.next(pageNumber),
+	            	             	msg: {
+	            	             		aria_label__pagination_bottom: "#{msg.aria_label__pagination_bottom}",
+	            	             		aria_label__pagination_pages: "#{msg.aria_label__pagination_pages}",
+	            	             		aria_label__pagination_previous: "#{msg.aria_label__pagination_previous}",
+	            	             		aria_label__pagination_next: "#{msg.aria_label__pagination_next}",
+	            	             		numericPaginator_prev: "#{msg.numericPaginator_prev}",
+	            	             		numericPaginator_next: "#{msg.numericPaginator_next}",
+	            	             		aria__label_pagination_goto: "#{msg.aria__label_pagination_goto}"
+	            	             	}
+	                    		})
+	                    	})
+	                    
+	                    </script>
+                </h:panelGroup>
                     
                 <!-- METADATA (FIRST GROUP WITH location="objectview" -->    
-                <ui:fragment rendered="#{metadataBean.activeMetadataView != null}">
+                <h:panelGroup id="viewMetadata" rendered="#{metadataBean.activeMetadataView != null}">
                     <div id="view_metadata" class="view-metadata view-object__metadata">
+                        <div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
+							<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+						</div>
                         <ui:insert name="viewMetadataMetadata">
                             <ui:include src="/resources/includes/metadata/metadata.xhtml">
                                 <ui:param name="metadataViewIndex" value="#{metadataBean.activeMetadataView.index}"/>
@@ -132,7 +175,7 @@
                             </ui:include>
                         </ui:insert>
                     </div>
-                </ui:fragment>
+                </h:panelGroup>
 
 				<!-- MODULE CONTRIBUTIONS -->
                 <c:forEach var="module" items="#{configurationBean.modules}">
@@ -141,11 +184,19 @@
                     </c:forEach>
                 </c:forEach>
 
-				<!-- USER GENERATED CONTENT -->
- 				<h:panelGroup rendered="#{configurationBean.displayUserGeneratedContentBelowImage and contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage).size() > 0}"> 
-					<div id="view_image_user_generated_content">
-						<viewerComponent:annotationList contentList="#{contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage)}" sidebar="false"/>
-					</div>
+				<!-- USER GENERATED CONTENT (ANNOTATIONS) -->
+ 				<h:panelGroup id="userGeneratedContentGroup"> 
+					<ui:fragment rendered="#{configurationBean.displayUserGeneratedContentBelowImage and contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage).size() > 0}">
+						<div id="view_image_user_generated_content" class="view-object__user_generated_content">
+						<h2>
+							<span>#{msg.admin__crowdsourcing_annotations}</span>
+							<div class="ajax_loader ajax_loader__image_update ajax_loader__content_area -hidden">
+								<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+							</div>
+						</h2>
+							<viewerComponent:annotationList contentList="#{contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage)}" sidebar="false"/>
+						</div>
+					</ui:fragment>
  				</h:panelGroup>
 
                 <!-- USER COMMENTS -->
@@ -183,7 +234,9 @@
                         saveBtn: "#{msg.downloadGenerateFile}",
                     }
                 };
-				$(document).ready(() => viewerJS.downloadModal.init( downloadModalConfig ));
+				$(document).ready(() => {
+					viewerJS.downloadModal.init( downloadModalConfig );
+				});
 
                 // viewerJS.clipboard.init( '[data-copy]' );
             </script>
@@ -192,7 +245,9 @@
 
     <ui:define name="sidebar">
 
-        <viewerComponent:record_sidebar/>
+		<h:panelGroup id="sidebarGroup">
+	        <viewerComponent:record_sidebar id="sidebar"/>
+		</h:panelGroup>
 
     </ui:define>
 

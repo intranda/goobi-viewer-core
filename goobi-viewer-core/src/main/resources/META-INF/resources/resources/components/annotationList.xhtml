@@ -19,7 +19,7 @@
 	<composite:implementation>
 
 		<nav id="user_generated_content_nav">
-			<ul>
+			<ul jsf:id="annotationList">
 				<ui:repeat var="content" value="#{cc.attrs.contentList}">
 					<h:panelGroup rendered="#{!content.isEmpty() and content.type != 'GEOLOCATION'}">
 						<li id="words-#{content.id}">

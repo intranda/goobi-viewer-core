@@ -27,8 +27,11 @@
 						<dd>
 								<!-- Metadata value -->
 								<h:panelGroup rendered="#{metadata.singleString}">
-									<h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}" escape="false">
-									</h:outputFormat>
+                                    <ui:fragment rendered="#{val.hasAccessConditions}">
+                                       <span class="metadata__locked-value-icon" data-toggle="tooltip" title="#{msg.metadata__restricted_value_tooltip}"><i class="fa fa-unlock" /></span>
+                                    </ui:fragment>
+                                    <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}" escape="false">
+                                    </h:outputFormat>
 								</h:panelGroup>
 	
 								<!-- Nested child metadata -->

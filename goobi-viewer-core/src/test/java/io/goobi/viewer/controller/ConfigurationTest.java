@@ -45,8 +45,6 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.mchange.v2.sql.filter.SynchronizedFilterDataSource;
-
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
@@ -1156,24 +1154,6 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getZoomFullscreenViewType()
-     * @verifies return correct value
-     */
-    @Test
-    void getZoomFullscreenViewType_shouldReturnCorrectValue() throws Exception {
-        assertEquals("classic", DataManager.getInstance().getConfiguration().getZoomFullscreenViewType());
-    }
-
-    /**
-     * @see Configuration#getZoomImageViewType()
-     * @verifies return correct value
-     */
-    @Test
-    void getZoomImageViewType_shouldReturnCorrectValue() throws Exception {
-        assertEquals("openSeadragon", DataManager.getInstance().getConfiguration().getImageViewType());
-    }
-
-    /**
      * @see Configuration#isBookmarksEnabled()
      * @verifies return correct value
      */
@@ -1377,24 +1357,6 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void isPreventProxyCaching_shouldReturnCorrectValue() {
         assertEquals(true, DataManager.getInstance().getConfiguration().isPreventProxyCaching());
-    }
-
-    /**
-     * @see Configuration#isSolrCompressionEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    void isSolrCompressionEnabled_shouldReturnCorrectValue() {
-        assertFalse(DataManager.getInstance().getConfiguration().isSolrCompressionEnabled());
-    }
-
-    /**
-     * @see Configuration#isSolrBackwardsCompatible()
-     * @verifies return correct value
-     */
-    @Test
-    void isSolrBackwardsCompatible_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isSolrBackwardsCompatible());
     }
 
     /**
@@ -2103,6 +2065,26 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getAdvancedSearchTemplateNames()
+     * @verifies return all configured values
+     */
+    @Test
+    void getAdvancedSearchTemplateNames_shouldReturnCorrectValue() {
+        List<String> result = DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateNames();
+        Assertions.assertNotNull(result);
+        assertEquals(2, result.size());
+    }
+
+    /**
+     * @see Configuration#getAdvancedSearchTemplateQuery(String)
+     * @verifies return correct value
+     */
+    @Test
+    void getAdvancedSearchTemplateQuery_shouldReturnCorrectValue() {
+        assertEquals("DOCSTRCT:person", DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateQuery("person"));
+    }
+
+    /**
      * @see Configuration#isCalendarSearchEnabled()
      * @verifies return correct value
      */
@@ -2757,8 +2739,13 @@ class ConfigurationTest extends AbstractTest {
     }
 
     @Test
-    void isDoublePageNavigationEnabled_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled());
+    void isDoublePageNavigationEnabled_shouldReturnCorrectValue() throws ViewerConfigurationException {
+        assertTrue(DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(null, null));
+    }
+
+    @Test
+    void isSequencePageNavigationEnabled_shouldReturnCorrectValue() throws ViewerConfigurationException {
+        assertFalse(DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(null, null));
     }
 
     /**
@@ -3162,7 +3149,7 @@ class ConfigurationTest extends AbstractTest {
         List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationStyles();
         assertEquals(3, result.size());
     }
-    
+
     /**
      * @see Configuration#getSidebarWidgetUsageCitationRecommendationDocstructMapping()
      * @verifies return all configured values
@@ -3509,7 +3496,6 @@ class ConfigurationTest extends AbstractTest {
 
         assertEquals("lido_objects", groups.get(0).getName());
         assertEquals("SOURCEDOCFORMAT:LIDO", groups.get(0).getQuery());
-        assertTrue(groups.get(0).isUseAsAdvancedSearchTemplate());
     }
 
     /**

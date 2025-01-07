@@ -153,6 +153,17 @@ public final class FileTools {
     }
 
     /**
+     * @param file
+     * @return Charset of the given file
+     * @throws IOException
+     */
+    public static String getCharset(Path file) throws IOException {
+        try (InputStream in = Files.newInputStream(file)) {
+            return getCharset(in);
+        }
+    }
+
+    /**
      * Uses ICU4J to determine the charset of the given InputStream. Clients are responsible for closing the input stream. Do not re-use this stream
      * for any other operations.
      *
@@ -162,13 +173,14 @@ public final class FileTools {
      * @should detect charset correctly
      * @should not close stream
      */
-    public static String getCharset(InputStream input) throws IOException {
+    static String getCharset(InputStream input) throws IOException {
         CharsetDetector cd = new CharsetDetector();
-        BufferedInputStream bis = new BufferedInputStream(input);
-        cd.setText(bis);
-        CharsetMatch cm = cd.detect();
-        if (cm != null) {
-            return cm.getName();
+        try (BufferedInputStream bis = new BufferedInputStream(input)) {
+            cd.setText(bis);
+            CharsetMatch cm = cd.detect();
+            if (cm != null) {
+                return cm.getName();
+            }
         }
 
         return null;
@@ -612,17 +624,6 @@ public final class FileTools {
         } catch (IOException e) {
             logger.error("Error reading text to stream", e);
             return null;
-        }
-    }
-
-    /**
-     * @param file
-     * @return Charset of the given file
-     * @throws IOException
-     */
-    public static String getCharset(Path file) throws IOException {
-        try (InputStream in = Files.newInputStream(file)) {
-            return getCharset(in);
         }
     }
 
