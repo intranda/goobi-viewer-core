@@ -169,7 +169,7 @@ public final class SearchHelper {
     /** Constant <code>PATTERN_PHRASE</code> */
     private static final Pattern PATTERN_PHRASE = Pattern.compile("^" + REGEX_QUOTATION_MARKS + "(~\\d+)?$");
     /** Constant <code>PATTERN_PROXIMITY_SEARCH_TOKEN</code> */
-    private static final Pattern PATTERN_PROXIMITY_SEARCH_TOKEN = Pattern.compile("?<=\")~(\\d+)");
+    private static final Pattern PATTERN_PROXIMITY_SEARCH_TOKEN = Pattern.compile("(?<=\")~(\\d+)");
     /** Constant <code>PATTERN_YEAR_RANGE</code> */
     private static final Pattern PATTERN_YEAR_RANGE = Pattern.compile("\\[\\d+ TO \\d+\\]");
     /** Constant <code>PATTERN_HYPHEN_LINK</code> */
