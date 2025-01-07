@@ -162,12 +162,14 @@ public final class SearchHelper {
     private static final Pattern PATTERN_NOT_BRACKETS = Pattern.compile("NOT\\([^()]*\\)");
     /** Regex pattern for negations not followed by brackets */
     private static final Pattern PATTERN_NOT = Pattern.compile("NOT [a-zA-Z_]+:[a-zA-Z0-9\\*]+");
+    /** Constant <code>REGEX_QUOTATION_MARKS="\"[^()]*?\""</code>. */
+    public static final String REGEX_QUOTATION_MARKS = "@?\"[^()]*?\"@?";
     /** Constant <code>PATTERN_FIELD_PHRASE</code> */
-    private static final Pattern PATTERN_FIELD_PHRASE = Pattern.compile("[\\w]+:" + StringTools.REGEX_QUOTATION_MARKS);
+    private static final Pattern PATTERN_FIELD_PHRASE = Pattern.compile("[\\w]+:" + REGEX_QUOTATION_MARKS);
     /** Constant <code>PATTERN_PHRASE</code> */
-    private static final Pattern PATTERN_PHRASE = Pattern.compile("^" + StringTools.REGEX_QUOTATION_MARKS + "(~[0-9]+)?$");
+    private static final Pattern PATTERN_PHRASE = Pattern.compile("^" + REGEX_QUOTATION_MARKS + "(~\\d+)?$");
     /** Constant <code>PATTERN_PROXIMITY_SEARCH_TOKEN</code> */
-    private static final Pattern PATTERN_PROXIMITY_SEARCH_TOKEN = Pattern.compile("(?<=\")~(\\d+)");
+    private static final Pattern PATTERN_PROXIMITY_SEARCH_TOKEN = Pattern.compile("?<=\")~(\\d+)");
     /** Constant <code>PATTERN_YEAR_RANGE</code> */
     private static final Pattern PATTERN_YEAR_RANGE = Pattern.compile("\\[\\d+ TO \\d+\\]");
     /** Constant <code>PATTERN_HYPHEN_LINK</code> */
@@ -2258,9 +2260,11 @@ public final class SearchHelper {
         String queryCopy = q;
 
         // Extract phrases and add them directly
+        logger.trace("checking for phrases: " + queryCopy);
         Matcher mPhrases = PATTERN_FIELD_PHRASE.matcher(queryCopy);
         while (mPhrases.find()) {
             String phrase = queryCopy.substring(mPhrases.start(), mPhrases.end());
+            logger.trace("phrase: "+ phrase);
             String[] phraseSplit = phrase.split(":");
             String field = phraseSplit[0];
             switch (field) {
@@ -2283,7 +2287,7 @@ public final class SearchHelper {
                     break;
             }
             String phraseWithoutQuotation = phraseSplit[1].replace("\"", "");
-            if (phraseWithoutQuotation.length() > 0 && !stopwords.contains(phraseWithoutQuotation)) {
+            if (!phraseWithoutQuotation.isEmpty() && !stopwords.contains(phraseWithoutQuotation)) {
                 if (ret.get(field) == null) {
                     ret.put(field, new HashSet<>());
                 }
