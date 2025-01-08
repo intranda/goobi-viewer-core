@@ -2539,21 +2539,25 @@ public class Configuration extends AbstractConfiguration {
             String type = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@type]", "");
             String endpoint = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@endpoint]", null);
             String tokenEndpoint = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tokenEndpoint]", null);
+            String jwksUri = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@jwksUri]", null);
             String redirectionEndpoint = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@redirectionEndpoint]", null);
             String scope = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@scope]", null);
+            String responseType = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@responseType]", "code");
+            String responseMode = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@responseMode]");
             String image = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@image]", null);
             boolean enabled = myConfigToUse.getBoolean(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@enabled]", true);
+            String discoveryUri = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@discoveryUri]");
             String clientId = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@clientId]", null);
             String clientSecret = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@clientSecret]", null);
             String parameterType = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@parameterType]", null);
             String parameterName = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@parameterName]", null);
+            String issuer = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@issuer]");
+            long tokenCheckDelay = myConfigToUse.getLong(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tokenCheckDelay]", 0);
             String thirdPartyLoginUrl = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginUrl]", null);
             String thirdPartyLoginApiKey = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginApiKey]", null);
             String thirdPartyLoginScope = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginScope]", null);
             String thirdPartyLoginReqParamDef = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginReqParamDef]", null);
-            ;
             String thirdPartyLoginClaim = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginClaim]", null);
-            ;
             long timeoutMillis = myConfigToUse.getLong(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@timeout]", 60000);
 
             if (enabled) {
@@ -2565,9 +2569,15 @@ public class Configuration extends AbstractConfiguration {
                     case "openid":
                         providers.add(
                                 new OpenIdProvider(name, label, endpoint, image, timeoutMillis, clientId, clientSecret)
+                                        .setDiscoveryUri(discoveryUri)
                                         .setTokenEndpoint(tokenEndpoint)
                                         .setRedirectionEndpoint(redirectionEndpoint)
+                                        .setJwksUri(jwksUri)
                                         .setScope(scope)
+                                        .setResponseType(responseType)
+                                        .setResponseMode(responseMode)
+                                        .setIssuer(issuer)
+                                        .setTokenCheckDelay(tokenCheckDelay)
                                         .setThirdPartyVariables(thirdPartyLoginUrl, thirdPartyLoginApiKey, thirdPartyLoginScope,
                                                 thirdPartyLoginReqParamDef, thirdPartyLoginClaim));
                         break;
@@ -3762,7 +3772,8 @@ public class Configuration extends AbstractConfiguration {
             ChronoUnit unit = ChronoUnit.valueOf(unitString.toUpperCase());
             return Duration.of(amount, unit);
         } catch (IllegalArgumentException e) {
-            logger.warn("Could not read temporal unit from string '{}' in config field 'externalResource.deleteAfter.unit'. Assuming days");
+            logger.warn("Could not read temporal unit from string '{}' in config field 'externalResource.deleteAfter.unit'. Assuming days.",
+                    unitString);
             return Duration.of(amount, ChronoUnit.DAYS);
         }
     }

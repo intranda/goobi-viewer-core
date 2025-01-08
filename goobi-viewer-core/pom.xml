@@ -117,6 +117,8 @@
 		<javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
 		<!-- This dependency is declared as ignoredUnusedDeclaredDependency, too -->
 		<javax.jstl.version>1.2</javax.jstl.version>
+		<java-jwt.version>3.19.1</java-jwt.version>
+		<jwks-rsa.version>0.21.2</jwks-rsa.version>
 		<jaxen.version>2.0.0</jaxen.version>
 		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
 		<jaxb-runtime.version>2.3.9</jaxb-runtime.version>
@@ -130,7 +132,6 @@
 		<mariadb-java-client.version>3.5.1</mariadb-java-client.version>
 		<mockito.version>5.14.2</mockito.version>
 		<mockserver.version>5.15.0</mockserver.version>
-		<oauth.version>1.0.2</oauth.version>
 		<omnifaces.version>3.14.7</omnifaces.version>
 		<openpdf.version>2.0.3</openpdf.version>
 		<poi.version>5.3.0</poi.version>
@@ -402,6 +403,18 @@
 			<artifactId>jaxb-api</artifactId>
 			<version>${jaxb-api.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>${java-jwt.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>jwks-rsa</artifactId>
+            <version>${jwks-rsa.version}</version>
+            <scope>compile</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom2</artifactId>
@@ -571,17 +584,6 @@
 			<artifactId>mockserver-netty</artifactId>
 			<version>${mockserver.version}</version>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.oltu.oauth2</groupId>
-			<artifactId>org.apache.oltu.oauth2.client</artifactId>
-			<version>${oauth.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
