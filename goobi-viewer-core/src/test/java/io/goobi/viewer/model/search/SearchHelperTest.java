@@ -458,13 +458,13 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 Set<String> terms = result.get(SolrConstants.FULLTEXT);
                 Assertions.assertNotNull(terms);
                 Assertions.assertEquals(1, terms.size());
-                Assertions.assertTrue(terms.contains("hello-world"));
+                Assertions.assertTrue(terms.contains("\"hello-world\""));
             }
             {
                 Set<String> terms = result.get(SolrConstants.UGCTERMS);
                 Assertions.assertNotNull(terms);
                 Assertions.assertEquals(1, terms.size());
-                Assertions.assertTrue(terms.contains("comment"));
+                Assertions.assertTrue(terms.contains("\"comment\""));
             }
             Assertions.assertNull(result.get("MD_Y"));
         }
@@ -485,31 +485,31 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void extractSearchTermsFromQuery_shouldHandleMultiplePhrasesInQueryCorrectly() {
         Map<String, Set<String>> result =
-                SearchHelper.extractSearchTermsFromQuery("(MD_A:\"value1\" OR MD_B:\"value1\" OR MD_C:\"value2\" OR MD_D:\"value2\")", null);
+                SearchHelper.extractSearchTermsFromQuery("(MD_A:(\"value1 value 2\") OR MD_B:\"value1\" OR MD_C:\"value2\" OR MD_D:\"value2\")", null);
         Assertions.assertEquals(5, result.size());
         {
             Set<String> terms = result.get("MD_A");
             Assertions.assertNotNull(terms);
             Assertions.assertEquals(1, terms.size());
-            Assertions.assertTrue(terms.contains("value1"));
+            Assertions.assertTrue(terms.contains("\"value1 value 2\""));
         }
         {
             Set<String> terms = result.get("MD_B");
             Assertions.assertNotNull(terms);
             Assertions.assertEquals(1, terms.size());
-            Assertions.assertTrue(terms.contains("value1"));
+            Assertions.assertTrue(terms.contains("\"value1\""));
         }
         {
             Set<String> terms = result.get("MD_C");
             Assertions.assertNotNull(terms);
             Assertions.assertEquals(1, terms.size());
-            Assertions.assertTrue(terms.contains("value2"));
+            Assertions.assertTrue(terms.contains("\"value2\""));
         }
         {
             Set<String> terms = result.get("MD_D");
             Assertions.assertNotNull(terms);
             Assertions.assertEquals(1, terms.size());
-            Assertions.assertTrue(terms.contains("value2"));
+            Assertions.assertTrue(terms.contains("\"value2\""));
         }
     }
 
@@ -571,11 +571,9 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 null);
         terms = result.get(SearchHelper.TITLE_TERMS);
         Assertions.assertNotNull(terms);
-        Assertions.assertEquals(6, terms.size());
-        Assertions.assertTrue(terms.contains("(value1 value2)"));
-        Assertions.assertTrue(terms.contains("(value2)"));
-        Assertions.assertTrue(terms.contains("(value3)"));
-        Assertions.assertTrue(terms.contains("(:value4:)"));
+        Assertions.assertEquals(4, terms.size());
+        Assertions.assertTrue(terms.contains("\"value1 value2\""));
+        Assertions.assertTrue(terms.contains("\"value3 :value4:\""));
         Assertions.assertTrue(terms.contains("\"hello-world\""));
         Assertions.assertTrue(terms.contains("\"comment\""));
     }
@@ -1057,14 +1055,14 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         searchTerms.put(SolrConstants.PI_ANCHOR, new HashSet<>(Arrays.asList(new String[] { "eight" })));
         searchTerms.put(SolrConstants.PI_TOPSTRUCT, new HashSet<>(Arrays.asList(new String[] { "nine" })));
         Assertions.assertEquals(
-                " +(" + SolrConstants.DEFAULT + ":(one OR two) OR " + SolrConstants.FULLTEXT + ":\"two\\ three\"~10 OR " + SolrConstants.NORMDATATERMS
+                " +(" + SolrConstants.DEFAULT + ":(one OR two) OR " + SolrConstants.FULLTEXT + ":\"two three\"~10 OR " + SolrConstants.NORMDATATERMS
                         + ":(four OR five) OR " + SolrConstants.UGCTERMS + ":six OR " + SolrConstants.CMS_TEXT_ALL + ":seven)",
                 SearchHelper.generateExpandQuery(fields, searchTerms, 10));
 
         searchTerms.clear();
         searchTerms.put(SolrConstants.FULLTEXT, new HashSet<>(Arrays.asList(new String[] { "\"two three\"" })));
         Assertions.assertEquals(
-                " +(" + SolrConstants.FULLTEXT + ":\"two\\ three\"~10)",
+                " +(" + SolrConstants.FULLTEXT + ":\"two three\"~10)",
                 SearchHelper.generateExpandQuery(fields, searchTerms, 10));
     }
 

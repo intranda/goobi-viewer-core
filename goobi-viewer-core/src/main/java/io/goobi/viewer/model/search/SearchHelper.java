@@ -2264,7 +2264,7 @@ public final class SearchHelper {
         Matcher mPhrases = PATTERN_FIELD_PHRASE.matcher(queryCopy);
         while (mPhrases.find()) {
             String phrase = queryCopy.substring(mPhrases.start(), mPhrases.end());
-            String[] phraseSplit = phrase.split(":");
+            String[] phraseSplit = phrase.split(":", 2);
             String field = phraseSplit[0];
             switch (field) {
                 case SolrConstants.SUPERDEFAULT:
@@ -2285,13 +2285,14 @@ public final class SearchHelper {
                     }
                     break;
             }
+            
             String phraseWithoutQuotation = phraseSplit[1].replace("@", "").replace("\"", "");
             if (!phraseWithoutQuotation.isEmpty() && !stopwords.contains(phraseWithoutQuotation)) {
                 if (ret.get(field) == null) {
                     ret.put(field, new HashSet<>());
                 }
                 // logger.trace("term: {}:{}", field, phraseWithoutQuotation); //NOSONAR Debug
-                // TODO Check why quotes where removed here, they're needed for the expand query
+                // TODO Check why quotes were removed here, they're needed for the expand query
                 ret.get(field).add("\"" + phraseWithoutQuotation + "\""); 
             }
             q = q.replace(phrase, "");
@@ -2345,7 +2346,7 @@ public final class SearchHelper {
                         value = value.replace("\"", "");
                     }
                     // Skip values in stopwords and duplicates for fuzzy search
-                    if (value.length() > 0 && !stopwords.contains(value) && !value.matches(".*~[1-2]$")) {
+                    if (!value.isEmpty() && !stopwords.contains(value) && !value.matches(".*~[1-2]$")) {
                         if (ret.get(currentField) == null) {
                             ret.put(currentField, new HashSet<>());
                         }
@@ -2933,7 +2934,7 @@ public final class SearchHelper {
             boolean multipleTerms = false;
             for (final String t : terms) {
                 if (sbInner.length() > 0) {
-//                    sbInner.append(SolrConstants.SOLR_QUERY_OR);
+                    sbInner.append(SolrConstants.SOLR_QUERY_OR);
                     multipleTerms = true;
                 }
                 String term = t;
