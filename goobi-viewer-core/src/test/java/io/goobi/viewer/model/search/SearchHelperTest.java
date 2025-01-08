@@ -526,13 +526,13 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             Set<String> terms = result.get("MD_C");
             Assertions.assertNotNull(terms);
             Assertions.assertEquals(1, terms.size());
-            Assertions.assertTrue(terms.contains("value2"));
+            Assertions.assertTrue(terms.contains("\"value2\""));
         }
         {
             Set<String> terms = result.get("MD_D");
             Assertions.assertNotNull(terms);
             Assertions.assertEquals(1, terms.size());
-            Assertions.assertTrue(terms.contains("value3"));
+            Assertions.assertTrue(terms.contains("\"value3\""));
         }
     }
 
@@ -607,7 +607,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Set<String> terms = result.get(SolrConstants.FULLTEXT);
         Assertions.assertNotNull(terms);
         Assertions.assertEquals(1, terms.size());
-        Assertions.assertTrue(terms.contains("hello world"));
+        Assertions.assertTrue(terms.contains("\"hello world\""));
     }
 
     /**
