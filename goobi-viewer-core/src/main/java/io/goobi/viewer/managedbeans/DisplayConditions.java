@@ -28,11 +28,6 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,11 +45,16 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.record.views.RecordPropertyCache;
 import io.goobi.viewer.model.viewer.record.views.VisibilityCondition;
 import io.goobi.viewer.model.viewer.record.views.VisibilityConditionInfo;
+import jakarta.el.ELException;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.component.UIComponent;
 import jakarta.faces.component.UINamingContainer;
 import jakarta.faces.component.html.HtmlPanelGrid;
 import jakarta.faces.component.html.HtmlPanelGroup;
 import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * DisplayConditions tests whether GUI elements in record views should be visible by a number of factors. These factors encompass the the current
@@ -336,7 +336,7 @@ public class DisplayConditions implements Serializable {
         private static boolean isRendered(UIComponent child) {
             try {
                 return child != null && child.isRendered() && isHasValuesIfRepeat(child);
-            } catch (ConcurrentModificationException | NullPointerException e) {
+            } catch (ConcurrentModificationException | NullPointerException | ELException e) {
                 //possibly happens when rendered conditions are tested on child with 'displayConditions.matchPage/matchRecord', according to log entry
                 logger.warn("Cannot detect rendered state of child compnent {} because of {}", child.getClientId(), e.toString());
                 return true;

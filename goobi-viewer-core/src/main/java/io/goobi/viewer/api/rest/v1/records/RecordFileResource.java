@@ -126,10 +126,8 @@ public class RecordFileResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_ALTO)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get Alto fulltext for a single page")
-    public String getAlto(
-            @Parameter(description = "Filename of the alto document") @PathParam("filename") String filename)
-            throws PresentationException, IndexUnreachableException, ContentNotFoundException,
-            ServiceNotAllowedException {
+    public String getAlto(@Parameter(description = "Filename of the alto document") @PathParam("filename") String filename)
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException, ServiceNotAllowedException {
         checkFulltextAccessConditions(pi, filename);
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);

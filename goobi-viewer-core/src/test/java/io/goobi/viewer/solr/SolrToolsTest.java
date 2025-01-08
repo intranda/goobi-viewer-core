@@ -177,6 +177,7 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
         doc.setField(SolrConstants.THUMBNAIL, "https://example.com/iiif/2/foo.jpg/info.json");
         Assertions.assertTrue(SolrTools.isHasImages(doc));
     }
+    
 
     @Test
     void testGetMetadataValuesForLanguage() {

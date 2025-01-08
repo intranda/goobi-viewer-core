@@ -75,7 +75,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RedirectException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSStaticPage;
@@ -1164,38 +1163,6 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * This method checks the Solr height attribute of the current page. If this is > 0, than the current page is displayed with OpenLayers
-     *
-     * @return the path which viewImageFullscreen.xhtml the user should see for the current page.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    public String getViewImagePathFullscreen() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
-        String imageDisplayType = DataManager.getInstance().getConfiguration().getZoomFullscreenViewType();
-        logger.trace("Detected display mode: {}", imageDisplayType);
-        if (StringUtils.isNotEmpty(imageDisplayType)) {
-            // MIX data exists
-            if (imageDisplayType.equalsIgnoreCase("openlayersimage") && BeanUtils.getActiveDocumentBean().getViewManager() != null
-                    && BeanUtils.getActiveDocumentBean().getViewManager().getCurrentPage().getPhysicalImageHeight() > 0) {
-                String path =
-                        "/resources/themes/" + DataManager.getInstance().getConfiguration().getTheme() + "/urlMappings/viewImageFullscreen.xhtml";
-                logger.debug("MIX data detected. Redirect to the Fullscreen view  (viewImageFullscreen.xhtml) of the '{}' theme.",
-                        DataManager.getInstance().getConfiguration().getTheme());
-                return path;
-            }
-            if (imageDisplayType.equalsIgnoreCase("classic")) {
-                logger.debug("No MIX data detected. Redirect to the normal /viewImageFullscreen.xhtml.");
-                return "/viewImageFullscreen.xhtml";
-            }
-        }
-        logger.error("No correct configuration, use the standard Fullscreen Image view. Detected: {} from <zoomFullscreenView/> in the {}.",
-                imageDisplayType, Configuration.CONFIG_FILE_NAME);
-
-        return "/viewImageFullscreen.xhtml";
-    }
-
-    /**
      * <p>
      * getCalendarUrl.
      * </p>
@@ -1355,7 +1322,7 @@ public class NavigationHelper implements Serializable {
     public String getPageUrl(PageType page) {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + page.getName();
     }
-
+    
     /**
      * <p>
      * getSearchUrl.

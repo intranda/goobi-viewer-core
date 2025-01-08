@@ -135,9 +135,8 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
                 "altoSource", Optional.ofNullable(altoFolder).map(f -> PathConverter.toURI(f.toAbsolutePath()).toString()).orElse(""),
                 "imageSource", PathConverter.toURI(imagePath.getParent().toAbsolutePath()).toString());
         Path pdfPath = pdfFolder.resolve(FileTools.replaceExtension(imagePath.getFileName(), "pdf"));
-        URI imageURI = PathConverter.toURI(imagePath);
         try (OutputStream out = Files.newOutputStream(pdfPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-            SinglePdfRequest request = new SinglePdfRequest(imageURI.toString(), params);
+            SinglePdfRequest request = new SinglePdfRequest(imagePath.getFileName().toString(), params);
             new GetPdfAction().writePdf(request, this.contentServerConfiguration, out);
         } catch (ContentLibException | IOException | URISyntaxException e) {
             logger.error("Failed to create pdf file {} from {}. Reason: {}", pdfPath, imagePath, e.toString());

@@ -37,13 +37,13 @@ public class ProcessStatusResponse {
     private String result; // success, error
 
     private String title;
-
+    
     private int id;
 
     private boolean processCompleted;
-
+    
     private String project;
-
+    
     private String ruleset;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ", timezone = "CET")

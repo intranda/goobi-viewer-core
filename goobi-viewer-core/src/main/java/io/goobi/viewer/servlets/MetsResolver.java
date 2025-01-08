@@ -183,7 +183,6 @@ public class MetsResolver extends HttpServlet {
 
         response.setContentType(StringConstants.MIMETYPE_TEXT_XML);
         File file = new File(filePath);
-        logger.error(filePath);
         response.setHeader("Content-Disposition", "filename=\"" + file.getName() + "\"");
         if (nonShareableMetadataFound && SolrConstants.SOURCEDOCFORMAT_METS.equals(format)) {
             try {

@@ -165,6 +165,11 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                         msg = msg.substring(StringUtils.lastIndexOf(msg, ":") + 1).trim();
                     }
                     handleError(msg, "download");
+                } else if (t instanceof IllegalUrlParameterException || isCausedByExceptionType(t, IllegalUrlParameterException.class.getName())) {
+                    // Illegal URL parameter input, do not output illegal value on error page
+                    String msg = getRootCause(t).getMessage();
+                    logger.warn(msg);
+                    handleError("Illegal URL parameter.", "general_no_url");
                 } else {
                     // All other exceptions
                     logger.error(t.getMessage(), t);

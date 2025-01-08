@@ -50,6 +50,8 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
+import io.goobi.viewer.controller.imaging.IIIFPresentationAPIHandler;
+import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;

@@ -1,0 +1,128 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" xmlns:o="http://omnifaces.org/ui"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface />
+
+	<composite:implementation>
+		<div id="sidebarScrollPreview" class="sidebar-scroll-preview"> 
+			<div class="sidebar-scroll-preview__inner">
+				<div class="sidebar-scroll-preview__grid" data-target="sidebarScrollPreviewContainer">
+					<ui:repeat varStatus="status" var="page" value="#{activeDocumentBean.viewManager.allPages}">
+						<div class="sidebar-scroll-preview__item">
+							<ui:fragment rendered="#{page != null}">
+								
+								<!-- NON SEQUENCE MODE LINKS -->
+								<ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() != 'SEQUENCE'}">
+									<h:outputLink styleClass="sidebar-scroll-preview__link" value="#{activeDocumentBean.getPageUrl(page.order)}">
+										<span class="sidebar-scroll-preview__image-wrapper">
+											<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image" src="#{imageDelivery.thumbs.getThumbnailUrl(page, 400, 400)}" />
+											<span class="sidebar-scroll-preview__button-text">#{page.order}:#{page.orderLabel}</span>
+										</span>
+										<f:passThroughAttribute name="data-target" value="pageNumber-#{status.index + 1}" />
+									</h:outputLink>								
+								</ui:fragment>	
+				
+								<!-- SEQUENCE MODE BUTTONS -->
+								<ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE'}">
+									<button type="button" class="sidebar-scroll-preview__button" data-target="pageNumber-#{page.order}">
+										<span class="sidebar-scroll-preview__image-wrapper">
+										<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image" src="#{imageDelivery.thumbs.getThumbnailUrl(page, 400, 400)}" />
+										<span class="sidebar-scroll-preview__button-text">#{page.order}:#{page.orderLabel}</span>
+										</span>
+									</button>
+								</ui:fragment>
+								
+							</ui:fragment>
+						</div>
+					</ui:repeat>
+				</div>
+			</div>
+		</div>
+		
+		<script>
+			 // fade in lazy loaded images
+			 $('[data-script="fadeIn"]').on('load', function(){
+			    $(this).addClass('-loaded');
+			 });
+	  	
+			$( document ).ready(function() {
+		    // console.log('current picture is:' + #{activeDocumentBean.viewManager.currentImageOrder})
+		    
+		    // DEFINE PREVIEW SIDEBAR VARIABLES AND SIMPLEBAR SCROLLBAR
+	  		const sidebarScrollPreviewContainer = $('[data-target="sidebarScrollPreviewContainer"]');
+		    const loadPageSelector = '[data-target="pageNumber-' + #{activeDocumentBean.viewManager.currentImageOrder} + '"]';
+			new SimpleBar($(sidebarScrollPreviewContainer)[0], { autoHide: false, scrollbarMinSize: 30, }); 
+			const sidebarScrollPreviewSimplebarContainer = $('.simplebar-content-wrapper');
+	  		
+	  		// FUNCTION TO SCROLL SIDEBAR THUMBNAIL PREVIEW
+		    function scrollSidebarPreviewFunction(imageActiveIndexSidebar, jumpStraight) {
+				// console.log("scrollSidebarPreviewFunction", imageActiveIndexSidebar, jumpStraight);
+	  			// JUMP STRAIGHT WITHOUT SCROLL ANIMATION
+	  			if (jumpStraight == 1) {
+		            $(sidebarScrollPreviewSimplebarContainer).animate({scrollTop: $(sidebarScrollPreviewSimplebarContainer).scrollTop() 
+		            	+ ($(imageActiveIndexSidebar).offset().top 
+		            	- $(sidebarScrollPreviewSimplebarContainer).offset().top
+		        	)}, 0); 
+	  				}
+	  			// SCROLL ANIMATION WHILE SCROLLING DOWN IN CANVAS
+	  			else {
+		            $(sidebarScrollPreviewSimplebarContainer).animate({scrollTop: $(sidebarScrollPreviewSimplebarContainer).scrollTop() 
+		            	+ ($(imageActiveIndexSidebar).offset().top 
+		            	- $(sidebarScrollPreviewSimplebarContainer).offset().top
+		        	)}, 180);
+	  			}
+
+				// HIGHLIGHT THE ACTUAL THUMBNAIL WHILE SCROLLING DOWN IN CANVAS
+	            $('[data-target^=pageNumber-]').removeClass('-highlighted');
+	            $(imageActiveIndexSidebar).addClass('-highlighted');
+	         	
+	            $('[data-target^=pageNumber-]').removeAttr("aria-label");
+	            $(imageActiveIndexSidebar).attr('aria-label', '#{msg.a11y__active_page}');
+		    }
+ 
+	  		// JUMP TO PAGE IN PREVIEW SIDEBAR AT PAGE LOAD
+		    scrollSidebarPreviewFunction(loadPageSelector, jumpStraight = 1);
+		    
+	  		// SCROLL SIDEBAR WHEN SEADRAGON SCROLLED
+			imageOrderChanged.subscribe (pageNo => {
+				    pageNumberSelector = '[data-target="pageNumber-' + pageNo + '"]';
+				    scrollSidebarPreviewFunction(pageNumberSelector, jumpStraight = 0);
+			});
+	  		
+	  		// SCROLL TO PAGE NUMBER INSIDE CANVAS ON THUMBNAIL CLICK
+			$( '[data-target^=pageNumber-]' ).on( "click", function() {
+				
+				// GET DATA TARGET 
+				var setDataTargetOnClickVarValue = $(this).attr("data-target");
+				
+				 //console.log('targetValueOnClick: ' + setDataTargetOnClickVarValue);
+
+			    var extractedPageNumber = setDataTargetOnClickVarValue.replace(/[^0-9]/gi, '');
+				
+			    changeImageOrder.next(extractedPageNumber);
+	            
+				// SCROLL SIDEBAR TO PAGE NUMBER POSITION
+				var scrollOnClickPageNumberTarget = '[data-target="pageNumber-' + extractedPageNumber + '"]';
+			     //console.log("scrollOnClickPageNumberTarget", scrollOnClickPageNumberTarget);
+			    scrollSidebarPreviewFunction(scrollOnClickPageNumberTarget, jumpStraight = 0);
+				
+				// HIGHLIGHT THE ACTUAL THUMBNAIL WHILE SCROLLING DOWN IN CANVAS
+	            $('[data-target^=pageNumber-]').removeClass('-highlighted');
+	            $(this).addClass('-highlighted');
+
+			} );
+	  		
+			});
+
+		</script>
+
+
+
+	</composite:implementation>
+</ui:composition>

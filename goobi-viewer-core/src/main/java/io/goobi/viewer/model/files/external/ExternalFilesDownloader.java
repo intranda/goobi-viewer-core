@@ -90,8 +90,7 @@ public class ExternalFilesDownloader {
     public static boolean resourceExists(URI uri) {
         logger.trace("checking url {}", uri);
         switch (uri.getScheme()) {
-            case "http":
-            case "https":
+            case "http", "https":
                 try {
                     return checkHttpResource(uri);
                 } catch (IOException e) {
@@ -162,8 +161,8 @@ public class ExternalFilesDownloader {
                                 "Aborted extraction of archive at " + uri + " because of maximum archive size violation: " + e.getMessage());
                     }
                 }
-            case 401:
-                // fallthrough
+                logger.warn("Error code: {}", response.getStatusLine().getStatusCode());
+                throw new IOException(response.getStatusLine().getReasonPhrase());
             default:
                 logger.warn("Error code: {}", response.getStatusLine().getStatusCode());
                 throw new IOException(response.getStatusLine().getReasonPhrase());

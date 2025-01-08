@@ -27,11 +27,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -556,6 +558,28 @@ public class ArchiveManager implements Serializable {
             logger.error("Failed to retrieve associated records from SOLR: {}", e.toString());
             this.databaseState = DatabaseState.ERROR_NOT_REACHABLE;
         }
+    }
+
+    /**
+     * Removes archives from the loaded archives map if their resourceId matches any in the given list.
+     * 
+     * @param resourceIds List of archive resource IDs to remove
+     * @return Number of removed archives
+     */
+    public int unloadArchives(Set<String> resourceIds) {
+        Set<ArchiveResource> toRemove = new HashSet<>(resourceIds.size());
+        for (ArchiveResource archiveResource : this.archives.keySet()) {
+            if (resourceIds.contains(archiveResource.getResourceId())) {
+                toRemove.add(archiveResource);
+                logger.debug("Unloading archive {}", archiveResource.getResourceId());
+            }
+        }
+
+        for (ArchiveResource archiveResource : toRemove) {
+            this.archives.remove(archiveResource);
+        }
+
+        return toRemove.size();
     }
 
     public boolean isInErrorState() {

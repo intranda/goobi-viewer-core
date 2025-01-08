@@ -41,6 +41,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.DataManager;
@@ -480,6 +482,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         }
         Mockito.when(page.getMimeType()).thenReturn(mimeType);
         Mockito.when(page.getBaseMimeType()).thenReturn(BaseMimeType.getByName(mimeType));
+        Mockito.when(page.getImageType()).thenReturn(new ImageType(ImageFileFormat.getImageFileFormatFromMimeType(mimeType)));
 
         IPageLoader pageLoader = Mockito.mock(EagerPageLoader.class);
         Mockito.when(pageLoader.getPage(Mockito.anyInt())).thenReturn(page);

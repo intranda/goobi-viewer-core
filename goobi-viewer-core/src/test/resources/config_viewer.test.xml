@@ -163,16 +163,6 @@
 		<!-- If true, all HTTP responses will contain attributes preventing proxies 
 			etc. from caching contents. Default is false. -->
 		<preventProxyCaching>true</preventProxyCaching>
-		
-        <solr>
-            <!-- useHttp2: If false, the old HTTP1 client will be used for backwards compatibility with Solr 8. Default is true. -->
-            <useHttp2>true</useHttp2>
-            <!-- DEPRECATED compressionEnabled: Enables compression for the Solr HTTP client. Default is true. -->
-            <compressionEnabled>false</compressionEnabled>
-            <!-- DEPRECATED backwardsCompatible: If true, an XML response parser instead of binary will be used
-                to enabled Solr 4 compatibility. Default is false. -->
-            <backwardsCompatible>true</backwardsCompatible>
-        </solr>
 	</performance>
 
     <accessConditions>
@@ -236,12 +226,11 @@
 		<!-- pageSelectDropdownDisplayMinPages: Minimum number of pages a record needs to possess in order for the drop-down to be displayed. Default is 3. -->
         <pageSelectDropdownDisplayMinPages>1</pageSelectDropdownDisplayMinPages>
 
-		<doublePageNavigation enabled="true" />
 		
         <!--zoomImageView and zoomFullscreenView: define the different viewer options for the standard view and fullscreen view, respecively. Possibilities for
             the "type" attribute are: classic and openlayers "Width" and "height" attributes define the size of the image display, in pixel set the attribute "tileImage"
             to true to use tiled images if possible (only possible when type=openlayers) -->
-		<zoomImageView type="classic" tileImage="true"
+		<zoomImageView type="default" tileImage="true"
 			footerHeight="50">
 			<useFor>
 				<view>viewFullscreen</view>
@@ -253,9 +242,10 @@
 				<scaleFactors>2;4;8</scaleFactors>
 				<size>1024</size>
 			</tileSize>
+			<doublePageNavigation enabled="true"/>
 		</zoomImageView>
 
-		<zoomImageView type="openLayers" tileImage="false"
+		<zoomImageView type="default" tileImage="false"
 			footerHeight="0">
 			<useFor>
 				<view>editContent</view>
@@ -267,7 +257,7 @@
 			<scale>400</scale>
 		</zoomImageView>
 
-		<zoomImageView type="openSeadragon" tileImage="true"
+		<zoomImageView type="default" tileImage="true"
 			footerHeight="50">
 			<scale>600</scale>
 			<scale>1000</scale>
@@ -277,6 +267,7 @@
 				<scaleFactors>1;2;3</scaleFactors>
 				<size>512</size>
 			</tileSize>
+			<doublePageNavigation enabled="true"/>
 		</zoomImageView>
 		
 		<!-- limitImageHeight: If true, the image width is divided by the
@@ -473,6 +464,10 @@
 				    <field>MD_FOO_LANG_DE</field>
 				    <field>MD_FOO_LANG_ES</field>
                     <field displaySelectItemsThreshold="20" selectType="badges">DOCSTRCT</field>
+                </template>
+                <template name="person" query="DOCSTRCT:person">
+                    <field untokenizeForPhraseSearch="true" visible="true">MD_NAME</field>
+                    <field>MD_BIRTHPLACE</field>
                 </template>
 			</searchFields>
 		</advanced>

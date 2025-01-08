@@ -170,7 +170,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     private SearchResultGroup activeResultGroup;
     /** Selected advanced search field configuration template. */
-    private String advancedSearchFieldTemplate = StringConstants.DEFAULT_NAME;
+    private String advancedSearchFieldTemplate = DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultTemplateName();
     private boolean phraseSearch = false;
     /** Current search result page. */
     private int currentPage = 1;
@@ -920,8 +920,17 @@ public class SearchBean implements SearchInterface, Serializable {
         currentSearch.setPage(currentPage);
         currentSearch.setSortString(searchSortingOption != null ? searchSortingOption.getSortString() : null);
         currentSearch.setFacetString(facets.getActiveFacetString());
-        currentSearch.setCustomFilterQuery(filterQuery);
         currentSearch.setProximitySearchDistance(proximitySearchDistance);
+        StringBuilder sbFilterQuery = new StringBuilder();
+        String templateQuery = DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateQuery(advancedSearchFieldTemplate);
+        if (StringUtils.isNotEmpty(templateQuery)) {
+            sbFilterQuery.append(" +(").append(templateQuery).append(")");
+        }
+        if (StringUtils.isNotEmpty(filterQuery)) {
+            sbFilterQuery.append(" +(").append(filterQuery).append(")");
+        }
+        currentSearch.setCustomFilterQuery(sbFilterQuery.toString().trim());
+        // logger.trace("Custom filter query: {}", sbFilterQuery.toString().trim());
 
         // When searching in MONTHDAY, add a term so that an expand query is created
         if (searchStringInternal.startsWith(SolrConstants.MONTHDAY)) {
@@ -1503,17 +1512,6 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * JSF expects a getter, too.
-     *
-     * @return a {@link java.lang.String} object.
-     * @deprecated user SearchBean.getExactSearchString()
-     */
-    @Deprecated(since = "24.01")
-    public String getExactSearchStringResetGui() {
-        return getExactSearchString();
-    }
-
-    /**
      * For unit tests.
      * 
      * @return the searchStringInternal
@@ -1633,9 +1631,11 @@ public class SearchBean implements SearchInterface, Serializable {
      *
      * @return activeResultGroup name; "-" if none set
      */
-    public String getActiveResultGroupName() {
+    public String getActiveContext() {
         if (activeResultGroup != null) {
             return activeResultGroup.getName();
+        } else if (advancedSearchFieldTemplate != null && !StringConstants.DEFAULT_NAME.equals(advancedSearchFieldTemplate)) {
+            return advancedSearchFieldTemplate;
         }
 
         return "-";
@@ -1653,16 +1653,42 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
+     * Depending on configuration settings, sets the given value as the active search result group name and/or active advanced search template.
+     *
+     * @param activeContext Name of the active context
+     */
+    public void setActiveContext(String activeContext) {
+        logger.trace("setActiveContext: {}", activeContext);
+        if (DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled()) {
+            setActiveResultGroupName(activeContext);
+        }
+        if (DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateNames().size() > 1) {
+            setAdvancedSearchFieldTemplate(activeContext);
+        }
+    }
+
+    /**
      * <p>
-     * setActiveResultGroupName.
+     * getActiveResultGroupName.
      * </p>
      *
-     * @param activeResultGroupName a {@link java.lang.String} object
+     * @return activeResultGroup name; "-" if none set
+     */
+    public String getActiveResultGroupName() {
+        if (activeResultGroup != null) {
+            return activeResultGroup.getName();
+        }
+
+        return "-";
+    }
+
+    /**
+     * Sets activeResultGroup via the given name.
+     *
+     * @param activeResultGroupName Name of the active context
      * @should select result group correctly
      * @should reset result group if new name not configured
      * @should reset result group if empty name given
-     * @should reset advanced search query items if new group used as field template
-     * @should reset advanced search query items if old group used as field template
      */
     public void setActiveResultGroupName(String activeResultGroupName) {
         logger.trace("setActiveResultGroupName: {}", activeResultGroupName);
@@ -1674,28 +1700,47 @@ public class SearchBean implements SearchInterface, Serializable {
             for (SearchResultGroup resultGroup : DataManager.getInstance().getConfiguration().getSearchResultGroups()) {
                 if (resultGroup.getName().equals(activeResultGroupName)) {
                     activeResultGroup = resultGroup;
-                    if (resultGroup.isUseAsAdvancedSearchTemplate()) {
-                        this.advancedSearchFieldTemplate = resultGroup.getName();
-                        // Reset query items
-                        resetAdvancedSearchParameters();
-                        // Reset slider ranges
-                        facets.resetSliderRange();
-                        // Reset avalable facets
-                        facets.resetAvailableFacets();
-                    }
                     return;
                 }
             }
             logger.warn("Search result group name not found: {}", activeResultGroupName);
         }
 
-        // Reset query items and slider ranges if active group is used as item field template
-        if (activeResultGroup != null && activeResultGroup.isUseAsAdvancedSearchTemplate()) {
-            resetAdvancedSearchParameters();
-            facets.resetSliderRange();
-        }
         activeResultGroup = null;
-        this.advancedSearchFieldTemplate = StringConstants.DEFAULT_NAME;
+    }
+
+    /**
+     * @return the advancedSearchFieldTemplate
+     */
+    public String getAdvancedSearchFieldTemplate() {
+        return advancedSearchFieldTemplate;
+    }
+
+    /**
+     * 
+     * @param advancedSearchFieldTemplate
+     */
+    public void setAdvancedSearchFieldTemplate(String advancedSearchFieldTemplate) {
+        logger.trace("setAdvancedSearchFieldTemplate: {}", advancedSearchFieldTemplate);
+        if (advancedSearchFieldTemplate != null && advancedSearchFieldTemplate.equals(this.advancedSearchFieldTemplate)) {
+            return;
+        }
+
+        if (advancedSearchFieldTemplate != null && !"-".equals(advancedSearchFieldTemplate)) {
+            this.advancedSearchFieldTemplate = advancedSearchFieldTemplate;
+            // Reset query items
+            resetAdvancedSearchParameters();
+            // Reset slider ranges
+            facets.resetSliderRange();
+            // Reset available facets
+            facets.resetAvailableFacets();
+            return;
+        }
+
+        this.advancedSearchFieldTemplate = DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultTemplateName();
+        // Reset query items and slider ranges if active group is used as item field template
+        resetAdvancedSearchParameters();
+        facets.resetSliderRange();
     }
 
     /**
@@ -1710,7 +1755,8 @@ public class SearchBean implements SearchInterface, Serializable {
     public void mirrorAdvancedSearchCurrentHierarchicalFacets() {
         logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets");
         if (facets.getActiveFacets().isEmpty()) {
-            for (SearchQueryItem item : advancedSearchQueryGroup.getQueryItems()) {
+            List<SearchQueryItem> queryItems = new ArrayList<>(advancedSearchQueryGroup.getQueryItems());
+            for (SearchQueryItem item : queryItems) {
                 if (item.isHierarchical()) {
                     logger.trace("resetting current field value in advanced search: {}", item.getField());
                     item.setValue(null);
@@ -1753,21 +1799,6 @@ public class SearchBean implements SearchInterface, Serializable {
                 }
             }
         }
-    }
-
-    /**
-     * <p>
-     * removeChronologyFacetAction.
-     * </p>
-     *
-     * @return Navigation outcome
-     * @deprecated No longer relevant for current implementation
-     */
-    @Deprecated(since = "2023.01")
-    public String removeChronologyFacetAction() {
-        String facet = SolrConstants.YEAR + ":" + facets.getTempValue();
-        facets.setTempValue("");
-        return removeFacetAction(facet);
     }
 
     /**

@@ -79,6 +79,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(CMSSidebarWidgetsBean.class);
 
+
     @Inject
     private CmsBean cmsBean;
 

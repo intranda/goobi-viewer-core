@@ -122,11 +122,11 @@ public class GeoMapFeature {
     public String getDocumentId() {
         return documentId;
     }
-
+    
     public Integer getPageNo() {
         return pageNo;
     }
-
+    
     public void setPageNo(Integer pageNo) {
         this.pageNo = pageNo;
     }

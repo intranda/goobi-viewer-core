@@ -164,10 +164,15 @@ public class MetadataBean {
      * @return the metadataElementList
      */
     public List<MetadataElement> getMetadataElementList(int index) {
+        return getMetadataElementList(index, false);
+    }
+
+    public List<MetadataElement> getMetadataElementList(int index, boolean forceReload) {
+
         // logger.trace("getMetadataElementList({})", index); //NOSONAR Debug
         Locale locale = BeanUtils.getLocale();
 
-        if (metadataElementMap.get(index) == null || !Objects.equals(locale, this.currentMetadataLocale)) {
+        if (forceReload || metadataElementMap.get(index) == null || !Objects.equals(locale, this.currentMetadataLocale)) {
             // Only reload if empty, otherwise a c:forEach (used by p:tabView) will cause a reload on every iteration
             try {
                 loadMetadata(index, locale);
