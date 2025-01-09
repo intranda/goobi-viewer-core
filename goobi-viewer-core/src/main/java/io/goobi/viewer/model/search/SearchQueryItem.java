@@ -635,7 +635,7 @@ public class SearchQueryItem implements Serializable {
                     if (SolrConstants.FULLTEXT.equals(useField) || SolrConstants.SUPERFULLTEXT.equals(useField)) {
                         // Remove quotation marks to add to search terms
                         String val = useValue.replace("\"", "");
-                        if (val.length() > 0) {
+                        if (!val.isEmpty()) {
                             searchTerms.add(val);
                         }
                     }
@@ -664,7 +664,7 @@ public class SearchQueryItem implements Serializable {
                     boolean moreThanOneValue = false;
                     for (final String v : valueSplit) {
                         String val = v.trim();
-                        if (val.length() == 0) {
+                        if (val.isEmpty()) {
                             continue;
                         }
                         if (val.charAt(0) == '"') {
@@ -677,7 +677,7 @@ public class SearchQueryItem implements Serializable {
                             val = val.substring(0, val.length() - 1);
                         }
 
-                        if (val.charAt(0) == '-' && val.length() > 1) {
+                        if (val.charAt(0) == '-' && val.length() > 1 && !isRange()) {
                             // negation
                             sbItem.append(" -");
                             val = val.substring(1);
@@ -708,7 +708,8 @@ public class SearchQueryItem implements Serializable {
                                 break;
                         }
 
-                        if (val.contains("-")) {
+                        logger.error(val);
+                        if (val.contains("-") && !isRange()) {
                             if (allowFuzzySearch) {
                                 //remove wildcards; they don't work with search containing hyphen
                                 String tempValue = SearchHelper.getWildcardsTokens(val)[1];
@@ -735,9 +736,9 @@ public class SearchQueryItem implements Serializable {
                             if (isRange() && values.size() > 1 && StringUtils.isNotBlank(values.get(1))) {
                                 // Range search
                                 sbItem.append('[')
-                                        .append(ClientUtils.escapeQueryChars(useValue))
+                                        .append(ClientUtils.escapeQueryChars(useValue).replace("\\-", "-"))
                                         .append(" TO ")
-                                        .append(ClientUtils.escapeQueryChars(values.get(1).trim()))
+                                        .append(ClientUtils.escapeQueryChars(values.get(1).trim()).replace("\\-", "-"))
                                         .append("]");
                             } else {
                                 // Regular search
@@ -752,7 +753,7 @@ public class SearchQueryItem implements Serializable {
                         }
                         if (SolrConstants.FULLTEXT.equals(useField) || SolrConstants.SUPERFULLTEXT.equals(useField)) {
                             String v2 = val.replace("\"", "");
-                            if (v2.length() > 0) {
+                            if (!v2.isEmpty()) {
                                 searchTerms.add(v2);
                                 // TODO do not add negated terms
                             }
