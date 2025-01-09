@@ -734,10 +734,25 @@ public class SearchQueryItem implements Serializable {
                             }
                             if (isRange() && values.size() > 1 && StringUtils.isNotBlank(values.get(1))) {
                                 // Range search
+                                String val1 = ClientUtils.escapeQueryChars(useValue).replace("\\-", "-");
+                                String val2 = ClientUtils.escapeQueryChars(values.get(1).trim()).replace("\\-", "-");
+                                if (SolrConstants.YEAR.equals(field) || field.startsWith(SolrConstants.PREFIX_MDNUM)) {
+                                    // Prevent exception if not a number
+                                    if (StringTools.parseInt(val1).isEmpty()) {
+                                        val1 = "0";
+                                        this.values.remove(0);
+                                        this.values.add(0, "NaN");
+                                    }
+                                    if (StringTools.parseInt(val2).isEmpty()) {
+                                        val2 = "0";
+                                        this.values.remove(1);
+                                        this.values.add("NaN");
+                                    }
+                                }
                                 sbItem.append('[')
-                                        .append(ClientUtils.escapeQueryChars(useValue).replace("\\-", "-"))
+                                        .append(val1)
                                         .append(" TO ")
-                                        .append(ClientUtils.escapeQueryChars(values.get(1).trim()).replace("\\-", "-"))
+                                        .append(val2)
                                         .append("]");
                             } else {
                                 // Regular search
