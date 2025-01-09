@@ -117,7 +117,7 @@
 		<javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
 		<!-- This dependency is declared as ignoredUnusedDeclaredDependency, too -->
 		<javax.jstl.version>1.2</javax.jstl.version>
-		<java-jwt.version>3.19.1</java-jwt.version>
+		<java-jwt.version>3.19.2</java-jwt.version>
 		<jwks-rsa.version>0.22.1</jwks-rsa.version>
 		<jaxen.version>2.0.0</jaxen.version>
 		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
