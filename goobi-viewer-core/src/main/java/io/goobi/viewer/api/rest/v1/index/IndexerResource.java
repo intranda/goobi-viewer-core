@@ -23,18 +23,18 @@ package io.goobi.viewer.api.rest.v1.index;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEXER;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,8 +44,13 @@ import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.IndexerDataRequestParameters;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.mq.MessageQueueManager;
+import io.goobi.viewer.controller.mq.ViewerMessage;
+import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.job.TaskType;
+import io.goobi.viewer.model.job.mq.RefreshArchiveTreeHandler;
 
 /**
  * Resource for communicating with the indexer process.
@@ -61,21 +66,35 @@ public class IndexerResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    @Inject
+    private MessageQueueManager mqm;
+
     /**
      * Used by the Solr indexer to submit its current version and hotfolder file count.
      * 
      * @param params
      * @return {@link SuccessMessage}
      * @throws IllegalRequestException
+     * @throws MessageQueueException
      */
     @PUT
     @Path("/version")
     @Produces({ MediaType.APPLICATION_JSON })
     @Consumes({ MediaType.APPLICATION_JSON })
-    public SuccessMessage setIndexerVersion(IndexerDataRequestParameters params) throws IllegalRequestException {
+    public SuccessMessage setIndexerVersion(IndexerDataRequestParameters params) throws IllegalRequestException, MessageQueueException {
         try {
             DataManager.getInstance().setIndexerVersion(new ObjectMapper().writeValueAsString(params));
             DataManager.getInstance().setHotfolderFileCount(params.getHotfolderFileCount());
+            if (params.getRecordIdentifiers() != null && !params.getRecordIdentifiers().isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+                for (String pi : params.getRecordIdentifiers()) {
+                    logger.trace("Received PI: {}", pi);
+                    sb.append(pi).append(" ");
+                }
+                ViewerMessage message = new ViewerMessage(TaskType.REFRESH_ARCHIVE_TREE.name());
+                message.getProperties().put(RefreshArchiveTreeHandler.PARAMETER_IDENTIFIERS, sb.toString().trim());
+                mqm.addToQueue(message);
+            }
             AdminBean ab = BeanUtils.getAdminBean();
             if (ab != null) {
                 ab.updateHotfolderFileCount();

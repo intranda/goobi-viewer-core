@@ -1059,48 +1059,6 @@ public class ActiveDocumentBean implements Serializable {
         }
     }
 
-    /**
-     * <p>
-     * getThumbPart.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @deprecated URL is now build in HTML
-     */
-    @Deprecated(since = "23.11")
-    public String getThumbPart() throws IndexUnreachableException {
-        if (viewManager != null) {
-            return new StringBuilder("/").append(getPersistentIdentifier())
-                    .append('/')
-                    .append(viewManager.getCurrentThumbnailPage())
-                    .append('/')
-                    .toString();
-        }
-
-        return "";
-    }
-
-    /**
-     * <p>
-     * getLogPart.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @deprecated URL is now build in HTML
-     */
-    @Deprecated(since = "23.11")
-    public String getLogPart() throws IndexUnreachableException {
-        return new StringBuilder("/").append(getPersistentIdentifier())
-                .append('/')
-                .append(imageToShow)
-                .append('/')
-                .append(getLogid())
-                .append('/')
-                .toString();
-    }
-
     // navigation in work
 
     /**

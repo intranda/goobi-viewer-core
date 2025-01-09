@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>24.12-SNAPSHOT</version>
+	<version>25.01-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Goobi viewer - Core</name>
 	<description>The Goobi viewer is an open source solution for the presentation of digitized cultural assets.</description>
@@ -88,7 +88,7 @@
 		<angus-mail.version>2.0.3</angus-mail.version>
 		<citationstyles.version>24.12</citationstyles.version>
 		<citeproc-java.version>3.2.0</citeproc-java.version>
-		<commons-codec.version>1.17.1</commons-codec.version>
+		<commons-codec.version>1.17.2</commons-codec.version>
 		<commons-collections4.version>4.4</commons-collections4.version>
 		<commons-configuration2.version>2.11.0</commons-configuration2.version>
 		<commons-io.version>2.18.0</commons-io.version>
@@ -97,7 +97,7 @@
 		<commons-net.version>3.11.1</commons-net.version>
 		<commons-text.version>1.13.0</commons-text.version>
 		<dbunit.version>2.8.0</dbunit.version>
-		<eclipselink.version>4.0.4</eclipselink.version>
+		<eclipselink.version>4.0.5</eclipselink.version>
 		<h2.version>1.4.200</h2.version>
 		<httpclient.version>4.5.14</httpclient.version>
 		<httpcore.version>4.4.16</httpcore.version>
@@ -117,6 +117,8 @@
 		<javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
 		<!-- This dependency is declared as ignoredUnusedDeclaredDependency, too -->
 		<javax.jstl.version>1.2</javax.jstl.version>
+		<java-jwt.version>3.19.2</java-jwt.version>
+		<jwks-rsa.version>0.22.1</jwks-rsa.version>
 		<jaxen.version>2.0.0</jaxen.version>
 		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
 		<jaxb-runtime.version>2.3.9</jaxb-runtime.version>
@@ -124,16 +126,15 @@
 		<jersey.version>2.46</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<!-- https://github.com/stleary/JSON-java -->
-		<json.version>20240303</json.version>
+		<json.version>20250107</json.version>
 		<jsoup.version>1.18.3</jsoup.version>
 		<junit.version>5.11.4</junit.version>
 		<mariadb-java-client.version>3.5.1</mariadb-java-client.version>
-		<mockito.version>5.14.2</mockito.version>
+		<mockito.version>5.15.2</mockito.version>
 		<mockserver.version>5.15.0</mockserver.version>
-		<oauth.version>1.0.2</oauth.version>
 		<omnifaces.version>3.14.7</omnifaces.version>
 		<openpdf.version>2.0.3</openpdf.version>
-		<poi.version>5.3.0</poi.version>
+		<poi.version>5.4.0</poi.version>
 		<prettyfaces.version>3.5.2.Final</prettyfaces.version>
 		<rome.version>2.1.0</rome.version>
 		<log4j.version>2.24.3</log4j.version>
@@ -402,6 +403,18 @@
 			<artifactId>jaxb-api</artifactId>
 			<version>${jaxb-api.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>${java-jwt.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>jwks-rsa</artifactId>
+            <version>${jwks-rsa.version}</version>
+            <scope>compile</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom2</artifactId>
@@ -571,17 +584,6 @@
 			<artifactId>mockserver-netty</artifactId>
 			<version>${mockserver.version}</version>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.oltu.oauth2</groupId>
-			<artifactId>org.apache.oltu.oauth2.client</artifactId>
-			<version>${oauth.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
@@ -860,7 +862,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.8.0</version>
+				<version>3.8.1</version>
 				<executions>
 					<execution>
 						<id>analyze</id>
@@ -973,7 +975,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.5.0</version>
+				<version>3.5.2</version>
 				<configuration>
 					<skipTests>${skipTests}</skipTests>
 					<excludes>
@@ -1055,7 +1057,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.10.1</version>
+				<version>3.11.2</version>
 				<configuration>
 					<doclint>none</doclint>
 					<failOnWarnings>true</failOnWarnings>
@@ -1107,7 +1109,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>
-				<version>2.17.1</version>
+				<version>2.18.0</version>
 				<configuration>
 					<rulesUri>file://${basedir}/version-number-rules.xml</rulesUri>
 				</configuration>
@@ -1139,12 +1141,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.5.0</version>
+				<version>3.6.0</version>
 				<dependencies>
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>10.21.0</version>
+						<version>10.21.1</version>
 					</dependency>
 				</dependencies>
 				<executions>

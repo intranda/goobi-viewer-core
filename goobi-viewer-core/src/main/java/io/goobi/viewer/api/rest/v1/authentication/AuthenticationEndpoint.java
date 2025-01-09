@@ -22,11 +22,21 @@
 package io.goobi.viewer.api.rest.v1.authentication;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.security.PublicKey;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,19 +54,34 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
+
+import com.auth0.jwk.JwkException;
+import com.auth0.jwk.JwkProvider;
+import com.auth0.jwk.UrlJwkProvider;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.RSAKeyProvider;
 
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.AuthenticationException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.security.authentication.AuthResponseListener;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
+import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * <p>
@@ -76,6 +101,12 @@ public class AuthenticationEndpoint {
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
+
+    /**
+     * This future gets fulfilled once the {@link UserBean} has finished setting up the session and redirecting the request. Completing the request
+     * should wait after the redirect, otherwise it will not have any effect
+     */
+    private static Future<Boolean> redirected = null;
 
     /**
      * <p>
@@ -151,7 +182,7 @@ public class AuthenticationEndpoint {
     @ApiResponse(responseCode = "500", description = "Internal error")
     public Response headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) {
         logger.debug("headerParameterLogin");
-        Optional<NavigationHelper> nh =  BeanUtils.getBeanFromRequest(servletRequest, "navigationHelper", NavigationHelper.class);
+        Optional<NavigationHelper> nh = BeanUtils.getBeanFromRequest(servletRequest, "navigationHelper", NavigationHelper.class);
         if (redirectUrl != null && (!nh.isPresent() || !redirectUrl.startsWith(nh.get().getApplicationUrl()))) {
             return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_ILLEGAL_REDIRECT_URL)
                     .build();
@@ -194,7 +225,6 @@ public class AuthenticationEndpoint {
                     }
                     break;
                 }
-
             }
         }
 
@@ -230,5 +260,216 @@ public class AuthenticationEndpoint {
 
         logger.trace("endpoint end");
         return Response.ok("").build();
+    }
+
+    /**
+     * 
+     * @param error
+     * @param authCode
+     * @param accessToken
+     * @param state
+     * @return {@link Response}
+     * @throws IOException
+     */
+    @GET
+    @Path(ApiUrls.AUTH_OAUTH)
+    @Operation(summary = "OpenID Connect callback (GET method)", description = "Verifies an openID claim and starts a session for the user")
+    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "400", description = "Bad request")
+    @ApiResponse(responseCode = "500", description = "Internal error")
+    //    @Tag(name = "login")
+    public Response openIdLoginGET(@QueryParam("error") String error, @QueryParam("code") String authCode,
+            @QueryParam("id_token") String accessToken, @QueryParam("state") String state) throws IOException {
+        logger.trace("openIdLoginGET");
+        //        for (String key : servletRequest.getParameterMap().keySet()) {
+        //            logger.trace("{}:{}", key, servletRequest.getParameterMap().get(key));
+        //        }
+        return openIdLogin(state, error, authCode, accessToken);
+    }
+
+    /**
+     * 
+     * @param error
+     * @param authCode
+     * @param state
+     * @return {@link Response}
+     * @throws IOException
+     */
+    @POST
+    @Path(ApiUrls.AUTH_OAUTH)
+    @Operation(summary = "OpenID Connect callback (POST method)", description = "Verifies an openID claim and starts a session for the user")
+    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "400", description = "Bad request")
+    @ApiResponse(responseCode = "500", description = "Internal error")
+    @Tag(name = "login")
+    public Response openIdLoginPOST(@FormParam("error") String error, @FormParam("code") String authCode, @FormParam("state") String state)
+            throws IOException {
+        logger.trace("openIdLoginPOST");
+        return openIdLogin(state, error, authCode, null);
+    }
+
+    /**
+     * 
+     * @param state
+     * @param error
+     * @param authCode
+     * @param accessToken
+     * @return {@link Response}
+     * @throws IOException
+     */
+    private Response openIdLogin(String state, String error, String authCode, String accessToken) throws IOException {
+        if (error != null) {
+            logger.trace("Error: {}", error);
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), error).build();
+        }
+
+        if (authCode == null && accessToken == null) {
+            return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "No auth code or token received.").build();
+        }
+
+        AuthResponseListener<HttpAuthenticationProvider> listener = DataManager.getInstance().getAuthResponseListener();
+        OpenIdProvider provider = null;
+        try {
+            for (HttpAuthenticationProvider p : DataManager.getInstance().getAuthResponseListener().getProviders()) {
+                if (p instanceof OpenIdProvider openIdProvider && state != null && state.equals(openIdProvider.getoAuthState())) {
+                    provider = openIdProvider;
+                    listener.unregister(openIdProvider);
+                    break;
+                }
+            }
+            if (provider == null) {
+                logger.trace("No provider found for given state.");
+                return Response.status(Response.Status.FORBIDDEN.getStatusCode(), REASON_PHRASE_NO_PROVIDER_FOUND).build();
+            }
+
+            String idTokenEncoded = accessToken;
+            if (idTokenEncoded == null) {
+                // Fetch token from token endpoint
+                Map<String, String> headers = new HashMap<>(2);
+                headers.put("Accept-Charset", "utf-8");
+                headers.put("Content-Type", "application/x-www-form-urlencoded");
+
+                Map<String, String> params = new HashMap<>(5);
+                params.put("grant_type", "authorization_code");
+                params.put("code", authCode);
+                params.put("client_id", provider.getClientId());
+                params.put("client_secret", provider.getClientSecret());
+                params.put("redirect_uri", provider.getRedirectionEndpoint());
+
+                String responseBody = NetTools.getWebContentPOST(provider.getTokenEndpoint(), headers, params, null, null, null, null);
+                // logger.trace(responseBody);
+
+                JSONObject responseObj = new JSONObject(responseBody);
+                idTokenEncoded = responseObj.getString("id_token");
+            }
+
+            // Artificial delay because sometimes token validity starts after the current time
+            if (provider.getTokenCheckDelay() > 0) {
+                logger.debug("Applying token check delay of {} ms", provider.getTokenCheckDelay());
+                try {
+                    Thread.sleep(provider.getTokenCheckDelay());
+                } catch (InterruptedException e) {
+                    logger.error(e.getMessage());
+                    Thread.currentThread().interrupt();
+                }
+            }
+
+            DecodedJWT jwt = verifyOpenIdToken(idTokenEncoded, provider.getJwksUri(), provider.getIssuer());
+            if (jwt == null) {
+                return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "Could not verify authentication token.").build();
+            }
+
+            // now check if the nonce is the same as in the old session
+            String nonce = (String) servletRequest.getSession().getAttribute("openIDNonce");
+            if (!nonce.equals(jwt.getClaim("nonce").asString())) {
+                logger.error("nonce does not match. Not logging user in");
+                return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "Nonce mismatch.").build();
+            }
+            if (!provider.getClientId().equals(jwt.getClaim("aud").asString())) {
+                logger.error("clientId does not match aud. Not logging user in");
+                return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "cliendId mismatch.").build();
+            }
+
+            redirected = provider.completeLogin(jwt, servletRequest, servletResponse);
+            if (redirected != null) {
+                try {
+                    // redirected has an internal timeout, so this get() should never run into a timeout, but you never know
+                    redirected.get(1, TimeUnit.MINUTES);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.warn("Waiting for redirect after login interrupted unexpectedly");
+                } catch (TimeoutException e) {
+                    logger.error("Waiting for redirect after login took longer than a minute. This should not happen. Redirect will not take place");
+                } catch (ExecutionException e) {
+                    logger.error("Unexpected error while waiting for redirect", e);
+                }
+            }
+            return Response.ok("").build();
+        } finally {
+            if (provider != null) {
+                listener.unregister(provider);
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param token
+     * @param jwksUri
+     * @param issuer
+     * @return {@link DecodedJWT}
+     */
+    static DecodedJWT verifyOpenIdToken(String token, String jwksUri, String issuer) {
+        // logger.trace(token);
+        RSAKeyProvider keyProvider = null;
+        try {
+            final JwkProvider provider = new UrlJwkProvider(new URI(jwksUri).toURL());
+
+            keyProvider = new RSAKeyProvider() {
+                @Override
+                public RSAPublicKey getPublicKeyById(String kid) {
+                    //Received 'kid' value might be null if it wasn't defined in the Token's header
+                    PublicKey publicKey;
+                    try {
+                        publicKey = provider.get(kid).getPublicKey();
+                        return (RSAPublicKey) publicKey;
+                    } catch (JwkException e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                    return null;
+                }
+
+                @Override
+                public RSAPrivateKey getPrivateKey() {
+                    return null;
+                }
+
+                @Override
+                public String getPrivateKeyId() {
+                    return null;
+                }
+            };
+        } catch (MalformedURLException | URISyntaxException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        DecodedJWT decodedJwt = JWT.decode(token);
+        String strAlgorithm = decodedJwt.getAlgorithm();
+
+        Algorithm algorithm = null;
+        if ("RS256".equals(strAlgorithm)) {
+            algorithm = Algorithm.RSA256(keyProvider);
+        } else {
+            logger.error("JWT algorithm not supported: {}", strAlgorithm);
+            return null;
+        }
+
+        try {
+            JWTVerifier verifier = JWT.require(algorithm).withIssuer(issuer).build();
+            return verifier.verify(decodedJwt);
+        } catch (JWTVerificationException exception) {
+            logger.error(exception);
+            return null;
+        }
     }
 }

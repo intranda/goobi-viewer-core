@@ -69,10 +69,10 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     protected final String name;
     protected final String label;
     protected final String type;
-    protected final String url;
     protected final String image;
     protected final long timeoutMillis;
     protected List<String> addUserToGroups;
+    protected String url;
     /** URL to redirect to after successful login. */
     protected String redirectUrl;
 

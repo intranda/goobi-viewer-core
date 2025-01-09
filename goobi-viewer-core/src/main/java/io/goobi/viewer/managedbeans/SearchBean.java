@@ -1512,17 +1512,6 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * JSF expects a getter, too.
-     *
-     * @return a {@link java.lang.String} object.
-     * @deprecated user SearchBean.getExactSearchString()
-     */
-    @Deprecated(since = "24.01")
-    public String getExactSearchStringResetGui() {
-        return getExactSearchString();
-    }
-
-    /**
      * For unit tests.
      * 
      * @return the searchStringInternal
@@ -1810,21 +1799,6 @@ public class SearchBean implements SearchInterface, Serializable {
                 }
             }
         }
-    }
-
-    /**
-     * <p>
-     * removeChronologyFacetAction.
-     * </p>
-     *
-     * @return Navigation outcome
-     * @deprecated No longer relevant for current implementation
-     */
-    @Deprecated(since = "2023.01")
-    public String removeChronologyFacetAction() {
-        String facet = SolrConstants.YEAR + ":" + facets.getTempValue();
-        facets.setTempValue("");
-        return removeFacetAction(facet);
     }
 
     /**
