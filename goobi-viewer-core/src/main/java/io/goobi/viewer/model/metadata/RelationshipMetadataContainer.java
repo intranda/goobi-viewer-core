@@ -22,9 +22,11 @@
 package io.goobi.viewer.model.metadata;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -36,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
+import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -148,6 +151,53 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
     public List<ComplexMetadata> getMetadata(String field, String sortField, Locale sortLanguage, String filterField, String filterMatcher,
             long limit) {
         return getMetadata(field, sortField, sortLanguage, filterField, filterMatcher, false, limit);
+    }
+
+    @Override
+    public Map<String, List<ComplexMetadata>> getGroupedMetadata(String field, String sortField, Locale sortLanguage,
+            List<Map<String, List<String>>> categories, long limit) {
+        return getGroupedMetadata(field, sortField, sortLanguage, categories, false, limit);
+    }
+
+    @Override
+    public Map<String, List<ComplexMetadata>> getGroupedMetadata(String field, String sortField, Locale sortLanguage,
+            Map<String, List<String>> categories, long limit) {
+        return getGroupedMetadata(field, sortField, sortLanguage, categories, false, limit);
+    }
+
+    public Map<String, List<ComplexMetadata>> getGroupedMetadata(String field, String sortField, Locale sortLanguage,
+            List<Map<String, List<String>>> categories, boolean hideUnlinkedRecords, long limit) {
+        Map<String, List<String>> categoryMap = new LinkedHashMap<>();
+        for (Map<String, List<String>> map : categories) {
+            categoryMap.putAll(map);
+        }
+        return getGroupedMetadata(field, sortField, sortLanguage, categoryMap, hideUnlinkedRecords, limit);
+    }
+
+    public Map<String, List<ComplexMetadata>> getGroupedMetadata(String field, String sortField, Locale sortLanguage,
+            Map<String, List<String>> categories, boolean hideUnlinkedRecords, long limit) {
+
+        try (Time t = DataManager.getInstance().getTiming().takeTime("getGroupedMetadata")) {
+
+            List<ComplexMetadata> allMetadata = getMetadata(field, sortField, sortLanguage, "", ".*", hideUnlinkedRecords, Integer.MAX_VALUE);
+
+            Map<String, List<ComplexMetadata>> map = new LinkedHashMap<String, List<ComplexMetadata>>();
+
+            for (Entry<String, List<String>> entry : categories.entrySet()) {
+                if (StringUtils.isNotBlank(entry.getKey()) && entry.getValue() != null && entry.getValue().size() == 2) {
+                    String category = entry.getKey();
+                    String filterField = entry.getValue().get(0);
+                    String filterMatcher = entry.getValue().get(1);
+                    List<ComplexMetadata> mds = getMetadata(field, sortField, sortLanguage, filterField, filterMatcher, hideUnlinkedRecords, limit);
+                    mds.forEach(md -> allMetadata.remove(md));
+                    map.put(category, mds);
+                }
+            }
+
+            map.put("", allMetadata.stream().limit(limit).toList());
+
+            return map;
+        }
     }
 
     public List<ComplexMetadata> getMetadata(String field, String sortField, Locale sortLanguage, String filterField, String filterMatcher,

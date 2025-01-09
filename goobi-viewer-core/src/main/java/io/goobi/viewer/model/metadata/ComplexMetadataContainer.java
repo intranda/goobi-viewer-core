@@ -23,9 +23,11 @@ package io.goobi.viewer.model.metadata;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -36,7 +38,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -86,6 +87,36 @@ public class ComplexMetadataContainer {
         return getMetadata(field).stream()
                 .filter(m -> StringUtils.isBlank(filterField) || Pattern.matches(filterMatcher, m.getFirstValue(filterField, null)))
                 .count();
+    }
+
+    public Map<String, List<ComplexMetadata>> getGroupedMetadata(String field, String sortField, Locale sortLanguage,
+            List<Map<String, List<String>>> categories, long limit) {
+        Map<String, List<String>> categoryMap = new LinkedHashMap<>();
+        for (Map<String, List<String>> map : categories) {
+            categoryMap.putAll(map);
+        }
+        return getGroupedMetadata(field, sortField, sortLanguage, categoryMap, limit);
+    }
+
+    public Map<String, List<ComplexMetadata>> getGroupedMetadata(String field, String sortField, Locale sortLanguage,
+            Map<String, List<String>> categories, long limit) {
+
+        List<ComplexMetadata> allMetadata = getMetadata(field, sortField, sortLanguage, "", ".*", limit);
+
+        Map<String, List<ComplexMetadata>> map = new LinkedHashMap<String, List<ComplexMetadata>>();
+        map.put("", allMetadata);
+
+        for (Entry<String, List<String>> entry : categories.entrySet()) {
+            if (entry.getValue() != null && entry.getValue().size() == 2) {
+                String category = entry.getKey();
+                String filterField = entry.getValue().get(0);
+                String filterMatcher = entry.getValue().get(0);
+                List<ComplexMetadata> mds = getMetadata(field, sortField, sortLanguage, filterField, filterMatcher, limit);
+                mds.forEach(md -> allMetadata.remove(md));
+                map.put(category, mds);
+            }
+        }
+        return map;
     }
 
     protected Stream<ComplexMetadata> streamMetadata(String field, String sortField, Locale sortLanguage, String filterField, String filterMatcher,
