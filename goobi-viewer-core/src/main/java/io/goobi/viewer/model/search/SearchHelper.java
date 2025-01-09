@@ -1262,10 +1262,11 @@ public final class SearchHelper {
         List<String> ret = new ArrayList<>();
         if (searchTerms != null && !searchTerms.isEmpty()) {
             for (final String term : searchTerms) {
-                if (term.length() == 0) {
+                if (term.isEmpty()) {
                     continue;
                 }
                 String searchTerm = SearchHelper.removeTruncation(term);
+                searchTerm = StringTools.removeQuotations(searchTerm);
                 // logger.trace("term: {}", searchTerm); //NOSONAR Debug
                 // Stopwords do not get pre-filtered out when doing a phrase search
                 if (searchTerm.contains(" ")) {
