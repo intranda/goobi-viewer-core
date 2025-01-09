@@ -708,7 +708,6 @@ public class SearchQueryItem implements Serializable {
                                 break;
                         }
 
-                        logger.error(val);
                         if (val.contains("-") && !isRange()) {
                             if (allowFuzzySearch) {
                                 //remove wildcards; they don't work with search containing hyphen
