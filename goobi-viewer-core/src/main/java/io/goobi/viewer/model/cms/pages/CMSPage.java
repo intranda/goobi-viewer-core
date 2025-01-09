@@ -1528,6 +1528,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
                     cmsComponent.setOrder(componentIndex);
                     CMSComponent groupComponent = new CMSComponent(cmsComponent, entry.getValue());
                     currentGroup.addComponent(groupComponent);
+                    componentIndex++;
                 }
             }
             componentIndex++;
