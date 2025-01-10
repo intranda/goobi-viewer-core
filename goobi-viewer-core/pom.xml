@@ -879,6 +879,9 @@
 						<configuration>
 							<failOnWarning>true</failOnWarning>
 							<ignoredUsedUndeclaredDependencies>
+							    <!-- woodstox-core: used by jackson-dataformat -->
+							    <ignoredUsedUndeclaredDependency>com.fasterxml.woodstox:woodstox-core</ignoredUsedUndeclaredDependency>
+							    
 								<!-- FALSE POSITIVE, SWITCHES WITH -jakarta PACKAGE IF DECLARED OTHER WAY ROUND -->
 								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-annotations</ignoredUsedUndeclaredDependency>
 								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-models</ignoredUsedUndeclaredDependency>
