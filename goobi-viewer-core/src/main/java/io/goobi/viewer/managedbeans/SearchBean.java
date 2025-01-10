@@ -171,6 +171,7 @@ public class SearchBean implements SearchInterface, Serializable {
     private SearchResultGroup activeResultGroup;
     /** Selected advanced search field configuration template. */
     private String advancedSearchFieldTemplate = DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultTemplateName();
+    @Deprecated
     private boolean phraseSearch = false;
     /** Current search result page. */
     private int currentPage = 1;
@@ -960,7 +961,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     : SearchHelper.generateExpandQuery(
                             SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedSearchQueryGroup,
                                     additionalExpandQueryfields),
-                            searchTerms, phraseSearch, proximitySearchDistance);
+                            searchTerms, proximitySearchDistance);
             if (StringUtils.isEmpty(expandQuery) && activeSearchType == SearchHelper.SEARCH_TYPE_TERMS) {
                 expandQuery = searchStringInternal;
             }

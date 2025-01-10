@@ -725,12 +725,28 @@ public final class StringTools {
             return path + "/";
         }
     }
-    
+
     public static String removeTrailingSlashes(String path) {
         if (path != null && (path.endsWith("/") || path.endsWith("\\"))) {
             return removeTrailingSlashes(path.substring(0, path.length() - 1));
         }
         return path;
+    }
+
+    /**
+     * 
+     * @param s
+     * @return Given string without quotation marks, or same string if not in quotation marks
+     */
+    public static String removeQuotations(String s) {
+        if (s != null) {
+            String ret = s.trim();
+            if (s.startsWith("\"") && ret.endsWith("\"") && ret.length() > 1) {
+                return ret.substring(1, ret.length() - 1);
+            }
+        }
+
+        return s;
     }
 
     /**

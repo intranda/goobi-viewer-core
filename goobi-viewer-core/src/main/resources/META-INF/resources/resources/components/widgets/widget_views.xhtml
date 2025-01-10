@@ -78,7 +78,7 @@
 							<li
 								class="#{navigationHelper.currentPage == 'toc' ? 'active' : ''}">
 								<h:outputLink 
-									value="#{navigationHelper.tocActiveUrl}#{activeDocumentBean.logPart}">
+									value="#{navigationHelper.tocActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
 									<h:outputText value="#{msg.tocAnchor}"
 										rendered="#{activeDocumentBean.anchor}" escape="false" />
 									<h:outputText value="#{msg.toc}"

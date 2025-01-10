@@ -494,6 +494,7 @@ public final class ALTOTools {
         logger.trace("{} ALTO words found for this page.", words.size());
         List<String> coordList = new ArrayList<>();
         for (String s : searchTerms) {
+            s = StringTools.removeQuotations(s); // Remove quotation marks from phrase searches
             String[] searchWords = s.split("\\s+");
             if (searchWords == null || searchWords.length == 0 || StringUtils.isBlank(searchWords[0])) {
                 continue;
@@ -521,9 +522,8 @@ public final class ALTOTools {
                                     wordIndex--;
                                     match = false;
                                     break;
-                                } else {
-                                    remainingProximityReach--;
                                 }
+                                remainingProximityReach--;
                             } else {
                                 remainingProximityReach = proximitySearchDistance;
                             }
