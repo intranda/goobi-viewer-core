@@ -239,35 +239,46 @@ class MetadataValueTest {
     }
 
     /**
-     * @see Metadata#isHasAccessConditions()
+     * @see Metadata#isAccessRestricted()
      * @verifies return false if accessConditions empty
      */
     @Test
-    void isHasAccessConditions_shouldReturnFalseIfAccessConditionsEmpty() {
+    void isAccessRestricted_shouldReturnFalseIfAccessConditionsEmpty() {
         MetadataValue val = new MetadataValue("123", "", "MD_FOO");
-        Assertions.assertFalse(val.isHasAccessConditions());
+        Assertions.assertFalse(val.isAccessRestricted());
     }
 
     /**
-     * @see Metadata#isHasAccessConditions()
+     * @see Metadata#isAccessRestricted()
      * @verifies return false if only value is open access
      */
     @Test
-    void isHasAccessConditions_shouldReturnFalseIfOnlyValueIsOpenAccess() {
+    void isAccessRestricted_shouldReturnFalseIfOnlyValueIsOpenAccess() {
         MetadataValue val = new MetadataValue("123", "", "MD_FOO");
         val.getAccessConditions().add(SolrConstants.OPEN_ACCESS_VALUE);
-        Assertions.assertFalse(val.isHasAccessConditions());
+        Assertions.assertFalse(val.isAccessRestricted());
     }
 
     /**
-     * @see Metadata#isHasAccessConditions()
-     * @verifies return true if other values are contained
+     * @see Metadata#isAccessRestricted()
+     * @verifies return false if random values contained
      */
     @Test
-    void isHasAccessConditions_shouldReturnTrueIfOtherValuesAreContained() {
+    void isAccessRestricted_shouldReturnFalseIfRandomValuesContained() {
+        MetadataValue val = new MetadataValue("123", "", "MD_FOO");
+        val.getAccessConditions().add("top secret");
+        Assertions.assertFalse(val.isAccessRestricted());
+    }
+
+    /**
+     * @see Metadata#isAccessRestricted()
+     * @verifies return true if metadata access restricted condition contained
+     */
+    @Test
+    void isAccessRestricted_shouldReturnTrueIfMetadataAccessRestrictedConditionContained() {
         MetadataValue val = new MetadataValue("123", "", "MD_FOO");
         val.getAccessConditions().add(StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED);
-        Assertions.assertTrue(val.isHasAccessConditions());
+        Assertions.assertTrue(val.isAccessRestricted());
     }
 
 }
