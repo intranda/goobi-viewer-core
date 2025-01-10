@@ -199,8 +199,8 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
      * {@link #login(String, String)} is resolved.
      *
      * @param jwt {@link DecodedJWT}
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
      * @return a {@link java.util.concurrent.Future} object.
      */
     public Future<Boolean> completeLogin(DecodedJWT jwt, HttpServletRequest request, HttpServletResponse response) {
