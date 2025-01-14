@@ -85,7 +85,7 @@
 		<normdataimporter.version>2.0.0-SNAPSHOT</normdataimporter.version>
 
 		<!-- other libraries -->
-		<activemq.version>6.1.4</activemq.version>
+		<activemq.version>6.1.5</activemq.version>
 		<angus-mail.version>2.0.3</angus-mail.version>
 		<citationstyles.version>24.12</citationstyles.version>
 		<citeproc-java.version>3.2.0</citeproc-java.version>
