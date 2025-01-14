@@ -784,6 +784,7 @@ public class ViewManager implements Serializable {
             case "jpeg":
                 return getThumbnailUrlForDownload(scale, page);
             default:
+                // If master image URL is an empty string, check the indexed mime type (i.e. "image/tif" instead of "image/tiff")!
                 return getMasterImageUrl(scale, page);
         }
     }
