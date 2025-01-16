@@ -145,25 +145,33 @@ public class RecordsFilesImageResource extends ImageResource {
     @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
     @Override
     public StreamingOutput getPdf() throws ContentLibException {
-        String pi = request.getAttribute("pi").toString();
-        String filename = request.getAttribute("filename").toString();
-        logger.trace("getPdf: {}/{}", pi, filename);
-        filename = FilenameUtils.getBaseName(filename);
-        filename = pi + "_" + filename + ".pdf";
-        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
+        try {
+            String pi = request.getAttribute("pi").toString();
+            String filename = request.getAttribute("filename").toString();
+            logger.trace("getPdf: {}/{}", pi, filename);
+            filename = FilenameUtils.getBaseName(filename);
+            filename = pi + "_" + filename + ".pdf";
+            response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
 
-        if (context.getProperty("param:metsSource") != null) {
-            try {
-                String metsSource = context.getProperty("param:metsSource").toString();
-                String metsPath = PathConverter.getPath(PathConverter.toURI(metsSource)).resolve(pi + ".xml").toUri().toString();
-                context.setProperty("param:metsFile", metsPath);
-            } catch (URISyntaxException e) {
-                logger.error("Failed to convert metsSource {} to METS URI", context.getProperty("metsSource"));
+            if (context.getProperty("param:metsSource") != null) {
+                try {
+                    String metsSource = context.getProperty("param:metsSource").toString();
+                    String metsPath = PathConverter.getPath(PathConverter.toURI(metsSource)).resolve(pi + ".xml").toUri().toString();
+                    context.setProperty("param:metsFile", metsPath);
+                } catch (URISyntaxException e) {
+                    logger.error("Failed to convert metsSource {} to METS URI", context.getProperty("metsSource"));
+                }
+
             }
 
+            return super.getPdf();
+        } catch (ContentLibException e) {
+            logger.error(e.toString(), e);
+            throw e;
+        } catch (RuntimeException e) {
+            logger.error(e.toString(), e);
+            throw e;
         }
-
-        return super.getPdf();
     }
 
     @Override
