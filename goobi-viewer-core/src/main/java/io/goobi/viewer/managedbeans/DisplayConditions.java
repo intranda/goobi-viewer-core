@@ -405,8 +405,6 @@ public class DisplayConditions implements Serializable {
          * @return
          */
         private static boolean isHasValuesIfRepeat(UIComponent c) {
-            System.out.println("isHasValuesIfRepeat " + c.getClass().getName() + " - " + c.getClass().getSimpleName());
-            // TODO Find replacement for com.sun.faces.*
             if ("UIRepeat".equals(c.getClass().getSimpleName())) {
                 Object value = Reflection.getMethodReturnValue(c, "getValue").orElse(null);
                 if (value instanceof Collection) {
