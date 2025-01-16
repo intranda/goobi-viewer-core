@@ -33,6 +33,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.omnifaces.cdi.Eager;
 
+import io.goobi.viewer.controller.Reflection;
 import io.goobi.viewer.controller.json.JsonStringConverter;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -404,14 +405,15 @@ public class DisplayConditions implements Serializable {
          * @return
          */
         private static boolean isHasValuesIfRepeat(UIComponent c) {
+            System.out.println("isHasValuesIfRepeat " + c.getClass().getName() + " - " + c.getClass().getSimpleName());
             // TODO Find replacement for com.sun.faces.*
-            //            if (c instanceof com.sun.faces.facelets.component.UIRepeat repeat) {
-            //                Object value = repeat.getValue();
-            //                if (value instanceof Collection) {
-            //                    return !((Collection<?>) value).isEmpty();
-            //                }
-            //                return false;
-            //            }
+            if ("UIRepeat".equals(c.getClass().getSimpleName())) {
+                Object value = Reflection.getMethodReturnValue(c, "getValue").orElse(null);
+                if (value instanceof Collection) {
+                    return !((Collection<?>) value).isEmpty();
+                }
+                return false;
+            }
 
             return true;
         }
