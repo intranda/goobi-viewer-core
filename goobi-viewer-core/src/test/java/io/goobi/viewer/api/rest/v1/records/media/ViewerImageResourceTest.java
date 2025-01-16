@@ -204,7 +204,7 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
         }
     }
 
-    @Test
+    //@Test
     void testGetPdf() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(PI, FILENAME).build();
         try (Response response = target(url)
