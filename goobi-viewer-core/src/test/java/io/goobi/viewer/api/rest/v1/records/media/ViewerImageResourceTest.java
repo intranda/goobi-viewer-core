@@ -29,22 +29,34 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
-
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+import java.util.Map;
 
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.security.LicenseType;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @author florian
@@ -164,6 +176,31 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
             assertEquals(200, status, "Should return status 200. Error message: " + new String(entity));
             assertEquals("file:///opt/digiverso/viewer/data/1/media/" + PI + "/" + FILENAME + ".tif", contentLocation);
             assertTrue(entity.length >= 5 * 5 * 8 * 3); //entity is at least as long as the image data
+        }
+    }
+
+    @Test
+    void testGetPdfLocal() throws IOException, WebApplicationException, ContentLibException, PresentationException, IndexUnreachableException {
+        String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(PI, FILENAME).build();
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getRequestURI()).thenReturn(url);
+        Mockito.when(request.getAttribute("pi")).thenReturn(PI);
+        Mockito.when(request.getAttribute("filename")).thenReturn(FILENAME + ".tif");
+        Mockito.when(request.getParameterMap())
+                .thenReturn(Map.of("imageSource",
+                        new String[] { DataFileTools.getDataRepositoryPathForRecord(PI) + "/"
+                                + DataManager.getInstance().getConfiguration().getMediaFolder() }));
+
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+
+        ContainerRequestContext context = Mockito.mock(ContainerRequestContext.class);
+
+        RecordsFilesImageResource resource =
+                new RecordsFilesImageResource(context, request, response, urls, PI, FILENAME + ".tif", ContentServerCacheManager.getInstance());
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            resource.getPdf().write(baos);
+            System.out.println("Written byte array stream of size " + baos.size());
+            assertTrue(baos.size() > 0);
         }
     }
 
