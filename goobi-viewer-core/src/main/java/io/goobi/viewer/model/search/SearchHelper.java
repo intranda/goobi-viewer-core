@@ -162,7 +162,7 @@ public final class SearchHelper {
     /** Regex pattern for negations not followed by brackets */
     private static final Pattern PATTERN_NOT = Pattern.compile("NOT [a-zA-Z_]+:[a-zA-Z0-9\\*]+");
     /** Constant <code>REGEX_QUOTATION_MARKS="\"[^()]*?\""</code>. */
-    public static final String REGEX_QUOTATION_MARKS = "@?\"[^()\"]*\"@?+";
+    public static final String REGEX_QUOTATION_MARKS = "@?+\"[^()\"]*\"@?+";
     /** Constant <code>PATTERN_FIELD_PHRASE</code> */
     private static final Pattern PATTERN_FIELD_PHRASE = Pattern.compile("[\\w]++:" + REGEX_QUOTATION_MARKS);
     /** Constant <code>PATTERN_PHRASE</code> */
