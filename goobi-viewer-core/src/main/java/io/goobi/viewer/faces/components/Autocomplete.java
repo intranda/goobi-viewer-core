@@ -27,9 +27,6 @@ import java.util.List;
 import org.json.JSONArray;
 
 import jakarta.el.MethodExpression;
-
-//import com.sun.faces.facelets.el.ContextualCompositeMethodExpression;
-
 import jakarta.faces.component.FacesComponent;
 import jakarta.faces.component.UINamingContainer;
 import jakarta.faces.context.ExternalContext;
