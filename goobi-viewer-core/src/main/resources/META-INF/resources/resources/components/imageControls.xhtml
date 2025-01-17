@@ -266,12 +266,14 @@
 
                         <!-- IMAGE FILTER -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image'}">
-                            <li class="image-controls__option image-filter">
+                            <li id="imageFiltering" class="image-controls__option image-filter">
                                 <button type="button" class="btn btn--icon" disabled="disabled"
                             	   data-popover-element="#imageFilterPopover"
                                    data-popover-dismiss="click-outside"
-                                   aria-label="#{msg.label__image_filter_toolkit}"
-                             data-toggle="tooltip"
+                                   data-container="#imageFiltering"
+                                   data-popover-aria-label="#{msg.label__image_filter_toolkit}"
+                                   
+                             	   data-toggle="tooltip"
                              	title="#{msg.label__image_filter_toolkit__error}">
                                 <i class="fa fa-wrench" aria-hidden="true"></i>
                                 </button>
@@ -281,7 +283,7 @@
 
                     <!-- ADD TO BOOKMARK -->
                     <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
-                        <li class="image-controls__option add-to-bookmark">
+                        <li id="bookmarkButtonObject" class="image-controls__option add-to-bookmark">
                             <button type="button" class="btn btn--icon"
                                 data-bookmark-list-type="add"
                                 data-pi="#{activeDocumentBean.viewManager.pi}"

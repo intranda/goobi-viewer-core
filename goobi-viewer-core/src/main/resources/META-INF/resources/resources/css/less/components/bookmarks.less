@@ -229,13 +229,16 @@
 			}
 		}
 		button {
+			text-align: left;
 			color: black;
 			width: 100%;
 			padding: 5px;
-		    text-align: left;
     		text-overflow: ellipsis;
 			overflow: hidden;
 			background-image: none;
+			display: flex !important;
+		 	align-items: center;
+		    gap: 4px;
 			.fa {
 				color: green;
 			}
@@ -247,6 +250,7 @@
 			    color: @white;
 			    border-radius: 2px;
 			    background-color: @blue;
+				margin-left: auto;
 			}
 		}
 	}

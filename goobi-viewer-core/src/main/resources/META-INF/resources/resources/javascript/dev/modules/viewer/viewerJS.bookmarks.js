@@ -305,7 +305,7 @@ var viewerJS = ( function( viewer ) {
             },
             renderBookmarksPopup: function(pi, logid, page, button) {
                 var $popup = $("<bookmarksPopup></bookmarksPopup>");
-                $('body').append($popup);
+                $('#bookmarkButtonObject').append($popup);
                 riot.mount('bookmarksPopup', {
                     data: {        
                         pi: pi,
