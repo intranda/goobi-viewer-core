@@ -21,18 +21,6 @@
  */
 package io.goobi.viewer.api.rest.v1.records.media;
 
-import jakarta.inject.Inject;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.StreamingOutput;
-
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfInformation;
@@ -46,6 +34,16 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.NetTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * @author florian
@@ -65,6 +63,7 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
      * @param urls
      * @param pi
      * @param divId
+     * @param cacheManager
      * @throws ContentLibException
      */
     public ViewerSectionPDFResource(

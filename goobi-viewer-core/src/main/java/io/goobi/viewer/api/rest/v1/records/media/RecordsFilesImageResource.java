@@ -90,11 +90,11 @@ public class RecordsFilesImageResource extends ImageResource {
      * @param urls
      * @param pi
      * @param filename
+     * @param cacheManager
      */
     public RecordsFilesImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Context ApiUrls urls,
-            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
+            @Context ApiUrls urls, @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Filename of the image") @PathParam("filename") String filename,
             @Context ContentServerCacheManager cacheManager) {
         super(context, request, response, pi, filename, cacheManager);
@@ -190,6 +190,7 @@ public class RecordsFilesImageResource extends ImageResource {
             String toReplace = URLEncoder.encode("{pi}", "UTF-8");
             this.resourceURI = URI.create(this.resourceURI.toString().replace(toReplace, directory));
         } catch (UnsupportedEncodingException e) {
+            logger.warn(e.getMessage());
         }
     }
 

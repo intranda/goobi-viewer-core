@@ -91,11 +91,11 @@ public class ExternalImageResource extends ImageResource {
      * @param response
      * @param urls
      * @param imageUrl
+     * @param cacheManager
      */
     public ExternalImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Context ApiUrls urls,
-            @Parameter(description = "URL of the image") @PathParam("filename") String imageUrl,
+            @Context ApiUrls urls, @Parameter(description = "URL of the image") @PathParam("filename") String imageUrl,
             @Context ContentServerCacheManager cacheManager) {
         super(context, request, response, "", imageUrl, cacheManager);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, imageUrl);

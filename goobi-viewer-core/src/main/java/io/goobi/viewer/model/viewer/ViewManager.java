@@ -377,6 +377,8 @@ public class ViewManager implements Serializable {
                     infos.put(page.getOrder(), getImageInfo(page, pageType));
                 }
                 break;
+            default:
+                break;
         }
 
         return infos;

@@ -571,8 +571,8 @@ public final class TocMaker {
                 }
 
                 TOCElement tocElement =
-                        new TOCElement(volumeLabel, String.valueOf(thumbPageNo), thumbPageNoLabel, volumeIddoc, volumeLogId, 1, topStructPi, thumbnailUrl,
-                                accessPermissionPdf, false, thumbnailUrl != null, volumeMimeType, docStructType, footerId);
+                        new TOCElement(volumeLabel, String.valueOf(thumbPageNo), thumbPageNoLabel, volumeIddoc, volumeLogId, 1, topStructPi,
+                                thumbnailUrl, accessPermissionPdf, false, thumbnailUrl != null, volumeMimeType, docStructType, footerId);
                 tocElement.getMetadata().put(SolrConstants.DOCSTRCT, docStructType);
                 tocElement.getMetadata().put(SolrConstants.CURRENTNO, (String) volumeDoc.getFieldValue(SolrConstants.CURRENTNO));
                 tocElement.getMetadata().put(SolrConstants.TITLE, (String) volumeDoc.getFirstValue(SolrConstants.TITLE));
