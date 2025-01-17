@@ -164,7 +164,7 @@ public final class SearchHelper {
     /** Constant <code>REGEX_QUOTATION_MARKS="\"[^()]*?\""</code>. */
     public static final String REGEX_QUOTATION_MARKS = "@?+\"[^()\"]*\"@?+";
     /** Constant <code>PATTERN_FIELD_PHRASE</code> */
-    private static final Pattern PATTERN_FIELD_PHRASE = Pattern.compile("[\\w]++:" + REGEX_QUOTATION_MARKS);
+    private static final Pattern PATTERN_FIELD_PHRASE = Pattern.compile("[\\w]++:" + REGEX_QUOTATION_MARKS); //NOSONAR Checked and fixed potential CB
     /** Constant <code>PATTERN_PHRASE</code> */
     private static final Pattern PATTERN_PHRASE = Pattern.compile("^" + REGEX_QUOTATION_MARKS + "(~\\d+)?$");
     /** Constant <code>PATTERN_PROXIMITY_SEARCH_TOKEN</code> */
