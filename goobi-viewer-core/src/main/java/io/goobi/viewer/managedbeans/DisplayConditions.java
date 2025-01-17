@@ -405,7 +405,7 @@ public class DisplayConditions implements Serializable {
          * @return
          */
         private static boolean isHasValuesIfRepeat(UIComponent c) {
-            if ("UIRepeat".equals(c.getClass().getSimpleName())) {
+            if ("UIRepeat".equals(c.getClass().getSimpleName())) { //NOSONAR Doing this to avoid using com.sun.* classes
                 Object value = Reflection.getMethodReturnValue(c, "getValue").orElse(null);
                 if (value instanceof Collection) {
                     return !((Collection<?>) value).isEmpty();
