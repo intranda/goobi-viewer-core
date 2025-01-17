@@ -119,32 +119,32 @@
 		<jakarta.websocket.version>1.1.2</jakarta.websocket.version>
 		<jakarta.ws.rs-api.version>3.1.0</jakarta.ws.rs-api.version>
 		<java-jwt.version>3.19.1</java-jwt.version>
-		<jwks-rsa.version>0.21.2</jwks-rsa.version>
+		<jwks-rsa.version>0.22.1</jwks-rsa.version>
 		<jaxen.version>2.0.0</jaxen.version>
 		<jaxb-api.version>4.0.2</jaxb-api.version>
 		<jaxb-runtime.version>4.0.5</jaxb-runtime.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
-		<jersey.version>3.1.9</jersey.version>
+		<jersey.version>3.1.10</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20250107</json.version>
 		<jsoup.version>1.18.3</jsoup.version>
 		<junit.version>5.11.4</junit.version>
 		<log4j.version>2.24.3</log4j.version>
-		<mariadb-java-client.version>3.5.0</mariadb-java-client.version>
-		<mockito.version>5.14.2</mockito.version>
+		<mariadb-java-client.version>3.5.1</mariadb-java-client.version>
+		<mockito.version>5.15.2</mockito.version>
 		<mockserver.version>5.15.0</mockserver.version>
 		<omnifaces.version>4.6</omnifaces.version>
 		<openpdf.version>2.0.3</openpdf.version>
 		<poi.version>5.4.0</poi.version>
 		<prettyfaces.version>10.0.2.Final</prettyfaces.version>
-		<quartz.version>2.3.2</quartz.version>
+		<quartz.version>2.5.0</quartz.version>
 		<reflections.version>0.10.2</reflections.version>
 		<rome.version>2.1.0</rome.version>
-		<spring.version>6.1.14</spring.version>
+		<spring.version>6.2.2</spring.version>
 		<slf4j.version>2.0.16</slf4j.version>
 		<solr.version>9.7.0</solr.version>
-		<swagger.version>2.2.27</swagger.version>
+		<swagger.version>2.2.28</swagger.version>
 		<tomcat.version>10.1.31</tomcat.version>
 		<weld-servlet-shaded.version>4.0.3.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
