@@ -991,7 +991,9 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.13.0</version>
 				<configuration>
-					<compilerArgs>
+                    <compilerArgs>
+                        <!-- Explicitly enable annotation processing -->
+						<arg>-proc:full</arg>
 						<arg>-Xlint:deprecation</arg>
 						<arg>-Xlint:unchecked</arg>
 					</compilerArgs>
