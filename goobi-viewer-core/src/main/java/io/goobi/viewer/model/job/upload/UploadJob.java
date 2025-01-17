@@ -34,13 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import jakarta.servlet.http.Part;
-import jakarta.ws.rs.ProcessingException;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -56,13 +49,11 @@ import org.omnifaces.util.Servlets;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.UploadException;
@@ -78,6 +69,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * <p>
@@ -146,8 +143,7 @@ public class UploadJob implements Serializable {
     private List<Part> files;
 
     public static Response postJobRequest(String url, AbstractTaskManagerRequest body) throws IOException {
-        try {
-            Client client = ClientBuilder.newClient();
+        try (Client client = ClientBuilder.newClient()) {
             client.property(ClientProperties.CONNECT_TIMEOUT, 12000);
             client.property(ClientProperties.READ_TIMEOUT, 30000);
             return client
@@ -179,10 +175,12 @@ public class UploadJob implements Serializable {
         ret.setProperties(new HashMap<>(1));
         ret.getProperties().put("email", email);
 
-        try {
-            logger.trace(new ObjectMapper().writeValueAsString(ret));
-        } catch (JsonProcessingException e) {
-            logger.trace(e.getMessage());
+        if (logger.isTraceEnabled()) {
+            try {
+                logger.trace(new ObjectMapper().writeValueAsString(ret));
+            } catch (JsonProcessingException e) {
+                logger.trace(e.getMessage());
+            }
         }
 
         return ret;
@@ -239,9 +237,8 @@ public class UploadJob implements Serializable {
     /**
      * 
      * @throws IOException
-     * @throws HTTPException
      */
-    public void uploadFiles() throws IOException, HTTPException {
+    public void uploadFiles() throws IOException {
         logger.trace("uploadFiles");
         if (getFiles() == null) {
             logger.debug("No files to upload.");
@@ -321,8 +318,6 @@ public class UploadJob implements Serializable {
             String json = handler.handleResponse(response);
             logger.trace("Process status JSON: {}", json);
             return new ObjectMapper().readValue(json, ProcessStatusResponse.class);
-        } catch (JsonMappingException e) {
-            logger.error(e.getMessage());
         } catch (IOException e) {
             logger.error(e.getMessage());
         }

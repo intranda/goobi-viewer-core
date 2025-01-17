@@ -314,8 +314,7 @@ public abstract class AbstractApiUrlManager {
      * @return {@link ApiInfo}
      */
     public ApiInfo getInfo() {
-        try {
-            Client client = ClientBuilder.newClient();
+        try (Client client = ClientBuilder.newClient()) {
             client.property(ClientProperties.CONNECT_TIMEOUT, 5000);
             client.property(ClientProperties.READ_TIMEOUT, 5000);
             return client

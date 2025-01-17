@@ -381,7 +381,7 @@ public abstract class DownloadJob implements Serializable {
     @JsonIgnore
     public Path getFile() {
         Path path = DownloadJobTools.getDownloadFileStatic(identifier, type, getFileExtension()).toPath();
-        logger.trace(path.toString());
+        logger.trace("Path: {}", path);
         if (Files.isRegularFile(path)) {
             return path;
         }
@@ -729,8 +729,7 @@ public abstract class DownloadJob implements Serializable {
      */
     @Deprecated(since = "24.10")
     public static Response postJobRequest(String url, AbstractTaskManagerRequest body) throws IOException {
-        try {
-            Client client = ClientBuilder.newClient();
+        try (Client client = ClientBuilder.newClient()) {
             client.property(ClientProperties.CONNECT_TIMEOUT, 12000);
             client.property(ClientProperties.READ_TIMEOUT, 30000);
             return client
@@ -747,9 +746,6 @@ public abstract class DownloadJob implements Serializable {
      */
     protected abstract String getRestApiPath();
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {
