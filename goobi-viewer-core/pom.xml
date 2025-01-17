@@ -1008,7 +1008,8 @@
 					</excludes>
 					<systemPropertyVariables>
 						<java.util.logging.config.file>src/test/resources/log4j2.test.xml</java.util.logging.config.file>
-					</systemPropertyVariables>
+                    </systemPropertyVariables>
+                    <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
