@@ -21,23 +21,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.faces.view.ViewScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.UploadException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.job.upload.UploadJob;
+import jakarta.annotation.PostConstruct;
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
  * <p>
@@ -175,7 +173,7 @@ public class UploadBean implements Serializable {
             currentUploadJob.createProcess();
             currentUploadJob.uploadFiles();
             Messages.info("user__upload_content_success_msg");
-        } catch (HTTPException | IOException | UploadException e) {
+        } catch (IOException | UploadException e) {
             logger.error(e.getMessage());
             Messages.error(e.getMessage());
         } finally {

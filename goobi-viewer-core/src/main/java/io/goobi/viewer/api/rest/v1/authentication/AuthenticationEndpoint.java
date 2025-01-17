@@ -319,7 +319,7 @@ public class AuthenticationEndpoint {
      */
     private Response openIdLogin(String state, String error, String authCode, String accessToken) throws IOException {
         if (error != null) {
-            logger.trace("Error: {}", error);
+            //( logger.trace("Error: {}", error); //NOSONAR User-controlled data, only comment in for debugging
             return Response.status(Response.Status.FORBIDDEN.getStatusCode(), error).build();
         }
 
