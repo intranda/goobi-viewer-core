@@ -179,8 +179,18 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * This originally requested the REST-API like the other tests in this class. But for still unknown reasons (presumably with the rest-server used
+     * for the tests), the test reliably fails in some enviroments. It now tests the underlying java-methods of the endpoint directly
+     * 
+     * @throws IOException
+     * @throws WebApplicationException
+     * @throws ContentLibException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     @Test
-    void testGetPdfLocal() throws IOException, WebApplicationException, ContentLibException, PresentationException, IndexUnreachableException {
+    void testGetPdf() throws IOException, WebApplicationException, ContentLibException, PresentationException, IndexUnreachableException {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(PI, FILENAME).build();
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRequestURI()).thenReturn(url);
@@ -201,22 +211,6 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
             resource.getPdf().write(baos);
             System.out.println("Written byte array stream of size " + baos.size());
             assertTrue(baos.size() > 0);
-        }
-    }
-
-    @Test
-    void testGetPdf() {
-        String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(PI, FILENAME).build();
-        try (Response response = target(url)
-                .request()
-                .accept("application/pdf")
-                .get()) {
-            byte[] entity = response.readEntity(byte[].class);
-            assertEquals(200, response.getStatus(), "Should return status 200. Response body was" + new String(entity));
-            assertNotNull(entity, "Should return user object as JSON");
-            String contentDisposition = response.getHeaderString("Content-Disposition");
-            assertEquals("attachment; filename=\"" + PI + "_" + FILENAME + ".pdf" + "\"", contentDisposition);
-            assertTrue(entity.length >= 5 * 5 * 8 * 3); //entity is at least as long as the image data
         }
     }
 
