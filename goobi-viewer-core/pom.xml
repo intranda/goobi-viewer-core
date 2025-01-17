@@ -138,7 +138,7 @@
 		<openpdf.version>2.0.3</openpdf.version>
 		<poi.version>5.4.0</poi.version>
 		<prettyfaces.version>10.0.2.Final</prettyfaces.version>
-		<quartz.version>2.3.2</quartz.version>
+		<quartz.version>2.5.0</quartz.version>
 		<reflections.version>0.10.2</reflections.version>
 		<rome.version>2.1.0</rome.version>
 		<spring.version>6.2.2</spring.version>
