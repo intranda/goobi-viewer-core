@@ -186,12 +186,16 @@ public class CMSMediaResource {
     @AuthorizationBinding
     public MediaList getAllMedia(
             @Parameter(
-                    description = "Comma separated list of tags. Only media items with any of these tags will be included") @QueryParam("tags") String tags,
-            @Parameter(description = "Maximum number of items to return") @QueryParam("max") Integer maxItems,
+                    description = "Comma separated list of tags. Only media items with any of these tags will be included") @QueryParam("tags") 
+            String tags,
+            @Parameter(description = "Maximum number of items to return") @QueryParam("max")
+            Integer maxItems,
             @Parameter(
-                    description = "Number of media items marks as 'important' that must be included in the result") @QueryParam("prioritySlots") Integer prioritySlots,
+                    description = "Number of media items marks as 'important' that must be included in the result") @QueryParam("prioritySlots") 
+            Integer prioritySlots,
             @Parameter(
-                    description = "Set to 'true' to return random items for each call. Otherwise the items will be ordererd by their upload date") @QueryParam("random") Boolean random)
+                    description = "Set to 'true' to return random items for each call. Otherwise the items will be ordererd by their upload date") 
+            @QueryParam("random") Boolean random)
             throws DAOException {
         List<String> tagList = new ArrayList<>();
         if (StringUtils.isNotBlank(tags)) {

@@ -1322,7 +1322,7 @@ public class NavigationHelper implements Serializable {
     public String getPageUrl(PageType page) {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + page.getName();
     }
-    
+
     /**
      * <p>
      * getSearchUrl.
@@ -1958,8 +1958,8 @@ public class NavigationHelper implements Serializable {
 
     /**
      * If the current page url is a search page url without or with empty search parameters replace
-     * {@link ViewHistory#getCurrentView(jakarta.servlet.ServletRequest)} with a search url containing the default sort string. This is done so the view
-     * history contains the current random seed for random search list sorting and returning to the page yields the same ordering as the original
+     * {@link ViewHistory#getCurrentView(jakarta.servlet.ServletRequest)} with a search url containing the default sort string. This is done so the
+     * view history contains the current random seed for random search list sorting and returning to the page yields the same ordering as the original
      * call. Must be called in the pretty mappings for all search urls which deliver randomly sorted hitlists
      */
     public void addSearchUrlWithCurrentSortStringToHistory() {

@@ -23,14 +23,6 @@ package io.goobi.viewer.api.rest.v1.records.media;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_FOOTER;
 
-import jakarta.inject.Inject;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.core.Context;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,6 +33,12 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.FooterResource;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Context;
 
 /**
  * @author florian
@@ -60,6 +58,7 @@ public class RecordFilesFooterResource extends FooterResource {
      * @param urls
      * @param pi
      * @param filename
+     * @param cacheManager
      * @throws ContentLibException
      */
     public RecordFilesFooterResource(

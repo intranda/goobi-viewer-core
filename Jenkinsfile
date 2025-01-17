@@ -3,7 +3,7 @@ pipeline {
   agent {
     docker {
       label 'controller'
-      image 'nexus.intranda.com:4443/goobi-viewer-testing-index:latest'
+      image 'nexus.intranda.com:4443/goobi-viewer-testing-index:latest21'
       args '-v $HOME/.m2:/var/maven/.m2:z -v $HOME/.config:/var/maven/.config -v $HOME/.sonar:/var/maven/.sonar -u 1000 -ti -e _JAVA_OPTIONS=-Duser.home=/var/maven -e MAVEN_CONFIG=/var/maven/.m2'
       registryUrl 'https://nexus.intranda.com:4443/'
       registryCredentialsId 'jenkins-docker'

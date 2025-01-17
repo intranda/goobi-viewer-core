@@ -29,7 +29,11 @@ import org.apache.logging.log4j.Logger;
 
 public final class Reflection {
 
-    private static final Logger logger = LogManager.getLogger(FileTools.class);
+    private static final Logger logger = LogManager.getLogger(Reflection.class);
+
+    /** Private constructor. */
+    private Reflection() {
+    }
 
     public static Optional<Object> getMethodReturnValue(Object object, String method) {
         try {
