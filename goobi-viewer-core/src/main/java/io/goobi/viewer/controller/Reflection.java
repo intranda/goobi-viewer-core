@@ -19,34 +19,28 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.security.user.icon;
+package io.goobi.viewer.controller;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
-import jakarta.servlet.http.HttpServletRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import io.goobi.viewer.managedbeans.NavigationHelper;
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
+public final class Reflection {
 
-/**
- * @author florian
- *
- */
-public class DefaultUserAvatar implements UserAvatar {
+    private static final Logger logger = LogManager.getLogger(Reflection.class);
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.user.icon.IconProvider#getIconUrl()
-     */
-    @Override
-    public String getIconUrl(int size, HttpServletRequest request) {
-        if (request != null) {
-            String contextPath = request.getContextPath();
-            return contextPath + "/resources/images/backend/thumbnail_goobi_person.svg";
-        }
-
-        return Optional.ofNullable(BeanUtils.getNavigationHelper())
-                .map(NavigationHelper::getApplicationUrl)
-                .orElse("/") + "resources/images/backend/thumbnail_goobi_person.svg";
+    /** Private constructor. */
+    private Reflection() {
     }
 
+    public static Optional<Object> getMethodReturnValue(Object object, String method) {
+        try {
+            return Optional.ofNullable(object.getClass().getMethod(method).invoke(object));
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+            logger.error("Error calling method {} ob object {}", method, object);
+            return Optional.empty();
+        }
+    }
 }

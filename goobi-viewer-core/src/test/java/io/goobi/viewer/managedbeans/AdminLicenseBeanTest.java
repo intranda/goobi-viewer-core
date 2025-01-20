@@ -23,8 +23,8 @@ package io.goobi.viewer.managedbeans;
 
 import java.util.List;
 
-import javax.faces.model.SelectItem;
-import javax.faces.model.SelectItemGroup;
+import jakarta.faces.model.SelectItem;
+import jakarta.faces.model.SelectItemGroup;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

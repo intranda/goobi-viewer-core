@@ -29,18 +29,18 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.faces.FacesException;
-import javax.faces.application.NavigationHandler;
-import javax.faces.application.ViewExpiredException;
-import javax.faces.context.ExceptionHandler;
-import javax.faces.context.ExceptionHandlerWrapper;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.faces.context.Flash;
-import javax.faces.event.ExceptionQueuedEvent;
-import javax.faces.event.ExceptionQueuedEventContext;
-import javax.faces.event.PhaseId;
-import javax.servlet.http.HttpSession;
+import jakarta.faces.FacesException;
+import jakarta.faces.application.NavigationHandler;
+import jakarta.faces.application.ViewExpiredException;
+import jakarta.faces.context.ExceptionHandler;
+import jakarta.faces.context.ExceptionHandlerWrapper;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.context.Flash;
+import jakarta.faces.event.ExceptionQueuedEvent;
+import jakarta.faces.event.ExceptionQueuedEventContext;
+import jakarta.faces.event.PhaseId;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -73,7 +73,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
      * Constructor for MyExceptionHandler.
      * </p>
      *
-     * @param wrapped a {@link javax.faces.context.ExceptionHandler} object.
+     * @param wrapped a {@link jakarta.faces.context.ExceptionHandler} object.
      */
     public MyExceptionHandler(ExceptionHandler wrapped) {
         super(wrapped);

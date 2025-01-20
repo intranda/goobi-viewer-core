@@ -47,9 +47,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -106,6 +103,8 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Search utility class. Static methods only.
@@ -163,9 +162,9 @@ public final class SearchHelper {
     /** Regex pattern for negations not followed by brackets */
     private static final Pattern PATTERN_NOT = Pattern.compile("NOT [a-zA-Z_]+:[a-zA-Z0-9\\*]+");
     /** Constant <code>REGEX_QUOTATION_MARKS="\"[^()]*?\""</code>. */
-    public static final String REGEX_QUOTATION_MARKS = "@?\"[^()]*?\"@?";
+    public static final String REGEX_QUOTATION_MARKS = "@?+\"[^()\"]*\"@?+";
     /** Constant <code>PATTERN_FIELD_PHRASE</code> */
-    private static final Pattern PATTERN_FIELD_PHRASE = Pattern.compile("[\\w]+:" + REGEX_QUOTATION_MARKS);
+    private static final Pattern PATTERN_FIELD_PHRASE = Pattern.compile("[\\w]++:" + REGEX_QUOTATION_MARKS); //NOSONAR Checked and fixed potential CB
     /** Constant <code>PATTERN_PHRASE</code> */
     private static final Pattern PATTERN_PHRASE = Pattern.compile("^" + REGEX_QUOTATION_MARKS + "(~\\d+)?$");
     /** Constant <code>PATTERN_PROXIMITY_SEARCH_TOKEN</code> */
@@ -524,7 +523,7 @@ public final class SearchHelper {
     /**
      * Returns all suffixes relevant to search filtering.
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param addStaticQuerySuffix a boolean.
      * @param addCollectionBlacklistSuffix a boolean.
      * @return Generated Solr query suffix
@@ -535,7 +534,7 @@ public final class SearchHelper {
 
     /**
      * 
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param addStaticQuerySuffix a boolean.
      * @param addCollectionBlacklistSuffix a boolean.
      * @param privilege Privilege to check (Connector checks a different privilege)
@@ -549,7 +548,7 @@ public final class SearchHelper {
     /**
      * Returns all suffixes relevant to search filtering.
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param addArchiveFilterSuffix a boolean.
      * @param addCollectionBlacklistSuffix a boolean.
      * @param privilege Privilege to check (Connector checks a different privilege)
@@ -1111,7 +1110,7 @@ public final class SearchHelper {
     /**
      * Updates the calling agent's session with a personalized filter sub-query.
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param privilege Privilege to check (Connector checks a different privilege)
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -2286,7 +2285,7 @@ public final class SearchHelper {
                     }
                     break;
             }
-            
+
             String phraseWithoutQuotation = phraseSplit[1].replace("@", "").replace("\"", "");
             if (!phraseWithoutQuotation.isEmpty() && !stopwords.contains(phraseWithoutQuotation)) {
                 if (ret.get(field) == null) {
@@ -2294,7 +2293,7 @@ public final class SearchHelper {
                 }
                 // logger.trace("term: {}:{}", field, phraseWithoutQuotation); //NOSONAR Debug
                 // TODO Check why quotes were removed here, they're needed for the expand query
-                ret.get(field).add("\"" + phraseWithoutQuotation + "\""); 
+                ret.get(field).add("\"" + phraseWithoutQuotation + "\"");
             }
             q = q.replace(phrase, "");
             ret.get(TITLE_TERMS).add("\"" + phraseWithoutQuotation + "\"");
@@ -2951,9 +2950,9 @@ public final class SearchHelper {
                     //unescape fuzzy search token
                     term = term.replaceAll("\\\\~(\\d)", "~$1");
                     // logger.trace("term: {}", term); //NOSONAR Debug
-//                    if (phraseSearch && !quotationMarksApplied) {
-//                        term = '"' + term + '"';
-//                    }
+                    //                    if (phraseSearch && !quotationMarksApplied) {
+                    //                        term = '"' + term + '"';
+                    //                    }
                 }
                 if (SolrConstants.FULLTEXT.equals(field) && proximitySearchDistance > 0) {
                     term = term.replace("\\\"", "\""); // unescape quotation marks

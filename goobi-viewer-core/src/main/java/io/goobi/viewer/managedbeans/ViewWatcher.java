@@ -24,8 +24,8 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.util.Optional;
 
-import javax.annotation.PreDestroy;
-import javax.inject.Named;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Named;
 
 import org.omnifaces.cdi.ViewScoped;
 

@@ -39,11 +39,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1216,7 +1216,7 @@ public class CmsBean implements Serializable {
      * getFacesContext.
      * </p>
      *
-     * @return a {@link javax.faces.context.FacesContext} object.
+     * @return a {@link jakarta.faces.context.FacesContext} object.
      */
     protected FacesContext getFacesContext() {
         return FacesContext.getCurrentInstance();

@@ -19,24 +19,23 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.bindings;
+package io.goobi.viewer.controller;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import jakarta.ws.rs.NameBinding;
+class ReflectionTest {
 
-/**
- * <p>
- *
- * Binding interface to collect all services for the IIIF presentation API. Used to add a filter to all IIIF Presentation resource answers which adds
- * the @context property to the topmost element.
- * </p>
- *
- * @author Florian Alpers
- * 
- */
-@NameBinding
-@Retention(RetentionPolicy.RUNTIME)
-public @interface IIIFPresentationBinding {
+    @Test
+    void test() {
+        Assertions.assertEquals("graograman", Reflection.getMethodReturnValue(new Foo(), "bar").orElse(null));
+    }
+
+    private class Foo {
+        @SuppressWarnings("unused")
+        public String bar() {
+            return "graograman";
+        }
+    }
+
 }

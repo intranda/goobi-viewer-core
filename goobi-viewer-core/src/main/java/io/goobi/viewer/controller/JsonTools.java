@@ -29,7 +29,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -96,7 +96,7 @@ public final class JsonTools {
      *
      * @param result a {@link org.apache.solr.common.SolrDocumentList} object.
      * @param expanded
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param languageToTranslate
      * @return a {@link org.json.JSONArray} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -256,7 +256,7 @@ public final class JsonTools {
      * JSON array of records grouped by their import date.
      *
      * @param result a {@link org.apache.solr.common.SolrDocumentList} object.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @return a {@link org.json.JSONArray} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.

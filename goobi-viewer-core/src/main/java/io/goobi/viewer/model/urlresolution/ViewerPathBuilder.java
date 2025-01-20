@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -87,7 +87,7 @@ public final class ViewerPathBuilder {
      * createPath.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param baseUrl a {@link java.lang.String} object.
      * @return a {@link java.util.Optional} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.

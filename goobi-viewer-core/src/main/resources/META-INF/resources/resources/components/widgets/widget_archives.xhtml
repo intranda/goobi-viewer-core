@@ -24,21 +24,21 @@
             <div id="widgetArchives" class="widget widget-archives">
                 <h2 class="widget-archives__heading">
 	                <span>#{msg.archives}</span>
-		                <a class="widget-archives__prev #{neighbours.left.present ? '':'-disabled'}" 
+		                <a class="widget-archives__prev #{neighbours.left != null ? '':'-disabled'}" 
                            disabled="disabled"
                            title="#{msg.previousHit}"
                            data-toggle="tooltip"
                            data-placement="top"
                            aria-label="#{msg.previousHit}"
-		                   href="#{neighbours.left.present ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.left.get()).concat('/')) : '#'}">
+		                   href="#{neighbours.left != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.left).concat('/')) : '#'}">
                             <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
                         </a>
-	                	<a class="widget-archives__next #{neighbours.right.present ? '':'-disabled'}"
+	                	<a class="widget-archives__next #{neighbours.right != null ? '':'-disabled'}"
                            title="#{msg.nextHit}"
                            data-toggle="tooltip"
                            data-placement="top"
                            aria-label="#{msg.nextHit}"                           
-	                	   href="#{neighbours.right.present ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.right.get()).concat('/')) : '#'}">
+	                	   href="#{neighbours.right != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.right).concat('/')) : '#'}">
                             <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
                         </a>
                 </h2>

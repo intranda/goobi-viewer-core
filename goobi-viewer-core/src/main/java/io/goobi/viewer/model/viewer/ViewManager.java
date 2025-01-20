@@ -53,15 +53,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import javax.faces.context.FacesContext;
-import javax.faces.event.ValueChangeEvent;
-import javax.faces.model.SelectItem;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -145,6 +141,10 @@ import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.SelectPageItem;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.event.ValueChangeEvent;
+import jakarta.faces.model.SelectItem;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Holds information about the currently open record (structure, pages, etc.). Used to reduced the size of ActiveDocumentBean.
@@ -376,6 +376,8 @@ public class ViewManager implements Serializable {
                 for (PhysicalElement page : this.getAllPages()) {
                     infos.put(page.getOrder(), getImageInfo(page, pageType));
                 }
+                break;
+            default:
                 break;
         }
 
@@ -1900,7 +1902,7 @@ public class ViewManager implements Serializable {
      * dropdownAction.
      * </p>
      *
-     * @param event {@link javax.faces.event.ValueChangeEvent}
+     * @param event {@link jakarta.faces.event.ValueChangeEvent}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws java.lang.NumberFormatException if any.
@@ -3750,7 +3752,8 @@ public class ViewManager implements Serializable {
     public void generatePageRangePdf() {
         logger.debug("Generating pdf of {} from pages {} to {}", this.pi, this.firstPdfPage, this.lastPdfPage);
         String filename = String.format("%s_%s_%s.pdf", this.pi, this.firstPdfPage, this.lastPdfPage);
-        try (PipedInputStream in = new PipedInputStream(); OutputStream out = new PipedOutputStream(in)) {
+        try (PipedInputStream in = new PipedInputStream(); OutputStream out = new PipedOutputStream(in);
+                ExecutorService executor = Executors.newFixedThreadPool(1)) {
             String firstPageName =
                     Optional.ofNullable(this.firstPdfPage).flatMap(this::getPage).map(PhysicalElement::getFileName).orElse(null);
             String lastPageName =
@@ -3762,7 +3765,7 @@ public class ViewManager implements Serializable {
                     "altoSource", DataFileTools.getAltoFolder(this.pi).toAbsolutePath().toString(),
                     "first", firstPageName,
                     "last", lastPageName));
-            Executors.newFixedThreadPool(1).submit(() -> {
+            executor.submit(() -> {
                 try {
                     new GetPdfAction().writePdf(request, ContentServerConfiguration.getInstance(), out);
                 } catch (URISyntaxException | ContentLibException | IOException e) {

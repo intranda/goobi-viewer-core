@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.api.rest.filters;
 
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.Provider;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerResponseFilter;

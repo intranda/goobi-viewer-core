@@ -29,13 +29,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -67,7 +67,7 @@ import io.swagger.v3.oas.annotations.Parameter;
  * @author florian
  *
  */
-@javax.ws.rs.Path(AUTHORITY)
+@jakarta.ws.rs.Path(AUTHORITY)
 @ViewerRestServiceBinding
 public class AuthorityResource {
 
@@ -83,7 +83,7 @@ public class AuthorityResource {
     }
 
     @GET
-    @javax.ws.rs.Path(AUTHORITY_RESOLVER)
+    @jakarta.ws.rs.Path(AUTHORITY_RESOLVER)
     @Produces({ MediaType.APPLICATION_JSON })
     @CORSBinding
     @Operation(tags = { "authority" }, summary = "Get a normdata authority resource identified by its escaped url")

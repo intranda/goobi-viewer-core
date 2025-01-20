@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 /**
  * This file capsules file uploading via jsf h:inputFile

@@ -37,9 +37,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;

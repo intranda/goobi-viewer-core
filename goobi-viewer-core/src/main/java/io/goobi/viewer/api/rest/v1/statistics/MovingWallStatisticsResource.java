@@ -21,11 +21,11 @@
  */
 package io.goobi.viewer.api.rest.v1.statistics;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,7 +38,7 @@ import io.goobi.viewer.model.statistics.MovingWallAnnualStatistics;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
-@javax.ws.rs.Path(ApiUrls.STATISTICS_MOVING_WALL)
+@jakarta.ws.rs.Path(ApiUrls.STATISTICS_MOVING_WALL)
 public class MovingWallStatisticsResource {
 
     private static final Logger logger = LogManager.getLogger(MovingWallStatisticsResource.class);
@@ -46,7 +46,7 @@ public class MovingWallStatisticsResource {
     private static final String VALUE_SEPARATOR = ";";
 
     @GET
-    @javax.ws.rs.Path(ApiUrls.STATISTICS_MOVING_WALL_YEAR)
+    @jakarta.ws.rs.Path(ApiUrls.STATISTICS_MOVING_WALL_YEAR)
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, "text/csv" })
     @AuthorizationBinding
     @Operation(summary = "Requires an authentication token. Get moving wall unlocked record identfiers for the given year", tags = { "statistics" })

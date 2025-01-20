@@ -24,8 +24,8 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.util.Optional;
 
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Named;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Named;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;

@@ -21,27 +21,15 @@
  */
 package io.goobi.viewer.api.rest.v2.annotations;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_ANNOTATION;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ANNOTATIONS_COMMENT;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.ANNOTATIONS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.ANNOTATIONS_ANNOTATION;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.ANNOTATIONS_COMMENT;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_MANIFEST;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_PAGES_CANVAS;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_RECORD;
 
 import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -50,7 +38,6 @@ import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.IncomingAnnotation;
 import de.intranda.api.annotation.wa.SpecificResource;
-import de.intranda.api.annotation.wa.WebAnnotation;
 import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.v2.Canvas2;
@@ -76,12 +63,23 @@ import io.goobi.viewer.model.security.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * @author florian
  *
  */
-@javax.ws.rs.Path(ANNOTATIONS)
+@jakarta.ws.rs.Path(ANNOTATIONS)
 @ViewerRestServiceBinding
 public class AnnotationResource {
 
@@ -119,7 +117,7 @@ public class AnnotationResource {
      * @throws ContentLibException
      */
     @GET
-    @javax.ws.rs.Path("/{page}")
+    @jakarta.ws.rs.Path("/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get a page within the annotation collection over all annotations")
     @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
@@ -137,7 +135,7 @@ public class AnnotationResource {
      * @throws ContentLibException
      */
     @GET
-    @javax.ws.rs.Path(ANNOTATIONS_ANNOTATION)
+    @jakarta.ws.rs.Path(ANNOTATIONS_ANNOTATION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get an annotation by its identifier")
     @ApiResponse(responseCode = "404", description = "If the page number is out of bounds")
@@ -155,7 +153,7 @@ public class AnnotationResource {
      * @throws ContentLibException
      */
     @GET
-    @javax.ws.rs.Path(ANNOTATIONS_COMMENT)
+    @jakarta.ws.rs.Path(ANNOTATIONS_COMMENT)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get an annotation by its identifier")
     @ApiResponse(responseCode = "404", description = "If the page number is out of bounds")
@@ -239,31 +237,31 @@ public class AnnotationResource {
      */
     public CrowdsourcingAnnotation createPersistentAnnotation(IAnnotation anno) {
         CrowdsourcingAnnotation pAnno = null;
-            IResource target = anno.getTarget();
-            String template;
-            if (target instanceof Manifest2) {
-                template = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).build();
-            } else if (target instanceof Canvas2) {
-                template = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build();
-            } else if (target instanceof SpecificResource) {
-                //assume specific resources are on a canvas
-                template = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build();
-            } else {
-                //TODO: implement handling IIIF 3 resources
-                return null; //not implemented
-            }
+        IResource target = anno.getTarget();
+        String template;
+        if (target instanceof Manifest2) {
+            template = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).build();
+        } else if (target instanceof Canvas2) {
+            template = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build();
+        } else if (target instanceof SpecificResource) {
+            //assume specific resources are on a canvas
+            template = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).build();
+        } else {
+            //TODO: implement handling IIIF 3 resources
+            return null; //not implemented
+        }
 
-            String pi = urls.parseParameter(template, target.getId().toString(), "pi");
-            String pageNoString = urls.parseParameter(template, target.getId().toString(), "pageNo");
-            Integer pageNo = null;
-            if (StringUtils.isNotBlank(pageNoString) && pageNoString.matches("\\d+")) {
-                pageNo = Integer.parseInt(pageNoString);
-            }
-            pAnno = new CrowdsourcingAnnotation((AbstractAnnotation) anno, null, pi, pageNo);
-            User user = getUser();
-            if (user != null) {
-                pAnno.setCreator(user);
-            }
+        String pi = urls.parseParameter(template, target.getId().toString(), "pi");
+        String pageNoString = urls.parseParameter(template, target.getId().toString(), "pageNo");
+        Integer pageNo = null;
+        if (StringUtils.isNotBlank(pageNoString) && pageNoString.matches("\\d+")) {
+            pageNo = Integer.parseInt(pageNoString);
+        }
+        pAnno = new CrowdsourcingAnnotation((AbstractAnnotation) anno, null, pi, pageNo);
+        User user = getUser();
+        if (user != null) {
+            pAnno.setCreator(user);
+        }
         return pAnno;
     }
 
