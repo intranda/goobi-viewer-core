@@ -28,22 +28,12 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
-import javax.el.ELException;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.component.UIComponent;
-import javax.faces.component.UINamingContainer;
-import javax.faces.component.html.HtmlPanelGrid;
-import javax.faces.component.html.HtmlPanelGroup;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.omnifaces.cdi.Eager;
 
+import io.goobi.viewer.controller.Reflection;
 import io.goobi.viewer.controller.json.JsonStringConverter;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -56,6 +46,16 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.record.views.RecordPropertyCache;
 import io.goobi.viewer.model.viewer.record.views.VisibilityCondition;
 import io.goobi.viewer.model.viewer.record.views.VisibilityConditionInfo;
+import jakarta.el.ELException;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.component.UINamingContainer;
+import jakarta.faces.component.html.HtmlPanelGrid;
+import jakarta.faces.component.html.HtmlPanelGroup;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * DisplayConditions tests whether GUI elements in record views should be visible by a number of factors. These factors encompass the the current
@@ -405,8 +405,8 @@ public class DisplayConditions implements Serializable {
          * @return
          */
         private static boolean isHasValuesIfRepeat(UIComponent c) {
-            if (c instanceof com.sun.faces.facelets.component.UIRepeat repeat) {
-                Object value = repeat.getValue();
+            if ("UIRepeat".equals(c.getClass().getSimpleName())) { //NOSONAR Doing this to avoid using com.sun.* classes
+                Object value = Reflection.getMethodReturnValue(c, "getValue").orElse(null);
                 if (value instanceof Collection) {
                     return !((Collection<?>) value).isEmpty();
                 }

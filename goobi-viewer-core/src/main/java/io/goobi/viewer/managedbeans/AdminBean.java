@@ -34,12 +34,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.http.Part;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,7 +45,8 @@ import org.jdom2.Namespace;
 import org.omnifaces.cdi.Push;
 import org.omnifaces.cdi.PushContext;
 
-import de.unigoettingen.sub.commons.util.CacheUtils;
+import de.unigoettingen.sub.commons.cache.CacheUtils;
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -77,6 +72,11 @@ import io.goobi.viewer.model.translations.admin.TranslationGroup;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.Part;
 
 /**
  * Administration backend functions.
@@ -126,6 +126,8 @@ public class AdminBean implements Serializable {
     private Role memberRole;
 
     private transient Part uploadedAvatarFile;
+
+    private CacheUtils cacheUtils = new CacheUtils(ContentServerCacheManager.getInstance());
 
     /**
      * <p>
@@ -1107,7 +1109,7 @@ public class AdminBean implements Serializable {
      * @return a int.
      */
     public int deleteFromCache(List<String> identifiers, boolean fromContentCache, boolean fromThumbnailCache) {
-        return CacheUtils.deleteFromCache(identifiers, fromContentCache, fromThumbnailCache);
+        return cacheUtils.deleteFromCache(identifiers, fromContentCache, fromThumbnailCache);
     }
 
     /**
@@ -1130,7 +1132,7 @@ public class AdminBean implements Serializable {
                 DownloadJobTools.removeJobsForRecord(identifier);
             }
         }
-        return CacheUtils.deleteFromCache(identifiers, fromContentCache, fromThumbnailCache, fromPdfCache);
+        return cacheUtils.deleteFromCache(identifiers, fromContentCache, fromThumbnailCache, fromPdfCache);
     }
 
     /**

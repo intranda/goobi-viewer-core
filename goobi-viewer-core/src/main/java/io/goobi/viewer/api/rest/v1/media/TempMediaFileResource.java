@@ -37,20 +37,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -75,7 +75,7 @@ import io.goobi.viewer.messages.Messages;
  * @author florian
  *
  */
-@javax.ws.rs.Path(TEMP_MEDIA_FILES)
+@jakarta.ws.rs.Path(TEMP_MEDIA_FILES)
 @ViewerRestServiceBinding
 @AdminLoggedInBinding
 public class TempMediaFileResource {
@@ -99,7 +99,7 @@ public class TempMediaFileResource {
      * @return a json response with a result message
      */
     @POST
-    @javax.ws.rs.Path(TEMP_MEDIA_FILES_FOLDER)
+    @jakarta.ws.rs.Path(TEMP_MEDIA_FILES_FOLDER)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response uploadMediaFiles(@PathParam("folder") String foldername, @DefaultValue("true") @FormDataParam("enabled") boolean enabled,
@@ -156,7 +156,7 @@ public class TempMediaFileResource {
      * @return a filename list of all uploaded files in the media folder
      */
     @GET
-    @javax.ws.rs.Path(TEMP_MEDIA_FILES_FOLDER)
+    @jakarta.ws.rs.Path(TEMP_MEDIA_FILES_FOLDER)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUploadedFiles(@PathParam("folder") String folder) {
 
@@ -198,7 +198,7 @@ public class TempMediaFileResource {
      * @return a 200 response if deletion was successful, otherwise 500
      */
     @DELETE
-    @javax.ws.rs.Path(TEMP_MEDIA_FILES_FOLDER)
+    @jakarta.ws.rs.Path(TEMP_MEDIA_FILES_FOLDER)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteUploadedFiles(@PathParam("folder") String folder) {
 

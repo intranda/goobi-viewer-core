@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
 
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;

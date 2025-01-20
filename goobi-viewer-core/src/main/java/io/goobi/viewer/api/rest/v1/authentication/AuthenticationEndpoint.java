@@ -38,18 +38,18 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -115,7 +115,7 @@ public class AuthenticationEndpoint {
      *
      * @param email a {@link java.lang.String} object.
      * @param password a {@link java.lang.String} object.
-     * @return a {@link javax.ws.rs.core.Response} object.
+     * @return a {@link jakarta.ws.rs.core.Response} object.
      */
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -319,7 +319,7 @@ public class AuthenticationEndpoint {
      */
     private Response openIdLogin(String state, String error, String authCode, String accessToken) throws IOException {
         if (error != null) {
-            logger.trace("Error: {}", error);
+            //( logger.trace("Error: {}", error); //NOSONAR User-controlled data, only comment in for debugging
             return Response.status(Response.Status.FORBIDDEN.getStatusCode(), error).build();
         }
 

@@ -25,15 +25,15 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Optional;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -47,16 +47,16 @@ import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 /**
  * Filter for redirecting prettified calls to cmsPages.
  * <p>
- * Forwarding is handled by {@link javax.servlet.RequestDispatcher#forward(ServletRequest, ServletResponse)}, so the url displayed to the user doesn't
- * change, but the internal handling of the request is according to the forwarded url
+ * Forwarding is handled by {@link jakarta.servlet.RequestDispatcher#forward(ServletRequest, ServletResponse)}, so the url displayed to the user
+ * doesn't change, but the internal handling of the request is according to the forwarded url
  * </p>
  * <p>
  * 'prettified' in this context refers to calling CMSPages by either their 'alternative url' or the url of the static page they replace.
  * </p>
  * <p>
- * This filter needs to be placed in the filter chain before the {@link org.ocpsoft.rewrite.servlet.RewriteFilter} because the RewriteFilter
- * (former PrettyFilter) needs to handle the actual CMSPage mapping (the PrettyFilter won't handle the request if it has been called already for
- * this request, despite the forward)
+ * This filter needs to be placed in the filter chain before the {@link org.ocpsoft.rewrite.servlet.RewriteFilter} because the RewriteFilter (former
+ * PrettyFilter) needs to handle the actual CMSPage mapping (the PrettyFilter won't handle the request if it has been called already for this request,
+ * despite the forward)
  * </p>
  * <p>
  * This filter also stores the called url to the session map using

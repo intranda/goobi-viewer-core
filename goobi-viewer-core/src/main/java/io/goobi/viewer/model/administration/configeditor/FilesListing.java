@@ -29,8 +29,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
+import jakarta.faces.model.DataModel;
+import jakarta.faces.model.ListDataModel;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;

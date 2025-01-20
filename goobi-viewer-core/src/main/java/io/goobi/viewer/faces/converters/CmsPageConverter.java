@@ -21,10 +21,10 @@
  */
 package io.goobi.viewer.faces.converters;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.convert.Converter;
+import jakarta.faces.convert.FacesConverter;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -38,9 +38,6 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 @FacesConverter("cmsPageConverter")
 public class CmsPageConverter implements Converter<CMSPage> {
 
-    /* (non-Javadoc)
-     * @see javax.faces.convert.Converter#getAsObject(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.String)
-     */
     /** {@inheritDoc} */
     @Override
     public CMSPage getAsObject(FacesContext context, UIComponent component, String value) {
@@ -52,9 +49,6 @@ public class CmsPageConverter implements Converter<CMSPage> {
         }
     }
 
-    /* (non-Javadoc)
-     * @see javax.faces.convert.Converter#getAsString(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public String getAsString(FacesContext context, UIComponent component, CMSPage object) {

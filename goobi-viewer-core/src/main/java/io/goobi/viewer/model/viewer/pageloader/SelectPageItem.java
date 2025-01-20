@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.model.viewer.pageloader;
 
-import javax.faces.model.SelectItem;
+import jakarta.faces.model.SelectItem;
 
 public class SelectPageItem extends SelectItem {
 

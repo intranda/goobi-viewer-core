@@ -32,9 +32,9 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.commons.collections4.iterators.ArrayIterator;
 import org.apache.commons.lang3.ArrayUtils;
@@ -314,8 +314,7 @@ public abstract class AbstractApiUrlManager {
      * @return {@link ApiInfo}
      */
     public ApiInfo getInfo() {
-        try {
-            Client client = ClientBuilder.newClient();
+        try (Client client = ClientBuilder.newClient()) {
             client.property(ClientProperties.CONNECT_TIMEOUT, 5000);
             client.property(ClientProperties.READ_TIMEOUT, 5000);
             return client

@@ -24,10 +24,10 @@ package io.goobi.viewer.api.rest.filters;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.ext.Provider;
 
 import de.intranda.api.iiif.presentation.v2.AbstractPresentationModelElement2;
 import de.intranda.api.iiif.presentation.v3.AbstractPresentationModelElement3;
@@ -54,7 +54,7 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
     public static final String CONTENT_TYPE_IIIF3 = "application/ld+json;profile=\"http://iiif.io/api/presentation/3/context.json\"";
 
     /* (non-Javadoc)
-     * @see javax.ws.rs.container.ContainerResponseFilter#filter(javax.ws.rs.container.ContainerRequestContext, ContainerResponseContext)
+     * @see jakarta.ws.rs.container.ContainerResponseFilter#filter(jakarta.ws.rs.container.ContainerRequestContext, ContainerResponseContext)
      */
     /** {@inheritDoc} */
     @Override
@@ -90,7 +90,7 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
      * setResponseCharset.
      * </p>
      *
-     * @param response a {@link javax.ws.rs.container.ContainerResponseContext} object.
+     * @param response a {@link jakarta.ws.rs.container.ContainerResponseContext} object.
      * @param charset a {@link java.lang.String} object.
      */
     public void setResponseCharset(ContainerResponseContext response, String charset) {

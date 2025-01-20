@@ -33,14 +33,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,7 +70,7 @@ import io.swagger.v3.oas.annotations.Parameter;
  * @author florian
  *
  */
-@javax.ws.rs.Path(RECORDS_RECORD)
+@jakarta.ws.rs.Path(RECORDS_RECORD)
 @ViewerRestServiceBinding
 @CORSBinding
 public class RecordResource {
@@ -92,7 +92,7 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_MANIFEST)
+    @jakarta.ws.rs.Path(RECORDS_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 3.0 manifest for record")
     @IIIFPresentationBinding
@@ -112,7 +112,7 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_ANNOTATIONS)
+    @jakarta.ws.rs.Path(RECORDS_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record as annotation collection")
     public IAnnotationCollection getAnnotationsForRecord() throws DAOException, IllegalRequestException {
@@ -124,7 +124,7 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_COMMENTS)
+    @jakarta.ws.rs.Path(RECORDS_COMMENTS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List comments for a record as an annotation collection")
     public IAnnotationCollection getCommentsForRecord() throws DAOException {
@@ -135,7 +135,7 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_ANNOTATIONS_PAGE)
+    @jakarta.ws.rs.Path(RECORDS_ANNOTATIONS_PAGE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record as an annotation collection page")
     public AnnotationPage getAnnotationsPageForRecord() throws DAOException, IllegalRequestException {
@@ -152,7 +152,7 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_COMMENTS_PAGE)
+    @jakarta.ws.rs.Path(RECORDS_COMMENTS_PAGE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List comments for a record as an annotation collection page")
     public IAnnotationCollection getCommentsForRecordPage()

@@ -30,11 +30,11 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -199,8 +199,8 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
      * {@link #login(String, String)} is resolved.
      *
      * @param jwt {@link DecodedJWT}
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
      * @return a {@link java.util.concurrent.Future} object.
      */
     public Future<Boolean> completeLogin(DecodedJWT jwt, HttpServletRequest request, HttpServletResponse response) {

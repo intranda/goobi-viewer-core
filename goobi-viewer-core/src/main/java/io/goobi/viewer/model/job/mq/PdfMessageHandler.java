@@ -39,6 +39,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.goobi.presentation.contentServlet.controller.GetMetsPdfAction;
 
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.MetsPdfRequest;
@@ -139,7 +140,7 @@ public class PdfMessageHandler implements MessageHandler<MessageStatus> {
         createLock(pdfFile);
         try (FileOutputStream fos = new FileOutputStream(pdfFile.toFile())) {
             MetsPdfRequest request = createPdfRequest(work, divId, usePdfSource);
-            GetMetsPdfAction action = new GetMetsPdfAction();
+            GetMetsPdfAction action = new GetMetsPdfAction(ContentServerCacheManager.getInstance());
             action.writePdf(request, ContentServerConfiguration.getInstance(), fos, p -> {
             });
         } catch (IOException | ContentLibException | URISyntaxException e) {

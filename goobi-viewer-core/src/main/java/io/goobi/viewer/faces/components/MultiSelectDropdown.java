@@ -29,9 +29,9 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.faces.component.FacesComponent;
-import javax.faces.component.UINamingContainer;
-import javax.faces.context.FacesContext;
+import jakarta.faces.component.FacesComponent;
+import jakarta.faces.component.UINamingContainer;
+import jakarta.faces.context.FacesContext;
 
 /**
  * @author florian
@@ -50,7 +50,7 @@ public class MultiSelectDropdown extends UINamingContainer {
     }
 
     /* (non-Javadoc)
-     * @see javax.faces.component.UIComponentBase#encodeBegin(javax.faces.context.FacesContext)
+     * @see jakarta.faces.component.UIComponentBase#encodeBegin(jakarta.faces.context.FacesContext)
      */
     @Override
     public void encodeBegin(FacesContext context) throws IOException {

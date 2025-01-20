@@ -43,14 +43,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -865,7 +865,7 @@ public class NavigationHelper implements Serializable {
         if (request != null) {
             URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
             if (url != null) {
-                return getApplicationUrl() + url.toURL().substring(1);
+                return getApplicationUrl() + StringTools.stripJS(url.toURL().substring(1));
             }
         }
         return null;
@@ -892,7 +892,7 @@ public class NavigationHelper implements Serializable {
      * </p>
      *
      * @return the complete Request Path, eg http://hostname.de/viewer/pathxyz/pathxyz/
-     * @param externalContext a {@link javax.faces.context.ExternalContext} object.
+     * @param externalContext a {@link jakarta.faces.context.ExternalContext} object.
      */
     public String getRequestPath(ExternalContext externalContext) {
         ExternalContext exContext = externalContext;
@@ -908,7 +908,7 @@ public class NavigationHelper implements Serializable {
      * getRequestPath.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param prettyFacesURI a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
@@ -941,7 +941,7 @@ public class NavigationHelper implements Serializable {
      * getFullRequestUrl.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param prettyFacesURI a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
@@ -1322,7 +1322,7 @@ public class NavigationHelper implements Serializable {
     public String getPageUrl(PageType page) {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + page.getName();
     }
-    
+
     /**
      * <p>
      * getSearchUrl.
@@ -1958,8 +1958,8 @@ public class NavigationHelper implements Serializable {
 
     /**
      * If the current page url is a search page url without or with empty search parameters replace
-     * {@link ViewHistory#getCurrentView(javax.servlet.ServletRequest)} with a search url containing the default sort string. This is done so the view
-     * history contains the current random seed for random search list sorting and returning to the page yields the same ordering as the original
+     * {@link ViewHistory#getCurrentView(jakarta.servlet.ServletRequest)} with a search url containing the default sort string. This is done so the
+     * view history contains the current random seed for random search list sorting and returning to the page yields the same ordering as the original
      * call. Must be called in the pretty mappings for all search urls which deliver randomly sorted hitlists
      */
     public void addSearchUrlWithCurrentSortStringToHistory() {

@@ -23,15 +23,10 @@ package io.goobi.viewer.model.job.quartz;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-
-import javax.enterprise.inject.spi.BeanManager;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -39,7 +34,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.quartz.SchedulerException;
-
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.Configuration;
@@ -49,6 +43,8 @@ import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.QuartzBean;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
 
 class QuartzListenerTest extends AbstractDatabaseEnabledTest{
 
@@ -59,6 +55,7 @@ class QuartzListenerTest extends AbstractDatabaseEnabledTest{
     MessageQueueManager broker;
     Path schedulerDirectory;
     
+    @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
@@ -75,6 +72,7 @@ class QuartzListenerTest extends AbstractDatabaseEnabledTest{
         }
     }
     
+    @Override
     @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
@@ -85,7 +83,7 @@ class QuartzListenerTest extends AbstractDatabaseEnabledTest{
         }
     }
     
-    private void clearDatabase(IDAO dao) throws DAOException {
+    private static void clearDatabase(IDAO dao) throws DAOException {
         List<RecurringTaskTrigger> triggers = dao.getRecurringTaskTriggers();
         for (RecurringTaskTrigger trigger : triggers) {
             dao.deleteRecurringTaskTrigger(trigger.getId());
@@ -93,7 +91,7 @@ class QuartzListenerTest extends AbstractDatabaseEnabledTest{
     }
     
     @Test
-    void testStartJobs() throws DAOException, SchedulerException, IOException {
+    void testStartJobs() throws SchedulerException {
         ServletContext context = Mockito.mock(ServletContext.class);
         ServletContextEvent contextEvt = Mockito.mock(ServletContextEvent.class);
         Mockito.when(contextEvt.getServletContext()).thenReturn(context);

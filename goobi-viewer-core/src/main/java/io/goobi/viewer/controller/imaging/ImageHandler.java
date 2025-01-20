@@ -163,6 +163,7 @@ public class ImageHandler {
      * </p>
      *
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
+     * @param pageType
      * @return The image information for the image file of the given page
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException if any.
      * @throws java.net.URISyntaxException if any.
