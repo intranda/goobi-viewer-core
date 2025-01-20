@@ -33,16 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import jakarta.servlet.http.HttpSession;
-import javax.websocket.EndpointConfig;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
-import jakarta.ws.rs.core.UriBuilder;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -68,12 +58,22 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.ExternalFilesDownloadJob;
 import io.goobi.viewer.model.job.mq.DownloadExternalResourceHandler;
+import jakarta.servlet.http.HttpSession;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerEndpoint;
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * Endpoint that maps HTTP session IDs to connected web sockets.
  */
 @ServerEndpoint(value = "/tasks/download/monitor.socket", configurator = GetHttpSessionConfigurator.class)
-public class DownloadTaskEndpoint {
+public class DownloadTaskEndpoint extends Endpoint {
 
     private static final Logger logger = LogManager.getLogger(DownloadTaskEndpoint.class);
 
@@ -84,6 +84,7 @@ public class DownloadTaskEndpoint {
     private Session session;
 
     @OnOpen
+    @Override
     public void onOpen(Session session, EndpointConfig config) {
         this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
         this.session = session;
