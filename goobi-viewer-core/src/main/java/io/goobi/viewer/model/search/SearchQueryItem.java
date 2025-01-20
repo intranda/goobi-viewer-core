@@ -381,7 +381,11 @@ public class SearchQueryItem implements Serializable {
     public void setValue(final String value) {
         // logger.trace("setValue: {}", value); //NOSONAR Debug
         String val = StringTools.stripJS(value);
-        values.add(0, val);
+        if (values.isEmpty()) {
+            values.add(0, val);
+        } else {
+            values.set(0, val);
+        }
     }
 
     /**
