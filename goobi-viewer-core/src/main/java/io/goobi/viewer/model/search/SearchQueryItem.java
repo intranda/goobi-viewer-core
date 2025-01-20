@@ -305,7 +305,6 @@ public class SearchQueryItem implements Serializable {
      * @return the field
      */
     public String getField() {
-        logger.trace("getField: {}", field);
         return field;
     }
 
@@ -622,7 +621,7 @@ public class SearchQueryItem implements Serializable {
                     }
                     String useValue = value.trim();
                     this.proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(useValue);
-                    logger.trace("proximity distance: {}", proximitySearchDistance);
+                    // logger.trace("proximity distance: {}", proximitySearchDistance); //NOSONAR Debug
 
                     sbItem.append(useField).append(':');
                     if (useValue.charAt(0) != '"') {
