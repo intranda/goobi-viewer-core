@@ -882,7 +882,6 @@
 						<id>analyze</id>
 						<goals>
 							<goal>analyze-only</goal>
-							<goal>properties</goal>
 						</goals>
 						<configuration>
 							<failOnWarning>true</failOnWarning>
@@ -1018,8 +1017,7 @@
 					</excludes>
 					<systemPropertyVariables>
 						<java.util.logging.config.file>src/test/resources/log4j2.test.xml</java.util.logging.config.file>
-                    </systemPropertyVariables>
-                    <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
+					</systemPropertyVariables>
 				</configuration>
 			</plugin>
 			<plugin>
