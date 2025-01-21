@@ -29,14 +29,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import jakarta.faces.model.SelectItem;
 
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
@@ -79,6 +78,7 @@ import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.faces.model.SelectItem;
 
 class ConfigurationTest extends AbstractTest {
 
@@ -3599,11 +3599,12 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @throws MalformedURLException
+     * @throws URISyntaxException 
      * @see Configuration#isHostProxyWhitelisted(String)
      * @verifies return true if host whitelisted
      */
     @Test
-    void isHostProxyWhitelisted_shouldReturnTrueIfHostWhitelisted() throws MalformedURLException {
+    void isHostProxyWhitelisted_shouldReturnTrueIfHostWhitelisted() throws MalformedURLException, URISyntaxException {
         assertTrue(DataManager.getInstance().getConfiguration().isHostProxyWhitelisted("http://localhost:1234"));
     }
 

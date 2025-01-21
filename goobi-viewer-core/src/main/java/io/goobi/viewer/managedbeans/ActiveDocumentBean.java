@@ -263,7 +263,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public void reset() throws IndexUnreachableException {
         synchronized (this) {
-            logger.trace("reset (thread {})", Thread.currentThread().getId());
+            logger.trace("reset (thread {})", Thread.currentThread().threadId());
             String pi = viewManager != null ? viewManager.getPi() : null;
             viewManager = null;
             topDocumentIddoc = null;
@@ -376,7 +376,7 @@ public class ActiveDocumentBean implements Serializable {
                     lastReceivedIdentifier = null;
                 }
             }
-            logger.debug("update(): (IDDOC {} ; page {} ; thread {})", topDocumentIddoc, imageToShow, Thread.currentThread().getId());
+            logger.debug("update(): (IDDOC {} ; page {} ; thread {})", topDocumentIddoc, imageToShow, Thread.currentThread().threadId());
             prevHit = null;
             nextHit = null;
             boolean doublePageMode = isDoublePageUrl();

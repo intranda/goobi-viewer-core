@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.metadata;
 
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -685,7 +686,7 @@ public final class MetadataTools {
                 proxyUrl = DataManager.getInstance().getConfiguration().getProxyUrl();
                 proxyPort = DataManager.getInstance().getConfiguration().getProxyPort();
             }
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
 

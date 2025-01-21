@@ -22,6 +22,7 @@
 package io.goobi.viewer.dao.impl;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
@@ -52,11 +53,11 @@ import io.goobi.viewer.AbstractTest;
         // TODO Fails on Jenkins
         File masterFile = new File("src/main/resources/META-INF/persistence.xml");
         Assertions.assertTrue(masterFile.isFile());
-        URL masterUrl = new URL("file:///" + masterFile.getAbsolutePath());
+        URL masterUrl = new URI("file:///" + masterFile.getAbsolutePath()).toURL();
 
         File file = new File("src/test/resources/modules/persistence.xml");
         Assertions.assertTrue(file.isFile());
-        URL moduleUrl = new URL("file:///" + file.getAbsolutePath());
+        URL moduleUrl = new URI("file:///" + file.getAbsolutePath()).toURL();
 
         Document doc = JPAClassLoader.scanPersistenceXML(masterUrl, Collections.singletonList(moduleUrl));
         Assertions.assertNotNull(doc);

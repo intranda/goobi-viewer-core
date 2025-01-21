@@ -24,7 +24,8 @@ package io.goobi.viewer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.regex.Matcher;
@@ -80,12 +81,12 @@ public final class Version {
         } else {
             manifestPath = classPath.substring(0, classPath.lastIndexOf("classes") + 7) + "/META-INF/MANIFEST.MF";
         }
-        try (InputStream inputStream = new URL(manifestPath).openStream()) {
+        try (InputStream inputStream = new URI(manifestPath).toURL().openStream()) {
             StringWriter writer = new StringWriter();
             IOUtils.copy(inputStream, writer, StandardCharsets.UTF_8.name());
             String manifestString = writer.toString();
             value = manifestString;
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             return null;
         }
 
