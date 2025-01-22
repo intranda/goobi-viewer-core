@@ -568,6 +568,8 @@ public class ArchiveTree implements Serializable {
 
     /**
      * Expands this entry and sets all sub-entries visible if their immediate parent is expanded.
+     * 
+     * @param entry
      */
     public void expandEntry(ArchiveEntry entry) {
         // logger.trace("expand: {}", label); //NOSONAR Debug
@@ -622,6 +624,8 @@ public class ArchiveTree implements Serializable {
 
     /**
      * Expands and sets visible all ancestors of this node and expands siblings of this node.
+     * 
+     * @param entry
      */
     public void expandUpEntry(ArchiveEntry entry) {
         if (entry.getParentNode() == null) {
