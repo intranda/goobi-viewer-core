@@ -42,6 +42,8 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -747,5 +749,27 @@ public final class FileTools {
     public static boolean isWithin(Path path, Path parent) {
         Path normalized = path.toAbsolutePath().normalize();
         return normalized.startsWith(parent.toAbsolutePath().normalize());
+    }
+
+    public static boolean isYoungerThan(Path path, Path reference) {
+        FileTime pathDate;
+        try {
+            pathDate = getDateModified(path);
+            FileTime referenceDate = getDateModified(reference);
+            return pathDate.toInstant().isAfter(referenceDate.toInstant());
+        } catch (IOException e) {
+            logger.error("Cannot compare ages of {} and {}: {}", path, reference, e.toString());
+            return false;
+        }
+    }
+
+    public static FileTime getDateCreated(Path path) throws IOException {
+        BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
+        return attr.creationTime();
+    }
+
+    public static FileTime getDateModified(Path path) throws IOException {
+        BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
+        return attr.lastModifiedTime() != null ? attr.lastModifiedTime() : attr.lastAccessTime();
     }
 }

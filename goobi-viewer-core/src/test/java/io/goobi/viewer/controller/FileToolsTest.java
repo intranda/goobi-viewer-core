@@ -24,9 +24,12 @@ package io.goobi.viewer.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ehcache.shadow.org.terracotta.utilities.io.Files;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -165,5 +168,19 @@ class FileToolsTest extends AbstractTest {
     @Test
     void getFilenameFromPathString_shouldReturnFileNameCorrectly() throws Exception {
         Assertions.assertEquals("00000001.xml", FileTools.getFilenameFromPathString("data/1/alto/PPN123/00000001.xml"));
+    }
+
+    @Test
+    void testIsYounger(@TempDir Path tempDir) throws IOException, InterruptedException {
+        Path file1 = tempDir.resolve("file1.txt");
+        Path file2 = tempDir.resolve("file2.txt");
+
+        Files.createFile(file1);
+        Thread.sleep(100);
+        Files.createFile(file2);
+
+        Assertions.assertTrue(FileTools.isYoungerThan(file2, file1));
+        Assertions.assertFalse(FileTools.isYoungerThan(file1, file2));
+        Assertions.assertFalse(FileTools.isYoungerThan(file1, file1));
     }
 }
