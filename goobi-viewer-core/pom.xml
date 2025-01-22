@@ -893,9 +893,6 @@
 								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-annotations</ignoredUsedUndeclaredDependency>
 								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-models</ignoredUsedUndeclaredDependency>
 
-								<!-- Used by iiif-api-model -->
-								<ignoredUsedUndeclaredDependency>jakarta.xml.bind:jakarta.xml.bind-api</ignoredUsedUndeclaredDependency>
-
 								<ignoredUsedUndeclaredDependency>org.glassfish.hk2.external:jakarta.inject</ignoredUsedUndeclaredDependency>
 							</ignoredUsedUndeclaredDependencies>
 
