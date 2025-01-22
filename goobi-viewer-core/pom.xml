@@ -894,6 +894,8 @@
 								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-annotations</ignoredUsedUndeclaredDependency>
 								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-models</ignoredUsedUndeclaredDependency>
 
+                                <ignoredUsedUndeclaredDependency>org.ehcache:ehcache:jar:jakarta</ignoredUsedUndeclaredDependency>
+
 								<ignoredUsedUndeclaredDependency>org.glassfish.hk2.external:jakarta.inject</ignoredUsedUndeclaredDependency>
 							</ignoredUsedUndeclaredDependencies>
 
