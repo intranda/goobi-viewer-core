@@ -27,14 +27,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import jakarta.servlet.http.HttpServletRequest;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.model.ner.ElementReference;
 import io.goobi.viewer.api.rest.model.ner.MultiPageReference;
@@ -53,6 +50,7 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author florian
@@ -142,8 +140,6 @@ public class NERBuilder {
                             // TODO add URI to reference
                             range.addTags(tags);
                         }
-                    } catch (ContentNotFoundException e) {
-                        logger.trace("No ALTO file: {}", altoFileName);
                     } catch (DAOException e) {
                         logger.error(e.toString());
                     }
