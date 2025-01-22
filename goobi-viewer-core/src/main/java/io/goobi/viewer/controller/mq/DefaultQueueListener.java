@@ -218,7 +218,9 @@ public class DefaultQueueListener {
         this.shouldStop = true;
         log.info("Stopping MessageQueue listener...");
         try {
-            this.thread.join(1000);
+            if (this.thread != null) {
+                this.thread.join(1000);
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
