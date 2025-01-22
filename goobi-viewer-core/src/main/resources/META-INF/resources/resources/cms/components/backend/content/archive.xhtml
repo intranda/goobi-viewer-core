@@ -18,72 +18,74 @@
 		<div class="admin__content-component-input-group">
 
 			<!-- LABEL -->
-			<ui:fragment rendered="#{not empty cc.attrs.contentItem.content.mapId}">
+			<ui:fragment rendered="#{not empty cc.attrs.contentItem.content.archiveId}">
 				<div class="admin__content-component-input-label">#{msg[cc.attrs.contentItem.label]}#{cc.attrs.contentItem.mandatory?'*':''}:</div>
 			</ui:fragment>
-			
-			<h:panelGroup layout="block" id="contentArchive" styleClass="admin__content-component-input-field">
-			
-			    <h:panelGroup id="contentArchiveGroup" styleClass="admin__content-component-input-group" layout="block">
 			           
-			            <!-- AREA FOR AJAX REFRESH -->
-			            <h:panelGroup layout="block" id="ArchiveGroup" styleClass="admin__content-component-input-field">
-			                <!-- VALIDATION MESSAGE -->
-			                <div class="cms-module__option-message">
-			                    <h:messages for="archiveSelect" 
-			                        infoClass="cms-module__option-message-status success" 
-			                        warnClass="cms-module__option-message-status warning"
-			                        errorClass="cms-module__option-message-status danger" />
-			
-			                    <div class="cms-module__option-message-mark">
-			                        <i class="fa fa-check" aria-hidden="true"></i>
-			                        <i class="fa fa-exclamation" aria-hidden="true"></i>
-			                    </div>
-			                </div>
-			                
-			                <!-- SELECT MENU -->
-			                <div class="custom-control custom-control--select">
-			                    <h:selectOneMenu 
-			                        id="ArchiveSelect" 
-			                        styleClass="form-control" 
-			                        value="#{cc.attrs.contentItem.content.archiveResource}">
-			                        <f:selectItem itemValue="#{null}" itemLabel="#{msg.select}" itemDisabled="true" noSelectionOption="true"></f:selectItem>
-			                        <f:selectItems 
-			                            value="#{archiveBean.filteredDatabases}"
-			                            var="archiveResource"
-			                            itemValue="#{archiveResource.resourceId}"
-			                            itemLabel="#{archiveResource.resourceName}" />
-			                        <f:ajax event="change" render="archiveGroup" />
-			                    </h:selectOneMenu>
-			                </div>
-			            </h:panelGroup>
-			    </h:panelGroup>
-			    
-				<!-- AREA FOR AJAX REFRESH -->
-				<h:panelGroup id="openInPopupGroup" layout="block"
-					styleClass="cms-module__option-checkbox">
-					<!-- VALIDATION MESSAGE -->
-					<div class="cms-module__option-message">
-						<h:messages for="openInPopup"
-							infoClass="cms-module__option-message-status success"
-							warnClass="cms-module__option-message-status warning"
-							errorClass="cms-module__option-message-status danger" />
+            <!-- AREA FOR AJAX REFRESH -->
+            <h:panelGroup layout="block" id="ArchiveGroup" styleClass="admin__content-component-input-field">
+                <!-- VALIDATION MESSAGE -->
+                <div class="cms-module__option-message">
+                    <h:messages for="archiveSelect" 
+                        infoClass="cms-module__option-message-status success" 
+                        warnClass="cms-module__option-message-status warning"
+                        errorClass="cms-module__option-message-status danger" />
 
-						<div class="cms-module__option-message-mark">
-							<i class="fa fa-check" aria-hidden="true"></i> <i
-								class="fa fa-exclamation" aria-hidden="true"></i>
-						</div>
+                    <div class="cms-module__option-message-mark">
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                    </div>
+                </div>
+                
+                <!-- SELECT MENU -->
+                <div class="custom-control custom-control--select">
+                    <h:selectOneMenu 
+                        id="ArchiveSelect" 
+                        styleClass="form-control" 
+                        value="#{cc.attrs.contentItem.content.archiveId}">
+                        <f:selectItem itemValue="#{null}" itemLabel="#{msg.select}" itemDisabled="true" noSelectionOption="true"></f:selectItem>
+                        <f:selectItems 
+                            value="#{archiveBean.filteredDatabases}"
+                            var="archiveResource"
+                            itemValue="#{archiveResource.resourceId}"
+                            itemLabel="#{archiveResource.resourceName}" />
+                        <f:ajax event="change" render="archiveGroup" /> 
+                    </h:selectOneMenu>
+                </div>
+            </h:panelGroup>
+		</div>
+		
+		<div class="admin__content-component-input-group">
+
+			<!-- LABEL -->
+			<ui:fragment rendered="#{not empty cc.attrs.contentItem.content.archiveId}">
+				<div class="admin__content-component-input-label">#{msg.label__open_in_popup}:</div>
+			</ui:fragment>
+			    
+			<!-- AREA FOR AJAX REFRESH -->
+			<h:panelGroup id="openInPopupGroup" layout="block"
+				styleClass="cms-module__option-checkbox">
+				<!-- VALIDATION MESSAGE -->
+				<div class="cms-module__option-message">
+					<h:messages for="openInPopup"
+						infoClass="cms-module__option-message-status success"
+						warnClass="cms-module__option-message-status warning"
+						errorClass="cms-module__option-message-status danger" />
+
+					<div class="cms-module__option-message-mark">
+						<i class="fa fa-check" aria-hidden="true"></i> <i
+							class="fa fa-exclamation" aria-hidden="true"></i>
 					</div>
+				</div>
 
-					<!-- CHECKBOX -->
-					<h:selectBooleanCheckbox id="openInPopup"
-						value="#{cc.attrs.contentItem.content.openInPopup}">
-						<f:passThroughAttribute name="aria-label"
-							value="#{msg.cms_openInPopup}" />
-					</h:selectBooleanCheckbox>
-				</h:panelGroup>			    
+				<!-- CHECKBOX -->
+				<h:selectBooleanCheckbox id="openInPopup"
+					value="#{cc.attrs.contentItem.content.openInPopup}">
+					<f:passThroughAttribute name="aria-label"
+						value="#{msg.cms_openInPopup}" />
+				</h:selectBooleanCheckbox>
+			</h:panelGroup>			    
 			    
-			</h:panelGroup>
 		</div>
 
 	</composite:implementation>

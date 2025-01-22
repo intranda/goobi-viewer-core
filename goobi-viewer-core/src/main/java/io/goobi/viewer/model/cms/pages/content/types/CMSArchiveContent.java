@@ -12,7 +12,11 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
+@Entity
+@DiscriminatorValue("archive")
 public class CMSArchiveContent extends CMSContent {
 
     private static final String COMPONENT_NAME = "archive";
@@ -66,7 +70,7 @@ public class CMSArchiveContent extends CMSContent {
         return archiveId;
     }
 
-    public void setArchiveResource(String archiveId) {
+    public void setArchiveId(String archiveId) {
         this.archiveId = archiveId;
     }
 
