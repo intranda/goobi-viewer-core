@@ -1944,8 +1944,8 @@ public class NavigationHelper implements Serializable {
         return isRtl(getLocale());
     }
 
-    public boolean isRtl(String locale) {
-        return isRtl(new Locale(locale));
+    public boolean isRtl(String lang) {
+        return isRtl(Locale.forLanguageTag(lang));
     }
 
     public boolean isRtl(Locale locale) {

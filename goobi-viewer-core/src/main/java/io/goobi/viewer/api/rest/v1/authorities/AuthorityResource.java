@@ -92,7 +92,7 @@ public class AuthorityResource {
             @Parameter(description = "Metadata template to use") @QueryParam("template") String template,
             @Parameter(description = "Language to use for metadata fields") @QueryParam("lang") String lang)
             throws ContentNotFoundException, PresentationException {
-        
+
         if (servletResponse != null) {
             servletResponse.setCharacterEncoding(StringTools.DEFAULT_ENCODING);
         }
@@ -107,7 +107,7 @@ public class AuthorityResource {
                     locale = Locale.ENGLISH;
                     break;
                 default:
-                    locale = new Locale(lang);
+                    locale = Locale.forLanguageTag(lang);
                     break;
             }
         }
