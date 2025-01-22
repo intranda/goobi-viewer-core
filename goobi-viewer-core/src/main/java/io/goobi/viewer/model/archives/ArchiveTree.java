@@ -33,9 +33,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 
 /**
- * Table of contents and associated functionality for a record.
+ * Table of contents and associated functionality for a record. Instances can be either the default archive or a session-local copy.
  */
 public class ArchiveTree implements Serializable {
 
@@ -55,7 +57,10 @@ public class ArchiveTree implements Serializable {
     private List<ArchiveEntry> flatEntryList;
 
     /** TOC element map. */
-    private Map<String, List<ArchiveEntry>> entryMap = new HashMap<>(1);
+    private Map<String, List<ArchiveEntry>> entryMap = HashMap.newHashMap(1);
+
+    private Map<String, Boolean> entryExpansionMap = new HashMap<>();
+    private Map<String, Boolean> entryVisiblilityMap = new HashMap<>();
 
     /** Actively selected entry */
     private ArchiveEntry selectedEntry;
@@ -198,9 +203,9 @@ public class ArchiveTree implements Serializable {
      * @return List<ArchiveEntry>
      */
     public List<ArchiveEntry> getVisibleTree(boolean searchActive) {
-        logger.trace("getVisibleTree:  {}", trueRootElement.getLabel());
+        logger.trace("getVisibleTree: {}", trueRootElement.getLabel());
         return getTreeView().stream()
-                .filter(e -> e.isVisible() && (e.isDisplaySearch() || !searchActive) && e.isAccessAllowed())
+                .filter(e -> isEntryVisible(e) && (e.isDisplaySearch() || !searchActive) && e.isAccessAllowed())
                 .toList();
     }
 
@@ -226,14 +231,14 @@ public class ArchiveTree implements Serializable {
                 // Current element index
                 if (lastLevel < entry.getHierarchyLevel() && index > 0) {
                     if (entry.getHierarchyLevel() > collapseLevel) {
-                        entry.getParentNode().setExpanded(false);
-                        entry.setVisible(false);
+                        entryExpansionMap.put(entry.getParentNode().getId(), false);
+                        entryVisiblilityMap.put(entry.getId(), false);
                         // logger.trace("Set node invisible: {} (level {})", entry.getLabel(), entry.getHierarchyLevel()); //NOSONAR Debug
                     } else {
-                        entry.getParentNode().setExpanded(true);
+                        entryExpansionMap.put(entry.getParentNode().getId(), true);
                     }
                 } else if (entry.getHierarchyLevel() > collapseLevel) {
-                    entry.setVisible(false);
+                    entryVisiblilityMap.put(entry.getId(), false);
                 }
                 lastLevel = entry.getHierarchyLevel();
                 index++;
@@ -256,11 +261,11 @@ public class ArchiveTree implements Serializable {
         }
 
         if (entry.getHierarchyLevel() <= maxDepth) {
-            entry.setVisible(true);
-            entry.setExpanded(entry.getHierarchyLevel() != maxDepth);
+            entryVisiblilityMap.put(entry.getId(), true);
+            entryExpansionMap.put(entry.getId(), entry.getHierarchyLevel() != maxDepth);
         } else {
-            entry.setVisible(false);
-            entry.setExpanded(false);
+            entryVisiblilityMap.put(entry.getId(), false);
+            entryExpansionMap.put(entry.getId(), false);
         }
 
         if (entry.getSubEntryList() != null && !entry.getSubEntryList().isEmpty()) {
@@ -286,10 +291,10 @@ public class ArchiveTree implements Serializable {
 
         ArchiveEntry currentEntry = Optional.ofNullable(selectedEntry).orElse(this.selectedEntry);
         if (currentEntry != null && isExpandEntryOnSelection()) {
-            if (currentEntry.isExpanded()) {
-                currentEntry.collapse();
+            if (isEntryExpanded(currentEntry)) {
+                collapseEntry(currentEntry);
             } else {
-                currentEntry.expand();
+                expandEntry(currentEntry);
             }
         }
         this.selectedEntry = selectedEntry;
@@ -358,9 +363,9 @@ public class ArchiveTree implements Serializable {
         }
 
         for (ArchiveEntry tcElem : entryMap.get(DEFAULT_GROUP)) {
-            tcElem.setVisible(true);
+            entryVisiblilityMap.put(tcElem.getId(), true);
             if (tcElem.isHasChild()) {
-                tcElem.setExpanded(true);
+                entryExpansionMap.put(tcElem.getId(), true);
             }
         }
     }
@@ -390,13 +395,13 @@ public class ArchiveTree implements Serializable {
 
         for (ArchiveEntry tcElem : entryMap.get(DEFAULT_GROUP)) {
             if (tcElem.getHierarchyLevel() == 0) {
-                tcElem.setExpanded(false);
-                tcElem.setVisible(true);
+                entryExpansionMap.put(tcElem.getId(), false);
+                entryVisiblilityMap.put(tcElem.getId(), true);
             } else {
                 if (collapseAllEntries) {
-                    tcElem.setExpanded(false);
+                    entryExpansionMap.put(tcElem.getId(), false);
                 }
-                tcElem.setVisible(false);
+                entryVisiblilityMap.put(tcElem.getId(), false);
             }
         }
     }
@@ -533,5 +538,98 @@ public class ArchiveTree implements Serializable {
 
     public boolean isTreeFullyLoaded() {
         return treeFullyLoaded;
+    }
+
+    /**
+     * 
+     * @param entry
+     * @return true if given entry is currently visible; false otherwise
+     */
+    public boolean isEntryVisible(ArchiveEntry entry) {
+        if (entry == null) {
+            return false;
+        }
+
+        return entryVisiblilityMap.get(entry.getId()) != null && entryVisiblilityMap.get(entry.getId());
+    }
+
+    /**
+     * 
+     * @param entry
+     * @return true if given entry is currently expanded; false otherwise
+     */
+    public boolean isEntryExpanded(ArchiveEntry entry) {
+        if (entry == null) {
+            return false;
+        }
+
+        return entryExpansionMap.get(entry.getId()) != null && entryExpansionMap.get(entry.getId());
+    }
+
+    /**
+     * Expands this entry and sets all sub-entries visible if their immediate parent is expanded.
+     */
+    public void expandEntry(ArchiveEntry entry) {
+        // logger.trace("expand: {}", label); //NOSONAR Debug
+        if (!entry.isHasChildren()) {
+            return;
+        }
+
+        if (!entry.isChildrenLoaded()) {
+            logger.trace("Loading children for entry: {}", entry.getLabel());
+            try {
+                ((SolrEADParser) DataManager.getInstance().getArchiveManager().getEadParser()).loadChildren(entry, null, false);
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        entryExpansionMap.put(entry.getId(), true);
+        setEntryChildrenVisibility(entry, true);
+    }
+
+    /**
+     * Collapses this entry and hides all sub-entries.
+     * 
+     * @param entry
+     */
+    public void collapseEntry(ArchiveEntry entry) {
+        // logger.trace("collapse: {}", id); //NOSONAR Debug
+        if (!entry.isHasChildren()) {
+            return;
+        }
+
+        entryExpansionMap.put(entry.getId(), false);
+        setEntryChildrenVisibility(entry, false);
+    }
+
+    /**
+     * @param entry
+     * @param visible
+     */
+    void setEntryChildrenVisibility(ArchiveEntry entry, boolean visible) {
+        if (!entry.isHasChildren()) {
+            return;
+        }
+
+        for (ArchiveEntry sub : entry.getSubEntryList()) {
+            entryVisiblilityMap.put(sub.getId(), visible);
+            if (isEntryExpanded(sub) && sub.isHasChildren()) {
+                setEntryChildrenVisibility(sub, visible);
+            }
+        }
+    }
+
+    /**
+     * Expands and sets visible all ancestors of this node and expands siblings of this node.
+     */
+    public void expandUpEntry(ArchiveEntry entry) {
+        if (entry.getParentNode() == null) {
+            return;
+        }
+
+        entryVisiblilityMap.put(entry.getParentNode().getId(), true);
+        expandEntry(entry.getParentNode());
+        expandUpEntry(entry.getParentNode());
     }
 }
