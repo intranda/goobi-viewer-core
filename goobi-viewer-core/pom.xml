@@ -70,7 +70,7 @@
 		<sonar.java.target>21</sonar.java.target>
 
 		<!-- Checkstyle -->
-		<checkstyle.max.violations>50</checkstyle.max.violations>
+		<checkstyle.max.violations>40</checkstyle.max.violations>
 		<skipCheckstyle>true</skipCheckstyle>
 
 		<!-- Manifest information -->
@@ -882,6 +882,7 @@
 						<id>analyze</id>
 						<goals>
 							<goal>analyze-only</goal>
+							<goal>properties</goal>
 						</goals>
 						<configuration>
 							<failOnWarning>true</failOnWarning>
@@ -892,9 +893,6 @@
 								<!-- FALSE POSITIVE, SWITCHES WITH -jakarta PACKAGE IF DECLARED OTHER WAY ROUND -->
 								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-annotations</ignoredUsedUndeclaredDependency>
 								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-models</ignoredUsedUndeclaredDependency>
-
-								<!-- Used by iiif-api-model -->
-								<ignoredUsedUndeclaredDependency>jakarta.xml.bind:jakarta.xml.bind-api</ignoredUsedUndeclaredDependency>
 
 								<ignoredUsedUndeclaredDependency>org.glassfish.hk2.external:jakarta.inject</ignoredUsedUndeclaredDependency>
 							</ignoredUsedUndeclaredDependencies>
@@ -929,9 +927,6 @@
 									 Target Invocation Exception: java.lang.NoClassDefFoundError: jakarta/enterprise/inject/spi/el/ELAwareBeanManager -->
 								<ignoredUnusedDeclaredDependency>jakarta.enterprise:jakarta.enterprise.cdi-api</ignoredUnusedDeclaredDependency>
 								<ignoredUnusedDeclaredDependency>jakarta.enterprise:jakarta.enterprise.cdi-el-api</ignoredUnusedDeclaredDependency>
-
-								<!-- bind-api is required for Jersey -->
-								<ignoredUnusedDeclaredDependency>jakarta.xml.bind:jakarta.xml.bind-api</ignoredUnusedDeclaredDependency>
 
 								<!-- org.citationstyles.* are runtime resources for citeproc -->
 								<ignoredUnusedDeclaredDependency>org.citationstyles:locales</ignoredUnusedDeclaredDependency>
@@ -1017,7 +1012,8 @@
 					</excludes>
 					<systemPropertyVariables>
 						<java.util.logging.config.file>src/test/resources/log4j2.test.xml</java.util.logging.config.file>
-					</systemPropertyVariables>
+                    </systemPropertyVariables>
+                    <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
