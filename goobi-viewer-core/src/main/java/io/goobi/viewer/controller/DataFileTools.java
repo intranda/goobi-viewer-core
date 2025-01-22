@@ -436,7 +436,7 @@ public final class DataFileTools {
                     return fulltext;
                 }
             } catch (ContentNotFoundException e) {
-                loadFromApiURl(fulltextFilePath);
+                throw new FileNotFoundException(e.getMessage());
             } catch (PresentationException e) {
                 logger.error(e.getMessage());
             }
@@ -449,8 +449,6 @@ public final class DataFileTools {
                 if (alto != null) {
                     return ALTOTools.getFulltext(alto.getOne(), alto.getTwo(), mergeLineBreakWords);
                 }
-            } catch (ContentNotFoundException e) {
-                throw new FileNotFoundException(e.getMessage());
             } catch (PresentationException e) {
                 logger.error(e.getMessage());
             }
@@ -487,7 +485,7 @@ public final class DataFileTools {
      * @should throw ContentNotFoundException
      */
     public static StringPair loadAlto(String altoFilePath)
-            throws ContentNotFoundException, IndexUnreachableException, PresentationException, FileNotFoundException {
+            throws IndexUnreachableException, PresentationException, FileNotFoundException {
         if (altoFilePath == null) {
             return null;
         }
@@ -499,14 +497,7 @@ public final class DataFileTools {
             TextResourceBuilder builder = new TextResourceBuilder();
             return builder.getAltoDocument(pi, filename);
         } catch (ContentNotFoundException e) {
-            return new StringPair(DataManager.getInstance()
-                    .getRestApiManager()
-                    .getContentApiManager()
-                    .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_ALTO).params(pi, filename).build())
-                    .map(NetTools::callUrlGET)
-                    .filter(array -> NetTools.isStatusOk(array[0]))
-                    .map(array -> array[1])
-                    .orElseThrow(() -> new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND)), null);
+            throw new FileNotFoundException(e.getMessage());
         }
     }
 
