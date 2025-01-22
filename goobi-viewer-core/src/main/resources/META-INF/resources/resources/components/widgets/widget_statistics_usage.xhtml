@@ -23,6 +23,7 @@
 				<ui:param name="displayStatistics"
 				value="#{viewBean.get('showRecordStatistics') == 'true' or not statisticsBean.recordStatisticWidgetCollapsible}" />
 
+		<h:form>
 			<h:commandScript render="@none" name="hideStatistics"
 				action="#{viewBean.put('showRecordStatistics', 'false')}">
 			</h:commandScript>
@@ -110,6 +111,7 @@
 					</div>
 				</div>
 			</h:panelGroup>
+			</h:form>
 		</c:if>
 	</composite:implementation>
 </ui:composition>
