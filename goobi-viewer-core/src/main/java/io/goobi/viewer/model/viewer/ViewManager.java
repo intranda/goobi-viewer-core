@@ -3754,17 +3754,21 @@ public class ViewManager implements Serializable {
         String filename = String.format("%s_%s_%s.pdf", this.pi, this.firstPdfPage, this.lastPdfPage);
         try (PipedInputStream in = new PipedInputStream(); OutputStream out = new PipedOutputStream(in);
                 ExecutorService executor = Executors.newFixedThreadPool(1)) {
-            String firstPageName =
-                    Optional.ofNullable(this.firstPdfPage).flatMap(this::getPage).map(PhysicalElement::getFileName).orElse(null);
-            String lastPageName =
-                    Optional.ofNullable(this.lastPdfPage).flatMap(this::getPage).map(PhysicalElement::getFileName).orElse(null);
 
-            SinglePdfRequest request = new SinglePdfRequest(Map.of(
-                    "imageSource", DataFileTools.getMediaFolder(this.pi).toAbsolutePath().toString(),
-                    "pdfSource", DataFileTools.getPdfFolder(this.pi).toAbsolutePath().toString(),
-                    "altoSource", DataFileTools.getAltoFolder(this.pi).toAbsolutePath().toString(),
-                    "first", firstPageName,
-                    "last", lastPageName));
+            Map<String, String> params = new HashMap<>();
+            params.put("imageSource", DataFileTools.getMediaFolder(this.pi).toAbsolutePath().toString());
+            params.put("pdfSource", DataFileTools.getPdfFolder(this.pi).toAbsolutePath().toString());
+            params.put("altoSource", DataFileTools.getAltoFolder(this.pi).toAbsolutePath().toString());
+            Optional.ofNullable(this.firstPdfPage)
+                    .flatMap(this::getPage)
+                    .map(PhysicalElement::getFileName)
+                    .ifPresent(first -> params.put("first", first));
+            Optional.ofNullable(this.lastPdfPage)
+                    .flatMap(this::getPage)
+                    .map(PhysicalElement::getFileName)
+                    .ifPresent(last -> params.put("last", last));
+
+            SinglePdfRequest request = new SinglePdfRequest(params);
             executor.submit(() -> {
                 try {
                     new GetPdfAction().writePdf(request, ContentServerConfiguration.getInstance(), out);
