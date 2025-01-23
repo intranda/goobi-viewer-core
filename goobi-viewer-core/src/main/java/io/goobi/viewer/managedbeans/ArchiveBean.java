@@ -137,13 +137,14 @@ public class ArchiveBean implements Serializable {
      * @return the archiveTree
      */
     public ArchiveTree getArchiveTree() {
-        // logger.trace("getArchiveTree"); //NOSONAR Debug
+        // logger.trace("getArchiveTree: {} from ArchiveBean {}", archiveTree != null ?
+        // archiveTree.toString() : "null", this.toString()); //NOSONAR Debug
         return archiveTree;
     }
 
     public void toggleEntryExpansion(ArchiveEntry entry) {
         logger.trace("toggleEntryExpansion: {}", entry);
-        if (entry.isExpanded()) {
+        if (archiveTree.isEntryExpanded(entry)) {
             collapseEntry(entry);
         } else {
             expandEntry(entry);
@@ -164,7 +165,7 @@ public class ArchiveBean implements Serializable {
         }
         synchronized (getArchiveTree()) {
             boolean updateTree = entry.isChildrenFound() && !entry.isChildrenLoaded();
-            entry.expand();
+            getArchiveTree().expandEntry(entry);
             if (updateTree) {
                 logger.trace("Updating tree");
                 getArchiveTree().update(entry.getRootNode());
@@ -186,7 +187,7 @@ public class ArchiveBean implements Serializable {
         }
 
         synchronized (getArchiveTree()) {
-            entry.collapse();
+            getArchiveTree().collapseEntry(entry);
         }
     }
 
@@ -259,7 +260,7 @@ public class ArchiveBean implements Serializable {
         getArchiveTree().collapseAll(collapseAll);
         for (ArchiveEntry entry : results) {
             if (entry.isSearchHit()) {
-                entry.expandUp();
+                getArchiveTree().expandUpEntry(entry);
             }
         }
     }
@@ -323,7 +324,7 @@ public class ArchiveBean implements Serializable {
         ArchiveEntry result = getArchiveTree().getEntryById(localId);
         if (result != null) {
             getArchiveTree().setSelectedEntry(result);
-            result.expandUp();
+            getArchiveTree().expandUpEntry(result);
         } else {
             logger.debug("Entry not found: {}", localId);
             getArchiveTree().setSelectedEntry(getArchiveTree().getRootElement());
