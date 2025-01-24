@@ -16,6 +16,18 @@
                 <ignoreVersion>6.1.0</ignoreVersion>
             </ignoreVersions>
         </rule>
+        <rule groupId="jakarta.websocket" artifactId="jakarta.websocket-*">
+            <ignoreVersions>
+                <!-- Update is tested already -->
+                <!-- ignoreVersion>2.2.0</ignoreVersion -->
+            </ignoreVersions>
+        </rule>
+        <rule groupId="org.glassfish" artifactId="jakarta.faces">
+            <ignoreVersions>
+                <!-- Update is tested already -->
+                <!-- ignoreVersion type="regex">4.1.*</ignoreVersion -->
+            </ignoreVersions>
+        </rule>
         <rule groupId="org.jboss.weld.servlet" artifactId="weld-servlet-shaded">
             <ignoreVersions>
                 <ignoreVersion type="regex">6.*</ignoreVersion>
