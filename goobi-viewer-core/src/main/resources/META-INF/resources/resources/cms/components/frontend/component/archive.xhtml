@@ -19,77 +19,89 @@
 
 		<ui:fragment rendered="#{cc.attrs.component.hasAccess(userBean.user)}">
 
-			<!-- CONTENT COMPONENT COLLECTION LIST -->
-			<div
-				class="tpl-archive content-component content-component__archive_tree
-						-width-100 #{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user) ? '-isPrivate' : ''}">
+			<button class="btn btn--success #{cc.attrs.component.getContent('archive').openInPopup ? '' : 'd-none'}" type="button" id="archiveModalTrigger">Archiv öffnen</button>
 
-				<div class="archives__tree-heading">
-					<h2>#{msg.archives__archive_tree_heading}</h2>
-					<button id="archivesSearchTrigger"
-						class="#{not empty archiveBean.searchString ? '-active' : ''} btn"
-						aria-label="#{msg.search}">
-						<i class="fa fa-search"></i>
-					</button>
+			<!-- CONTENT COMPONENT COLLECTION LIST -->
+			<div id="archive_component_wrapper" style="width:100%" 
+			data-overlay-type="modal"
+				data-overlay="#{cc.attrs.component.getContent('archive').openInPopup ? 'content' : 'none'}" data-overlay-trigger="archiveModalTrigger">
+				
+				<div data-overlay-content='header'>
+					<h2>#{archiveBean.currentArchive.resourceName}</h2>
 				</div>
 				
-				<h:form>
-					<h:commandScript name="reloadTree" render="#{cc.clientId}:archivesForm">
-					</h:commandScript>
-				</h:form>
-				<script>
-				viewerJS.jsfAjax.success.subscribe(data => {
-					let shouldRefresh = data.source.classList.contains("archives-tree__expandable-icon") 
-					|| data.source.classList.contains("archives-tree__expand-all-icon")
-					|| data.source.classList.contains("archives__search-submit-button");
-					if(shouldRefresh) {
-						reloadTree();
-					}
-				});
-				</script>
-				
-				
-				<h:panelGroup layout="block" id="treeGroup"
-					styleClass="archives__graphic-tree">
-					<div
-						class="archives__search-input-wrapper #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">
-						<h:form id="searchForm" prependId="false">
-							<h:inputText id="archivesSearchField"
-								styleClass="form-control filter-input archives__search-input"
-								value="#{archiveBean.searchString}" immediate="true">
-								<f:passThroughAttribute name="placeholder"
-									value="#{msg.searchFieldDemoText}" />
-								<f:passThroughAttribute name="aria-label"
-									value="#{msg.aria_label__search_form}" />
-							</h:inputText>
-							<div
-								class="archives__search-clear #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">x</div>
-							<h:commandButton styleClass="archives__search-submit-button"
-								value="#{msg.search}" action="#{archiveBean.searchAction}">
-								<f:ajax execute="@form" render="@none"/>
-							</h:commandButton>
-						</h:form>
+				<div id="archive_component_content" data-overlay-content="body"
+					class="tpl-archive content-component content-component__archive_tree
+							-width-100 #{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user) ? '-isPrivate' : ''}">
+	
+					<div class="archives__tree-heading">
+						<h2>#{msg.archives__archive_tree_heading}</h2>
+						<button id="archivesSearchTrigger"
+							class="#{not empty archiveBean.searchString ? '-active' : ''} btn"
+							aria-label="#{msg.search}">
+							<i class="fa fa-search"></i>
+						</button>
 					</div>
-					<ui:include
-						src="/resources/includes/archives/archiveTreeView.xhtml">
-						<ui:param name="indent"
-							value="#{configurationBean.tocIndentation * 1.5}" />
-						<ui:param name="renderOnExpand"
-							value="@none" />
-					</ui:include>
-
-				</h:panelGroup>
-
-				<script type="text/javascript">
-		        	viewerJS.archives.init({
-		                initHcSticky: false,
-		                initSearch: true,
-		                initTextTree: false,
-		        });
-		        </script>
-
+					
+					<h:form>
+						<h:commandScript name="reloadTree" render="#{cc.clientId}:archivesForm">
+						</h:commandScript>
+					</h:form>
+					
+					<h:panelGroup layout="block" id="treeGroup"
+						styleClass="archives__graphic-tree">
+						<div
+							class="archives__search-input-wrapper #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">
+							<h:form id="searchForm" prependId="false">
+								<h:inputText id="archivesSearchField"
+									styleClass="form-control filter-input archives__search-input"
+									value="#{archiveBean.searchString}" immediate="true">
+									<f:passThroughAttribute name="placeholder"
+										value="#{msg.searchFieldDemoText}" />
+									<f:passThroughAttribute name="aria-label"
+										value="#{msg.aria_label__search_form}" />
+								</h:inputText>
+								<div
+									class="archives__search-clear #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">x</div>
+								<h:commandButton styleClass="archives__search-submit-button"
+									value="#{msg.search}" action="#{archiveBean.searchAction}">
+									<f:ajax execute="@form" render="@none"/>
+								</h:commandButton>
+							</h:form>
+						</div>
+						<ui:include
+							src="/resources/includes/archives/archiveTreeView.xhtml">
+							<ui:param name="indent"
+								value="#{configurationBean.tocIndentation * 1.5}" />
+							<ui:param name="renderOnExpand"
+								value="@none" />
+						</ui:include>
+	
+					</h:panelGroup>
+	
+					<script type="text/javascript">
+			        	//initialize search
+						viewerJS.archives.init({
+			                initHcSticky: false,
+			                initSearch: true,
+			                initTextTree: false,
+			       		 });
+			        	
+			        	//normal ajax refresh doesn't work (maybe because of the cms-component-structure)
+			        	//so refresh the tree after the actual request with a commandScript
+						viewerJS.jsfAjax.success.subscribe(data => {
+							let shouldRefresh = data.source.classList.contains("archives-tree__expandable-icon") 
+							|| data.source.classList.contains("archives-tree__expand-all-icon")
+							|| data.source.classList.contains("archives__search-submit-button");
+							if(shouldRefresh) {
+								reloadTree();
+							}
+						});
+			        	
+			        </script>
+	
+				</div>
 			</div>
-
 		</ui:fragment>
 
 
