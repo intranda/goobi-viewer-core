@@ -9,6 +9,7 @@
 
 	<!-- Changed render @all to archivesForm to avoid reloads of surrounding layout elements + performance advantage  -->
 	<c:set var="render" value="#{render != null ? render : 'archivesForm'}" scope="request"></c:set>
+	<c:set var="renderOnExpand" value="#{renderOnExpand != null ? renderOnExpand : 'archivesForm'}" scope="request"></c:set>
 
 	<c:set var="archiveTree" value="#{archiveTree != null ? archiveTree : archiveBean.archiveTree}" scope="request" />
 
@@ -44,14 +45,14 @@
 					<!-- EXPAND ALL -->
 					<div class="archives-tree__expand-minimize-all">
 						<button
-							class="btn btn--clean"
+							class="btn btn--clean archives-tree__expand-all-icon"
 							jsf:rendered="#{not empty visibleTree}"
 							jsf:action="#{archiveBean.archiveTree.collapseAll(true)}"
 							title="#{msg.allClose}">
 							<f:passThroughAttribute name="data-toggle" value="tooltip" />
 							<f:passThroughAttribute name="data-placement" value="top" />
 							<f:passThroughAttribute name="aria-label" value="#{msg.allClose}" />
-							<f:ajax render="archivesForm" onevent="fadeOutAllTooltips" />
+							<f:ajax render="#{renderOnExpand}" onevent="fadeOutAllTooltips" />
 							#{msg.allClose}
 						</button>
 					</div>
@@ -73,7 +74,7 @@
 												value="#{msg.allOpen}" />
 											<f:passThroughAttribute name="data-expand-entry"
 												value="expanded" />
-											<f:ajax render="archivesForm" />
+											<f:ajax render="#{renderOnExpand}" />
 										</button>
 										
 									</div>
