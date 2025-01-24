@@ -27,6 +27,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -44,8 +46,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import jakarta.faces.model.SelectItem;
 
 import org.apache.commons.configuration2.BaseHierarchicalConfiguration;
 import org.apache.commons.configuration2.HierarchicalConfiguration;
@@ -113,6 +113,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.collections.DcSortingList;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.faces.model.SelectItem;
 
 /**
  * <p>
@@ -1702,7 +1703,6 @@ public class Configuration extends AbstractConfiguration {
             return StringConstants.DEFAULT_NAME;
         }
 
-        String ret = null;
         for (HierarchicalConfiguration<ImmutableNode> subElement : templateList) {
             String name = subElement.getString(XML_PATH_ATTRIBUTE_NAME);
             if (StringConstants.DEFAULT_NAME.equals(name)) {
@@ -6172,10 +6172,11 @@ public class Configuration extends AbstractConfiguration {
      * @param url
      * @return Configured value
      * @throws MalformedURLException
+     * @throws URISyntaxException
      * @should return true if host whitelisted
      */
-    public boolean isHostProxyWhitelisted(String url) throws MalformedURLException {
-        URL urlAsURL = new URL(url);
+    public boolean isHostProxyWhitelisted(String url) throws MalformedURLException, URISyntaxException {
+        URL urlAsURL = new URI(url).toURL();
         return getProxyWhitelist().contains(urlAsURL.getHost());
     }
 

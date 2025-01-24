@@ -77,7 +77,7 @@
 											
 
                                         <!-- DESCRIPTION -->
-                                        <p class="admin__boxed-entry-description">#{widget.description.getValue(navigationHelper.locale).orElse("")}</p>
+                                        <p class="admin__boxed-entry-description">#{widget.description.getValue(navigationHelper.locale)}</p>
                                         
                                         <!-- INFOS + DATA -->
 										<div class="cms-widgets-overview__single-widget-info-wrapper">
@@ -122,7 +122,7 @@
 			                                        <div class="row admin__boxed-entry-actions">
 			                                            <div class="col-3 d-flex">
 			                                                <!-- EDIT -->
-			                                                <a href="#{request.contextPath}/admin/cms/maps/edit/#{widget.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{widget.title.getValue(navigationHelper.locale).orElse('')}">#{msg.edit}</a>
+			                                                <a href="#{request.contextPath}/admin/cms/maps/edit/#{widget.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{widget.title.getValue(navigationHelper.locale)}">#{msg.edit}</a>
 			                                            </div>
 			                                        </div>
 							
@@ -135,7 +135,7 @@
                                         <div class="row admin__boxed-entry-actions">
                                             <div class="col-3 d-flex">
                                                 <!-- EDIT -->
-                                                <a href="#{navigationHelper.applicationUrl}admin/cms/widgets/edit/#{widget.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{widget.title.getValue(navigationHelper.locale).orElse('')}">#{msg.edit}</a>
+                                                <a href="#{navigationHelper.applicationUrl}admin/cms/widgets/edit/#{widget.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{widget.title.getValue(navigationHelper.locale)}">#{msg.edit}</a>
 
                                                 <!-- DELETE -->
                                                 <ui:fragment  rendered="#{empty widget.embeddingPages}">
@@ -144,7 +144,7 @@
 	                                                    data-require-confirmation="true"
 	                                                    data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms_widget__delete_this_widget, widget.title.getTextOrDefault())}"
 	                                                    jsf:action="#{cmsSidebarWidgetsBean.deleteWidget(widget.id)}"
-	                                                    aria-label="#{msg.delete}: #{widget.title.getValue(navigationHelper.locale).orElse('')}" >
+	                                                    aria-label="#{msg.delete}: #{widget.title.getValue(navigationHelper.locale)}" >
 	                                                    #{msg.delete}
 	                                                </button>
                                                 </ui:fragment>

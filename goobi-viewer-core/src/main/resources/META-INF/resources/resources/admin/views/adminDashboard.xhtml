@@ -245,7 +245,7 @@
 							<ui:fragment rendered="#{userBean.admin and adminBean.displayTranslationsDashboardWidget}">
                             	<c:choose>
 									<c:when test="#{adminBean.hasAccessPermissingForTranslationFiles}">
-                                		<h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 #{adminBean.configuredTranslationGroups.stream().anyMatch(g -> g.loadError).get() ? '-danger':'-warning'}">
+                                		<h:form prependId="false" styleClass="admin__boxed-entry -no-actions -w33 #{adminBean.configuredTranslationGroups.stream().anyMatch(g -> g.loadError) ? '-danger':'-warning'}">
 		                                    <div class="row">
 		                                        <h2 class="col-9">#{msg.admin__translations}</h2>
 		                                    </div>

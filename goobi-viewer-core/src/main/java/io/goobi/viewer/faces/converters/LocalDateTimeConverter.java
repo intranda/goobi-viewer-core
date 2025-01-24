@@ -81,15 +81,15 @@ public class LocalDateTimeConverter implements Converter<LocalDateTime> {
 
     private static Locale getLocale(FacesContext context, UIComponent component) {
         Object locale = component.getAttributes().get("locale");
-        return (locale instanceof Locale) ? (Locale) locale
-                : (locale instanceof String) ? new Locale((String) locale)
+        return (locale instanceof Locale loc) ? loc
+                : (locale instanceof String lang) ? Locale.forLanguageTag(lang)
                         : context.getViewRoot().getLocale();
     }
 
     private static ZoneId getZoneId(UIComponent component) {
         Object timeZone = component.getAttributes().get("timeZone");
-        return (timeZone instanceof TimeZone) ? ((TimeZone) timeZone).toZoneId()
-                : (timeZone instanceof String) ? ZoneId.of((String) timeZone)
+        return (timeZone instanceof TimeZone tz) ? tz.toZoneId()
+                : (timeZone instanceof String s) ? ZoneId.of(s)
                         : null;
     }
 

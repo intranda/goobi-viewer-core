@@ -33,10 +33,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
@@ -68,11 +66,9 @@ public class ArchiveEntry implements Serializable {
     private String topstructPi;
     // Node LOGID
     private String logId;
-    // node is open/closed
-    private boolean displayChildren;
     // node is search hit
     private boolean searchHit;
-    // node type -  @level
+    // node type - @level
     private String nodeType;
     // display node in a search result
     private boolean displaySearch;
@@ -86,10 +82,6 @@ public class ArchiveEntry implements Serializable {
     private String unitdate;
 
     private List<String> accessConditions = new ArrayList<>();
-
-    private boolean visible = true;
-
-    private boolean expanded = false;
 
     private boolean containsImage = false;
 
@@ -137,10 +129,7 @@ public class ArchiveEntry implements Serializable {
 
         this.subEntryList = orig.subEntryList.stream().map(e -> new ArchiveEntry(e, this)).collect(Collectors.toList());
 
-        this.visible = orig.visible;
-        this.expanded = orig.expanded;
         this.searchHit = orig.searchHit;
-        this.displayChildren = orig.displayChildren;
         this.displaySearch = orig.displaySearch;
         this.doc = orig.doc;
         this.childrenFound = orig.childrenFound;
@@ -173,7 +162,7 @@ public class ArchiveEntry implements Serializable {
         // logger.trace("getAsFlatList"); //NOSONAR Debug
         List<ArchiveEntry> list = new LinkedList<>(); // LinkedList more efficient to create here due to the recursion
         list.add(this);
-        if ((displayChildren || ignoreDisplayChildren) && subEntryList != null && !subEntryList.isEmpty()) {
+        if (ignoreDisplayChildren && subEntryList != null && !subEntryList.isEmpty()) {
             for (ArchiveEntry ds : subEntryList) {
                 list.addAll(ds.getAsFlatList(ignoreDisplayChildren));
                 // logger.trace("ID: {}, level: {}, label: {}", ds.getId(), ds.getHierarchyLevel(), ds.getLabel()); //NOSONAR Debug
@@ -252,71 +241,6 @@ public class ArchiveEntry implements Serializable {
         if (isHasChildren()) {
             for (ArchiveEntry sub : subEntryList) {
                 sub.shiftHierarchy(offset);
-            }
-        }
-    }
-
-    /**
-     * Expands and sets visible all ancestors of this node and expands siblings of this node.
-     */
-    public void expandUp() {
-        if (parentNode == null) {
-            return;
-        }
-
-        parentNode.setVisible(true);
-        parentNode.expand();
-        parentNode.expandUp();
-    }
-
-    /**
-     * Expands this entry and sets all sub-entries visible if their immediate parent is expanded.
-     */
-    public void expand() {
-        // logger.trace("expand: {}", label); //NOSONAR Debug
-        if (!isHasChildren()) {
-            return;
-        }
-
-        if (!isChildrenLoaded()) {
-            logger.trace("Loading children for entry: {}", label);
-            try {
-                ((SolrEADParser) DataManager.getInstance().getArchiveManager().getEadParser()).loadChildren(this, null, false);
-            } catch (PresentationException | IndexUnreachableException e) {
-                logger.error(e.getMessage());
-            }
-        }
-
-        setExpanded(true);
-        setChildrenVisibility(true);
-    }
-
-    /**
-     * Collapses this entry and hides all sub-entries.
-     */
-    public void collapse() {
-        // logger.trace("collapse: {}", id); //NOSONAR Debug
-        if (!isHasChildren()) {
-            return;
-        }
-
-        setExpanded(false);
-        setChildrenVisibility(false);
-    }
-
-    /**
-     *
-     * @param visible
-     */
-    void setChildrenVisibility(boolean visible) {
-        if (!isHasChildren()) {
-            return;
-        }
-
-        for (ArchiveEntry sub : subEntryList) {
-            sub.setVisible(visible);
-            if (sub.isExpanded() && sub.isHasChildren()) {
-                sub.setChildrenVisibility(visible);
             }
         }
     }
@@ -446,20 +370,6 @@ public class ArchiveEntry implements Serializable {
      */
     public void setLogId(String logId) {
         this.logId = logId;
-    }
-
-    /**
-     * @return the displayChildren
-     */
-    public boolean isDisplayChildren() {
-        return displayChildren;
-    }
-
-    /**
-     * @param displayChildren the displayChildren to set
-     */
-    public void setDisplayChildren(boolean displayChildren) {
-        this.displayChildren = displayChildren;
     }
 
     /**
@@ -620,34 +530,6 @@ public class ArchiveEntry implements Serializable {
      */
     public void setAccessConditions(List<String> accessConditions) {
         this.accessConditions = accessConditions;
-    }
-
-    /**
-     * @return the visible
-     */
-    public boolean isVisible() {
-        return visible;
-    }
-
-    /**
-     * @param visible the visible to set
-     */
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
-
-    /**
-     * @return the expanded
-     */
-    public boolean isExpanded() {
-        return expanded;
-    }
-
-    /**
-     * @param expanded the expanded to set
-     */
-    public void setExpanded(boolean expanded) {
-        this.expanded = expanded;
     }
 
     /**

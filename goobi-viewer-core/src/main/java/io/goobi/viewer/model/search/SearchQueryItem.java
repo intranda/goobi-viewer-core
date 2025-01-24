@@ -305,7 +305,6 @@ public class SearchQueryItem implements Serializable {
      * @return the field
      */
     public String getField() {
-        logger.trace("getField: {}", field);
         return field;
     }
 
@@ -382,7 +381,11 @@ public class SearchQueryItem implements Serializable {
     public void setValue(final String value) {
         // logger.trace("setValue: {}", value); //NOSONAR Debug
         String val = StringTools.stripJS(value);
-        values.add(0, val);
+        if (values.isEmpty()) {
+            values.add(0, val);
+        } else {
+            values.set(0, val);
+        }
     }
 
     /**
@@ -622,7 +625,7 @@ public class SearchQueryItem implements Serializable {
                     }
                     String useValue = value.trim();
                     this.proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(useValue);
-                    logger.trace("proximity distance: {}", proximitySearchDistance);
+                    // logger.trace("proximity distance: {}", proximitySearchDistance); //NOSONAR Debug
 
                     sbItem.append(useField).append(':');
                     if (useValue.charAt(0) != '"') {

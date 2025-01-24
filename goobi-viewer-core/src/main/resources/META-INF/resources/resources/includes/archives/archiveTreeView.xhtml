@@ -66,7 +66,8 @@
 									data-id="id_#{entry.id}"
 									style="padding-left: #{entry.hierarchyLevel * indent}px">
 									<!-- EXPAND OPTION -->
-									<div jsf:rendered="#{entry.hasChild}" class="archives-tree__expandable-icon-wrapper #{entry.expanded == true ? '-expanded' : '-collapsed' }">
+									<div jsf:rendered="#{entry.hasChild}"
+									    class="archives-tree__expandable-icon-wrapper #{archiveTree.isEntryExpanded(entry) ? '-expanded' : '-collapsed' }">
 										<button
 											class="btn btn--clean archives-tree__expandable-icon"
 											jsf:rendered="#{entry.hasChild}"

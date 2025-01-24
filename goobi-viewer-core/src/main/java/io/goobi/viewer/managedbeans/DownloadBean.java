@@ -79,7 +79,7 @@ public class DownloadBean implements Serializable {
      */
     public void reset() {
         synchronized (this) {
-            logger.debug("reset (thread {})", Thread.currentThread().getId());
+            logger.debug("reset (thread {})", Thread.currentThread().threadId());
             downloadIdentifier = null;
         }
     }

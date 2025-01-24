@@ -78,6 +78,7 @@
 
 
 							<ui:fragment rendered="#{messageQueueBean.queueContent.size() > 0}">
+							    <!-- Use <button> instead of <a> here to avoid error with OmniFaces -->
 							    <button class="admin__tasks-icon-wrapper"
 							        title="#{msg.admin__tasks__clear_all_button_tooltip}"
 							        data-toggle="tooltip" data-placement="top" data-trigger="hover"
@@ -94,27 +95,11 @@
                                     </div>
                                     <f:ajax execute="@form" render="@form" />
 							    </button>
-<!-- 								<a class="admin__tasks-icon-wrapper" -->
-<!-- 									title="#{msg.admin__tasks__clear_all_button_tooltip}" -->
-<!-- 									data-toggle="tooltip" data-placement="top" data-trigger="hover" -->
-<!-- 									jsf:action="#{messageQueueBean.clearQueue}" jsf:id="clearButton" -->
-<!-- 									data-require-confirmation="true" -->
-<!-- 									data-confirmation-text="#{msg.admin__tasks__clear_all_button_confirmation}" -->
-<!-- 									aria-label="#{msg.admin__tasks__clear_all_button_confirmation}"> -->
-<!-- 									<div class="admin__tasks-clear-all"></div> -->
-<!-- 									<div class="admin__tasks-icon"> -->
-<!-- 										<div -->
-<!-- 											class="admin__tasks-button-trash #{messageQueueBean.paused ? '-hidden' : '-active'}"> -->
-<!-- 											<i class="fa fa-times"></i> -->
-<!-- 										</div> -->
-<!-- 									</div> -->
-<!-- 									<f:ajax execute="@form" render="@form" /> -->
-<!-- 								</a> -->
 							</ui:fragment>
 							
 							 
 							
-							<a jsf:id="restartListenerButton" jsf:action="#{messageQueueBean.restartAllListeners()}"
+							<button jsf:id="restartListenerButton" jsf:action="#{messageQueueBean.restartAllListeners()}"
 									data-toggle="tooltip" data-placement="top" data-trigger="hover"
 								class="ml-auto admin__tasks-icon-wrapper" title="#{msg.action__restart_all_task_listeners}">
 								<div class="admin__tasks-button-restart-queue"></div>
@@ -124,7 +109,7 @@
 									</div>
 								</div>
 
-							</a>
+							</button>
 							
 						</div>
 

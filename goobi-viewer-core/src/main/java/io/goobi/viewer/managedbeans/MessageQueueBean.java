@@ -165,6 +165,10 @@ public class MessageQueueBean implements Serializable {
      */
     @PreDestroy
     public void close() throws JMSException {
+        log.debug("MessageQueueBean.close()");
+        for (DefaultQueueListener listener : getListeners()) {
+            listener.close();
+        }
         if (this.queueSession != null) {
             this.queueSession.close();
         }
