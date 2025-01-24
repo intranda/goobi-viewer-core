@@ -268,7 +268,12 @@ public class SearchFacets implements Serializable {
      * @return true if given link is part of the active facet string; false otherwise
      */
     public boolean isFacetStringCurrentlyUsed(String link) {
-        return isFacetCurrentlyUsed(new FacetItem(link, false));
+        try {
+            return isFacetCurrentlyUsed(new FacetItem(link, false));
+        } catch (IllegalArgumentException e) {
+            logger.warn(e.getMessage());
+            return false;
+        }
     }
 
     /**
