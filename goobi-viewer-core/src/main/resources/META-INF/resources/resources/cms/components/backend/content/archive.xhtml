@@ -19,7 +19,7 @@
 
 			<!-- LABEL -->
 			<ui:fragment rendered="#{not empty cc.attrs.contentItem.content.archiveId}">
-				<div class="admin__content-component-input-label">#{msg[cc.attrs.contentItem.label]}#{cc.attrs.contentItem.mandatory?'*':''}:</div>
+				<div class="admin__content-component-input-label">#{msg.label__select_archive_resource}*:</div>
 			</ui:fragment>
 			           
             <!-- AREA FOR AJAX REFRESH -->
@@ -59,7 +59,7 @@
 
 			<!-- LABEL -->
 			<ui:fragment rendered="#{not empty cc.attrs.contentItem.content.archiveId}">
-				<div class="admin__content-component-input-label">#{msg.label__open_in_popup}:</div>
+				<div class="admin__content-component-input-label">#{msg.label__open_in_overlay}:</div>
 			</ui:fragment>
 			    
 			<!-- AREA FOR AJAX REFRESH -->
@@ -80,9 +80,9 @@
 
 				<!-- CHECKBOX -->
 				<h:selectBooleanCheckbox id="openInPopup"
-					value="#{cc.attrs.contentItem.content.openInPopup}">
+					value="#{cc.attrs.contentItem.content.openInOverlay}">
 					<f:passThroughAttribute name="aria-label"
-						value="#{msg.cms_openInPopup}" />
+						value="#{msg.label__open_in_overlay}" />
 				</h:selectBooleanCheckbox>
 			</h:panelGroup>			    
 			    

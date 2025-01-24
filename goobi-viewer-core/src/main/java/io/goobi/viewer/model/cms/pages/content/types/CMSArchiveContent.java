@@ -46,8 +46,8 @@ public class CMSArchiveContent extends CMSContent {
 
     @Column(name = "archive_id")
     private String archiveId = "";
-    @Column(name = "open_in_popup")
-    private boolean openInPopup = false;
+    @Column(name = "open_in_overlay")
+    private boolean openInOverlay = false;
 
     public CMSArchiveContent() {
         super();
@@ -56,7 +56,7 @@ public class CMSArchiveContent extends CMSContent {
     public CMSArchiveContent(CMSArchiveContent orig) {
         super(orig);
         this.archiveId = orig.archiveId;
-        this.openInPopup = orig.openInPopup;
+        this.openInOverlay = orig.openInOverlay;
     }
 
     @Override
@@ -104,12 +104,12 @@ public class CMSArchiveContent extends CMSContent {
         this.archiveId = archiveId;
     }
 
-    public boolean isOpenInPopup() {
-        return openInPopup;
+    public boolean isOpenInOverlay() {
+        return openInOverlay;
     }
 
-    public void setOpenInPopup(boolean openInPopup) {
-        this.openInPopup = openInPopup;
+    public void setOpenInOverlay(boolean openInOverlay) {
+        this.openInOverlay = openInOverlay;
     }
 
 }
