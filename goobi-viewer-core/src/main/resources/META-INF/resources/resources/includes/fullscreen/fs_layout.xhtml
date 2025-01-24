@@ -255,7 +255,7 @@
                            data-toggle="tooltip"
                            data-placement="top"
                            aria-label="#{msg.previousHit}"
-		                   href="#{neighbours.left != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.left.get()).concat('/')) : '#'}">
+		                   href="#{neighbours.left != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.left).concat('/')) : '#'}">
                             <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
                         </a>
 	                	<a class="widget-archives__next #{neighbours.right != null ? '':'-disabled'}"
@@ -263,7 +263,7 @@
                            data-toggle="tooltip"
                            data-placement="top"
                            aria-label="#{msg.nextHit}"                           
-	                	   href="#{neighbours.right != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.right.get()).concat('/')) : '#'}">
+	                	   href="#{neighbours.right != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.right).concat('/')) : '#'}">
                             <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
                         </a>
                         </span>
