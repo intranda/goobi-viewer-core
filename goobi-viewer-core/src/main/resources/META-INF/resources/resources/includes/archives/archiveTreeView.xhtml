@@ -12,6 +12,8 @@
 	<c:set var="renderOnExpand" value="#{renderOnExpand != null ? renderOnExpand : 'archivesForm'}" scope="request"></c:set>
 
 	<c:set var="archiveTree" value="#{archiveTree != null ? archiveTree : archiveBean.archiveTree}" scope="request" />
+	
+	<c:set var="selectEntryAction" value="#{selectEntryAction != null ? selectEntryAction : 'select'}" scope="request" />
 
 	<!-- A list of  EadEntry object which should be displayed in the tree.
 	Note: all entries in the list are displayed. The list must be filtered for visible elements beforehand-->
@@ -97,51 +99,93 @@
 										
 										<div class="archives-tree__record-link-wrapper">
 										
-											<!-- (RECORD/ENTRY) HAS IMAGE -->
-										    <ui:fragment rendered="#{entry.containsImage}">
-											    <h:commandLink
-											        styleClass="archives-tree__record-link #{archiveTree.expandEntryOnSelection ? 'collapsible' : ''}"
-											        action="#{archiveTree.toggleSelectedEntry(entry)}"
-												    value="#{entry.label}"
-												    pt:data-trigger="expand"
-												    pt:data-select-entry="#{entry.id}">
-												    <f:ajax render="#{render}" />
-												    
-												    <ui:fragment rendered="#{entry.imageAccessAllowed}">
-													    <!-- SMALL IMAGE ICON INDICATOR BEHIND RECORD -->
-<!-- 													    <span data-toggle="tooltip" title="#{msg.archives__record_has_image__tooltip}" class="archives-tree__record-link-icon-wrapper"> -->
-<!-- 													    	<i class="fa fa-picture-o" aria-hidden="true"></i> -->
-<!-- 													    </span> -->
-													    <!-- TO DO: TOOLTIP ONLY FOR RECORD LEVEL, SEE ABOVE -->
-													    <span class="archives-tree__record-link-icon-wrapper-outer">
-														    <span class="archives-tree__record-link-icon-wrapper">
-														    	<i class="fa fa-picture-o" aria-hidden="true"></i>
+											<ui:fragment rendered="#{selectEntryAction == 'open'}">
+												
+												<ui:fragment rendered="#{entry.containsImage}">
+													<a class="testet archives-tree__record-link #{archiveTree.expandEntryOnSelection ? 'collapsible' : ''}"
+														href="#{navigationHelper.objectUrl}/#{entry.associatedRecordPi}/"
+	                                                    data-trigger="expand"
+	                                                    data-select-entry="#{entry.id}">
+	                                                    <span>#{entry.label}</span>
+	                                                    
+	                                                    <ui:fragment rendered="#{entry.imageAccessAllowed}">
+														    <span class="archives-tree__record-link-icon-wrapper-outer">
+															    <span class="archives-tree__record-link-icon-wrapper">
+															    	<i class="fa fa-picture-o" aria-hidden="true"></i>
+															    </span>
 														    </span>
-													    </span>
-												    </ui:fragment>
-												    
-												    <ui:fragment rendered="#{!entry.imageAccessAllowed}">
-													    <!-- SMALL ICON IMAGE INDICATOR BEHIND RECORD (NO ACCESS) -->
-													    <span class="archives-tree__record-link-icon-wrapper-outer" data-toggle="tooltip" title="#{msg.archives__record_has_image_no_access__tooltip}">
-														    <span class="archives-tree__record-link-icon-wrapper">
-														    	<i class="fa fa-ban archives-tree__record-link-icon-ban" aria-hidden="true"></i>
-														    	<i class="fa fa-picture-o" aria-hidden="true"></i>
+													    </ui:fragment>
+													    
+													    <ui:fragment rendered="#{!entry.imageAccessAllowed}">
+														    <span class="archives-tree__record-link-icon-wrapper-outer" data-toggle="tooltip" title="#{msg.archives__record_has_image_no_access__tooltip}">
+															    <span class="archives-tree__record-link-icon-wrapper">
+															    	<i class="fa fa-ban archives-tree__record-link-icon-ban" aria-hidden="true"></i>
+															    	<i class="fa fa-picture-o" aria-hidden="true"></i>
+															    </span>
 														    </span>
-													    </span>
-												    </ui:fragment>
-
-											    </h:commandLink>
+													    </ui:fragment>
+	                                                    
+	                                                </a>
+												</ui:fragment>
+												
+												<ui:fragment rendered="#{!entry.containsImage}">
+													<span class="archives-tree__record-link #{archiveTree.expandEntryOnSelection ? 'collapsible' : ''}"
+	                                                    data-trigger="expand"
+	                                                    data-select-entry="#{entry.id}">
+	                                                    #{entry.label}
+	                                                </span>
+												</ui:fragment>
+												
 											</ui:fragment>
-											<!-- RECORD HAS NO IMAGE -->
-                                            <ui:fragment rendered="#{!entry.containsImage}">
-                                                <h:commandLink styleClass="archives-tree__record-link #{archiveTree.expandEntryOnSelection ? 'collapsible' : ''}"
-                                                    action="#{archiveTree.toggleSelectedEntry(entry)}"
-                                                    value="#{entry.label}"
-                                                    pt:data-trigger="expand"
-                                                    pt:data-select-entry="#{entry.id}">
-                                                    <f:ajax render="#{render}" />
-
-                                                </h:commandLink>
+										
+											<ui:fragment rendered="#{selectEntryAction == 'select'}">
+												<!-- (RECORD/ENTRY) HAS IMAGE -->
+											    <ui:fragment rendered="#{entry.containsImage}">
+											    
+												    <h:commandLink
+												        styleClass="archives-tree__record-link #{archiveTree.expandEntryOnSelection ? 'collapsible' : ''}"
+												        action="#{archiveTree.toggleSelectedEntry(entry)}"
+													    value="#{entry.label}"
+													    pt:data-trigger="expand"
+													    pt:data-select-entry="#{entry.id}">
+													    <f:ajax render="#{render}" />
+													    
+													    <ui:fragment rendered="#{entry.imageAccessAllowed}">
+														    <!-- SMALL IMAGE ICON INDICATOR BEHIND RECORD -->
+	<!-- 													    <span data-toggle="tooltip" title="#{msg.archives__record_has_image__tooltip}" class="archives-tree__record-link-icon-wrapper"> -->
+	<!-- 													    	<i class="fa fa-picture-o" aria-hidden="true"></i> -->
+	<!-- 													    </span> -->
+														    <!-- TO DO: TOOLTIP ONLY FOR RECORD LEVEL, SEE ABOVE -->
+														    <span class="archives-tree__record-link-icon-wrapper-outer">
+															    <span class="archives-tree__record-link-icon-wrapper">
+															    	<i class="fa fa-picture-o" aria-hidden="true"></i>
+															    </span>
+														    </span>
+													    </ui:fragment>
+													    
+													    <ui:fragment rendered="#{!entry.imageAccessAllowed}">
+														    <!-- SMALL ICON IMAGE INDICATOR BEHIND RECORD (NO ACCESS) -->
+														    <span class="archives-tree__record-link-icon-wrapper-outer" data-toggle="tooltip" title="#{msg.archives__record_has_image_no_access__tooltip}">
+															    <span class="archives-tree__record-link-icon-wrapper">
+															    	<i class="fa fa-ban archives-tree__record-link-icon-ban" aria-hidden="true"></i>
+															    	<i class="fa fa-picture-o" aria-hidden="true"></i>
+															    </span>
+														    </span>
+													    </ui:fragment>
+	
+												    </h:commandLink>
+												</ui:fragment>
+												<!-- RECORD HAS NO IMAGE -->
+	                                            <ui:fragment rendered="#{!entry.containsImage}">
+	                                                <h:commandLink styleClass="archives-tree__record-link #{archiveTree.expandEntryOnSelection ? 'collapsible' : ''}"
+	                                                    action="#{archiveTree.toggleSelectedEntry(entry)}"
+	                                                    value="#{entry.label}"
+	                                                    pt:data-trigger="expand"
+	                                                    pt:data-select-entry="#{entry.id}">
+	                                                    <f:ajax render="#{render}" />
+	
+	                                                </h:commandLink>
+	                                            </ui:fragment>
                                             </ui:fragment>
                                             <ui:fragment rendered="#{not empty entry.unitdate}">
 												<div class="archives-tree__entry-date">
