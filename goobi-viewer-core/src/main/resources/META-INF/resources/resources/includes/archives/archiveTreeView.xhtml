@@ -105,6 +105,7 @@
 												<ui:fragment rendered="#{entry.containsImage}">
 													<a class="testet archives-tree__record-link #{archiveTree.expandEntryOnSelection ? 'collapsible' : ''}"
 														href="#{navigationHelper.objectUrl}/#{entry.associatedRecordPi}/"
+														target="GoobiArchiveRecord"
 	                                                    data-trigger="expand"
 	                                                    data-select-entry="#{entry.id}">
 	                                                    <span>#{entry.label}</span>
