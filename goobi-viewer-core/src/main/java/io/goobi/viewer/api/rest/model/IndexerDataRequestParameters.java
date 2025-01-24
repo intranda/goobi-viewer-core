@@ -23,11 +23,13 @@ package io.goobi.viewer.api.rest.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * POST request parameters for IndexingResource (indexer ersion).
+ * POST request parameters for IndexingResource (indexer version).
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class IndexerDataRequestParameters {
 
     private String application;
