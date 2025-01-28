@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -39,11 +38,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.LongStream;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -70,6 +64,10 @@ import io.goobi.viewer.model.calendar.CalendarItemYear;
 import io.goobi.viewer.model.calendar.CalendarRow;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
  * This bean provides data for the calendar and time based search entries.
@@ -88,7 +86,6 @@ public class CalendarBean implements Serializable {
     @Inject
     private SearchBean searchBean;
 
-    //    private List<CalendarItemYear> allActiveYears;
     private Map<Integer, CalendarItemCentury> allActiveCenturies;
     private CalendarItemYear currentYear;
     private CalendarItemMonth currentMonth;
@@ -155,7 +152,7 @@ public class CalendarBean implements Serializable {
         if ("MIN".equalsIgnoreCase(start) || "MAX".equalsIgnoreCase(end)) {
             StringBuilder sbSearchString = new StringBuilder(docstructFilterQuery);
             if (collection != null && !collection.isEmpty()) {
-                sbSearchString.append(" AND ").append(SolrConstants.DC).append(':').append(collection);
+                sbSearchString.append(SolrConstants.SOLR_QUERY_AND).append(SolrConstants.DC).append(':').append(collection);
             }
             int[] minMaxYears = SearchHelper.getMinMaxYears(sbSearchString.toString());
             if (start.equalsIgnoreCase("MIN")) {
@@ -704,60 +701,6 @@ public class CalendarBean implements Serializable {
     }
 
     /**
-     * This method returns a list of all active years. <br />
-     *
-     * The method searches for the facet of the field 'YEAR'. If the count of a facet is greater than 0, the year is active.
-     *
-     * @return a {@link java.util.List} object.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    //    public List<CalendarItemYear> getAllActiveYears() throws PresentationException, IndexUnreachableException {
-    //        if (allActiveYears == null) {
-    //            allActiveYears = new ArrayList<>();
-    //            List<String> fields = new ArrayList<>();
-    //            fields.add(SolrConstants.CALENDAR_YEAR);
-    //            fields.add(SolrConstants.CALENDAR_DAY);
-    //            StringBuilder sbSearchString = new StringBuilder();
-    //            if (collection != null && !collection.isEmpty()) {
-    //                sbSearchString.append(SolrConstants.CALENDAR_DAY)
-    //                        .append(":* AND ")
-    //                        .append(SolrConstants.DC)
-    //                        .append(':')
-    //                        .append(collection)
-    //                        .append('*')
-    //                        .append(docstructFilterQuery);
-    //            } else {
-    //                sbSearchString.append(SolrConstants.CALENDAR_DAY).append(":*").append(docstructFilterQuery);
-    //            }
-    //            sbSearchString.append(SearchHelper.getAllSuffixes());
-    //
-    //            logger.trace("getAllActiveYears query: {}", sbSearchString);
-    //            QueryResponse resp = SearchHelper.searchCalendar(sbSearchString.toString(), fields, 1, false);
-    //
-    //            FacetField facetFieldDay = resp.getFacetField(SolrConstants.CALENDAR_DAY);
-    //            List<Count> dayCounts = facetFieldDay.getValues() != null ? facetFieldDay.getValues() : new ArrayList<>();
-    //            Map<Integer, Integer> yearCountMap = new HashMap<>();
-    //            for (Count day : dayCounts) {
-    //                int year = Integer.parseInt(day.getName().substring(0, 4));
-    //                Integer count = yearCountMap.get(year);
-    //                if (count == null) {
-    //                    count = 0;
-    //                }
-    //                yearCountMap.put(year, (int) (count + day.getCount()));
-    //            }
-    //
-    //            List<Integer> years = new ArrayList<>(yearCountMap.keySet());
-    //            Collections.sort(years);
-    //            for (int year : years) {
-    //                CalendarItemYear item = new CalendarItemYear(String.valueOf(year), year, yearCountMap.get(year));
-    //                allActiveYears.add(item);
-    //            }
-    //        }
-    //        return allActiveYears;
-    //    }
-
-    /**
      * This method returns a list of all active centuries. <br />
      *
      * The method searches for the facet of the field 'CENTURY'. If the count of a facet is greater than 0, the century is active.
@@ -789,15 +732,14 @@ public class CalendarBean implements Serializable {
         return allActiveCenturies.values().stream().sorted().toList();
     }
 
-    private void fillEmptyYears(CalendarItemCentury century, Integer maxYear) {
+    private static void fillEmptyYears(CalendarItemCentury century, Integer maxYear) {
         for (int i = 0; i < 100; i++) {
             Integer year = (century.getValue() - 1) * 100 + i;
             if (year > maxYear) {
                 break;
-            } else {
-                if (century.getYear(year) == null) {
-                    century.addYearHits(year, 0);
-                }
+            }
+            if (century.getYear(year) == null) {
+                century.addYearHits(year, 0);
             }
         }
     }
@@ -806,7 +748,7 @@ public class CalendarBean implements Serializable {
         return year / 100 + (int) Math.signum(year);
     }
 
-    private Map<Integer, Integer> getCounts(QueryResponse resp, String facetField) {
+    private static Map<Integer, Integer> getCounts(QueryResponse resp, String facetField) {
         FacetField facet = resp.getFacetField(facetField);
         List<Count> counts = facet.getValues() != null ? facet.getValues() : new ArrayList<>();
         Map<Integer, Integer> countMap = new HashMap<>();
@@ -831,8 +773,7 @@ public class CalendarBean implements Serializable {
         sbSearchString.append(SearchHelper.getAllSuffixes());
 
         logger.trace("getAllActiveYears query: {}", sbSearchString);
-        QueryResponse resp = SearchHelper.searchCalendar(sbSearchString.toString(), Arrays.asList(fields), 1, false);
-        return resp;
+        return SearchHelper.searchCalendar(sbSearchString.toString(), Arrays.asList(fields), 1, false);
     }
 
     /**
@@ -857,9 +798,8 @@ public class CalendarBean implements Serializable {
      * @param selectYear the selectYear to set
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IOException
      */
-    public void setSelectYear(String selectYear) throws PresentationException, IndexUnreachableException, IOException {
+    public void setSelectYear(String selectYear) throws PresentationException, IndexUnreachableException {
         logger.trace("setSelectYear: {}", selectYear);
         if (this.selectYear == null || !this.selectYear.equals(selectYear)) {
             this.selectYear = selectYear;
@@ -868,7 +808,8 @@ public class CalendarBean implements Serializable {
             monthList = populateMonthsWithDays(selectYear, collection, docstructFilterQuery);
             Integer year = Integer.parseInt(selectYear);
             Integer century = getCentury(year);
-            if (this.allActiveCenturies != null) {
+            // Use getter for allActiveCenturies in case it's not populated yet
+            if (getAllActiveCenturies() != null) {
                 setCurrentYear(this.allActiveCenturies.getOrDefault(century, new CalendarItemCentury(century)).getYear(year));
             }
         }
