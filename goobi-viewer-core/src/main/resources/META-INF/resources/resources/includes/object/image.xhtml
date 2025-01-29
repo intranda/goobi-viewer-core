@@ -294,7 +294,6 @@
 	           		.subscribe(imageId => {
 	           			const pageOrder = imageIdToOrderMap.get(imageId);
 	           			if(pageOrder != undefined) {	          
-	           				console.log("onCurrentImageChange", imageId, pageOrder)
 	           				setCurrentImageOrder({"order": pageOrder});
 	           			}
 	           		});
@@ -302,7 +301,6 @@
 	           		//js updates
 		           	viewImage.sequence.onCurrentImageChange.subscribe (imageId => {
 		           		const pageNo = imageIdToOrderMap.get(imageId);
-           				console.log("onCurrentImageChange2", imageId, pageNo)
 
 		           		if(pageNo != undefined) {	           			
 			           		setBrowserLocation(pageNo);
@@ -313,7 +311,6 @@
 		           	changeImageOrder.subscribe(pageNo => {	    
 		           		if(pageNo != undefined ) {
 		           			const id = sources.iiif.getId(imageSources[Number(pageNo)]);
-		           			console.log("changeImageOrder", pageNo, id);
 		           			if(id != undefined) {		           				
 		            			viewImage.sequence.setCurrentImage(id, true);
 		           			}
