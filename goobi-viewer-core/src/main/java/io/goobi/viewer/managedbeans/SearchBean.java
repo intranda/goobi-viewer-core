@@ -52,14 +52,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
@@ -119,6 +111,13 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.collections.BrowseDcElement;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * SearchBean
@@ -171,8 +170,6 @@ public class SearchBean implements SearchInterface, Serializable {
     private SearchResultGroup activeResultGroup;
     /** Selected advanced search field configuration template. */
     private String advancedSearchFieldTemplate = DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultTemplateName();
-    @Deprecated
-    private boolean phraseSearch = false;
     /** Current search result page. */
     private int currentPage = 1;
     /** Index of the currently open search result (used for search result browsing). */
@@ -1236,7 +1233,6 @@ public class SearchBean implements SearchInterface, Serializable {
         // Reset internal query etc. only after confirming the given search string is not empty
         searchStringInternal = "";
         searchTerms.clear();
-        phraseSearch = false;
 
         if ("*".equals(tempSearchString)) {
             searchStringInternal = SearchHelper.prepareQuery("");
@@ -1250,7 +1246,6 @@ public class SearchBean implements SearchInterface, Serializable {
 
         if (tempSearchString.contains("\"")) {
             // Phrase search
-            phraseSearch = true;
             // Determine proximity search distance if token present, then remove it from the term
             proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(tempSearchString);
             if (proximitySearchDistance > 0) {
@@ -1260,7 +1255,7 @@ public class SearchBean implements SearchInterface, Serializable {
             StringBuilder sb = new StringBuilder();
             for (String p : toSearch) {
                 String phrase = p.replace("\"", "");
-                if (phrase.length() > 0) {
+                if (!phrase.isEmpty()) {
                     if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
                         // For aggregated searches include both SUPER and regular DEFAULT/FULLTEXT fields
                         sb.append(SolrConstants.SUPERDEFAULT).append(":(\"").append(phrase).append("\") OR ");
