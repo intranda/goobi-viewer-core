@@ -79,6 +79,9 @@ public class ArchiveBean implements Serializable {
         this.archiveManager = archiveManager;
     }
 
+    /**
+     * @should reset properties correctly
+     */
     public void reset() {
         this.currentResource = "";
         this.searchString = "";
@@ -559,4 +562,23 @@ public class ArchiveBean implements Serializable {
 
         return "";
     }
+
+    /**
+     * For tests.
+     * 
+     * @param databaseLoaded the databaseLoaded to set
+     */
+    void setDatabaseLoaded(boolean databaseLoaded) {
+        this.databaseLoaded = databaseLoaded;
+    }
+
+    /**
+     * For tests.
+     * 
+     * @param archiveTree the archiveTree to set
+     */
+    void setArchiveTree(ArchiveTree archiveTree) {
+        this.archiveTree = archiveTree;
+    }
+
 }
