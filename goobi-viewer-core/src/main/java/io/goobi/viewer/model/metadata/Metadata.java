@@ -150,7 +150,13 @@ public class Metadata implements Serializable {
         values.add(new MetadataValue(ownerIddoc + "_" + 0, masterValue, label));
         if (StringUtils.isNotEmpty(paramValue)) {
             values.get(0).getParamValues().add(new ArrayList<>());
-            values.get(0).getParamValues().get(0).add(paramValue);
+            // Apply date formatting to YEARMONTHDAY when found as additional metadata
+            if (SolrConstants.CALENDAR_DAY.equals(label)) {
+                params.add(new MetadataParameter().setType(MetadataParameterType.DATEFIELD).setInputPattern("yyyyMMdd"));
+                setParamValue(0, 0, Collections.singletonList(paramValue), label, null, null, null, null);
+            } else {
+                values.get(0).getParamValues().get(0).add(paramValue);
+            }
         }
     }
 
@@ -489,12 +495,13 @@ public class Metadata implements Serializable {
                     break;
                 case DATEFIELD:
                     String outputPattern =
-                            StringUtils.isNotBlank(param.getPattern()) ? param.getPattern() : BeanUtils.getNavigationHelper().getDatePattern();
+                            StringUtils.isNotBlank(param.getOutputPattern()) ? param.getOutputPattern()
+                                    : BeanUtils.getNavigationHelper().getDatePattern();
                     String altOutputPattern = outputPattern.replace("dd/", "");
                     try {
-                        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(outputPattern);
-                        LocalDate date = LocalDate.parse(value);
-                        value = date.format(dateTimeFormatter);
+                        LocalDate date = StringUtils.isNotEmpty(param.getInputPattern())
+                                ? LocalDate.parse(value, DateTimeFormatter.ofPattern(param.getInputPattern())) : LocalDate.parse(value);
+                        value = date.format(DateTimeFormatter.ofPattern(outputPattern));
                     } catch (DateTimeParseException e) {
                         // No-day format hack
                         try {

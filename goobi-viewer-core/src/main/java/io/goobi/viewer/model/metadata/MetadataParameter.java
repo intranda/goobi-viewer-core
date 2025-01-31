@@ -60,6 +60,7 @@ public class MetadataParameter implements Serializable {
         FIELD("field"),
         TRANSLATEDFIELD("translatedfield"),
         DATEFIELD("datefield"),
+        DATETIMEFIELD("datetimefield"),
         IDENTIFIER("identifier"),
         WIKIFIELD("wikifield"),
         WIKIPERSONFIELD("wikipersonfield"),
@@ -122,7 +123,8 @@ public class MetadataParameter implements Serializable {
     private String prefix;
     private String suffix;
     private String condition = "";
-    private String pattern = "";
+    private String inputPattern = "";
+    private String outputPattern = "";
     private boolean addUrl = false;
     private boolean topstructValueFallback = false;
     private boolean removeHighlighting = false;
@@ -360,18 +362,34 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * @return the pattern
+     * @return the inputPattern
      */
-    public String getPattern() {
-        return pattern;
+    public String getInputPattern() {
+        return inputPattern;
     }
 
     /**
-     * @param pattern the pattern to set
+     * @param inputPattern the inputPattern to set
      * @return this
      */
-    public MetadataParameter setPattern(String pattern) {
-        this.pattern = pattern;
+    public MetadataParameter setInputPattern(String inputPattern) {
+        this.inputPattern = inputPattern;
+        return this;
+    }
+
+    /**
+     * @return the outputPattern
+     */
+    public String getOutputPattern() {
+        return outputPattern;
+    }
+
+    /**
+     * @param outputPattern the outputPattern to set
+     * @return this
+     */
+    public MetadataParameter setOutputPattern(String outputPattern) {
+        this.outputPattern = outputPattern;
         return this;
     }
 
@@ -481,7 +499,8 @@ public class MetadataParameter implements Serializable {
         String prefix = config.getString("[@prefix]", "").replace("_SPACE_", " ");
         String suffix = config.getString("[@suffix]", "").replace("_SPACE_", " ");
         String condition = config.getString(XML_PATH_ATTRIBUTE_CONDITION);
-        String pattern = config.getString("[@pattern]");
+        String inputPattern = config.getString("[@inputPattern]");
+        String outputPattern = config.getString("[@pattern]");
         boolean addUrl = config.getBoolean(XML_PATH_ATTRIBUTE_URL, false);
         boolean topstructValueFallback = config.getBoolean("[@topstructValueFallback]", topstructValueFallbackDefaultValue);
         boolean removeHighlighting = config.getBoolean("[@removeHighlighting]", false);
@@ -536,7 +555,8 @@ public class MetadataParameter implements Serializable {
                 .setPrefix(prefix)
                 .setSuffix(suffix)
                 .setCondition(condition)
-                .setPattern(pattern)
+                .setInputPattern(inputPattern)
+                .setOutputPattern(outputPattern)
                 .setAddUrl(addUrl)
                 .setTopstructValueFallback(topstructValueFallback)
                 .setRemoveHighlighting(removeHighlighting)

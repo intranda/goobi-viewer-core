@@ -156,7 +156,7 @@ public class MetadataBuilder {
         IMetadataValue value = new MultiLanguageMetadataValue();
         for (Locale locale : IPolyglott.getLocalesStatic()) {
             String outputPattern =
-                    StringUtils.isNotBlank(param.getPattern()) ? param.getPattern() : NavigationHelper.getDatePattern(locale);
+                    StringUtils.isNotBlank(param.getOutputPattern()) ? param.getOutputPattern() : NavigationHelper.getDatePattern(locale);
             String altOutputPattern = outputPattern.replace("dd/", "");
             String dateString = "";
 
