@@ -53,8 +53,18 @@ class LocalDateTimeConverterTest {
         UIComponent component = Mockito.mock(UIComponent.class);
         Mockito.when(component.getAttributes()).thenReturn(attributes);
 
-        LocalDateTime date = new LocalDateTimeConverter().setLocale(Locale.GERMAN).getAsObject(null, component, DATETIME_GERMAN);
-        assertEquals(DATETIME, date);
+        assertEquals(DATETIME, new LocalDateTimeConverter().setLocale(Locale.GERMAN).getAsObject(null, component, DATETIME_GERMAN));
+    }
+    
+    @Test
+    void getAsString_shouldConvertGermanDateTimeCorrectly() {
+        Map<String, Object> attributes = new HashMap<>(2);
+        attributes.put("pattern", PATTERN_GERMAN);
+        attributes.put("timeZone", "UTC");
+        UIComponent component = Mockito.mock(UIComponent.class);
+        Mockito.when(component.getAttributes()).thenReturn(attributes);
+
+        assertEquals(DATETIME_GERMAN, new LocalDateTimeConverter().setLocale(Locale.GERMAN).getAsString(null, component, DATETIME));
     }
 
     @Test
@@ -65,8 +75,19 @@ class LocalDateTimeConverterTest {
         UIComponent component = Mockito.mock(UIComponent.class);
         Mockito.when(component.getAttributes()).thenReturn(attributes);
 
-        LocalDateTime date = new LocalDateTimeConverter().setLocale(Locale.ENGLISH).getAsObject(null, component, DATETIME_ENGLISH);
-        assertEquals(DATETIME, date);
+        assertEquals(DATETIME, new LocalDateTimeConverter().setLocale(Locale.ENGLISH).getAsObject(null, component, DATETIME_ENGLISH));
+    }
+    
+    
+    @Test
+    void getAsString_shouldConvertEnglishDateTimeCorrectly() {
+        Map<String, Object> attributes = new HashMap<>(2);
+        attributes.put("pattern", PATTERN_ENGLISH);
+        attributes.put("timeZone", "UTC");
+        UIComponent component = Mockito.mock(UIComponent.class);
+        Mockito.when(component.getAttributes()).thenReturn(attributes);
+
+        assertEquals(DATETIME_ENGLISH, new LocalDateTimeConverter().setLocale(Locale.ENGLISH).getAsString(null, component, DATETIME));
     }
 
     @Test
@@ -76,7 +97,17 @@ class LocalDateTimeConverterTest {
         attributes.put("timeZone", "UTC");
         UIComponent component = Mockito.mock(UIComponent.class);
         Mockito.when(component.getAttributes()).thenReturn(attributes);
-        LocalDateTime date = new LocalDateTimeConverter().setLocale(Locale.ENGLISH).getAsObject(null, component, DATETIME_GENERIC);
-        assertEquals(DATETIME, date);
+        assertEquals(DATETIME, new LocalDateTimeConverter().setLocale(Locale.ENGLISH).getAsObject(null, component, DATETIME_GENERIC));
+    }
+    
+    @Test
+    void getAsString_shouldConvertGenericDateTimeCorrectly() {
+        Map<String, Object> attributes = new HashMap<>(2);
+        attributes.put("pattern", PATTERN_GENERIC);
+        attributes.put("timeZone", "UTC");
+        UIComponent component = Mockito.mock(UIComponent.class);
+        Mockito.when(component.getAttributes()).thenReturn(attributes);
+
+        assertEquals(DATETIME_GENERIC, new LocalDateTimeConverter().setLocale(Locale.ENGLISH).getAsString(null, component, DATETIME));
     }
 }

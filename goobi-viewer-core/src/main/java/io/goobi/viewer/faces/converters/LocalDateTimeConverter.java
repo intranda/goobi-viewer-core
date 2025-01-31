@@ -42,6 +42,11 @@ public class LocalDateTimeConverter implements Converter<LocalDateTime> {
 
     private Locale locale;
 
+    /**
+     * @should convert English dateTime correctly
+     * @should convert German dateTime correctly
+     * @should covert generic dateTime correctly
+     */
     @Override
     public LocalDateTime getAsObject(FacesContext context, UIComponent component, String submittedValue) {
         if (submittedValue == null || submittedValue.isEmpty()) {
@@ -55,6 +60,11 @@ public class LocalDateTimeConverter implements Converter<LocalDateTime> {
         }
     }
 
+    /**
+     * @should convert English dateTime correctly
+     * @should convert German dateTime correctly
+     * @should covert generic dateTime correctly
+     */
     @Override
     public String getAsString(FacesContext context, UIComponent component, LocalDateTime ldt) {
         if (ldt == null) {
