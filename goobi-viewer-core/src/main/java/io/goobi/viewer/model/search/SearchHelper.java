@@ -397,6 +397,7 @@ public final class SearchHelper {
                 SolrDocumentList childDocs = childDocsMap.getOrDefault(pi, new SolrDocumentList());
                 logger.trace("{} child hits found for {}", childDocs.size(), pi);
                 childDocs = filterChildDocs(childDocs, iddoc, searchTerms, factory);
+                logger.trace("{} child hits left after filtering.", childDocs.size());
                 hit.setChildDocs(childDocs);
 
                 // Check whether user may see full-text, before adding them to count
@@ -3135,7 +3136,11 @@ public final class SearchHelper {
         }
 
         if (additionalFields != null) {
-            ret.addAll(additionalFields);
+            for (String field : additionalFields) {
+                if (!ret.contains(field)) {
+                    ret.add(field);
+                }
+            }
         }
 
         return ret;
