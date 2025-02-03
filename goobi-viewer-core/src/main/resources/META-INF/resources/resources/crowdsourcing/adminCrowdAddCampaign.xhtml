@@ -786,6 +786,8 @@
 								<ui:include src="/resources/cms/includes/mediaSelect.xhtml">
 									<ui:param name="mediaDisplayPanel"
 										value="createCampaignForm:contentMediaGroup" />
+									<ui:param name="fileTypes" value="#{cmsMediaBean.getImageTypes()}"/>
+        							<ui:param name="fileTypeValidator" value="#{cmsMediaBean.getImageFilter()}"/>
 								</ui:include>
 							</div>
 						</ui:fragment>
