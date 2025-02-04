@@ -28,15 +28,24 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.jdom2.Document;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.XmlTools;
 
 class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
+    
+    @Override
+    @BeforeEach
+    public void setUp() throws Exception {
+        super.setUp();
+        DataManager.getInstance().getConfiguration().overrideValue("configFolder", "src/test/resources/xsl/");
+    }
 
     /**
      * @see MetsResolver#doGet(HttpServletRequest,HttpServletResponse)

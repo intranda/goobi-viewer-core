@@ -245,7 +245,7 @@ public class MetsResolver extends HttpServlet {
      * @return {@link Document} without restricted metadata elements
      */
     static Document filterRestrictedMetadata(Document metsDoc) {
-        String stylesheetFilePath = DataManager.getInstance().getConfiguration().getConfigLocalPath() + "METS_metadata_filter.xsl";
+        String stylesheetFilePath = DataManager.getInstance().getConfiguration().getConfigLocalPath() + "METS_filter.xsl";
         try (FileInputStream fis = new FileInputStream(stylesheetFilePath)) {
             XSLTransformer transformer = new XSLTransformer(fis);
             return transformer.transform(metsDoc);
