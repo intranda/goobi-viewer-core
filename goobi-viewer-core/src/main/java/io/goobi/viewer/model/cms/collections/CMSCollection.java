@@ -290,7 +290,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * @param value a {@link java.lang.String} object.
      */
     public void setLabel(String value, String language) {
-        getLabels().stream().filter(label -> label.getLanguage().equalsIgnoreCase(language)).findFirst().ifPresent(label -> label.setValue(value));
+        getLabels().stream().filter(label -> label.getLanguage().equalsIgnoreCase(language)).findFirst().ifPresent(label -> label.setTranslationValue(value));
     }
 
     /**
@@ -305,7 +305,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
                 .filter(translation -> language.equalsIgnoreCase(translation.getLanguage()))
                 //                .filter(translation -> StringUtils.isNotBlank(translation.getValue()))
                 .findFirst()
-                .map(Translation::getValue)
+                .map(Translation::getTranslationValue)
                 .orElse("");
         //                .orElse(ViewerResourceBundle.getTranslation(getSolrFieldValue() + "_DESCRIPTION", null));
     }
@@ -342,7 +342,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         getDescriptions().stream()
                 .filter(label -> label.getLanguage().equalsIgnoreCase(language))
                 .findFirst()
-                .ifPresent(desc -> desc.setValue(value));
+                .ifPresent(desc -> desc.setTranslationValue(value));
     }
 
     /**
@@ -430,9 +430,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
                         .filter(t -> StringUtils.equals(t.getLanguage(), tr.getLanguage()))
                         .findAny()
                         .orElse(null);
-                if (otr == null && StringUtils.isNotBlank(tr.getValue())) {
+                if (otr == null && StringUtils.isNotBlank(tr.getTranslationValue())) {
                     return false;
-                } else if (otr != null && !StringUtils.equals(otr.getValue(), tr.getValue())) {
+                } else if (otr != null && !StringUtils.equals(otr.getTranslationValue(), tr.getTranslationValue())) {
                     return false;
                 }
             }
@@ -649,8 +649,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     @Override
     public IMetadataValue getTranslationsForName() {
         Map<String, String> labels = getLabels().stream()
-                .filter(l -> StringUtils.isNotBlank(l.getValue()))
-                .collect(Collectors.toMap(l -> l.getLanguage(), l -> l.getValue()));
+                .filter(l -> StringUtils.isNotBlank(l.getTranslationValue()))
+                .collect(Collectors.toMap(l -> l.getLanguage(), l -> l.getTranslationValue()));
         if (labels.isEmpty()) {
             return ViewerResourceBundle.getTranslations(getSolrFieldValue());
         }
@@ -661,8 +661,8 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     @Override
     public IMetadataValue getTranslationsForDescription() {
         Map<String, String> descriptions = getDescriptions().stream()
-                .filter(l -> StringUtils.isNotBlank(l.getValue()))
-                .collect(Collectors.toMap(l -> l.getLanguage(), l -> l.getValue()));
+                .filter(l -> StringUtils.isNotBlank(l.getTranslationValue()))
+                .collect(Collectors.toMap(l -> l.getLanguage(), l -> l.getTranslationValue()));
         if (descriptions.isEmpty()) {
             return null;
         }
@@ -728,7 +728,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
             return true;
         }
 
-        return StringUtils.isBlank(translation.getValue());
+        return StringUtils.isBlank(translation.getTranslationValue());
     }
 
     /* (non-Javadoc)

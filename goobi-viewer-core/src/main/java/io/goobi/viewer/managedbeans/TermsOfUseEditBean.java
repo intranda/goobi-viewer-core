@@ -74,7 +74,7 @@ public class TermsOfUseEditBean implements Serializable, IPolyglott {
         if (translation == null) {
             translation = this.termsOfUse.setTitle(getSelectedLanguage(), "");
         }
-        return translation.getValue();
+        return translation.getTranslationValue();
     }
 
     public void setTitle(String value) {
@@ -86,7 +86,7 @@ public class TermsOfUseEditBean implements Serializable, IPolyglott {
         if (translation == null) {
             translation = this.termsOfUse.setDescription(getSelectedLanguage(), "");
         }
-        return translation.getValue();
+        return translation.getTranslationValue();
     }
 
     public void setDescription(String value) {

@@ -2720,13 +2720,13 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     void testUpdateTranslations() throws Exception {
         String newVal = "Kartenbeschreibung 2";
         GeoMap map1 = DataManager.getInstance().getDao().getGeoMap(1l);
-        Assertions.assertEquals("Kartenbeschreibung 1", map1.getDescription("de").getValue());
-        map1.getDescription("de").setValue(newVal);
-        Assertions.assertEquals(newVal, map1.getDescription("de").getValue());
+        Assertions.assertEquals("Kartenbeschreibung 1", map1.getDescription("de").getTranslationValue());
+        map1.getDescription("de").setTranslationValue(newVal);
+        Assertions.assertEquals(newVal, map1.getDescription("de").getTranslationValue());
 
         DataManager.getInstance().getDao().updateGeoMap(map1);
         map1 = DataManager.getInstance().getDao().getAllGeoMaps().stream().filter(map -> map.getId() == 1l).findAny().orElse(null);
-        Assertions.assertEquals(newVal, map1.getDescription("de").getValue());
+        Assertions.assertEquals(newVal, map1.getDescription("de").getTranslationValue());
     }
 
     /**
@@ -2905,10 +2905,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         DataManager.getInstance().getDao().saveTermsOfUse(tou);
         tou = DataManager.getInstance().getDao().getTermsOfUse();
-        Assertions.assertEquals("English Title", tou.getTitle("en").getValue());
-        Assertions.assertEquals("German Title", tou.getTitle("de").getValue());
-        Assertions.assertEquals("German description", tou.getDescription("de").getValue());
-        Assertions.assertEquals("English description", tou.getDescription("en").getValue());
+        Assertions.assertEquals("English Title", tou.getTitle("en").getTranslationValue());
+        Assertions.assertEquals("German Title", tou.getTitle("de").getTranslationValue());
+        Assertions.assertEquals("German description", tou.getDescription("de").getTranslationValue());
+        Assertions.assertEquals("English description", tou.getDescription("en").getTranslationValue());
 
     }
 

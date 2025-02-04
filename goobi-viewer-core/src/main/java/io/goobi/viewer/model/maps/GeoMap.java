@@ -232,7 +232,7 @@ public class GeoMap implements Serializable {
         if (title.isEmpty()) {
             title = getTitle(IPolyglott.getDefaultLocale().getLanguage());
         }
-        return title.getValue();
+        return title.getTranslationValue();
     }
 
     public String getDescription() {
@@ -240,7 +240,7 @@ public class GeoMap implements Serializable {
         if (desc.isEmpty()) {
             desc = getDescription(BeanUtils.getNavigationHelper().getDefaultLocale().getLanguage());
         }
-        return desc.getValue();
+        return desc.getTranslationValue();
     }
 
     public MapTranslation getTitle(String language) {
@@ -351,7 +351,7 @@ public class GeoMap implements Serializable {
             Map<String, String> titles = translations.stream()
                     .filter(t -> METADATA_TAG_TITLE.equals(t.getTag()))
                     .filter(t -> !t.isEmpty())
-                    .collect(Collectors.toMap(MapTranslation::getLanguage, MapTranslation::getValue));
+                    .collect(Collectors.toMap(MapTranslation::getLanguage, MapTranslation::getTranslationValue));
             return new MultiLanguageMetadataValue(titles);
         }
     }
@@ -361,7 +361,7 @@ public class GeoMap implements Serializable {
             Map<String, String> titles = translations.stream()
                     .filter(t -> METADATA_TAG_DESCRIPTION.equals(t.getTag()))
                     .filter(t -> !t.isEmpty())
-                    .collect(Collectors.toMap(MapTranslation::getLanguage, MapTranslation::getValue));
+                    .collect(Collectors.toMap(MapTranslation::getLanguage, MapTranslation::getTranslationValue));
             return new MultiLanguageMetadataValue(titles);
         }
     }

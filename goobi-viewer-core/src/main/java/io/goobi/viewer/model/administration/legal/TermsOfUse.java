@@ -104,7 +104,7 @@ public class TermsOfUse {
     }
 
     public Optional<String> getTitleIfExists(String language) {
-        return getForLanguage(getTitles(), language).findAny().map(Translation::getValue);
+        return getForLanguage(getTitles(), language).findAny().map(Translation::getTranslationValue);
     }
 
     public TermsOfUseTranslation setTitle(String language, String value) {
@@ -114,7 +114,7 @@ public class TermsOfUse {
             translation.setTag(TITLE_TAG);
             this.translations.add(translation);
         } else {
-            translation.setValue(value);
+            translation.setTranslationValue(value);
         }
         return translation;
     }
@@ -125,7 +125,7 @@ public class TermsOfUse {
     }
 
     public Optional<String> getDescriptionIfExists(String language) {
-        return getForLanguage(getDescriptions(), language).findAny().map(Translation::getValue);
+        return getForLanguage(getDescriptions(), language).findAny().map(Translation::getTranslationValue);
     }
 
     public TermsOfUseTranslation setDescription(String language, String value) {
@@ -135,7 +135,7 @@ public class TermsOfUse {
             translation.setTag(DESCRIPTION_TAG);
             this.translations.add(translation);
         } else {
-            translation.setValue(value);
+            translation.setTranslationValue(value);
         }
         return translation;
     }
@@ -166,7 +166,7 @@ public class TermsOfUse {
         Iterator<TermsOfUseTranslation> i = this.translations.iterator();
         while (i.hasNext()) {
             TermsOfUseTranslation t = i.next();
-            if (StringUtils.isBlank(t.getValue())) {
+            if (StringUtils.isBlank(t.getTranslationValue())) {
                 i.remove();
             }
         }
