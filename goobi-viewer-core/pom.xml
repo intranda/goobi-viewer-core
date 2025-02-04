@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>25.01-SNAPSHOT</version>
+	<version>25.02-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Goobi viewer - Core</name>
 	<description>The Goobi viewer is an open source solution for the presentation of digitized cultural assets.</description>
@@ -79,7 +79,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.6.2</alto.version>
-		<ics.version>4.0.1</ics.version>
+		<ics.version>4.0.2</ics.version>
 		<tei-conversion.version>1.3.3</tei-conversion.version>
 		<iiif-api-model.version>3.0.0</iiif-api-model.version>
 		<normdataimporter.version>2.0.0</normdataimporter.version>
