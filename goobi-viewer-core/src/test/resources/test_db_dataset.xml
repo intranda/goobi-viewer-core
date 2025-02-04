@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-	<users user_id="1" email="1@users.org" password_hash="abcdef1"
+	<viewer_users user_id="1" email="1@users.org" password_hash="abcdef1"
 		active="true" suspended="false" superuser="true" last_name="last 1"
 		first_name="first 1" nickname="admin" comments="no comments 1" score="0"
 		avatar_type="GRAVATAR" last_login="2012-03-03 11:22:33.000000000" />
-	<users user_id="2" email="2@users.org" password_hash="abcdef2"
+	<viewer_users user_id="2" email="2@users.org" password_hash="abcdef2"
 		active="true" suspended="false" superuser="false" last_name="last 2"
 		first_name="first 2" nickname="nick 2" comments="no comments 2" score="120"
 		avatar_type="DEFAULT" />
-    <users user_id="3" email="3@users.org" password_hash="abcdef3"
+    <viewer_users user_id="3" email="3@users.org" password_hash="abcdef3"
         active="true" suspended="true" superuser="false" last_name="last 3"
         first_name="first 3" comments="no comments 3" score="-1"
         avatar_type="DEFAULT" />
@@ -28,8 +28,8 @@
     <user_groups user_group_id="3" name="user group 3 name"
         owner_id="1" description="user group 3" active="false" />
 
-	<roles role_id="1" name="role 1 name" description="role 1 desc" />
-	<roles role_id="2" name="role 2 name" description="role 2 (unused)" />
+	<user_roles role_id="1" name="role 1 name" description="role 1 desc" />
+	<user_roles role_id="2" name="role 2 name" description="role 2 (unused)" />
 	
 	<role_privileges role_id="1" privilege_name="role 1 priv 1" />
 
