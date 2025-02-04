@@ -78,7 +78,7 @@ import jakarta.persistence.UniqueConstraint;
  * @author Florian Alpers
  */
 @Entity
-@Table(name = "cms_collections", uniqueConstraints = { @UniqueConstraint(columnNames = { "solrField", "solrFieldValue" }) })
+@Table(name = "cms_collections", uniqueConstraints = { @UniqueConstraint(columnNames = { "solr_field", "solr_value" }) })
 public class CMSCollection implements Comparable<CMSCollection>, BrowseElementInfo, CMSMediaHolder, IPolyglott, Serializable {
 
     private static final long serialVersionUID = 4674623800509560656L;
