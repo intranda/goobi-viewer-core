@@ -65,13 +65,13 @@ var viewerJS = ( function( viewer ) {
         
         return new Promise( (resolve, reject) => {
         
-	        let $overlay = $(".overlay");
+	        let $overlay = $("#overlayModal");
 	        if($overlay.length > 0) {
 	            if($overlay.hasClass("active")) {
 	                defer.reject("overlay is already active");
 	                return;
 	            }
-	            
+	            console.log("open in ", $overlay);
 	            let $node = $(node);
 	            let $contentHeader = $node.find("[data-overlay-content='header']");
 	            let $contentBody = $node.find("[data-overlay-content='body']");
@@ -84,6 +84,7 @@ var viewerJS = ( function( viewer ) {
 	            if($areaHeader.length > 0 && $contentHeader.length > 0) {
 	                $areaHeader.append($contentHeader);
 	            }
+				console.log("append ", $contentBody, " to ", $areaBody);
 	            if($areaBody.length > 0 && $contentBody.length > 0) {
 	                $areaBody.append($contentBody);
 	            }
@@ -95,7 +96,7 @@ var viewerJS = ( function( viewer ) {
 	            let $modal = $("#overlayModal");
 	            $modal.modal({
 	                backdrop: true,
-	                keyboad: closable,
+	                keyboard: closable,
 	                focus: true,
 	                show: true
 	            })

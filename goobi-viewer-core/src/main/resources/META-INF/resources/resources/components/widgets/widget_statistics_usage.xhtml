@@ -23,15 +23,16 @@
 				<ui:param name="displayStatistics"
 				value="#{viewBean.get('showRecordStatistics') == 'true' or not statisticsBean.recordStatisticWidgetCollapsible}" />
 
-			<o:commandScript render="@none" name="hideStatistics"
+		<h:form>
+			<h:commandScript render="@none" name="hideStatistics"
 				action="#{viewBean.put('showRecordStatistics', 'false')}">
-			</o:commandScript>
-			<o:commandScript render="usageStatisticsDisplay"
+			</h:commandScript>
+			<h:commandScript render="usageStatisticsDisplay"
 				name="showStatistics"
 				action="#{viewBean.put('showRecordStatistics', 'true')}"
 				onbegin="document.querySelector('.usage-statistics-loader')?.classList.remove('d-none')"
 				oncomplete="document.querySelector('.usage-statistics-loader')?.classList.add('d-none')">
-			</o:commandScript>
+			</h:commandScript>
 
 			<h:panelGroup rendered="#{cc.attrs.collapse == false}">
 				<div id="widgetUsageStatistics"
@@ -110,6 +111,7 @@
 					</div>
 				</div>
 			</h:panelGroup>
+			</h:form>
 		</c:if>
 	</composite:implementation>
 </ui:composition>

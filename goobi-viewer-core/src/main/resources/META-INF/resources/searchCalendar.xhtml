@@ -38,7 +38,7 @@
 						<!-- SEARCH CALENDAR TITLE -->
 						<div class="search-calendar__title">
 							<h1>
-								<h:outputText value="#{msg.searchCalendar}" />
+								<h:outputText value="#{msg.searchCalendar} #{calendarBean.currentYear != null ? calendarBean.currentYear.name : ''}" />
 							</h1>
 						</div>
 

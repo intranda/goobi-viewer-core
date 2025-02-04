@@ -26,7 +26,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_USER_AVATAR_IMAGE_IIIF;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
@@ -51,7 +51,7 @@ public class LocalUserAvatar implements UserAvatar {
     }
 
     /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.user.icon.IconProvider#getIconUrl(int, javax.servlet.http.HttpServletRequest)
+     * @see io.goobi.viewer.model.security.user.icon.IconProvider#getIconUrl(int, jakarta.servlet.http.HttpServletRequest)
      */
     @Override
     public String getIconUrl(int size, HttpServletRequest request) {

@@ -29,14 +29,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import javax.faces.model.SelectItem;
 
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
@@ -79,6 +78,7 @@ import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.faces.model.SelectItem;
 
 class ConfigurationTest extends AbstractTest {
 
@@ -1360,24 +1360,6 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSolrCompressionEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    void isSolrCompressionEnabled_shouldReturnCorrectValue() {
-        assertFalse(DataManager.getInstance().getConfiguration().isSolrCompressionEnabled());
-    }
-
-    /**
-     * @see Configuration#isSolrBackwardsCompatible()
-     * @verifies return correct value
-     */
-    @Test
-    void isSolrBackwardsCompatible_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isSolrBackwardsCompatible());
-    }
-
-    /**
      * @see Configuration#isSidebarFulltextLinkVisible()
      * @verifies return correct value
      */
@@ -2081,7 +2063,7 @@ class ConfigurationTest extends AbstractTest {
     void isAdvancedSearchEnabled_shouldReturnCorrectValue() {
         assertFalse(DataManager.getInstance().getConfiguration().isAdvancedSearchEnabled());
     }
-    
+
     /**
      * @see Configuration#getAdvancedSearchTemplateNames()
      * @verifies return all configured values
@@ -2092,7 +2074,7 @@ class ConfigurationTest extends AbstractTest {
         Assertions.assertNotNull(result);
         assertEquals(2, result.size());
     }
-    
+
     /**
      * @see Configuration#getAdvancedSearchTemplateQuery(String)
      * @verifies return correct value
@@ -3617,11 +3599,12 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @throws MalformedURLException
+     * @throws URISyntaxException 
      * @see Configuration#isHostProxyWhitelisted(String)
      * @verifies return true if host whitelisted
      */
     @Test
-    void isHostProxyWhitelisted_shouldReturnTrueIfHostWhitelisted() throws MalformedURLException {
+    void isHostProxyWhitelisted_shouldReturnTrueIfHostWhitelisted() throws MalformedURLException, URISyntaxException {
         assertTrue(DataManager.getInstance().getConfiguration().isHostProxyWhitelisted("http://localhost:1234"));
     }
 

@@ -50,8 +50,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.faces.context.FacesContext;
-import javax.servlet.ServletContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.ServletContext;
 
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.ConfigurationBuilder;

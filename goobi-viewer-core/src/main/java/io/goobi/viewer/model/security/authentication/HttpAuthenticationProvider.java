@@ -27,7 +27,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import javax.ws.rs.WebApplicationException;
+import jakarta.ws.rs.WebApplicationException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.config.RequestConfig;
@@ -69,10 +69,10 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
     protected final String name;
     protected final String label;
     protected final String type;
-    protected final String url;
     protected final String image;
     protected final long timeoutMillis;
     protected List<String> addUserToGroups;
+    protected String url;
     /** URL to redirect to after successful login. */
     protected String redirectUrl;
 
@@ -211,7 +211,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
      * @param url a {@link java.net.URI} object.
      * @param requestEntity a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
-     * @throws javax.ws.rs.WebApplicationException if any.
+     * @throws jakarta.ws.rs.WebApplicationException if any.
      */
     protected String post(URI url, String requestEntity) throws WebApplicationException {
         //client from connectionManager is reused, so don't close it
@@ -243,7 +243,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
      *
      * @param url a {@link java.net.URI} object.
      * @return a {@link java.lang.String} object.
-     * @throws javax.ws.rs.WebApplicationException if any.
+     * @throws jakarta.ws.rs.WebApplicationException if any.
      */
     protected String get(URI url) throws WebApplicationException {
         //client from connectionManager is reused, so don't close it

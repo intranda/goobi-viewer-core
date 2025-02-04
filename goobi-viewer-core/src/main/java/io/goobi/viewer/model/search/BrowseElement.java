@@ -22,8 +22,6 @@
 package io.goobi.viewer.model.search;
 
 import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -532,16 +530,12 @@ public class BrowseElement implements Serializable {
      * @should return empty string for unknown file extensions
      */
     static String getMimeTypeFromExtension(String filename) {
-        try {
-            URL fileUrl = new URL(filename);
-            ImageFileFormat format = ImageFileFormat.getImageFileFormatFromFileExtension(fileUrl.getPath());
-            if (format != null) {
-                return format.getMimeType();
-            }
-        } catch (MalformedURLException e) {
-            logger.warn(e.getMessage());
+        ImageFileFormat format = ImageFileFormat.getImageFileFormatFromFileExtension(filename);
+        if (format != null) {
+            return format.getMimeType();
+        } else {
+            return "";
         }
-        return "";
     }
 
     /**

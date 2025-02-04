@@ -33,23 +33,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
@@ -70,6 +59,17 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * @author florian
@@ -90,13 +90,14 @@ public class RecordsFilesImageResource extends ImageResource {
      * @param urls
      * @param pi
      * @param filename
+     * @param cacheManager
      */
     public RecordsFilesImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Context ApiUrls urls,
-            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
-            @Parameter(description = "Filename of the image") @PathParam("filename") String filename) {
-        super(context, request, response, pi, filename);
+            @Context ApiUrls urls, @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
+            @Parameter(description = "Filename of the image") @PathParam("filename") String filename,
+            @Context ContentServerCacheManager cacheManager) {
+        super(context, request, response, pi, filename, cacheManager);
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename);
         //Privilege must be PRIV_BORN_DIGITAL for born digital PDFs, and PRIV_VIEW_IMAGES otherwise (i.e. for images)
@@ -144,25 +145,33 @@ public class RecordsFilesImageResource extends ImageResource {
     @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
     @Override
     public StreamingOutput getPdf() throws ContentLibException {
-        String pi = request.getAttribute("pi").toString();
-        String filename = request.getAttribute("filename").toString();
-        logger.trace("getPdf: {}/{}", pi, filename);
-        filename = FilenameUtils.getBaseName(filename);
-        filename = pi + "_" + filename + ".pdf";
-        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
+        try {
+            String pi = request.getAttribute("pi").toString();
+            String filename = request.getAttribute("filename").toString();
+            logger.trace("getPdf: {}/{}", pi, filename);
+            filename = FilenameUtils.getBaseName(filename);
+            filename = pi + "_" + filename + ".pdf";
+            response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
 
-        if (context.getProperty("param:metsSource") != null) {
-            try {
-                String metsSource = context.getProperty("param:metsSource").toString();
-                String metsPath = PathConverter.getPath(PathConverter.toURI(metsSource)).resolve(pi + ".xml").toUri().toString();
-                context.setProperty("param:metsFile", metsPath);
-            } catch (URISyntaxException e) {
-                logger.error("Failed to convert metsSource {} to METS URI", context.getProperty("metsSource"));
+            if (context.getProperty("param:metsSource") != null) {
+                try {
+                    String metsSource = context.getProperty("param:metsSource").toString();
+                    String metsPath = PathConverter.getPath(PathConverter.toURI(metsSource)).resolve(pi + ".xml").toUri().toString();
+                    context.setProperty("param:metsFile", metsPath);
+                } catch (URISyntaxException e) {
+                    logger.error("Failed to convert metsSource {} to METS URI", context.getProperty("metsSource"));
+                }
+
             }
 
+            return super.getPdf();
+        } catch (ContentLibException e) {
+            logger.error(e.toString(), e);
+            throw e;
+        } catch (RuntimeException e) {
+            logger.error(e.toString(), e);
+            throw e;
         }
-
-        return super.getPdf();
     }
 
     @Override
@@ -181,6 +190,7 @@ public class RecordsFilesImageResource extends ImageResource {
             String toReplace = URLEncoder.encode("{pi}", "UTF-8");
             this.resourceURI = URI.create(this.resourceURI.toString().replace(toReplace, directory));
         } catch (UnsupportedEncodingException e) {
+            logger.warn(e.getMessage());
         }
     }
 

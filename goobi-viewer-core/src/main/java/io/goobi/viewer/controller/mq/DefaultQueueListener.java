@@ -45,6 +45,7 @@ public class DefaultQueueListener {
 
     private static final Logger log = LogManager.getLogger(DefaultQueueListener.class);
 
+    private final Object lock = new Object();
     private final MessageQueueManager messageBroker;
     private Thread thread = null;
     private volatile boolean shouldStop = false;
@@ -119,12 +120,10 @@ public class DefaultQueueListener {
         try {
             Message message = consumer.receive();
             ViewerMessage ticket = null;
-            if (message instanceof TextMessage) {
-                TextMessage tm = (TextMessage) message;
+            if (message instanceof TextMessage tm) {
                 ticket = ViewerMessage.parseJSON(tm.getText());
             }
-            if (message instanceof BytesMessage) {
-                BytesMessage bm = (BytesMessage) message;
+            if (message instanceof BytesMessage bm) {
                 byte[] bytes = new byte[(int) bm.getBodyLength()];
                 bm.readBytes(bytes);
                 ticket = ViewerMessage.parseJSON(new String(bytes));
@@ -136,13 +135,13 @@ public class DefaultQueueListener {
             if (!shouldStop) {
                 // back off a little bit, maybe we have a problem with the connection or we are shutting down
                 try {
-                    Thread.sleep(1500);
+                    Thread.sleep(3000);
                 } catch (InterruptedException e1) {
                     Thread.currentThread().interrupt();
                     return;
                 }
                 if (!shouldStop) {
-                    log.error("Message listener has encountered an error. Attempting to resume listener", e);
+                    log.error("Message listener {} has encountered an error. Attempting to resume listener", this, e);
                 }
             }
         }
@@ -216,9 +215,11 @@ public class DefaultQueueListener {
 
     public void close() {
         this.shouldStop = true;
-        log.info("Stopping MessageQueue listener...");
+        log.info("Stopping MessageQueue listener {}...", this);
         try {
-            this.thread.join(1000);
+            if (this.thread != null) {
+                this.thread.join(1000);
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

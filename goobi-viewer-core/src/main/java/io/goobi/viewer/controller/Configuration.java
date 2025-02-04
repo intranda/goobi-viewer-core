@@ -27,6 +27,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -44,8 +46,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.faces.model.SelectItem;
 
 import org.apache.commons.configuration2.BaseHierarchicalConfiguration;
 import org.apache.commons.configuration2.HierarchicalConfiguration;
@@ -113,6 +113,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.collections.DcSortingList;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.faces.model.SelectItem;
 
 /**
  * <p>
@@ -906,7 +907,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         FeatureSetConfiguration config = new FeatureSetConfiguration("docStruct", "MD_TITLE",
-                DataManager.getInstance().getConfiguration().getRecordGeomapMarker(templateName, ""), "", "LABEL", Collections.emptyList());
+                DataManager.getInstance().getConfiguration().getRecordGeomapMarker(templateName), "", "LABEL", Collections.emptyList());
 
         return List.of(config);
     }
@@ -959,19 +960,6 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isDisplaySidebarRssFeed() {
         return getLocalBoolean("sidebar.sidebarRssFeed[@enabled]", true);
-    }
-
-    /**
-     * <p>
-     * isOriginalContentDownload.
-     * </p>
-     *
-     * @return a boolean.
-     * @deprecated Use Configuration.isDisplaySidebarWidgetAdditionalFiles()
-     */
-    @Deprecated(since = "2023.11")
-    public boolean isDisplaySidebarWidgetDownloads() {
-        return isDisplaySidebarWidgetAdditionalFiles();
     }
 
     /**
@@ -1715,7 +1703,6 @@ public class Configuration extends AbstractConfiguration {
             return StringConstants.DEFAULT_NAME;
         }
 
-        String ret = null;
         for (HierarchicalConfiguration<ImmutableNode> subElement : templateList) {
             String name = subElement.getString(XML_PATH_ATTRIBUTE_NAME);
             if (StringConstants.DEFAULT_NAME.equals(name)) {
@@ -2552,21 +2539,25 @@ public class Configuration extends AbstractConfiguration {
             String type = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@type]", "");
             String endpoint = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@endpoint]", null);
             String tokenEndpoint = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tokenEndpoint]", null);
+            String jwksUri = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@jwksUri]", null);
             String redirectionEndpoint = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@redirectionEndpoint]", null);
             String scope = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@scope]", null);
+            String responseType = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@responseType]", "code");
+            String responseMode = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@responseMode]");
             String image = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@image]", null);
             boolean enabled = myConfigToUse.getBoolean(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@enabled]", true);
+            String discoveryUri = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@discoveryUri]");
             String clientId = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@clientId]", null);
             String clientSecret = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@clientSecret]", null);
             String parameterType = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@parameterType]", null);
             String parameterName = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@parameterName]", null);
+            String issuer = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@issuer]");
+            long tokenCheckDelay = myConfigToUse.getLong(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tokenCheckDelay]", 0);
             String thirdPartyLoginUrl = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginUrl]", null);
             String thirdPartyLoginApiKey = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginApiKey]", null);
             String thirdPartyLoginScope = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginScope]", null);
             String thirdPartyLoginReqParamDef = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginReqParamDef]", null);
-            ;
             String thirdPartyLoginClaim = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginClaim]", null);
-            ;
             long timeoutMillis = myConfigToUse.getLong(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@timeout]", 60000);
 
             if (enabled) {
@@ -2578,9 +2569,15 @@ public class Configuration extends AbstractConfiguration {
                     case "openid":
                         providers.add(
                                 new OpenIdProvider(name, label, endpoint, image, timeoutMillis, clientId, clientSecret)
+                                        .setDiscoveryUri(discoveryUri)
                                         .setTokenEndpoint(tokenEndpoint)
                                         .setRedirectionEndpoint(redirectionEndpoint)
+                                        .setJwksUri(jwksUri)
                                         .setScope(scope)
+                                        .setResponseType(responseType)
+                                        .setResponseMode(responseMode)
+                                        .setIssuer(issuer)
+                                        .setTokenCheckDelay(tokenCheckDelay)
                                         .setThirdPartyVariables(thirdPartyLoginUrl, thirdPartyLoginApiKey, thirdPartyLoginScope,
                                                 thirdPartyLoginReqParamDef, thirdPartyLoginClaim));
                         break;
@@ -3775,7 +3772,8 @@ public class Configuration extends AbstractConfiguration {
             ChronoUnit unit = ChronoUnit.valueOf(unitString.toUpperCase());
             return Duration.of(amount, unit);
         } catch (IllegalArgumentException e) {
-            logger.warn("Could not read temporal unit from string '{}' in config field 'externalResource.deleteAfter.unit'. Assuming days");
+            logger.warn("Could not read temporal unit from string '{}' in config field 'externalResource.deleteAfter.unit'. Assuming days.",
+                    unitString);
             return Duration.of(amount, ChronoUnit.DAYS);
         }
     }
@@ -4324,46 +4322,6 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isPreventProxyCaching() {
         return getLocalBoolean(("performance.preventProxyCaching"), false);
-    }
-
-    /**
-     * <p>
-     * isSolrUseHttp2.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isSolrUseHttp2() {
-        return getLocalBoolean(("performance.solr.useHttp2"), true);
-    }
-
-    /**
-     * <p>
-     * isSolrCompressionEnabled.
-     * </p>
-     *
-     * @return a boolean
-     * @should return correct value
-     * @deprecated Not supported when using HTTP2
-     */
-    @Deprecated(since = "24.01")
-    public boolean isSolrCompressionEnabled() {
-        return getLocalBoolean(("performance.solr.compressionEnabled"), true);
-    }
-
-    /**
-     * <p>
-     * isSolrBackwardsCompatible.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     * @deprecated Not supported when using HTTP2
-     */
-    @Deprecated(since = "24.01")
-    public boolean isSolrBackwardsCompatible() {
-        return getLocalBoolean(("performance.solr.backwardsCompatible"), false);
     }
 
     /**
@@ -5816,12 +5774,11 @@ public class Configuration extends AbstractConfiguration {
 
     }
 
-    public String getRecordGeomapMarker(String templateName, String type) {
+    public String getRecordGeomapMarker(String templateName) {
         HierarchicalConfiguration<ImmutableNode> template = selectTemplate(getLocalConfigurationsAt("maps.record.template"), templateName, true);
         if (template != null) {
             List<HierarchicalConfiguration<ImmutableNode>> configs = template.configurationsAt("marker");
             return configs.stream()
-                    .filter(config -> config.getString("[@type]", "").equals(type))
                     .findAny()
                     .map(config -> config.getString(".", ""))
                     .orElse("");
@@ -6214,10 +6171,11 @@ public class Configuration extends AbstractConfiguration {
      * @param url
      * @return Configured value
      * @throws MalformedURLException
+     * @throws URISyntaxException
      * @should return true if host whitelisted
      */
-    public boolean isHostProxyWhitelisted(String url) throws MalformedURLException {
-        URL urlAsURL = new URL(url);
+    public boolean isHostProxyWhitelisted(String url) throws MalformedURLException, URISyntaxException {
+        URL urlAsURL = new URI(url).toURL();
         return getProxyWhitelist().contains(urlAsURL.getHost());
     }
 

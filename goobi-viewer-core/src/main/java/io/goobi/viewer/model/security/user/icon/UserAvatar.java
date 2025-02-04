@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.model.security.user.icon;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author florian

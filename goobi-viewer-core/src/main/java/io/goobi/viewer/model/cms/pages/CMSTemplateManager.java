@@ -24,6 +24,7 @@ package io.goobi.viewer.model.cms.pages;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystemAlreadyExistsException;
@@ -43,13 +44,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import javax.annotation.PostConstruct;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import javax.servlet.ServletContext;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,6 +55,12 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.cms.legacy.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
+import jakarta.annotation.PostConstruct;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
+import jakarta.servlet.ServletContext;
 
 /**
  * <p>
@@ -231,7 +231,7 @@ public class CMSTemplateManager implements Serializable {
      * </p>
      *
      * @param filesystemPath a {@link java.lang.String} object.
-     * @param servletContext a {@link javax.servlet.ServletContext} object.
+     * @param servletContext a {@link jakarta.servlet.ServletContext} object.
      * @param templateFolderUrl a {@link java.lang.String} object.
      * @return a {@link java.util.Optional} object.
      * @throws java.net.MalformedURLException if any.
@@ -255,7 +255,7 @@ public class CMSTemplateManager implements Serializable {
             String templateFolderPath = filesystemPath + templateFolderUrl;
             Path path = PathConverter.getPath(PathConverter.toURI(templateFolderPath));
             if (Files.exists(path)) {
-                fileUrl = Optional.of(new URL(filesystemPath + templateFolderUrl));
+                fileUrl = Optional.of(new URI(filesystemPath + templateFolderUrl).toURL());
             } else {
                 logger.warn("Template folder path not found: {}", path.toAbsolutePath());
             }

@@ -21,12 +21,12 @@
  */
 package io.goobi.viewer;
 
-import javax.servlet.annotation.WebListener;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
+import jakarta.servlet.annotation.WebListener;
+import jakarta.servlet.http.HttpSessionEvent;
+import jakarta.servlet.http.HttpSessionListener;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.AdminBean;
@@ -43,7 +43,7 @@ public class SessionListener implements HttpSessionListener {
     private static final Logger logger = LogManager.getLogger(SessionListener.class);
 
     /* (non-Javadoc)
-     * @see javax.servlet.http.HttpSessionListener#sessionCreated(javax.servlet.http.HttpSessionEvent)
+     * @see jakarta.servlet.http.HttpSessionListener#sessionCreated(jakarta.servlet.http.HttpSessionEvent)
      */
     /** {@inheritDoc} */
     @Override
@@ -54,7 +54,7 @@ public class SessionListener implements HttpSessionListener {
     }
 
     /* (non-Javadoc)
-     * @see javax.servlet.http.HttpSessionListener#sessionDestroyed(javax.servlet.http.HttpSessionEvent)
+     * @see jakarta.servlet.http.HttpSessionListener#sessionDestroyed(jakarta.servlet.http.HttpSessionEvent)
      */
     /** {@inheritDoc} */
     @Override

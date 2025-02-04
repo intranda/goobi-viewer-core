@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.faces.context.FacesContext;
+import jakarta.faces.context.FacesContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;

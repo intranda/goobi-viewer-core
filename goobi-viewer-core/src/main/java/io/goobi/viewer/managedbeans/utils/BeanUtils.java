@@ -26,21 +26,21 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import javax.el.ELException;
-import javax.el.ValueExpression;
-import javax.enterprise.context.ContextNotActiveException;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.CDI;
-import javax.faces.application.Application;
-import javax.faces.context.FacesContext;
+import jakarta.el.ELException;
+import jakarta.el.ValueExpression;
+import jakarta.enterprise.context.ContextNotActiveException;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.faces.application.Application;
+import jakarta.faces.context.FacesContext;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -91,7 +91,7 @@ public final class BeanUtils {
     /**
      * Gets the current Request from the faces context
      *
-     * @return a {@link javax.servlet.http.HttpServletRequest} object.
+     * @return a {@link jakarta.servlet.http.HttpServletRequest} object.
      */
     public static HttpServletRequest getRequest() {
         SessionBean sb = getSessionBean();
@@ -110,8 +110,8 @@ public final class BeanUtils {
      * getRequest.
      * </p>
      *
-     * @param context a {@link javax.faces.context.FacesContext} object.
-     * @return a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param context a {@link jakarta.faces.context.FacesContext} object.
+     * @return a {@link jakarta.servlet.http.HttpServletRequest} object.
      */
     public static HttpServletRequest getRequest(FacesContext context) {
         if (context != null && context.getExternalContext() != null) {
@@ -173,7 +173,7 @@ public final class BeanUtils {
      * getServletImagesPathFromRequest.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param theme a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
@@ -195,7 +195,7 @@ public final class BeanUtils {
      * getServletContext.
      * </p>
      *
-     * @return a {@link javax.servlet.ServletContext} object.
+     * @return a {@link jakarta.servlet.ServletContext} object.
      */
     public static ServletContext getServletContext() {
         FacesContext context = FacesContext.getCurrentInstance();
@@ -294,7 +294,7 @@ public final class BeanUtils {
         // Via FacesContext
         if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext().getContext() != null) {
             ret = (BeanManager) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext())
-                    .getAttribute("javax.enterprise.inject.spi.BeanManager");
+                    .getAttribute("jakarta.enterprise.inject.spi.BeanManager");
             if (ret != null) {
                 return ret;
             }
@@ -328,7 +328,7 @@ public final class BeanUtils {
                 return bm.getReference(bean, clazz, ctx);
             }
         } catch (NullPointerException e) {
-            logger.error("Error when getting bean by name {}", e);
+            logger.error("Error when getting bean by name '{}'", name, e);
         }
 
         return null;
@@ -572,7 +572,7 @@ public final class BeanUtils {
      * getUserBeanFromRequest.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @return a {@link io.goobi.viewer.managedbeans.UserBean} object.
      */
     public static UserBean getUserBeanFromRequest(HttpServletRequest request) {
@@ -593,7 +593,7 @@ public final class BeanUtils {
      * getBeanFromRequest.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object
      * @param beanName a {@link java.lang.String} object
      * @param clazz a {@link java.lang.Class} object
      * @param <T> a T class
@@ -617,7 +617,7 @@ public final class BeanUtils {
      * getUserFromRequest.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @return a {@link io.goobi.viewer.model.security.user.User} object.
      */
     public static User getUserFromRequest(HttpServletRequest request) {
@@ -646,12 +646,12 @@ public final class BeanUtils {
      * findInstanceInSessionAttributes.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object
      * @param clazz a {@link java.lang.Class} object
      * @param <T> a T class
      * @return a {@link java.util.Optional} object
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "unchecked" })
     public static <T> Optional<T> findInstanceInSessionAttributes(HttpServletRequest request, Class<T> clazz) {
         Enumeration<String> attributeNames = request.getSession().getAttributeNames();
         while (attributeNames.hasMoreElements()) {
@@ -674,7 +674,7 @@ public final class BeanUtils {
      * getResponse.
      * </p>
      *
-     * @return a {@link javax.servlet.http.HttpServletResponse} object.
+     * @return a {@link jakarta.servlet.http.HttpServletResponse} object.
      */
     public static HttpServletResponse getResponse() {
         FacesContext context = FacesContext.getCurrentInstance();

@@ -116,6 +116,7 @@
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent</class>
 		<class>io.goobi.viewer.model.cms.pages.content.types.CMSDocumentContent</class>
+	    <class>io.goobi.viewer.model.cms.pages.content.types.CMSArchiveContent</class>
 		<class>io.goobi.viewer.model.cms.HighlightData</class>
         <class>io.goobi.viewer.controller.mq.ViewerMessage</class>
         <class>io.goobi.viewer.model.job.quartz.RecurringTaskTrigger</class>
@@ -194,6 +195,7 @@
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchFacetsContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSArchiveContent</class>
         <class>io.goobi.viewer.model.cms.recordnotes.CMSRecordNote</class>
         <class>io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote</class>
         <class>io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote</class>

@@ -42,9 +42,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.UriBuilder;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -84,6 +81,8 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * <p>
@@ -457,14 +456,16 @@ public class ManifestBuilder extends AbstractBuilder {
         }
 
         if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF()) {
-            URI uri = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(ele.getPi(), page.getFileName()).buildURI();
+            URI uri = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(ele.getPi(), escapeURI(page.getFileName())).buildURI();
             LinkingProperty pdf =
                     new LinkingProperty(LinkingTarget.PDF, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF()));
             manifest.addRendering(pdf.getResource(uri));
         }
 
         if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto() && page.isAltoAvailable()) {
-            URI uri = urls.path(RECORDS_FILES, RECORDS_FILES_ALTO).params(ele.getPi(), Path.of(page.getAltoFileName()).getFileName()).buildURI();
+            URI uri = urls.path(RECORDS_FILES, RECORDS_FILES_ALTO)
+                    .params(ele.getPi(), Path.of(escapeURI(page.getAltoFileName())).getFileName())
+                    .buildURI();
             LinkingProperty alto =
                     new LinkingProperty(LinkingTarget.ALTO, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingAlto()));
             manifest.addSeeAlso(alto.getResource(uri));
@@ -472,7 +473,8 @@ public class ManifestBuilder extends AbstractBuilder {
 
         if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext() && page.isFulltextAvailable()) {
             URI uri = urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT)
-                    .params(ele.getPi(), Path.of(Optional.ofNullable(page.getFulltextFileName()).orElse(page.getAltoFileName())).getFileName())
+                    .params(ele.getPi(),
+                            Path.of(Optional.ofNullable(page.getFulltextFileName()).orElse(escapeURI(page.getAltoFileName()))).getFileName())
                     .buildURI();
             LinkingProperty text = new LinkingProperty(LinkingTarget.PLAINTEXT,
                     createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPlaintext()));

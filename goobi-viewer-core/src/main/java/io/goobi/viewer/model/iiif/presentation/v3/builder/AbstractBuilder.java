@@ -40,8 +40,10 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_RECORD;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_SECTIONS;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_SECTIONS_RANGE;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
@@ -51,8 +53,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -100,6 +100,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * <p>
@@ -864,6 +865,15 @@ public abstract class AbstractBuilder {
             return Optional.empty();
         } else {
             throw new PresentationException("No solr field configured containing external manifest urls");
+        }
+    }
+
+    protected String escapeURI(String uri) {
+        try {
+            // logger.trace("Encoding param: {}", replacement); //NOSONAR Debug
+            return URLEncoder.encode(uri, StringTools.DEFAULT_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            return uri;
         }
     }
 

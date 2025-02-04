@@ -25,10 +25,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Optional;
 
-import javax.faces.context.FacesContext;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,7 +61,7 @@ public final class ViewHistory {
      * Saves the current view information to the session map. Also saves the previous view information to the session map if it represents a different
      * view than the current view
      *
-     * @param request a {@link javax.servlet.ServletRequest} object.
+     * @param request a {@link jakarta.servlet.ServletRequest} object.
      */
     public static synchronized void setCurrentView(final ServletRequest request) {
 
@@ -135,7 +135,7 @@ public final class ViewHistory {
      *
      * @return An optional containing the last stored current path if available. An empty optional if no session is available or no path has been
      *         stored yet
-     * @param request a {@link javax.servlet.ServletRequest} object.
+     * @param request a {@link jakarta.servlet.ServletRequest} object.
      */
     public static synchronized Optional<ViewerPath> getCurrentView(ServletRequest request) {
         if (request != null) {
@@ -157,7 +157,7 @@ public final class ViewHistory {
      *
      * @return An optional containing the last stored previous path if available. An empty optional if no session is available or no previous path has
      *         been stored yet
-     * @param request a {@link javax.servlet.ServletRequest} object.
+     * @param request a {@link jakarta.servlet.ServletRequest} object.
      */
     public static synchronized Optional<ViewerPath> getPreviousView(ServletRequest request) {
         if (request != null) {

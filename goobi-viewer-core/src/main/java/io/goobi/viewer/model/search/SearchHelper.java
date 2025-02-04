@@ -47,11 +47,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.similarity.FuzzyScore;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -107,6 +103,8 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Search utility class. Static methods only.
@@ -163,10 +161,12 @@ public final class SearchHelper {
     private static final Pattern PATTERN_NOT_BRACKETS = Pattern.compile("NOT\\([^()]*\\)");
     /** Regex pattern for negations not followed by brackets */
     private static final Pattern PATTERN_NOT = Pattern.compile("NOT [a-zA-Z_]+:[a-zA-Z0-9\\*]+");
+    /** Constant <code>REGEX_QUOTATION_MARKS="\"[^()]*?\""</code>. */
+    public static final String REGEX_QUOTATION_MARKS = "@?+\"[^()\"]*\"@?+";
     /** Constant <code>PATTERN_FIELD_PHRASE</code> */
-    private static final Pattern PATTERN_FIELD_PHRASE = Pattern.compile("[\\w]+:" + StringTools.REGEX_QUOTATION_MARKS);
+    private static final Pattern PATTERN_FIELD_PHRASE = Pattern.compile("[\\w]++:" + REGEX_QUOTATION_MARKS); //NOSONAR Checked and fixed potential CB
     /** Constant <code>PATTERN_PHRASE</code> */
-    private static final Pattern PATTERN_PHRASE = Pattern.compile("^" + StringTools.REGEX_QUOTATION_MARKS + "(~[0-9]+)?$");
+    private static final Pattern PATTERN_PHRASE = Pattern.compile("^" + REGEX_QUOTATION_MARKS + "(~\\d+)?$");
     /** Constant <code>PATTERN_PROXIMITY_SEARCH_TOKEN</code> */
     private static final Pattern PATTERN_PROXIMITY_SEARCH_TOKEN = Pattern.compile("(?<=\")~(\\d+)");
     /** Constant <code>PATTERN_YEAR_RANGE</code> */
@@ -397,6 +397,7 @@ public final class SearchHelper {
                 SolrDocumentList childDocs = childDocsMap.getOrDefault(pi, new SolrDocumentList());
                 logger.trace("{} child hits found for {}", childDocs.size(), pi);
                 childDocs = filterChildDocs(childDocs, iddoc, searchTerms, factory);
+                logger.trace("{} child hits left after filtering.", childDocs.size());
                 hit.setChildDocs(childDocs);
 
                 // Check whether user may see full-text, before adding them to count
@@ -523,7 +524,7 @@ public final class SearchHelper {
     /**
      * Returns all suffixes relevant to search filtering.
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param addStaticQuerySuffix a boolean.
      * @param addCollectionBlacklistSuffix a boolean.
      * @return Generated Solr query suffix
@@ -534,7 +535,7 @@ public final class SearchHelper {
 
     /**
      * 
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param addStaticQuerySuffix a boolean.
      * @param addCollectionBlacklistSuffix a boolean.
      * @param privilege Privilege to check (Connector checks a different privilege)
@@ -548,7 +549,7 @@ public final class SearchHelper {
     /**
      * Returns all suffixes relevant to search filtering.
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param addArchiveFilterSuffix a boolean.
      * @param addCollectionBlacklistSuffix a boolean.
      * @param privilege Privilege to check (Connector checks a different privilege)
@@ -1110,7 +1111,7 @@ public final class SearchHelper {
     /**
      * Updates the calling agent's session with a personalized filter sub-query.
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param privilege Privilege to check (Connector checks a different privilege)
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -1261,10 +1262,11 @@ public final class SearchHelper {
         List<String> ret = new ArrayList<>();
         if (searchTerms != null && !searchTerms.isEmpty()) {
             for (final String term : searchTerms) {
-                if (term.length() == 0) {
+                if (term.isEmpty()) {
                     continue;
                 }
                 String searchTerm = SearchHelper.removeTruncation(term);
+                searchTerm = StringTools.removeQuotations(searchTerm);
                 // logger.trace("term: {}", searchTerm); //NOSONAR Debug
                 // Stopwords do not get pre-filtered out when doing a phrase search
                 if (searchTerm.contains(" ")) {
@@ -1564,7 +1566,7 @@ public final class SearchHelper {
         }
         int endIndex = startIndex + term.length();
         String before = phrase.substring(0, startIndex);
-        
+
         String highlightedTerm = applyHighlightingToTerm(phrase.substring(startIndex, endIndex));
         // logger.trace("highlighted term: {}", highlightedTerm); //NOSONAR Debug
         String after = phrase.substring(endIndex);
@@ -2259,10 +2261,11 @@ public final class SearchHelper {
         String queryCopy = q;
 
         // Extract phrases and add them directly
+        logger.trace("checking for phrases in: {}", queryCopy);
         Matcher mPhrases = PATTERN_FIELD_PHRASE.matcher(queryCopy);
         while (mPhrases.find()) {
             String phrase = queryCopy.substring(mPhrases.start(), mPhrases.end());
-            String[] phraseSplit = phrase.split(":");
+            String[] phraseSplit = phrase.split(":", 2);
             String field = phraseSplit[0];
             switch (field) {
                 case SolrConstants.SUPERDEFAULT:
@@ -2283,13 +2286,15 @@ public final class SearchHelper {
                     }
                     break;
             }
-            String phraseWithoutQuotation = phraseSplit[1].replace("\"", "");
-            if (phraseWithoutQuotation.length() > 0 && !stopwords.contains(phraseWithoutQuotation)) {
+
+            String phraseWithoutQuotation = phraseSplit[1].replace("@", "").replace("\"", "");
+            if (!phraseWithoutQuotation.isEmpty() && !stopwords.contains(phraseWithoutQuotation)) {
                 if (ret.get(field) == null) {
                     ret.put(field, new HashSet<>());
                 }
                 // logger.trace("term: {}:{}", field, phraseWithoutQuotation); //NOSONAR Debug
-                ret.get(field).add(phraseWithoutQuotation);
+                // TODO Check why quotes were removed here, they're needed for the expand query
+                ret.get(field).add("\"" + phraseWithoutQuotation + "\"");
             }
             q = q.replace(phrase, "");
             ret.get(TITLE_TERMS).add("\"" + phraseWithoutQuotation + "\"");
@@ -2342,7 +2347,7 @@ public final class SearchHelper {
                         value = value.replace("\"", "");
                     }
                     // Skip values in stopwords and duplicates for fuzzy search
-                    if (value.length() > 0 && !stopwords.contains(value) && !value.matches(".*~[1-2]$")) {
+                    if (!value.isEmpty() && !stopwords.contains(value) && !value.matches(".*~[1-2]$")) {
                         if (ret.get(currentField) == null) {
                             ret.put(currentField, new HashSet<>());
                         }
@@ -2365,7 +2370,7 @@ public final class SearchHelper {
                 }
             } else if (s.length() > 0 && !stopwords.contains(s)) {
                 // single values w/o a field
-                
+
                 // Skip duplicates for fuzzy search
                 if (s.trim().equals("+") || s.matches(".*~[1-2]$")) {
                     continue;
@@ -2882,7 +2887,6 @@ public final class SearchHelper {
      *
      * @param fields a {@link java.util.List} object.
      * @param searchTerms a {@link java.util.Map} object.
-     * @param phraseSearch If true, quotation marks are added to terms
      * @param proximitySearchDistance
      * @return a {@link java.lang.String} object.
      * @should generate query correctly
@@ -2894,8 +2898,7 @@ public final class SearchHelper {
      * @should add quotation marks if phraseSearch is true
      * @should add proximity search token correctly
      */
-    public static String generateExpandQuery(List<String> fields, Map<String, Set<String>> searchTerms, boolean phraseSearch,
-            int proximitySearchDistance) {
+    public static String generateExpandQuery(List<String> fields, Map<String, Set<String>> searchTerms, int proximitySearchDistance) {
         logger.trace("generateExpandQuery");
         if (searchTerms.isEmpty()) {
             return "";
@@ -2941,14 +2944,16 @@ public final class SearchHelper {
                     if ((term.startsWith("\"") && term.endsWith("\""))) {
                         quotationMarksApplied = true;
                     }
-                    term = ClientUtils.escapeQueryChars(term);
+                    if (!quotationMarksApplied) {
+                        term = ClientUtils.escapeQueryChars(term);
+                    }
                     term = term.replace("\\*", "*");
                     //unescape fuzzy search token
                     term = term.replaceAll("\\\\~(\\d)", "~$1");
                     // logger.trace("term: {}", term); //NOSONAR Debug
-                    if (phraseSearch && !quotationMarksApplied) {
-                        term = '"' + term + '"';
-                    }
+                    //                    if (phraseSearch && !quotationMarksApplied) {
+                    //                        term = '"' + term + '"';
+                    //                    }
                 }
                 if (SolrConstants.FULLTEXT.equals(field) && proximitySearchDistance > 0) {
                     term = term.replace("\\\"", "\""); // unescape quotation marks
@@ -3131,7 +3136,11 @@ public final class SearchHelper {
         }
 
         if (additionalFields != null) {
-            ret.addAll(additionalFields);
+            for (String field : additionalFields) {
+                if (!ret.contains(field)) {
+                    ret.add(field);
+                }
+            }
         }
 
         return ret;

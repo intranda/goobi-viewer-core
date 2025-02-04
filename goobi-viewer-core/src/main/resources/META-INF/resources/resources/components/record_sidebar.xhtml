@@ -50,7 +50,7 @@
 				<widgetComponent:widget_recordNotes 
 					notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
 
-				<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc]}')}">
+			<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: ![viewToc]}')}">
 				
 					<widgetComponent:widget_downloads id="widgetDownloads" />
 			</ui:fragment>

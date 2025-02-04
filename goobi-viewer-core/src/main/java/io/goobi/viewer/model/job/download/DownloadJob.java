@@ -33,11 +33,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -381,7 +381,7 @@ public abstract class DownloadJob implements Serializable {
     @JsonIgnore
     public Path getFile() {
         Path path = DownloadJobTools.getDownloadFileStatic(identifier, type, getFileExtension()).toPath();
-        logger.trace(path.toString());
+        logger.trace("Path: {}", path);
         if (Files.isRegularFile(path)) {
             return path;
         }
@@ -729,14 +729,13 @@ public abstract class DownloadJob implements Serializable {
      */
     @Deprecated(since = "24.10")
     public static Response postJobRequest(String url, AbstractTaskManagerRequest body) throws IOException {
-        try {
-            Client client = ClientBuilder.newClient();
+        try (Client client = ClientBuilder.newClient()) {
             client.property(ClientProperties.CONNECT_TIMEOUT, 12000);
             client.property(ClientProperties.READ_TIMEOUT, 30000);
             return client
                     .target(url)
                     .request(MediaType.APPLICATION_JSON)
-                    .post(javax.ws.rs.client.Entity.entity(body, MediaType.APPLICATION_JSON));
+                    .post(jakarta.ws.rs.client.Entity.entity(body, MediaType.APPLICATION_JSON));
         } catch (IllegalArgumentException | NullPointerException | ProcessingException e) {
             throw new IOException("Error connecting to " + url, e);
         }
@@ -747,9 +746,6 @@ public abstract class DownloadJob implements Serializable {
      */
     protected abstract String getRestApiPath();
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {

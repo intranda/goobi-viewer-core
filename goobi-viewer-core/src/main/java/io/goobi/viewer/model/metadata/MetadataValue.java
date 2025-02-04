@@ -37,6 +37,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.undercouch.citeproc.CSL;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.Citation;
@@ -361,12 +362,12 @@ public class MetadataValue implements Serializable {
      * @return true if thids.accessConditions not empty; false otherwise
      * @should return false if accessConditions empty
      * @should return false if only value is open access
-     * @should return true if other values are contained
+     * @should return false if random values contained
+     * @should return true if metadata access restricted condition contained
      */
-    public boolean isHasAccessConditions() {
+    public boolean isAccessRestricted() {
         logger.trace("access conditions for {}: {}", label, !this.accessConditions.isEmpty());
-        return !this.accessConditions.isEmpty()
-                && !(this.accessConditions.size() == 1 && SolrConstants.OPEN_ACCESS_VALUE.equals(this.accessConditions.iterator().next()));
+        return this.accessConditions.contains(StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED);
     }
 
     /**

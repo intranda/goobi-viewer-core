@@ -35,10 +35,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -263,7 +263,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                         // Thread ID as the temp folder path so that it doesn't collide with other users' calls
                         Path localTempFolder =
                                 Paths.get(DataManager.getInstance().getConfiguration().getTempFolder(),
-                                        String.valueOf(Thread.currentThread().getId()));
+                                        String.valueOf(Thread.currentThread().threadId()));
                         try {
                             // ?action=get_overviewpage&identifier=PPN62692460X&from=2015-06-26&until=2016-01-01
                             List<CMSPage> pages = DataManager.getInstance().getDao().getCMSPagesForRecord(identifier, null);

@@ -38,13 +38,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.enterprise.context.SessionScoped;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -123,6 +121,8 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
 
 /**
  * This bean opens the requested record and provides all data relevant to this record.
@@ -263,7 +263,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public void reset() throws IndexUnreachableException {
         synchronized (this) {
-            logger.trace("reset (thread {})", Thread.currentThread().getId());
+            logger.trace("reset (thread {})", Thread.currentThread().threadId());
             String pi = viewManager != null ? viewManager.getPi() : null;
             viewManager = null;
             topDocumentIddoc = null;
@@ -376,7 +376,7 @@ public class ActiveDocumentBean implements Serializable {
                     lastReceivedIdentifier = null;
                 }
             }
-            logger.debug("update(): (IDDOC {} ; page {} ; thread {})", topDocumentIddoc, imageToShow, Thread.currentThread().getId());
+            logger.debug("update(): (IDDOC {} ; page {} ; thread {})", topDocumentIddoc, imageToShow, Thread.currentThread().threadId());
             prevHit = null;
             nextHit = null;
             boolean doublePageMode = isDoublePageUrl();
@@ -1057,48 +1057,6 @@ public class ActiveDocumentBean implements Serializable {
             }
             return "-";
         }
-    }
-
-    /**
-     * <p>
-     * getThumbPart.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @deprecated URL is now build in HTML
-     */
-    @Deprecated(since = "23.11")
-    public String getThumbPart() throws IndexUnreachableException {
-        if (viewManager != null) {
-            return new StringBuilder("/").append(getPersistentIdentifier())
-                    .append('/')
-                    .append(viewManager.getCurrentThumbnailPage())
-                    .append('/')
-                    .toString();
-        }
-
-        return "";
-    }
-
-    /**
-     * <p>
-     * getLogPart.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @deprecated URL is now build in HTML
-     */
-    @Deprecated(since = "23.11")
-    public String getLogPart() throws IndexUnreachableException {
-        return new StringBuilder("/").append(getPersistentIdentifier())
-                .append('/')
-                .append(imageToShow)
-                .append('/')
-                .append(getLogid())
-                .append('/')
-                .toString();
     }
 
     // navigation in work

@@ -38,8 +38,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
@@ -54,7 +52,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.api.rest.model.ner.TagCount;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.DataFileTools;
@@ -81,6 +78,7 @@ import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Wrapper class for search hits. Contains the corresponding <code>BrowseElement</code>
@@ -408,7 +406,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @param number a int.
      * @param skip a int.
      * @param locale a {@link java.util.Locale} object.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -605,7 +603,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             if (StringUtils.isNotEmpty(highlightWord)) {
                                 searchTerms.put(SolrConstants.FULLTEXT, Collections.singleton(highlightWord));
                             }
-                        } catch (ContentNotFoundException | PresentationException e) {
+                        } catch (FileNotFoundException | PresentationException e) {
                             logger.error(e.getMessage());
                         }
                     } else {

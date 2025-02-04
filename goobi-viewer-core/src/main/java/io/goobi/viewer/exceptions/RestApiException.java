@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.exceptions;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 /**
  * <p>

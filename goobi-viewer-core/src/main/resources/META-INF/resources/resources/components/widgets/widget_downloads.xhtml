@@ -132,7 +132,7 @@
                         
 	                            <!-- METS -->
 	                            <ui:fragment visibility-class="widget-element" 
-	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], accessCondition:DOWNLOAD_METADATA, pageType:![viewFulltext, viewFullscreen]}')}">
+	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], accessCondition:DOWNLOAD_METADATA, pageType:![viewFulltext, viewFullscreen, viewMetadata]}')}">
 	                                <a 
 	                                    href="#{activeDocumentBean.viewManager.metsResolverUrl}"
 	                                    id="lidomets" 
@@ -309,7 +309,7 @@
                         <!-- WORK IIIF-RELIANT FUNCTIONS (GENERATE_IIIF_MANIFEST CHECK) -->
                            <!-- IIIF MANIFEST FULL RECORD -->
                            <ui:fragment visibility-class="widget-element" 
-                           	rendered="#{displayConditions.matchRecord('{numPages:1, mimeType:![application], pageType:![viewFulltext], accessCondition:GENERATE_IIIF_MANIFEST}')}">
+                           	rendered="#{displayConditions.matchRecord('{numPages:1, mimeType:![application], pageType:![viewFulltext, viewMetadata], accessCondition:GENERATE_IIIF_MANIFEST}')}">
 	                           <button 
 	                                  id="iiifManifestRecord"
 	                                  class="badge badge-dark widget-usage__work-download-iiif" 
@@ -324,7 +324,7 @@
 	                    
                             <!-- MIRADOR FULL RECORD -->
                             <ui:fragment visibility-class="widget-element" 
-                           	rendered="#{displayConditions.matchRecord('{pageType:![viewFulltext], contentType:[IMAGE], accessCondition:VIEW_IMAGES}')}">
+                           	rendered="#{displayConditions.matchRecord('{pageType:![viewFulltext, viewMetadata], contentType:[IMAGE], accessCondition:VIEW_IMAGES}')}">
                                     <a
                                         href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifManifest}&amp;page=1" 
                                         id="mirador" 
@@ -426,7 +426,7 @@
 
 								<!-- IIIF MANIFEST PAGE -->
 								<ui:fragment visibility-class="widget-element" 
-                           			rendered="#{displayConditions.matchPage('{pageType:![viewFulltext], numPages:2, mimeType: [image], accessCondition:VIEW_IMAGES}')}">
+                           			rendered="#{displayConditions.matchPage('{pageType:![viewFulltext, viewMetadata], numPages:2, mimeType: [image], accessCondition:VIEW_IMAGES}')}">
 									<button id="iiifManifestPage"
 										class="badge badge-dark widget-usage__page-download-iiif"
 										data-copy-value="#{imageDelivery.iiifPageManifest}"
@@ -437,7 +437,7 @@
 
 								<!-- MIRADOR PAGE -->
 								<ui:fragment visibility-class="widget-element"
-									rendered="#{displayConditions.matchPage('{pageType:![viewFulltext], numPages:2, contentType:[IMAGE], accessCondition:VIEW_IMAGES}')}">
+									rendered="#{displayConditions.matchPage('{pageType:![viewFulltext, viewMetadata], numPages:2, contentType:[IMAGE], accessCondition:VIEW_IMAGES}')}">
 									<a
 										href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifPageManifest}"
 										id="mirador"
@@ -547,7 +547,7 @@
 													</div>
 												</div>
 
-												<a
+												<button
 													jsf:action="#{activeDocumentBean.viewManager.generatePageRangePdf()}"
 													id="pdfPageRangeLink"
 													class="badge badge-dark widget-downloads__page-download-pdf-range widget-downloads__page-range-pdf-link"
@@ -557,7 +557,7 @@
 													aria-label="#{msg.image}: #{msg.label__pdf_download}">
 													<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
 													#{msg.downloadButton}
-												</a>
+												</button>
 											</h:form>
 
 										</div>
@@ -589,9 +589,9 @@
 									#{msg.label__share_image_region_image}</a>
 							</div>
 						</div>
-
 						<!-- INTEGRATED WIDGET ADDITIONAL FILES -->
-						<ui:fragment rendered="#{activeDocumentBean.viewManager.displayContentDownloadMenu}">
+						<ui:fragment rendered="#{activeDocumentBean.viewManager.displayContentDownloadMenu and 
+						(displayConditions.matchRecord('{pageType:[viewObject], numPages:1, mimeType: [image, video, audio, model]}') or displayConditions.matchRecord('{pageType:[viewMetadata], numPages:!1, mimeType: ![image, video, audio, model]}')) }">
 							<div id="widgetAdditionalFiles"
 								class="widget-downloads__additional-files-wrapper">
 								<h:form id="widgetAdditionalFilesForm">
@@ -599,7 +599,7 @@
 										class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget_additionalFiles}</h3>
 		
 									<ul class="widget-downloads__additional-files-list">
-										<ui:repeat varStatus="status"
+										<ui:repeat varStatus="status" visibility-class="widget-element"
 											value="#{activeDocumentBean.viewManager.contentDownloadLinksForWork}"
 											var="link">
 											<li jsf:id="additionalFileLink_#{status.index}"><h:outputLink value="#{link.url}" target="_blank">
@@ -628,6 +628,5 @@
 						});
 				</script>
 			</div> <!-- END WIDGET -->
-
 	</composite:implementation>
 </ui:composition>

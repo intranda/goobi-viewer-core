@@ -159,6 +159,7 @@ public class SearchHitFactory {
             if (!additionalMetadata.isEmpty()) {
                 for (MetadataWrapper mw : additionalMetadata) {
                     browseElement.getMetadataList().add(mw.getMetadata());
+                    logger.trace("additional: " + mw.getMetadata().getLabel() + ":" + mw.getMetadata().getFirstValue());
                 }
             }
         }
