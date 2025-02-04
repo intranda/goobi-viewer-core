@@ -544,7 +544,7 @@ public class Metadata implements Serializable {
                                 if (options != null && options.get(FIELD_NORM_TYPE) != null) {
                                     // Try local NORM_TYPE value, if given
                                     normDataType = MetadataTools.findMetadataGroupType(options.get(FIELD_NORM_TYPE));
-                                } else {
+                                } else if (!value.contains("viaf.org")) { // TODO remove this temporary fix eventually
                                     // Fetch authority data record and determine norm data set type from gndspec field 075$b
                                     Record authorityRecord = MetadataTools.getAuthorityDataRecord(value);
                                     if (authorityRecord != null && !authorityRecord.getNormDataList().isEmpty()) {
