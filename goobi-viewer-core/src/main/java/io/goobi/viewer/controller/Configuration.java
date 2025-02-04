@@ -907,7 +907,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         FeatureSetConfiguration config = new FeatureSetConfiguration("docStruct", "MD_TITLE",
-                DataManager.getInstance().getConfiguration().getRecordGeomapMarker(templateName, ""), "", "LABEL", Collections.emptyList());
+                DataManager.getInstance().getConfiguration().getRecordGeomapMarker(templateName), "", "LABEL", Collections.emptyList());
 
         return List.of(config);
     }
@@ -5774,12 +5774,11 @@ public class Configuration extends AbstractConfiguration {
 
     }
 
-    public String getRecordGeomapMarker(String templateName, String type) {
+    public String getRecordGeomapMarker(String templateName) {
         HierarchicalConfiguration<ImmutableNode> template = selectTemplate(getLocalConfigurationsAt("maps.record.template"), templateName, true);
         if (template != null) {
             List<HierarchicalConfiguration<ImmutableNode>> configs = template.configurationsAt("marker");
             return configs.stream()
-                    .filter(config -> config.getString("[@type]", "").equals(type))
                     .findAny()
                     .map(config -> config.getString(".", ""))
                     .orElse("");
