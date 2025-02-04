@@ -72,7 +72,7 @@ public abstract class PersistentAnnotation {
     private static final Logger logger = LogManager.getLogger(PersistentAnnotation.class);
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "annotation_id")
     private Long id;
 

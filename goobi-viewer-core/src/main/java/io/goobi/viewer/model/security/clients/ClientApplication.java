@@ -72,7 +72,7 @@ public class ClientApplication implements ILicensee, Serializable {
 
     /** Unique database ID. */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "client_application_id")
     @Schema(description = "The internal database identifier of the client", example = "2", type = "long", accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;

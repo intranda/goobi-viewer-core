@@ -88,7 +88,7 @@ public class Search implements Serializable {
     private static final Logger logger = LogManager.getLogger(Search.class);
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "search_id")
     private Long id;
 

@@ -68,7 +68,7 @@ public class IpRange extends AbstractLicensee implements Serializable {
     private static final Logger logger = LogManager.getLogger(IpRange.class);
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ip_range_id")
     private Long id;
 

@@ -185,7 +185,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
     private static final Random RANDOM = new SecureRandom();
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "campaign_id")
     private Long id;
 

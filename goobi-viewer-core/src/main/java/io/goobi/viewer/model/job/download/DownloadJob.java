@@ -100,7 +100,7 @@ public abstract class DownloadJob implements Serializable {
     private static final long serialVersionUID = -491389510147134159L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "download_job_id")
     protected Long id;
 

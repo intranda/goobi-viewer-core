@@ -99,7 +99,7 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     public static final String CONTENT_TYPE_AUDIO = "audio";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "cms_media_item_id")
     private Long id;
 

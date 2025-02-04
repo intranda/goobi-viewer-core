@@ -49,7 +49,7 @@ public class CMSStaticPage implements Serializable {
     private static final long serialVersionUID = -8591081547005923490L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "static_page_id")
     private Long id;
 

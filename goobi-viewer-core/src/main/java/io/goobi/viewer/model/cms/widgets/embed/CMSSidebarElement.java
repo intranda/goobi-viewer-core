@@ -75,7 +75,7 @@ public class CMSSidebarElement implements Serializable {
     protected static final int HASH_MULTIPLIER = 11;
     // private static final NumberIterator ID_COUNTER = new NumberIterator();
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "cms_sidebar_element_id")
     private Long id;
 

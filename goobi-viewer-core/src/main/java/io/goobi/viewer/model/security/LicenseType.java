@@ -84,7 +84,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     private static final String LICENSE_TYPE_DESC_LEGAL_DISCLAIMER = "licenseType_disclaimer_desc";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "license_type_id")
     private Long id;
 

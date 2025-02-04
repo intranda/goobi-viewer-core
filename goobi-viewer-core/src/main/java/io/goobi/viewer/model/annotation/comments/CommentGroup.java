@@ -51,7 +51,7 @@ public class CommentGroup implements Serializable {
     private static final Logger logger = LogManager.getLogger(CommentGroup.class);
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "comment_group_id")
     private Long id;
 

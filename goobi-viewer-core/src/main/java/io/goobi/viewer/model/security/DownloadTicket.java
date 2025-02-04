@@ -62,7 +62,7 @@ public class DownloadTicket implements Serializable {
     private static final Random RANDOM = new SecureRandom();
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "download_ticket_id")
     private Long id;
 

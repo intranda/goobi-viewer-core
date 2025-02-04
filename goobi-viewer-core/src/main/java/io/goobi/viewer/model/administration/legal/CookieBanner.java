@@ -52,7 +52,7 @@ public class CookieBanner implements Serializable {
 
     /** Unique database ID. */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "cookie_banner_id")
     protected Long id;
 

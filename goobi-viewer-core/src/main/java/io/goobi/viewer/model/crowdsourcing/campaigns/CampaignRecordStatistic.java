@@ -73,7 +73,7 @@ public class CampaignRecordStatistic implements Serializable {
     private static final long serialVersionUID = 8902904205183851565L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "campaign_record_statistic_id")
     private Long id;
 

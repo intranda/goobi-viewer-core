@@ -55,7 +55,7 @@ public abstract class FeatureSet implements Serializable {
     protected static final String DEFAULT_MARKER_NAME = "default";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "featureset_id")
     private Long id;
 

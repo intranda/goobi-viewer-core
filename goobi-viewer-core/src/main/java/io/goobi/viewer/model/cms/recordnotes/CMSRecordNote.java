@@ -61,7 +61,7 @@ public abstract class CMSRecordNote implements Serializable {
      * Auto-generated database id
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "cms_record_note_id")
     private Long id;
 

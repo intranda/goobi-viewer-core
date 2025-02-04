@@ -91,7 +91,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
     /** Unique database ID. */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "cms_collection_id")
     private Long id;
 

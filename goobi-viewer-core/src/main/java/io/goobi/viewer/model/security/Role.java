@@ -51,7 +51,7 @@ public class Role implements Serializable {
     public static final String SUPERUSER_ROLE = "admin";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "role_id")
     private Long id;
 

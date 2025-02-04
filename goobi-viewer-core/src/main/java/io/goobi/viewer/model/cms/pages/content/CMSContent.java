@@ -54,7 +54,7 @@ import jakarta.persistence.Table;
 public abstract class CMSContent {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "cms_content_id")
     private Long id;
 

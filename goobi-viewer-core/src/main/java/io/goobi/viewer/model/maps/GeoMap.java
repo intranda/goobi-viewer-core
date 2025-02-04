@@ -90,7 +90,7 @@ public class GeoMap implements Serializable {
     private final transient Object lockTranslations = new Object();
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "geomap_id")
     private Long id;
 

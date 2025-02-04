@@ -62,7 +62,7 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     private static final UserJsonFacade ANONYMOUS = new UserJsonFacade("anonymous");
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "message_id")
     private Long id;
 
