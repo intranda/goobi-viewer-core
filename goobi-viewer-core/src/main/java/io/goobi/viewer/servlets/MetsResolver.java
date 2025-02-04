@@ -149,25 +149,9 @@ public class MetsResolver extends HttpServlet {
 
         // If the user has no listing privilege for this record, act as if it does not exist
         boolean access = false;
-        boolean superuserAccess = false;
         try {
             access =
                     AccessConditionUtils.checkAccessPermissionBySolrDoc(doc, query, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request).isGranted();
-            if (access) {
-
-                User user = BeanUtils.getUserFromRequest(request);
-                if (user == null) {
-                    UserBean userBean = BeanUtils.getUserBean();
-                    if (userBean != null) {
-                        try {
-                            user = userBean.getUser();
-                            superuserAccess = userBean.isAdmin();
-                        } catch (ContextNotActiveException e) {
-                            logger.trace("Cannot access bean method from different thread: UserBean.getUser()");
-                        }
-                    }
-                }
-            }
         } catch (IndexUnreachableException | DAOException e) {
             logger.error(e.getMessage(), e);
             try {
@@ -186,6 +170,19 @@ public class MetsResolver extends HttpServlet {
             }
             return;
         }
+
+        User user = BeanUtils.getUserFromRequest(request);
+        if (user == null) {
+            UserBean userBean = BeanUtils.getUserBean();
+            if (userBean != null) {
+                try {
+                    user = userBean.getUser();
+                } catch (ContextNotActiveException e) {
+                    logger.trace("Cannot access bean method from different thread: UserBean.getUser()");
+                }
+            }
+        }
+        boolean superuserAccess = user != null ? user.isSuperuser() : false;
 
         String format = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
         String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
