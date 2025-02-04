@@ -197,20 +197,23 @@ public class MetsResolver extends HttpServlet {
         response.setContentType(StringConstants.MIMETYPE_TEXT_XML);
         File file = new File(filePath);
         response.setHeader("Content-Disposition", "filename=\"" + file.getName() + "\"");
-        if (!superuserAccess && SolrConstants.SOURCEDOCFORMAT_METS.equals(format)) {
-            try {
-                Document metsDoc = XmlTools.readXmlFile(filePath);
-                Document cleanDoc = filterRestrictedMetadata(metsDoc);
-                if (cleanDoc != null) {
-                    XMLOutputter outputter = XmlTools.getXMLOutputter();
-                    outputter.setFormat(Format.getPrettyFormat());
-                    outputter.output(cleanDoc, response.getOutputStream());
+
+        try (FileInputStream fis = new FileInputStream(file); ServletOutputStream out = response.getOutputStream()) {
+            if (!superuserAccess && SolrConstants.SOURCEDOCFORMAT_METS.equals(format)) {
+                // Filters METS documents, unless client has superuser access
+                try {
+                    Document metsDoc = XmlTools.readXmlFile(filePath);
+                    Document cleanDoc = filterRestrictedMetadata(metsDoc);
+                    if (cleanDoc != null) {
+                        XMLOutputter outputter = XmlTools.getXMLOutputter();
+                        outputter.setFormat(Format.getPrettyFormat());
+                        outputter.output(cleanDoc, response.getOutputStream());
+                    }
+                } catch (IOException | JDOMException e) {
+                    logger.error(e.getMessage());
                 }
-            } catch (IOException | JDOMException e) {
-                logger.error(e.getMessage());
-            }
-        } else {
-            try (FileInputStream fis = new FileInputStream(file); ServletOutputStream out = response.getOutputStream()) {
+            } else {
+                // Unfiltered access
                 int bytesRead = 0;
                 byte[] byteArray = new byte[300];
                 try {
@@ -221,20 +224,20 @@ public class MetsResolver extends HttpServlet {
                 } catch (IOException e) {
                     logger.error(e.getMessage());
                 }
-            } catch (FileNotFoundException e) {
-                logger.debug(e.getMessage());
-                try {
-                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found: " + file.getName());
-                } catch (IOException e1) {
-                    logger.error(e1.getMessage());
-                }
-            } catch (IOException e) {
-                logger.error(e.getMessage());
-                try {
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                } catch (IOException e1) {
-                    logger.error(e1.getMessage());
-                }
+            }
+        } catch (FileNotFoundException e) {
+            logger.debug(e.getMessage());
+            try {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found: " + file.getName());
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            } catch (IOException e1) {
+                logger.error(e1.getMessage());
             }
         }
     }
