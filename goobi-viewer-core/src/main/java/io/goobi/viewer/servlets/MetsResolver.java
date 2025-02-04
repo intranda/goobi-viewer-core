@@ -37,6 +37,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.jboss.weld.contexts.ContextNotActiveException;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.output.Format;
@@ -52,8 +53,11 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.faces.validators.PIValidator;
+import io.goobi.viewer.managedbeans.UserBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -145,17 +149,26 @@ public class MetsResolver extends HttpServlet {
 
         // If the user has no listing privilege for this record, act as if it does not exist
         boolean access = false;
-        boolean nonShareableMetadataFound = false;
+        boolean superuserAccess = false;
         try {
             access =
                     AccessConditionUtils.checkAccessPermissionBySolrDoc(doc, query, IPrivilegeHolder.PRIV_DOWNLOAD_METADATA, request).isGranted();
             if (access) {
-                // Check whether there are restricted metadata values in this record
-                String restrictionQuery = "+" + SolrConstants.PI_TOPSTRUCT + ":\"" + id + "\" +" + SolrConstants.ACCESSCONDITION + ":\""
-                        + StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED + "\"";
-                nonShareableMetadataFound = DataManager.getInstance().getSearchIndex().getHitCount(restrictionQuery) > 0;
+
+                User user = BeanUtils.getUserFromRequest(request);
+                if (user == null) {
+                    UserBean userBean = BeanUtils.getUserBean();
+                    if (userBean != null) {
+                        try {
+                            user = userBean.getUser();
+                            superuserAccess = userBean.isAdmin();
+                        } catch (ContextNotActiveException e) {
+                            logger.trace("Cannot access bean method from different thread: UserBean.getUser()");
+                        }
+                    }
+                }
             }
-        } catch (IndexUnreachableException | DAOException | PresentationException e) {
+        } catch (IndexUnreachableException | DAOException e) {
             logger.error(e.getMessage(), e);
             try {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -184,7 +197,7 @@ public class MetsResolver extends HttpServlet {
         response.setContentType(StringConstants.MIMETYPE_TEXT_XML);
         File file = new File(filePath);
         response.setHeader("Content-Disposition", "filename=\"" + file.getName() + "\"");
-        if (nonShareableMetadataFound && SolrConstants.SOURCEDOCFORMAT_METS.equals(format)) {
+        if (!superuserAccess && SolrConstants.SOURCEDOCFORMAT_METS.equals(format)) {
             try {
                 Document metsDoc = XmlTools.readXmlFile(filePath);
                 Document cleanDoc = filterRestrictedMetadata(metsDoc);
