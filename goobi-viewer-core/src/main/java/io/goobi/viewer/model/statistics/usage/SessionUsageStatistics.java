@@ -55,7 +55,7 @@ public class SessionUsageStatistics {
      * Persistence context unique identifier
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "session_statistics_id")
     private Long id;
 

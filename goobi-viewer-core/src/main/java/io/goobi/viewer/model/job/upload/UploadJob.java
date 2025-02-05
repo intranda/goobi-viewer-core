@@ -91,7 +91,7 @@ public class UploadJob implements Serializable {
     private static final Logger logger = LogManager.getLogger(UploadJob.class);
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "upload_job_id")
     private Long id;
 

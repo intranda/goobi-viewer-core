@@ -64,7 +64,7 @@ public class PersistentCMSComponent implements IPolyglott, Serializable, Compara
 
     /** Unique database ID. */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "component_id")
     private Long id;
 

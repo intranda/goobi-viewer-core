@@ -44,7 +44,7 @@ public class UserRole implements Serializable {
     private static final long serialVersionUID = -4122020685959116944L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_role_id")
     private Long id;
 

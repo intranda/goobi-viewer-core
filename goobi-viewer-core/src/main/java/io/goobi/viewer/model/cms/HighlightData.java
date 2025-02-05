@@ -56,7 +56,7 @@ public class HighlightData implements Serializable {
     private static final long serialVersionUID = 2632497568590266830L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "highlight_id")
     private Long id;
 

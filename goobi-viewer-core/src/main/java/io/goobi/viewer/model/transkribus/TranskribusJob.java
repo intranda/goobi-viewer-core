@@ -58,7 +58,7 @@ public class TranskribusJob implements Serializable {
     private static final long serialVersionUID = 2399740912703228096L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "job_id")
     private Long id;
 

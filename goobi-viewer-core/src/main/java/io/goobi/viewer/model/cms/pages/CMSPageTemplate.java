@@ -94,7 +94,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
     private static final Logger logger = LogManager.getLogger(CMSPageTemplate.class);
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cms_page_template_id")
     private Long id;
 

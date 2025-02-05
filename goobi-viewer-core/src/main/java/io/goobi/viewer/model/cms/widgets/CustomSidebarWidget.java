@@ -69,7 +69,7 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
 
     /** Unique database ID. */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "widget_id")
     protected Long id;
 

@@ -70,7 +70,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     private static final Logger logger = LogManager.getLogger(CMSNavigationItem.class);
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cms_navigation_item_id")
     private Long id;
 

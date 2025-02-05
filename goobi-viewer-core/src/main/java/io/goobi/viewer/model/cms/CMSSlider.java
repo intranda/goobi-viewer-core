@@ -55,7 +55,7 @@ public class CMSSlider implements Serializable {
     private static final long serialVersionUID = -3029283417613875012L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "slider_id")
     private Long id;
     @Column(name = "source_type", nullable = false)

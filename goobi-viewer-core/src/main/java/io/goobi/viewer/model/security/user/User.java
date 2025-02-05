@@ -121,7 +121,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
     private transient BCrypt bcrypt = new BCrypt();
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 

@@ -49,7 +49,7 @@ public class Disclaimer {
 
     /** Unique database ID. */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "disclaimer_id")
     protected Long id;
 

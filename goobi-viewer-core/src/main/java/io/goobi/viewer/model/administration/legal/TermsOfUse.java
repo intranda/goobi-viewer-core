@@ -57,7 +57,7 @@ public class TermsOfUse {
 
     /** Unique database ID. */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "terms_of_use_id")
     protected Long id;
 

@@ -65,7 +65,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
     private static final Logger logger = LogManager.getLogger(UserGroup.class);
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_group_id")
     private Long id;
 

@@ -49,7 +49,7 @@ import jakarta.persistence.Table;
 public class ThemeConfiguration {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "theme_id")
     private Long id;
     @Column(name = "name", nullable = true, columnDefinition = "TINYTEXT")

@@ -78,7 +78,7 @@ public class Bookmark implements Serializable {
     private static final Logger logger = LogManager.getLogger(Bookmark.class);
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bookshelf_item_id")
     private Long id;
 

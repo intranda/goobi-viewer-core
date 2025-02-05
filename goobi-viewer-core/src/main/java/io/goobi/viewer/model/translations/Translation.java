@@ -45,7 +45,7 @@ public class Translation {
 
     /** Unique database ID. */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "translation_id")
     protected Long id;
 

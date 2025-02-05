@@ -54,7 +54,7 @@ import io.goobi.viewer.controller.DataManager;
 public class DailySessionUsageStatistics {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "usage_statistics_id")
     private Long id;
 

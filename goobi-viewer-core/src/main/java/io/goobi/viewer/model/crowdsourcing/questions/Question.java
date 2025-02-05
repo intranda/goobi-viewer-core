@@ -88,7 +88,7 @@ public class Question implements Serializable {
     private static final String URI_ID_REGEX = "/crowdsourcing/campaigns/(\\d{1,19})/questions/(\\d{1,19})/?$";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "question_id")
     private Long id;
 

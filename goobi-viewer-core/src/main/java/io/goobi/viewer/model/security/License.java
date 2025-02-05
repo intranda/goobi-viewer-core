@@ -111,7 +111,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "license_id")
     private Long id;
 

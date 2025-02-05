@@ -60,7 +60,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     private static final Logger logger = LogManager.getLogger(CommentLegacy.class);
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
     private Long id;
 

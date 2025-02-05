@@ -61,7 +61,7 @@ public class ViewerMessage {
     public static final String MESSAGE_PROPERTY_INFO = "result";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 

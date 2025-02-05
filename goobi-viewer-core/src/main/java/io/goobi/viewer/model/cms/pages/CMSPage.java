@@ -129,7 +129,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public static final String TOPBAR_SLIDER_ID = "topbar_slider";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cms_page_id")
     private Long id;
 

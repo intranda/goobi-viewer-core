@@ -86,7 +86,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     private static final Logger logger = LogManager.getLogger(BookmarkList.class);
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bookshelf_id")
     private Long id;
 
