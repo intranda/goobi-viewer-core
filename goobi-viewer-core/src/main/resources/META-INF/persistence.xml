@@ -263,9 +263,10 @@
 		<class>io.goobi.viewer.model.job.quartz.RecurringTaskTrigger</class>
 		<properties>
 			<property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver" />
-			<property name="jakarta.persistence.jdbc.url" value="jdbc:h2:mem:test" />
+			<property name="jakarta.persistence.jdbc.url" value="jdbc:h2:mem:test;MODE=LEGACY;NON_KEYWORDS=VALUE;DB_CLOSE_DELAY=-1" />
 			<property name="jakarta.persistence.jdbc.user" value="user" />
 			<property name="jakarta.persistence.jdbc.password" value="password" />
+            <property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.H2Platform"/>
 			<!-- EclipseLink should create the database schema automatically -->
 			<property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
 			<property name="eclipselink.ddl-generation.output-mode" value="database" />
