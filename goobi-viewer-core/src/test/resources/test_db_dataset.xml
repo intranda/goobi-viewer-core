@@ -156,11 +156,11 @@
 	<cms_geomap geomap_id="1" creator_id="1" date_created="2020-04-23 09:10:52" date_updated="2020-04-23 09:10:52" initial_view="{&quot;zoom&quot;:8,&quot;center&quot;:[6.501159667968751,49.89109559573688]}"></cms_geomap>
     <cms_geomap geomap_id="2" creator_id="3" date_created="2020-04-23 09:10:52" date_updated="2020-04-23 09:10:52" initial_view="{&quot;zoom&quot;:5,&quot;center&quot;:[11.073397,49.451993]}"></cms_geomap>
     
-    <cms_geomap_translation translation_id="1" language="de" tag="Title" value="Kartentitel 1" owner_id="1"></cms_geomap_translation>
-    <cms_geomap_translation translation_id="2" language="de" tag="Description" value="Kartenbeschreibung 1" owner_id="1"></cms_geomap_translation>
-    <cms_geomap_translation translation_id="3" language="en" tag="Title" value="Map title 1" owner_id="1"></cms_geomap_translation>
-    <cms_geomap_translation translation_id="4" language="en" tag="Description" value="Map description 1" owner_id="1"></cms_geomap_translation>
-    <cms_geomap_translation translation_id="5" language="de" tag="Title" value="Kartentitel 2" owner_id="2"></cms_geomap_translation>
+    <cms_geomap_translation translation_id="1" language="de" tag="Title" translation_value="Kartentitel 1" owner_id="1"></cms_geomap_translation>
+    <cms_geomap_translation translation_id="2" language="de" tag="Description" translation_value="Kartenbeschreibung 1" owner_id="1"></cms_geomap_translation>
+    <cms_geomap_translation translation_id="3" language="en" tag="Title" translation_value="Map title 1" owner_id="1"></cms_geomap_translation>
+    <cms_geomap_translation translation_id="4" language="en" tag="Description" translation_value="Map description 1" owner_id="1"></cms_geomap_translation>
+    <cms_geomap_translation translation_id="5" language="de" tag="Title" translation_value="Kartentitel 2" owner_id="2"></cms_geomap_translation>
     
     <cms_geomap_featureset featureset_id="1" owner_geomap="1" feature_source="manual"></cms_geomap_featureset>
     <cms_geomap_featureset featureset_id="2" owner_geomap="2" feature_source="manual"></cms_geomap_featureset>
@@ -248,7 +248,7 @@
         date_start="2021-03-01 00:00:00.000000000" date_end="2021-04-01 00:00:00.000000000"
         solr_query="+PI:PI_5" statistic_mode="PAGE" />
         
-    <cs_campaign_translations translation_id="1" owner_id="1" language="en" tag="title" value="English title" />
+    <cs_campaign_translations translation_id="1" owner_id="1" language="en" tag="title" translation_value="English title" />
     
     <cs_questions question_id="1" owner_id="1" text="{&quot;en&quot;:&quot;English text&quot;}" question_type="PLAINTEXT" target_selector="RECTANGLE" target_frequency="0" />
     <cs_questions question_id="2" owner_id="1" question_type="PLAINTEXT" target_selector="RECTANGLE" target_frequency="0" />
