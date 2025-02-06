@@ -3161,6 +3161,13 @@ this.on("mount", () => {
 	this.geomap = this.opts.geomap;
 	this.featureGroups = this.opts.featureGroups;
 	this.filters = this.createFilters(this.opts.filters, this.featureGroups);
+	if(this.opts.comparator) {
+		this.filters.forEach(filter => {
+			if(filter.options) {
+				filter.options.sort(this.opts.comparator.compare);
+			}
+		})
+	}
 	this.geomap.onActiveLayerChange.subscribe(groups => {
 		this.featureGroups = groups;
 		this.filters = this.createFilters(this.opts.filters, this.featureGroups);
