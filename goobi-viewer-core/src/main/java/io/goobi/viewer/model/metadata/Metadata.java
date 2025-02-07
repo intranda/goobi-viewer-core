@@ -416,7 +416,7 @@ public class Metadata implements Serializable {
      */
     public void setParamValue(int valueIndex, int paramIndex, List<String> inValues, String paramLabel, String url, Map<String, String> options,
             String groupType, Locale locale) {
-        setParamValue(valueIndex, paramIndex, inValues, new RelationshipMetadataContainer(Collections.emptyList(), Collections.emptyMap(), ""),
+        setParamValue(valueIndex, paramIndex, inValues, new RelationshipMetadataContainer(Collections.emptyList(), Collections.emptyMap()),
                 paramLabel, url, options, groupType, locale);
     }
 
@@ -1019,9 +1019,9 @@ public class Metadata implements Serializable {
             /**
              * Load data of related documents if any params are of type "related". Otherwise generate an empty RelationshipMetadataContainer
              */
-            RelationshipMetadataContainer relatedDocuments = new RelationshipMetadataContainer(Collections.emptyList(), Collections.emptyMap(), "");
+            RelationshipMetadataContainer relatedDocuments = new RelationshipMetadataContainer(Collections.emptyList(), Collections.emptyMap());
             if (hasRelationshipMetadata()) {
-                relatedDocuments = RelationshipMetadataContainer.loadRelationships(new ComplexMetadataContainer(groupedMdList, ""));
+                relatedDocuments = RelationshipMetadataContainer.loadRelationships(new ComplexMetadataContainer(groupedMdList));
             }
             int count = 0;
             for (SolrDocument doc : groupedMdList) {

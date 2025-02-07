@@ -311,19 +311,15 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     public ComplexMetadataContainer getMetadataDocuments() throws PresentationException, IndexUnreachableException {
-        return getMetadataDocuments("");
-    }
-
-    public ComplexMetadataContainer getMetadataDocuments(String sortField) throws PresentationException, IndexUnreachableException {
         if (this.metadataDocuments == null) {
-            this.metadataDocuments = loadMetadataDocuments(sortField);
+            this.metadataDocuments = loadMetadataDocuments();
         }
 
         return this.metadataDocuments;
     }
 
-    private ComplexMetadataContainer loadMetadataDocuments(String sortField) throws PresentationException, IndexUnreachableException {
-        return RelationshipMetadataContainer.loadRelationshipMetadata(this.pi, sortField, DataManager.getInstance().getSearchIndex());
+    private ComplexMetadataContainer loadMetadataDocuments() throws PresentationException, IndexUnreachableException {
+        return RelationshipMetadataContainer.loadRelationshipMetadata(this.pi, DataManager.getInstance().getSearchIndex());
     }
 
     /**

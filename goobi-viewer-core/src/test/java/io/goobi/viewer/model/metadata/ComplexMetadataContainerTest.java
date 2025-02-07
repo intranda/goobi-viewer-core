@@ -138,7 +138,7 @@ class ComplexMetadataContainerTest extends AbstractTest {
 
     @Test
     void testCreateMetadataContainer() {
-        ComplexMetadataContainer container = new ComplexMetadataContainer(metadataDocs, "");
+        ComplexMetadataContainer container = new ComplexMetadataContainer(metadataDocs);
 
         assertEquals(2, container.getMetadata("MD_BIOGRAPHY_EDUCATION").size());
         assertEquals("lycée", container.getMetadata("MD_BIOGRAPHY_EDUCATION").get(1).getFirstValue(Locale.FRANCE));
