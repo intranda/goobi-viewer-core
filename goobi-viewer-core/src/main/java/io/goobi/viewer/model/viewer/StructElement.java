@@ -310,6 +310,10 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         throw new PresentationException("errDocNotFound");
     }
 
+    public ComplexMetadataContainer getMetadataDocuments() throws PresentationException, IndexUnreachableException {
+        return getMetadataDocuments("");
+    }
+
     public ComplexMetadataContainer getMetadataDocuments(String sortField) throws PresentationException, IndexUnreachableException {
         if (this.metadataDocuments == null) {
             this.metadataDocuments = loadMetadataDocuments(sortField);

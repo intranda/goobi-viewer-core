@@ -40,7 +40,7 @@ class ComplexMetadataContainerTest extends AbstractTest {
 
     @Override
     @BeforeEach
-    public void setUp() {   
+    public void setUp() {
 
         metadataDocs = List.of(
                 new SolrDocument(Map.of(
@@ -138,7 +138,7 @@ class ComplexMetadataContainerTest extends AbstractTest {
 
     @Test
     void testCreateMetadataContainer() {
-        ComplexMetadataContainer container = new ComplexMetadataContainer(metadataDocs);
+        ComplexMetadataContainer container = new ComplexMetadataContainer(metadataDocs, "");
 
         assertEquals(2, container.getMetadata("MD_BIOGRAPHY_EDUCATION").size());
         assertEquals("lycée", container.getMetadata("MD_BIOGRAPHY_EDUCATION").get(1).getFirstValue(Locale.FRANCE));

@@ -56,19 +56,20 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
 
     private final Map<String, MetadataContainer> relatedDocumentMap;
 
-    public RelationshipMetadataContainer(List<SolrDocument> metadataDocs, Predicate<String> fieldNameFilter,
+    public RelationshipMetadataContainer(List<SolrDocument> metadataDocs, String sortField, Predicate<String> fieldNameFilter,
             Map<String, MetadataContainer> relatedDocumentMap) {
-        super(metadataDocs, fieldNameFilter);
+        super(metadataDocs, sortField, fieldNameFilter);
         this.relatedDocumentMap = relatedDocumentMap;
     }
 
-    public RelationshipMetadataContainer(List<SolrDocument> metadataDocs, Map<String, MetadataContainer> relatedDocumentMap) {
-        super(metadataDocs);
+    public RelationshipMetadataContainer(List<SolrDocument> metadataDocs, Map<String, MetadataContainer> relatedDocumentMap, String sortField) {
+        super(metadataDocs, sortField);
         this.relatedDocumentMap = relatedDocumentMap;
     }
 
-    public RelationshipMetadataContainer(Map<String, List<ComplexMetadata>> metadataMap, Map<String, MetadataContainer> relatedDocumentMap) {
-        super(metadataMap);
+    public RelationshipMetadataContainer(Map<String, List<ComplexMetadata>> metadataMap, Map<String, MetadataContainer> relatedDocumentMap,
+            String sortField) {
+        super(metadataMap, sortField);
         this.relatedDocumentMap = relatedDocumentMap;
     }
 
@@ -84,13 +85,13 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
     public static RelationshipMetadataContainer loadRelationshipMetadata(String pi, String sortField, SolrSearchIndex searchIndex,
             List<String> recordFields)
             throws PresentationException, IndexUnreachableException {
-        ComplexMetadataContainer container = ComplexMetadataContainer.loadMetadataDocuments(pi, searchIndex);
+        ComplexMetadataContainer container = ComplexMetadataContainer.loadMetadataDocuments(pi, sortField, searchIndex);
         return loadRelationships(searchIndex, sortField, recordFields, container);
     }
 
-    public static RelationshipMetadataContainer loadRelationships(ComplexMetadataContainer container, String sortField)
+    public static RelationshipMetadataContainer loadRelationships(ComplexMetadataContainer container)
             throws PresentationException, IndexUnreachableException {
-        return loadRelationships(container, sortField, DataManager.getInstance().getSearchIndex());
+        return loadRelationships(container, container.getSortField(), DataManager.getInstance().getSearchIndex());
     }
 
     public static RelationshipMetadataContainer loadRelationships(ComplexMetadataContainer container, String sortField, SolrSearchIndex searchIndex)
@@ -109,7 +110,7 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
                 .map(md -> md.getFirstValue(RELATIONSHIP_ID_REFERENCE, null))
                 .collect(Collectors.joining(" "));
         if (StringUtils.isBlank(recordIdentifiers)) {
-            return new RelationshipMetadataContainer(container.metadataMap, Collections.emptyMap());
+            return new RelationshipMetadataContainer(container.metadataMap, Collections.emptyMap(), sortField);
         }
 
         String query = String.format(RELATED_RECORD_QUERY_FORMAT, recordIdentifiers);
@@ -117,7 +118,7 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
         Map<String, MetadataContainer> map = recordDocs.stream()
                 .collect(Collectors.toMap(doc -> SolrTools.getSingleFieldStringValue(doc, DOCUMENT_IDENTIFIER),
                         MetadataContainer::createMetadataEntity));
-        return new RelationshipMetadataContainer(container.metadataMap, map);
+        return new RelationshipMetadataContainer(container.metadataMap, map, sortField);
     }
 
     public static ComplexMetadataContainer loadRelationshipMetadata(String pi, String sortField, SolrSearchIndex searchIndex)

@@ -45,38 +45,50 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 public class ComplexMetadataContainer {
 
     private static final String QUERY_FORMAT = "+DOCTYPE:METADATA +PI_TOPSTRUCT:%s";
-    private static final String DEFAULT_SORTING = "desc";
+    public static final String SORT_DIRECTION_ASCENDING = "asc";
+    public static final String SORT_DIRECTION_DESCENDING = "desc";
+    private static final String DEFAULT_SORT_DIRECTION = SORT_DIRECTION_ASCENDING;
 
     protected final Map<String, List<ComplexMetadata>> metadataMap;
 
-    private String sorting = DEFAULT_SORTING;
+    private String sortDirection = DEFAULT_SORT_DIRECTION;
     private String sortField = "";
 
-    public void setSorting(String sorting) {
-        this.sorting = sorting;
-    }
-
-    public String getSorting() {
-        return sorting;
-    }
-
-    public boolean isDescendingOrder() {
-        return "desc".equalsIgnoreCase(sorting);
-    }
-
-    public ComplexMetadataContainer(Map<String, List<ComplexMetadata>> metadataMap) {
+    public ComplexMetadataContainer(Map<String, List<ComplexMetadata>> metadataMap, String sortField) {
         this.metadataMap = metadataMap;
+        this.sortField = sortField;
     }
 
-    public ComplexMetadataContainer(List<SolrDocument> metadataDocs) {
-        this(metadataDocs, s -> true);
+    public ComplexMetadataContainer(List<SolrDocument> metadataDocs, String sortField) {
+        this(metadataDocs, sortField, s -> true);
     }
 
-    public ComplexMetadataContainer(List<SolrDocument> metadataDocs, Predicate<String> fieldNameFilter) {
+    public ComplexMetadataContainer(List<SolrDocument> metadataDocs, String sortField, Predicate<String> fieldNameFilter) {
+        this.sortField = sortField;
         this.metadataMap = ComplexMetadata.getMetadataFromDocuments(metadataDocs)
                 .stream()
                 .filter(doc -> fieldNameFilter.test(doc.getField()))
                 .collect(Collectors.toMap(ComplexMetadata::getField, List::of, ListUtils::union));
+    }
+
+    public String getSortDirection() {
+        return sortDirection;
+    }
+
+    public void setSortDirection(String sortDirection) {
+        this.sortDirection = sortDirection;
+    }
+
+    public String getSortField() {
+        return sortField;
+    }
+
+    public void setSortField(String sortField) {
+        this.sortField = sortField;
+    }
+
+    public boolean isDescendingOrder() {
+        return "desc".equalsIgnoreCase(sortDirection);
     }
 
     public List<ComplexMetadata> getMetadata(String field, String sortField, Locale sortLanguage, String filterField, String filterValue,
@@ -161,22 +173,23 @@ public class ComplexMetadataContainer {
         return getMetadataValues(metadataField, filterField, filterValue, valueField, locale).stream().findFirst().orElse("");
     }
 
-    public static ComplexMetadataContainer loadMetadataDocuments(String pi, SolrSearchIndex searchIndex)
+    public static ComplexMetadataContainer loadMetadataDocuments(String pi, String sortField, SolrSearchIndex searchIndex)
             throws PresentationException, IndexUnreachableException {
         SolrDocumentList metadataDocs = searchIndex.search(String.format(QUERY_FORMAT, pi));
-        return new ComplexMetadataContainer(metadataDocs);
+        return new ComplexMetadataContainer(metadataDocs, sortField);
     }
 
-    public static ComplexMetadataContainer loadMetadataDocuments(String pi, SolrSearchIndex searchIndex, Predicate<String> fieldNameFilter)
+    public static ComplexMetadataContainer loadMetadataDocuments(String pi, String sortField, SolrSearchIndex searchIndex,
+            Predicate<String> fieldNameFilter)
             throws PresentationException, IndexUnreachableException {
         SolrDocumentList metadataDocs = searchIndex.search(String.format(QUERY_FORMAT, pi));
-        return new ComplexMetadataContainer(metadataDocs, fieldNameFilter);
+        return new ComplexMetadataContainer(metadataDocs, sortField, fieldNameFilter);
     }
 
-    public static ComplexMetadataContainer loadMetadataDocuments(String pi, SolrSearchIndex searchIndex, List<String> fieldList)
+    public static ComplexMetadataContainer loadMetadataDocuments(String pi, String sortField, SolrSearchIndex searchIndex, List<String> fieldList)
             throws PresentationException, IndexUnreachableException {
         SolrDocumentList metadataDocs = searchIndex.search(String.format(QUERY_FORMAT, pi), fieldList);
-        return new ComplexMetadataContainer(metadataDocs);
+        return new ComplexMetadataContainer(metadataDocs, sortField);
     }
 
 }
