@@ -50,6 +50,7 @@ public class ComplexMetadataContainer {
     protected final Map<String, List<ComplexMetadata>> metadataMap;
 
     private String sorting = DEFAULT_SORTING;
+    private String sortField = "";
 
     public void setSorting(String sorting) {
         this.sorting = sorting;

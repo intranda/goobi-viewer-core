@@ -31,9 +31,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import jakarta.faces.context.FacesContext;
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -62,6 +59,8 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Each instance of this class represents a structure element. This class extends <code>StructElementStub</code> and contains additional
@@ -311,16 +310,16 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         throw new PresentationException("errDocNotFound");
     }
 
-    public ComplexMetadataContainer getMetadataDocuments() throws PresentationException, IndexUnreachableException {
+    public ComplexMetadataContainer getMetadataDocuments(String sortField) throws PresentationException, IndexUnreachableException {
         if (this.metadataDocuments == null) {
-            this.metadataDocuments = loadMetadataDocuments();
+            this.metadataDocuments = loadMetadataDocuments(sortField);
         }
 
         return this.metadataDocuments;
     }
 
-    private ComplexMetadataContainer loadMetadataDocuments() throws PresentationException, IndexUnreachableException {
-        return RelationshipMetadataContainer.loadRelationshipMetadata(this.pi, DataManager.getInstance().getSearchIndex());
+    private ComplexMetadataContainer loadMetadataDocuments(String sortField) throws PresentationException, IndexUnreachableException {
+        return RelationshipMetadataContainer.loadRelationshipMetadata(this.pi, sortField, DataManager.getInstance().getSearchIndex());
     }
 
     /**

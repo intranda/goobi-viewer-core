@@ -4358,7 +4358,7 @@ public class ViewManager implements Serializable {
     }
 
     public List<PhysicalElement> getPagesForMediaType(String type) throws PresentationException, IndexUnreachableException {
-        List<ComplexMetadata> mds = getTopStructElement().getMetadataDocuments().getMetadata("MD_MEDIA_INFO");
+        List<ComplexMetadata> mds = getTopStructElement().getMetadataDocuments("").getMetadata("MD_MEDIA_INFO");
         return mds.stream()
                 .filter(md -> type.equalsIgnoreCase(md.getFirstValue("MD_SUBJECT", null)))
                 .map(md -> md.getFirstValue("MD_MEDIA_INFO", null))
