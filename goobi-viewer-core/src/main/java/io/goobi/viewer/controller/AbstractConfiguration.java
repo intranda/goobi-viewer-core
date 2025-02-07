@@ -31,8 +31,8 @@ import org.apache.commons.configuration2.builder.ReloadingFileBasedConfiguration
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.ex.ConversionException;
 import org.apache.commons.configuration2.tree.ImmutableNode;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Abstract configuration with base getters.
@@ -89,7 +89,7 @@ public abstract class AbstractConfiguration {
         } catch (ConversionException e) {
             logger.error("{}. Using default value {} instead.", e.getMessage(), inDefault);
             return inDefault;
-        } catch (Exception e) {
+        } catch (NullPointerException | IllegalArgumentException e) {
             logger.error(e.getMessage(), e);
             return inDefault;
         }
@@ -122,7 +122,7 @@ public abstract class AbstractConfiguration {
         } catch (ConversionException e) {
             logger.error("{}. Using default value {} instead.", e.getMessage(), inDefault);
             return inDefault;
-        } catch (Exception e) {
+        } catch (NullPointerException | IllegalArgumentException e) {
             logger.error(e.getMessage(), e);
             return inDefault;
         }
@@ -140,7 +140,7 @@ public abstract class AbstractConfiguration {
     protected String getLocalString(String inPath, String inDefault) {
         try {
             return getConfigLocal().getString(inPath, getConfig().getString(inPath, inDefault));
-        } catch (Exception e) {
+        } catch (NullPointerException | IllegalArgumentException e) {
             logger.error(e.getMessage(), e);
             return inDefault;
         }
@@ -245,7 +245,7 @@ public abstract class AbstractConfiguration {
     protected boolean getLocalBoolean(String inPath, boolean inDefault) {
         try {
             return getConfigLocal().getBoolean(inPath, getConfig().getBoolean(inPath, inDefault));
-        } catch (Exception e) {
+        } catch (NullPointerException | IllegalArgumentException e) {
             logger.error(e.getMessage(), e);
             return inDefault;
         }
