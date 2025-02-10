@@ -141,7 +141,9 @@ public class Translation {
         }
 
         for (Translation translation : translations) {
-            if (translation.getTag().equals(tag) && translation.getLanguage().equals(lang) && StringUtils.isNotBlank(translation.getTranslationValue())) {
+            if (translation.getTag().equals(tag)
+                    && translation.getLanguage().equals(lang)
+                    && StringUtils.isNotBlank(translation.getTranslationValue())) {
                 return translation.getTranslationValue();
             }
         }

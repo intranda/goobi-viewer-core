@@ -290,7 +290,10 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * @param value a {@link java.lang.String} object.
      */
     public void setLabel(String value, String language) {
-        getLabels().stream().filter(label -> label.getLanguage().equalsIgnoreCase(language)).findFirst().ifPresent(label -> label.setTranslationValue(value));
+        getLabels().stream()
+            .filter(label -> label.getLanguage().equalsIgnoreCase(language))
+            .findFirst()
+            .ifPresent(label -> label.setTranslationValue(value));
     }
 
     /**
