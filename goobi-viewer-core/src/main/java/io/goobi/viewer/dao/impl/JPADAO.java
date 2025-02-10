@@ -5126,7 +5126,7 @@ public class JPADAO implements IDAO {
                 }
                 sbQuery.append(filterString).append(order);
 
-                logger.error(sbQuery);
+                logger.trace(sbQuery);
                 Query q = em.createQuery(sbQuery.toString());
                 useParams.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
                 //            q.setParameter("lang", BeanUtils.getLocale().getLanguage());
