@@ -92,8 +92,6 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
     @BeforeAll
     public static void startProxy() {
         mockServer = ClientAndServer.startClientAndServer(SERVERPORT);
-        System.out.println("MockServer Port: " + mockServer.getLocalPort());
-
         String requestBody_valid = REQUEST_BODY_TEMPLATE.replace("{username}", userActive_nickname).replace("{password}", userActive_pwHash);
         String requestBody_invalid = REQUEST_BODY_TEMPLATE.replace("{username}", userActive_nickname).replace("{password}", userSuspended_pwHash);
         String requestBody_unknown =
@@ -127,9 +125,9 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
         serverClient.stop();
         mockServer.stop();
         Path logFile = Paths.get("mockserver.log");
-        //if (Files.isRegularFile(logFile)) {
-        //    Files.delete(logFile);
-        //}
+        if (Files.isRegularFile(logFile)) {
+            Files.delete(logFile);
+        }
     }
 
     /**
