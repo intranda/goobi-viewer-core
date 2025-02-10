@@ -30,9 +30,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
-import jakarta.faces.context.ExternalContext;
-import jakarta.faces.context.FacesContext;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -44,6 +41,8 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSComponentScope;
 import io.goobi.viewer.model.security.user.User;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
 
 class CMSPageTemplateEditBeanTest {
 
@@ -94,7 +93,7 @@ class CMSPageTemplateEditBeanTest {
     private static CMSTemplateManager createTemplateManager() {
         CMSTemplateManager templateManager = Mockito.mock(CMSTemplateManager.class);
         CMSComponent component = new CMSComponent(null, NAME_COMPONENT, DESCRIPTION_COMPONENT, null, FILENAME_COMPONENT, CMSComponentScope.PAGEVIEW,
-                Collections.emptyMap(), null);
+                Collections.emptyMap(), Collections.emptyList(), null);
         Mockito.when(templateManager.getComponent(FILENAME_COMPONENT)).thenReturn(Optional.of(component));
         return templateManager;
     }

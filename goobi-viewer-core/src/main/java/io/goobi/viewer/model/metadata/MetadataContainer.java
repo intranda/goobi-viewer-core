@@ -47,7 +47,7 @@ import io.goobi.viewer.solr.SolrTools;
 /**
  * An object containing a number of translatable metadata values. The values are mapped to a key which is a string corresponding to the SOLR field
  * name the values are taken from Each field name/key is mapped to a list of {@link IMetadataValue} objects which may contain a single string or
- * translations in several languages Used in {@link GeoCoordinateConverter} to add translatable metadata entites to geomap features
+ * translations in several languages Used in {@link GeoCoordinateConverter} to add translatable metadata entites to geomap features.
  * 
  * @author florian
  *
@@ -123,7 +123,7 @@ public class MetadataContainer {
     }
 
     /**
-     * Get all metadata for the given key
+     * Get all metadata for the given key.
      * 
      * @param key the field name for which to get the metadata value
      * @return List<IMetadataValue>
@@ -133,7 +133,7 @@ public class MetadataContainer {
     }
 
     /**
-     * get the first metadata value for the given key. If no such value exists, an empty {@link IMetadataValue} is returned
+     * get the first metadata value for the given key. If no such value exists, an empty {@link IMetadataValue} is returned.
      * 
      * @param key the field name for which to get the metadata value
      * @return {@link IMetadataValue}
@@ -153,7 +153,7 @@ public class MetadataContainer {
     }
 
     /**
-     * Get the first found value in the default language for the given key
+     * Get the first found value in the default language for the given key.
      * 
      * @param key the field name for which to get the metadata value
      * @return First value for the given key; empty string if not found
@@ -163,7 +163,7 @@ public class MetadataContainer {
     }
 
     /**
-     * Get all values of the default language (or any value of no default langauge value exists) for the given field
+     * Get all values of the default language (or any value of no default langauge value exists) for the given field.
      * 
      * @param key the field name for which to get the metadata value
      * @param locale the language for which to find a value. If there is no translation in that langauge, use the default language and failing that
@@ -175,7 +175,7 @@ public class MetadataContainer {
     }
 
     /**
-     * Get the first found value for the given key and locale
+     * Get the first found value for the given key and locale.
      * 
      * @param key the field name for which to get the metadata value
      * @param locale the language for which to find a value. If there is no translation in that langauge, use the default language and failing that
@@ -249,7 +249,7 @@ public class MetadataContainer {
     /**
      * Returns a {@link MetadataContainer} which includes all metadata fields matching the given fieldNameFilter from the given {@link SolrDocument}
      * doc as well as the {@link SolrConstants#MD_VALUE values} of those child documents which {@link SolrConstants#LABEL label} matches the
-     * fieldnameFilter
+     * fieldnameFilter.
      * 
      * @param doc The main DOCSTRUCT document
      * @param children METADATA type documents belonging to the main doc
@@ -300,7 +300,7 @@ public class MetadataContainer {
 
     /**
      * Returns a {@link MetadataContainer} which includes all metadata fields matching the given fieldNameFilter from the given {@link SolrDocument}
-     * doc
+     * doc.
      * 
      * @param doc The main DOCSTRUCT document
      * @param fieldNameFilter A function which should return true for all metadata field names to be included in the return value
@@ -312,7 +312,7 @@ public class MetadataContainer {
 
     /**
      * Returns a {@link MetadataContainer} which includes all metadata fields matching the given fieldNameFilter from the given {@link SolrDocument}
-     * doc
+     * doc.
      * 
      * @param doc The main DOCSTRUCT document
      * @return a {@link MetadataContainer}

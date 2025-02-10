@@ -25,6 +25,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystems;
@@ -50,9 +51,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import jakarta.faces.context.FacesContext;
-import jakarta.servlet.ServletContext;
-
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.ConfigurationBuilder;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
@@ -74,6 +72,8 @@ import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.ServletContext;
 
 /**
  * <p>
@@ -267,7 +267,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                 // logger.debug("URL: " + file.getParentFile().toURI().toURL()); //NOSONAR Debug
                 URLClassLoader urlLoader = new URLClassLoader(new URL[] { resourceURL });
                 return ResourceBundle.getBundle(BUNDLE_NAME, locale, urlLoader);
-            } catch (Exception e) {
+            } catch (NullPointerException | IllegalArgumentException | MalformedURLException e) {
                 // some error while loading bundle from file system; use default bundle now ...
             }
         } else {
@@ -712,7 +712,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                 return getLocalesFromFile(facesConfigPath);
             }
             throw new FileNotFoundException("Unable to locate faces-config at " + facesConfigPath);
-        } catch (Exception e) {
+        } catch (NullPointerException | IllegalArgumentException | IOException | JDOMException e) {
             logger.error("Error getting locales from faces-config", e);
             return getFacesLocales();
         }
@@ -735,7 +735,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                 return getDefaultLocaleFromFile(facesConfigPath);
             }
             throw new FileNotFoundException("Unable to locate faces-config at " + facesConfigPath);
-        } catch (Exception e) {
+        } catch (NullPointerException | IllegalArgumentException | IOException | JDOMException e) {
             logger.error("Error getting locales from faces-config", e);
             return getDefaultLocale();
         }
