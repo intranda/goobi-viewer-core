@@ -24,10 +24,10 @@ package io.goobi.viewer.managedbeans;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.model.archives.ArchiveTree;
 
-class ArchiveBeanTest extends AbstractTest {
+class ArchiveBeanTest extends AbstractSolrEnabledTest {
 
     /**
      * @see AdminBean#reset()
