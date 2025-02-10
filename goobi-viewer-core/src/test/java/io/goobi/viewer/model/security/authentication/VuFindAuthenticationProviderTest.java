@@ -72,7 +72,9 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
             + "\"isExpired\": \"Y\"" + "}," + "\"blocks\": {" + "\"isBlocked\": \"N\"" + "}" + "}";
 
     @BeforeAll
-    public static void startProxy() {
+    public static void startProxy() throws Exception {
+        AbstractDatabaseEnabledTest.setUpClass();
+        
         mockServer = ClientAndServer.startClientAndServer(SERVERPORT);
         String requestBodyValid = REQUEST_BODY_TEMPLATE.replace("{username}", userActiveNickname).replace("{password}", userActivePwHash);
         String requestBodyInvalid = REQUEST_BODY_TEMPLATE.replace("{username}", userActiveNickname).replace("{password}", userSuspendedPwHash);
@@ -104,6 +106,8 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
 
     @AfterAll
     public static void stopProxy() throws Exception {
+        AbstractDatabaseEnabledTest.tearDownClass();
+        
         serverClient.stop();
         mockServer.stop();
         Path logFile = Paths.get("mockserver.log");
