@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.security.authentication;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,6 +41,7 @@ import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.controller.FileTools;
 import jakarta.ws.rs.core.MediaType;
 
 /**
@@ -74,7 +76,7 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
     @BeforeAll
     public static void startProxy() {
         mockServer = ClientAndServer.startClientAndServer(SERVERPORT);
-        String requestBodyValid = REQUEST_BODY_TEMPLATE.replace("{username}", userActiveNickname).replace("{password}", userActivePwHash);
+        String requestBodyValid = REQUEST_BODY_TEMPLATE.replace("{username}", userActiveNickname + "foo").replace("{password}", userActivePwHash);
         String requestBodyInvalid = REQUEST_BODY_TEMPLATE.replace("{username}", userActiveNickname).replace("{password}", userSuspendedPwHash);
         String requestBodyUnknown =
                 REQUEST_BODY_TEMPLATE.replace("{username}", userActiveNickname + "test").replace("{password}", userActivePwHash);
@@ -108,6 +110,7 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
         mockServer.stop();
         Path logFile = Paths.get("mockserver.log");
         if (Files.isRegularFile(logFile)) {
+            System.out.println(FileTools.getStringFromFile(logFile.toFile(), StandardCharsets.UTF_8.toString()));
             Files.delete(logFile);
         }
     }
@@ -136,6 +139,8 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
     void testLogin_unknown() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         CompletableFuture<LoginResult> future = provider.login(userActiveNickname + "test", userActivePwHash);
         Assertions.assertFalse(future.get().getUser().isPresent());
+        System.out.println(REQUEST_BODY_TEMPLATE.replace("{username}", userActiveNickname + "test").replace("{password}", userActivePwHash));
+        System.out.println(RESPONSE_USER_UNKNOWN);
     }
 
     @Test
