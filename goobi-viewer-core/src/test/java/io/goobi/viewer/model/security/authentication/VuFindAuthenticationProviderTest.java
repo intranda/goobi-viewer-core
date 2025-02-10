@@ -21,29 +21,17 @@
  */
 package io.goobi.viewer.model.security.authentication;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import jakarta.ws.rs.core.MediaType;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.LaxRedirectStrategy;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
@@ -51,11 +39,8 @@ import org.mockserver.model.Header;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import de.intranda.api.iiif.image.ImageInformation;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * @author Florian Alpers
@@ -65,13 +50,11 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
 
     VuFindProvider provider;
 
-    private static String userActive_nickname = "admin";
-    private static String userActive_email = "1@users.org";
-    private static String userActive_pwHash = "abcdef1";
+    private static String userActiveNickname = "admin";
+    private static String userActivePwHash = "abcdef1";
 
-    private static String userSuspended_nickname = "nick 3";
-    private static String userSuspended_email = "3@users.org";
-    private static String userSuspended_pwHash = "abcdef3";
+    private static String userSuspendedNickname = "nick 3";
+    private static String userSuspendedPwHash = "abcdef3";
 
     //    private static ClientAndProxy proxy;
     private static ClientAndServer mockServer;
@@ -92,12 +75,12 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
     @BeforeAll
     public static void startProxy() {
         mockServer = ClientAndServer.startClientAndServer(SERVERPORT);
-        String requestBody_valid = REQUEST_BODY_TEMPLATE.replace("{username}", userActive_nickname).replace("{password}", userActive_pwHash);
-        String requestBody_invalid = REQUEST_BODY_TEMPLATE.replace("{username}", userActive_nickname).replace("{password}", userSuspended_pwHash);
+        String requestBody_valid = REQUEST_BODY_TEMPLATE.replace("{username}", userActiveNickname).replace("{password}", userActivePwHash);
+        String requestBody_invalid = REQUEST_BODY_TEMPLATE.replace("{username}", userActiveNickname).replace("{password}", userSuspendedPwHash);
         String requestBody_unknown =
-                REQUEST_BODY_TEMPLATE.replace("{username}", userActive_nickname + "test").replace("{password}", userActive_pwHash);
+                REQUEST_BODY_TEMPLATE.replace("{username}", userActiveNickname + "test").replace("{password}", userActivePwHash);
         String requestBody_suspended =
-                REQUEST_BODY_TEMPLATE.replace("{username}", userSuspended_nickname).replace("{password}", userSuspended_pwHash);
+                REQUEST_BODY_TEMPLATE.replace("{username}", userSuspendedNickname).replace("{password}", userSuspendedPwHash);
 
         serverClient = new MockServerClient(SERVERURL, SERVERPORT);
 
@@ -133,6 +116,7 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
@@ -145,11 +129,12 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
      */
     @AfterEach
     public void tearDown() throws Exception {
+        super.tearDown();
     }
 
     @Test
     void testLogin_valid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
-        CompletableFuture<LoginResult> future = provider.login(userActive_nickname, userActive_pwHash);
+        CompletableFuture<LoginResult> future = provider.login(userActiveNickname, userActivePwHash);
         Assertions.assertTrue(future.get().getUser().isPresent());
         Assertions.assertTrue(future.get().getUser().get().isActive());
         Assertions.assertFalse(future.get().getUser().get().isSuspended());
@@ -157,20 +142,20 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
 
     @Test
     void testLogin_invalid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
-        CompletableFuture<LoginResult> future = provider.login(userActive_nickname, userSuspended_pwHash);
+        CompletableFuture<LoginResult> future = provider.login(userActiveNickname, userSuspendedPwHash);
         Assertions.assertTrue(future.get().getUser().isPresent());
         Assertions.assertTrue(future.get().isRefused());
     }
 
     @Test
     void testLogin_unknown() throws AuthenticationProviderException, InterruptedException, ExecutionException {
-        CompletableFuture<LoginResult> future = provider.login(userActive_nickname + "test", userActive_pwHash);
+        CompletableFuture<LoginResult> future = provider.login(userActiveNickname + "test", userActivePwHash);
         Assertions.assertFalse(future.get().getUser().isPresent());
     }
 
     @Test
     void testLogin_suspended() throws AuthenticationProviderException, InterruptedException, ExecutionException {
-        CompletableFuture<LoginResult> future = provider.login(userSuspended_nickname, userSuspended_pwHash);
+        CompletableFuture<LoginResult> future = provider.login(userSuspendedNickname, userSuspendedPwHash);
         Assertions.assertTrue(future.get().getUser().isPresent());
         Assertions.assertTrue(future.get().getUser().get().isActive());
         Assertions.assertTrue(future.get().getUser().get().isSuspended());
