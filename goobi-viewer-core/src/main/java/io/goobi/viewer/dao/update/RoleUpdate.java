@@ -22,33 +22,19 @@
 package io.goobi.viewer.dao.update;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
-/**
- * @author florian
- *
- */
-public class UserUpdate implements IModelUpdate {
+public class RoleUpdate implements IModelUpdate {
 
     /** {@inheritDoc} */
     @Override
-    @SuppressWarnings("unchecked")
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
         // Update table name
-        if (dao.tableExists("users")) {
-            dao.executeUpdate("RENAME TABLE 'users' TO 'viewer_users'");
-        }
-        
-        if (dao.columnsExists("viewer_users", "use_gravatar")) {
-            List<Long> userIds = dao.getNativeQueryResults("SELECT user_id FROM viewer_users WHERE use_gravatar=1");
-            for (Long userId : userIds) {
-                dao.executeUpdate("UPDATE viewer_users SET avatar_type='GRAVATAR' WHERE viewer_users.user_id=" + userId);
-            }
-            dao.executeUpdate("ALTER TABLE viewer_users DROP COLUMN use_gravatar");
+        if (dao.tableExists("roles")) {
+            dao.executeUpdate("RENAME TABLE 'roles' TO 'user_roles'");
         }
 
         return true;
