@@ -124,8 +124,9 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
     public void setUp() throws Exception {
         super.setUp();
 
-        provider = new VuFindProvider("external", "", "http://" + SERVERURL + ":" + SERVERPORT + "/user/auth", "", 2000l);
+        provider = new VuFindProvider("external", "", "http://" + SERVERURL + ":" + SERVERPORT + "/user/auth", "", 1000l);
         // 1000 is not enough
+        Thread.sleep(2000);
     }
 
     /**
