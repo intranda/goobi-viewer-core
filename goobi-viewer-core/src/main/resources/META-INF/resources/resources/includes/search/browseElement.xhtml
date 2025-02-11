@@ -1,4 +1,5 @@
- <ui:composition xmlns="http://www.w3.org/1999/xhtml"
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
@@ -8,77 +9,94 @@
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
 
-    <ui:param name="browseElement" value="#{browseElement != null ? browseElement : null}"></ui:param>
-    <ui:param name="showBookmarkIcon" value="#{showBookmarkIcon != null ? showBookmarkIcon : false}"></ui:param>
+	<ui:param name="browseElement"
+		value="#{browseElement != null ? browseElement : null}"></ui:param>
+	<ui:param name="showBookmarkIcon"
+		value="#{showBookmarkIcon != null ? showBookmarkIcon : false}"></ui:param>
 
-    <div class="search-list__hit-inner-structure">
- 
-            <!-- ALL CONTENT/VALUES WRAPPER -->
-            <div class="search-list__hit-info-wrapper #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
-	            <!-- TITLE -->
-	            <div class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'}  #{configurationBean.displaySearchHitNumbers ? '-hitNumber' : ''} #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
-	                <!-- Display search hit number -->
-	                <h3>
-	                    <a class="search-list__hit-title-link" href="#{navigationHelper.applicationUrl}#{browseElement.url}" title="#{msg[browseElement.label]}">
-			                <h:panelGroup styleClass="search-list__hit-number-wrapper" rendered="#{configurationBean.displaySearchHitNumbers}">
-			                    <span title="#{hit.hitNumber}" class="search-list__hit-number">#{hit.hitNumber}</span>
-			                </h:panelGroup>
-	                        <h:outputText value="#{msg[browseElement.labelShort]}" escape="false" />
-	                    </a>
-	                </h3>
-	            </div>
+	<div class="search-list__hit-inner-structure">
 
-                <!-- DOCTSTRUCT HIERACHY BREADCRUMBS -->
-                <h:panelGroup
-                    rendered="#{fn:length(browseElement.structElements) > 0 and browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
-	                    <div class="search-list__hit-docstruct">
-	                        <ul>
-	                            <ui:repeat value="#{browseElement.structElements}" varStatus="stat" var="struct">
-	                                <li>
-	                                    <ui:fragment rendered="#{struct.sourceDocFormat != 'CMS'}">  
-	                                        <a href="#{struct.url}" aria-label="#{msg[struct.docStructType]}">
-	                                             <h:outputText value="#{msg[struct.docStructType]}" />
-	                                        </a>
-	                                   	</ui:fragment>
-	                                    <ui:fragment rendered="#{struct.sourceDocFormat == 'CMS'}">  
-	                                        <h:outputText
-	                                            value="#{msg['cms_category_'.concat(struct.getMetadataValue('MD_CATEGORY') != null ? struct.getMetadataValue('MD_CATEGORY') : 'default')]}" />
-	                                    </ui:fragment>
-	                                </li>
-	                             </ui:repeat>
-	                        </ul>
-	                    </div>
-                </h:panelGroup>
+		<!-- ALL CONTENT/VALUES WRAPPER -->
+		<div
+			class="search-list__hit-info-wrapper #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
+			<!-- TITLE -->
+			<div
+				class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'}  #{configurationBean.displaySearchHitNumbers ? '-hitNumber' : ''} #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
+				<!-- Display search hit number -->
+				<h3>
+					<a class="search-list__hit-title-link"
+						href="#{navigationHelper.applicationUrl}#{browseElement.url}"
+						title="#{msg[browseElement.label]}"> <h:panelGroup
+							styleClass="search-list__hit-number-wrapper"
+							rendered="#{configurationBean.displaySearchHitNumbers}">
+							<span title="#{hit.hitNumber}" class="search-list__hit-number">#{hit.hitNumber}</span>
+						</h:panelGroup> <h:outputText value="#{msg[browseElement.labelShort]}"
+							escape="false" />
+					</a>
+				</h3>
+			</div>
 
-                <h:panelGroup rendered="#{browseElement.group}">
-                    <div class="search-list__hit-docstruct">
-                        <h:outputText value="#{msg['doctype_'.concat(browseElement.docType)]}" />
-                    </div>
-                </h:panelGroup>
+			<!-- DOCTSTRUCT HIERACHY BREADCRUMBS -->
+			<h:panelGroup
+				rendered="#{fn:length(browseElement.structElements) > 0 and browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
+				<div class="search-list__hit-docstruct">
+					<ul>
+						<ui:repeat value="#{browseElement.structElements}"
+							varStatus="stat" var="struct">
+							<li><ui:fragment
+									rendered="#{struct.sourceDocFormat != 'CMS'}">
+									<a href="#{struct.url}"
+										aria-label="#{msg[struct.docStructType]}"> <h:outputText
+											value="#{msg[struct.docStructType]}" />
+									</a>
+								</ui:fragment> <ui:fragment rendered="#{struct.sourceDocFormat == 'CMS'}">
+									<h:outputText
+										value="#{msg['cms_category_'.concat(struct.getMetadataValue('MD_CATEGORY') != null ? struct.getMetadataValue('MD_CATEGORY') : 'default')]}" />
+								</ui:fragment></li>
+						</ui:repeat>
+					</ul>
+				</div>
+			</h:panelGroup>
 
-				<ui:include src="/resources/includes/search/browseElementMetadata.xhtml">
-                    <ui:param name="browseElement" value="#{browseElement}"></ui:param>
-                </ui:include>
-	        </div>
-        
-		    <!-- ADD TO BOOKMARKS ICON FOR OBJECTS WITHOUT THUMBS -->
-		    <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
+			<h:panelGroup rendered="#{browseElement.group}">
+				<div class="search-list__hit-docstruct">
+					<h:outputText
+						value="#{msg['doctype_'.concat(browseElement.docType)]}" />
+				</div>
+			</h:panelGroup>
+
+			<ui:include
+				src="/resources/includes/search/browseElementMetadata.xhtml">
+				<ui:param name="browseElement" value="#{browseElement}"></ui:param>
+			</ui:include>
+		</div>
+		<div class="search-list__thumb-wrapper">
+			<!-- THUMBNAIL -->
+			<ui:fragment rendered="#{browseElement.showThumbnail}">
+				<ui:include
+					src="/resources/includes/search/browseElementThumbnail.xhtml">
+					<ui:param name="browseElement" value="#{browseElement}"></ui:param>
+				</ui:include>
+			</ui:fragment>
+			<!-- ADD TO BOOKMARKS BUTTON (ICON) -->
+			<ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
 				<div class="search-list__thumb-bookmark-wrapper">
-			            <button type="button" class="btn btn--icon search-list__thumb-bookmark" data-bookmark-list-type="add" data-pi="#{browseElement.pi}"
-			                aria-label="#{msg.bookmarkList_addToBookmarkList}" role="switch" aria-checked="false">
-			                <span data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
-			                    data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}" data-toggle="tooltip" data-placement="bottom">
-			                    <i class="fa #{msg.bookmarkList_icon}" aria-hidden="true"></i>
-			                    <i class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
-			                </span>
-			            </button>
-		        </div>
-		    </ui:fragment>
+					<button type="button"
+						class="btn btn--icon search-list__thumb-bookmark"
+						data-bookmark-list-type="add" data-pi="#{browseElement.pi}"
+						aria-label="#{msg.bookmarkList_addToBookmarkList}" role="switch"
+						aria-checked="false">
+						<span
+							data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
+							data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
+							data-toggle="tooltip" data-placement="bottom"> <i
+							class="fa #{msg.bookmarkList_icon}" aria-hidden="true"></i> <i
+							class="fa #{msg.bookmarkList_iconAdded}" aria-hidden="true"></i>
+						</span>
+					</button>
+				</div>
+			</ui:fragment>
 
-        <ui:fragment rendered="#{browseElement.showThumbnail}">
-        	<ui:include src="/resources/includes/search/browseElementThumbnail.xhtml">
-               <ui:param name="browseElement" value="#{browseElement}"></ui:param>
-           </ui:include>
-        </ui:fragment>   
-    </div>
+		</div>
+	</div>
 </ui:composition>
