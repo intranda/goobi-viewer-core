@@ -219,7 +219,7 @@ public abstract class HttpAuthenticationProvider implements IAuthenticationProvi
                 HttpClientBuilder.create().setConnectionManager(connectionManager).setRedirectStrategy(new LaxRedirectStrategy()).build();
         try {
             HttpPost post = new HttpPost(url);
-            RequestConfig config = RequestConfig.custom().setConnectionRequestTimeout(1000).setSocketTimeout(1000).setConnectTimeout(1000).build();
+            RequestConfig config = RequestConfig.custom().setConnectionRequestTimeout((int) timeoutMillis).setSocketTimeout((int) timeoutMillis).setConnectTimeout((int) timeoutMillis).build();
             post.setConfig(config);
             post.addHeader("Content-Type", "application/json");
             HttpEntity e = new StringEntity(requestEntity);
