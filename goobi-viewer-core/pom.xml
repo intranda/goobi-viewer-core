@@ -131,7 +131,7 @@
 		<jsoup.version>1.18.3</jsoup.version>
 		<junit.version>5.11.4</junit.version>
 		<log4j.version>2.24.3</log4j.version>
-		<mariadb-java-client.version>3.5.1</mariadb-java-client.version>
+		<mariadb-java-client.version>3.5.2</mariadb-java-client.version>
 		<mockito.version>5.15.2</mockito.version>
 		<mockserver.version>5.15.0</mockserver.version>
 		<omnifaces.version>4.6.1</omnifaces.version>
