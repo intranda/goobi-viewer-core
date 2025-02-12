@@ -59,6 +59,7 @@ pipeline {
         anyOf {
           tag "v*"
           branch 'develop'
+          branch 'feature_h2_update'
         }
       }
       steps {
