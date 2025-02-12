@@ -280,12 +280,14 @@
 		border: 1px solid @middlegray;
 		background-color: @middlegray2;
 		max-width: 100%;
-		overflow: hidden;
 	}
 	&__hit-inner-structure {
 		display: grid;
 		grid-template-columns: 1fr 150px;
 		gap: 10px;
+	}
+	&__thumb-wrapper {
+		position: relative;
 	}
 	&__hit-header {
 		
@@ -348,7 +350,7 @@
 		position: absolute;
         right: 20px;
         top: 15px;
-		z-index: 11;
+		// z-index: 11;
 	}
 	&__thumb-bookmark {
 //		position: absolute;
@@ -385,11 +387,12 @@
 		}
 	}
 	&__hit-thumbnail {
-		position: relative;
+		// position: relative;
 		width: 100%;
 		margin-bottom: 0;
 		display: flex;
 		justify-content: flex-end;
+		z-index: 10;
 		img {
 			display: inline;
 			padding: 0;
