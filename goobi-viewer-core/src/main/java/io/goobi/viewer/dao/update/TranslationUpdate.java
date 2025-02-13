@@ -37,7 +37,7 @@ public class TranslationUpdate implements IModelUpdate {
         // Update column names
         for (String table : TABLES) {
             if (dao.tableExists(table)) {
-                dao.executeUpdate("ALTER TABLE '" + table + "' RENAME COLUMN 'value' TO 'translation_value'");
+                dao.executeUpdate("ALTER TABLE " + table + " RENAME COLUMN value TO translation_value");
             }
         }
 
