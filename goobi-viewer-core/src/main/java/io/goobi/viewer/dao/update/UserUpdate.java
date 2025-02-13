@@ -40,7 +40,7 @@ public class UserUpdate implements IModelUpdate {
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
         // Update table name
         if (dao.tableExists("users")) {
-            dao.executeUpdate("RENAME TABLE 'users' TO 'viewer_users'");
+            dao.executeUpdate("RENAME TABLE users TO viewer_users");
         }
         
         if (dao.columnsExists("viewer_users", "use_gravatar")) {

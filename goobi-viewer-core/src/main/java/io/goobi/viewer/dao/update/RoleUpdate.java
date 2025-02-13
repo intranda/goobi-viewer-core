@@ -34,7 +34,7 @@ public class RoleUpdate implements IModelUpdate {
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
         // Update table name
         if (dao.tableExists("roles")) {
-            dao.executeUpdate("RENAME TABLE 'roles' TO 'user_roles'");
+            dao.executeUpdate("RENAME TABLE roles TO user_roles");
         }
 
         return true;
