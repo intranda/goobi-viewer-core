@@ -22,6 +22,7 @@
 package io.goobi.viewer.dao.update;
 
 import java.sql.SQLException;
+import java.util.Objects;
 
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -33,11 +34,28 @@ public class TranslationUpdate implements IModelUpdate {
 
     /** {@inheritDoc} */
     @Override
+    @SuppressWarnings("unchecked")
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
         // Update column names
         for (String table : TABLES) {
             if (dao.tableExists(table)) {
-                dao.executeUpdate("ALTER TABLE " + table + " RENAME COLUMN value TO translation_value");
+                boolean newColumnHasEntries = dao.getNativeQueryResults("SELECT translation_value FROM " + table).stream().anyMatch(Objects::nonNull);
+                if (!newColumnHasEntries) {
+                    dao.executeUpdate("ALTER TABLE " + table + " DROP translation_value;");
+                    try {
+                        dao.executeUpdate("ALTER TABLE " + table + " RENAME COLUMN value TO translation_value");
+                        if (!dao.columnsExists(table, "translation_value")) {
+                            dao.executeUpdate("ALTER TABLE " + table + " CHANGE value translation_value varchar(255)");
+                        }
+                    } catch (DAOException e) {
+                        //exception is  not reliable. Ignore for now and check result of operation later
+                    }
+                    if (!dao.columnsExists("cms_pages", "page_template_id")) {
+                        dao.executeUpdate("ALTER TABLE " + table + " ADD COLUMN page_template_id varchar(255);");
+                    }
+
+                }
+
             }
         }
 
