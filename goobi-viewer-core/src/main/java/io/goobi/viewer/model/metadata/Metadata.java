@@ -1090,6 +1090,12 @@ public class Metadata implements Serializable {
                             if (truncateLength > 0 && modifiedValue.length() > truncateLength) {
                                 modifiedValue = new StringBuilder(modifiedValue.substring(0, truncateLength - 3)).append("...").toString();
                             }
+
+                            // Apply replace rules
+                            if (!param.getReplaceRules().isEmpty()) {
+                                modifiedValue = MetadataTools.applyReplaceRules(modifiedValue, param.getReplaceRules(), se.getPi());
+                            }
+
                             // Add highlighting
                             if (searchTerms != null) {
                                 if (searchTerms.get(getLabel()) != null) {
