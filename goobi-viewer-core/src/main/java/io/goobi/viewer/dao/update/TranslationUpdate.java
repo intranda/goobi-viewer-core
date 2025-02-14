@@ -24,6 +24,7 @@ package io.goobi.viewer.dao.update;
 import java.sql.SQLException;
 import java.util.Objects;
 
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
@@ -41,17 +42,17 @@ public class TranslationUpdate implements IModelUpdate {
             if (dao.tableExists(table)) {
                 boolean newColumnHasEntries = dao.getNativeQueryResults("SELECT translation_value FROM " + table).stream().anyMatch(Objects::nonNull);
                 if (!newColumnHasEntries) {
-                    dao.executeUpdate("ALTER TABLE " + table + " DROP translation_value;");
+                    dao.executeUpdate(StringConstants.SQL_ALTER_TABLE + table + " DROP translation_value;");
                     try {
-                        dao.executeUpdate("ALTER TABLE " + table + " RENAME COLUMN value TO translation_value");
+                        dao.executeUpdate(StringConstants.SQL_ALTER_TABLE + table + " RENAME COLUMN value TO translation_value");
                         if (!dao.columnsExists(table, "translation_value")) {
-                            dao.executeUpdate("ALTER TABLE " + table + " CHANGE value translation_value varchar(255)");
+                            dao.executeUpdate(StringConstants.SQL_ALTER_TABLE + table + " CHANGE value translation_value varchar(255)");
                         }
                     } catch (DAOException e) {
                         //exception is  not reliable. Ignore for now and check result of operation later
                     }
                     if (!dao.columnsExists("cms_pages", "page_template_id")) {
-                        dao.executeUpdate("ALTER TABLE " + table + " ADD COLUMN page_template_id varchar(255);");
+                        dao.executeUpdate(StringConstants.SQL_ALTER_TABLE + table + " ADD COLUMN page_template_id varchar(255);");
                     }
 
                 }

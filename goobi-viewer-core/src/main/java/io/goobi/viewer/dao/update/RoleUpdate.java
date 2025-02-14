@@ -34,6 +34,15 @@ public class RoleUpdate implements IModelUpdate {
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
         // Update table name
         if (dao.tableExists("roles")) {
+            // Delete new table with default role, if already created by EclipseLink
+            if (dao.tableExists("user_roles")) {
+                boolean newTableEmpty = dao.getNativeQueryResults("SELECT * FROM user_roles").size() <= 1;
+                if (newTableEmpty) {
+                    dao.executeUpdate("DROP TABLE user_roles");
+                }
+
+            }
+            
             dao.executeUpdate("RENAME TABLE roles TO user_roles");
         }
 
