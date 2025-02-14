@@ -106,6 +106,8 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     /**
      * 
+     * Constructor to create Component from template file
+     * 
      * @param jsfComponent
      * @param label
      * @param description
@@ -113,6 +115,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
      * @param templateFilename
      * @param scope
      * @param attributes
+     * @param properties
      * @param order
      */
     public CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename,

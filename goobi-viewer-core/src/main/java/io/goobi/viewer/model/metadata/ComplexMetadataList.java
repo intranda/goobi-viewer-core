@@ -148,8 +148,6 @@ public class ComplexMetadataList {
         stream = list.stream();
         if (StringUtils.isNotBlank(sortField)) {
             stream = stream.sorted(ObjectComparatorBuilder.build(sortOrder, sortLanguage, m -> m.getFirstValue(sortField, sortLanguage)));
-            //            stream = stream.sorted((m1, m2) -> compareHtml(m1.getFirstValue(sortField, sortLanguage), m2.getFirstValue(sortField, sortLanguage))
-            //                    * (isDescendingOrder() ? -1 : 1));
         }
         return stream.limit(listSizeLimit);
     }
