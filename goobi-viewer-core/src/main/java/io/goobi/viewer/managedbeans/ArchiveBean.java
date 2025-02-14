@@ -511,7 +511,7 @@ public class ArchiveBean implements Serializable {
                     return url + getCurrentArchive().getResourceId();
                 }
                 return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/sourcefile?id=" + getCurrentArchive().getResourceId();
-            } catch (Exception e) {
+            } catch (NullPointerException | IllegalArgumentException e) {
                 logger.error("Could not get EAD resolver URL for {}.", getCurrentArchive().getResourceId());
                 Messages.error("errGetCurrUrl");
             }

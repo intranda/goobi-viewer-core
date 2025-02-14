@@ -100,11 +100,11 @@ public class AlphanumComparator<T> implements Comparator<T>, Serializable {
             return 1;
         }
         // Sort digits after letters
-        if (Character.isDigit(relevantString1.charAt(0)) && StringUtils.isNotEmpty(relevantString2)
+        if (StringUtils.isNotEmpty(relevantString1) && Character.isDigit(relevantString1.charAt(0)) && StringUtils.isNotEmpty(relevantString2)
                 && Character.isLetter(relevantString2.charAt(0))) {
             return 1;
         }
-        if (Character.isLetter(relevantString1.charAt(0)) && StringUtils.isNotEmpty(relevantString2)
+        if (StringUtils.isNotEmpty(relevantString1) && Character.isLetter(relevantString1.charAt(0)) && StringUtils.isNotEmpty(relevantString2)
                 && Character.isDigit(relevantString2.charAt(0))) {
             return -1;
         }

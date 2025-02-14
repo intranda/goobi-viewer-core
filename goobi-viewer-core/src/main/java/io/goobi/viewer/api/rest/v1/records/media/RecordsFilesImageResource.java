@@ -168,7 +168,7 @@ public class RecordsFilesImageResource extends ImageResource {
         } catch (ContentLibException e) {
             logger.error(e.toString(), e);
             throw e;
-        } catch (RuntimeException e) {
+        } catch (NullPointerException | IllegalArgumentException e) {
             logger.error(e.toString(), e);
             throw e;
         }

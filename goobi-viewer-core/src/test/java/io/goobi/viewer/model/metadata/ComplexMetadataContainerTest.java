@@ -40,7 +40,7 @@ class ComplexMetadataContainerTest extends AbstractTest {
 
     @Override
     @BeforeEach
-    public void setUp() {   
+    public void setUp() {
 
         metadataDocs = List.of(
                 new SolrDocument(Map.of(

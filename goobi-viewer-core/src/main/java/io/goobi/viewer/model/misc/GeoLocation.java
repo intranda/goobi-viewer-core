@@ -84,14 +84,14 @@ public class GeoLocation {
         if (json.has(JSON_PROPERTYNAME_LATITUDE)) {
             try {
                 setLatitude(json.getDouble(JSON_PROPERTYNAME_LATITUDE));
-            } catch (Exception e) {
+            } catch (NullPointerException | IllegalArgumentException | JSONException e) {
                 //
             }
         }
         if (json.has(JSON_PROPERTYNAME_LONGITUDE)) {
             try {
                 setLongitude(json.getDouble(JSON_PROPERTYNAME_LONGITUDE));
-            } catch (Exception e) {
+            } catch (NullPointerException | IllegalArgumentException | JSONException e) {
                 //
             }
         }
