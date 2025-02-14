@@ -30,6 +30,10 @@ public final class ObjectComparatorBuilder {
     private ObjectComparatorBuilder() {
     }
 
+    public static Comparator<String> build(String sortOrder, Locale locale) {
+        return build(sortOrder, locale, Function.identity());
+    }
+
     public static <T> Comparator<T> build(String sortOrder, Locale locale, Function<T, String> stringifier) {
         ITranslator<T> translator = locale == null ? new NoopTranslator<>(stringifier) : new ResourceBundleTranslator<>(stringifier);
         switch (sortOrder) {
@@ -48,6 +52,11 @@ public final class ObjectComparatorBuilder {
                 return new AlphabeticComparator<>(new NoopTranslator<>(stringifier), null, true);
             case "alphabetical_raw_desc":
                 return new AlphabeticComparator<>(new NoopTranslator<>(stringifier), null, false);
+            case "alphabetical_html":
+            case "alphabetical_html_asc":
+                return new AlphabeticHtmlComparator<T>(true, stringifier);
+            case "alphabetical_html_desc":
+                return new AlphabeticHtmlComparator<T>(false, stringifier);
             case "alphanumerical":
             case "natural":
             case "natural_asc":

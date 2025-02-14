@@ -36,6 +36,8 @@ import java.util.stream.Stream;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import io.goobi.viewer.controller.sorting.ObjectComparatorBuilder;
+
 public class ComplexMetadataList {
 
     public static final String SORT_DIRECTION_ASCENDING = "asc";
@@ -54,7 +56,7 @@ public class ComplexMetadataList {
     }
 
     public ComplexMetadataList(List<ComplexMetadata> metadata, String sortField) {
-        this(metadata, sortField, SORT_DIRECTION_ASCENDING);
+        this(metadata, sortField, "");
     }
 
     public ComplexMetadataList(List<ComplexMetadata> metadata, String sortField, String sortOrder) {
@@ -145,8 +147,9 @@ public class ComplexMetadataList {
         List<ComplexMetadata> list = stream.collect(Collectors.toList());
         stream = list.stream();
         if (StringUtils.isNotBlank(sortField)) {
-            stream = stream.sorted((m1, m2) -> m1.getFirstValue(sortField, sortLanguage).compareTo(m2.getFirstValue(sortField, sortLanguage))
-                    * (isDescendingOrder() ? -1 : 1));
+            stream = stream.sorted(ObjectComparatorBuilder.build(sortOrder, sortLanguage, m -> m.getFirstValue(sortField, sortLanguage)));
+            //            stream = stream.sorted((m1, m2) -> compareHtml(m1.getFirstValue(sortField, sortLanguage), m2.getFirstValue(sortField, sortLanguage))
+            //                    * (isDescendingOrder() ? -1 : 1));
         }
         return stream.limit(listSizeLimit);
     }
@@ -163,17 +166,12 @@ public class ComplexMetadataList {
                             .orElse(false));
 
             if (StringUtils.isNotBlank(getSortField())) {
-                stream = stream.sorted((m1, m2) -> {
-                    String v1 = Optional.ofNullable(relatedEntityGetter.apply(m1))
-                            .map(c -> c.getFirstValue(getSortField(), sortLanguage))
-                            .filter(StringUtils::isNotBlank)
-                            .orElse(m1.getFirstValue(getSortField(), sortLanguage));
-                    String v2 = Optional.ofNullable(relatedEntityGetter.apply(m2))
-                            .map(c -> c.getFirstValue(getSortField(), sortLanguage))
-                            .filter(StringUtils::isNotBlank)
-                            .orElse(m2.getFirstValue(getSortField(), sortLanguage));
-                    return v1.compareTo(v2) * (isDescendingOrder() ? -1 : 1);
-                });
+
+                stream = stream.sorted(ObjectComparatorBuilder.build(getSortOrder(), sortLanguage,
+                        v -> Optional.ofNullable(relatedEntityGetter.apply(v))
+                                .map(c -> c.getFirstValue(getSortField(), sortLanguage))
+                                .filter(StringUtils::isNotBlank)
+                                .orElse(v.getFirstValue(getSortField(), sortLanguage))));
             }
             if (hideUnlinkedRecords) {
                 stream = stream.filter(m -> relatedEntityGetter.apply(m) != null);
@@ -184,17 +182,12 @@ public class ComplexMetadataList {
         } else if (getSortField() != null && getSortField().startsWith(RelationshipMetadataContainer.FIELD_IN_RELATED_DOCUMENT_PREFIX)) {
             String relatedSortField = getSortField().replace(RelationshipMetadataContainer.FIELD_IN_RELATED_DOCUMENT_PREFIX, "");
             Stream<ComplexMetadata> stream = streamMetadata(sortLanguage, filterField, filterMatcher, Integer.MAX_VALUE);
-            stream = stream.sorted((m1, m2) -> {
-                String v1 = Optional.ofNullable(relatedEntityGetter.apply(m1))
-                        .map(c -> c.getFirstValue(relatedSortField, sortLanguage))
-                        .filter(StringUtils::isNotBlank)
-                        .orElse(m1.getFirstValue(relatedSortField, sortLanguage));
-                String v2 = Optional.ofNullable(relatedEntityGetter.apply(m2))
-                        .map(c -> c.getFirstValue(relatedSortField, sortLanguage))
-                        .filter(StringUtils::isNotBlank)
-                        .orElse(m2.getFirstValue(relatedSortField, sortLanguage));
-                return v1.compareTo(v2) * (isDescendingOrder() ? -1 : 1);
-            });
+
+            stream = stream.sorted(ObjectComparatorBuilder.build(getSortOrder(), sortLanguage,
+                    v -> Optional.ofNullable(relatedEntityGetter.apply(v))
+                            .map(c -> c.getFirstValue(relatedSortField, sortLanguage))
+                            .filter(StringUtils::isNotBlank)
+                            .orElse(v.getFirstValue(relatedSortField, sortLanguage))));
             if (hideUnlinkedRecords) {
                 stream = stream.filter(m -> relatedEntityGetter.apply(m) != null);
             }

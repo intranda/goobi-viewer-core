@@ -88,9 +88,16 @@ public class ComplexMetadataContainer {
     }
 
     public ComplexMetadataList getList(String field, String defaultSortField) {
+        return getList(field, defaultSortField, "asc");
+    }
+
+    public ComplexMetadataList getList(String field, String defaultSortField, String defaultSortOrder) {
         ComplexMetadataList list = metadataMap.getOrDefault(field, new ComplexMetadataList(Collections.emptyList()));
         if (StringUtils.isNotBlank(defaultSortField) && StringUtils.isBlank(list.getSortField())) {
             list.setSortField(defaultSortField);
+        }
+        if (StringUtils.isNotBlank(defaultSortOrder) && StringUtils.isBlank(list.getSortOrder())) {
+            list.setSortOrder(defaultSortOrder);
         }
         return list;
     }
