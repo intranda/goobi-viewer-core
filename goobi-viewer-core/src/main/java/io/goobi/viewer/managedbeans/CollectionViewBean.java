@@ -117,6 +117,9 @@ public class CollectionViewBean implements Serializable {
     public CollectionView getCollection(CMSCollectionContent content, String topVisibleElement)
             throws PresentationException, IndexUnreachableException, IllegalRequestException {
         String myId = getCollectionId(content);
+        if (StringUtils.isBlank(topVisibleElement)) {
+            topVisibleElement = content.getCollectionName();
+        }
         CollectionView collection = collections.get(myId);
         if (collection == null) {
             try {
