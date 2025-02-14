@@ -51,9 +51,11 @@ public final class ObjectComparatorBuilder {
             case "alphanumerical":
             case "natural":
             case "natural_asc":
+            case "asc":
                 return new AlphanumComparator<>(true, locale, translator);
             case "alphanumerical_desc":
             case "natural_desc":
+            case "desc":
                 return new AlphanumComparator<>(false, locale, translator);
             default:
                 return new NoopComparator<>();
