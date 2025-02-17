@@ -37,7 +37,7 @@
 					</div>
                     <!-- YEAR SELECTION -->
                     <h:form id="searchCalendarForm" prependId="false">
-                        <h:panelGroup rendered="#{activeDocumentBean.anchor}">
+                        <h:panelGroup rendered="#{activeDocumentBean.anchor or activeDocumentBean.group}">
                             <div class="search-calendar__input">
                                 <div class="form-horizontal">
                                     <div class="form-group form-row align-items-center">
