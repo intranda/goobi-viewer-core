@@ -426,7 +426,7 @@
 
 								<!-- IIIF MANIFEST PAGE -->
 								<ui:fragment visibility-class="widget-element" 
-                           			rendered="#{displayConditions.matchPage('{pageType:![viewFulltext, viewMetadata], numPages:2, mimeType: [image], accessCondition:VIEW_IMAGES}')}">
+                           			rendered="#{displayConditions.matchPage('{pageType:![viewFulltext, viewMetadata], numPages:2, mimeType: [image], accessCondition:GENERATE_IIIF_MANIFEST}')}">
 									<button id="iiifManifestPage"
 										class="badge badge-dark widget-usage__page-download-iiif"
 										data-copy-value="#{imageDelivery.iiifPageManifest}"
