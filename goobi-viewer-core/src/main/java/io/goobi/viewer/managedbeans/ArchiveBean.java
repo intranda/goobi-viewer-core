@@ -412,7 +412,7 @@ public class ArchiveBean implements Serializable {
             } else {
                 try {
                     if (AccessConditionUtils
-                            .checkAccessPermissionByIdentifierAndLogId(resource.getResourceId(), null, IPrivilegeHolder.PRIV_LIST,
+                            .checkAccessPermissionByIdentifierAndLogId(resource.getResourceId(), null, IPrivilegeHolder.PRIV_ARCHIVE_DISPLAY_NODE,
                                     BeanUtils.getRequest())
                             .isGranted()) {
                         ret.add(resource);
