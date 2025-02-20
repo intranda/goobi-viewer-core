@@ -201,7 +201,7 @@ public class DefaultQueueListener {
                 //error, but don't retry
                 message.acknowledge();
             }
-        } catch (Exception t) {
+        } catch (JMSException | NullPointerException | IllegalArgumentException t) {
             log.error("Error handling ticket {}: ", message.getJMSMessageID(), t);
             sess.recover();
         } finally {

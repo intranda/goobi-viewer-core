@@ -56,7 +56,6 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
     private static String userSuspendedNickname = "nick 3";
     private static String userSuspendedPwHash = "abcdef3";
 
-    //    private static ClientAndProxy proxy;
     private static ClientAndServer mockServer;
     private static MockServerClient serverClient;
 
@@ -73,31 +72,33 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
             + "\"isExpired\": \"Y\"" + "}," + "\"blocks\": {" + "\"isBlocked\": \"N\"" + "}" + "}";
 
     @BeforeAll
-    public static void startProxy() {
+    public static void startProxy() throws Exception {
+        AbstractDatabaseEnabledTest.setUpClass();
+        
         mockServer = ClientAndServer.startClientAndServer(SERVERPORT);
-        String requestBody_valid = REQUEST_BODY_TEMPLATE.replace("{username}", userActiveNickname).replace("{password}", userActivePwHash);
-        String requestBody_invalid = REQUEST_BODY_TEMPLATE.replace("{username}", userActiveNickname).replace("{password}", userSuspendedPwHash);
-        String requestBody_unknown =
+        String requestBodyValid = REQUEST_BODY_TEMPLATE.replace("{username}", userActiveNickname).replace("{password}", userActivePwHash);
+        String requestBodyInvalid = REQUEST_BODY_TEMPLATE.replace("{username}", userActiveNickname).replace("{password}", userSuspendedPwHash);
+        String requestBodyUnknown =
                 REQUEST_BODY_TEMPLATE.replace("{username}", userActiveNickname + "test").replace("{password}", userActivePwHash);
-        String requestBody_suspended =
+        String requestBodySuspended =
                 REQUEST_BODY_TEMPLATE.replace("{username}", userSuspendedNickname).replace("{password}", userSuspendedPwHash);
 
         serverClient = new MockServerClient(SERVERURL, SERVERPORT);
 
         //active user
-        serverClient.when(HttpRequest.request().withPath("/user/auth").withBody(requestBody_valid))
+        serverClient.when(HttpRequest.request().withPath("/user/auth").withBody(requestBodyValid))
                 .respond(HttpResponse.response().withHeader(new Header("Content-Type", MediaType.APPLICATION_JSON)).withBody(RESPONSE_USER_VALID));
 
         //wrong password
-        serverClient.when(HttpRequest.request().withPath("/user/auth").withBody(requestBody_invalid))
+        serverClient.when(HttpRequest.request().withPath("/user/auth").withBody(requestBodyInvalid))
                 .respond(HttpResponse.response().withHeader(new Header("Content-Type", MediaType.APPLICATION_JSON)).withBody(RESPONSE_USER_INVALID));
 
         //unknown user
-        serverClient.when(HttpRequest.request().withPath("/user/auth").withBody(requestBody_unknown))
+        serverClient.when(HttpRequest.request().withPath("/user/auth").withBody(requestBodyUnknown))
                 .respond(HttpResponse.response().withHeader(new Header("Content-Type", MediaType.APPLICATION_JSON)).withBody(RESPONSE_USER_UNKNOWN));
 
         //suspended user
-        serverClient.when(HttpRequest.request().withPath("/user/auth").withBody(requestBody_suspended))
+        serverClient.when(HttpRequest.request().withPath("/user/auth").withBody(requestBodySuspended))
                 .respond(
                         HttpResponse.response().withHeader(new Header("Content-Type", MediaType.APPLICATION_JSON)).withBody(RESPONSE_USER_SUSPENDED));
 
@@ -105,6 +106,8 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
 
     @AfterAll
     public static void stopProxy() throws Exception {
+        AbstractDatabaseEnabledTest.tearDownClass();
+        
         serverClient.stop();
         mockServer.stop();
         Path logFile = Paths.get("mockserver.log");
@@ -122,14 +125,23 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
         super.setUp();
 
         provider = new VuFindProvider("external", "", "http://" + SERVERURL + ":" + SERVERPORT + "/user/auth", "", 1000l);
+        // 1000 is not enough
+        Thread.sleep(2000);
     }
 
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
+    }
+    
+    @Test
+    void testLogin_unknown() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+        CompletableFuture<LoginResult> future = provider.login(userActiveNickname + "test", userActivePwHash);
+        Assertions.assertFalse(future.get().getUser().isPresent());
     }
 
     @Test
@@ -145,12 +157,6 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
         CompletableFuture<LoginResult> future = provider.login(userActiveNickname, userSuspendedPwHash);
         Assertions.assertTrue(future.get().getUser().isPresent());
         Assertions.assertTrue(future.get().isRefused());
-    }
-
-    @Test
-    void testLogin_unknown() throws AuthenticationProviderException, InterruptedException, ExecutionException {
-        CompletableFuture<LoginResult> future = provider.login(userActiveNickname + "test", userActivePwHash);
-        Assertions.assertFalse(future.get().getUser().isPresent());
     }
 
     @Test

@@ -22,7 +22,6 @@
 
 	<composite:implementation>
 		<div class="widget widget__views" jsf:id="widgetViewsContent" rendered="#{displayConditions.getTag('widgetViewsContent').getChildCount('widget-element') > 1}">
-
 					<ui:fragment rendered="#{cc.attrs.collapsible == false}">
 						<h2 class="widget__title #{cc.attrs.collapsible ? 'collapseable' : ''}">
 							<span>#{cc.attrs.widgetTitle}</span>
@@ -74,7 +73,7 @@
 						</h:panelGroup>
 						<!-- TOC -->
 						<h:panelGroup visibility-class="widget-element"
-							rendered="#{configurationBean.sidebarTocWidgetVisible and displayConditions.matchRecord('{tocSize: 2}')}">
+							rendered="#{configurationBean.sidebarTocViewLinkVisible and displayConditions.matchRecord('{tocSize: 2}')}">
 							<li
 								class="#{navigationHelper.currentPage == 'toc' ? 'active' : ''}">
 								<h:outputLink 

@@ -125,8 +125,6 @@ public final class SearchHelper {
     public static final int SEARCH_TYPE_REGULAR = 0;
     /** Constant <code>SEARCH_TYPE_ADVANCED=1</code> */
     public static final int SEARCH_TYPE_ADVANCED = 1;
-    /** Constant <code>SEARCH_TYPE_TIMELINE=2</code> */
-    public static final int SEARCH_TYPE_TIMELINE = 2;
     /** Constant <code>SEARCH_TYPE_CALENDAR=3</code> */
     public static final int SEARCH_TYPE_CALENDAR = 3;
     /** Constant <code>SEARCH_TYPE_TERMS=4</code> */
@@ -3109,10 +3107,6 @@ public final class SearchHelper {
                         }
                     }
                 }
-                break;
-            case SearchHelper.SEARCH_TYPE_TIMELINE:
-                ret.add(SolrConstants.DEFAULT);
-                // TODO
                 break;
             case SearchHelper.SEARCH_TYPE_CALENDAR:
                 ret.add(SolrConstants.CALENDAR_DAY);

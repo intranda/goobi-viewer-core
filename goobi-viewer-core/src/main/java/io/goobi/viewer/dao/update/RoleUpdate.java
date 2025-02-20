@@ -22,46 +22,28 @@
 package io.goobi.viewer.dao.update;
 
 import java.sql.SQLException;
-import java.util.List;
 
-import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
-/**
- * @author florian
- *
- */
-public class UserUpdate implements IModelUpdate {
-
-    private static final String TABLE_NAME_CURRENT = "viewer_users";
+public class RoleUpdate implements IModelUpdate {
 
     /** {@inheritDoc} */
     @Override
-    @SuppressWarnings("unchecked")
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
         // Update table name
-        if (dao.tableExists("users")) {
-            
-            // Delete new table with anonymous use, if already created by EclipseLink
-            if (dao.tableExists(TABLE_NAME_CURRENT)) {
-                boolean newTableEmpty = dao.getNativeQueryResults("SELECT * FROM " + TABLE_NAME_CURRENT).size() <= 1;
+        if (dao.tableExists("roles")) {
+            // Delete new table with default role, if already created by EclipseLink
+            if (dao.tableExists("user_roles")) {
+                boolean newTableEmpty = dao.getNativeQueryResults("SELECT * FROM user_roles").size() <= 1;
                 if (newTableEmpty) {
-                    dao.executeUpdate("DROP TABLE " + TABLE_NAME_CURRENT);
+                    dao.executeUpdate("DROP TABLE user_roles");
                 }
 
             }
             
-            dao.executeUpdate("RENAME TABLE users TO " + TABLE_NAME_CURRENT);
-        }
-
-        if (dao.columnsExists(TABLE_NAME_CURRENT, "use_gravatar")) {
-            List<Long> userIds = dao.getNativeQueryResults("SELECT user_id FROM " + TABLE_NAME_CURRENT + " WHERE use_gravatar=1");
-            for (Long userId : userIds) {
-                dao.executeUpdate("UPDATE " + TABLE_NAME_CURRENT + " SET avatar_type='GRAVATAR' WHERE " + TABLE_NAME_CURRENT + ".user_id=" + userId);
-            }
-            dao.executeUpdate(StringConstants.SQL_ALTER_TABLE + TABLE_NAME_CURRENT + " DROP COLUMN use_gravatar");
+            dao.executeUpdate("RENAME TABLE roles TO user_roles");
         }
 
         return true;

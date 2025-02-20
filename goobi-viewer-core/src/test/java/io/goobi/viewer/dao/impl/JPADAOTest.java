@@ -1315,7 +1315,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      * @verifies throw IllegalArgumentException if shareKey empty
      */
     @Test
-    void getBookmarkListByShareKey_shouldThrowIllegalArgumentExceptionIfShareKeyEmpty() throws Exception {
+    void getBookmarkListByShareKey_shouldThrowIllegalArgumentExceptionIfShareKeyEmpty() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> DataManager.getInstance().getDao().getBookmarkListByShareKey(""));
     }
 
@@ -2720,13 +2720,13 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     void testUpdateTranslations() throws Exception {
         String newVal = "Kartenbeschreibung 2";
         GeoMap map1 = DataManager.getInstance().getDao().getGeoMap(1l);
-        Assertions.assertEquals("Kartenbeschreibung 1", map1.getDescription("de").getValue());
-        map1.getDescription("de").setValue(newVal);
-        Assertions.assertEquals(newVal, map1.getDescription("de").getValue());
+        Assertions.assertEquals("Kartenbeschreibung 1", map1.getDescription("de").getTranslationValue());
+        map1.getDescription("de").setTranslationValue(newVal);
+        Assertions.assertEquals(newVal, map1.getDescription("de").getTranslationValue());
 
         DataManager.getInstance().getDao().updateGeoMap(map1);
         map1 = DataManager.getInstance().getDao().getAllGeoMaps().stream().filter(map -> map.getId() == 1l).findAny().orElse(null);
-        Assertions.assertEquals(newVal, map1.getDescription("de").getValue());
+        Assertions.assertEquals(newVal, map1.getDescription("de").getTranslationValue());
     }
 
     /**
@@ -2851,7 +2851,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      * @verifies build multikey filter query correctly
      */
     @Test
-    void createFilterQuery_shouldBuildMultikeyFilterQueryCorrectly() throws Exception {
+    void createFilterQuery_shouldBuildMultikeyFilterQueryCorrectly() {
         Map<String, String> filters = Collections.singletonMap("a-a_b-b_c-c_d-d", "bar");
         Map<String, String> params = new HashMap<>();
 
@@ -2861,7 +2861,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     @Test
-    void createFilterQuery_twoJoinedTables() throws Exception {
+    void createFilterQuery_twoJoinedTables() {
         Map<String, String> filters = Collections.singletonMap("b-B_c-C", "bar");
         Map<String, Object> params = new HashMap<>();
 
@@ -2869,11 +2869,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         String filterString = JPADAO.createFilterQuery2("", filters, params);
 
         Assertions.assertEquals(expectedFilterString, filterString);
-        Assertions.assertTrue(params.get("bBcC").equals("%BAR%"));
+        Assertions.assertEquals("%BAR%", params.get("bBcC"));
     }
 
     @Test
-    void createFilterQuery_joinedTableAndField() throws Exception {
+    void createFilterQuery_joinedTableAndField() {
         Map<String, String> filters = Collections.singletonMap("B_c-C", "bar");
         Map<String, Object> params = new HashMap<>();
 
@@ -2881,7 +2881,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         String filterString = JPADAO.createFilterQuery2("", filters, params);
 
         Assertions.assertEquals(expectedFilterString, filterString);
-        Assertions.assertTrue(params.get("BcC").equals("%BAR%"));
+        Assertions.assertEquals("%BAR%", params.get("BcC"));
     }
 
     @Test
@@ -2905,10 +2905,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         DataManager.getInstance().getDao().saveTermsOfUse(tou);
         tou = DataManager.getInstance().getDao().getTermsOfUse();
-        Assertions.assertEquals("English Title", tou.getTitle("en").getValue());
-        Assertions.assertEquals("German Title", tou.getTitle("de").getValue());
-        Assertions.assertEquals("German description", tou.getDescription("de").getValue());
-        Assertions.assertEquals("English description", tou.getDescription("en").getValue());
+        Assertions.assertEquals("English Title", tou.getTitle("en").getTranslationValue());
+        Assertions.assertEquals("German Title", tou.getTitle("de").getTranslationValue());
+        Assertions.assertEquals("German description", tou.getDescription("de").getTranslationValue());
+        Assertions.assertEquals("English description", tou.getDescription("en").getTranslationValue());
 
     }
 
@@ -2927,7 +2927,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         //now all should have agreed
         users = DataManager.getInstance().getDao().getAllUsers(true);
-        Assertions.assertTrue(users.stream().allMatch(u -> u.isAgreedToTermsOfUse()));
+        Assertions.assertTrue(users.stream().allMatch(User::isAgreedToTermsOfUse));
 
         //reset agreements
         DataManager.getInstance().getDao().resetUserAgreementsToTermsOfUse();
@@ -2942,7 +2942,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      * @verifies create query correctly
      */
     @Test
-    void createCampaignsFilterQuery_shouldCreateQueryCorrectly() throws Exception {
+    void createCampaignsFilterQuery_shouldCreateQueryCorrectly() {
         Map<String, String> filters = new HashMap<>(1);
         filters.put("groupOwner", "1");
         Map<String, Object> params = new HashMap<>(1);
@@ -2958,7 +2958,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      * @verifies create query correctly
      */
     @Test
-    void createAnnotationsFilterQuery_shouldCreateQueryCorrectly() throws Exception {
+    void createAnnotationsFilterQuery_shouldCreateQueryCorrectly() {
         {
             // creator/reviewer and campaign name
             Map<String, String> filters = new HashMap<>(2);
@@ -2966,7 +2966,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
             filters.put("campaign", "geo");
             Map<String, Object> params = new HashMap<>(2);
             Assertions.assertEquals(
-                    " prefix WHERE (a.creatorId=:creatorIdreviewerId OR a.reviewerId=:creatorIdreviewerId) AND (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT t.owner FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.value) LIKE :campaign)))",
+                    " prefix WHERE (a.creatorId=:creatorIdreviewerId OR a.reviewerId=:creatorIdreviewerId) AND (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN"
+                            + " (SELECT t.owner FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.translationValue) LIKE :campaign)))",
                     JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
             Assertions.assertEquals(2, params.size());
             Assertions.assertEquals("%GEO%", params.get("campaign"));
@@ -2986,7 +2987,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
             filters.put("campaign", "geo");
             Map<String, Object> params = new HashMap<>(1);
             Assertions.assertEquals(
-                    " prefix WHERE (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT t.owner FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.value) LIKE :campaign)))",
+                    " prefix WHERE (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT t.owner FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.translationValue) LIKE :campaign)))",
                     JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
         }
         {
@@ -3007,7 +3008,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
             filters.put("targetPI_body", "ppn123");
             Map<String, Object> params = new HashMap<>(2);
             Assertions.assertEquals(
-                    " prefix WHERE (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT c FROM Campaign c WHERE c.id=:generatorId))) AND (UPPER(a.targetPI) LIKE :targetPIbody OR UPPER(a.body) LIKE :targetPIbody)",
+                    " prefix WHERE (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT c FROM Campaign c WHERE c.id=:generatorId)))"
+                            + " AND (UPPER(a.targetPI) LIKE :targetPIbody OR UPPER(a.body) LIKE :targetPIbody)",
                     JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
             Assertions.assertEquals(2, params.size());
             Assertions.assertEquals(1L, params.get("generatorId"));

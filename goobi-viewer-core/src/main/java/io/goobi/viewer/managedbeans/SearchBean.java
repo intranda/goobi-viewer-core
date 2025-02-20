@@ -550,7 +550,6 @@ public class SearchBean implements SearchInterface, Serializable {
                         calendarBean.resetCurrentSelection();
                     }
                     break;
-                case SearchHelper.SEARCH_TYPE_TIMELINE:
                 case SearchHelper.SEARCH_TYPE_CALENDAR:
                     resetSimpleSearchParameters();
                     resetAdvancedSearchParameters();

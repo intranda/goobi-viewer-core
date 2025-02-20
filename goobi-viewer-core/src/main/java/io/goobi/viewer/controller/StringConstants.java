@@ -70,6 +70,8 @@ public final class StringConstants {
      * negative and can be cast to an integer
      */
     public static final String POSITIVE_INTEGER = "^[0-9]{0,9}$";
+    
+    public static final String SQL_ALTER_TABLE = "ALTER TABLE ";
 
     private StringConstants() {
 

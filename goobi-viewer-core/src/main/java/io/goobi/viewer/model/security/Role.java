@@ -42,7 +42,7 @@ import jakarta.persistence.Transient;
  * of this class is not in use at the moment.
  */
 @Entity
-@Table(name = "roles")
+@Table(name = "user_roles")
 public class Role implements Serializable {
 
     private static final long serialVersionUID = -264290351046020590L;

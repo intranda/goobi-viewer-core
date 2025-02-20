@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +39,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.CollectionViewBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.search.CollectionResult;
@@ -280,7 +282,7 @@ public class CMSCollectionContent extends CMSContent {
      * @return {@link String}
      */
     public String getCombinedFilterQuery() {
-        String subThemeDiscriminatorValue = getOwningPage().getSubThemeDiscriminatorValue();
+        String subThemeDiscriminatorValue = Optional.ofNullable(getOwningPage()).map(CMSPage::getSubThemeDiscriminatorValue).orElse("");
         if (StringUtils.isNoneBlank(subThemeDiscriminatorValue, this.filterQuery)) {
             return "(" + this.filterQuery + ") AND " + DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField() + ":"
                     + subThemeDiscriminatorValue;

@@ -32,10 +32,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.model.SelectItem;
-import jakarta.inject.Named;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,6 +50,9 @@ import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.model.viewer.collections.CollectionView.BrowseDataProvider;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.model.SelectItem;
+import jakarta.inject.Named;
 
 /**
  * Creates and stored {@link io.goobi.viewer.model.viewer.collections.CollectionView}s for a session.
@@ -118,13 +117,17 @@ public class CollectionViewBean implements Serializable {
     public CollectionView getCollection(CMSCollectionContent content, String topVisibleElement)
             throws PresentationException, IndexUnreachableException, IllegalRequestException {
         String myId = getCollectionId(content);
+        if (StringUtils.isBlank(topVisibleElement)) {
+            topVisibleElement = content.getCollectionName();
+        }
         CollectionView collection = collections.get(myId);
         if (collection == null) {
             try {
                 collection = initializeCollection(content, topVisibleElement);
                 collections.put(myId, collection);
             } catch (CmsElementNotFoundException e) {
-                logger.debug("Not matching collection element for id {} on page {}", content.getItemId(), content.getOwningPage().getId());
+                logger.debug("Not matching collection element for id {} on page {}", content.getItemId(),
+                        Optional.ofNullable(content.getOwningPage()).map(CMSPage::getId).orElse(null));
             }
         } else {
             if (!Objects.equals(collection.getBaseElementName(), topVisibleElement)) {
@@ -151,7 +154,13 @@ public class CollectionViewBean implements Serializable {
      * @return a {@link java.lang.String} object
      */
     public static String getCollectionId(CMSCollectionContent content) {
-        return content.getOwningComponent().getOwningPage().getId() + "_" + content.getItemId();
+        if (content.getOwningComponent().getOwningPage() != null) {
+            return content.getOwningComponent().getOwningPage().getId() + "_" + content.getItemId();
+        } else if (content.getOwningComponent().getOwningTemplate() != null) {
+            return content.getOwningComponent().getOwningTemplate().getId() + "_" + content.getItemId();
+        } else {
+            return content.getItemId();
+        }
     }
 
     /**
@@ -236,7 +245,7 @@ public class CollectionViewBean implements Serializable {
         };
 
         CollectionView collection = new CollectionView(content.getSolrField(), provider);
-        String subtheme = content.getOwningPage().getSubThemeDiscriminatorValue();
+        String subtheme = Optional.ofNullable(content.getOwningPage()).map(CMSPage::getSubThemeDiscriminatorValue).orElse("");
         if (StringUtils.isNotBlank(subtheme)) {
             try {
                 Optional<CMSPage> searchPage = DataManager.getInstance()
