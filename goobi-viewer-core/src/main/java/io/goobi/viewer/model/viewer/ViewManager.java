@@ -1271,7 +1271,11 @@ public class ViewManager implements Serializable {
     private List<PhysicalResource> loadDownloadResources() throws PresentationException, IndexUnreachableException {
         String query = "+PI_TOPSTRUCT:%s +DOCTYPE:DOWNLOAD_RESOURCE".formatted(pi);
         List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().getDocs(query, null);
-        return docs.stream().map(PhysicalResource::create).filter(Objects::nonNull).toList();
+        if (docs != null) {
+            return docs.stream().map(PhysicalResource::create).filter(Objects::nonNull).toList();
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     /**
