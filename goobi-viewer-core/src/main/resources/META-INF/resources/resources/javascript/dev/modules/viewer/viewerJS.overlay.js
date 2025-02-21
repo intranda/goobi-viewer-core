@@ -50,7 +50,7 @@ var viewerJS = ( function( viewer ) {
                     $trigger.on("click", (event) => {
                         switch(type) {
                             case "modal":
-                                viewer.overlay.openModal($overlay, closable);
+                                viewer.overlay.openModal($overlay, closable, fullscreen);
                                 break;
                             default:
                                 viewer.overlay.open($node, closable, fullscreen);
@@ -61,7 +61,7 @@ var viewerJS = ( function( viewer ) {
             }
     }
     
-    viewer.overlay.openModal = function(node, closable, onClose) {
+    viewer.overlay.openModal = function(node, closable, fullscreen, onClose) {
         
         return new Promise( (resolve, reject) => {
         
@@ -114,10 +114,14 @@ var viewerJS = ( function( viewer ) {
 	                }
 	                $("body").off("click", ".close-modal");
 	            });
+				if(fullscreen) {
+	                $modal.addClass("fullscreen");
+	            }
 	            let $dismissButtons = $overlay.find("[data-overlay-action='dismiss']")
 	            if(closable === true) {      
 	                $dismissButtons.show();
 	                $( 'body' ).one( 'click.close-modal', "[data-overlay-action='dismiss']", event => {
+						$modal.removeClass("fullscreen");
 	                    $modal.modal("hide");
 	                });
 	            } else {
@@ -164,9 +168,14 @@ var viewerJS = ( function( viewer ) {
 		        }
 	                    
 	            
-	            let $dismissButtons = $overlay.find("[data-overlay-action='dismiss']")
+	            let $dismissButtons = $overlay.find("[data-overlay-action='dismiss']");
+				let $contentDismissButtons = $node.find("[data-overlay-action='dismiss']");
 	            if(closable === true) {      
-	                $dismissButtons.show();
+					if($contentDismissButtons.length) {
+						$contentDismissButtons.show();
+					} else {
+						$dismissButtons.show();
+					}
 	                $( 'body' ).one( 'click.close-modal', "[data-overlay-action='dismiss']", event => {
 	                    overlay.close();
 	                });
