@@ -13,32 +13,37 @@
             <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/rssFeedLib/jquery.aRSSFeed.js"></script>
             <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/rssFeedLib/jquery.jfeed.js"></script>
             <div class="compName_rssFeed rss_wrapp men_wrapp rss_elem_wrapp sidebar-widget widget #{cc.attrs.widget.styleClass}">
-                    <h2>
-                        #{cc.attrs.widget.title.isEmpty() ? msg.lastImports : cc.attrs.widget.title.textOrDefault}
-                        <a
-                            href="#{navigationHelper.applicationUrl}api/v1/records/rss?query=#{cc.attrs.filterQuery}&amp;sortField=#{cc.attrs.widget.sortField}&amp;sortDescending=#{cc.attrs.widget.descendingSorting}"
-                            title="#{msg.rssSubscribe}"
-                            aria-label="#{msg.rssSubscribe}"
-                            target="_blank"
-                            data-toggle="tooltip">
-                            <i class="fa fa-rss" aria-hidden="true"></i>
-                        </a>
-                    </h2>
-                    <div
-                        class="rss-wrapp"
-                        rssnum="#{cc.attrs.widget.numEntries}"
-                        rss_url="#{navigationHelper.applicationUrl}api/v1/records/rss?max=#{cc.attrs.widget.numEntries}&amp;query=#{cc.attrs.filterQuery}&amp;sortField=#{cc.attrs.widget.sortField}&amp;sortDescending=#{cc.attrs.widget.descendingSorting}"
-                        lastImportsMsg="#{msg.importdate}:"
-                        weekDayNames="#{msg.weekDayNames}"
-                        monthNames="#{msg.monthNames}"></div>
+                <h2>
+                    #{cc.attrs.widget.title.isEmpty() ? msg.lastImports : cc.attrs.widget.title.textOrDefault}
+                    <a
+                        href="#{navigationHelper.applicationUrl}api/v1/records/rss?query=#{cc.attrs.filterQuery}&amp;sortField=#{cc.attrs.widget.sortField}&amp;sortDescending=#{cc.attrs.widget.descendingSorting}"
+                        title="#{msg.rssSubscribe}"
+                        aria-label="#{msg.rssSubscribe}"
+                        target="_blank"
+                        data-toggle="tooltip">
+                        <i class="fa fa-rss" aria-hidden="true"></i>
+                    </a>
+                </h2>
+                <div class="rss-wrapp">
+                    <ui:repeat  var="entry" value="#{rssBean.getRssFeed(cc.attrs.widget.numEntries, cc.attrs.filterQuery, cc.attrs.widget.sortField, cc.attrs.widget.descendingSorting)}">
+                        <div class="rss-elem">
+                            <dl>
+                                <dt class="rss-elem-title">
+                                    <a href="#{entry.uri}" title="#{entry.title}" data-ajax="false">#{entry.title}</a>
+                                </dt>
+                                <dd class="rss-elem-info">
+                                    <small>#{msg.DATECREATED}:</small>
+                                    <small>
+                                        <h:outputText value="#{entry.publishedDate}">
+                                            <f:convertDateTime name="pattern" value="#{navigationHelper.datePattern}" />
+                                        </h:outputText>
+                                    </small>
+                                </dd>
+                            </dl>
+                        </div>
+                    </ui:repeat>
+                </div>
             </div>
-            <script
-                language="javascript"
-                type="text/javascript">
-				$(document).ready(function() {
-					$(".rss-wrapp").aRSSFeed();
-				});
-			</script>
         </h:panelGroup>
     </composite:implementation>
 </ui:composition>

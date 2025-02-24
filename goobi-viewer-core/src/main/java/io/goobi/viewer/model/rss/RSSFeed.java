@@ -180,6 +180,7 @@ public final class RSSFeed {
         List<SyndEntry> entries = new ArrayList<>();
 
         String sortOrder = sortDescending ? "desc" : "asc";
+        logger.trace("RSS query: {}", query);
         SolrDocumentList docs = DataManager.getInstance()
                 .getSearchIndex()
                 .search(query, 0, maxItems,
@@ -732,31 +733,55 @@ public final class RSSFeed {
      * @return RSS feed as {@link String}
      * @throws ContentLibException
      */
-    public static String createRssFeed(final String language, final Integer maxHits, String subtheme, final String query, String facets,
+    public static String createRssFeedString(final String language, final Integer maxHits, String subtheme, final String query, String facets,
             HttpServletRequest servletRequest, String sortField, boolean sortDescending)
             throws ContentLibException {
         try {
-            String q = createQuery(query, null, subtheme, servletRequest, false);
-            if (StringUtils.isNotBlank(q)) {
-                q = SearchHelper.buildFinalQuery(q, false, servletRequest, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
-            }
-
-            // Optional faceting
-            List<String> filterQueries = null;
-            if (StringUtils.isNotBlank(facets)) {
-                SearchFacets searchFacets = new SearchFacets();
-                searchFacets.setActiveFacetString(facets);
-                filterQueries = searchFacets.generateFacetFilterQueries(true);
-            }
-
             SyndFeedOutput output = new SyndFeedOutput();
             return output
-                    .outputString(RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), q, filterQueries,
-                            language != null ? language : servletRequest.getLocale().getLanguage(),
-                            maxHits != null ? maxHits : DataManager.getInstance().getConfiguration().getRssFeedItems(), sortField, sortDescending));
+                    .outputString(createRssFeed(language, maxHits, subtheme, query, facets, servletRequest, sortField, sortDescending));
+
         } catch (PresentationException | IndexUnreachableException | ViewerConfigurationException | DAOException | FeedException e) {
             throw new ContentLibException(e.toString());
         }
+    }
+
+    /**
+     * 
+     * @param language
+     * @param maxHits
+     * @param subtheme
+     * @param query
+     * @param facets
+     * @param servletRequest
+     * @param sortField
+     * @param sortDescending
+     * @return {@link SyndFeed}
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ViewerConfigurationException
+     * @throws DAOException
+     */
+    public static SyndFeed createRssFeed(final String language, final Integer maxHits, String subtheme, final String query, String facets,
+            HttpServletRequest servletRequest, String sortField, boolean sortDescending)
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
+        String q = createQuery(query, null, subtheme, servletRequest, false);
+        if (StringUtils.isNotBlank(q)) {
+            q = SearchHelper.buildFinalQuery(q, false, servletRequest, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+        }
+
+        // Optional faceting
+        List<String> filterQueries = null;
+        if (StringUtils.isNotBlank(facets)) {
+            SearchFacets searchFacets = new SearchFacets();
+            searchFacets.setActiveFacetString(facets);
+            filterQueries = searchFacets.generateFacetFilterQueries(true);
+        }
+
+        return RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), q, filterQueries,
+                language != null ? language : servletRequest.getLocale().getLanguage(),
+                maxHits != null ? maxHits : DataManager.getInstance().getConfiguration().getRssFeedItems(), sortField, sortDescending);
+
     }
 
     /**
