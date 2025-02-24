@@ -10,8 +10,6 @@
     </composite:interface>
     <composite:implementation>
         <h:panelGroup rendered="#{(configurationBean.displaySidebarRssFeed and cc.attrs.widget.type == null) or cc.attrs.widget.type == 'WIDGET_RSSFEED'}">
-            <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/rssFeedLib/jquery.aRSSFeed.js"></script>
-            <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/rssFeedLib/jquery.jfeed.js"></script>
             <div class="compName_rssFeed rss_wrapp men_wrapp rss_elem_wrapp sidebar-widget widget #{cc.attrs.widget.styleClass}">
                 <h2>
                     #{cc.attrs.widget.title.isEmpty() ? msg.lastImports : cc.attrs.widget.title.textOrDefault}
