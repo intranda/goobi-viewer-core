@@ -331,7 +331,7 @@ public class Metadata implements Serializable {
      */
     public List<StringPair> getSortFields() {
         if (StringUtils.isEmpty(sortField)) {
-            return null;
+            return Collections.emptyList();
         }
 
         return Collections.singletonList(new StringPair(sortField, "asc"));
