@@ -893,7 +893,7 @@ public final class StringTools {
             String s = result.group();
             String s1 = result.group(0);
             int groupCount = result.groupCount();
-            List<String> groups = IntStream.range(0, result.groupCount() + 1).mapToObj(i -> result.group(i)).collect(Collectors.toList());
+            List<String> groups = IntStream.range(0, result.groupCount() + 1).mapToObj(result::group).toList();
             String replacement = replacer.apply(groups);
             buffer.replace(result.start(), result.end(), replacement);
         });
