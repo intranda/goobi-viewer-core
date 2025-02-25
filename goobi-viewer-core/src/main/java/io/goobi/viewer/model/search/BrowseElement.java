@@ -174,7 +174,7 @@ public class BrowseElement implements Serializable {
         this.label = new SimpleMetadataValue(label);
         this.fulltext = fulltext;
         this.locale = locale;
-        this.metadataListMap = new HashMap<>(1);
+        this.metadataListMap = HashMap.newHashMap(1);
         this.metadataListMap.put(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>());
         this.url = url;
         if (this.url == null) {
@@ -205,7 +205,7 @@ public class BrowseElement implements Serializable {
 
         this.metadataListMap = metadataListMap;
         if (this.metadataListMap == null || this.metadataListMap.isEmpty()) {
-            this.metadataListMap = new HashMap<>(1);
+            this.metadataListMap = HashMap.newHashMap(1);
             this.metadataListMap.put(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>());
         }
         this.locale = locale;
@@ -343,7 +343,7 @@ public class BrowseElement implements Serializable {
         // Thumbnail
         if (thumbs != null) {
             String sbThumbnailUrl = thumbs.getThumbnailUrl(structElement);
-            if (sbThumbnailUrl != null && sbThumbnailUrl.length() > 0) {
+            if (sbThumbnailUrl != null && !sbThumbnailUrl.isEmpty()) {
                 thumbnailUrl = StringTools.intern(sbThumbnailUrl);
             }
         }
@@ -533,9 +533,9 @@ public class BrowseElement implements Serializable {
         ImageFileFormat format = ImageFileFormat.getImageFileFormatFromFileExtension(filename);
         if (format != null) {
             return format.getMimeType();
-        } else {
-            return "";
         }
+
+        return "";
     }
 
     /**
@@ -891,6 +891,16 @@ public class BrowseElement implements Serializable {
      */
     public void setVolumeNo(String volumeNo) {
         this.volumeNo = volumeNo;
+    }
+
+    /**
+     * Checks whether the search hit should identify itself as a group document when being displayed. 
+     * 
+     * @return true if group and not newspaper; false otherwise
+     */
+    public boolean isDisplayGroupStatus() {
+        logger.trace("docstrct: " + getDocStructType());
+        return isGroup() && !"newspaper".equalsIgnoreCase(getDocStructType());
     }
 
     /**
