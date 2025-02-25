@@ -899,7 +899,6 @@ public class BrowseElement implements Serializable {
      * @return true if group and not newspaper; false otherwise
      */
     public boolean isDisplayGroupStatus() {
-        logger.trace("docstrct: " + getDocStructType());
         return isGroup() && !"newspaper".equalsIgnoreCase(getDocStructType());
     }
 
