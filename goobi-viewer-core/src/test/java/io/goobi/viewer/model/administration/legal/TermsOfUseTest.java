@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.administration.legal;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -39,11 +41,41 @@ class TermsOfUseTest extends AbstractTest {
         orig.setActive(true);
         orig.setTitle("en", "title");
         orig.setDescription("en", "desc");
-        
+
         TermsOfUse copy = new TermsOfUse(orig);
         Assertions.assertEquals(123L, copy.getId());
         Assertions.assertTrue(copy.isActive());
         Assertions.assertEquals("title", copy.getTitleIfExists("en").get());
         Assertions.assertEquals("desc", copy.getDescriptionIfExists("en").get());
+    }
+
+    /**
+     * @see TermsOfUse#getForLanguage(Stream<TermsOfUseTranslation>,String)
+     * @verifies throw IllegalArgumentException if language blank
+     */
+    @Test
+    void getForLanguage_shouldThrowIllegalArgumentExceptionIfLanguageBlank() {
+        Exception e = Assertions.assertThrows(IllegalArgumentException.class,
+                () -> TermsOfUse.getForLanguage(null, " "));
+        assertEquals("Must provide non-empty language parameter to filter translations for language", e.getMessage());
+    }
+
+    /**
+     * @see TermsOfUse#TermsOfUse(TermsOfUse)
+     * @verifies clear the list
+     */
+    @Test
+    void cleanTranslations_shouldClearTheList() {
+        TermsOfUse orig = new TermsOfUse();
+        orig.id = 123L;
+        orig.setActive(true);
+        orig.setTitle("en", "title");
+        orig.setTitle("de", " ");
+        orig.setDescription("en", "desc");
+        orig.setDescription("de", "");
+        Assertions.assertEquals(4, orig.getTranslations().size());
+
+        orig.cleanTranslations();
+        Assertions.assertEquals(2, orig.getTranslations().size());
     }
 }

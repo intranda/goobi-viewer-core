@@ -149,7 +149,14 @@ public class TermsOfUse {
         return this.translations.stream().filter(t -> DESCRIPTION_TAG.equals(t.getTag()));
     }
 
-    private static Stream<TermsOfUseTranslation> getForLanguage(Stream<TermsOfUseTranslation> translations, String language) {
+    /**
+     * 
+     * @param translations
+     * @param language
+     * @return Stream<TermsOfUseTranslation>
+     * @should throw IllegalArgumentException if language blank
+     */
+    static Stream<TermsOfUseTranslation> getForLanguage(Stream<TermsOfUseTranslation> translations, String language) {
         if (StringUtils.isBlank(language)) {
             throw new IllegalArgumentException("Must provide non-empty language parameter to filter translations for language");
         }
@@ -161,7 +168,9 @@ public class TermsOfUse {
     }
 
     /**
-     * Remove all empty translations from the translations list
+     * Remove all empty translations from the translations list.
+     * 
+     * @should clear the list
      */
     public void cleanTranslations() {
         Iterator<TermsOfUseTranslation> i = this.translations.iterator();
@@ -171,6 +180,15 @@ public class TermsOfUse {
                 i.remove();
             }
         }
+    }
+
+    /**
+     * For testing.
+     * 
+     * @return the translations
+     */
+    List<TermsOfUseTranslation> getTranslations() {
+        return translations;
     }
 
 }
