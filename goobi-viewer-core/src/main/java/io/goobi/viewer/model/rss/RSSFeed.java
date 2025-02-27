@@ -50,6 +50,7 @@ import com.rometools.rome.io.SyndFeedOutput;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -180,7 +181,7 @@ public final class RSSFeed {
         List<SyndEntry> entries = new ArrayList<>();
 
         String sortOrder = sortDescending ? "desc" : "asc";
-        logger.trace("RSS query: {}", query);
+        logger.trace("RSS query: {}", StringTools.cleanUserGeneratedData(query)); //NOSONAR Output is cleaned up prior to logging
         SolrDocumentList docs = DataManager.getInstance()
                 .getSearchIndex()
                 .search(query, 0, maxItems,

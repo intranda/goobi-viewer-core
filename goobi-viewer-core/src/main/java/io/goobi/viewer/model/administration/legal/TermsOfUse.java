@@ -27,6 +27,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.persistence.annotations.PrivateOwned;
+
+import io.goobi.viewer.model.translations.Translation;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,12 +40,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.persistence.annotations.PrivateOwned;
-
-import io.goobi.viewer.model.translations.IPolyglott;
-import io.goobi.viewer.model.translations.Translation;
 
 /**
  * @author florian
@@ -75,6 +73,11 @@ public class TermsOfUse {
 
     }
 
+    /**
+     * 
+     * @param orig
+     * @should clone original correctly
+     */
     public TermsOfUse(TermsOfUse orig) {
         this.active = orig.active;
         this.id = orig.id;
@@ -99,8 +102,7 @@ public class TermsOfUse {
     }
 
     public TermsOfUseTranslation getTitle(String language) {
-        TermsOfUseTranslation translation = getForLanguage(getTitles(), language).findAny().orElse(null);
-        return translation;
+        return getForLanguage(getTitles(), language).findAny().orElse(null);
     }
 
     public Optional<String> getTitleIfExists(String language) {
@@ -120,8 +122,7 @@ public class TermsOfUse {
     }
 
     public TermsOfUseTranslation getDescription(String language) {
-        TermsOfUseTranslation translation = getForLanguage(getDescriptions(), language).findAny().orElse(null);
-        return translation;
+        return getForLanguage(getDescriptions(), language).findAny().orElse(null);
     }
 
     public Optional<String> getDescriptionIfExists(String language) {
@@ -148,7 +149,14 @@ public class TermsOfUse {
         return this.translations.stream().filter(t -> DESCRIPTION_TAG.equals(t.getTag()));
     }
 
-    private Stream<TermsOfUseTranslation> getForLanguage(Stream<TermsOfUseTranslation> translations, String language) {
+    /**
+     * 
+     * @param translations
+     * @param language
+     * @return Stream<TermsOfUseTranslation>
+     * @should throw IllegalArgumentException if language blank
+     */
+    static Stream<TermsOfUseTranslation> getForLanguage(Stream<TermsOfUseTranslation> translations, String language) {
         if (StringUtils.isBlank(language)) {
             throw new IllegalArgumentException("Must provide non-empty language parameter to filter translations for language");
         }
@@ -160,7 +168,9 @@ public class TermsOfUse {
     }
 
     /**
-     * Remove all empty translations from the translations list
+     * Remove all empty translations from the translations list.
+     * 
+     * @should clear the list
      */
     public void cleanTranslations() {
         Iterator<TermsOfUseTranslation> i = this.translations.iterator();
@@ -170,6 +180,15 @@ public class TermsOfUse {
                 i.remove();
             }
         }
+    }
+
+    /**
+     * For testing.
+     * 
+     * @return the translations
+     */
+    List<TermsOfUseTranslation> getTranslations() {
+        return translations;
     }
 
 }
