@@ -181,7 +181,7 @@ public final class RSSFeed {
         List<SyndEntry> entries = new ArrayList<>();
 
         String sortOrder = sortDescending ? "desc" : "asc";
-        logger.trace("RSS query: {}", StringTools.cleanUserGeneratedData(query));
+        logger.trace("RSS query: {}", StringTools.cleanUserGeneratedData(query)); //NOSONAR Output is cleaned up prior to logging
         SolrDocumentList docs = DataManager.getInstance()
                 .getSearchIndex()
                 .search(query, 0, maxItems,
