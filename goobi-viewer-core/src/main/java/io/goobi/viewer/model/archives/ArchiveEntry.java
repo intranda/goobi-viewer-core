@@ -107,6 +107,7 @@ public class ArchiveEntry implements Serializable {
      * 
      * @param orig
      * @param parent
+     * @should clone entry correctly
      */
     public ArchiveEntry(ArchiveEntry orig, ArchiveEntry parent) {
         this.parentNode = parent;
