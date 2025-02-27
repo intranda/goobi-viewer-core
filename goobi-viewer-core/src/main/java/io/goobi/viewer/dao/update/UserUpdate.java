@@ -41,9 +41,11 @@ public class UserUpdate implements IModelUpdate {
     @Override
     @SuppressWarnings("unchecked")
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
+        boolean ret = false;
+
         // Update table name
         if (dao.tableExists("users")) {
-            
+
             // Delete new table with anonymous use, if already created by EclipseLink
             if (dao.tableExists(TABLE_NAME_CURRENT)) {
                 boolean newTableEmpty = dao.getNativeQueryResults("SELECT * FROM " + TABLE_NAME_CURRENT).size() <= 1;
@@ -52,8 +54,9 @@ public class UserUpdate implements IModelUpdate {
                 }
 
             }
-            
+
             dao.executeUpdate("RENAME TABLE users TO " + TABLE_NAME_CURRENT);
+            ret = true;
         }
 
         if (dao.columnsExists(TABLE_NAME_CURRENT, "use_gravatar")) {
@@ -62,9 +65,10 @@ public class UserUpdate implements IModelUpdate {
                 dao.executeUpdate("UPDATE " + TABLE_NAME_CURRENT + " SET avatar_type='GRAVATAR' WHERE " + TABLE_NAME_CURRENT + ".user_id=" + userId);
             }
             dao.executeUpdate(StringConstants.SQL_ALTER_TABLE + TABLE_NAME_CURRENT + " DROP COLUMN use_gravatar");
+            ret = true;
         }
 
-        return true;
+        return ret;
     }
 
 }

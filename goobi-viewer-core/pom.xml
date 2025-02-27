@@ -142,7 +142,7 @@
 		<reflections.version>0.10.2</reflections.version>
 		<rome.version>2.1.0</rome.version>
 		<spring.version>6.2.3</spring.version>
-		<slf4j.version>2.0.16</slf4j.version>
+		<slf4j.version>2.0.17</slf4j.version>
 		<solr.version>9.8.0</solr.version>
 		<swagger.version>2.2.28</swagger.version>
 		<tomcat.version>10.1.31</tomcat.version>
@@ -1187,7 +1187,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>10.21.2</version>
+						<version>10.21.3</version>
 					</dependency>
 				</dependencies>
 				<executions>
