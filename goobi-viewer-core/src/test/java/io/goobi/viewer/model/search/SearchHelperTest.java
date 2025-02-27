@@ -485,7 +485,8 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void extractSearchTermsFromQuery_shouldHandleMultiplePhrasesInQueryCorrectly() {
         Map<String, Set<String>> result =
-                SearchHelper.extractSearchTermsFromQuery("(MD_A:(\"value1 value 2\") OR MD_B:\"value1\" OR MD_C:\"value2\" OR MD_D:\"value2\")", null);
+                SearchHelper.extractSearchTermsFromQuery("(MD_A:(\"value1 value 2\") OR MD_B:\"value1\" OR MD_C:\"value2\" OR MD_D:\"value2\")",
+                        null);
         Assertions.assertEquals(5, result.size());
         {
             Set<String> terms = result.get("MD_A");
@@ -1025,17 +1026,17 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(" +(DEFAULT:(\\[one\\] OR \\:two\\:))", SearchHelper.generateExpandQuery(fields, searchTerms, 0));
     }
 
-//    /**
-//     * @see SearchHelper#generateExpandQuery(List,Map,boolean)
-//     * @verifies add quotation marks if phraseSearch is true
-//     */
-//    @Test
-//    void generateExpandQuery_shouldAddQuotationMarksIfPhraseSearchIsTrue() {
-//        List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT });
-//        Map<String, Set<String>> searchTerms = new HashMap<>();
-//        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "one two three" })));
-//        Assertions.assertEquals(" +(DEFAULT:\"one\\ two\\ three\")", SearchHelper.generateExpandQuery(fields, searchTerms, 0));
-//    }
+    //    /**
+    //     * @see SearchHelper#generateExpandQuery(List,Map,boolean)
+    //     * @verifies add quotation marks if phraseSearch is true
+    //     */
+    //    @Test
+    //    void generateExpandQuery_shouldAddQuotationMarksIfPhraseSearchIsTrue() {
+    //        List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT });
+    //        Map<String, Set<String>> searchTerms = new HashMap<>();
+    //        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "one two three" })));
+    //        Assertions.assertEquals(" +(DEFAULT:\"one\\ two\\ three\")", SearchHelper.generateExpandQuery(fields, searchTerms, 0));
+    //    }
 
     /**
      * @see SearchHelper#generateExpandQuery(List,Map,boolean,int)
@@ -1258,6 +1259,15 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             String highlightedPhrase = SearchHelper.applyHighlightingToPhrase(phrase, terms);
             Assertions.assertEquals(
                     SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "Auszehrung (Tuberkulose" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + ")",
+                    highlightedPhrase);
+        }
+        {
+            String phrase = "Brauti, Margrete Gunnarsdotter";
+            Set<String> terms = new HashSet<>();
+            terms.add("\"Brauti, Margrete Gunnarsdotter\"");
+            String highlightedPhrase = SearchHelper.applyHighlightingToPhrase(phrase, terms);
+            Assertions.assertEquals(
+                    SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "Brauti, Margrete Gunnarsdotter" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END,
                     highlightedPhrase);
         }
     }
