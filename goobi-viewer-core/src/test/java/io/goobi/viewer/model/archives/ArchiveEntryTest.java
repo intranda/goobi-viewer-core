@@ -70,4 +70,27 @@ class ArchiveEntryTest extends AbstractTest {
         Assertions.assertEquals(1, copy.getAccessConditions().size());
         Assertions.assertEquals(orig.getAccessConditions().get(0), copy.getAccessConditions().get(0));
     }
+
+    /**
+     * @see SolrEADParser(ArchiveEntry)
+     * @verifies return true if access conditions empty
+     */
+    @Test
+    void isAccessAllowed_shouldReturnTrueIfAccessConditionsEmpty() {
+        ArchiveEntry entry = new ArchiveEntry(1, 1, null);
+        entry.setTopstructPi("PPN123");
+        Assertions.assertTrue(entry.isAccessAllowed());
+    }
+
+    /**
+     * @see SolrEADParser(ArchiveEntry)
+     * @verifies check access correctly
+     */
+    @Test
+    void isAccessAllowed_shouldCheckAccessCorrectly() {
+        ArchiveEntry entry = new ArchiveEntry(1, 1, null);
+        entry.setTopstructPi("PPN123");
+        entry.getAccessConditions().add("restricted");
+        Assertions.assertFalse(entry.isAccessAllowed());
+    }
 }
