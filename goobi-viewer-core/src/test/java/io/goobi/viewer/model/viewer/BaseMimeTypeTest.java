@@ -24,7 +24,7 @@ package io.goobi.viewer.model.viewer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class MimeTypeTest {
+class BaseMimeTypeTest {
 
     /**
      * @see BaseMimeType#getByName(String)
