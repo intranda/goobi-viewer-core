@@ -42,11 +42,12 @@ public class RoleUpdate implements IModelUpdate {
                 }
 
             }
-            
+
             dao.executeUpdate("RENAME TABLE roles TO user_roles");
+            return true;
         }
 
-        return true;
+        return false;
     }
 
 }

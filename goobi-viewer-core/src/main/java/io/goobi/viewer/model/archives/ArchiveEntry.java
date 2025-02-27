@@ -441,7 +441,7 @@ public class ArchiveEntry implements Serializable {
 
         try {
             boolean ret = AccessConditionUtils
-                    .checkAccessPermissionByIdentifierAndLogId(topstructPi, logId, IPrivilegeHolder.PRIV_LIST, BeanUtils.getRequest())
+                    .checkAccessPermissionByIdentifierAndLogId(topstructPi, logId, IPrivilegeHolder.PRIV_ARCHIVE_DISPLAY_NODE, BeanUtils.getRequest())
                     .isGranted();
             if (!ret) {
                 logger.trace("Access denied to {}", label);

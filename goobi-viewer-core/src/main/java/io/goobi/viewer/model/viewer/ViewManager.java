@@ -214,6 +214,7 @@ public class ViewManager implements Serializable {
     private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
     private Map<CitationLinkLevel, List<CitationLink>> citationLinks = new HashMap<>();
     private List<String> externalResourceUrls = null;
+    private List<PhysicalResource> downloadResources = null;
 
     private PageNavigation pageNavigation = PageNavigation.SINGLE;
 
@@ -1254,13 +1255,36 @@ public class ViewManager implements Serializable {
      * @return true if record is born digital material (no scanned images); false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @deprecated replc
      */
+    @Deprecated(since = "25.02")
     public boolean isBornDigital() throws IndexUnreachableException, DAOException {
         return isHasPages() && isFilesOnly();
     }
 
     public boolean isHasExternalResources() throws IndexUnreachableException {
         return Optional.ofNullable(getExternalResourceUrls()).map(list -> !list.isEmpty()).orElse(false);
+    }
+
+    public boolean isHasDownloadResources() throws PresentationException, IndexUnreachableException {
+        return Optional.ofNullable(getDownloadResources()).map(list -> !list.isEmpty()).orElse(false);
+    }
+
+    public List<PhysicalResource> getDownloadResources() throws PresentationException, IndexUnreachableException {
+        if (this.downloadResources == null) {
+            this.downloadResources = loadDownloadResources();
+        }
+        return this.downloadResources;
+    }
+
+    private List<PhysicalResource> loadDownloadResources() throws PresentationException, IndexUnreachableException {
+        String query = "+PI_TOPSTRUCT:%s +DOCTYPE:DOWNLOAD_RESOURCE".formatted(pi);
+        List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().getDocs(query, null);
+        if (docs != null) {
+            return docs.stream().map(PhysicalResource::create).filter(Objects::nonNull).toList();
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     /**
