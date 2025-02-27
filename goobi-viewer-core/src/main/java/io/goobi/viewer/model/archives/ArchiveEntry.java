@@ -433,6 +433,8 @@ public class ArchiveEntry implements Serializable {
      * Checks whether access to the given node is allowed due to set access conditions.
      * 
      * @return true if access granted; false otherwise
+     * @should return true if access conditions empty
+     * @should check access correctly
      */
     public boolean isAccessAllowed() {
         if (getAccessConditions().isEmpty()) {
