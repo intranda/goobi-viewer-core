@@ -24,12 +24,17 @@ package io.goobi.viewer.dao.update;
 import java.sql.SQLException;
 import java.util.Objects;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
 public class TranslationUpdate implements IModelUpdate {
+
+    private static final Logger logger = LogManager.getLogger(TranslationUpdate.class);
 
     private static final String[] TABLES = { "cs_campaign_translations", "cms_geomap_translation", "terms_of_use_translations", "translations" };
 
@@ -42,6 +47,7 @@ public class TranslationUpdate implements IModelUpdate {
             if (dao.tableExists(table)) {
                 boolean newColumnHasEntries = dao.getNativeQueryResults("SELECT translation_value FROM " + table).stream().anyMatch(Objects::nonNull);
                 if (!newColumnHasEntries) {
+                    logger.debug("Updating table: {}", table);
                     dao.executeUpdate(StringConstants.SQL_ALTER_TABLE + table + " DROP translation_value;");
                     try {
                         dao.executeUpdate(StringConstants.SQL_ALTER_TABLE + table + " RENAME COLUMN value TO translation_value");
@@ -54,12 +60,11 @@ public class TranslationUpdate implements IModelUpdate {
                     if (!dao.columnsExists("cms_pages", "page_template_id")) {
                         dao.executeUpdate(StringConstants.SQL_ALTER_TABLE + table + " ADD COLUMN page_template_id varchar(255);");
                     }
-
+                    return true;
                 }
-
             }
         }
 
-        return true;
+        return false;
     }
 }
