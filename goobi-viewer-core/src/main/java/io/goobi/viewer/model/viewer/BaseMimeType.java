@@ -142,4 +142,17 @@ public enum BaseMimeType {
 
         return mimeType.isImageOrPdfDownloadAllowed();
     }
+
+    public static String getSpecificMimeType(String mimeType) {
+        if (StringUtils.isBlank(mimeType)) {
+            return "";
+        }
+
+        String useName = mimeType;
+        if (useName.contains("/")) {
+            return useName.substring(useName.indexOf("/") + 1);
+        } else {
+            return "";
+        }
+    }
 }
