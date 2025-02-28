@@ -848,6 +848,7 @@ public final class StringTools {
 
     /**
      * Clean a String from any malicious content like script tags, line breaks and backtracking filepaths.
+     * TODO InvalidPathException in Windows
      *
      * @param data
      * @return a cleaned up string which can be savely used
