@@ -52,6 +52,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
@@ -1469,7 +1470,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return true;
         } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            return AccessConditionUtils.checkAccessPermissionForImage(request, pi, fileName).isGranted();
+            return AccessConditionUtils.checkAccessPermissionForImage(request, pi, fileName).isGranted()
+                    && FilterTools.checkForConcurrentViewLimit(pi, request);
         } else {
             logger.trace("FacesContext not found");
         }

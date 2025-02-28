@@ -84,6 +84,7 @@
         });
         const imageIdToOrderMap = new Map(Object.entries(imageSources).map( ([key, value]) => [sources.iiif.getId(value), Number(key)]));
         const currentImageOrder = #{activeDocumentBean.viewManager.currentImageOrder}
+        const recordPi = "#{activeDocumentBean.viewManager.pi}"
         // console.log("images ", imageMap); 
         var configViewer = { 
         	global: {
@@ -313,7 +314,7 @@
 		           		const pageNo = imageIdToOrderMap.get(imageId);
 
 		           		if(pageNo != undefined) {	           			
-			           		setBrowserLocation(pageNo);
+			           		setBrowserLocation(recordPi, pageNo);
 			           		imageOrderChanged.next(pageNo);
 		           		}
 		           	});
@@ -367,12 +368,12 @@
 				}
 
 		    }
-		    function setBrowserLocation(pageNo) {
+		    function setBrowserLocation(pi, pageNo) {
 		    	const url = new URL(window.location.href);
            		let pathArray = url.pathname.split("/");
            		let replacedPathPart = false;
            		for (var i = pathArray.length-1; i >= 0; i--) {
-					if(/^\d+$/.test(pathArray[i])) {
+					if(/^\d+$/.test(pathArray[i]) && pathArray[i] != pi) {
 						//this is presumably the page number
 						pathArray[i] = pageNo;
 						replacedPathPart = true;
