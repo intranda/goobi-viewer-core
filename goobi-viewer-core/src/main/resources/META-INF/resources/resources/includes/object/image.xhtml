@@ -208,8 +208,18 @@
         	    var $sidebar = $('#fullscreenViewSidebar');
 //         	    var $scrollPreview = $('#sidebarScrollPreview');
 //         	    leftMargin = $scrollPreview.width() == undefined ? 0 : $scrollPreview.width();
-        	    rightMargin = $sidebar.width() == undefined ? 0 : $sidebar.width();
-        	    return rightMargin;// + leftMargin;
+				rightMargin = 0;
+				
+			    if (window.matchMedia('(min-width: 968px)').matches) {
+	        		rightMargin = ($sidebar.width() == undefined) ? 0 : $sidebar.width();
+			    }
+
+        	    console.log(rightMargin);
+
+//         	    element.css('right') !== '0px'
+
+        	    return rightMargin;
+        	    // + leftMargin;
         	}
         }
        	// desktop object view
