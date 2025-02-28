@@ -28,10 +28,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
-import io.goobi.viewer.exceptions.RecordLimitExceededException;
+import org.apache.logging.log4j.Logger;
 
 public class RecordLockManager {
 
@@ -54,44 +52,46 @@ public class RecordLockManager {
      * @param pi Record identifier
      * @param sessionId HTTP session ID
      * @param limit Optional number of concurrent views for the record
-     * @throws RecordLimitExceededException
+     * @throws IllegalArgumentException if the given pi is null
      * @should add record lock to map correctly
      * @should do nothing if limit null
      * @should do nothing if session id already in list
-     * @should throw RecordLimitExceededException if limit exceeded
+     * @return a {@link LockRecordResult}, indicating that either a lock has been set, the lock limit was exceeded or that no action was necessary
      */
-    public synchronized void lockRecord(String pi, String sessionId, Integer limit) throws RecordLimitExceededException {
+    public synchronized LockRecordResult lockRecord(String pi, String sessionId, Integer limit) {
         logger.trace("lockRecord: {}", pi);
         if (pi == null) {
             throw new IllegalArgumentException("pi may not be null");
         }
         if (sessionId == null) {
             logger.warn("No sessionId given");
-            return;
+            return LockRecordResult.NO_ACTION;
         }
         // Record has unlimited views
         if (limit == null) {
-            return;
+            return LockRecordResult.NO_ACTION;
         }
         Set<RecordLock> recordLocks = loadedRecordMap.computeIfAbsent(pi, k -> new HashSet<>(limit));
         RecordLock newLock = new RecordLock(pi, sessionId);
         logger.trace("{} is currently locked {} times", pi, recordLocks.size());
-        if (recordLocks.size() == limit) {
-            if (recordLocks.contains(newLock)) {
-                return;
+        if (recordLocks.contains(newLock)) {
+            return LockRecordResult.NO_ACTION;
+        } else {
+            if (recordLocks.size() == limit) {
+                return LockRecordResult.LIMIT_EXCEEDED;
+            } else {
+                recordLocks.add(newLock);
             }
-            throw new RecordLimitExceededException(pi + ":" + limit);
         }
-
-        recordLocks.add(newLock);
         logger.trace("Added lock: {}", newLock);
+        return LockRecordResult.RECORD_LOCKED;
     }
 
     /**
      *
      * @param sessionId HTTP session ID
      * @param skipPiList Optional list of identifiers to skip
-     * @return true if session id removed from list successfully; false otherwise
+     * @return number of records if session id removed successfully
      * @should return number of records if session id removed successfully
      * @should skip pi in list
      */

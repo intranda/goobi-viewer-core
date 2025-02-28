@@ -25,16 +25,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotImplementedException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.Configuration;
@@ -42,11 +38,13 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.RecordLimitExceededException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.recordlock.LockRecordResult;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 public final class FilterTools {
 
@@ -67,12 +65,15 @@ public final class FilterTools {
     }
 
     /**
+     * Set a lock for the given record pi and the request's session if possible.
+     * 
      * @param pi
      * @param request
-     * @throws ServiceNotAllowedException
+     * @throws RecordNotFoundException if no record was found
+     * @return false if the view limit is already exceeded and the record may not be viewed, true otherwise
      * @should throw exception if record not found
      */
-    public static void filterForConcurrentViewLimit(String pi, HttpServletRequest request) throws ServiceNotAllowedException {
+    public static boolean checkForConcurrentViewLimit(String pi, HttpServletRequest request) {
         // logger.trace("filterForConcurrentViewLimit: {}", request.getSession().getId()); //NOSONAR Debug
         HttpSession session = request.getSession();
         // Release all locks for this session except the current record
@@ -102,16 +103,17 @@ public final class FilterTools {
             if (limits != null && !limits.isEmpty() && AccessConditionUtils.isConcurrentViewsLimitEnabledForAnyAccessCondition(
                     accessConditions)) {
                 if (session != null) {
-                    DataManager.getInstance().getRecordLockManager().lockRecord(pi, session.getId(), Integer.valueOf(limits.get(0)));
+                    return !LockRecordResult.LIMIT_EXCEEDED
+                            .equals(DataManager.getInstance().getRecordLockManager().lockRecord(pi, session.getId(), Integer.valueOf(limits.get(0))));
                 } else {
                     logger.debug("No session found, unable to lock limited view record {}", pi);
-                    throw new RecordLimitExceededException(pi + ":" + limits.get(0));
+                    return false; //requests without session should not be allowed
                 }
             }
+            return true;
         } catch (PresentationException | IndexUnreachableException | DAOException | RecordNotFoundException e) {
-            throw new ServiceNotAllowedException("Serving this image is currently impossible due to " + e.getMessage());
-        } catch (RecordLimitExceededException e) {
-            throw new ServiceNotAllowedException("Concurrent views limit has been exceeded for record: " + pi);
+            logger.warn("Serving this image is currently impossible due to " + e.getMessage());
+            return false;
         }
     }
 
