@@ -107,6 +107,7 @@ public class ArchiveEntry implements Serializable {
      * 
      * @param orig
      * @param parent
+     * @should clone entry correctly
      */
     public ArchiveEntry(ArchiveEntry orig, ArchiveEntry parent) {
         this.parentNode = parent;
@@ -432,6 +433,8 @@ public class ArchiveEntry implements Serializable {
      * Checks whether access to the given node is allowed due to set access conditions.
      * 
      * @return true if access granted; false otherwise
+     * @should return true if access conditions empty
+     * @should check access correctly
      */
     public boolean isAccessAllowed() {
         if (getAccessConditions().isEmpty()) {
@@ -441,7 +444,7 @@ public class ArchiveEntry implements Serializable {
 
         try {
             boolean ret = AccessConditionUtils
-                    .checkAccessPermissionByIdentifierAndLogId(topstructPi, logId, IPrivilegeHolder.PRIV_LIST, BeanUtils.getRequest())
+                    .checkAccessPermissionByIdentifierAndLogId(topstructPi, logId, IPrivilegeHolder.PRIV_ARCHIVE_DISPLAY_NODE, BeanUtils.getRequest())
                     .isGranted();
             if (!ret) {
                 logger.trace("Access denied to {}", label);
