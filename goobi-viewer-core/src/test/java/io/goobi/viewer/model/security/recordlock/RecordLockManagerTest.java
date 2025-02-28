@@ -35,8 +35,8 @@ import io.goobi.viewer.controller.DataManager;
 class RecordLockManagerTest extends AbstractTest {
 
     @AfterEach
-    void after() {
-        DataManager.getInstance().getRecordLockManager().removeOldLocks(0);
+    void cleanup() {
+        DataManager.getInstance().getRecordLockManager().removeOldLocks(-1); //removes all locks
     }
 
     /**
