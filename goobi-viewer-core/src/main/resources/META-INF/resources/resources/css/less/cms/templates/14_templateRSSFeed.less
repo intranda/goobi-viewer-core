@@ -10,6 +10,11 @@
     &__text {
     	margin-bottom: 15px;
     }
+	&__grid {
+		display: grid;
+		grid-template-columns: 1.5fr 4fr;
+		gap: 20px;
+	}
     &__feed {}
     &__item {
     	padding: 10px;
@@ -23,7 +28,9 @@
     	a {}
     }
     &__item-image {
-    	img {}
+    	img {
+			max-width: 100%;
+		}
     }
     &__item-date {
     	margin-bottom: 10px;
@@ -61,6 +68,11 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
+	.tpl-rss {
+		&__grid {
+			grid-template-columns: 1fr;
+		}
+	}
 	@{RTL} {
 		.tpl-rss {
 			&__item-metadata {

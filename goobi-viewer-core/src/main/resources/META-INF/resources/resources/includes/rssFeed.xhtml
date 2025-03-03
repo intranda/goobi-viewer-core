@@ -1,43 +1,43 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html">
 
 	<composite:interface />
 
-    <composite:implementation>
+	<composite:implementation>
 
-        <div class="compName_rssFeed rss_wrapp men_wrapp rss_elem_wrapp sidebar-widget widget">
-            <h2>
-                #{msg.lastImports}
-                <a
-                    href="#{navigationHelper.applicationUrl}#{navigationHelper.rssUrl}"
-                    title="#{msg.rssSubscribe}"
-                    target="_blank">
-                    <i class="fa fa-rss" aria-hidden="true"></i>
-                </a>
-            </h2>
-            <div class="rss-wrapp">
-                <ui:repeat  var="entry" value="#{rssBean.getRssFeed(5, cc.attrs.filterQuery, cc.attrs.widget.sortField, cc.attrs.widget.descendingSorting)}">
-                    <div class="rss-elem">
-                        <dl>
-                            <dt class="rss-elem-title">
-                                <a href="#{entry.uri}" title="#{entry.title}" data-ajax="false">#{entry.title}</a>
-                            </dt>
-                            <dd class="rss-elem-info">
-                                <small>#{msg.DATECREATED}:</small>
-                                <small>
-                                    <h:outputText value="#{entry.publishedDate}">
-                                        <f:convertDateTime name="pattern" value="#{navigationHelper.datePattern}" />
-                                    </h:outputText>
-                                </small>
-                            </dd>
-                        </dl>
-                    </div>
-                </ui:repeat>
-            </div>
-        </div>
+		<div class="widget widget-rss">
+			<!-- TITLE -->
+			<h2 class="widget__title">
+				<span>#{msg.lastImports}</span> <a class="widget-rss__rss-link"
+					href="#{navigationHelper.applicationUrl}#{navigationHelper.rssUrl}"
+					title="#{msg.rssSubscribe}" target="_blank"> <i
+					class="fa fa-rss" aria-hidden="true"></i>
+				</a>
+			</h2>
 
-    </composite:implementation>
+			<!-- BODY -->
+			<dl class="widget-rss__list">
+				<ui:repeat var="entry"
+					value="#{rssBean.getRssFeed(5, cc.attrs.filterQuery, cc.attrs.widget.sortField, cc.attrs.widget.descendingSorting)}">
+					<dt class="widget-rss__entry-title">
+						<a class="widget-rss__entry-link" href="#{entry.link}"
+							title="#{entry.title}" data-ajax="false">#{entry.title}</a>
+					</dt>
+					<dd class="widget-rss__entry-info">
+						<small>#{msg.DATECREATED}:</small> <small> <h:outputText
+								value="#{entry.publishedDate}">
+								<f:convertDateTime name="pattern"
+									value="#{navigationHelper.datePattern}" />
+							</h:outputText>
+						</small>
+					</dd>
+				</ui:repeat>
+			</dl>
+
+		</div>
+
+	</composite:implementation>
 </ui:composition>
