@@ -711,7 +711,7 @@ public final class TocMaker {
                         .append(SolrConstants.PI)
                         .append(":*")
                         .toString();
-                logger.debug("Sibling query: {}", siblingQuery);
+                logger.trace("Sibling query: {}", siblingQuery);
                 SolrDocumentList childDocs = DataManager.getInstance()
                         .getSearchIndex()
                         .search(siblingQuery, SolrSearchIndex.MAX_HITS,
