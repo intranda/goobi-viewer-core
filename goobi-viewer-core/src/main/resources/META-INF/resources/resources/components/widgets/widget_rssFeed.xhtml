@@ -5,22 +5,32 @@
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 	<composite:interface>
 		<composite:attribute name="widget"
-			type="io.goobi.viewer.model.cms.widget.CustomSidebarWidget"
-			required="true" />
+			type="io.goobi.viewer.model.cms.widgets.CustomSidebarWidget"
+			required="false"  />
 		<composite:attribute name="filterQuery" required="false"
-			default="#{cc.attrs.widget.type == 'WIDGET_RSSFEED' ? cc.attrs.widget.filterQuery : ''}" />
+			default="#{cc.attrs.widget != null ? cc.attrs.widget.filterQuery : ''}" />
+
+		<composite:attribute name="sortField" required="false"
+			default="#{cc.attrs.widget != null ? cc.attrs.widget.sortField : 'DATECREATED'}" />
+			
+		<composite:attribute name="descendingSorting" required="false"
+			default="#{cc.attrs.widget != null ? cc.attrs.widget.descendingSorting : true}" />
+			
+		<composite:attribute name="title" required="false"
+			default="#{cc.attrs.widget != null ? cc.attrs.widget.title.textOrDefault : msg.lastImports}" />
+				
+
 	</composite:interface>
 	
 	<!-- USED IN FRONTEND -->
 	<composite:implementation>
 		<h:panelGroup
-			rendered="#{(configurationBean.displaySidebarRssFeed and cc.attrs.widget.type == null) or cc.attrs.widget.type == 'WIDGET_RSSFEED'}">
+			rendered="#{(configurationBean.displaySidebarRssFeed and cc.attrs.widget == null) or cc.attrs.widget.type == 'WIDGET_RSSFEED'}">
 
 			<div class="widget widget-rss">
 				<!-- TITLE -->
 				<h2 class="widget__title">
-					#{cc.attrs.widget.title.isEmpty() ? msg.lastImports :
-					cc.attrs.widget.title.textOrDefault} <a
+					<span>#{cc.attrs.title}</span> <a
 						href="#{navigationHelper.applicationUrl}api/v1/records/rss?query=#{cc.attrs.filterQuery}&amp;sortField=#{cc.attrs.widget.sortField}&amp;sortDescending=#{cc.attrs.widget.descendingSorting}"
 						title="#{msg.rssSubscribe}" aria-label="#{msg.rssSubscribe}"
 						target="_blank" data-toggle="tooltip"> <i class="fa fa-rss"
@@ -30,10 +40,12 @@
 				<dl class="widget-rss__list">
 
 					<ui:repeat var="entry"
-						value="#{rssBean.getRssFeed(5, cc.attrs.filterQuery, cc.attrs.widget.sortField, cc.attrs.widget.descendingSorting)}">
+						value="#{rssBean.getRssFeed(5, cc.attrs.filterQuery, cc.attrs.sortField, cc.attrs.descendingSorting)}">
 						<dt class="widget-rss__entry-title">
 							<a class="widget-rss__entry-link" href="#{entry.link}"
-								title="#{entry.title}" data-ajax="false">#{entry.title}</a>
+								title="#{entry.title}" data-ajax="false">
+								#{fn:substring(entry.title, 0, 50)}#{fn:length(entry.title) > 50 ? '...' : ''}
+								</a>
 						</dt>
 						<dd class="widget-rss__entry-info">
 							<small>#{msg.DATECREATED}:</small> <small> <h:outputText
