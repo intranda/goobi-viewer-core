@@ -10,6 +10,8 @@
 		<composite:attribute name="filterQuery" required="false"
 			default="#{cc.attrs.widget.type == 'WIDGET_RSSFEED' ? cc.attrs.widget.filterQuery : ''}" />
 	</composite:interface>
+	
+	<!-- USED IN FRONTEND -->
 	<composite:implementation>
 		<h:panelGroup
 			rendered="#{(configurationBean.displaySidebarRssFeed and cc.attrs.widget.type == null) or cc.attrs.widget.type == 'WIDGET_RSSFEED'}">
@@ -26,6 +28,7 @@
 					</a>
 				</h2>
 				<dl class="widget-rss__list">
+
 					<ui:repeat var="entry"
 						value="#{rssBean.getRssFeed(5, cc.attrs.filterQuery, cc.attrs.widget.sortField, cc.attrs.widget.descendingSorting)}">
 						<dt class="widget-rss__entry-title">

@@ -4,10 +4,13 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-	<composite:interface />
-
+	<composite:interface>	
+	</composite:interface>
+ 
 	<composite:implementation>
 
+
+		<!-- USED IN ADMIN BACKEND -->
 		<div class="widget widget-rss">
 			<!-- TITLE -->
 			<h2 class="widget__title">
@@ -20,8 +23,9 @@
 
 			<!-- BODY -->
 			<dl class="widget-rss__list">
+
 				<ui:repeat var="entry"
-					value="#{rssBean.getRssFeed(5, cc.attrs.filterQuery, cc.attrs.widget.sortField, cc.attrs.widget.descendingSorting)}">
+					value="#{rssBean.getRssFeed(5, '', 'DATECREATED', true)}">
 					<dt class="widget-rss__entry-title">
 						<a class="widget-rss__entry-link" href="#{entry.uri}"
 							title="#{entry.title}" data-ajax="false">#{entry.title}</a>
