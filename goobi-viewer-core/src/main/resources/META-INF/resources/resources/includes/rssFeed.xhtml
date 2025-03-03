@@ -27,7 +27,7 @@
 				<ui:repeat var="entry"
 					value="#{rssBean.getRssFeed(5, '', 'DATECREATED', true)}">
 					<dt class="widget-rss__entry-title">
-						<a class="widget-rss__entry-link" href="#{entry.uri}"
+						<a class="widget-rss__entry-link" href="#{entry.link}"
 							title="#{entry.title}" data-ajax="false">#{entry.title}</a>
 					</dt>
 					<dd class="widget-rss__entry-info">

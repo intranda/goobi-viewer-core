@@ -176,8 +176,8 @@
 											<viewerForms:singleSelectField
 												label="#{msg.cms__edit_widget__solrfield_label}"
 												required="true" value="#{widget.facetField}"
-												selectValues="#{cmsBean.getLuceneFields(true)}" var="field"
-												itemValue="#{field}" itemLabel="#{msg[field]}"
+												selectValues="#{cmsBean.getLuceneFields(true)}"
+												itemValue="#{var}" itemLabel="#{msg[var]}"
 												helpText="#{msg.help__cms__edit_widget__solrfield}" />
 
 											<viewerForms:textInputField
@@ -212,7 +212,7 @@
 											<viewerForms:singleSelectField label="#{msg.sortBy}"
 												required="true" value="#{widget.sortField}"
 												selectValues="#{cmsBean.getPossibleSortFields()}"
-												var="field" itemValue="#{field}" itemLabel="#{msg[field]} (#{field})" 
+												itemValue="#{var}" itemLabel="#{msg[var]} (#{var})" 
 												helpText="#{msg.cms_widget__solr_sortfield__help}" />
 
 											<viewerForms:textInputField
