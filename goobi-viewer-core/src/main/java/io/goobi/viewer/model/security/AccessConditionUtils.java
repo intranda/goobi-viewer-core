@@ -497,9 +497,9 @@ public final class AccessConditionUtils {
         if (StringUtils.isNotEmpty(identifier)) {
             String query = new StringBuilder().append('+')
                     .append(SolrConstants.PI_TOPSTRUCT)
-                    .append(':')
+                    .append(":\"")
                     .append(identifier)
-                    .append(" +")
+                    .append("\" +")
                     .append(SolrConstants.DOCTYPE)
                     .append(':')
                     .append(DocType.DOCSTRCT.name())
