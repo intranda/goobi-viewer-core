@@ -14,7 +14,6 @@
 		<composite:attribute name="requiredMessage" required="false" default="#{msg.info__input_required}"></composite:attribute>
 		<composite:attribute name="helpText" required="false" default=""></composite:attribute>
 		<composite:attribute name="selectValues" required="true"  type="java.util.List" />
-		<composite:attribute name="var" required="false" default="var"/>
 		<composite:attribute name="itemLabel" required="false" default="#{var.toString()}"/>
 		<composite:attribute name="itemValue" required="false" default="#{var}"/>
 	</composite:interface>
@@ -42,7 +41,7 @@
 					id="#{cc.attrs.clientId}_input" class="form-control" aria-label="#{cc.attrs.label}"
 					value="#{cc.attrs.value}" required="#{cc.attrs.required}" requiredMessage="#{cc.attrs.requiredMessage}">
 					<f:selectItem itemValue="#{null}" itemDisabled="true" itemLabel="#{msg.select}"></f:selectItem>
-					<f:selectItems value="#{cc.attrs.selectValues}" var="#{cc.attrs.var}" itemLabel="#{cc.attrs.itemLabel}" itemValue="#{cc.attrs.itemValue}"></f:selectItems>
+					<f:selectItems value="#{cc.attrs.selectValues}" var="var" itemLabel="#{cc.attrs.itemLabel}" itemValue="#{cc.attrs.itemValue}"></f:selectItems>
 				</h:selectOneMenu>
 				<ui:fragment rendered="#{not empty cc.attrs.helpText}">
 					<span class="admin__form-help-text">#{cc.attrs.helpText}</span>
