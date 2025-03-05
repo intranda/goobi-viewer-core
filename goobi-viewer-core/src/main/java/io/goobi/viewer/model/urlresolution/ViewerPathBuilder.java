@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.ocpsoft.pretty.PrettyContext;
@@ -42,7 +44,6 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.servlets.utils.ServletUtils;
-import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * This class offers static methods to create {@link ViewerPath ViewerPaths} from a http request.
@@ -79,6 +80,23 @@ public final class ViewerPathBuilder {
         serviceUrl = serviceUrl.replaceAll("\\/index\\.x?html", "/");
         return createPath(serverUrl, serverName, serviceUrl, queryString);
 
+    }
+
+    /**
+     * <p>
+     * createPath.
+     * </p>
+     *
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param baseUrl a {@link java.lang.String} object.
+     * @return a {@link java.util.Optional} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public static Optional<ViewerPath> createPath(HttpServletRequest request, String baseUrl) throws DAOException {
+        String serverUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request); // http://localhost:8080/viewer
+        String serverName = request.getContextPath(); // /viewer
+        String serviceUrl = baseUrl.replaceAll("^" + serverUrl, "").replaceAll("^" + serverName, "");
+        return createPath(serverUrl, serverName, serviceUrl, request.getQueryString());
     }
 
     /**
