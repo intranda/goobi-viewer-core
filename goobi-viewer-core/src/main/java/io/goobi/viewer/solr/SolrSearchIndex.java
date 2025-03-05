@@ -1059,7 +1059,7 @@ public class SolrSearchIndex {
         Set<String> added = new HashSet<>();
         for (String name : fieldInfoMap.keySet()) {
             String n = name;
-            if ((n.startsWith(SolrConstants.PREFIX_SORT) || n.startsWith("SORTNUM_") || n.equals(SolrConstants.DATECREATED))) {
+            if ((n.startsWith(SolrConstants.PREFIX_SORT) || n.startsWith("SORTNUM_"))) {
                 if (n.contains(SolrConstants.MIDFIX_LANG)) {
                     n = n.replaceAll(SolrConstants.MIDFIX_LANG + ".*", SolrConstants.MIDFIX_LANG + "{}");
                 }
