@@ -97,14 +97,12 @@ public final class ViewerPathBuilder {
     public static Optional<ViewerPath> createPath(HttpServletRequest request, String baseUrl) throws DAOException {
         String serverUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request); // http://localhost:8080/viewer
         String serverName = request.getContextPath(); // /viewer
-        String regexServerUrl = "^" + serverUrl;
-        String regexServerName = "^" + serverName;
         String serviceUrl = baseUrl;
-        if (baseUrl.matches(Pattern.quote(regexServerUrl))) {
-            serviceUrl = serviceUrl.replaceAll(regexServerUrl, "");
+        if (serviceUrl.startsWith(serverUrl)) {
+            serviceUrl = serviceUrl.substring(serverUrl.length());
         }
-        if (baseUrl.matches(Pattern.quote(regexServerName))) {
-            serviceUrl = serviceUrl.replaceAll(regexServerName, "");
+        if (serviceUrl.startsWith(serverName)) {
+            serviceUrl = serviceUrl.substring(serverName.length());
         }
         return createPath(serverUrl, serverName, serviceUrl, request.getQueryString());
     }
