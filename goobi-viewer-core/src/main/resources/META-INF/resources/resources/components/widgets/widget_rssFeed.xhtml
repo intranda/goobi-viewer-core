@@ -30,7 +30,8 @@
 			<div class="widget widget-rss">
 				<!-- TITLE -->
 				<h2 class="widget__title">
-					<span>#{cc.attrs.title}</span> <a
+					<span>#{cc.attrs.title}</span> 
+					<a class="widget-rss__rss-link"
 						href="#{navigationHelper.applicationUrl}api/v1/records/rss?query=#{cc.attrs.filterQuery}&amp;sortField=#{cc.attrs.widget.sortField}&amp;sortDescending=#{cc.attrs.widget.descendingSorting}"
 						title="#{msg.rssSubscribe}" aria-label="#{msg.rssSubscribe}"
 						target="_blank" data-toggle="tooltip"> <i class="fa fa-rss"
