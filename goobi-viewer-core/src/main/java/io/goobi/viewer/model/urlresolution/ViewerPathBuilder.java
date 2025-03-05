@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -91,11 +92,20 @@ public final class ViewerPathBuilder {
      * @param baseUrl a {@link java.lang.String} object.
      * @return a {@link java.util.Optional} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should remove server url or name correctly
      */
     public static Optional<ViewerPath> createPath(HttpServletRequest request, String baseUrl) throws DAOException {
         String serverUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request); // http://localhost:8080/viewer
         String serverName = request.getContextPath(); // /viewer
-        String serviceUrl = baseUrl.replaceAll("^" + serverUrl, "").replaceAll("^" + serverName, "");
+        String regexServerUrl = "^" + serverUrl;
+        String regexServerName = "^" + serverName;
+        String serviceUrl = baseUrl;
+        if (baseUrl.matches(Pattern.quote(regexServerUrl))) {
+            serviceUrl = serviceUrl.replaceAll(regexServerUrl, "");
+        }
+        if (baseUrl.matches(Pattern.quote(regexServerName))) {
+            serviceUrl = serviceUrl.replaceAll(regexServerName, "");
+        }
         return createPath(serverUrl, serverName, serviceUrl, request.getQueryString());
     }
 

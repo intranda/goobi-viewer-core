@@ -21,38 +21,26 @@
  */
 package io.goobi.viewer.model.urlresolution;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
 import java.util.Optional;
 
-import org.junit.jupiter.api.AfterEach;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author Florian Alpers
  *
  */
 class ViewerPathBuilderTest {
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @BeforeEach
-    public void setUp() throws Exception {
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @AfterEach
-    public void tearDown() throws Exception {
-    }
 
     @Test
     void testStartsWith() {
@@ -78,10 +66,26 @@ class ViewerPathBuilderTest {
     void testCreateCorrectPathWIthLeadingExcamationMark() throws DAOException {
         String url = "http://localhost:8082/viewer/!fulltext/AC03343066/13/";
         String serverUrl = "http://localhost:8082/viewer";
-        String applicationName ="/viewer";
+        String applicationName = "/viewer";
         Optional<ViewerPath> path = ViewerPathBuilder.createPath(serverUrl, applicationName, url, "");
         assertTrue(path.isPresent());
         assertEquals("fulltext/AC03343066/13/", path.get().getCombinedPath().toString());
     }
 
+    /**
+     * @see ViewerPathBuilder#createPath(HttpServletRequest,String)
+     * @verifies remove server url and name correctly
+     */
+    @Test
+    void createPath_shouldRemoveServerUrlAndNameCorrectly() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setScheme("http");
+        request.setServerName("localhost");
+        request.setServerPort(8080);
+        request.setContextPath("/viewer");
+        request.setParameter("urn", "urn:nbn:de:gbv:9-g-4882158");
+        Optional<ViewerPath> path = ViewerPathBuilder.createPath(request, "http://localhost:8080/viewer/!fulltext/AC03343066/13/");
+        assertTrue(path.isPresent());
+        assertEquals("fulltext/AC03343066/13/", path.get().getCombinedPath().toString());
+    }
 }
