@@ -887,7 +887,7 @@ public final class StringTools {
 
     public static String replaceAllMatches(String string, String matchRegex, Function<List<String>, String> replacer) {
         Matcher matcher = Pattern.compile(matchRegex).matcher(string);
-        StringBuffer buffer = new StringBuffer(string);
+        StringBuilder buffer = new StringBuilder(string);
         List<MatchResult> results = matcher.results().collect(Collectors.toList());
         Collections.reverse(results);
         results.forEach(result -> {
