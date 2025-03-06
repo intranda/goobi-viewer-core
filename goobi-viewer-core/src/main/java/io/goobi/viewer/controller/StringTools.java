@@ -848,6 +848,7 @@ public final class StringTools {
 
     /**
      * Clean a String from any malicious content like script tags, line breaks and backtracking filepaths.
+     * TODO InvalidPathException in Windows
      *
      * @param data
      * @return a cleaned up string which can be savely used
@@ -886,14 +887,14 @@ public final class StringTools {
 
     public static String replaceAllMatches(String string, String matchRegex, Function<List<String>, String> replacer) {
         Matcher matcher = Pattern.compile(matchRegex).matcher(string);
-        StringBuffer buffer = new StringBuffer(string);
+        StringBuilder buffer = new StringBuilder(string);
         List<MatchResult> results = matcher.results().collect(Collectors.toList());
         Collections.reverse(results);
         results.forEach(result -> {
             String s = result.group();
             String s1 = result.group(0);
             int groupCount = result.groupCount();
-            List<String> groups = IntStream.range(0, result.groupCount() + 1).mapToObj(i -> result.group(i)).collect(Collectors.toList());
+            List<String> groups = IntStream.range(0, result.groupCount() + 1).mapToObj(result::group).toList();
             String replacement = replacer.apply(groups);
             buffer.replace(result.start(), result.end(), replacement);
         });

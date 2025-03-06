@@ -1254,17 +1254,12 @@ public class CalendarBean implements Serializable {
      */
     public String getActualYear() {
         String year = "";
-        if (searchBean.getActiveSearchType() == SearchHelper.SEARCH_TYPE_TIMELINE) {
-            if (currentYear == null) {
-                return null;
-            }
-            year = currentYear.getName();
-        } else {
-            if (StringUtils.isEmpty(selectYear)) {
-                return null;
-            }
-            year = selectYear;
+
+        if (StringUtils.isEmpty(selectYear)) {
+            return null;
         }
+        year = selectYear;
+
         return year;
     }
 
@@ -1279,17 +1274,10 @@ public class CalendarBean implements Serializable {
      */
     public String searchForIncompleteData() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         String year = "";
-        if (searchBean.getActiveSearchType() == SearchHelper.SEARCH_TYPE_TIMELINE) {
-            if (currentYear == null) {
-                return "";
-            }
-            year = currentYear.getName();
-        } else {
-            if (StringUtils.isEmpty(selectYear)) {
-                return "";
-            }
-            year = selectYear;
+        if (StringUtils.isEmpty(selectYear)) {
+            return "";
         }
+        year = selectYear;
 
         searchBean.setCurrentPage(1);
         searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();

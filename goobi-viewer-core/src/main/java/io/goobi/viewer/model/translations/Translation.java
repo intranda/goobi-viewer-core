@@ -59,8 +59,8 @@ public class Translation {
     @Column(name = "language")
     protected String language;
 
-    @Column(name = "value", nullable = true, columnDefinition = "LONGTEXT")
-    protected String value;
+    @Column(name = "translation_value", nullable = true, columnDefinition = "LONGTEXT")
+    protected String translationValue;
 
     /**
      * <p>
@@ -76,11 +76,11 @@ public class Translation {
      * </p>
      *
      * @param language a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
+     * @param translationValue a {@link java.lang.String} object.
      */
-    public Translation(String language, String value) {
+    public Translation(String language, String translationValue) {
         this.language = language;
-        this.value = value;
+        this.translationValue = translationValue;
     }
 
     /**
@@ -90,12 +90,12 @@ public class Translation {
      *
      * @param language a {@link java.lang.String} object.
      * @param tag a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
+     * @param translationValue a {@link java.lang.String} object.
      */
-    public Translation(String language, String tag, String value) {
+    public Translation(String language, String tag, String translationValue) {
         this.language = language;
         this.tag = tag;
-        this.value = value;
+        this.translationValue = translationValue;
     }
 
     /**
@@ -106,7 +106,7 @@ public class Translation {
     public Translation(Translation t) {
         this.id = t.id;
         this.language = t.language;
-        this.value = t.value;
+        this.translationValue = t.translationValue;
         this.tag = t.tag;
     }
 
@@ -141,8 +141,10 @@ public class Translation {
         }
 
         for (Translation translation : translations) {
-            if (translation.getTag().equals(tag) && translation.getLanguage().equals(lang) && StringUtils.isNotBlank(translation.getValue())) {
-                return translation.getValue();
+            if (translation.getTag().equals(tag)
+                    && translation.getLanguage().equals(lang)
+                    && StringUtils.isNotBlank(translation.getTranslationValue())) {
+                return translation.getTranslationValue();
             }
         }
 
@@ -154,21 +156,21 @@ public class Translation {
         return "";
     }
 
-    public static void setTranslation(List<Translation> translations, String lang, String value, String tag) {
+    public static void setTranslation(List<Translation> translations, String lang, String translationValue, String tag) {
         if (lang == null) {
             throw new IllegalArgumentException("lang may not be null");
         }
-        if (value == null) {
-            throw new IllegalArgumentException("value may not be null");
+        if (translationValue == null) {
+            throw new IllegalArgumentException("translationValue may not be null");
         }
 
         for (Translation translation : translations) {
             if (translation.getTag().equals(tag) && translation.getLanguage().equals(lang)) {
-                translation.setValue(value);
+                translation.setTranslationValue(translationValue);
                 return;
             }
         }
-        translations.add(new Translation(lang, tag, value));
+        translations.add(new Translation(lang, tag, translationValue));
     }
 
     /**
@@ -239,24 +241,24 @@ public class Translation {
 
     /**
      * <p>
-     * Getter for the field <code>value</code>.
+     * Getter for the field <code>translationValue</code>.
      * </p>
      *
-     * @return the value
+     * @return the translationValue
      */
-    public String getValue() {
-        return value;
+    public String getTranslationValue() {
+        return translationValue;
     }
 
     /**
      * <p>
-     * Setter for the field <code>value</code>.
+     * Setter for the field <code>translationValue</code>.
      * </p>
      *
-     * @param value the value to set
+     * @param translationValue the translationValue to set
      */
-    public void setValue(String value) {
-        this.value = value;
+    public void setTranslationValue(String translationValue) {
+        this.translationValue = translationValue;
     }
 
     /* (non-Javadoc)
@@ -265,7 +267,7 @@ public class Translation {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return value;
+        return translationValue;
     }
 
     /**
@@ -292,6 +294,6 @@ public class Translation {
     }
 
     public boolean isEmpty() {
-        return StringUtils.isBlank(getValue());
+        return StringUtils.isBlank(getTranslationValue());
     }
 }

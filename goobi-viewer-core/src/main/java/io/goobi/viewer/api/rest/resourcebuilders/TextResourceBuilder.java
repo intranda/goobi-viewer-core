@@ -43,8 +43,6 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jakarta.ws.rs.core.StreamingOutput;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -81,6 +79,7 @@ import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * @author florian
@@ -880,7 +879,7 @@ public class TextResourceBuilder {
     private static String convert(AbstractTEIConvert converter, String input, String identifier) throws UncheckedPresentationException {
         try {
             return converter.convert(input);
-        } catch (Exception e) {
+        } catch (NullPointerException | IllegalArgumentException e) {
             throw new UncheckedPresentationException("Error converting the input from " + identifier, e);
         }
     }

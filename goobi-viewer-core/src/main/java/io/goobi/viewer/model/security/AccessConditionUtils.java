@@ -34,9 +34,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -50,8 +47,6 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
-import io.goobi.viewer.controller.imaging.IIIFPresentationAPIHandler;
-import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -70,6 +65,8 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * <p>
@@ -497,9 +494,9 @@ public final class AccessConditionUtils {
         if (StringUtils.isNotEmpty(identifier)) {
             String query = new StringBuilder().append('+')
                     .append(SolrConstants.PI_TOPSTRUCT)
-                    .append(':')
+                    .append(":\"")
                     .append(identifier)
-                    .append(" +")
+                    .append("\" +")
                     .append(SolrConstants.DOCTYPE)
                     .append(':')
                     .append(DocType.DOCSTRCT.name())

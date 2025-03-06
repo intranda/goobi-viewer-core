@@ -25,11 +25,11 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -75,9 +75,15 @@ public class CMSComponentReader {
             attributes.put(attr.getName(), attr);
         }
 
+        List<CMSComponent.Property> properties = XmlTools.evaluateToFirstString("properties", templateDoc.getRootElement(), null)
+                .map(s -> s.split("[;,\\s]+"))
+                .map(array -> Arrays.stream(array).map(CMSComponent.Property::getProperty).filter(p -> p != null).toList())
+                .orElse(Collections.emptyList());
+
         String filename = FilenameUtils.getBaseName(templateFile.getFileName().toString());
         CMSComponent component =
-                new CMSComponent(new JsfComponent(jsfComponentLibrary, jsfComponentName), label, desc, icon, filename, scope, attributes, null);
+                new CMSComponent(new JsfComponent(jsfComponentLibrary, jsfComponentName), label, desc, icon, filename, scope, attributes, properties,
+                        null);
 
         List<Element> contentElements = XmlTools.evaluateToElements("content/item", templateDoc.getRootElement(), null);
 
@@ -108,15 +114,6 @@ public class CMSComponentReader {
 
         return component;
 
-    }
-
-    private Option createOption(Element element) {
-        String label = element.getAttributeValue("label");
-        String value = element.getText();
-        if (StringUtils.isBlank(label)) {
-            label = value;
-        }
-        return new Option(value, label);
     }
 
     private static CMSContent createContentFromClassName(String className)

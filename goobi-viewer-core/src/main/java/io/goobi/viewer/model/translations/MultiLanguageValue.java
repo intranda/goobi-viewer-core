@@ -110,19 +110,19 @@ public class MultiLanguageValue implements IPolyglott {
     }
 
     public void setValue(String value) {
-        getSelectedTranslation().setValue(value);
+        getSelectedTranslation().setTranslationValue(value);
     }
 
     public String getValue() {
-        return getSelectedTranslation().getValue();
+        return getSelectedTranslation().getTranslationValue();
     }
 
     public void setValueForLocale(Locale locale, String value) {
-        this.getTranslation(locale).setValue(value);
+        this.getTranslation(locale).setTranslationValue(value);
     }
 
     public String getValueForLocale(Locale locale) {
-        return this.getTranslation(locale).getValue();
+        return this.getTranslation(locale).getTranslationValue();
     }
 
     public Stream<Translation> stream() {
@@ -133,7 +133,7 @@ public class MultiLanguageValue implements IPolyglott {
         return this.translations.entrySet()
                 .stream()
                 .filter(e -> !e.getValue().isEmpty())
-                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().getValue()));
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().getTranslationValue()));
     }
 
     /**

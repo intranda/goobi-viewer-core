@@ -103,7 +103,7 @@
 
 											<div class="col-9 admin__form-input cms-module__option-control">
 												<h:inputText id="mapTitle" styleClass="form-control"
-													value="#{geoMapBean.currentMap.getTitle(geoMapBean.selectedLanguage).value}"
+													value="#{geoMapBean.currentMap.getTitle(geoMapBean.selectedLanguage).translationValue}"
 													required="#{geoMapBean.selectedLanguage == navigationHelper.defaultLocale.language}"
 													requiredMessage="#{msg.error__title_required}" />
 												<div id="titleHelp"
@@ -126,7 +126,7 @@
 											</div>
 											<div class="col-9 admin__form-input cms-module__option-control">
 												<h:inputTextarea id="mapDesc" styleClass="form-control"
-													value="#{geoMapBean.currentMap.getDescription(geoMapBean.selectedLanguage).value}">
+													value="#{geoMapBean.currentMap.getDescription(geoMapBean.selectedLanguage).translationValue}">
 													<f:passThroughAttribute name="aria-label"
 														value="#{msg.description}" />
 												</h:inputTextarea>

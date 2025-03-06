@@ -24,14 +24,14 @@ package io.goobi.viewer.model.viewer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class MimeTypeTest {
+class BaseMimeTypeTest {
 
     /**
      * @see BaseMimeType#getByName(String)
      * @verifies find mime type by short name correctly
      */
     @Test
-    void getByName_shouldFindMimeTypeByShortNameCorrectly() throws Exception {
+    void getByName_shouldFindMimeTypeByShortNameCorrectly() {
         Assertions.assertEquals(BaseMimeType.APPLICATION, BaseMimeType.getByName("application"));
         Assertions.assertEquals(BaseMimeType.AUDIO, BaseMimeType.getByName("audio"));
         Assertions.assertEquals(BaseMimeType.IMAGE, BaseMimeType.getByName("image"));
@@ -44,10 +44,38 @@ class MimeTypeTest {
      * @verifies find mime type by full name correctly
      */
     @Test
-    void getByName_shouldFindMimeTypeByFullNameCorrectly() throws Exception {
+    void getByName_shouldFindMimeTypeByFullNameCorrectly() {
         Assertions.assertEquals(BaseMimeType.APPLICATION, BaseMimeType.getByName("application/pdf"));
         Assertions.assertEquals(BaseMimeType.AUDIO, BaseMimeType.getByName("audio/mpeg3"));
         Assertions.assertEquals(BaseMimeType.IMAGE, BaseMimeType.getByName("image/jpeg"));
         Assertions.assertEquals(BaseMimeType.SANDBOXED_HTML, BaseMimeType.getByName("text/sandboxed-html"));
+    }
+
+    /**
+     * @see BaseMimeType#getSpecificMimeType(String)
+     * @verifies return empty string if mimeType blank
+     */
+    @Test
+    void getSpecificMimeType_shouldReturnEmptyStringIfMNimeTypeBlank() {
+        Assertions.assertEquals("", BaseMimeType.getSpecificMimeType(" "));
+    }
+    
+    /**
+     * @see BaseMimeType#getSpecificMimeType(String)
+     * @verifies return empty string if mimeType contains no slash
+     */
+    @Test
+    void getSpecificMimeType_shouldReturnEmptyStringIfMimeTypeContainsNoSlash() {
+        Assertions.assertEquals("", BaseMimeType.getSpecificMimeType("foo"));
+    }
+
+    /**
+     * @see BaseMimeType#getSpecificMimeType(String)
+     * @verifies return second part correctly
+     */
+    @Test
+    void getSpecificMimeType_shouldReturnSecondPartCorrectly() {
+
+        Assertions.assertEquals("bar", BaseMimeType.getSpecificMimeType("foo/bar"));
     }
 }

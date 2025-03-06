@@ -1,59 +1,35 @@
 /* ==============================================================
    Widget RSS
-   style declarations for rssFeed.xhtml
+   style declarations for widget rss
    ==============================================================*/
-.rss_elem_wrapp {
-    h2 {
-        a {
-            float: right;
-            .fa {
-	    		width: 16px;
-	    		height: 16px;
-	    		line-height: 16px;
-	    		font-size: @fontMedium;
-	    		text-align: center;
-	    		color: @white;
-	    		background-color: @orange;
-	    	}
-        }
-    }
-    .rss-wrapp {
-        .rss-elem {
-            dl {
-                .rss-elem-title {
-                    a {
-                        &:hover {}
-                    }
-                }
-                .rss-elem-info {
-                    margin-bottom: 0.875rem;
-                }
-            }
-            &:last-child {
-            	dl {
-	                .rss-elem-title {
-	                    a {
-	                        &:hover {}
-	                    }
-	                }
-	                .rss-elem-info {
-	                    margin: 0;
-	                }
-	            }	
-            }
-        }
-    }
-}
-
-@{RTL} .rss_elem_wrapp {
-	.rss-wrapp {
-		.rss-elem dl {
-			.rss-elem-info {
-				margin-right: 0;
-			}
+.widget-rss {
+	.widget__title {
+		display: flex;
+		justify-content: space-between;
+		gap: 10px;
+		.fa {
+			display: block;
 		}
 	}
+	&__rss-link {
+		.fa {
+			width: 16px;
+			height: 16px;
+			line-height: 16px;
+			font-size: @fontMedium;
+			text-align: center;
+			color: @white;
+			background-color: @orange;
+		}
+	}
+	&__entry-info {
+		margin-bottom: 12px;
+	}
+	&__entry-link {
+		font-weight: 400;
+	}
 }
+
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 

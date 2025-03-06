@@ -32,8 +32,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.ws.rs.core.UriBuilder;
-
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
@@ -52,6 +50,7 @@ import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.viewer.PageType;
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * <p>
@@ -289,7 +288,8 @@ public class CollectionView implements Serializable {
             }
             this.visibleCollectionList = sortDcList(visibleList, DataManager.getInstance().getConfiguration().getCollectionSorting(field),
                     getTopVisibleElement(), splittingChar);
-            if (!isDisplayParentCollections() && StringUtils.isNotBlank(getTopVisibleElement()) && !this.visibleCollectionList.isEmpty()) {
+            if (!isIgnoreHierarchy() && !isDisplayParentCollections() && StringUtils.isNotBlank(getTopVisibleElement())
+                    && !this.visibleCollectionList.isEmpty()) {
                 //if parent elements should be hidden, remove topElement from the list
                 //This cannot be done earlier because it breaks sortDcList...
                 this.visibleCollectionList.remove(0);

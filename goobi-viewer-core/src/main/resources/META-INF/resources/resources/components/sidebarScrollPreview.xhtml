@@ -32,7 +32,7 @@
 								<ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE'}">
 									<button type="button" class="sidebar-scroll-preview__button" data-target="pageNumber-#{page.order}">
 										<span class="sidebar-scroll-preview__image-wrapper">
-										<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image" src="#{imageDelivery.thumbs.getThumbnailUrl(page, 400, 400)}" />
+										<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image" data-viewer-thumbnail="thumbnail" src="#{imageDelivery.thumbs.getThumbnailUrl(page, 400, 400)}" />
 										<span class="sidebar-scroll-preview__button-text">#{page.order}:#{page.orderLabel}</span>
 										</span>
 									</button>

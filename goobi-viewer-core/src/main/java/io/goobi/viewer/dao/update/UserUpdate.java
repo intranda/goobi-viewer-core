@@ -24,6 +24,7 @@ package io.goobi.viewer.dao.update;
 import java.sql.SQLException;
 import java.util.List;
 
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
@@ -34,19 +35,40 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
  */
 public class UserUpdate implements IModelUpdate {
 
+    private static final String TABLE_NAME_CURRENT = "viewer_users";
+
     /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
-        if (dao.columnsExists("users", "use_gravatar")) {
-            List<Long> userIds = dao.getNativeQueryResults("SELECT user_id FROM users WHERE use_gravatar=1");
-            for (Long userId : userIds) {
-                dao.executeUpdate("UPDATE users SET avatar_type='GRAVATAR' WHERE users.user_id=" + userId);
+        boolean ret = false;
+
+        // Update table name
+        if (dao.tableExists("users")) {
+
+            // Delete new table with anonymous use, if already created by EclipseLink
+            if (dao.tableExists(TABLE_NAME_CURRENT)) {
+                boolean newTableEmpty = dao.getNativeQueryResults("SELECT * FROM " + TABLE_NAME_CURRENT).size() <= 1;
+                if (newTableEmpty) {
+                    dao.executeUpdate("DROP TABLE " + TABLE_NAME_CURRENT);
+                }
+
             }
-            dao.executeUpdate("ALTER TABLE users DROP COLUMN use_gravatar");
+
+            dao.executeUpdate("RENAME TABLE users TO " + TABLE_NAME_CURRENT);
+            ret = true;
         }
 
-        return true;
+        if (dao.columnsExists(TABLE_NAME_CURRENT, "use_gravatar")) {
+            List<Long> userIds = dao.getNativeQueryResults("SELECT user_id FROM " + TABLE_NAME_CURRENT + " WHERE use_gravatar=1");
+            for (Long userId : userIds) {
+                dao.executeUpdate("UPDATE " + TABLE_NAME_CURRENT + " SET avatar_type='GRAVATAR' WHERE " + TABLE_NAME_CURRENT + ".user_id=" + userId);
+            }
+            dao.executeUpdate(StringConstants.SQL_ALTER_TABLE + TABLE_NAME_CURRENT + " DROP COLUMN use_gravatar");
+            ret = true;
+        }
+
+        return ret;
     }
 
 }

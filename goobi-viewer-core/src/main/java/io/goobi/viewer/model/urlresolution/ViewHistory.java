@@ -25,18 +25,18 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Optional;
 
-import jakarta.faces.context.FacesContext;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.ocpsoft.pretty.PrettyContext;
 
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * This class offers methods to store information about the current and previous html-view (page) in the session store
@@ -86,7 +86,7 @@ public final class ViewHistory {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (NullPointerException | IllegalArgumentException | DAOException e) {
             //catch all throwables to avoid constant redirects to error
             logger.error("Error saving page url", e);
         }

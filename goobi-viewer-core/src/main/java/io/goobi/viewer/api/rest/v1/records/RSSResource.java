@@ -73,7 +73,8 @@ public class RSSResource {
             @QueryParam("sortDescending") Boolean sortDescending)
             throws ContentLibException {
 
-        return RSSFeed.createRssFeed(language, maxHits, subtheme, query, facets, servletRequest, sortField, sortDescending == null || sortDescending);
+        return RSSFeed.createRssFeedString(language, maxHits, subtheme, query, facets, servletRequest, sortField, sortDescending == null
+                || sortDescending);
     }
 
     @GET

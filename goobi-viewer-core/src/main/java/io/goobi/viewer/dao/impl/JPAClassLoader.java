@@ -144,8 +144,8 @@ public class JPAClassLoader extends ClassLoader {
         Element eleMasterRoot = docMaster.getRootElement();
 
         // Collect already defined class names for this persistence unit
-        Map<String, Set<String>> masterExistingClasses = new HashMap<>(2);
-        Map<String, Element> masterPuMap = new HashMap<>(2);
+        Map<String, Set<String>> masterExistingClasses = HashMap.newHashMap(2);
+        Map<String, Element> masterPuMap = HashMap.newHashMap(2);
         for (Element elePU : eleMasterRoot.getChildren("persistence-unit", null)) {
             String puName = elePU.getAttributeValue("name");
             masterPuMap.put(puName, elePU);
@@ -196,7 +196,7 @@ public class JPAClassLoader extends ClassLoader {
                 try {
                     List<URL> coreFileUrl = findCorePersistenceXMLs();
                     if (coreFileUrl.isEmpty()) {
-                        throw new DAOException("Core persistence.xml");
+                        throw new DAOException("Core persistence.xml not found");
                     }
                     Document docMerged = scanPersistenceXML(coreFileUrl.get(0), findModulePersistenceXMLs());
                     // logger.trace("persistence.xml\n{}", new XMLOutputter().outputString(docMerged)); //NOSONAR Debug
@@ -208,9 +208,7 @@ public class JPAClassLoader extends ClassLoader {
                     newUrl = file.toURI().toURL();
                     //                    newUrl = new URL("file://" + file.getAbsolutePath());
                     logger.info("URL: {}", newUrl);
-                } catch (JDOMException e) {
-                    throw new IOException(e.toString());
-                } catch (DAOException e) {
+                } catch (DAOException | JDOMException e) {
                     throw new IOException(e.toString());
                 }
             }

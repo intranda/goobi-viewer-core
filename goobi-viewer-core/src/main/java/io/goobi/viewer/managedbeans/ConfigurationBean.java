@@ -28,11 +28,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.faces.annotation.FacesConfig;
-import jakarta.faces.model.SelectItem;
-import jakarta.inject.Named;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -60,6 +55,10 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.faces.annotation.FacesConfig;
+import jakarta.faces.model.SelectItem;
+import jakarta.inject.Named;
 
 /**
  * This is a wrapper class for the <code>Configuration</code> class for access from HTML.
@@ -1376,7 +1375,7 @@ public class ConfigurationBean implements Serializable {
     public String getSearchSortingDescendingKey(String field) {
         return DataManager.getInstance().getConfiguration().getSearchSortingKeyDescending(field).orElse("searchSortingDropdown_descending");
     }
-    
+
     /**
      * 
      * @return List of configured advanced search template names
@@ -1600,5 +1599,9 @@ public class ConfigurationBean implements Serializable {
 
     public boolean isPdfPageRangeEnabled() {
         return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsagePdfPageRange();
+    }
+
+    public boolean isSidebarTocViewLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarTocViewLinkVisible();
     }
 }

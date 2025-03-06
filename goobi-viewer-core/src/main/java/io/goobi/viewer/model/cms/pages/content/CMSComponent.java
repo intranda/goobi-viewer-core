@@ -31,10 +31,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.faces.component.UIComponent;
-import jakarta.faces.component.html.HtmlPanelGroup;
-import jakarta.faces.context.FacesContext;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -43,6 +39,9 @@ import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
 import io.goobi.viewer.model.security.user.User;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.component.html.HtmlPanelGroup;
+import jakarta.faces.context.FacesContext;
 
 public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
@@ -62,6 +61,8 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     private Integer order = null;
 
+    private final List<Property> properties;
+
     private final Map<String, CMSComponentAttribute> attributes;
 
     private final PersistentCMSComponent persistentComponent;
@@ -78,7 +79,8 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
      */
     public CMSComponent(CMSComponent template, List<CMSContentItem> items) {
         this(template.getJsfComponent(), template.getLabel(), template.getDescription(), template.getIconPath(), template.getTemplateFilename(),
-                template.getScope(), template.getAttributes(), template.getOrder(), Optional.ofNullable(template.getPersistentComponent()));
+                template.getScope(), template.getAttributes(), template.getProperties(), template.getOrder(),
+                Optional.ofNullable(template.getPersistentComponent()));
         List<CMSContentItem> newItems = items.stream().map(CMSContentItem::new).toList();
         this.contentItems.addAll(newItems);
     }
@@ -93,6 +95,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
                 template.getScope(),
                 CMSComponent.initializeAttributes(template.getAttributes(),
                         jpa.map(PersistentCMSComponent::getAttributes).orElse(Collections.emptyMap())),
+                template.getProperties(),
                 template.getOrder(),
                 jpa);
         List<CMSContent> contentData = jpa.map(PersistentCMSComponent::getContentItems).orElse(Collections.emptyList());
@@ -103,6 +106,8 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     /**
      * 
+     * Constructor to create Component from template file
+     * 
      * @param jsfComponent
      * @param label
      * @param description
@@ -110,11 +115,12 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
      * @param templateFilename
      * @param scope
      * @param attributes
+     * @param properties
      * @param order
      */
     public CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename,
-            CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes, Integer order) {
-        this(jsfComponent, label, description, iconPath, templateFilename, scope, attributes, order, Optional.empty());
+            CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes, List<Property> properties, Integer order) {
+        this(jsfComponent, label, description, iconPath, templateFilename, scope, attributes, properties, order, Optional.empty());
     }
 
     /**
@@ -130,13 +136,15 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
      * @param jpa
      */
     private CMSComponent(JsfComponent jsfComponent, String label, String description, String iconPath, String templateFilename,
-            CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes, Integer order, Optional<PersistentCMSComponent> jpa) {
+            CMSComponentScope scope, Map<String, CMSComponentAttribute> attributes, List<Property> properties, Integer order,
+            Optional<PersistentCMSComponent> jpa) {
         this.jsfComponent = jsfComponent;
         this.label = label;
         this.description = description;
         this.iconPath = iconPath;
         this.templateFilename = templateFilename;
         this.attributes = attributes == null ? Collections.emptyMap() : attributes;
+        this.properties = properties == null ? Collections.emptyList() : properties;
         this.scope = scope;
         this.persistentComponent = jpa.orElse(null);
         this.order = Optional.ofNullable(order).orElse(jpa.map(PersistentCMSComponent::getOrder).orElse(0));
@@ -543,6 +551,14 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         return this.contentItems.stream().map(CMSContentItem::getContent).anyMatch(PagedCMSContent.class::isInstance);
     }
 
+    public List<Property> getProperties() {
+        return properties;
+    }
+
+    public boolean hasProperty(Property property) {
+        return this.properties.contains(property);
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.label == null ? "" : this.label);
@@ -553,6 +569,24 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
             sb.append(" / ").append(this.getContentItems().size()).append(" content items");
         }
         return sb.toString();
+    }
+
+    /**
+     * Additional properties that can be passed to the component to set certain behaviour
+     */
+    public static enum Property {
+        /**
+         * Applicable to any search related content: Enforce faceting on page load
+         */
+        FORCE_FACETING;
+
+        public static Property getProperty(String s) {
+            try {
+                return valueOf(s.toUpperCase());
+            } catch (IllegalArgumentException | NullPointerException e) {
+                return null;
+            }
+        }
     }
 
 }

@@ -125,8 +125,6 @@ public final class SearchHelper {
     public static final int SEARCH_TYPE_REGULAR = 0;
     /** Constant <code>SEARCH_TYPE_ADVANCED=1</code> */
     public static final int SEARCH_TYPE_ADVANCED = 1;
-    /** Constant <code>SEARCH_TYPE_TIMELINE=2</code> */
-    public static final int SEARCH_TYPE_TIMELINE = 2;
     /** Constant <code>SEARCH_TYPE_CALENDAR=3</code> */
     public static final int SEARCH_TYPE_CALENDAR = 3;
     /** Constant <code>SEARCH_TYPE_TERMS=4</code> */
@@ -468,7 +466,6 @@ public final class SearchHelper {
                     } else {
                         ownerDocs.put(ownerIDDoc, null); //put an empty entry to mark that the owner doc needs to be added to result list
                     }
-
                 }
             } else if (hitType == HitType.DOCSTRCT) {
                 if (ownerDocs.containsKey(iddoc)) {
@@ -1487,9 +1484,11 @@ public final class SearchHelper {
 
         String highlightedValue = phrase;
         for (final String t : terms) {
+            // Remove quotation
+            String term = StringTools.removeQuotations(t);
             //remove fuzzy search suffix
-            FuzzySearchTerm fuzzyTerm = new FuzzySearchTerm(t);
-            String term = fuzzyTerm.getTerm();
+            FuzzySearchTerm fuzzyTerm = new FuzzySearchTerm(term);
+            term = fuzzyTerm.getTerm();
             // Highlighting single-character terms can take a long time, so skip them
             if (term.length() < 2) { //NOSONAR Debug
                 continue;
@@ -3109,10 +3108,6 @@ public final class SearchHelper {
                         }
                     }
                 }
-                break;
-            case SearchHelper.SEARCH_TYPE_TIMELINE:
-                ret.add(SolrConstants.DEFAULT);
-                // TODO
                 break;
             case SearchHelper.SEARCH_TYPE_CALENDAR:
                 ret.add(SolrConstants.CALENDAR_DAY);

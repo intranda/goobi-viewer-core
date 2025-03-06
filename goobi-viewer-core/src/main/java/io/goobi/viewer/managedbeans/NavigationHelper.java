@@ -43,15 +43,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.context.ExternalContext;
-import jakarta.faces.context.FacesContext;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
@@ -93,6 +84,14 @@ import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * This bean contains useful navigation parameters.
@@ -1499,7 +1498,7 @@ public class NavigationHelper implements Serializable {
         for (IModule module : DataManager.getInstance().getModules()) {
             try {
                 module.augmentResetRecord();
-            } catch (Exception e) {
+            } catch (NullPointerException | IllegalArgumentException e) {
                 logger.error(e.getMessage(), e);
             }
         }

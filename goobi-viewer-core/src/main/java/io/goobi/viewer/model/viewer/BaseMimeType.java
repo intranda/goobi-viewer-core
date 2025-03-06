@@ -142,4 +142,24 @@ public enum BaseMimeType {
 
         return mimeType.isImageOrPdfDownloadAllowed();
     }
+
+    /**
+     * 
+     * @param mimeType
+     * @return Part of mimeType after the slash; entire value if no slash
+     * @should return empty string if mimeType blank
+     * @should return empty string if mimeType contains no slash
+     * @should return second part
+     */
+    public static String getSpecificMimeType(String mimeType) {
+        if (StringUtils.isBlank(mimeType)) {
+            return "";
+        }
+
+        String useName = mimeType;
+        if (useName.contains("/")) {
+            return useName.substring(useName.indexOf("/") + 1);
+        }
+        return "";
+    }
 }

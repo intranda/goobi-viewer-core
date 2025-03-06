@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -36,6 +37,7 @@ import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
+import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
@@ -201,12 +203,13 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     void populateGroup_shouldPopulateGroupCorrectly() throws IndexUnreachableException {
         Metadata metadata = new Metadata("", "MD_CREATOR", "{1}{3}", "");
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_VALUE"));
+        metadata.getParams().get(0).setReplaceRules(Collections.singletonList(new MetadataReplaceRule(",", ";", MetadataReplaceRuleType.STRING)));
         metadata.getParams()
                 .add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_LIFEPERIOD").setPrefix(" (").setSuffix(")"));
 
         StructElement se = new StructElement();
         Assertions.assertTrue(metadata.populateGroup(se, "1687786575170", null, null, 0, Locale.ENGLISH));
-        assertEquals("Weheren, Bartholdt", metadata.getValues().get(0).getComboValueShort(0));
+        assertEquals("Weheren; Bartholdt", metadata.getValues().get(0).getComboValueShort(0));
         assertEquals(" (1569)", metadata.getValues().get(0).getComboValueShort(1));
     }
 

@@ -98,7 +98,7 @@ import jakarta.servlet.http.Part;
  * </p>
  */
 @Entity
-@Table(name = "users")
+@Table(name = "viewer_users")
 public class User extends AbstractLicensee implements HttpSessionBindingListener, Serializable, Comparable<User> {
 
     private static final long serialVersionUID = 549769987121664488L;

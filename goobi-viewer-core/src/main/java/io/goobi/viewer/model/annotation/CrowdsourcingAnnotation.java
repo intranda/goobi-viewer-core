@@ -25,10 +25,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.intranda.api.annotation.AbstractAnnotation;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import de.intranda.api.annotation.AbstractAnnotation;
-import de.intranda.api.annotation.wa.WebAnnotation;
 
 /**
  * An Annotation class to store annotation in a database

@@ -25,14 +25,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.RecordLimitExceededException;
 
 class RecordLockManagerTest extends AbstractTest {
+
+    @AfterEach
+    void cleanup() {
+        DataManager.getInstance().getRecordLockManager().removeOldLocks(-1); //removes all locks
+    }
 
     /**
      * @see RecordLockManager#lockRecord(String,String,Integer)
@@ -40,7 +45,7 @@ class RecordLockManagerTest extends AbstractTest {
      */
     @Test
     void lockRecord_shouldAddRecordLockToMapCorrectly() throws Exception {
-        DataManager.getInstance().getRecordLockManager().lockRecord("PPN123", "SID123", 1);
+        Assertions.assertEquals(LockRecordResult.RECORD_LOCKED, DataManager.getInstance().getRecordLockManager().lockRecord("PPN123", "SID123", 1));
         Set<RecordLock> locks = DataManager.getInstance().getRecordLockManager().getLoadedRecordMap().get("PPN123");
         Assertions.assertNotNull(locks);
         Assertions.assertEquals(1, locks.size());
@@ -55,7 +60,7 @@ class RecordLockManagerTest extends AbstractTest {
      */
     @Test
     void lockRecord_shouldDoNothingIfLimitNull() throws Exception {
-        DataManager.getInstance().getRecordLockManager().lockRecord("PPN123", "SID123", null);
+        Assertions.assertEquals(LockRecordResult.NO_ACTION, DataManager.getInstance().getRecordLockManager().lockRecord("PPN123", "SID123", null));
         Assertions.assertNull(DataManager.getInstance().getRecordLockManager().getLoadedRecordMap().get("PPN123"));
     }
 
@@ -66,13 +71,14 @@ class RecordLockManagerTest extends AbstractTest {
     @Test
     void lockRecord_shouldDoNothingIfSessionIdAlreadyInList() throws Exception {
         {
-            DataManager.getInstance().getRecordLockManager().lockRecord("PPN123", "SID123", 2);
+            Assertions.assertEquals(LockRecordResult.RECORD_LOCKED,
+                    DataManager.getInstance().getRecordLockManager().lockRecord("PPN123", "SID123", 2));
             Set<RecordLock> locks = DataManager.getInstance().getRecordLockManager().getLoadedRecordMap().get("PPN123");
             Assertions.assertNotNull(locks);
             Assertions.assertEquals(1, locks.size());
         }
         {
-            DataManager.getInstance().getRecordLockManager().lockRecord("PPN123", "SID123", 2);
+            Assertions.assertEquals(LockRecordResult.NO_ACTION, DataManager.getInstance().getRecordLockManager().lockRecord("PPN123", "SID123", 2));
             Set<RecordLock> locks = DataManager.getInstance().getRecordLockManager().getLoadedRecordMap().get("PPN123");
             Assertions.assertNotNull(locks);
             Assertions.assertEquals(1, locks.size());
@@ -86,8 +92,7 @@ class RecordLockManagerTest extends AbstractTest {
     @Test
     void lockRecord_shouldThrowRecordLimitExceededExceptionIfLimitExceeded() throws Exception {
         DataManager.getInstance().getRecordLockManager().lockRecord("PPN123", "SID123", 1);
-        Assertions.assertThrows(RecordLimitExceededException.class,
-                () -> DataManager.getInstance().getRecordLockManager().lockRecord("PPN123", "SID789", 1));
+        Assertions.assertEquals(LockRecordResult.LIMIT_EXCEEDED, DataManager.getInstance().getRecordLockManager().lockRecord("PPN123", "SID789", 1));
     }
 
     /**

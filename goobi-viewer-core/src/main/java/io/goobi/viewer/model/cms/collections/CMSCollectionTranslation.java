@@ -76,7 +76,7 @@ public class CMSCollectionTranslation extends Translation implements Serializabl
         this.language = tr.language;
         this.owner = owner;
         this.tag = tr.tag;
-        this.value = tr.value;
+        this.translationValue = tr.translationValue;
     }
 
     /**

@@ -71,7 +71,7 @@ public class CampaignTranslation extends Translation implements Serializable {
     }
 
     public CampaignTranslation(CampaignTranslation orig) {
-        super(orig.language, orig.tag, orig.value);
+        super(orig.language, orig.tag, orig.translationValue);
         this.id = orig.id;
         this.owner = orig.owner;
     }
@@ -102,7 +102,7 @@ public class CampaignTranslation extends Translation implements Serializable {
 
         for (CampaignTranslation translation : translations) {
             if (translation.getTag().equals(tag) && translation.getLanguage().equals(lang)) {
-                translation.setValue(value);
+                translation.setTranslationValue(value);
                 return;
             }
         }

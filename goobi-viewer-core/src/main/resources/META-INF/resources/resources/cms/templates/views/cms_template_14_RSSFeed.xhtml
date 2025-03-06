@@ -15,22 +15,46 @@
     
 	<composite:implementation>
 				
-				<div id="templateRSSFeed" class="tpl-rss content-component__legacy-full-width">
-                    <h:outputText escape="false" value="#{cc.attrs.component.getContentData('text')}"></h:outputText>
-                </div>
+			<div id="templateRSSFeed" class="tpl-rss content-component__legacy-full-width">
+                <h:outputText escape="false" value="#{cc.attrs.component.getContentData('text')}"></h:outputText>
+            </div>
 				
-				<div class="tpl-rss__feed"></div>
-				
-				<script type="text/javascript">
-                    $.ajax( {
-                        url: "#{navigationHelper.applicationUrl}api/v1/records/rss/channel.json?max=#{cc.attrs.component.getContentItem('rss').content.elementsPerPage}&amp;lang=#{navigationHelper.localeString}",
-                        type: "GET",
-                        datatype: "JSON"
-                    } ).then( function( data ) {
-                        var rssFeedConfig = {};
+			<div class="tpl-rss__feed">
+                <ui:repeat var="item"
+                    value="#{rssBean.getRssFeedChannel(cc.attrs.component.getContentItem('rss').content.elementsPerPage, cc.attrs.filterQuery, cc.attrs.widget.sortField, cc.attrs.widget.descendingSorting).items}">
+                    <div class="tpl-rss__item">
+                        <div class="row">
+                        
+                            <!-- left -->
+                            <div class="col-12 col-md-4">
+                                <ui:fragment rendered="#{item.description.image != null}">
+                                    <div class="tpl-rss__item-image">
+                                        <a href="#{item.link}">
+                                            <image class="mg-fluid" src="#{item.description.image}" alt="#{item.title}" />
+                                        </a>
+                                    </div>
+                                </ui:fragment>
+                            </div>
                             
-                        cmsJS.rssFeed.init( rssFeedConfig, data );
-                    } );
-                </script>
+                            <!-- right -->
+                            <div class="col-12 col-md-8">
+                                <div class="tpl-rss__item-title">
+                                    <h2 class="h3">
+                                        <a href="#{item.link}">#{item.title}</a>
+                                    </h2>
+                                </div>
+                                <dl class="tpl-rss__item-metadata dl-horizontal">
+                                    <ui:repeat var="metadata" value="#{item.description.metadata}">
+                                        <dt>#{metadata.label}:</dt>
+                                        <dd>#{metadata.value}</dd>
+                                    </ui:repeat>
+                                </dl>
+                            </div>
+                        
+                        </div>
+                    </div>
+                </ui:repeat>
+			</div>
+				
 	</composite:implementation>
 </ui:composition>

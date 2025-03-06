@@ -8,6 +8,7 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <jta-data-source>java:comp/env/viewer</jta-data-source>
 
+        <class>io.goobi.viewer.controller.mq.ViewerMessage</class>
         <class>io.goobi.viewer.dao.converter.ConsentScopeConverter</class>
         <class>io.goobi.viewer.dao.converter.DisplayScopeConverter</class>
         <class>io.goobi.viewer.dao.converter.NumberListConverter</class>
@@ -31,6 +32,7 @@
         <class>io.goobi.viewer.model.cms.CMSProperty</class>
         <class>io.goobi.viewer.model.cms.CMSSlider</class>
         <class>io.goobi.viewer.model.cms.CMSStaticPage</class>
+        <class>io.goobi.viewer.model.cms.HighlightData</class>
         <class>io.goobi.viewer.model.cms.collections.CMSCollection</class>
         <class>io.goobi.viewer.model.cms.collections.CMSCollectionTranslation</class>
         <class>io.goobi.viewer.model.cms.media.CMSMediaItem</class>
@@ -39,8 +41,10 @@
         <class>io.goobi.viewer.model.cms.pages.CMSPageTemplate</class>
         <class>io.goobi.viewer.model.cms.pages.content.CMSContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent</class>       
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSArchiveContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSBrowseContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSDocumentContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent</class>
@@ -75,6 +79,7 @@
 		<class>io.goobi.viewer.model.job.download.DownloadJob</class>
 		<class>io.goobi.viewer.model.job.download.EPUBDownloadJob</class>
 		<class>io.goobi.viewer.model.job.download.PDFDownloadJob</class>
+        <class>io.goobi.viewer.model.job.quartz.RecurringTaskTrigger</class>
         <class>io.goobi.viewer.model.job.upload.UploadJob</class>
         <class>io.goobi.viewer.model.log.LogMessage</class>
         <class>io.goobi.viewer.model.maps.GeoMap</class>
@@ -98,28 +103,6 @@
 		<class>io.goobi.viewer.model.security.clients.ClientApplication</class>
 		<class>io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics</class>
 		<class>io.goobi.viewer.model.statistics.usage.SessionUsageStatistics</class>
-		<class>io.goobi.viewer.model.cms.pages.CMSPageTemplate</class>
-		<class>io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.CMSContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSBrowseContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMetadataContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSDocumentContent</class>
-	    <class>io.goobi.viewer.model.cms.pages.content.types.CMSArchiveContent</class>
-		<class>io.goobi.viewer.model.cms.HighlightData</class>
-        <class>io.goobi.viewer.controller.mq.ViewerMessage</class>
-        <class>io.goobi.viewer.model.job.quartz.RecurringTaskTrigger</class>
 
 		<properties>
 			<!-- EclipseLink should create the database schema automatically -->
@@ -148,6 +131,7 @@
 	<persistence-unit name="intranda_viewer_test" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 
+        <class>io.goobi.viewer.controller.mq.ViewerMessage</class>
         <class>io.goobi.viewer.dao.converter.ConsentScopeConverter</class>
         <class>io.goobi.viewer.dao.converter.DisplayScopeConverter</class>
         <class>io.goobi.viewer.dao.converter.NumberListConverter</class>
@@ -171,6 +155,7 @@
         <class>io.goobi.viewer.model.cms.CMSProperty</class>
         <class>io.goobi.viewer.model.cms.CMSSlider</class>
         <class>io.goobi.viewer.model.cms.CMSStaticPage</class>
+        <class>io.goobi.viewer.model.cms.HighlightData</class>
         <class>io.goobi.viewer.model.cms.collections.CMSCollection</class>
         <class>io.goobi.viewer.model.cms.collections.CMSCollectionTranslation</class>
         <class>io.goobi.viewer.model.cms.media.CMSMediaItem</class>
@@ -180,8 +165,10 @@
         <!-- PersistentCMSComponent and CMSContent must be listed in this order o_O -->
         <class>io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent</class>
         <class>io.goobi.viewer.model.cms.pages.content.CMSContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSArchiveContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSBrowseContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSDocumentContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent</class>
@@ -195,7 +182,6 @@
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchFacetsContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent</class>
-        <class>io.goobi.viewer.model.cms.pages.content.types.CMSArchiveContent</class>
         <class>io.goobi.viewer.model.cms.recordnotes.CMSRecordNote</class>
         <class>io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote</class>
         <class>io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote</class>
@@ -217,6 +203,7 @@
 		<class>io.goobi.viewer.model.job.download.DownloadJob</class>
 		<class>io.goobi.viewer.model.job.download.EPUBDownloadJob</class>
 		<class>io.goobi.viewer.model.job.download.PDFDownloadJob</class>
+        <class>io.goobi.viewer.model.job.quartz.RecurringTaskTrigger</class>
         <class>io.goobi.viewer.model.job.upload.UploadJob</class>
         <class>io.goobi.viewer.model.log.LogMessage</class>
         <class>io.goobi.viewer.model.maps.GeoMap</class>
@@ -234,38 +221,18 @@
 		<class>io.goobi.viewer.model.security.user.User</class>
 		<class>io.goobi.viewer.model.security.user.UserGroup</class>
 		<class>io.goobi.viewer.model.security.user.UserRole</class>
-		<class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
-		<class>io.goobi.viewer.model.viewer.themes.ThemeConfiguration</class>
-		<class>io.goobi.viewer.model.translations.Translation</class>
 		<class>io.goobi.viewer.model.security.clients.ClientApplication</class>
 		<class>io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics</class>
 		<class>io.goobi.viewer.model.statistics.usage.SessionUsageStatistics</class>
-		<class>io.goobi.viewer.model.cms.pages.CMSPageTemplate</class>
-		<class>io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.CMSContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSBrowseContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSSliderContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSMetadataContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent</class>
-		<class>io.goobi.viewer.model.cms.pages.content.types.CMSDocumentContent</class>
-		<class>io.goobi.viewer.model.cms.HighlightData</class>
-        <class>io.goobi.viewer.controller.mq.ViewerMessage</class>
-		<class>io.goobi.viewer.model.job.quartz.RecurringTaskTrigger</class>
+        <class>io.goobi.viewer.model.transkribus.TranskribusJob</class>
+        <class>io.goobi.viewer.model.translations.Translation</class>
+        <class>io.goobi.viewer.model.viewer.themes.ThemeConfiguration</class>
 		<properties>
 			<property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver" />
-			<property name="jakarta.persistence.jdbc.url" value="jdbc:h2:mem:test" />
+			<property name="jakarta.persistence.jdbc.url" value="jdbc:h2:mem:test;MODE=LEGACY;NON_KEYWORDS=VALUE;DB_CLOSE_DELAY=-1" />
 			<property name="jakarta.persistence.jdbc.user" value="user" />
 			<property name="jakarta.persistence.jdbc.password" value="password" />
+            <property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.H2Platform"/>
 			<!-- EclipseLink should create the database schema automatically -->
 			<property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
 			<property name="eclipselink.ddl-generation.output-mode" value="database" />

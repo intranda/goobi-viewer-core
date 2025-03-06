@@ -41,10 +41,6 @@ public abstract class AbstractDatabaseEnabledTest extends AbstractTest {
 
     private static IDatabaseTester databaseTester;
 
-    //    protected static IDataSet getDataSet() throws Exception {
-    //        return new XmlDataSet(new FileInputStream("resources/test_db_dataset.xml"));
-    //    }
-
     @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractTest.setUpClass();
@@ -54,9 +50,9 @@ public abstract class AbstractDatabaseEnabledTest extends AbstractTest {
         try (FileInputStream fis = new FileInputStream("src/test/resources/test_db_dataset.xml")) {
             databaseTester.setDataSet(new FlatXmlDataSetBuilder().setColumnSensing(true).build(fis));
         }
-        // databaseTester.setDataSet(getDataSet());
     }
 
+    @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
