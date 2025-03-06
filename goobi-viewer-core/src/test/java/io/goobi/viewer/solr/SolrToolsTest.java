@@ -24,7 +24,6 @@ package io.goobi.viewer.solr;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 
@@ -76,10 +75,10 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     void getMetadataValues_shouldParseDatesCorrectly() {
         SolrDocument doc = new SolrDocument();
         LocalDateTime ldt = LocalDateTime.of(2025, 03, 06, 17, 20, 30);
-        doc.addField(SolrConstants.DATE_PUBLICRELEASEDATE, DateTools.convertLocalDateTimeToDateViaInstant(ldt, true));
+        doc.addField(SolrConstants.DATE_PUBLICRELEASEDATE, DateTools.convertLocalDateTimeToDateViaInstant(ldt, false));
         List<String> values = SolrTools.getMetadataValues(doc, SolrConstants.DATE_PUBLICRELEASEDATE);
         Assertions.assertEquals(1, values.size());
-        Assertions.assertEquals("2025-03-06T17:20:30Z", values.get(0));
+        Assertions.assertEquals("2025-03-06T17:20:30", values.get(0));
     }
 
     /**
