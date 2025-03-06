@@ -509,7 +509,13 @@ public class Metadata implements Serializable {
                             LocalDate date = LocalDate.parse(value + "-01");
                             value = date.format(dateTimeFormatter);
                         } catch (DateTimeParseException e1) {
-                            logger.warn("Error parsing {} as date", value);
+                            // LocalDateTime
+                            try {
+                                LocalDateTime date = LocalDateTime.parse(value);
+                                value = date.format(DateTimeFormatter.ofPattern(outputPattern));
+                            } catch (DateTimeParseException e2) {
+                                logger.warn("Error parsing '{}' as dateor datetime", value);
+                            }
                         }
                     }
                     value = value.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);

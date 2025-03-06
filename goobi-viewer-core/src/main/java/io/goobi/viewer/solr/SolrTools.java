@@ -24,7 +24,6 @@ package io.goobi.viewer.solr;
 import java.io.IOException;
 import java.io.StringReader;
 import java.security.SecureRandom;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -353,13 +352,11 @@ public final class SolrTools {
 
         List<String> ret = new ArrayList<>(values.size());
         for (Object value : values) {
-            if (value instanceof String s) {
-                ret.add(s);
-            } else if (value instanceof Date date) {
-                ret.add(DateTools.FORMATTERISO8601DATETIMEINSTANT
-                        .format(DateTools.convertDateToLocalDateTimeViaInstant(date).atZone(ZoneId.systemDefault())));
-            } else {
-                ret.add(String.valueOf(value));
+            switch (value) {
+                case String s -> ret.add(s);
+                case Date date -> ret.add(DateTools.FORMATTERISO8601FULL
+                        .format(DateTools.convertDateToLocalDateTimeViaInstant(date)));
+                default -> ret.add(String.valueOf(value));
             }
         }
 
