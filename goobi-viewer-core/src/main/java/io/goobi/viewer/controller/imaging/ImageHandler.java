@@ -185,11 +185,11 @@ public class ImageHandler {
         if (fileUri.getScheme() != null && fileUri.getScheme().matches("^http.*")) {
             if (width * height == 0) {
                 return new ImageInformation(fileUri); //no internal size information. return external url
-            } else {
-                apiUri = fileUri; //use external url as if for internal imageInformation
             }
+            apiUri = fileUri; //use external url as if for internal imageInformation
         } else {
-            apiUri = urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), PathConverter.getPath(fileUri).getFileName().toString()).buildURI(); //create interl imageInformation uri
+            //create interl imageInformation uri
+            apiUri = urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), PathConverter.getPath(fileUri).getFileName().toString()).buildURI();
         }
 
         Map<Integer, List<Integer>> tileSizes = DataManager.getInstance().getConfiguration().getTileSizes(pageType, page.getMimeType());
