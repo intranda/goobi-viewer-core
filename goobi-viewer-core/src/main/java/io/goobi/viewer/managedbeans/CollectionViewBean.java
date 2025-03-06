@@ -114,24 +114,25 @@ public class CollectionViewBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if any.
      */
-    public CollectionView getCollection(CMSCollectionContent content, String topVisibleElement)
+    public CollectionView getCollection(CMSCollectionContent content, final String topVisibleElement)
             throws PresentationException, IndexUnreachableException, IllegalRequestException {
         String myId = getCollectionId(content);
-        if (StringUtils.isBlank(topVisibleElement)) {
-            topVisibleElement = content.getCollectionName();
+        String useTopVisibleElement = topVisibleElement;
+        if (StringUtils.isBlank(useTopVisibleElement)) {
+            useTopVisibleElement = content.getCollectionName();
         }
         CollectionView collection = collections.get(myId);
         if (collection == null) {
             try {
-                collection = initializeCollection(content, topVisibleElement);
+                collection = initializeCollection(content, useTopVisibleElement);
                 collections.put(myId, collection);
             } catch (CmsElementNotFoundException e) {
                 logger.debug("Not matching collection element for id {} on page {}", content.getItemId(),
                         Optional.ofNullable(content.getOwningPage()).map(CMSPage::getId).orElse(null));
             }
         } else {
-            if (!Objects.equals(collection.getBaseElementName(), topVisibleElement)) {
-                collection.setBaseElementName(topVisibleElement);
+            if (!Objects.equals(collection.getBaseElementName(), useTopVisibleElement)) {
+                collection.setBaseElementName(useTopVisibleElement);
                 collection.populateCollectionList();
             }
 
