@@ -178,17 +178,17 @@ public class ImageHandler {
         URI fileUri = new URI(getIIIFBaseUrl(page.getFilepath()));
         int width = page.getImageWidth(); //0 if width is not known
         int height = page.getImageHeight(); //0 if height is not known
-        //        if (fileUri.getScheme() != null && fileUri.getScheme().matches("^http.*")) {
-        //            return new ImageInformation(fileUri);
-        //        }
+
         URI apiUri;
         if (fileUri.getScheme() != null && fileUri.getScheme().matches("^http.*")) {
             if (width * height == 0) {
-                return new ImageInformation(fileUri); //no internal size information. return external url
+                //no internal size information. return external url
+                return new ImageInformation(fileUri);
             }
-            apiUri = fileUri; //use external url as if for internal imageInformation
+            //use external url as if for internal imageInformation
+            apiUri = fileUri;
         } else {
-            //create interl imageInformation uri
+            //create internal imageInformation uri
             apiUri = urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), PathConverter.getPath(fileUri).getFileName().toString()).buildURI();
         }
 
