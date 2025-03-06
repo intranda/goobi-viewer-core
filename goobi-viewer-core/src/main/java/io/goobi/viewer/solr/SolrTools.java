@@ -24,10 +24,12 @@ package io.goobi.viewer.solr;
 import java.io.IOException;
 import java.io.StringReader;
 import java.security.SecureRandom;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -56,6 +58,7 @@ import org.jdom2.JDOMException;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
@@ -336,6 +339,7 @@ public final class SolrTools {
      * @param fieldName a {@link java.lang.String} object.
      * @return a {@link java.util.List} object.
      * @should return all values for the given field
+     * @should parse dates correctly
      */
     public static List<String> getMetadataValues(SolrDocument doc, String fieldName) {
         if (doc == null) {
@@ -351,6 +355,9 @@ public final class SolrTools {
         for (Object value : values) {
             if (value instanceof String s) {
                 ret.add(s);
+            } else if (value instanceof Date date) {
+                ret.add(DateTools.FORMATTERISO8601DATETIMEINSTANT
+                        .format(DateTools.convertDateToLocalDateTimeViaInstant(date).atZone(ZoneId.systemDefault())));
             } else {
                 ret.add(String.valueOf(value));
             }
@@ -496,7 +503,7 @@ public final class SolrTools {
                     .keySet()
                     .stream()
                     .filter(field -> field.equals(key) || field.startsWith(key + SolrConstants.MIDFIX_LANG))
-                    .collect(Collectors.toList());
+                    .toList();
             for (String languageField : fieldNames) {
                 String locale = null;
                 if (languageField.matches(key + "_LANG_\\w{2,3}")) {

@@ -23,6 +23,8 @@ package io.goobi.viewer.solr;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +36,7 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.model.viewer.StringPair;
 
 class SolrToolsTest extends AbstractSolrEnabledTest {
@@ -63,6 +66,20 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
         Assertions.assertNotNull(doc);
         List<String> values = SolrTools.getMetadataValues(doc, "MD_CREATOR");
         Assertions.assertTrue(values.size() >= 2);
+    }
+
+    /**
+     * @see SolrTools#getMetadataValues(SolrDocument,String)
+     * @verifies parse dates correctly
+     */
+    @Test
+    void getMetadataValues_shouldParseDatesCorrectly() {
+        SolrDocument doc = new SolrDocument();
+        LocalDateTime ldt = LocalDateTime.of(2025, 03, 06, 17, 20, 30);
+        doc.addField(SolrConstants.DATE_PUBLICRELEASEDATE, DateTools.convertLocalDateTimeToDateViaInstant(ldt, true));
+        List<String> values = SolrTools.getMetadataValues(doc, SolrConstants.DATE_PUBLICRELEASEDATE);
+        Assertions.assertEquals(1, values.size());
+        Assertions.assertEquals("2025-03-06T17:20:30Z", values.get(0));
     }
 
     /**
@@ -177,7 +194,6 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
         doc.setField(SolrConstants.THUMBNAIL, "https://example.com/iiif/2/foo.jpg/info.json");
         Assertions.assertTrue(SolrTools.isHasImages(doc));
     }
-    
 
     @Test
     void testGetMetadataValuesForLanguage() {
