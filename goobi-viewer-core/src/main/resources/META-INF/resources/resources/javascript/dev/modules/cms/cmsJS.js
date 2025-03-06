@@ -27,7 +27,7 @@ var cmsJS = ( function() {
     
     var _debug = false;
     var cms = {};
-    
+     
     /**
      * Method which initializes the CMS.
      * 

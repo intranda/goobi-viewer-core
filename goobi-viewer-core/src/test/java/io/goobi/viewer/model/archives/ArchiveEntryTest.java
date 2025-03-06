@@ -24,9 +24,9 @@ package io.goobi.viewer.model.archives;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractSolrEnabledTest;
 
-class ArchiveEntryTest extends AbstractTest {
+class ArchiveEntryTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SolrEADParser(ArchiveEntry)

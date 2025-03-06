@@ -708,9 +708,8 @@ public final class TocMaker {
                         .append(":\"")
                         .append(queryValue)
                         .append("\" +")
-                        .append(SolrConstants.DOCTYPE)
-                        .append(':')
-                        .append(DocType.DOCSTRCT.name())
+                        .append(SolrConstants.PI)
+                        .append(":*")
                         .toString();
                 logger.debug("Sibling query: {}", siblingQuery);
                 SolrDocumentList childDocs = DataManager.getInstance()

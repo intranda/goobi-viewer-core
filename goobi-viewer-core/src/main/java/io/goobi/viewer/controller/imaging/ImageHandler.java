@@ -37,6 +37,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.image.ImageTile;
 import de.intranda.api.iiif.image.v3.ImageInformation3;
@@ -174,14 +175,23 @@ public class ImageHandler {
     public ImageInformation getImageInformation(PhysicalElement page, PageType pageType)
             throws ContentLibException, ViewerConfigurationException, URISyntaxException {
 
-        URI fileUri = new URI(page.getFilepath());
-        if (fileUri.getScheme() != null && fileUri.getScheme().matches("^http.*")) {
-            return new ImageInformation(fileUri);
-        }
-        URI apiUri =
-                urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), PathConverter.getPath(fileUri).getFileName().toString()).buildURI();
+        URI fileUri = new URI(getIIIFBaseUrl(page.getFilepath()));
         int width = page.getImageWidth(); //0 if width is not known
         int height = page.getImageHeight(); //0 if height is not known
+
+        URI apiUri;
+        if (fileUri.getScheme() != null && fileUri.getScheme().matches("^http.*")) {
+            if (width * height == 0) {
+                //no internal size information. return external url
+                return new ImageInformation(fileUri);
+            }
+            //use external url as if for internal imageInformation
+            apiUri = fileUri;
+        } else {
+            //create internal imageInformation uri
+            apiUri = urls.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), PathConverter.getPath(fileUri).getFileName().toString()).buildURI();
+        }
+
         Map<Integer, List<Integer>> tileSizes = DataManager.getInstance().getConfiguration().getTileSizes(pageType, page.getMimeType());
         List<Integer> sizes = DataManager.getInstance()
                 .getConfiguration()
@@ -207,6 +217,17 @@ public class ImageHandler {
                         .toList()));
 
         return info;
+    }
+
+    /**
+     * Get the IIIF base url (resource id) from an iiif info.json url or a iiif image url. If the given url does not match a iiif image resource
+     * pattern, return the unchanged url
+     * 
+     * @param url
+     * @return the base url/id of the given iiif image resource.
+     */
+    public static String getIIIFBaseUrl(String url) {
+        return IIIFUrlResolver.getIIIFImageBaseUrl(url).replaceAll("\\/info\\.json\\/?", "");
     }
 
     /**
@@ -264,7 +285,7 @@ public class ImageHandler {
      * @param path a {@link java.lang.String} object.
      * @return true exactly if the given path starts with {@code http://} or {@code https://}
      */
-    protected static boolean isExternalUrl(String path) {
+    public static boolean isExternalUrl(String path) {
         return path != null && (path.startsWith("http://") || path.startsWith("https://"));
     }
 

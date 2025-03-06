@@ -350,7 +350,7 @@
                             <!-- RSS FEED -->
                             <ui:fragment rendered="#{searchBean.solrIndexReachable and configurationBean.displaySidebarRssFeed}">
 	                            <div class="admin__boxed-entry -no-actions -w33">
-	                                <ui:include src="/resources/includes/rssFeed.xhtml" />
+	                            	<widgetComponent:widget_rssFeed/>
 	                            </div>
                             </ui:fragment>
 
