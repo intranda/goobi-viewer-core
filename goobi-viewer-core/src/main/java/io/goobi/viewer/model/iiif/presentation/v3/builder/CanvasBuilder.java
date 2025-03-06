@@ -33,8 +33,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.List;
 
-import jakarta.ws.rs.core.UriBuilder;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -68,6 +66,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * @author florian
@@ -269,10 +268,15 @@ public class CanvasBuilder extends AbstractBuilder {
 
         if (page.isHasImage()) {
             String filename = page.getFileName();
-            String escFilename = StringTools.encodeUrl(filename);
-            String imageId = imageUrlManager.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), escFilename).build();
             URI mediaId = imageUrlManager.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_MEDIA).params(page.getPi(), page.getOrder()).buildURI();
-            canvas.addMedia(mediaId, new ImageResource(imageId, thumbWidth, thumbHeight));
+            if ((ImageHandler.isExternalUrl(filename))) {
+                String imageId = ImageHandler.getIIIFBaseUrl(filename);
+                canvas.addMedia(mediaId, new ImageResource(imageId, thumbWidth, thumbHeight));
+            } else {
+                String escFilename = StringTools.encodeUrl(filename);
+                String imageId = imageUrlManager.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), escFilename).build();
+                canvas.addMedia(mediaId, new ImageResource(imageId, thumbWidth, thumbHeight));
+            }
         }
 
     }
