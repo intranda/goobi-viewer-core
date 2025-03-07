@@ -1061,8 +1061,10 @@ public class Metadata implements Serializable {
                 }
 
                 // Check metadata access permission; do not load if denied
+                String movingWallQuery = SolrConstants.PI + ":\"" + se.getPi() + '"'; // Moving wall query has to be record-based because DATE_PUBLICRELEASEDATE is only available in the top document
                 accessGranted =
-                        AccessConditionUtils.checkAccessPermissionBySolrDoc(doc, null, IPrivilegeHolder.PRIV_VIEW_METADATA, BeanUtils.getRequest())
+                        AccessConditionUtils
+                                .checkAccessPermissionBySolrDoc(doc, movingWallQuery, IPrivilegeHolder.PRIV_VIEW_METADATA, BeanUtils.getRequest())
                                 .isGranted();
                 if (!accessGranted) {
                     logger.trace("Access denied to metadata field {}", key);

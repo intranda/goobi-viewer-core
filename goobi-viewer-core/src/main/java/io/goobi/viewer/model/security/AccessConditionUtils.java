@@ -433,7 +433,7 @@ public final class AccessConditionUtils {
      */
     public static AccessPermission checkAccessPermissionBySolrDoc(SolrDocument doc, String originalQuery, String privilegeName,
             HttpServletRequest request) throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionBySolrDoc({}, {}, {})", identifier, logId, privilegeName); //NOSONAR Debug
+        // logger.trace("checkAccessPermissionBySolrDoc({}, {})", originalQuery, privilegeName); //NOSONAR Debug
         if (doc == null) {
             return AccessPermission.denied();
         }
@@ -1000,6 +1000,9 @@ public final class AccessConditionUtils {
                 continue;
             }
             // Check whether the license type contains conditions that exclude the given record, in that case disregard this license type
+            if (licenseType.isMovingWall() && StringUtils.isEmpty(query)) {
+                logger.warn("License type '{}' is in 'moving wall' mode, but no query was passed to check for relevance.", licenseType.getName());
+            }
             if (licenseType.isMovingWall() && StringUtils.isNotEmpty(query)
                     && !Boolean.TRUE.equals(licenseType.getRestrictionsExpired().get(query))) {
                 StringBuilder sbQuery = new StringBuilder().append("+(")
@@ -1009,8 +1012,8 @@ public final class AccessConditionUtils {
                         .append(" -(")
                         .append(SearchHelper.getMovingWallQuery())
                         .append(')');
-                // logger.trace("License relevance query: {}", //NOSONAR Debug
-                //        StringTools.stripPatternBreakingChars(StringTools.stripPatternBreakingChars(sbQuery.toString()))); //NOSONAR Debug
+                logger.trace("License relevance query: {}", //NOSONAR Debug
+                        StringTools.stripPatternBreakingChars(StringTools.stripPatternBreakingChars(sbQuery.toString()))); //NOSONAR Debug
                 if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
                     // logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to the moving wall condition.", //NOSONAR Debug
                     // licenseType.getName(), StringTools.stripPatternBreakingChars(query)); //NOSONAR Debug
@@ -1032,6 +1035,7 @@ public final class AccessConditionUtils {
         }
 
         return ret;
+
     }
 
     /**
