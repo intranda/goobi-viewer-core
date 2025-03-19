@@ -4289,24 +4289,23 @@ riot.tag2('simplepaginator', '<div if="{opts.itemCount > 1}" class="{opts.rtl ? 
 
         this.getFirstItems = function() {
             let result = [];
-            let startRange = Math.min(this.range, this.getCenterItems()[0]-1);
-            if(startRange > 0) {
-                for (let i = this.opts.firstItem; i < this.opts.firstItem + startRange; i++) {
-                    result.push(i);
-                }
+            let firstCenterItem = this.getCenterItems()[0];
+            let lastItem = Math.min(this.opts.firstItem + this.range + 1, firstCenterItem);
+            for (let i = this.opts.firstItem; i < lastItem; i++) {
+                result.push(i);
             }
+            console.log("get first items", result);
             return result;
         }.bind(this)
 
         this.getLastItems = function() {
             let result = [];
             let centerItems = this.getCenterItems();
-            let endRange = Math.min(this.range, this.opts.lastItem - centerItems[centerItems.length-1]);
-            if(endRange > 0) {
-                for (let i = this.opts.lastItem - endRange + 1; i <= this.opts.lastItem; i++) {
+            let lastCenterItem = centerItems[centerItems.length-1];
+            let firstItem = Math.max(this.opts.lastItem - this.range - 1, lastCenterItem);
+                for (let i = firstItem + 1; i <= this.opts.lastItem; i++) {
                     result.push(i);
                 }
-            }
             return result;
         }.bind(this)
 

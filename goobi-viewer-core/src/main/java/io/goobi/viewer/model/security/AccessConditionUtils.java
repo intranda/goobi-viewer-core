@@ -47,6 +47,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -432,7 +433,7 @@ public final class AccessConditionUtils {
      */
     public static AccessPermission checkAccessPermissionBySolrDoc(SolrDocument doc, String originalQuery, String privilegeName,
             HttpServletRequest request) throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionBySolrDoc({}, {}, {})", identifier, logId, privilegeName); //NOSONAR Debug
+        // logger.trace("checkAccessPermissionBySolrDoc({}, {})", originalQuery, privilegeName); //NOSONAR Debug
         if (doc == null) {
             return AccessPermission.denied();
         }
@@ -870,7 +871,7 @@ public final class AccessConditionUtils {
             return AccessPermission.denied();
         }
 
-        Set<String> useAccessConditions = new HashSet<>(relevantLicenseTypes.size());
+        Set<String> useAccessConditions = HashSet.newHashSet(relevantLicenseTypes.size());
 
         // If all relevant license types allow the requested privilege by default, allow access
         boolean licenseTypeAllowsPriv = true;
@@ -999,7 +1000,11 @@ public final class AccessConditionUtils {
                 continue;
             }
             // Check whether the license type contains conditions that exclude the given record, in that case disregard this license type
-            if (licenseType.isMovingWall() && StringUtils.isNotEmpty(query)) {
+            if (licenseType.isMovingWall() && StringUtils.isEmpty(query)) {
+                logger.warn("License type '{}' is in 'moving wall' mode, but no query was passed to check for relevance.", licenseType.getName());
+            }
+            if (licenseType.isMovingWall() && StringUtils.isNotEmpty(query)
+                    && !Boolean.TRUE.equals(licenseType.getRestrictionsExpired().get(query))) {
                 StringBuilder sbQuery = new StringBuilder().append("+(")
                         .append(query)
                         .append(") +")
@@ -1007,15 +1012,16 @@ public final class AccessConditionUtils {
                         .append(" -(")
                         .append(SearchHelper.getMovingWallQuery())
                         .append(')');
-                // logger.trace("License relevance query: {}", //NOSONAR Debug
-                // StringTools.stripPatternBreakingChars(StringTools.stripPatternBreakingChars(sbQuery.toString()))); //NOSONAR Debug
+                logger.trace("License relevance query: {}", //NOSONAR Debug
+                        StringTools.stripPatternBreakingChars(StringTools.stripPatternBreakingChars(sbQuery.toString()))); //NOSONAR Debug
                 if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
                     // logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to the moving wall condition.", //NOSONAR Debug
                     // licenseType.getName(), StringTools.stripPatternBreakingChars(query)); //NOSONAR Debug
                     if (licenseType.isMovingWall()) {
                         // Moving wall license type allow everything if the condition query doesn't match
-                        // logger.trace("License type '{}' is moving wall and its condition query doesn't match record query '{}'. //NOSONAR Debug
-                        // All restrictions lifted.", licenseType.getName(), StringTools.stripPatternBreakingChars(query)); //NOSONAR Debug
+                        logger.trace(
+                                "License type '{}' is moving wall and its condition query doesn't match record query '{}'. All restrictions lifted.",
+                                licenseType.getName(), StringTools.stripPatternBreakingChars(query)); //NOSONAR Debug
                         licenseType.getRestrictionsExpired().put(query, true);
                     } else {
                         continue;
@@ -1029,6 +1035,7 @@ public final class AccessConditionUtils {
         }
 
         return ret;
+
     }
 
     /**

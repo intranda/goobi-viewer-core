@@ -104,7 +104,7 @@
 	                                           <button
 	                                           	   type="button"
 	                                               class="admin__table-action-link -redlink"
-	                                               title="#{msg.cms_pageMetadata_delete}"
+	                                               title="#{messagesBean.addMessageParams(msg.cms_pageMetadata_delete, page.title)}"
 	                                               data-require-confirmation="true"
 	                                               data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.cms_pageMetadata_delete, page.title)}"
 	                                               jsf:rendered="#{!cmsBean.isLinkedFromNavBar(page) and !cmsBean.isLinkedToStaticPage(page)}"
