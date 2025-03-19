@@ -1018,21 +1018,23 @@ public final class SearchHelper {
 
             QueryResponse response = DataManager.getInstance()
                     .getSearchIndex()
-                    .searchFacetsAndStatistics(sbQuery.toString(), null, Collections.singletonList(SolrConstants.DEFAULT), 1, null, false);
+                    .searchFacetsAndStatistics(sbQuery.toString(), null,
+                            Collections.singletonList(SolrConstants.PREFIX_FACET + SolrConstants.DEFAULT), 1, null, false);
             FacetField facetField = response.getFacetFields().get(0);
 
+            logger.trace(facetField.getValues().size());
             ret = facetField.getValues()
                     .stream()
                     .filter(count -> count.getName().toLowerCase().startsWith(suggestLower))
                     .sorted((c1, c2) -> Long.compare(c2.getCount(), c1.getCount()))
                     .map(Count::getName)
                     .distinct()
-                    .collect(Collectors.toList());
-
+                    .toList();
         } catch (PresentationException e) {
             logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
         }
 
+        logger.trace("Autocomplete size: {}", ret.size());
         return ret;
     }
 
