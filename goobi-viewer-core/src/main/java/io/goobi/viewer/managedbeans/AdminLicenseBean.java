@@ -973,9 +973,17 @@ public class AdminLicenseBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public long getNumRecordsWithAccessCondition(String accessCondition) throws IndexUnreachableException, PresentationException {
-        return DataManager.getInstance()
+        long records = DataManager.getInstance()
                 .getSearchIndex()
                 .getHitCount(SearchHelper.getQueryForAccessCondition(accessCondition, false));
+        if (records == 0) {
+            // Alternative query for metadata-only restrictions
+            records = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount("+DOCTYPE:METADATA +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"");
+        }
+
+        return records;
     }
 
     /**
