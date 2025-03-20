@@ -205,4 +205,9 @@ public class CMSMultiRecordNote extends CMSRecordNote {
         }
     }
 
+    @Override
+    public CMSRecordNote copy() {
+        return new CMSMultiRecordNote(this);
+    }
+
 }
