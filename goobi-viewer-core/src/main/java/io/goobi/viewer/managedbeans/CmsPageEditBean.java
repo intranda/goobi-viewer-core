@@ -77,6 +77,7 @@ import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
  * <p>
@@ -249,7 +250,7 @@ public class CmsPageEditBean implements Serializable {
 
             // Delete CMS page metadata from index if page is not published
             if (!selectedPage.isPublished() || !selectedPage.isSearchable()) {
-                deletePageMetadataFromIndex(selectedPage);
+                deletePageMetadataFromIndex(selectedPage, selectedPage.getId());
             }
 
         } else {
@@ -311,6 +312,7 @@ public class CmsPageEditBean implements Serializable {
                 page.removeComponent(component);
                 dao.deleteCMSComponent(persistentComponent);
             }
+            Long pageId = page.getId(); // This is gone after deleting
             if (this.dao.deleteCMSPage(page)) {
                 // Delete files matching content item IDs of the deleted page and re-index record
                 try {
@@ -327,7 +329,7 @@ public class CmsPageEditBean implements Serializable {
                     Messages.error(e.getMessage());
                 }
                 // Delete page metadata from the index
-                deletePageMetadataFromIndex(selectedPage);
+                deletePageMetadataFromIndex(selectedPage, pageId);
                 cmsBean.getLazyModelPages().update();
                 Messages.info("cms_deletePage_success");
             } else {
@@ -341,15 +343,19 @@ public class CmsPageEditBean implements Serializable {
     /**
      * 
      * @param page
+     * @param pageId
      */
-    static void deletePageMetadataFromIndex(CMSPage page) {
+    static void deletePageMetadataFromIndex(CMSPage page, Long pageId) {
         if (page == null) {
             throw new org.jboss.weld.exceptions.IllegalArgumentException("page may not be null");
         }
+        if (pageId == null) {
+            throw new org.jboss.weld.exceptions.IllegalArgumentException("pageId may not be null");
+        }
 
         try {
-            String pi = "CMS" + page.getId();
-            if (DataManager.getInstance().getSearchIndex().getHitCount(pi) > 0) {
+            String pi = "CMS" + pageId;
+            if (DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.PI + ":\"" + pi + '"') > 0) {
                 IndexerTools.deleteRecord("CMS" + page.getId(), false,
                         Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()));
                 logger.debug("Page contents will be deleted from index: {}", pi);
