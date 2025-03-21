@@ -10,10 +10,14 @@
 	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
 
-	<composite:interface />
+	<composite:interface>
+		<composite:attribute name="metadataElement" type="io.goobi.viewer.model.metadata.MetadataElement" required="false" default="#{metadataBean.getBottomMetadataElement(0)}" />
+	</composite:interface>
+	
+	
 
 	<composite:implementation>
-		<h:panelGroup id="sidebarMetadataGroup" rendered="#{metadataBean.getBottomMetadataElement(0).hasSidebarMetadata and not (activeDocumentBean.anchor or activeDocumentBean.group)}">
+		<h:panelGroup id="sidebarMetadataGroup" rendered="#{cc.attrs.metadataElement.hasSidebarMetadata and not (activeDocumentBean.anchor or activeDocumentBean.group)}">
 			
                 <!-- SIDEBAR METADATA -->
 				<div id="widgetMetadata" class="widget widget-metadata">
@@ -25,7 +29,7 @@
 					</h2>
 					
 					<dl jsf:id="sidebarMetadataList">
-						<c:forEach items="#{metadataBean.getBottomMetadataElement(0).sidebarMetadataList}" var="metadata">
+						<c:forEach items="#{cc.attrs.metadataElement.sidebarMetadataList}" var="metadata">
 							<dt title="#{metadata.label}">
 								<h:outputText value="#{msg[metadata.label]}:" escape="false" />
 							</dt>
