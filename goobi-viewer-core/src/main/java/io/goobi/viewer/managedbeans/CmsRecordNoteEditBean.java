@@ -160,7 +160,6 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     /**
      * Save the selected note to the database
      *
-     * @return false if saving was not successful
      */
     public void save() {
         try {
