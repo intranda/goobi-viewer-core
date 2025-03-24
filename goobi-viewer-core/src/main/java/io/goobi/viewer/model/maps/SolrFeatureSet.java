@@ -21,21 +21,28 @@
  */
 package io.goobi.viewer.model.maps;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.ocpsoft.pretty.PrettyContext;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -129,15 +136,51 @@ public class SolrFeatureSet extends FeatureSet {
     }
 
     public String getSolrQuery(boolean aggregateResults) {
-        if (aggregateResults) {
+        if (false) {
             return String.format("{!join from=PI_TOPSTRUCT to=PI} %s", this.solrQuery);
         }
 
         return solrQuery;
     }
 
+    public String getSolrQueryForSearchEncoded() {
+        return StringTools.encodeUrl(getSolrQueryForSearch().replace("+", "%2B"));
+    }
+
+    public String getSolrQueryForSearch() {
+        return this.getSolrQueryForSearch(isAggregateResults());
+    }
+
+    public String getSolrQueryForSearch(boolean aggregateResults) {
+        if (aggregateResults) {
+            return String.format("{!join from=PI_TOPSTRUCT to=PI} +(%s) +WKT_COORDS:\"Intersects(POINT({lng} {lat})) distErrPct=0\"", this.solrQuery);
+        } else {
+            return String.format("+(%s) +WKT_COORDS:\"Intersects(POINT({lng} {lat})) distErrPct=0\"", this.solrQuery);
+
+        }
+    }
+
     public String getSolrQueryEncoded() {
-        return StringTools.encodeUrl(getSolrQuery());
+        return StringTools.encodeUrl(Optional.ofNullable(getSolrQuery()).orElse("")).replace("%2B", "+");
+    }
+
+    /**
+     * <p>
+     * getCoordinateSearchQueryTemplate.
+     * </p>
+     *
+     * @param featureSet a {@link io.goobi.viewer.model.maps.SolrFeatureSet} object
+     * @return String
+     * @throws URISyntaxException
+     */
+    public String getCoordinateSearchQueryTemplate() throws URISyntaxException {
+        URI mappedUrl = new URIBuilder(PrettyContext.getCurrentInstance()
+                .getConfig()
+                .getMappingById("newSearch5")
+                .getPatternParser()
+                .getMappedURL("-", getSolrQueryEncoded(), "1", "-", "-")
+                .toURL()).build();
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
 
     public void setSolrQuery(String solrQuery) {

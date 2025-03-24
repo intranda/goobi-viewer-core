@@ -356,25 +356,6 @@ public class GeoMapBean implements Serializable, IPolyglott {
         return !getAllMaps().isEmpty();
     }
 
-    /**
-     * <p>
-     * getCoordinateSearchQueryTemplate.
-     * </p>
-     *
-     * @param featureSet a {@link io.goobi.viewer.model.maps.SolrFeatureSet} object
-     * @return String
-     */
-    public String getCoordinateSearchQueryTemplate(SolrFeatureSet featureSet) {
-        String locationQuery = "WKT_COORDS:\"Intersects(POINT({lng} {lat})) distErrPct=0\"";
-        String filterQuery = featureSet != null ? featureSet.getSolrQuery() : "-";
-        URL mappedUrl = PrettyContext.getCurrentInstance()
-                .getConfig()
-                .getMappingById("newSearch5")
-                .getPatternParser()
-                .getMappedURL("-", filterQuery, "1", "-", locationQuery);
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
-    }
-
     public static String getCoordinateSearchQuery(SolrFeatureSet featureSet, String longLat) {
         String locationQuery = "WKT_COORDS:\"Intersects(POINT({longLat})) distErrPct=0\"";
         locationQuery = locationQuery.replace("{longLat}", longLat);
