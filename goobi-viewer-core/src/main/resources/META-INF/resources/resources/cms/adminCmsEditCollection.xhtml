@@ -51,7 +51,7 @@
                                     <div class="col-2">#{msg.description}:</div>
                                     <div class="col-10">
 		                                <div class="#{status.index == 0 ? 'active' : ''}" id="descriptionLanguage-#{status.index}">
-		                                    <h:inputTextarea value="#{cmsCollectionsBean.currentCollection.descriptionAsTranslation.value}"
+		                                    <h:inputTextarea value="#{cmsCollectionsBean.currentCollection.descriptionAsTranslation.translationValue}"
 		                                        styleClass="form-control tinyMCE -validation-input">
                                                 <f:passThroughAttribute name="aria-label" value="#{msg.aria_label__collections_description}"/>
 		                                    	<f:ajax execute="@this" event="valueChange"/>
