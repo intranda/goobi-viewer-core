@@ -91,7 +91,9 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
      * @param note the note to set
      */
     public void setNote(CMSRecordNote note) {
-        if (this.note == null || !this.note.equals(note)) {
+        if (note == null) {
+            this.note = null;
+        } else if (this.note == null || !this.note.equals(note)) {
             this.note = note.copy();
             this.selectedLocale = setSelectedLocale(this.note, this.selectedLocale, BeanUtils.getDefaultLocale());
         }
