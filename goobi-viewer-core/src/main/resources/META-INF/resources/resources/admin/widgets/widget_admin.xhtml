@@ -124,11 +124,18 @@
                             <h:outputLink id="widgetAdminTasksLink" value="#{navigationHelper.getPageUrl('adminMessageQueue')}/">
                                 <i class="fa fa-spinner" aria-hidden="true"></i>
                                 <span>#{msg.admin__tasks__title}</span>
-                                    <ui:fragment rendered="#{userBean.admin and messageQueueBean.paused or userBean.admin and quartzBean.paused}">
+                                    <ui:fragment rendered="#{messageQueueBean.paused or quartzBean.paused}">
                                         <span data-toggle="tooltip" title="#{msg.admin__tasks__tooltip_queue_not_running}" class="admin-widget__counter"><i class="fa fa-exclamation" aria-hidden="true"></i></span>
 								    </ui:fragment>
                             </h:outputLink>
-                        </li>                     
+                        </li>
+                        
+                        <li  class="#{navigationHelper.currentPage == 'adminMaintenanceMode' ? 'active' : ''}">
+                            <h:outputLink value="#{request.contextPath}/admin/maintenance/">
+                                <i class="fa fa-coffee" aria-hidden="true"></i>
+                                <span>#{msg.admin__maintenance_mode__title}</span>
+                            </h:outputLink>
+                        </li>   
                     </ui:fragment>
 
 				</ul>

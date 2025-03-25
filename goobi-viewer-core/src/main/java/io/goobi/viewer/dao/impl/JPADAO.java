@@ -51,6 +51,7 @@ import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.administration.MaintenanceMode;
 import io.goobi.viewer.model.administration.legal.CookieBanner;
 import io.goobi.viewer.model.administration.legal.Disclaimer;
 import io.goobi.viewer.model.administration.legal.TermsOfUse;
@@ -7077,17 +7078,13 @@ public class JPADAO implements IDAO {
     @Override
     public List<HighlightData> getPastHighlightsForDate(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters, LocalDateTime date) throws DAOException {
-        List<HighlightData> data =
-                getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date > a.dateEnd", Map.of("date", date));
-        return data;
+        return getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date > a.dateEnd", Map.of("date", date));
     }
 
     @Override
     public List<HighlightData> getFutureHighlightsForDate(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters, LocalDateTime date) throws DAOException {
-        List<HighlightData> data =
-                getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date < a.dateStart", Map.of("date", date));
-        return data;
+        return getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date < a.dateStart", Map.of("date", date));
     }
 
     @Override
@@ -7106,6 +7103,37 @@ public class JPADAO implements IDAO {
             return true;
         } catch (PersistenceException e) {
             logger.error("Error adding object to database", e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MaintenanceMode getMaintenanceMode() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT a FROM MaintenanceMode a WHERE a.id = 1");
+            return (MaintenanceMode) getSingleResult(q).orElse(null);
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean updateMaintenanceMode(MaintenanceMode maintenanceMode) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(maintenanceMode);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
             handleException(em);
             return false;
         } finally {
@@ -7243,7 +7271,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    private String addFilterQueries(Map<String, String> filters, Map<String, Object> params, Character entityVariable) {
+    private static String addFilterQueries(Map<String, String> filters, Map<String, Object> params, Character entityVariable) {
         Stream<String> queries = filters.entrySet().stream().map(entry -> getFilterQuery(entry.getKey(), entry.getValue(), params, entityVariable));
         return "(" + queries.collect(Collectors.joining(") OR (")) + ")";
     }
@@ -7257,7 +7285,7 @@ public class JPADAO implements IDAO {
      * @param entityVariable
      * @return Generated query
      */
-    private String getFilterQuery(String filterField, Object filterValue, Map<String, Object> params, Character entityVariable) {
+    private static String getFilterQuery(String filterField, Object filterValue, Map<String, Object> params, Character entityVariable) {
         if (filterValue instanceof String) {
             String query = String.format("%c.%s LIKE :%s", entityVariable, filterField, filterField);
             params.put(filterField, "%" + filterValue + "%");

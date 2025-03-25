@@ -1,0 +1,147 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:crowdsourcingComponent="http://xmlns.jcp.org/jsf/composite/crowdsourcing/components"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentPageAdmin('adminMaintenanceMode')}" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:panelGroup id="adminMaintenanceModeView"
+			rendered="#{userBean.user.superuser}">
+			<div id="createCampaign" class="cms-create-page">
+
+				<!-- BACK TO OVERVIEW -->
+				<h:form rendered="#{crowdsourcingBean.selectedCampaign == null}">
+					<h:commandLink action="pretty:adminCrowdCampaigns">
+						<h:outputText
+							value="#{msg.admin__campaign_crowdsourcing_backToOverview}" />
+					</h:commandLink>
+				</h:form>
+
+				<h:panelGroup>
+					<div class="admin__title-bar">
+						<h1 class="admin__title">#{crowdsourcingBean.editMode ?
+							msg.admin__crowdsourcing_campaign_edit :
+							msg.admin__crowdsourcing_campaign_new}</h1>
+					</div>
+
+					<viewerComponent:adminBreadcrumbs />
+
+					<div class="admin__content-inner-content">
+						<h:form id="maintenanceModeForm" prependId="true">
+							<div class="row">
+								<div class="col-12">
+									<!-- CREATE CAMPAIGN WRAPPER -->
+									<div class="admin__content-wrapper">
+										<div class="admin__content-main -refreshHCsticky">
+											<!-- GENERAL INFORMATION (TITLE + TEXT) -->
+											<h2>#{msg.admin__category_general}</h2>
+
+											<h:panelGroup id="titleDataGroup">
+												<!-- NEW CAMPAIGN LANGUAGE TABS GENERAL -->
+												<div class="admin__language-tabs">
+													<viewerComponent:localeSelector
+														object="#{crowdsourcingBean.selectedCampaign}"
+														render="createCampaignForm:titleDataGroup"
+														execute="createCampaignForm:titleDataGroup" />
+												</div>
+
+												<!-- NEW CONTENT TABS CAMPAIGN GENERAL-->
+												<div id="languagesGeneralArea" class="admin__default-block">
+													<div class="tab-content">
+
+														<div>
+															<div class="form-group form-row mb-3">
+																<div class="col-2 control-label admin__form-label">
+																	<span>#{msg.admin__maintenance_mode_enabled_label}:</span>
+																</div>
+																<div class="col-9 admin__form-input">
+
+																	<viewerComponent:toggleSwitch
+																		name="maintenanceModeEnabledToggle"
+																		value="#{adminBean.maintenanceMode.enabled}" />
+																	<span class="admin__form-help-text in">#{msg.admin__maintenance_mode_enabled_desc}</span>
+																</div>
+															</div>
+														</div>
+
+														<!-- DESCRIPTION TEXT -->
+														<div class="form-group form-row">
+															<div class="col-2 control-label admin__form-label">
+																<label id="adminCrowdAddCampaignDescription"
+																	for="adminCrowdAddCampaignDescription">
+																	#{msg.text}: </label>
+															</div>
+
+															<div class="col-9 admin__form-input">
+																<h:inputTextarea id="adminMaintenanceModeText"
+																	styleClass="form-control"
+																	value="#{adminBean.maintenanceMode.text}">
+																	<f:passThroughAttribute name="aria-label"
+																		value="#{msg.description}" />
+																</h:inputTextarea>
+																<span class="admin__form-help-text">#{msg.admin__maintenance_mode_text_desc}</span>
+															</div>
+
+															<div class="col-1 admin__form-help-icon">
+																<button type="button" class="btn btn--clean"
+																	data-toggle="helptext" aria-label="inline help icon">
+																	<i class="fa fa-question-circle" aria-hidden="true"></i>
+																</button>
+															</div>
+														</div>
+														<!-- TAB CONTENT EOL -->
+													</div>
+													<!-- ADMIN BLOCK EOL -->
+												</div>
+											</h:panelGroup>
+
+
+											<!-- FINAL ACTIONS CANCEL + SAVE -->
+											<div
+												class="row no-gutters justify-content-end admin__final-actions mb-0">
+												<h:commandLink id="cancelUpdateMaintenaanceModeButton" type="submit"
+													styleClass="btn admin__cancel-button" value="#{msg.cancel}"
+													action="pretty:adminMaintenanceMode" immediate="true" />
+												<h:commandButton id="saveAddCampaignButton"
+													styleClass="btn btn--success" value="#{msg.button__save}"
+													action="#{adminBean.saveMaintenanceModeAction}" />
+											</div>
+
+										</div>
+
+										<div class="admin__content-side -sticky"></div>
+									</div>
+								</div>
+							</div>
+						</h:form>
+
+					</div>
+
+				</h:panelGroup>
+
+			</div>
+		</h:panelGroup>
+	</ui:define>
+
+
+
+	<!-- SIDEBAR -->
+	<ui:define name="sidebar">
+		<adminWidget:widget_admin />
+		<adminWidget:widget_crowdsourcing />
+		<adminWidget:widget_cms />
+	</ui:define>
+</ui:composition>

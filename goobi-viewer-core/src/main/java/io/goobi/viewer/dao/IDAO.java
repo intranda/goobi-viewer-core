@@ -31,6 +31,7 @@ import java.util.Set;
 
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.administration.MaintenanceMode;
 import io.goobi.viewer.model.administration.legal.CookieBanner;
 import io.goobi.viewer.model.administration.legal.Disclaimer;
 import io.goobi.viewer.model.administration.legal.TermsOfUse;
@@ -2677,6 +2678,28 @@ public interface IDAO {
 
     public List<HighlightData> getFutureHighlightsForDate(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters, LocalDateTime date) throws DAOException;
+
+    // Maintenance mode
+
+    /**
+     * Returns the only existing instance of MaintenanceMode.
+     *
+     * @param id a long.
+     * @return a {@link io.goobi.viewer.model.security.user.IpRange} object.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public MaintenanceMode getMaintenanceMode() throws DAOException;
+
+    /**
+     * <p>
+     * updateMaintenanceMode.
+     * </p>
+     *
+     * @param ipRange a {@link io.goobi.viewer.model.security.user.IpRange} object.
+     * @return a boolean.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean updateMaintenanceMode(MaintenanceMode maintenanceMode) throws DAOException;
 
     /**
      * Get the EntityManagerFactory created when initializing the class. Can be used to explicitly create new EntityManagers.
