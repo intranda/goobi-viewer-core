@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
+import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.Translation;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -23,10 +23,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import software.amazon.awssdk.utils.StringUtils;
 
 @Entity
 @Table(name = "maintenance_mode")
-public class MaintenanceMode {
+public class MaintenanceMode implements IPolyglott {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -99,7 +100,16 @@ public class MaintenanceMode {
      * @should return correct value
      */
     public String getText() {
-        return Translation.getTranslation(translations, selectedLocale.getLanguage(), "text");
+        return getText(selectedLocale.getLanguage());
+    }
+
+    /**
+     * @param language
+     * @return Text value in the given language
+     * @should return correct value
+     */
+    public String getText(String language) {
+        return Translation.getTranslation(translations, language, "text");
     }
 
     /**
@@ -143,7 +153,33 @@ public class MaintenanceMode {
         } else if (!id.equals(other.id)) {
             return false;
         }
-        
+
         return true;
+    }
+
+    @Override
+    public boolean isComplete(Locale locale) {
+        return StringUtils.isNotBlank(getText(locale.getLanguage()));
+    }
+
+    @Override
+    public boolean isValid(Locale locale) {
+        return true;
+    }
+
+    @Override
+    public boolean isEmpty(Locale locale) {
+        return StringUtils.isBlank(getText(locale.getLanguage()));
+    }
+
+    @Override
+    public Locale getSelectedLocale() {
+        return selectedLocale;
+    }
+
+    @Override
+    public void setSelectedLocale(Locale locale) {
+        this.selectedLocale = locale;
+
     }
 }

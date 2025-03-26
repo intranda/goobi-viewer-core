@@ -32,74 +32,63 @@
 
 				<h:panelGroup>
 					<div class="admin__title-bar">
-						<h1 class="admin__title">#{crowdsourcingBean.editMode ?
-							msg.admin__crowdsourcing_campaign_edit :
-							msg.admin__crowdsourcing_campaign_new}</h1>
+						<h1 class="admin__title">#{msg.admin__maintenance_mode__title}</h1>
 					</div>
 
 					<viewerComponent:adminBreadcrumbs />
 
 					<div class="admin__content-inner-content">
+					
+                        <!-- INFO TEXT -->
+                        <div class="admin__info-text">
+                            <h:outputText value="#{msg.admin__maintenance_mode__description_text}" escape="false" />
+                        </div>
+					
 						<h:form id="maintenanceModeForm" prependId="true">
 							<div class="row">
 								<div class="col-12">
 									<!-- CREATE CAMPAIGN WRAPPER -->
 									<div class="admin__content-wrapper">
 										<div class="admin__content-main -refreshHCsticky">
+										
+
+                                                        <div>
+                                                            <div class="form-group form-row mb-3">
+                                                                <div class="col-2 control-label admin__form-label">
+                                                                    <span>#{msg.admin__maintenance_mode_enabled_label}:</span>
+                                                                </div>
+                                                                <div class="col-9 admin__form-input">
+                                                                    <viewerComponent:toggleSwitch
+                                                                        name="maintenanceModeEnabledToggle"
+                                                                        value="#{adminBean.maintenanceMode.enabled}" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+										
 											<!-- GENERAL INFORMATION (TITLE + TEXT) -->
-											<h2>#{msg.admin__category_general}</h2>
+											<h2>#{msg.admin__maintenance_page_text_label}</h2>
 
 											<h:panelGroup id="titleDataGroup">
-												<!-- NEW CAMPAIGN LANGUAGE TABS GENERAL -->
+												<!-- LANGUAGE TABS -->
 												<div class="admin__language-tabs">
 													<viewerComponent:localeSelector
-														object="#{crowdsourcingBean.selectedCampaign}"
-														render="createCampaignForm:titleDataGroup"
-														execute="createCampaignForm:titleDataGroup" />
+														object="#{adminBean.maintenanceMode}"
+														render="maintenanceModeForm:adminMaintenanceModeText"
+														execute="maintenanceModeForm:adminMaintenanceModeText" />
 												</div>
 
 												<!-- NEW CONTENT TABS CAMPAIGN GENERAL-->
 												<div id="languagesGeneralArea" class="admin__default-block">
 													<div class="tab-content">
 
-														<div>
-															<div class="form-group form-row mb-3">
-																<div class="col-2 control-label admin__form-label">
-																	<span>#{msg.admin__maintenance_mode_enabled_label}:</span>
-																</div>
-																<div class="col-9 admin__form-input">
-
-																	<viewerComponent:toggleSwitch
-																		name="maintenanceModeEnabledToggle"
-																		value="#{adminBean.maintenanceMode.enabled}" />
-																	<span class="admin__form-help-text in">#{msg.admin__maintenance_mode_enabled_desc}</span>
-																</div>
-															</div>
-														</div>
-
 														<!-- DESCRIPTION TEXT -->
 														<div class="form-group form-row">
-															<div class="col-2 control-label admin__form-label">
-																<label id="adminCrowdAddCampaignDescription"
-																	for="adminCrowdAddCampaignDescription">
-																	#{msg.text}: </label>
-															</div>
-
-															<div class="col-9 admin__form-input">
+															<div class="col-12 admin__form-input">
 																<h:inputTextarea id="adminMaintenanceModeText"
 																	styleClass="form-control"
 																	value="#{adminBean.maintenanceMode.text}">
-																	<f:passThroughAttribute name="aria-label"
-																		value="#{msg.description}" />
+																	<f:passThroughAttribute name="aria-label" value="#{msg.description}" />
 																</h:inputTextarea>
-																<span class="admin__form-help-text">#{msg.admin__maintenance_mode_text_desc}</span>
-															</div>
-
-															<div class="col-1 admin__form-help-icon">
-																<button type="button" class="btn btn--clean"
-																	data-toggle="helptext" aria-label="inline help icon">
-																	<i class="fa fa-question-circle" aria-hidden="true"></i>
-																</button>
 															</div>
 														</div>
 														<!-- TAB CONTENT EOL -->
