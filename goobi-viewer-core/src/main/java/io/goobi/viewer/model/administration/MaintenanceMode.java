@@ -121,7 +121,16 @@ public class MaintenanceMode implements IPolyglott {
      * @param description a {@link java.lang.String} object.
      */
     public void setText(String text) {
-        MaintenanceModeTranslation.setTranslation(translations, selectedLocale.getLanguage(), text, "text", this);
+        setText(text, selectedLocale.getLanguage());
+    }
+
+    /**
+     * 
+     * @param text
+     * @param language
+     */
+    public void setText(String text, String language) {
+        MaintenanceModeTranslation.setTranslation(translations, language, text, "text", this);
     }
 
     /** {@inheritDoc} */

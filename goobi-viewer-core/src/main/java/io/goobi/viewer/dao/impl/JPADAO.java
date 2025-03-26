@@ -6930,8 +6930,7 @@ public class JPADAO implements IDAO {
         if (filters != null) {
             filterQuery = addViewerMessageFilterQuery(filters, params);
         }
-        long count = getFilteredRowCount("ViewerMessage", filterQuery, params);
-        return count;
+        return getFilteredRowCount("ViewerMessage", filterQuery, params);
     }
 
     @SuppressWarnings("unchecked")
@@ -7110,7 +7109,11 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct object
+     */
     @Override
     public MaintenanceMode getMaintenanceMode() throws DAOException {
         preQuery();
