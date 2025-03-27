@@ -2,12 +2,13 @@
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-	xmlns:crowdsourcingComponent="http://xmlns.jcp.org/jsf/composite/crowdsourcing/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
 	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms"
 	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
 	<ui:define name="metadata">
@@ -18,6 +19,7 @@
 	</ui:define>
 
 	<ui:define name="content">
+		
 		<h:panelGroup id="adminMaintenanceModeView"
 			rendered="#{userBean.user.superuser}">
 			<div id="createCampaign" class="cms-create-page">
@@ -50,51 +52,66 @@
 									<!-- CREATE CAMPAIGN WRAPPER -->
 									<div class="admin__content-wrapper">
 										<div class="admin__content-main -refreshHCsticky">
-										
 
-                                                        <div>
-                                                            <div class="form-group form-row mb-3">
-                                                                <div class="col-2 control-label admin__form-label">
-                                                                    <span>#{msg.admin__maintenance_mode_enabled_label}:</span>
-                                                                </div>
-                                                                <div class="col-9 admin__form-input">
-                                                                    <viewerComponent:toggleSwitch
-                                                                        name="maintenanceModeEnabledToggle"
-                                                                        value="#{adminBean.maintenanceMode.enabled}" />
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                            <div>
+                                                <div class="form-group form-row mb-3">
+                                                    <div class="col-2 control-label admin__form-label">
+                                                        <span>#{msg.admin__maintenance_mode_enabled_label}:</span>
+                                                    </div>
+                                                    <div class="col-9 admin__form-input">
+                                                        <viewerComponent:toggleSwitch
+                                                            name="maintenanceModeEnabledToggle"
+                                                            value="#{adminBean.maintenanceMode.enabled}" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+											<viewerForms:inputFormBlock
+												title="#{msg.admin__terms_of_use__manage_text}"
+												languageSelector="#{adminBean.maintenanceMode}">
+			
+												<viewerForms:htmlInputField label="#{msg.text}"
+													value="#{adminBean.maintenanceMode.text}">
+												</viewerForms:htmlInputField>
+			
+											</viewerForms:inputFormBlock>
+										
+										
+										
+										
+										
+										
 										
 											<!-- GENERAL INFORMATION (TITLE + TEXT) -->
 											<h2>#{msg.admin__maintenance_page_text_label}</h2>
 
 											<h:panelGroup id="titleDataGroup">
 												<!-- LANGUAGE TABS -->
-												<div class="admin__language-tabs">
-													<viewerComponent:localeSelector
-														object="#{adminBean.maintenanceMode}"
-														render="maintenanceModeForm:adminMaintenanceModeText"
-														execute="maintenanceModeForm:adminMaintenanceModeText" />
-												</div>
+<!-- 												<div class="admin__language-tabs"> -->
+<!-- 													<viewerComponent:localeSelector -->
+<!-- 														object="#{adminBean.maintenanceMode}" -->
+<!-- 														render="maintenanceModeForm:adminMaintenanceModeText" -->
+<!-- 														execute="maintenanceModeForm:adminMaintenanceModeText" /> -->
+<!-- 												</div> -->
 
 												<!-- NEW CONTENT TABS CAMPAIGN GENERAL-->
-												<div id="languagesGeneralArea" class="admin__default-block">
-													<div class="tab-content">
+<!-- 												<div id="languagesGeneralArea" class="admin__default-block"> -->
+<!-- 													<div class="tab-content"> -->
 
-														<!-- DESCRIPTION TEXT -->
-														<div class="form-group form-row">
-															<div class="col-12 admin__form-input">
-																<h:inputTextarea id="adminMaintenanceModeText"
-																	styleClass="form-control"
-																	value="#{adminBean.maintenanceMode.text}">
-																	<f:passThroughAttribute name="aria-label" value="#{msg.description}" />
-																</h:inputTextarea>
-															</div>
-														</div>
-														<!-- TAB CONTENT EOL -->
-													</div>
-													<!-- ADMIN BLOCK EOL -->
-												</div>
+<!-- 														DESCRIPTION TEXT -->
+<!-- 														<div class="form-group form-row"> -->
+<!-- 															<div class="col-12 admin__form-input"> -->
+<!-- 																<h:inputTextarea id="adminMaintenanceModeText" -->
+<!-- 																	styleClass="form-control" -->
+<!-- 																	value="#{adminBean.maintenanceMode.text}"> -->
+<!-- 																	<f:passThroughAttribute name="aria-label" value="#{msg.description}" /> -->
+<!-- 																</h:inputTextarea> -->
+<!-- 															</div> -->
+<!-- 														</div> -->
+<!-- 														TAB CONTENT EOL -->
+<!-- 													</div> -->
+<!-- 													ADMIN BLOCK EOL -->
+<!-- 												</div> -->
 											</h:panelGroup>
 
 
