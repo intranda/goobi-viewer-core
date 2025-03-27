@@ -75,6 +75,7 @@ import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.solr.SolrConstants;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.event.ValueChangeEvent;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.servlet.http.Part;
@@ -792,6 +793,11 @@ public class AdminBean implements Serializable {
         }
 
         return "pretty:adminMaintenanceMode";
+    }
+    
+    public void saveMaintenanceModeActionListener(ValueChangeEvent event) throws DAOException {
+        logger.trace("saveMaintenanceModeActionListener");
+        saveMaintenanceModeAction();
     }
 
     /*********************************** Getter and Setter ***************************************/

@@ -53,18 +53,20 @@
 									<div class="admin__content-wrapper">
 										<div class="admin__content-main -refreshHCsticky">
 
-                                            <div>
-                                                <div class="form-group form-row mb-3">
-                                                    <div class="col-2 control-label admin__form-label">
-                                                        <span>#{msg.admin__maintenance_mode_enabled_label}:</span>
-                                                    </div>
-                                                    <div class="col-9 admin__form-input">
-                                                        <viewerComponent:toggleSwitch
-                                                            name="maintenanceModeEnabledToggle"
-                                                            value="#{adminBean.maintenanceMode.enabled}" />
-                                                    </div>
-                                                </div>
-                                            </div>
+											<div>
+												<div class="form-group form-row mb-3">
+													<div class="col-2 control-label admin__form-label">
+														<span>#{msg.admin__maintenance_mode_enabled_label}:</span>
+													</div>
+													<div class="col-9 admin__form-input">
+														<viewerComponent:toggleSwitch
+															name="maintenanceModeEnabledToggle"
+															value="#{adminBean.maintenanceMode.enabled}"
+															render=":messages"
+															actionListener="#{adminBean.saveMaintenanceModeActionListener}" />
+													</div>
+												</div>
+											</div>
 
 											<viewerForms:inputFormBlock
 												title="#{msg.admin__terms_of_use__manage_text}"

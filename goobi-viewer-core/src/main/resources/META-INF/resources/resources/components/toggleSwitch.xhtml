@@ -19,18 +19,21 @@
 		<composite:attribute name="toggleActionRight" default="show"/>
 		<composite:attribute name="render" default="@none"/>
 		<composite:attribute name="disabled" default="#{false}"/>
+        <composite:attribute name="actionListener" method-signature="void valueChangeListener(jakarta.faces.event.ValueChangeEvent)" />
 	</composite:interface>
 	
 	<div class="admin__radio-switch" id="#{cc.clientId}">
 		<h:selectOneRadio group="#{cc.attrs.name}"
-			value="#{cc.attrs.value}" disabled="#{cc.attrs.disabled}">
+			value="#{cc.attrs.value}" disabled="#{cc.attrs.disabled}"
+			valueChangeListener="#{cc.attrs.actionListener}">
 			<f:selectItem itemValue="#{cc.attrs.valueLeft}" itemLabel="#{cc.attrs.labelLeft}" />
 			<f:ajax render="#{cc.attrs.render}" execute="@this" />
 				<f:passThroughAttribute name="data-toggle-action" value="#{cc.attrs.toggleActionLeft}" />
 				<f:passThroughAttribute name="data-toggle-target" value="#{cc.attrs.toggleTarget}" />
 		</h:selectOneRadio>
 		<h:selectOneRadio group="#{cc.attrs.name}"
-			value="#{cc.attrs.value}" disabled="#{cc.attrs.disabled}">
+			value="#{cc.attrs.value}" disabled="#{cc.attrs.disabled}"
+			valueChangeListener="#{cc.attrs.actionListener}">
 			<f:selectItem itemValue="#{cc.attrs.valueRight}" itemLabel="#{cc.attrs.labelRight}" />
 			<f:ajax render="#{cc.attrs.render}" execute="@this" />
 				<f:passThroughAttribute name="data-toggle-action" value="#{cc.attrs.toggleActionRight}" />
