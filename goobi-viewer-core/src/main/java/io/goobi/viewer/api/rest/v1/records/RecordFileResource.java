@@ -203,6 +203,7 @@ public class RecordFileResource {
     @Operation(tags = { "records" }, summary = "Get media files of record")
     @CORSBinding
     @MediaResourceBinding
+    @RecordFileDownloadBinding
     public Response getMediaFile(
             @Parameter(description = "Media file name") @PathParam("filename") String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
