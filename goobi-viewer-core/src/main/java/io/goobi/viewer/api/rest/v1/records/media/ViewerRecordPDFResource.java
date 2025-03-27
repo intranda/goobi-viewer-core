@@ -21,7 +21,22 @@
  */
 package io.goobi.viewer.api.rest.v1.records.media;
 
-import jakarta.inject.Inject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfInformation;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfInfoBinding;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.MetsPdfResource;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.NetTools;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
@@ -32,22 +47,6 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.StreamingOutput;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfInformation;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfInfoBinding;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.MetsPdfResource;
-import io.goobi.viewer.api.rest.AbstractApiUrlManager;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.NetTools;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 
 /**
  * @author florian
@@ -76,6 +75,7 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     @Path(ApiUrls.RECORDS_PDF)
     @Produces("application/pdf")
     @ContentServerPdfBinding
+    @RecordFileDownloadBinding
     @Operation(tags = { "records" }, summary = "Get PDF for entire record")
     public StreamingOutput getPdf() throws ContentLibException {
         logger.trace("getPdf: {}", filename);
