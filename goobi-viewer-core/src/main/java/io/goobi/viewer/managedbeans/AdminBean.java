@@ -794,7 +794,13 @@ public class AdminBean implements Serializable {
 
         return "pretty:adminMaintenanceMode";
     }
-    
+
+    /**
+     * This method must accept a {@link ValueChangeEvent} to work as a passed action method of a toggleSwitch component.
+     * 
+     * @param event
+     * @throws DAOException
+     */
     public void saveMaintenanceModeActionListener(ValueChangeEvent event) throws DAOException {
         logger.trace("saveMaintenanceModeActionListener");
         saveMaintenanceModeAction();

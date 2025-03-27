@@ -63,69 +63,36 @@
 															name="maintenanceModeEnabledToggle"
 															value="#{adminBean.maintenanceMode.enabled}"
 															render=":messages"
+															toggleTarget="#maintenanceModeTextWrapper"
 															actionListener="#{adminBean.saveMaintenanceModeActionListener}" />
 													</div>
 												</div>
 											</div>
 
-											<viewerForms:inputFormBlock
-												title="#{msg.admin__terms_of_use__manage_text}"
-												languageSelector="#{adminBean.maintenanceMode}">
-			
-												<viewerForms:htmlInputField label="#{msg.text}"
-													value="#{adminBean.maintenanceMode.text}">
-												</viewerForms:htmlInputField>
-			
-											</viewerForms:inputFormBlock>
-										
-										
-										
-										
-										
-										
-										
-											<!-- GENERAL INFORMATION (TITLE + TEXT) -->
-											<h2>#{msg.admin__maintenance_page_text_label}</h2>
+											<div id="maintenanceModeTextWrapper">
 
-											<h:panelGroup id="titleDataGroup">
-												<!-- LANGUAGE TABS -->
-<!-- 												<div class="admin__language-tabs"> -->
-<!-- 													<viewerComponent:localeSelector -->
-<!-- 														object="#{adminBean.maintenanceMode}" -->
-<!-- 														render="maintenanceModeForm:adminMaintenanceModeText" -->
-<!-- 														execute="maintenanceModeForm:adminMaintenanceModeText" /> -->
-<!-- 												</div> -->
+												<viewerForms:inputFormBlock
+													title="#{msg.admin__terms_of_use__manage_text}"
+													languageSelector="#{adminBean.maintenanceMode}">
 
-												<!-- NEW CONTENT TABS CAMPAIGN GENERAL-->
-<!-- 												<div id="languagesGeneralArea" class="admin__default-block"> -->
-<!-- 													<div class="tab-content"> -->
+													<viewerForms:htmlInputField label="#{msg.text}"
+														value="#{adminBean.maintenanceMode.text}">
+													</viewerForms:htmlInputField>
 
-<!-- 														DESCRIPTION TEXT -->
-<!-- 														<div class="form-group form-row"> -->
-<!-- 															<div class="col-12 admin__form-input"> -->
-<!-- 																<h:inputTextarea id="adminMaintenanceModeText" -->
-<!-- 																	styleClass="form-control" -->
-<!-- 																	value="#{adminBean.maintenanceMode.text}"> -->
-<!-- 																	<f:passThroughAttribute name="aria-label" value="#{msg.description}" /> -->
-<!-- 																</h:inputTextarea> -->
-<!-- 															</div> -->
-<!-- 														</div> -->
-<!-- 														TAB CONTENT EOL -->
-<!-- 													</div> -->
-<!-- 													ADMIN BLOCK EOL -->
-<!-- 												</div> -->
-											</h:panelGroup>
+												</viewerForms:inputFormBlock>
 
+												<!-- FINAL ACTIONS CANCEL + SAVE -->
+												<div
+													class="row no-gutters justify-content-end admin__final-actions mb-0">
+													<h:commandLink id="cancelUpdateMaintenaanceModeButton"
+														type="submit" styleClass="btn admin__cancel-button"
+														value="#{msg.cancel}" action="pretty:adminMaintenanceMode"
+														immediate="true" />
+													<h:commandButton id="saveAddCampaignButton"
+														styleClass="btn btn--success" value="#{msg.button__save}"
+														action="#{adminBean.saveMaintenanceModeAction}" />
+												</div>
 
-											<!-- FINAL ACTIONS CANCEL + SAVE -->
-											<div
-												class="row no-gutters justify-content-end admin__final-actions mb-0">
-												<h:commandLink id="cancelUpdateMaintenaanceModeButton" type="submit"
-													styleClass="btn admin__cancel-button" value="#{msg.cancel}"
-													action="pretty:adminMaintenanceMode" immediate="true" />
-												<h:commandButton id="saveAddCampaignButton"
-													styleClass="btn btn--success" value="#{msg.button__save}"
-													action="#{adminBean.saveMaintenanceModeAction}" />
 											</div>
 
 										</div>
