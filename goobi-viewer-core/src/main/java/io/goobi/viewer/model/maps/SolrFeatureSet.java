@@ -169,7 +169,6 @@ public class SolrFeatureSet extends FeatureSet {
      * getCoordinateSearchQueryTemplate.
      * </p>
      *
-     * @param featureSet a {@link io.goobi.viewer.model.maps.SolrFeatureSet} object
      * @return String
      * @throws URISyntaxException
      */

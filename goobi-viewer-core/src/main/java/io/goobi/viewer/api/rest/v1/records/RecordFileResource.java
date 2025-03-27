@@ -40,17 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.StreamingOutput;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -82,10 +71,21 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.translations.language.Language;
+import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.record.views.FileType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * @author florian
@@ -203,6 +203,7 @@ public class RecordFileResource {
     @Operation(tags = { "records" }, summary = "Get media files of record")
     @CORSBinding
     @MediaResourceBinding
+    @RecordFileDownloadBinding
     public Response getMediaFile(
             @Parameter(description = "Media file name") @PathParam("filename") String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
@@ -215,8 +216,7 @@ public class RecordFileResource {
             throw new ContentNotFoundException("Media file " + filename + " not found");
         }
 
-        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, filename,
-                IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES).isGranted();
+        boolean access = checkMediaFileAccess(filename);
         if (!access) {
             throw new ServiceNotAllowedException("Access to source file " + filename + " not allowed");
         }
@@ -264,6 +264,20 @@ public class RecordFileResource {
         };
         return Response.ok(so, mimeType).build();
 
+    }
+
+    protected boolean checkMediaFileAccess(String filename) throws IndexUnreachableException, DAOException {
+
+        try {
+            if (BaseMimeType.IMAGE == BaseMimeType.getByName(FileTools.getMimeTypeFromFile(Path.of(filename)))) {
+                return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, filename,
+                        IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES).isGranted();
+            }
+        } catch (IOException e) {
+            logger.warn("Unable to read mimetype of file {}", filename);
+        }
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, filename,
+                IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES).isGranted();
     }
 
     @GET

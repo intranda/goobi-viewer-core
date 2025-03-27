@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.citation;
 
+import java.time.DateTimeException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -73,4 +74,20 @@ class CitationTest extends AbstractTest {
         // Assertions.assertEquals("Zahn, T. (2017-04-11). Thrawn.", s, s);
         Assertions.assertEquals("Zahn, T. (2017). Thrawn.", s, s);
     }
+
+    @Test
+    void getCitationString_shouldThrowException() throws Exception {
+        Map<String, List<String>> fields = new HashMap<>();
+        fields.put(CitationDataProvider.AUTHOR, Collections.singletonList("Zahn, Timothy"));
+        fields.put(CitationDataProvider.TITLE, Collections.singletonList("Thrawn"));
+        fields.put(CitationDataProvider.ISSUED, Collections.singletonList("1010-19-99/9123-1-"));
+        fields.put(CitationDataProvider.ISBN, Collections.singletonList("9780606412148"));
+
+        CitationProcessorWrapper cpw = new CitationProcessorWrapper();
+        Citation cit = new Citation("id", cpw.getCitationProcessor("apa"), cpw.getCitationItemDataProvider(), CSLType.BOOK, fields);
+
+        Assertions.assertThrows(DateTimeException.class, () -> cit.getCitationString("html"), "No exception thrown for illegal date time");
+
+    }
+
 }

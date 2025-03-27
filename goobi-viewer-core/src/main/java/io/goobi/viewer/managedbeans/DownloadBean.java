@@ -29,12 +29,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 
-import jakarta.faces.context.ExternalContext;
-import jakarta.faces.context.FacesContext;
-import jakarta.faces.view.ViewScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,6 +43,13 @@ import io.goobi.viewer.exceptions.DownloadException;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.EPUBDownloadJob;
 import io.goobi.viewer.model.job.download.PDFDownloadJob;
+import io.goobi.viewer.model.statistics.usage.RequestType;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * <p>
@@ -191,6 +192,19 @@ public class DownloadBean implements Serializable {
                 return;
             }
             throw e;
+        }
+        if (ec.getRequest() instanceof HttpServletRequest) {
+            try {
+                DataManager.getInstance()
+                        .getUsageStatisticsRecorder()
+                        .recordRequest(RequestType.FILE_DOWNLOAD, this.message.getProperties().get("pi"), (HttpServletRequest) ec.getRequest());
+            } catch (DAOException e) {
+                logger.error("Cannot count usage statistics for file download of {}. Error connecting to database: {}",
+                        this.message.getProperties().get("pi"), e.toString());
+            }
+        } else {
+            logger.warn("Cannot count usage statistics for file download of {}. Request object is not of expected type {}",
+                    this.message.getProperties().get("pi"), HttpServletRequest.class);
         }
         // os.flush();
         // Important! Otherwise JSF will attempt to render the response which obviously
