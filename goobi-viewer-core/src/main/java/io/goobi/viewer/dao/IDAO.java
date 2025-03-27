@@ -2684,7 +2684,6 @@ public interface IDAO {
     /**
      * Returns the only existing instance of MaintenanceMode.
      *
-     * @param id a long.
      * @return a {@link io.goobi.viewer.model.security.user.IpRange} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -2695,7 +2694,7 @@ public interface IDAO {
      * updateMaintenanceMode.
      * </p>
      *
-     * @param ipRange a {@link io.goobi.viewer.model.security.user.IpRange} object.
+     * @param maintenanceMode a {@link io.goobi.viewer.model.security.user.IpRange} object.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */

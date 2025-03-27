@@ -97,7 +97,6 @@ public class MaintenanceMode implements IPolyglott {
     /**
      *
      * @return Text value in the current language
-     * @should return correct value
      */
     public String getText() {
         return getText(selectedLocale.getLanguage());
@@ -106,7 +105,6 @@ public class MaintenanceMode implements IPolyglott {
     /**
      * @param language
      * @return Text value in the given language
-     * @should return correct value
      */
     public String getText(String language) {
         return Translation.getTranslation(translations, language, "text");
@@ -117,8 +115,7 @@ public class MaintenanceMode implements IPolyglott {
      * setText.
      * </p>
      *
-     * @should set value correctly
-     * @param description a {@link java.lang.String} object.
+     * @param text a {@link java.lang.String} object.
      */
     public void setText(String text) {
         setText(text, selectedLocale.getLanguage());
@@ -166,21 +163,25 @@ public class MaintenanceMode implements IPolyglott {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isComplete(Locale locale) {
         return StringUtils.isNotBlank(getText(locale.getLanguage()));
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isValid(Locale locale) {
         return true;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isEmpty(Locale locale) {
         return StringUtils.isBlank(getText(locale.getLanguage()));
     }
 
+    /** {@inheritDoc} */
     @Override
     public Locale getSelectedLocale() {
         return selectedLocale;
