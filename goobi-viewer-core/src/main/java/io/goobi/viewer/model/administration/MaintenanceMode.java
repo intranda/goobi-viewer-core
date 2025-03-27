@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,7 +24,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import software.amazon.awssdk.utils.StringUtils;
 
 @Entity
 @Table(name = "maintenance_mode")
