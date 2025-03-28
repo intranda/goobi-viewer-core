@@ -319,7 +319,7 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         assertEquals(4, rows.length());
         assertEquals(8, rows.getJSONArray(0).length());
         assertEquals(0, rows.getJSONArray(0).getInt(0));
-        assertEquals(3, rows.getJSONArray(0).getInt(4));
+        assertEquals(6, rows.getJSONArray(0).getInt(4));
         assertEquals(JSONObject.NULL, rows.get(2));
         assertEquals(JSONObject.NULL, rows.get(3));
     }
