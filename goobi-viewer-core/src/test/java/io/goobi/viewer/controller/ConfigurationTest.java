@@ -908,7 +908,7 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getSolrUrl_shouldReturnCorrectValue() {
-        assertEquals("https://viewer-testing-index.goobi.io/solr/collection1", DataManager.getInstance().getConfiguration().getSolrUrl());
+        assertEquals("https://viewer-testing-index.goobi.io/solr/current", DataManager.getInstance().getConfiguration().getSolrUrl());
     }
 
     /**

@@ -135,6 +135,7 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
 
     @Test
     void testAddNewArchive() {
+        assertNotNull(possibleDatabases);
         ArchiveManager archiveManager = new ArchiveManager(eadParser);
 
         ArchiveResource newArchive = new ArchiveResource("resource 3", "r3",
@@ -147,6 +148,7 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
 
     @Test
     void testRemoveArchive() {
+        assertNotNull(possibleDatabases);
         ArchiveManager archiveManager = new ArchiveManager(eadParser);
         possibleDatabases.remove(1);
         assertNotNull(archiveManager.getArchive("r2"));
@@ -160,6 +162,7 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
      */
     @Test
     void loadTree_shouldLoadTreeCorrectly() throws Exception {
+        assertNotNull(possibleDatabases);
         ArchiveEntry entry =
                 eadParser.loadDatabase(possibleDatabases.get(0), DataManager.getInstance().getConfiguration().getArchivesLazyLoadingThreshold());
         assertNotNull(entry);

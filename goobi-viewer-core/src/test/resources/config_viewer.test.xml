@@ -79,7 +79,7 @@
 		</metadata>
 
 		<!-- solr: URL to the Solr index core -->
-		<solr>https://viewer-testing-index.goobi.io/solr/collection1</solr>
+		<solr>https://viewer-testing-index.goobi.io/solr/current</solr>
 
 		<!-- dfg-viewer: absolute path to DFG-Viewer for linking in bibliographic data.
             @sourcefileField can contain an optional Solr index field containing a custom record file URL -->

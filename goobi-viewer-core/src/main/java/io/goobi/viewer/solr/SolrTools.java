@@ -793,7 +793,9 @@ public final class SolrTools {
             throw new IllegalArgumentException("filterQuery may not be null");
         }
         String facettifiedField = useFacetField ? SearchHelper.facetifyField(field) : field;
+        logger.error(facettifiedField);
         String fq = SearchHelper.buildFinalQuery(filterQuery, false, SearchAggregationType.NO_AGGREGATION);
+        logger.error(fq);
         QueryResponse qr =
                 DataManager.getInstance()
                         .getSearchIndex()
@@ -829,7 +831,7 @@ public final class SolrTools {
             return Collections.emptyList();
         }
 
-        return getAvailableValuesForField(subthemeDiscriminatorField, SolrConstants.PI + ":*", false);
+        return getAvailableValuesForField(subthemeDiscriminatorField, SolrConstants.PI + ":*", true);
     }
 
     /**
