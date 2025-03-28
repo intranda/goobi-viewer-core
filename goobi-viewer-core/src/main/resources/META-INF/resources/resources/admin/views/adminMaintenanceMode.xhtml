@@ -19,99 +19,83 @@
 	</ui:define>
 
 	<ui:define name="content">
-		
+	
 		<h:panelGroup id="adminMaintenanceModeView"
-			rendered="#{userBean.user.superuser}">
-			<div id="createCampaign" class="cms-create-page">
+			rendered="#{userBean.admin}">
 
-				<!-- BACK TO OVERVIEW -->
-				<h:form rendered="#{crowdsourcingBean.selectedCampaign == null}">
-					<h:commandLink action="pretty:adminCrowdCampaigns">
-						<h:outputText
-							value="#{msg.admin__campaign_crowdsourcing_backToOverview}" />
-					</h:commandLink>
-				</h:form>
+			<h:panelGroup>
+				<div class="admin__title-bar">
+					<h1 class="admin__title">#{msg.admin__maintenance_mode__title}</h1>
+				</div>
 
-				<h:panelGroup>
-					<div class="admin__title-bar">
-						<h1 class="admin__title">#{msg.admin__maintenance_mode__title}</h1>
-					</div>
+				<viewerComponent:adminBreadcrumbs />
 
-					<viewerComponent:adminBreadcrumbs />
+				<div class="admin__content-inner-content">
 
-					<div class="admin__content-inner-content">
-					
-                        <!-- INFO TEXT -->
-                        <div class="admin__info-text">
-                            <h:outputText value="#{msg.admin__maintenance_mode__description_text}" escape="false" />
-                        </div>
-					
-						<h:form id="maintenanceModeForm" prependId="true">
-							<div class="row">
-								<div class="col-12">
-									<!-- CREATE CAMPAIGN WRAPPER -->
-									<div class="admin__content-wrapper">
-										<div class="admin__content-main -refreshHCsticky">
+					<div id="maintenanceModeActivateWrapper"
+						class="admin__maintenance-edit-wrapper">
+						<h:form id="maintenanceModeActivateForm" prependId="false">
+							<!-- INFO TEXT -->
+							<div class="admin__info-text">
+								<h:outputText
+									value="#{msg.admin__maintenance_mode__description_text}"
+									escape="false" />
+							</div>
+							<div class="form-horizontal form-group">
+								<div class="row no-gutters mb-3 align-items-center">
+									<div class="control-label mr-3 admin__form-label">#{msg.admin__maintenance_mode_enabled_label}:</div>
+									<div class="admin__form-input">
+										<div class="col-9 admin__form-input">
 
-											<div>
-												<div class="form-group form-row mb-3">
-													<div class="col-2 control-label admin__form-label">
-														<span>#{msg.admin__maintenance_mode_enabled_label}:</span>
-													</div>
-													<div class="col-9 admin__form-input">
-														<viewerComponent:toggleSwitch
-															name="maintenanceModeEnabledToggle"
-															value="#{adminBean.maintenanceMode.enabled}"
-															render=":messages"
-															toggleTarget="#maintenanceModeTextWrapper"
-															actionListener="#{adminBean.saveMaintenanceModeActionListener}" />
-													</div>
-												</div>
-											</div>
-
-											<div id="maintenanceModeTextWrapper">
-
-												<viewerForms:inputFormBlock
-													title="#{msg.admin__terms_of_use__manage_text}"
-													languageSelector="#{adminBean.maintenanceMode}">
-
-													<viewerForms:htmlInputField label="#{msg.text}"
-														value="#{adminBean.maintenanceMode.text}">
-													</viewerForms:htmlInputField>
-
-												</viewerForms:inputFormBlock>
-
-												<!-- FINAL ACTIONS CANCEL + SAVE -->
-												<div
-													class="row no-gutters justify-content-end admin__final-actions mb-0">
-													<h:commandLink id="cancelUpdateMaintenaanceModeButton"
-														type="submit" styleClass="btn admin__cancel-button"
-														value="#{msg.cancel}" action="pretty:adminMaintenanceMode"
-														immediate="true" />
-													<h:commandButton id="saveAddCampaignButton"
-														styleClass="btn btn--success" value="#{msg.button__save}"
-														action="#{adminBean.saveMaintenanceModeAction}" />
-												</div>
-
-											</div>
-
+											<viewerComponent:toggleSwitch
+												name="maintenanceModeEnabledToggle"
+												value="#{adminBean.maintenanceMode.enabled}"
+												render=":messages"
+												toggleTarget="#maintenanceModeEditWrapper"
+												actionListener="#{adminBean.saveMaintenanceModeActionListener}" />
 										</div>
-
-										<div class="admin__content-side -sticky"></div>
 									</div>
 								</div>
 							</div>
 						</h:form>
-
 					</div>
 
-				</h:panelGroup>
+					<div id="maintenanceModeEditWrapper"
+						class="admin__user-terms-box-editable hide">
+						<div class="form-horizontal form-group">
+							<h:form id="maintenanceModeFormEdit" prependId="true">
 
-			</div>
+								<div id="maintenanceModeTextWrapper">
+
+									<viewerForms:inputFormBlock
+										title="#{msg.admin__terms_of_use__manage_text}"
+										languageSelector="#{adminBean.maintenanceMode}">
+
+										<viewerForms:htmlInputField label="#{msg.text}"
+											value="#{adminBean.maintenanceMode.text}">
+										</viewerForms:htmlInputField>
+
+									</viewerForms:inputFormBlock>
+
+									<!-- FINAL ACTIONS CANCEL + SAVE -->
+									<div
+										class="row no-gutters justify-content-end admin__final-actions mb-0">
+										<h:commandLink id="cancelUpdateMaintenaanceModeButton"
+											type="submit" styleClass="btn admin__cancel-button"
+											value="#{msg.cancel}" action="pretty:adminMaintenanceMode"
+											immediate="true" />
+										<h:commandButton id="saveAddCampaignButton"
+											styleClass="btn btn--success" value="#{msg.button__save}"
+											action="#{adminBean.saveMaintenanceModeAction}" />
+									</div>
+								</div>
+							</h:form>
+						</div>
+					</div>
+				</div>
+			</h:panelGroup>
 		</h:panelGroup>
 	</ui:define>
-
-
 
 	<!-- SIDEBAR -->
 	<ui:define name="sidebar">
