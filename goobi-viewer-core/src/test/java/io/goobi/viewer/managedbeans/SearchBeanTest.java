@@ -750,31 +750,34 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         searchBean.getCurrentSearch().execute(new SearchFacets(), null, 10, null, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         assertEquals(18, searchBean.getCurrentSearch().getHitsCount());
 
+        searchBean.findCurrentHitIndex("AC03456323", 1, true);
+        assertEquals(0, searchBean.getCurrentHitIndex());  
+        
         searchBean.findCurrentHitIndex("PPN9462", 1, true);
-        assertEquals(0, searchBean.getCurrentHitIndex());
-
-        searchBean.findCurrentHitIndex("633114553", 1, true);
         assertEquals(1, searchBean.getCurrentHitIndex());
 
-        searchBean.findCurrentHitIndex("PPN407465633d27302e312e312e27_40636c6173736e756d3d27312e27_407369673d27313527", 1, true);
+        searchBean.findCurrentHitIndex("633114553", 1, true);
         assertEquals(2, searchBean.getCurrentHitIndex());
 
-        searchBean.findCurrentHitIndex("808996762", 1, true);
+        searchBean.findCurrentHitIndex("PPN407465633d27302e312e312e27_40636c6173736e756d3d27312e27_407369673d27313527", 1, true);
         assertEquals(3, searchBean.getCurrentHitIndex());
 
-        searchBean.findCurrentHitIndex("02008011811811", 1, true);
+        searchBean.findCurrentHitIndex("808996762", 1, true);
         assertEquals(4, searchBean.getCurrentHitIndex());
+        
+        searchBean.findCurrentHitIndex("AC16139576", 1, true);
+        assertEquals(5, searchBean.getCurrentHitIndex());
 
-        searchBean.findCurrentHitIndex("iiif_test_image", 1, true);
+        searchBean.findCurrentHitIndex("02008011811811", 1, true);
         assertEquals(6, searchBean.getCurrentHitIndex());
 
-        searchBean.findCurrentHitIndex("339471409", 1, true);
+        searchBean.findCurrentHitIndex("iiif_test_image", 1, true);
         assertEquals(7, searchBean.getCurrentHitIndex());
 
-        searchBean.findCurrentHitIndex("02008012412069", 1, true);
+        searchBean.findCurrentHitIndex("339471409", 1, true);
         assertEquals(8, searchBean.getCurrentHitIndex());
 
-        searchBean.findCurrentHitIndex("02008012412076", 1, true);
+        searchBean.findCurrentHitIndex("02008012412069", 1, true);
         assertEquals(9, searchBean.getCurrentHitIndex());
     }
 
