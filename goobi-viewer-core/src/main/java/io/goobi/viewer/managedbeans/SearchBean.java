@@ -202,6 +202,8 @@ public class SearchBean implements SearchInterface, Serializable {
     private volatile FutureTask<Boolean> downloadReady; //NOSONAR   Future is thread-save
     private volatile FutureTask<Boolean> downloadComplete; //NOSONAR   Future is thread-save
 
+    private String filterQuery = "";
+
     /** Reusable Random object. */
     private Random random = new SecureRandom();
 
@@ -267,7 +269,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public String search() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        return search("");
+        return search(this.filterQuery);
     }
 
     /**
@@ -923,9 +925,18 @@ public class SearchBean implements SearchInterface, Serializable {
         if (StringUtils.isNotEmpty(templateQuery)) {
             sbFilterQuery.append(" +(").append(templateQuery).append(")");
         }
-        if (StringUtils.isNotEmpty(filterQuery)) {
+        if (StringUtils.isNotEmpty(filterQuery) && !filterQuery.startsWith("{!")) {
             sbFilterQuery.append(" +(").append(filterQuery).append(")");
+        } else if (StringUtils.isNotEmpty(filterQuery)) {
+            sbFilterQuery.append(filterQuery);
         }
+
+        if (StringUtils.isNotEmpty(this.filterQuery) && !this.filterQuery.startsWith("{!")) {
+            sbFilterQuery.append(" +(").append(this.filterQuery).append(")");
+        } else if (StringUtils.isNotEmpty(this.filterQuery)) {
+            sbFilterQuery.append(this.filterQuery);
+        }
+
         currentSearch.setCustomFilterQuery(sbFilterQuery.toString().trim());
         // logger.trace("Custom filter query: {}", sbFilterQuery.toString().trim());
 
@@ -3444,6 +3455,14 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public String getCombinedFilterQueryEscaped() {
         return StringTools.encodeUrl(getCombinedFilterQuery());
+    }
+
+    public String getFilterQuery() {
+        return filterQuery;
+    }
+
+    public void setFilterQuery(String filterQuery) {
+        this.filterQuery = filterQuery;
     }
 
     /**

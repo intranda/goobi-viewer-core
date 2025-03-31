@@ -68,7 +68,7 @@
 										tooltipPlacement: "top",
 										navigationSteps: #{configurationBean.pageBrowseEnabled ? configurationBean.pageBrowseSteps : '[1]' },
 										pageUrlTemplate : (page) => `#{request.contextPath}/#{navigationHelper.currentPageType.name}/#{activeDocumentBean.viewManager.pi}/\${page}/`,
-										update: imageOrderChanged,
+										update: typeof imageOrderChanged !== 'undefined' ? imageOrderChanged : undefined,
 										onUpdate: (pageNumber) => changeImageOrder.next(pageNumber),
 										msg: {
 											aria_label__nav_image_controls: "#{msg.aria_label__nav_image_controls}",

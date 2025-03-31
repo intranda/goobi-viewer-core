@@ -43,6 +43,7 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.DateTimeException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -4144,7 +4145,17 @@ public class ViewManager implements Serializable {
                 Citation citation = new Citation(pi, processor, citationProcessorWrapper.getCitationItemDataProvider(),
                         CitationTools.getCSLTypeForDocstrct(topStructElement.getDocStructType(), topStructElement.getDocStructType()),
                         val.getCitationValues());
-                return citation.getCitationString(outputFormat);
+                try {
+                    return citation.getCitationString(outputFormat);
+                } catch (DateTimeException e) {
+                    logger.error("Citeproc encountered exception parsing date: {}", e.toString());
+                    if ("html".equalsIgnoreCase(outputFormat)) {
+                        return "<span style=\"color: red;\">Citation engine encountered exception parsing date: <span style=\"font-weight: bold;\">"
+                                + e.getLocalizedMessage() + "</span></span>";
+                    } else {
+                        return "Citation engine encountered exception parsing date:" + e.getLocalizedMessage();
+                    }
+                }
             }
         }
 
