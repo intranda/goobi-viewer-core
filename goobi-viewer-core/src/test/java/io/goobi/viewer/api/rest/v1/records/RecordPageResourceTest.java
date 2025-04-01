@@ -28,15 +28,20 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_COMMENTS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_NER_TAGS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.net.URI;
+import java.util.Map;
 
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -48,6 +53,7 @@ import de.intranda.api.iiif.presentation.v2.AnnotationList;
 import de.intranda.api.iiif.presentation.v2.Canvas2;
 import de.intranda.api.iiif.presentation.v2.Sequence;
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
+import io.goobi.viewer.controller.DataManager;
 
 /**
  * @author florian
@@ -58,6 +64,7 @@ class RecordPageResourceTest extends AbstractRestApiTest {
     private static final String PI = "PPN743674162";
     private static final String PAGENO = "10";
     private static final String PI_ANNOTATIONS = "PI_1";
+    private static final String PI_SPACE_IN_FILENAME = "ARVIErdm5";
     private static final String PAGENO_ANNOTATIONS = "1";
 
     /**
@@ -168,6 +175,47 @@ class RecordPageResourceTest extends AbstractRestApiTest {
             AnnotationList collection = mapper.readValue(entity, AnnotationList.class);
             assertNotNull(collection);
             assertEquals(3, collection.getResources().size());
+        }
+    }
+    
+
+    @Test
+    void testEscapeFilenamesInUrls() {
+        DataManager.getInstance().getConfiguration().overrideValue("webapi.iiif.rendering.viewer[@enabled]", true);
+        Assertions.assertTrue(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer());
+        DataManager.getInstance().getConfiguration().overrideValue("webapi.iiif.rendering.pdf[@enabled]", true);
+        Assertions.assertTrue(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF());
+
+        String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(PI_SPACE_IN_FILENAME, "1").build();
+        try (Response response = target(url)
+                .request()
+                .get()) {
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            String entity = response.readEntity(String.class);
+            assertNotNull(entity);
+            JSONObject canvas = new JSONObject(entity);
+            JSONArray renderings = null;
+            try {
+                renderings = canvas.getJSONArray("rendering");
+            } catch (JSONException e) {
+                // Fallback for when "rendering" is not an array
+                JSONObject rendering = canvas.getJSONObject("rendering");
+                if (rendering != null) {
+                    renderings = new JSONArray();
+                    renderings.put(rendering);
+                }
+            }
+            assertNotNull(renderings);
+            assertFalse(renderings.isEmpty());
+            Map pdfLink = renderings.toList()
+                    .stream()
+                    .map(Map.class::cast)
+                    .filter(map -> "dcTypes:Image".equals(map.get("@type")))
+                    .findAny()
+                    .orElse(null);
+            assertNotNull(pdfLink, "No PDF link in canvas");
+            String id = (String) pdfLink.get("@id");
+            Assertions.assertTrue(id.contains("erdmagnetisches+observatorium+vi_blatt_5.tif"), "Wrong filename in " + id);
         }
     }
 }
