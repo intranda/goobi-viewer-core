@@ -3220,7 +3220,7 @@ this.findValues = function(featureGroups, filterField) {
 }.bind(this)
 
 this.findEntities = function(featureGroups, filterField) {
-	let entities = featureGroups.flatMap(group => group.markers).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
+	let entities = featureGroups.flatMap(group => group.markers).filter(m => m.feature.properties.entities).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
 	return entities;
 }.bind(this)
 
