@@ -415,7 +415,7 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void getPdfDownloadQuotaForRecord_shouldReturn100IfRecordHasNoQuotaValue() throws Exception {
-        Assertions.assertEquals(100, AccessConditionUtils.getPdfDownloadQuotaForRecord("51419376X"));
+        Assertions.assertEquals(100, AccessConditionUtils.getPdfDownloadQuotaForRecord("34115495_1940"));
     }
 
     /**
