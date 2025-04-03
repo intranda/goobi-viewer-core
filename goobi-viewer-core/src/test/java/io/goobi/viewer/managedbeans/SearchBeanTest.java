@@ -748,7 +748,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         searchBean.getCurrentSearch().setQuery("+DC:dcimage* +ISWORK:true -IDDOC_PARENT:*");
         searchBean.getCurrentSearch().setSortString("SORT_TITLE");
         searchBean.getCurrentSearch().execute(new SearchFacets(), null, 10, null, false, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
-        assertEquals(18, searchBean.getCurrentSearch().getHitsCount());
+        assertEquals(19, searchBean.getCurrentSearch().getHitsCount());
 
         searchBean.findCurrentHitIndex("AC03456323", 1, true);
         assertEquals(0, searchBean.getCurrentHitIndex());  
@@ -770,14 +770,14 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         searchBean.findCurrentHitIndex("02008011811811", 1, true);
         assertEquals(6, searchBean.getCurrentHitIndex());
-
-        searchBean.findCurrentHitIndex("iiif_test_image", 1, true);
+        
+        searchBean.findCurrentHitIndex("ARVIErdm5", 1, true);
         assertEquals(7, searchBean.getCurrentHitIndex());
 
-        searchBean.findCurrentHitIndex("339471409", 1, true);
+        searchBean.findCurrentHitIndex("iiif_test_image", 1, true);
         assertEquals(8, searchBean.getCurrentHitIndex());
 
-        searchBean.findCurrentHitIndex("02008012412069", 1, true);
+        searchBean.findCurrentHitIndex("339471409", 1, true);
         assertEquals(9, searchBean.getCurrentHitIndex());
     }
 
