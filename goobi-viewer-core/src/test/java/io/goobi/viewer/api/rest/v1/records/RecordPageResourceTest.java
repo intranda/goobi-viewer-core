@@ -190,8 +190,8 @@ class RecordPageResourceTest extends AbstractRestApiTest {
         try (Response response = target(url)
                 .request()
                 .get()) {
-            assertEquals(200, response.getStatus(), "Should return status 200");
             String entity = response.readEntity(String.class);
+            assertEquals(200, response.getStatus(), response.getStatusInfo().getReasonPhrase());
             assertNotNull(entity);
             JSONObject canvas = new JSONObject(entity);
             JSONArray renderings = null;
@@ -215,7 +215,7 @@ class RecordPageResourceTest extends AbstractRestApiTest {
                     .orElse(null);
             assertNotNull(pdfLink, "No PDF link in canvas");
             String id = (String) pdfLink.get("@id");
-            Assertions.assertTrue(id.contains("erdmagnetisches+observatorium+vi_blatt_5.tif"), "Wrong filename in " + id);
+            Assertions.assertTrue(id.contains("erdmagnetisches+observatorium+vi_blatt_5.jpg"), "Wrong filename in " + id);
         }
     }
 }
