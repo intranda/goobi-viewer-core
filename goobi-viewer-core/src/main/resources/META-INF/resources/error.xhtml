@@ -59,6 +59,26 @@
                         <h:outputLink value="#{navigationHelper.applicationUrl}">#{msg.returnHome}</h:outputLink>
                     </p>
                 </h:panelGroup>
+                
+                <!-- ERROR GENERAL, NO URL DISPLAY -->
+                <h:panelGroup rendered="#{type == 'general_no_url'}">
+                    <h1 >#{msg.failure}</h1>
+
+                    <p>
+                        <h:outputText value="#{msg.generalError}" escape="false"/><br />
+                        <br />
+                        <h:outputText value="#{msg.details}:" />
+                    </p>
+                    <div class="alert alert-danger" role="alert">
+                        <h:outputText rendered="#{errMsg != null}" value="#{errMsg}" />
+                        <h:outputText rendered="#{errMsg == null}" value="#{flash.keep.errorDetails}" />
+                    </div>
+                    <p>
+                        <h:outputLink rendered="#{!empty header['referer']}" value="#{header['referer']}">#{msg.returnToPreviousPage}</h:outputLink>
+                        <br />
+                        <h:outputLink value="#{navigationHelper.applicationUrl}">#{msg.returnHome}</h:outputLink>
+                    </p>
+                </h:panelGroup>
 
                 <!-- ERROR RECORD DELETED -->
 				<h:panelGroup rendered="#{type == 'recordDeleted' or typeHttp == 'recordDeleted'}">

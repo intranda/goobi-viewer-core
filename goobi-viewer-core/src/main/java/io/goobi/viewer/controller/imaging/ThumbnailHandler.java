@@ -659,7 +659,7 @@ public class ThumbnailHandler {
         }
         ImageFileFormat format = getImageFileFormat(page, formatString);
         if (format == null) {
-            logger.warn("Format not recognized for: {}", path);
+            logger.warn("Format not recognized for: {} (mime type: {}", path, page.getMimeType());
             return "";
 
         }

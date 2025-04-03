@@ -25,8 +25,8 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -50,15 +50,35 @@ public class MessagesBean {
         return "none";
     }
 
-    private String translate(String value, Locale language) {
+    private static String translate(String value, Locale language) {
         return ViewerResourceBundle.getTranslation(value, language);
     }
 
-    private IMetadataValue getTranslations(String value) {
+    private static IMetadataValue getTranslations(String value) {
         return ViewerResourceBundle.getTranslations(value);
     }
 
     public String cleanHtml(String html) {
         return Jsoup.clean(html, Safelist.relaxed());
+    }
+
+    /**
+     * 
+     * @param msg
+     * @param params
+     * @return msg with params
+     */
+    public String addMessageParams(String msg, String... params) {
+        if (msg == null) {
+            return null;
+        }
+
+        if (params != null && params.length > 0) {
+            for (int i = 0; i < params.length; ++i) {
+                msg = msg.replace("{" + i + "}", params[i]);
+            }
+        }
+
+        return msg;
     }
 }

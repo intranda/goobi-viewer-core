@@ -30,6 +30,8 @@ import java.util.Map;
 import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.Test;
 
+import de.intranda.metadata.multilanguage.IMetadataValue;
+
 class MetadataContainerTest {
 
     @Test
@@ -85,6 +87,27 @@ class MetadataContainerTest {
         assertEquals("curator", record.getValues("MD_ROLE", null).get(0));
         assertEquals("curator", record.getValues("MD_ROLE").get(0));
         assertEquals("Curateur.rice", record.getValues("MD_ROLE", Locale.FRANCE).get(0));
+    }
+
+    @Test
+    void test_getPartiallyTranslatedValues() {
+        SolrDocument main = new SolrDocument(Map.of(
+                "PI", "1234",
+                "NORM_ALTNAME_LANG_EN", List.of("Saltbourg")));
+
+        SolrDocument doc = new SolrDocument(Map.of(
+                "MD_LOCATION", List.of("Salzburg Stadt"),
+                "NORM_OFFICIALNAME", List.of("Salzburg"),
+                "NORM_ALTNAME", List.of("Stadt Salzburg"),
+                "NORM_ALTNAME_LANG_FR", List.of("Salzbourg"),
+                "NORM_ALTNAME_LANG_IT", List.of("Salisburgo"),
+                "NORM_ALTNAME_LANG_PL", List.of("Salzburgu")));
+
+        MetadataContainer record = MetadataContainer.createMetadataEntity(main, List.of(doc), e -> true, e -> true);
+        assertEquals("Salzbourg", record.getFirstValue("NORM_ALTNAME", Locale.FRANCE));
+        assertEquals("Stadt Salzburg", record.getFirstValue("NORM_ALTNAME", Locale.ENGLISH));
+
+        IMetadataValue md = record.getFirst("NORM_ALTNAME");
     }
 
 }

@@ -34,7 +34,7 @@
                             <div class="admin__boxed-entry -no-actions -w33">
                                 <div class="admin__dashboard-user-welcome">
                                 	<div class="admin__dashboard-user-welcome-left">
-	                                    <h2>#{msg.admin__dashboard_hello} <h:outputText value="#{userBean.user.nickName}" escape="true" /></h2>
+	                                    <h2>#{msg.admin__dashboard_hello}<h:outputText value=" #{userBean.user.nickName}" escape="true" /></h2>
 	                                    <p>#{msg.admin__dashboard_documentation}:<br/>
 	                                        <a class="-bluelink" href="https://docs.goobi.io" target="_blank" rel="noopener">https://docs.goobi.io</a>
 	                                    </p>
@@ -350,7 +350,7 @@
                             <!-- RSS FEED -->
                             <ui:fragment rendered="#{searchBean.solrIndexReachable and configurationBean.displaySidebarRssFeed}">
 	                            <div class="admin__boxed-entry -no-actions -w33">
-	                                <ui:include src="/resources/includes/rssFeed.xhtml" />
+	                            	<widgetComponent:widget_rssFeed/>
 	                            </div>
                             </ui:fragment>
 

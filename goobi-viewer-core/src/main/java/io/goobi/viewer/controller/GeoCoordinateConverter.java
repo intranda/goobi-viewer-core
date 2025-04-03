@@ -40,9 +40,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.UriBuilder;
-
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -73,6 +70,8 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.servlets.IdentifierResolver;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * Utility methods for converting geo-coordinated between different formats
@@ -82,6 +81,7 @@ import io.goobi.viewer.solr.SolrTools;
  */
 public class GeoCoordinateConverter {
 
+    private static final int MAX_QUERY_RESULTS = 20_000;
     private static final Logger logger = LogManager.getLogger(GeoCoordinateConverter.class);
     protected static final String POINT_LAT_LNG_PATTERN = "([\\dE.-]+)[\\s/]*([\\dE.-]+)";
     protected static final String POLYGON_LAT_LNG_PATTERN = "POLYGON\\(\\(([\\dE.-]+[\\s/]*[\\dE.-]+[,\\s]*)+\\)\\)"; //NOSONAR
@@ -184,7 +184,7 @@ public class GeoCoordinateConverter {
 
         QueryResponse response = DataManager.getInstance()
                 .getSearchIndex()
-                .search(finalQuery, 0, 10_000, null, null, getSolrFieldsForMainQuery(coordinateFields, markerTitleField, aggregateResults),
+                .search(finalQuery, 0, MAX_QUERY_RESULTS, null, null, getSolrFieldsForMainQuery(coordinateFields, markerTitleField, aggregateResults),
                         filterQueries, params);
         SolrDocumentList docs = response.getResults();
 
@@ -192,7 +192,8 @@ public class GeoCoordinateConverter {
             String expandQuery = useQuery.replaceAll("\\{\\!join[^}]+}", "");
             QueryResponse expandResponse = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(expandQuery, 0, 10_000, null, null, getSolrFieldsForExpandQuery(coordinateFields, markerTitleField), filterQueries,
+                    .search(expandQuery, 0, MAX_QUERY_RESULTS, null, null, getSolrFieldsForExpandQuery(coordinateFields, markerTitleField),
+                            filterQueries,
                             params);
             SolrDocumentList expandDocs = expandResponse.getResults();
 

@@ -23,7 +23,7 @@ package io.goobi.viewer.api.rest.v1.authentication;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import org.junit.jupiter.api.Test;
 
@@ -75,7 +75,7 @@ class AuthenticationEndpointTest extends AbstractRestApiTest {
                 .request()
                 .get()) {
             assertEquals(403, response.getStatus(), "Should return status 403");
-            assertEquals(AuthenticationEndpoint.REASON_PHRASE_NO_PROVIDER_FOUND, response.getStatusInfo().getReasonPhrase());
+            assertEquals(AuthenticationEndpoint.REASON_PHRASE_NO_PROVIDERS_CONFIGURED, response.getStatusInfo().getReasonPhrase());
         }
     }
 }

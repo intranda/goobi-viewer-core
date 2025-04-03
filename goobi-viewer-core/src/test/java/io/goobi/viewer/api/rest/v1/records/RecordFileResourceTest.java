@@ -26,31 +26,17 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_ALTO;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_PLAINTEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_SOURCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_FILES_TEI;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
-import java.util.Map;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.apache.commons.lang3.StringUtils;
-import org.jdom2.JDOMException;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
-import io.goobi.viewer.controller.DataManager;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @author florian
@@ -59,7 +45,6 @@ import io.goobi.viewer.controller.DataManager;
 class RecordFileResourceTest extends AbstractRestApiTest {
 
     private static final String PI = "PPN743674162";
-    private static final String PI_SPACE_IN_FILENAME = "ARVIErdm5";
     private static final String FILENAME = "00000010";
 
     /**
@@ -82,12 +67,9 @@ class RecordFileResourceTest extends AbstractRestApiTest {
 
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordFileResource#getAlto(java.lang.String)}.
-     *
-     * @throws IOException
-     * @throws JDOMException
      */
     @Test
-    void testGetAlto() throws JDOMException, IOException {
+    void testGetAlto() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_ALTO).params(PI, FILENAME + ".xml").build();
         try (Response response = target(url)
                 .request()
@@ -101,13 +83,10 @@ class RecordFileResourceTest extends AbstractRestApiTest {
 
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordFileResource#getPlaintext(java.lang.String)}.
-     *
-     * @throws IOException
-     * @throws JDOMException
      */
     @Test
-    void testGetPlaintext() throws JDOMException, IOException {
-        String url = urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(PI, FILENAME + ".txt").build();
+    void testGetPlaintext() {
+        String url = urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(PI, FILENAME + ".xml").build();
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.TEXT_PLAIN)
@@ -120,12 +99,9 @@ class RecordFileResourceTest extends AbstractRestApiTest {
 
     /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordFileResource#getTEI(java.lang.String)}.
-     *
-     * @throws IOException
-     * @throws JDOMException
      */
     @Test
-    void testGetTEI() throws JDOMException, IOException {
+    void testGetTEI() {
         String url = urls.path(RECORDS_FILES, RECORDS_FILES_TEI).params(PI, FILENAME + ".xml").build();
         try (Response response = target(url)
                 .request()
@@ -168,46 +144,6 @@ class RecordFileResourceTest extends AbstractRestApiTest {
                 .request()
                 .get()) {
             assertEquals(404, response.getStatus(), "Should return status 404");
-        }
-    }
-
-    @Test
-    void testEscapeFilenamesInUrls() {
-        DataManager.getInstance().getConfiguration().overrideValue("webapi.iiif.rendering.viewer[@enabled]", true);
-        Assertions.assertTrue(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer());
-        DataManager.getInstance().getConfiguration().overrideValue("webapi.iiif.rendering.pdf[@enabled]", true);
-        Assertions.assertTrue(DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF());
-
-        String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(PI_SPACE_IN_FILENAME, "1").build();
-        try (Response response = target(url)
-                .request()
-                .get()) {
-            assertEquals(200, response.getStatus(), "Should return status 200");
-            String entity = response.readEntity(String.class);
-            assertNotNull(entity);
-            JSONObject canvas = new JSONObject(entity);
-            JSONArray renderings = null;
-            try {
-                renderings = canvas.getJSONArray("rendering");
-            } catch (JSONException e) {
-                // Fallback for when "rendering" is not an array
-                JSONObject rendering = canvas.getJSONObject("rendering");
-                if (rendering != null) {
-                    renderings = new JSONArray();
-                    renderings.put(rendering);
-                }
-            }
-            assertNotNull(renderings);
-            assertFalse(renderings.isEmpty());
-            Map pdfLink = renderings.toList()
-                    .stream()
-                    .map(object -> (Map) object)
-                    .filter(map -> "dcTypes:Image".equals(map.get("@type")))
-                    .findAny()
-                    .orElse(null);
-            assertNotNull(pdfLink, "No PDF link in canvas");
-            String id = (String) pdfLink.get("@id");
-            Assertions.assertTrue(id.contains("erdmagnetisches+observatorium+vi_blatt_5.tif"), "Wrong filename in " + id);
         }
     }
 }

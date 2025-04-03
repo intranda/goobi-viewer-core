@@ -2,6 +2,9 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
     <composite:interface>
@@ -13,6 +16,19 @@
     <composite:implementation>
 		<ui:fragment
 		    rendered="#{cc.attrs.visible and (activeDocumentBean.toc.hasChildren)}">
+			
+			<script>
+				function updateToc(message) {
+					let info = JSON.parse(message);
+					if(info.iddoc) {
+						let selector = "[data-iddoc='iddoc_"+info.iddoc+"']";
+						document.querySelectorAll(".widget-toc__element.active, .widget-toc__element .active").forEach(ele => ele.classList.remove("active"));
+						document.querySelector(selector)?.classList.add("active");
+					}
+				}
+			</script>
+			<o:socket channel="tocUpdateChannel" onmessage="updateToc"></o:socket>
+			
 			<div id="widgetToc" class="widget widget-toc">
                 <!-- OVERLAY -->
                 <div class="widget-toc__overlay"></div>
@@ -20,7 +36,12 @@
 		    	<h:form id="widgetTocForm" prependId="false">
                     <!-- TITLE -->
                     <div class="widget-toc__title">
-                        <h2 >#{msg.sidebarTocAnchor}</h2>
+                        <h2 class="widget__title">
+                        	<span>#{msg.sidebarTocAnchor}</span>
+                        </h2>
+                       	<div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
+							<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+						</div>	
 
                         <!-- EXPAND ALL -->
                         <ui:fragment rendered="#{configurationBean.sidebarTocTreeView and activeDocumentBean.toc.maxTocDepth > 0}">
@@ -51,7 +72,7 @@
                     </div>
 
                     <!-- ELEMENTS -->
-                    <div class="widget-toc__elements">
+                    <div jsf:id="sidebarTocTree" class="widget-toc__elements">
                         <!-- TREE VIEW -->
 		            	<ui:fragment rendered="#{configurationBean.sidebarTocTreeView}">
 							<ul>

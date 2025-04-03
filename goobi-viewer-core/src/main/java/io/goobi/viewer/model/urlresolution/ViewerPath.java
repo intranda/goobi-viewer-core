@@ -25,7 +25,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 

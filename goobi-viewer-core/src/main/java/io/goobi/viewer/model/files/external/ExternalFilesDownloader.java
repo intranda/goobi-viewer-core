@@ -33,8 +33,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipInputStream;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Response.Status;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -90,8 +90,7 @@ public class ExternalFilesDownloader {
     public static boolean resourceExists(URI uri) {
         logger.trace("checking url {}", uri);
         switch (uri.getScheme()) {
-            case "http":
-            case "https":
+            case "http", "https":
                 try {
                     return checkHttpResource(uri);
                 } catch (IOException e) {
@@ -162,8 +161,8 @@ public class ExternalFilesDownloader {
                                 "Aborted extraction of archive at " + uri + " because of maximum archive size violation: " + e.getMessage());
                     }
                 }
-            case 401:
-                // fallthrough
+                logger.warn("Error code: {}", response.getStatusLine().getStatusCode());
+                throw new IOException(response.getStatusLine().getReasonPhrase());
             default:
                 logger.warn("Error code: {}", response.getStatusLine().getStatusCode());
                 throw new IOException(response.getStatusLine().getReasonPhrase());

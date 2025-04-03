@@ -22,27 +22,42 @@
 package io.goobi.viewer.model.security.authentication;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
-import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
-import org.apache.oltu.oauth2.common.OAuthProviderType;
-import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
-import org.apache.oltu.oauth2.common.message.types.ResponseType;
-import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
+
+import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.JsonTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
-import io.goobi.viewer.servlets.openid.OAuthServlet;
 
 /**
  * <p>
@@ -56,16 +71,29 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     /** Constant <code>TYPE_OPENID="openId"</code> */
     public static final String TYPE_OPENID = "openId";
 
+    /** OAuth discovery URI. */
+    private String discoveryUri;
     /** OAuth client ID. */
     private String clientId;
     /** OAuth client secret. */
     private String clientSecret;
     /** Token endpoint URI. */
-    private String tokenEndpoint = url + "/token";
+    private String tokenEndpoint;
     /** OpenID servlet URI. Not to be confused with <code>HttpAuthenticationProvider.redirectUrl</code> */
-    private String redirectionEndpoint = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL;
-    /** Scope. */
+    private String redirectionEndpoint =
+            BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/api/v1" + ApiUrls.AUTH + ApiUrls.AUTH_OAUTH;
+    /** OAuth parameter jwks_uri. */
+    private String jwksUri;
+    /** OAuth parameter scope. */
     private String scope = "openid email";
+    /** OAuth parameter response_type. */
+    private String responseType = "code";
+    /** OAuth parameter response_mode. */
+    private String responseMode;
+    /** OAuth parameter issuer. */
+    private String issuer;
+    /** Token check delay (milliseconds). */
+    private long tokenCheckDelay = 0;
 
     private String thirdPartyLoginUrl;
     private String thirdPartyLoginApiKey;
@@ -98,6 +126,257 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         super(name, label, TYPE_OPENID, url, image, timeoutMillis);
         this.clientId = clientId;
         this.clientSecret = clientSecret;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException {
+        ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+
+        // Generate nonce
+        byte[] secureBytes = new byte[64];
+        new SecureRandom().nextBytes(secureBytes);
+        String nonce = Base64.getUrlEncoder().encodeToString(secureBytes);
+        HttpSession session = (HttpSession) ec.getSession(false);
+        session.setAttribute("openIDNonce", nonce);
+
+        // Populate parameters via OpenID Discovery, if not yet set
+        doDiscovery();
+
+        if (url == null) {
+            throw new AuthenticationProviderException("endpoint not configured");
+        }
+
+        try {
+            oAuthState =
+                    new StringBuilder(UUID.randomUUID().toString()).append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).toString();
+            DataManager.getInstance().getAuthResponseListener().register(this);
+
+            URIBuilder builder = new URIBuilder(url);
+            builder.addParameter("client_id", clientId);
+            builder.addParameter("response_type", responseType);
+            builder.addParameter("scope", scope);
+            builder.addParameter("state", oAuthState);
+            builder.addParameter("nonce", nonce);
+            if (redirectionEndpoint != null) {
+                builder.addParameter("redirect_uri", redirectionEndpoint);
+            }
+            if (responseMode != null) {
+                builder.addParameter("response_mode", responseMode);
+            }
+
+            String uri = builder.build().toString();
+            // logger.trace("uri: {}", uri);
+
+            ec.redirect(uri);
+
+            return CompletableFuture.supplyAsync(() -> {
+                synchronized (responseLock) {
+                    try {
+                        //                        long startTime = System.currentTimeMillis();
+                        //                        while (System.currentTimeMillis() - startTime < getTimeoutMillis()) {
+                        responseLock.wait(getTimeoutMillis());
+                        //                        }
+                        return this.loginResult;
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), new AuthenticationProviderException(e));
+                    }
+                }
+            });
+
+        } catch (IOException | URISyntaxException e) {
+            throw new AuthenticationProviderException(e);
+        }
+    }
+
+    /**
+     * Tries to find or create a valid {@link io.goobi.viewer.model.security.user.User} based on the given json object. Generates a
+     * {@link io.goobi.viewer.model.security.authentication.LoginResult} containing the given request and response and either an optional containing
+     * the user or nothing if no user was found, or a {@link io.goobi.viewer.model.security.authentication.AuthenticationProviderException} if an
+     * internal error occured during login If this method is not called within {@link #getTimeoutMillis()} ms after calling
+     * {@link #login(String, String)}, a loginResponse is created containing an appropriate exception. In any case, the future returned by
+     * {@link #login(String, String)} is resolved.
+     *
+     * @param jwt {@link DecodedJWT}
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
+     * @return a {@link java.util.concurrent.Future} object.
+     */
+    public Future<Boolean> completeLogin(DecodedJWT jwt, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            if (jwt == null) {
+                throw new AuthenticationProviderException("received no jwt object");
+            }
+
+            String email = null;
+            String sub = null;
+            if (jwt.getClaim("email") != null) {
+                email = jwt.getClaim("email").asString();
+            }
+            if (jwt.getClaim("sub") != null) {
+                sub = jwt.getClaim("sub").asString();
+            }
+
+            // Third party fallback
+            if (email == null && thirdPartyLoginScope != null && jwt.getClaim(thirdPartyLoginScope) != null && thirdPartyLoginApiKey != null
+                    && thirdPartyLoginReqParamDef != null && thirdPartyLoginUrl != null) {
+                String data = jwt.getClaim(thirdPartyLoginScope).asString();
+                JSONArray array = new JSONArray();
+                JSONObject json = new JSONObject();
+                array.put(data);
+                json.put(thirdPartyLoginReqParamDef, array);
+                final StringEntity entity = new StringEntity(json.toString());
+
+                HttpPost externalRequest = new HttpPost(thirdPartyLoginUrl);
+                String[] thirdPartyLoginApiKeyParams = thirdPartyLoginApiKey.split(" ");
+                externalRequest.addHeader(thirdPartyLoginApiKeyParams[0], thirdPartyLoginApiKeyParams[1]);
+                externalRequest.addHeader("content-type", "application/json");
+                externalRequest.setEntity(entity);
+
+                CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+                HttpResponse externalResponse = httpClient.execute(externalRequest);
+
+                JSONObject externalResponseObj = new JSONObject(EntityUtils.toString(externalResponse.getEntity()));
+                email = JsonTools.getNestedValue(externalResponseObj, thirdPartyLoginClaim);
+            }
+
+            User user = null;
+            if (email != null) {
+                String comboSub = getName().toLowerCase() + ":" + sub;
+                // Retrieve user by sub
+                if (sub != null) {
+                    user = DataManager.getInstance().getDao().getUserByOpenId(comboSub);
+                    if (user != null) {
+                        logger.debug("Found user {} via OAuth sub '{}'.", user.getId(), comboSub);
+                    }
+                }
+                // If not found, try email
+                if (user == null) {
+                    user = DataManager.getInstance().getDao().getUserByEmail(email);
+                    if (user != null && sub != null) {
+                        user.getOpenIdAccounts().add(comboSub);
+                        logger.debug("Updated user {} - added OAuth sub '{}'.", user.getId(), comboSub);
+                    }
+                }
+                // If still not found, create a new user
+                if (user == null) {
+                    user = new User();
+                    user.setActive(true);
+                    user.setEmail(email);
+                    if (sub != null) {
+                        user.getOpenIdAccounts().add(comboSub);
+                    }
+                    logger.debug("Created new user.");
+                }
+                // Add to bean and persist
+                if (user.getId() == null) {
+                    if (!DataManager.getInstance().getDao().addUser(user)) {
+                        logger.error("Could not add user to DB.");
+                    }
+                } else {
+                    if (!DataManager.getInstance().getDao().updateUser(user)) {
+                        logger.error("Could not update user in DB.");
+                    }
+                }
+            }
+            this.loginResult = new LoginResult(request, response, Optional.ofNullable(user), false);
+        } catch (DAOException | IOException e) {
+            this.loginResult = new LoginResult(request, response, new AuthenticationProviderException(e));
+        } catch (AuthenticationProviderException e) {
+            this.loginResult = new LoginResult(request, response, e);
+        } finally {
+            synchronized (responseLock) {
+                responseLock.notifyAll();
+            }
+        }
+        return this.loginResult.isRedirected(getTimeoutMillis());
+    }
+
+    void doDiscovery() {
+        if (this.discoveryUri == null) {
+            return;
+        }
+
+        logger.trace("OpenID discovery URI: {}", this.discoveryUri);
+        try {
+            String responseBody = NetTools.getWebContentGET(this.discoveryUri);
+            JSONObject discoveryObj = new JSONObject(responseBody);
+            for (String field : discoveryObj.keySet()) {
+                // logger.trace("{}:{}", field, discoveryObj.get(field));
+                switch (field) {
+                    case "authorization_endpoint":
+                        if (this.url == null) {
+                            this.url = discoveryObj.getString(field);
+                            logger.trace("Using {} from discovery: {}", field, url);
+                        }
+                        break;
+                    case "issuer":
+                        if (this.issuer == null) {
+                            this.issuer = discoveryObj.getString(field);
+                            logger.trace("Using {} from discovery: {}", field, issuer);
+                        }
+                        break;
+                    case "jwks_uri":
+                        if (this.jwksUri == null) {
+                            this.jwksUri = discoveryObj.getString(field);
+                            logger.trace("Using {} from discovery: {}", field, jwksUri);
+                        }
+                        break;
+                    case "token_endpoint":
+                        if (this.tokenEndpoint == null) {
+                            this.tokenEndpoint = discoveryObj.getString(field);
+                            logger.trace("Using {} from discovery: {}", field, tokenEndpoint);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } catch (IOException | HTTPException e) {
+            logger.error(e.getMessage());
+        }
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void logout() throws AuthenticationProviderException {
+        //noop
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean allowsPasswordChange() {
+        return false;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean allowsNicknameChange() {
+        return true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean allowsEmailChange() {
+        return false;
+    }
+
+    /**
+     * @return the discoveryUri
+     */
+    public String getDiscoveryUri() {
+        return discoveryUri;
+    }
+
+    /**
+     * @param discoveryUri the discoveryUri to set
+     * @return this
+     */
+    public OpenIdProvider setDiscoveryUri(String discoveryUri) {
+        this.discoveryUri = discoveryUri;
+        return this;
     }
 
     /**
@@ -141,6 +420,22 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     }
 
     /**
+     * @return the jwksUri
+     */
+    public String getJwksUri() {
+        return jwksUri;
+    }
+
+    /**
+     * @param jwksUri the jwksUri to set
+     * @return this
+     */
+    public OpenIdProvider setJwksUri(String jwksUri) {
+        this.jwksUri = jwksUri;
+        return this;
+    }
+
+    /**
      * @return the redirectionEndpoint
      */
     public String getRedirectionEndpoint() {
@@ -176,6 +471,70 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         return this;
     }
 
+    /**
+     * @return the responseType
+     */
+    public String getResponseType() {
+        return responseType;
+    }
+
+    /**
+     * @param responseType the responseType to set
+     * @return this
+     */
+    public OpenIdProvider setResponseType(String responseType) {
+        this.responseType = responseType;
+        return this;
+    }
+
+    /**
+     * @return the responseMode
+     */
+    public String getResponseMode() {
+        return responseMode;
+    }
+
+    /**
+     * @param responseMode the responseMode to set
+     * @return this
+     */
+    public OpenIdProvider setResponseMode(String responseMode) {
+        this.responseMode = responseMode;
+        return this;
+    }
+
+    /**
+     * @return the issuer
+     */
+    public String getIssuer() {
+        return issuer;
+    }
+
+    /**
+     * @param issuer the issuer to set
+     * @return this
+     */
+    public OpenIdProvider setIssuer(String issuer) {
+        this.issuer = issuer;
+        return this;
+    }
+
+    /**
+     * @return the tokenCheckDelay
+     */
+    public long getTokenCheckDelay() {
+        return tokenCheckDelay;
+    }
+
+    /**
+     * @param tokenCheckDelay the tokenCheckDelay to set
+     * @return this
+     */
+    public OpenIdProvider setTokenCheckDelay(long tokenCheckDelay) {
+        this.tokenCheckDelay = tokenCheckDelay;
+        return this;
+    }
+
     public String getThirdPartyLoginUrl() {
         return thirdPartyLoginUrl;
     }
@@ -207,223 +566,6 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
         }
 
         return this;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#login(java.lang.String, java.lang.String)
-     */
-    /** {@inheritDoc} */
-    @Override
-    public CompletableFuture<LoginResult> login(String loginName, String password) throws AuthenticationProviderException {
-
-        // Apache Oltu
-        try {
-            oAuthState =
-                    new StringBuilder(String.valueOf(System.nanoTime())).append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).toString();
-            OAuthClientRequest request = null;
-            switch (getName().toLowerCase()) {
-                case "google":
-                    request = OAuthClientRequest.authorizationProvider(OAuthProviderType.GOOGLE)
-                            .setResponseType(ResponseType.CODE.name().toLowerCase())
-                            .setClientId(getClientId())
-                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
-                            .setState(oAuthState)
-                            .setScope("openid email")
-                            .buildQueryMessage();
-                    break;
-                case "facebook":
-                    request = OAuthClientRequest.authorizationProvider(OAuthProviderType.FACEBOOK)
-                            .setClientId(getClientId())
-                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
-                            .setState(oAuthState)
-                            .setScope("email")
-                            .buildQueryMessage();
-                    break;
-                case "thirdpartyloginapi":
-                    // Login with help of third party API
-                    request = OAuthClientRequest.authorizationLocation(getUrl())
-                            .setResponseType(ResponseType.CODE.name().toLowerCase())
-                            .setClientId(getClientId())
-                            .setRedirectURI(redirectionEndpoint)
-                            .setState(oAuthState)
-                            .setScope("openid")
-                            .buildQueryMessage();
-                    break;
-                default:
-                    // Other providers
-                    request = OAuthClientRequest.authorizationLocation(getUrl())
-                            .setResponseType(ResponseType.CODE.name().toLowerCase())
-                            .setClientId(getClientId())
-                            .setRedirectURI(redirectionEndpoint)
-                            .setState(oAuthState)
-                            .setScope(scope)
-                            .buildQueryMessage();
-                    break;
-            }
-
-            DataManager.getInstance().getOAuthResponseListener().register(this);
-            if (request != null) {
-                BeanUtils.getResponse().sendRedirect(request.getLocationUri());
-            }
-            return CompletableFuture.supplyAsync(() -> {
-                synchronized (responseLock) {
-                    try {
-                        //                        long startTime = System.currentTimeMillis();
-                        //                        while (System.currentTimeMillis() - startTime < getTimeoutMillis()) {
-                        responseLock.wait(getTimeoutMillis());
-                        //                        }
-                        return this.loginResult;
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        return new LoginResult(BeanUtils.getRequest(), BeanUtils.getResponse(), new AuthenticationProviderException(e));
-                    }
-                }
-            });
-
-        } catch (IOException | OAuthSystemException e) {
-            throw new AuthenticationProviderException(e);
-        }
-    }
-
-    /**
-     * Tries to find or create a valid {@link io.goobi.viewer.model.security.user.User} based on the given json object. Generates a
-     * {@link io.goobi.viewer.model.security.authentication.LoginResult} containing the given request and response and either an optional containing
-     * the user or nothing if no user was found, or a {@link io.goobi.viewer.model.security.authentication.AuthenticationProviderException} if an
-     * internal error occured during login If this method is not called within {@link #getTimeoutMillis()} ms after calling
-     * {@link #login(String, String)}, a loginResponse is created containing an appropriate exception. In any case, the future returned by
-     * {@link #login(String, String)} is resolved.
-     *
-     * @param json The server response as json object. If null, the login request is resolved as failure
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
-     * @return a {@link java.util.concurrent.Future} object.
-     */
-    public Future<Boolean> completeLogin(JSONObject json, HttpServletRequest request, HttpServletResponse response) {
-        try {
-            if (json == null) {
-                throw new AuthenticationProviderException("received no json object");
-            }
-            String email = null;
-            String sub = null;
-            switch (getName().toLowerCase()) {
-                case "google":
-                    // Validate id_token
-                    if (!json.has("iss")) {
-                        logger.error("Google id_token validation failed - 'iss' value missing");
-                        break;
-                    }
-                    if (!"accounts.google.com".equals(json.get("iss"))) {
-                        logger.error("Google id_token validation failed - 'iss' value: {}", json.get("iss"));
-                        break;
-                    }
-                    if (!json.has("aud")) {
-                        logger.error("Google id_token validation failed - 'aud' value missing");
-                        break;
-                    }
-                    if (!getClientId().equals(json.get("aud"))) {
-                        logger.error("Google id_token validation failed - 'aud' value: {}", json.get("aud"));
-                        break;
-                    }
-                    if (json.has("email")) {
-                        email = (String) json.get("email");
-                    }
-                    if (json.has("sub")) {
-                        sub = (String) json.get("sub");
-                    }
-                    break;
-                case "facebook":
-                    if (json.has("email")) {
-                        email = (String) json.get("email");
-                    }
-                    if (json.has("sub")) {
-                        sub = (String) json.get("sub");
-                    }
-                    break;
-                case "thirdpartyloginapi":
-                    if (json.has("email")) {
-                        email = (String) json.get("email");
-                    }
-                    if (json.has("sub")) {
-                        sub = json.getString("sub");
-                    }
-                    break;
-                default:
-                    if (json.has("email")) {
-                        email = (String) json.get("email");
-                    }
-                    if (json.has("sub")) {
-                        sub = (String) json.get("sub");
-                    }
-                    break;
-            }
-            User user = null;
-            if (email != null) {
-                String comboSub = getName().toLowerCase() + ":" + sub;
-                // Retrieve user by sub
-                if (sub != null) {
-                    user = DataManager.getInstance().getDao().getUserByOpenId(comboSub);
-                    if (user != null) {
-                        logger.debug("Found user {} via OAuth sub '{}'.", user.getId(), comboSub);
-                    }
-                }
-                // If not found, try email
-                if (user == null) {
-                    user = DataManager.getInstance().getDao().getUserByEmail(email);
-                    if (user != null && sub != null) {
-                        user.getOpenIdAccounts().add(comboSub);
-                        logger.debug("Updated user {} - added OAuth sub '{}'.", user.getId(), comboSub);
-                    }
-                }
-                // If still not found, create a new user
-                if (user == null) {
-                    user = new User();
-                    user.setActive(true);
-                    user.setEmail(email);
-                    if (sub != null) {
-                        user.getOpenIdAccounts().add(comboSub);
-                    }
-                    logger.debug("Created new user.");
-                }
-                // Add to bean and persist
-                if (user.getId() == null) {
-                    if (!DataManager.getInstance().getDao().addUser(user)) {
-                        logger.error("Could not add user to DB.");
-                    }
-                } else {
-                    if (!DataManager.getInstance().getDao().updateUser(user)) {
-                        logger.error("Could not update user in DB.");
-                    }
-                }
-            }
-            this.loginResult = new LoginResult(request, response, Optional.ofNullable(user), false);
-        } catch (DAOException e) {
-            this.loginResult = new LoginResult(request, response, new AuthenticationProviderException(e));
-        } catch (AuthenticationProviderException e) {
-            this.loginResult = new LoginResult(request, response, e);
-        } finally {
-            synchronized (responseLock) {
-                responseLock.notifyAll();
-            }
-        }
-        return this.loginResult.isRedirected(getTimeoutMillis());
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#logout()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public void logout() throws AuthenticationProviderException {
-        //noop
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean allowsPasswordChange() {
-        return false;
     }
 
     /**
@@ -469,23 +611,4 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
     public void setoAuthAccessToken(String oAuthAccessToken) {
         this.oAuthAccessToken = oAuthAccessToken;
     }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsNicknameChange()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean allowsNicknameChange() {
-        return true;
-    }
-
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsEmailChange()
-     */
-    /** {@inheritDoc} */
-    @Override
-    public boolean allowsEmailChange() {
-        return false;
-    }
-
 }

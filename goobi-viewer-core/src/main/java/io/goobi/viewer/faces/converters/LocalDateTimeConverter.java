@@ -30,16 +30,23 @@ import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-import javax.faces.convert.ConverterException;
-import javax.faces.convert.FacesConverter;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.convert.Converter;
+import jakarta.faces.convert.ConverterException;
+import jakarta.faces.convert.FacesConverter;
 
 @FacesConverter("localDateTimeConverter")
 public class LocalDateTimeConverter implements Converter<LocalDateTime> {
 
+    private Locale locale;
+
+    /**
+     * @should convert English dateTime correctly
+     * @should convert German dateTime correctly
+     * @should covert generic dateTime correctly
+     */
     @Override
     public LocalDateTime getAsObject(FacesContext context, UIComponent component, String submittedValue) {
         if (submittedValue == null || submittedValue.isEmpty()) {
@@ -53,6 +60,11 @@ public class LocalDateTimeConverter implements Converter<LocalDateTime> {
         }
     }
 
+    /**
+     * @should convert English dateTime correctly
+     * @should convert German dateTime correctly
+     * @should covert generic dateTime correctly
+     */
     @Override
     public String getAsString(FacesContext context, UIComponent component, LocalDateTime ldt) {
         if (ldt == null) {
@@ -63,7 +75,7 @@ public class LocalDateTimeConverter implements Converter<LocalDateTime> {
 
     }
 
-    private static DateTimeFormatter getFormatter(FacesContext context, UIComponent component) {
+    private DateTimeFormatter getFormatter(FacesContext context, UIComponent component) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(getPattern(component), getLocale(context, component));
         ZoneId zone = getZoneId(component);
         return (zone != null) ? formatter.withZone(zone) : formatter;
@@ -79,18 +91,33 @@ public class LocalDateTimeConverter implements Converter<LocalDateTime> {
         return pattern;
     }
 
-    private static Locale getLocale(FacesContext context, UIComponent component) {
+    private Locale getLocale(FacesContext context, UIComponent component) {
+        if (locale != null) {
+            return locale;
+        }
+
         Object locale = component.getAttributes().get("locale");
-        return (locale instanceof Locale) ? (Locale) locale
-                : (locale instanceof String) ? new Locale((String) locale)
+        return (locale instanceof Locale loc) ? loc
+                : (locale instanceof String lang) ? Locale.forLanguageTag(lang)
                         : context.getViewRoot().getLocale();
     }
 
     private static ZoneId getZoneId(UIComponent component) {
         Object timeZone = component.getAttributes().get("timeZone");
-        return (timeZone instanceof TimeZone) ? ((TimeZone) timeZone).toZoneId()
-                : (timeZone instanceof String) ? ZoneId.of((String) timeZone)
+        return (timeZone instanceof TimeZone tz) ? tz.toZoneId()
+                : (timeZone instanceof String s) ? ZoneId.of(s)
                         : null;
+    }
+
+    /**
+     * For tests.
+     * 
+     * @param locale the locale to set
+     * @return this
+     */
+    LocalDateTimeConverter setLocale(Locale locale) {
+        this.locale = locale;
+        return this;
     }
 
 }

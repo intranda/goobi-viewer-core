@@ -51,8 +51,6 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
 import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
 import org.apache.solr.client.solrj.impl.Http2SolrClient;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
-import org.apache.solr.client.solrj.impl.XMLResponseParser;
 import org.apache.solr.client.solrj.request.LukeRequest;
 import org.apache.solr.client.solrj.request.json.HeatmapFacetMap;
 import org.apache.solr.client.solrj.request.json.JsonQueryRequest;
@@ -131,11 +129,11 @@ public class SolrSearchIndex {
      * Checks whether the server's configured URL matches that in the config file. If not, a new server instance is created.
      */
     public void checkReloadNeeded() {
-        if (!(client instanceof Http2SolrClient || client instanceof HttpSolrClient)) {
+        if (!(client instanceof Http2SolrClient)) {
             return;
         }
 
-        String baseUrl = client instanceof Http2SolrClient http2Client ? http2Client.getBaseURL() : ((HttpSolrClient) client).getBaseURL();
+        String baseUrl = ((Http2SolrClient) client).getBaseURL();
         if (!DataManager.getInstance().getConfiguration().getSolrUrl().equals(baseUrl)) {
             // Re-init Solr client if the configured Solr URL has been changed
             logger.info("Solr URL has changed, re-initializing Solr client...");
@@ -172,41 +170,7 @@ public class SolrSearchIndex {
      * @return New {@link SolrClient}
      */
     public static SolrClient getNewSolrClient() {
-        if (DataManager.getInstance().getConfiguration().isSolrUseHttp2()) {
-            return getNewHttp2SolrClient();
-        }
-
-        logger.trace("Using HTTP1 compatiblity mode.");
-        return getNewHttpSolrClient();
-    }
-
-    /**
-     * <p>
-     * getNewHttpSolrClient.
-     * </p>
-     *
-     * @return a {@link org.apache.solr.client.solrj.impl.HttpSolrServer} object.
-     * @deprecated Use getNewHttp2SolrClient(), if Solr 9 is available
-     */
-    @Deprecated(since = "24.01")
-    static HttpSolrClient getNewHttpSolrClient() {
-        HttpSolrClient client = new HttpSolrClient.Builder()
-                .withBaseSolrUrl(DataManager.getInstance().getConfiguration().getSolrUrl())
-                .withSocketTimeout(TIMEOUT_SO)
-                .withConnectionTimeout(TIMEOUT_CONNECTION)
-                .allowCompression(DataManager.getInstance().getConfiguration().isSolrCompressionEnabled())
-                .build();
-        //        server.setDefaultMaxConnectionsPerHost(100);
-        //        server.setMaxTotalConnections(100);
-        client.setFollowRedirects(false); // defaults to false
-        //        server.setMaxRetries(1); // defaults to 0. > 1 not recommended.
-        client.setRequestWriter(new BinaryRequestWriter());
-        // Backwards compatibility mode for Solr 4 servers
-        if (DataManager.getInstance().getConfiguration().isSolrBackwardsCompatible()) {
-            client.setParser(new XMLResponseParser());
-        }
-
-        return client;
+        return getNewHttp2SolrClient();
     }
 
     /**
@@ -1095,7 +1059,7 @@ public class SolrSearchIndex {
         Set<String> added = new HashSet<>();
         for (String name : fieldInfoMap.keySet()) {
             String n = name;
-            if ((n.startsWith(SolrConstants.PREFIX_SORT) || n.startsWith("SORTNUM_") || n.equals(SolrConstants.DATECREATED))) {
+            if ((n.startsWith(SolrConstants.PREFIX_SORT) || n.startsWith("SORTNUM_"))) {
                 if (n.contains(SolrConstants.MIDFIX_LANG)) {
                     n = n.replaceAll(SolrConstants.MIDFIX_LANG + ".*", SolrConstants.MIDFIX_LANG + "{}");
                 }

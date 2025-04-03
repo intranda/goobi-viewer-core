@@ -54,6 +54,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
@@ -63,6 +64,8 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -103,6 +106,7 @@ public class Metadata implements Serializable {
     private boolean hideIfOnlyMetadataField = false;
     private boolean topstructOnly = false;
     private String filterQuery = "";
+    private boolean accessGranted = true;
 
     // Data
 
@@ -146,7 +150,13 @@ public class Metadata implements Serializable {
         values.add(new MetadataValue(ownerIddoc + "_" + 0, masterValue, label));
         if (StringUtils.isNotEmpty(paramValue)) {
             values.get(0).getParamValues().add(new ArrayList<>());
-            values.get(0).getParamValues().get(0).add(paramValue);
+            // Apply date formatting to YEARMONTHDAY when found as additional metadata
+            if (SolrConstants.CALENDAR_DAY.equals(label)) {
+                params.add(new MetadataParameter().setType(MetadataParameterType.DATEFIELD).setInputPattern("yyyyMMdd"));
+                setParamValue(0, 0, Collections.singletonList(paramValue), label, null, null, null, null);
+            } else {
+                values.get(0).getParamValues().get(0).add(paramValue);
+            }
         }
     }
 
@@ -201,14 +211,9 @@ public class Metadata implements Serializable {
         values.add(new MetadataValue(ownerIddoc + "_" + 0, masterValue, label));
         if (paramValue != null) {
             setParamValue(0, 0, Collections.singletonList(paramValue), label, null, null, null, locale);
-            //            values.get(0).getParamValues().add(new ArrayList<>());
-            //            values.get(0).getParamValues().get(0).add(paramValue);
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -221,9 +226,6 @@ public class Metadata implements Serializable {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -329,7 +331,7 @@ public class Metadata implements Serializable {
      */
     public List<StringPair> getSortFields() {
         if (StringUtils.isEmpty(sortField)) {
-            return null;
+            return Collections.emptyList();
         }
 
         return Collections.singletonList(new StringPair(sortField, "asc"));
@@ -457,6 +459,11 @@ public class Metadata implements Serializable {
                 case RELATEDFIELD:
                     value = relatedMetadata.getMetadataValue(this.label,
                             RelationshipMetadataContainer.FIELD_IN_RELATED_DOCUMENT_PREFIX + param.getKey(), locale);
+                    value = value.trim();
+                    value = value.replace("<", "");
+                    value = value.replace(">", "");
+                    value = value.replace(" ", "_");
+                    break;
                 case WIKIFIELD, WIKIPERSONFIELD:
                     if (value.contains(",")) {
                         // Find and remove additional information in a person's name
@@ -488,12 +495,13 @@ public class Metadata implements Serializable {
                     break;
                 case DATEFIELD:
                     String outputPattern =
-                            StringUtils.isNotBlank(param.getPattern()) ? param.getPattern() : BeanUtils.getNavigationHelper().getDatePattern();
+                            StringUtils.isNotBlank(param.getOutputPattern()) ? param.getOutputPattern()
+                                    : BeanUtils.getNavigationHelper().getDatePattern();
                     String altOutputPattern = outputPattern.replace("dd/", "");
                     try {
-                        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(outputPattern);
-                        LocalDate date = LocalDate.parse(value);
-                        value = date.format(dateTimeFormatter);
+                        LocalDate date = StringUtils.isNotEmpty(param.getInputPattern())
+                                ? LocalDate.parse(value, DateTimeFormatter.ofPattern(param.getInputPattern())) : LocalDate.parse(value);
+                        value = date.format(DateTimeFormatter.ofPattern(outputPattern));
                     } catch (DateTimeParseException e) {
                         // No-day format hack
                         try {
@@ -501,7 +509,13 @@ public class Metadata implements Serializable {
                             LocalDate date = LocalDate.parse(value + "-01");
                             value = date.format(dateTimeFormatter);
                         } catch (DateTimeParseException e1) {
-                            logger.warn("Error parsing {} as date", value);
+                            // LocalDateTime
+                            try {
+                                LocalDateTime date = LocalDateTime.parse(value);
+                                value = date.format(DateTimeFormatter.ofPattern(outputPattern));
+                            } catch (DateTimeParseException e2) {
+                                logger.warn("Error parsing '{}' as dateor datetime", value);
+                            }
                         }
                     }
                     value = value.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);
@@ -536,7 +550,7 @@ public class Metadata implements Serializable {
                                 if (options != null && options.get(FIELD_NORM_TYPE) != null) {
                                     // Try local NORM_TYPE value, if given
                                     normDataType = MetadataTools.findMetadataGroupType(options.get(FIELD_NORM_TYPE));
-                                } else {
+                                } else if (!value.contains("viaf.org")) { // TODO remove this temporary fix eventually
                                     // Fetch authority data record and determine norm data set type from gndspec field 075$b
                                     Record authorityRecord = MetadataTools.getAuthorityDataRecord(value);
                                     if (authorityRecord != null && !authorityRecord.getNormDataList().isEmpty()) {
@@ -869,14 +883,14 @@ public class Metadata implements Serializable {
             int count = 0;
             int indexOfParam = params.indexOf(param);
             // logger.trace("{} ({})", param.toString(), indexOfParam); //NOSONAR Debug
-            List<String> values = null;
+            List<String> vals = null;
             if (MetadataParameterType.TOPSTRUCTFIELD.equals(param.getType()) && se.getTopStruct() != null) {
                 // Use topstruct value, if the parameter has the type "topstructfield"
-                values = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
+                vals = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
             } else if (MetadataParameterType.ANCHORFIELD.equals(param.getType())) {
                 // Use anchor value, if the parameter has the type "anchorfield"
                 if (anchorSe != null) {
-                    values = getMetadata(anchorSe.getTopStruct().getMetadataFields(), param.getKey(), locale);
+                    vals = getMetadata(anchorSe.getTopStruct().getMetadataFields(), param.getKey(), locale);
                 } else {
                     // Add empty parameter if there is no anchor
                     setParamValue(0, getParams().indexOf(param), Collections.singletonList(""), null, null, null, null, locale);
@@ -884,35 +898,42 @@ public class Metadata implements Serializable {
                 }
             } else {
                 // Own values
-                values = getMetadata(se.getMetadataFields(), param.getKey(), locale);
+                vals = getMetadata(se.getMetadataFields(), param.getKey(), locale);
             }
 
-            if (values == null && se.getTopStruct() != null && param.isTopstructValueFallback()) {
+            if (vals == null && se.getTopStruct() != null && param.isTopstructValueFallback()) {
                 // Topstruct values as a fallback
-                values = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
+                vals = getMetadata(se.getTopStruct().getMetadataFields(), param.getKey(), locale);
             }
-            if (values != null) {
+            if (vals != null) {
                 if (MetadataParameterType.CITEPROC.equals(param.getType())) {
-                    // logger.trace(param.getKey() + ":" + values.get(0)); //NOSONAR Debug
+                    // logger.trace(param.getKey() + ":" + vals.get(0)); //NOSONAR Debug
                     // Use all available values for citation
                     found = true;
                     // Apply replace rules
                     if (!param.getReplaceRules().isEmpty()) {
-                        List<String> moddedValues = new ArrayList<>(values.size());
-                        for (String value : values) {
+                        List<String> moddedValues = new ArrayList<>(vals.size());
+                        for (String value : vals) {
                             moddedValues.add(MetadataTools.applyReplaceRules(value, param.getReplaceRules(), se.getPi()));
                         }
-                        values = moddedValues;
+                        vals = moddedValues;
                     }
-                    setParamValue(0, indexOfParam, values, param.getKey(), null, null, null, locale);
+                    setParamValue(0, indexOfParam, vals, param.getKey(), null, null, null, locale);
                 } else {
-                    for (String val : values) {
+                    for (String val : vals) {
                         // logger.trace("{}: {}", param.getKey(), val); //NOSONAR Debug
                         if (count >= number && number != -1) {
                             break;
                         }
                         found = true;
                         String value = val;
+
+                        // Set value to empty for restricted access metadata values when configured as non-grouped
+                        if (StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED.equals(value)) {
+                            logger.trace("Removing hidden value");
+                            continue;
+                        }
+
                         // Apply replace rules
                         if (!param.getReplaceRules().isEmpty()) {
                             value = MetadataTools.applyReplaceRules(value, param.getReplaceRules(), se.getPi());
@@ -946,7 +967,7 @@ public class Metadata implements Serializable {
                     }
                 }
             }
-            if (values == null && param.getDefaultValue() != null) {
+            if (vals == null && param.getDefaultValue() != null) {
                 // logger.trace("No value found for {} (index {}), using default value '{}'", //NOSONAR Debug
                 // param.getKey(), indexOfParam, param.getDefaultValue()); //NOSONAR Debug
                 setParamValue(0, indexOfParam, Collections.singletonList(param.getDefaultValue()), param.getKey(), null, null, null, locale);
@@ -993,11 +1014,11 @@ public class Metadata implements Serializable {
         if (ownerIddoc == null) {
             return false;
         }
-        String filterQuery = StringUtils.isNotBlank(this.filterQuery) ? String.format("+(%s)", this.filterQuery) : "";
+        String fq = StringUtils.isNotBlank(this.filterQuery) ? String.format("+(%s)", this.filterQuery) : "";
         boolean found = false;
         try {
             SolrDocumentList groupedMdList =
-                    MetadataTools.getGroupedMetadata(ownerIddoc, '+' + SolrConstants.LABEL + ":" + key + " " + filterQuery, sortFields);
+                    MetadataTools.getGroupedMetadata(ownerIddoc, '+' + SolrConstants.LABEL + ":" + key + " " + fq, sortFields);
             if (groupedMdList == null || groupedMdList.isEmpty()) {
                 return false;
             }
@@ -1012,24 +1033,44 @@ public class Metadata implements Serializable {
             for (SolrDocument doc : groupedMdList) {
                 String metadataDocIddoc = null;
                 Map<String, List<String>> groupFieldMap = new HashMap<>();
+                Set<String> accessConditions = new HashSet<>();
                 // Collect values for all fields in this metadata doc
                 for (String fieldName : doc.getFieldNames()) {
-                    List<String> vals = groupFieldMap.get(fieldName);
-                    if (vals == null) {
-                        vals = new ArrayList<>();
-                        groupFieldMap.put(fieldName, vals);
-                    }
+                    List<String> valueMap = groupFieldMap.computeIfAbsent(fieldName, k -> new ArrayList<>());
                     // logger.trace(fieldName + ":" + doc.getFieldValue(fieldName).toString()); //NOSONAR Debug
                     if (doc.getFieldValue(fieldName) instanceof String value) {
-                        vals.add(value);
+                        valueMap.add(value);
                     } else if (doc.getFieldValue(fieldName) instanceof Collection) {
-                        vals.addAll(SolrTools.getMetadataValues(doc, fieldName));
+                        List<String> vals = SolrTools.getMetadataValues(doc, fieldName);
+                        valueMap.addAll(vals);
+                        if (SolrConstants.ACCESSCONDITION.equals(fieldName)) {
+                            for (String ac : vals) {
+                                if (!SolrConstants.OPEN_ACCESS_VALUE.equals(ac)) {
+                                    accessConditions.addAll(vals);
+                                }
+                            }
+                            if (!accessConditions.isEmpty()) {
+                                logger.trace("Metadata field {} has access conditions.", key);
+                            }
+                        }
                     }
                     // Collect IDDOC value for use as owner IDDOC for child metadata
                     if (fieldName.equals(SolrConstants.IDDOC)) {
                         metadataDocIddoc = (String) doc.getFieldValue(fieldName);
                     }
                 }
+
+                // Check metadata access permission; do not load if denied
+                String movingWallQuery = SolrConstants.PI + ":\"" + se.getPi() + '"'; // Moving wall query has to be record-based because DATE_PUBLICRELEASEDATE is only available in the top document
+                accessGranted =
+                        AccessConditionUtils
+                                .checkAccessPermissionBySolrDoc(doc, movingWallQuery, IPrivilegeHolder.PRIV_VIEW_METADATA, BeanUtils.getRequest())
+                                .isGranted();
+                if (!accessGranted) {
+                    logger.trace("Access denied to metadata field {}", key);
+                    continue;
+                }
+
                 String groupType = null;
                 if (groupFieldMap.containsKey(SolrConstants.METADATATYPE) && !groupFieldMap.get(SolrConstants.METADATATYPE).isEmpty()) {
                     groupType = groupFieldMap.get(SolrConstants.METADATATYPE).get(0);
@@ -1057,6 +1098,12 @@ public class Metadata implements Serializable {
                             if (truncateLength > 0 && modifiedValue.length() > truncateLength) {
                                 modifiedValue = new StringBuilder(modifiedValue.substring(0, truncateLength - 3)).append("...").toString();
                             }
+
+                            // Apply replace rules
+                            if (!param.getReplaceRules().isEmpty()) {
+                                modifiedValue = MetadataTools.applyReplaceRules(modifiedValue, param.getReplaceRules(), se.getPi());
+                            }
+
                             // Add highlighting
                             if (searchTerms != null) {
                                 if (searchTerms.get(getLabel()) != null) {
@@ -1089,6 +1136,7 @@ public class Metadata implements Serializable {
                     MetadataValue val = values.get(count);
                     val.setIddoc(metadataDocIddoc);
                     val.setOwnerIddoc(ownerIddoc);
+                    val.getAccessConditions().addAll(accessConditions);
 
                     if (!getChildMetadata().isEmpty()) {
                         for (Metadata child : getChildMetadata()) {
@@ -1103,13 +1151,15 @@ public class Metadata implements Serializable {
             // logger.trace("GROUP QUERY END"); //NOSONAR Debug
         } catch (PresentationException e) {
             logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
+        } catch (DAOException e) {
+            logger.error(e.getMessage());
         }
 
         return found;
     }
 
     private boolean hasRelationshipMetadata() {
-        return this.params.stream().map(param -> param.getType()).anyMatch(type -> type == MetadataParameterType.RELATEDFIELD);
+        return this.params.stream().map(param -> param.getType()).anyMatch(t -> t == MetadataParameterType.RELATEDFIELD);
     }
 
     /**
@@ -1302,6 +1352,20 @@ public class Metadata implements Serializable {
 
     public String getFilterQuery() {
         return filterQuery;
+    }
+
+    /**
+     * @return the accessGranted
+     */
+    public boolean isAccessGranted() {
+        return accessGranted;
+    }
+
+    /**
+     * @param accessGranted the accessGranted to set
+     */
+    public void setAccessGranted(boolean accessGranted) {
+        this.accessGranted = accessGranted;
     }
 
     /**

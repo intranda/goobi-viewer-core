@@ -27,8 +27,8 @@ import java.util.Optional;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
 
 /**
- * @author florian
- *
+ * 
+ * @param <T> The type of annotation
  */
 public interface AnnotationLister<T extends PersistentAnnotation> {
 

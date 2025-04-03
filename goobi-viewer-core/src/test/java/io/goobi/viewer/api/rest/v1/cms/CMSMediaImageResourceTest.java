@@ -27,11 +27,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,7 +88,7 @@ class CMSMediaImageResourceTest extends AbstractRestApiTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer(url));
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
-        CMSMediaImageResource resource = new CMSMediaImageResource(context, request, response, urls, filename);
+        CMSMediaImageResource resource = new CMSMediaImageResource(context, request, response, urls, filename, null);
         String resourceURI = resource.getResourceURI().toString();
         assertEquals(url, resourceURI);
     }
@@ -110,7 +110,7 @@ class CMSMediaImageResourceTest extends AbstractRestApiTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer(imageUrl));
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
-        CMSMediaImageResource resource = new CMSMediaImageResource(context, request, response, urls, filename);
+        CMSMediaImageResource resource = new CMSMediaImageResource(context, request, response, urls, filename, null);
         String resourceURI = resource.getResourceURI().toString();
         assertTrue(resourceURI.startsWith(apiUrl));
         assertTrue(resourceURI.contains(filenameEnc), resourceURI + " should contain " + filenameEnc);

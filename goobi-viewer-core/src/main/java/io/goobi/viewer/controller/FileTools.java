@@ -42,6 +42,8 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -153,6 +155,17 @@ public final class FileTools {
     }
 
     /**
+     * @param file
+     * @return Charset of the given file
+     * @throws IOException
+     */
+    public static String getCharset(Path file) throws IOException {
+        try (InputStream in = Files.newInputStream(file)) {
+            return getCharset(in);
+        }
+    }
+
+    /**
      * Uses ICU4J to determine the charset of the given InputStream. Clients are responsible for closing the input stream. Do not re-use this stream
      * for any other operations.
      *
@@ -162,13 +175,14 @@ public final class FileTools {
      * @should detect charset correctly
      * @should not close stream
      */
-    public static String getCharset(InputStream input) throws IOException {
+    static String getCharset(InputStream input) throws IOException {
         CharsetDetector cd = new CharsetDetector();
-        BufferedInputStream bis = new BufferedInputStream(input);
-        cd.setText(bis);
-        CharsetMatch cm = cd.detect();
-        if (cm != null) {
-            return cm.getName();
+        try (BufferedInputStream bis = new BufferedInputStream(input)) {
+            cd.setText(bis);
+            CharsetMatch cm = cd.detect();
+            if (cm != null) {
+                return cm.getName();
+            }
         }
 
         return null;
@@ -616,17 +630,6 @@ public final class FileTools {
     }
 
     /**
-     * @param file
-     * @return Charset of the given file
-     * @throws IOException
-     */
-    public static String getCharset(Path file) throws IOException {
-        try (InputStream in = Files.newInputStream(file)) {
-            return getCharset(in);
-        }
-    }
-
-    /**
      *
      * Parses the given String as {@link java.nio.file.Path Path} and returns the lowest folder name as String. Returns an empty String if the given
      * path is empty or null
@@ -685,7 +688,7 @@ public final class FileTools {
         if (urlStringLocal.contains(":")) {
             try {
                 // logger.trace("url string: {}", urlString); //NOSONAR Debug
-                URL url = new URL(urlStringLocal);
+                URL url = new URI(urlStringLocal).toURL();
                 URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(),
                         url.getQuery(), url.getRef());
                 if (urlStringLocal.endsWith("/") && Paths.get(uri.getPath()).getFileName().toString().contains(".")) {
@@ -746,5 +749,27 @@ public final class FileTools {
     public static boolean isWithin(Path path, Path parent) {
         Path normalized = path.toAbsolutePath().normalize();
         return normalized.startsWith(parent.toAbsolutePath().normalize());
+    }
+
+    public static boolean isYoungerThan(Path path, Path reference) {
+        FileTime pathDate;
+        try {
+            pathDate = getDateModified(path);
+            FileTime referenceDate = getDateModified(reference);
+            return pathDate.toInstant().isAfter(referenceDate.toInstant());
+        } catch (IOException e) {
+            logger.error("Cannot compare ages of {} and {}: {}", path, reference, e.toString());
+            return false;
+        }
+    }
+
+    public static FileTime getDateCreated(Path path) throws IOException {
+        BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
+        return attr.creationTime();
+    }
+
+    public static FileTime getDateModified(Path path) throws IOException {
+        BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
+        return attr.lastModifiedTime() != null ? attr.lastModifiedTime() : attr.lastAccessTime();
     }
 }

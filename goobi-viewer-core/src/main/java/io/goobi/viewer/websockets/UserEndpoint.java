@@ -26,26 +26,26 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.servlet.http.HttpSession;
-import javax.websocket.EndpointConfig;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.AdminBean;
+import jakarta.servlet.http.HttpSession;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerEndpoint;
 
 /**
  * Endpoint that maps HTTP session IDs to connected web sockets.
  */
 @ServerEndpoint(value = "/session.socket", configurator = GetHttpSessionConfigurator.class)
-public class UserEndpoint {
+public class UserEndpoint extends Endpoint {
 
     private static final Logger logger = LogManager.getLogger(UserEndpoint.class);
 
@@ -54,6 +54,7 @@ public class UserEndpoint {
     private HttpSession httpSession;
 
     @OnOpen
+    @Override
     public void onOpen(Session session, EndpointConfig config) {
         // logger.trace("onOpen: {}", session.getId()); //NOSONAR Debug
         this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());

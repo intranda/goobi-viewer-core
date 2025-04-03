@@ -32,9 +32,9 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -164,10 +164,15 @@ public class MetadataBean {
      * @return the metadataElementList
      */
     public List<MetadataElement> getMetadataElementList(int index) {
+        return getMetadataElementList(index, false);
+    }
+
+    public List<MetadataElement> getMetadataElementList(int index, boolean forceReload) {
+
         // logger.trace("getMetadataElementList({})", index); //NOSONAR Debug
         Locale locale = BeanUtils.getLocale();
 
-        if (metadataElementMap.get(index) == null || !Objects.equals(locale, this.currentMetadataLocale)) {
+        if (forceReload || metadataElementMap.get(index) == null || !Objects.equals(locale, this.currentMetadataLocale)) {
             // Only reload if empty, otherwise a c:forEach (used by p:tabView) will cause a reload on every iteration
             try {
                 loadMetadata(index, locale);

@@ -65,10 +65,12 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
 
                     private static final long serialVersionUID = 1L;
 
+                    @Override
                     public List<ArchiveResource> getPossibleDatabases() {
                         return possibleDatabases;
                     }
 
+                    @Override
                     public ArchiveEntry loadDatabase(ArchiveResource database, int lazyLoadingThreshold) {
                         return root;
                     }
@@ -119,22 +121,15 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
 
     @Test
     void testUpdateDatabase() throws Exception {
-        {
-            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
-            archiveManager.getArchiveTree("r1");
-            archiveManager.getArchiveTree("r1");
-            Mockito.verify(archiveManager, Mockito.times(1)).loadDatabase(Mockito.any(), Mockito.any());
-        }
-        {
-            //            ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser, null));
-            //            archiveManager.getArchiveTree("database 1", "resource 2");
-            //            archiveManager.getArchiveTree("database 1", "resource 2");
-            //            Mockito.verify(archiveManager, Mockito.times(2)).loadDatabase(Mockito.any(), Mockito.any());
-        }
+        ArchiveManager archiveManager = Mockito.spy(new ArchiveManager(eadParser));
+        archiveManager.getArchiveTree("r1");
+        archiveManager.getArchiveTree("r1");
+        Mockito.verify(archiveManager, Mockito.times(1)).loadDatabase(Mockito.any(), Mockito.any());
     }
 
     @Test
     void testAddNewArchive() {
+        assertNotNull(possibleDatabases);
         ArchiveManager archiveManager = new ArchiveManager(eadParser);
 
         ArchiveResource newArchive = new ArchiveResource("resource 3", "r3",
@@ -147,6 +142,7 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
 
     @Test
     void testRemoveArchive() {
+        assertNotNull(possibleDatabases);
         ArchiveManager archiveManager = new ArchiveManager(eadParser);
         possibleDatabases.remove(1);
         assertNotNull(archiveManager.getArchive("r2"));
@@ -160,6 +156,7 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
      */
     @Test
     void loadTree_shouldLoadTreeCorrectly() throws Exception {
+        assertNotNull(possibleDatabases, "No EAD record in the index.");
         ArchiveEntry entry =
                 eadParser.loadDatabase(possibleDatabases.get(0), DataManager.getInstance().getConfiguration().getArchivesLazyLoadingThreshold());
         assertNotNull(entry);

@@ -67,7 +67,6 @@
 	
 			</div>
 	          <script type="text/javascript">	
-	        
 					$(document).ready(e => {	
 				    let config = {
 				      		areaString: '#{searchBean.facets.geoFacetFeature}',
@@ -96,8 +95,8 @@
 				      		},
 				      		heatmap: {
 				      			enabled: #{configurationBean.useHeatmapForFacetting()},
-				      			heatmapUrl: "/viewer/api/v1/index/spatial/heatmap/{solrField}",
-				      			featureUrl: "/viewer/api/v1/index/spatial/search/{solrField}",
+				      			heatmapUrl: "#{request.contextPath}/api/v1/index/spatial/heatmap/{solrField}",
+				      			featureUrl: "#{request.contextPath}/api/v1/index/spatial/search/{solrField}",
 				      			mainQuery: "#{searchBean.getFinalSolrQueryEscaped()}",
 				      			facetQuery: "#{searchBean.getCombinedFilterQueryEscaped()}",
 				      			labelField: "LABEL",

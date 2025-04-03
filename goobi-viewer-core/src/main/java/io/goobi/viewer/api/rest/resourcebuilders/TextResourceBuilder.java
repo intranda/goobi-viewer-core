@@ -43,8 +43,6 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.ws.rs.core.StreamingOutput;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -81,6 +79,7 @@ import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * @author florian
@@ -202,9 +201,10 @@ public class TextResourceBuilder {
         }
 
         try {
-            String charset = FileTools.getCharset(file);
-            // logger.trace(file.toAbsolutePath().toString()); //NOSONAR Debug
-            String alto = FileTools.getStringFromFile(file.toFile(), charset != null ? charset : StringTools.DEFAULT_ENCODING);
+            // String charset = FileTools.getCharset(file);
+            // logger.debug("ALTO file '{}' charset detected: {}", file.getFileName(), charset);
+            String charset = StringTools.DEFAULT_ENCODING;
+            String alto = FileTools.getStringFromFile(file.toFile(), charset);
             return new StringPair(alto, charset);
         } catch (FileNotFoundException e) {
             logger.debug(e.getMessage());
@@ -879,7 +879,7 @@ public class TextResourceBuilder {
     private static String convert(AbstractTEIConvert converter, String input, String identifier) throws UncheckedPresentationException {
         try {
             return converter.convert(input);
-        } catch (Exception e) {
+        } catch (NullPointerException | IllegalArgumentException e) {
             throw new UncheckedPresentationException("Error converting the input from " + identifier, e);
         }
     }

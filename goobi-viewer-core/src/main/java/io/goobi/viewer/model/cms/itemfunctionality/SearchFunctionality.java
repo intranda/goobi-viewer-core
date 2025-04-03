@@ -32,7 +32,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.faces.context.FacesContext;
+import jakarta.faces.context.FacesContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -227,10 +227,12 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * The part of the search url before the page number
      *
      * @return a {@link java.lang.String} object.
+     * @should construct url prefix correctly
      */
     public String getUrlPrefix() {
         StringBuilder sb = new StringBuilder();
         sb.append(getBaseUrl());
+        sb.append(getActiveResultGroupName()).append("/");
         sb.append(getQueryString()).append("/");
         return sb.toString();
     }

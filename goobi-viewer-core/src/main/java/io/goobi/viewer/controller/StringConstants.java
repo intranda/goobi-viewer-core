@@ -23,6 +23,8 @@ package io.goobi.viewer.controller;
 
 public final class StringConstants {
 
+    public static final String ACCESSCONDITION_METADATA_ACCESS_RESTRICTED = "metadata_access_restricted";
+
     public static final String DEFAULT = "default";
     public static final String DEFAULT_NAME = "_DEFAULT";
 
@@ -68,6 +70,8 @@ public final class StringConstants {
      * negative and can be cast to an integer
      */
     public static final String POSITIVE_INTEGER = "^[0-9]{0,9}$";
+    
+    public static final String SQL_ALTER_TABLE = "ALTER TABLE ";
 
     private StringConstants() {
 

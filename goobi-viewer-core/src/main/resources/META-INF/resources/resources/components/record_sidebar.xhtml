@@ -31,9 +31,9 @@
 
 				<widgetComponent:widget_nerFacetting rendered="#{displayConditions.matchRecord('{pageType: [viewObject]}')}"/>
 
-				<widgetComponent:widget_metadata rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc, viewFulltext]}')}"/>
+				<widgetComponent:widget_metadata id="widgetMetadata" rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc, viewFulltext]}')}"/>
 				
-				<widgetComponent:widget_metadataTech />
+				<widgetComponent:widget_metadataTech id="widgetTechnical" />
 
 				<widgetComponent:widget_geoMap
 					rendered="#{activeDocumentBean.geoMap.hasFeatures()}"
@@ -45,32 +45,31 @@
 					currentPageNo="#{activeDocumentBean.viewManager.currentImageOrder}"
 					featureClickHandling="openSearch" />
 
-				<widgetComponent:widget_annotations />
+				<widgetComponent:widget_annotations id="widgetAnnotations" />
 
 				<widgetComponent:widget_recordNotes 
 					notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
 
-				<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc]}')}">
+			<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: ![viewToc]}')}">
 				
-					<widgetComponent:widget_downloads />
+					<widgetComponent:widget_downloads id="widgetDownloads" />
 			</ui:fragment>
-			<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc, viewFulltext]}')}">
-
-					<widgetComponent:widget_citation />
-
-					<widgetComponent:widget_relatedGroups />
-
-					<widgetComponent:widget_toc 
-						rendered="#{configurationBean.sidebarTocWidgetVisible}" />
-						
-				</ui:fragment>
 
 
-				<widgetComponent:widget_formatsLinks rendered="#{
+				<widgetComponent:widget_formatsLinks id="widgetFormatLinks" rendered="#{
 				displayConditions.matchRecord('{pageType: [viewMetadata]}') or 
 				displayConditions.matchRecord('{pageType: [viewToc], docType:[anchor]}')}"/>
 				
-				<widgetComponent:widget_citation  rendered="#{displayConditions.matchRecord('{pageType: [viewMetadata, viewToc], docType:[anchor]}')}"/>
+				<widgetComponent:widget_citation id="widgetCitations" rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc, viewFulltext]}') or displayConditions.matchRecord('{pageType: [viewMetadata, viewToc], docType:[anchor]}')}"/>
+			
+				<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc, viewFulltext]}')}">
+
+					<widgetComponent:widget_relatedGroups />
+
+					<widgetComponent:widget_toc id="widgetToc"
+						rendered="#{configurationBean.sidebarTocWidgetVisible}" />
+						
+				</ui:fragment>
 					
 			</ui:fragment>
 

@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.job.mq;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -81,7 +82,8 @@ public class GeoMapUpdateHandler implements MessageHandler<MessageStatus> {
     }
 
     private static void updateMapInCache(PersistentStorageBean applicationBean, GeoMap geomap) throws PresentationException {
-        for (FeatureSet featureSet : geomap.getFeatureSets()) {
+        List<FeatureSet> featureSets = new ArrayList<>(geomap.getFeatureSets());
+        for (FeatureSet featureSet : featureSets) {
             try {
                 featureSet.getFeaturesAsString();
             } catch (ContextNotActiveException e) {

@@ -29,10 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.enterprise.context.SessionScoped;
-import javax.faces.context.FacesContext;
-import javax.inject.Named;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,6 +53,9 @@ import io.goobi.viewer.model.archives.ArchiveTree;
 import io.goobi.viewer.model.archives.NodeType;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Named;
 
 @Named
 @SessionScoped
@@ -80,6 +79,9 @@ public class ArchiveBean implements Serializable {
         this.archiveManager = archiveManager;
     }
 
+    /**
+     * @should reset properties correctly
+     */
     public void reset() {
         this.currentResource = "";
         this.searchString = "";
@@ -137,13 +139,14 @@ public class ArchiveBean implements Serializable {
      * @return the archiveTree
      */
     public ArchiveTree getArchiveTree() {
-        // logger.trace("getArchiveTree"); //NOSONAR Debug
+        // logger.trace("getArchiveTree: {} from ArchiveBean {}", archiveTree != null ?
+        // archiveTree.toString() : "null", this.toString()); //NOSONAR Debug
         return archiveTree;
     }
 
     public void toggleEntryExpansion(ArchiveEntry entry) {
         logger.trace("toggleEntryExpansion: {}", entry);
-        if (entry.isExpanded()) {
+        if (archiveTree.isEntryExpanded(entry)) {
             collapseEntry(entry);
         } else {
             expandEntry(entry);
@@ -164,7 +167,7 @@ public class ArchiveBean implements Serializable {
         }
         synchronized (getArchiveTree()) {
             boolean updateTree = entry.isChildrenFound() && !entry.isChildrenLoaded();
-            entry.expand();
+            getArchiveTree().expandEntry(entry);
             if (updateTree) {
                 logger.trace("Updating tree");
                 getArchiveTree().update(entry.getRootNode());
@@ -186,7 +189,7 @@ public class ArchiveBean implements Serializable {
         }
 
         synchronized (getArchiveTree()) {
-            entry.collapse();
+            getArchiveTree().collapseEntry(entry);
         }
     }
 
@@ -259,7 +262,7 @@ public class ArchiveBean implements Serializable {
         getArchiveTree().collapseAll(collapseAll);
         for (ArchiveEntry entry : results) {
             if (entry.isSearchHit()) {
-                entry.expandUp();
+                getArchiveTree().expandUpEntry(entry);
             }
         }
     }
@@ -323,7 +326,7 @@ public class ArchiveBean implements Serializable {
         ArchiveEntry result = getArchiveTree().getEntryById(localId);
         if (result != null) {
             getArchiveTree().setSelectedEntry(result);
-            result.expandUp();
+            getArchiveTree().expandUpEntry(result);
         } else {
             logger.debug("Entry not found: {}", localId);
             getArchiveTree().setSelectedEntry(getArchiveTree().getRootElement());
@@ -409,7 +412,7 @@ public class ArchiveBean implements Serializable {
             } else {
                 try {
                     if (AccessConditionUtils
-                            .checkAccessPermissionByIdentifierAndLogId(resource.getResourceId(), null, IPrivilegeHolder.PRIV_LIST,
+                            .checkAccessPermissionByIdentifierAndLogId(resource.getResourceId(), null, IPrivilegeHolder.PRIV_ARCHIVE_DISPLAY_NODE,
                                     BeanUtils.getRequest())
                             .isGranted()) {
                         ret.add(resource);
@@ -508,7 +511,7 @@ public class ArchiveBean implements Serializable {
                     return url + getCurrentArchive().getResourceId();
                 }
                 return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/sourcefile?id=" + getCurrentArchive().getResourceId();
-            } catch (Exception e) {
+            } catch (NullPointerException | IllegalArgumentException e) {
                 logger.error("Could not get EAD resolver URL for {}.", getCurrentArchive().getResourceId());
                 Messages.error("errGetCurrUrl");
             }
@@ -559,4 +562,23 @@ public class ArchiveBean implements Serializable {
 
         return "";
     }
+
+    /**
+     * For tests.
+     * 
+     * @param databaseLoaded the databaseLoaded to set
+     */
+    void setDatabaseLoaded(boolean databaseLoaded) {
+        this.databaseLoaded = databaseLoaded;
+    }
+
+    /**
+     * For tests.
+     * 
+     * @param archiveTree the archiveTree to set
+     */
+    void setArchiveTree(ArchiveTree archiveTree) {
+        this.archiveTree = archiveTree;
+    }
+
 }

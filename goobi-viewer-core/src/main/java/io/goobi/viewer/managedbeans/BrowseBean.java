@@ -34,9 +34,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -886,13 +886,13 @@ public class BrowseBean implements Serializable {
         List<String> ret = new ArrayList<>();
         for (BrowsingMenuFieldConfig bmfc : DataManager.getInstance().getConfiguration().getBrowsingMenuFields()) {
             if (bmfc.isSkipInWidget()) {
-                logger.trace("Browsing field {} is configured to be skipped in the menu.", bmfc.getField());
+                // logger.trace("Browsing field {} is configured to be skipped in the menu.", bmfc.getField());
                 continue;
             }
             if (bmfc.getField().contains(SolrConstants.MIDFIX_LANG)
                     && (useLanguage == null || !(bmfc.getField().contains(SolrConstants.MIDFIX_LANG + useLanguage)
                             || bmfc.getField().contains(SolrConstants.MIDFIX_LANG + "{}")))) {
-                logger.trace("Skipped term browsing field {} due to language mismatch.", bmfc.getField());
+                // logger.trace("Skipped term browsing field {} due to language mismatch.", bmfc.getField());
                 continue;
             }
             ret.add(bmfc.getField());

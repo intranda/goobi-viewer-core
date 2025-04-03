@@ -196,6 +196,12 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
         item.setValue(" 1900 ");
         item.setValue2(" 2020 ");
         Assertions.assertEquals("+(MD_YEARPUBLISH:([1900 TO 2020]))", item.generateQuery(new HashSet<>(), true, false));
+        
+        item = new SearchQueryItem();
+        item.setField("MD_YEARPUBLISH");
+        item.setValue(" -1500 ");
+        item.setValue2(" -5 ");
+        Assertions.assertEquals("+(MD_YEARPUBLISH:([-1500 TO -5]))", item.generateQuery(new HashSet<>(), true, false));
     }
 
     /**

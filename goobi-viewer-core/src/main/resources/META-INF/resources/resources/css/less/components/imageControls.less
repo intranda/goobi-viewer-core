@@ -5,6 +5,7 @@
 /* CONTROLS */
 /* BLOCK */
 .image-controls {
+	padding: 10px;
 	position: relative;
     &.-ltr, .-ltr {
         direction: ltr;
@@ -12,26 +13,32 @@
     &.-rtl, .-rtl {
         direction: rtl;
     }
-	form {
+	&__inner {
 		display: flex;
-		flex-wrap: wrap-reverse;
+		flex-wrap: wrap;
+		gap: 5px;
+	}
+	// GRID/GAP SIZING FOR THE IMAGE ACTIONS/CONTROLS + (DOC) OPTIONS
+    &__actions,
+    &__actions-nav,
+    &__actions-additional,
+	&__options {
+		display: flex;
+		gap: 6px;
+		flex-wrap: wrap;
 	}
 	/* DOCUMENT OPTIONS */
 	&__options {
-		padding: 0 10px;
-		margin-top: 10px;
 		margin-left: auto;
-		ul {
-			display: flex;
-			flex-wrap: wrap;
-		}
+		gap: 10px;
+		display: flex;
+		flex-wrap: wrap;
+		ul {}
 	    li {
 	    	align-self: center;
 	    }
 	}
 	&__option {
-		margin: 6px;
-		
 		a, 
 		span, 
 		button {
@@ -80,13 +87,9 @@
 	}
     /* ACTIONS */
     &__actions {
-    	padding: 0 10px;
-    	margin-top: 10px;
+		// margin-right: auto;
     	flex-grow: 1;
     	ul {
-			display: flex;
-			flex-wrap: wrap;
-/* 			justify-content: center; */
 		}
 	    li {
 	    	align-self: center;
@@ -100,10 +103,12 @@
 			width: 145px;
 		}
 	}
+	&__includes-container {
+		display: none;
+	}
     &__action {
 		width: 32px;
 		height: 32px;
-		margin: 3px;
 		border: 1px solid @gray;
 		display: flex;
 		justify-content: center;
@@ -125,15 +130,18 @@
 			width: 100%;
 			padding: 0.4rem;
 			font-size: 1.2rem;
+			white-space: nowrap;
 			font-weight: 400;
 			color: @gray;
 			fill: @gray;
+			border: none;
 			cursor: pointer;
 			&:hover,
 			&:active,
 			&:focus {
 				text-decoration: none;
 			}
+			img,
 			svg {
 				width: 100%;
 				height: 100%;
@@ -143,12 +151,12 @@
     	.custom-control--select::after {
     		border-top-color: @gray;
     	}
+    	button {
+			white-space: nowrap;
+			font-size: 12px;
+		}
 		span {
 			cursor: default;
-		}
-		[class*="image-"] {
-			position: relative;
-			font-size: @fontXLarge;
 		}
 		&.inactive {
 			opacity: 0.4;
@@ -161,11 +169,11 @@
 	    	a,
 	    	span,
 	    	button {}
-	    	> svg {
-	    		width: 32px;
-	    		height: 32px;
-	    		padding: 0.4rem;
-	    	}
+//	    	> img, svg {
+//	    		width: 32px;
+//	    		height: 32px;
+//	    		padding: 0.4rem;
+//	    	}
 		}
 	    /* ELEMENT */
 	    &.start {}
@@ -371,7 +379,6 @@
 			}
 		}
 		&__action {
-			margin: 0 5px 10px 5px;
 			&.select {
 				width: 74px;
 			}

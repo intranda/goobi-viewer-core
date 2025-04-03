@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.faces.context.FacesContext;
-import javax.servlet.ServletContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -46,7 +46,7 @@ import io.goobi.viewer.model.archives.ArchiveManager;
 import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.security.authentication.AuthResponseListener;
-import io.goobi.viewer.model.security.authentication.OpenIdProvider;
+import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.recordlock.RecordLockManager;
 import io.goobi.viewer.model.statistics.usage.UsageStatisticsRecorder;
@@ -87,7 +87,7 @@ public final class DataManager {
 
     private SessionStoreBookmarkManager bookmarkManager;
 
-    private AuthResponseListener<OpenIdProvider> oAuthResponseListener;
+    private AuthResponseListener<HttpAuthenticationProvider> authResponseListener;
 
     private IURLBuilder defaultUrlBuilder = new DefaultURLBuilder();
 
@@ -401,32 +401,32 @@ public final class DataManager {
 
     /**
      * <p>
-     * injectOAuthResponseListener.
+     * injectAuthResponseListener.
      * </p>
      *
      * @param listener a {@link io.goobi.viewer.model.security.authentication.AuthResponseListener} object.
      */
-    public void injectOAuthResponseListener(AuthResponseListener<OpenIdProvider> listener) {
+    public void injectAuthResponseListener(AuthResponseListener<HttpAuthenticationProvider> listener) {
         if (listener != null) {
-            this.oAuthResponseListener = listener;
+            this.authResponseListener = listener;
         }
     }
 
     /**
      * <p>
-     * Getter for the field <code>oAuthResponseListener</code>.
+     * Getter for the field <code>authResponseListener</code>.
      * </p>
      *
      * @return a {@link io.goobi.viewer.model.security.authentication.AuthResponseListener} object.
      */
-    public AuthResponseListener<OpenIdProvider> getOAuthResponseListener() {
-        if (oAuthResponseListener == null) {
+    public AuthResponseListener<HttpAuthenticationProvider> getAuthResponseListener() {
+        if (authResponseListener == null) {
             synchronized (LOCK) {
-                oAuthResponseListener = new AuthResponseListener<>();
+                authResponseListener = new AuthResponseListener<>();
             }
         }
 
-        return oAuthResponseListener;
+        return authResponseListener;
     }
 
     /**

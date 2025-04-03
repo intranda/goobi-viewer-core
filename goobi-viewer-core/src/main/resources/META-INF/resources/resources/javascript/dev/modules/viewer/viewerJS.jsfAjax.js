@@ -66,8 +66,8 @@ var viewerJS = ( function ( viewer ) {
     		
     		$.extend( true, _defaults, config );
     		// listen to jsf ajax event
-            if ( typeof jsf !== 'undefined' ) {
-                jsf.ajax.addOnEvent( ( data ) => {
+            if ( typeof faces !== 'undefined' ) {
+                faces.ajax.addOnEvent( ( data ) => {
                     if ( _debug ) {
                         console.log( 'JSF AJAX - data: ', data );
                     }

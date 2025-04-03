@@ -40,8 +40,10 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_RECORD;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_SECTIONS;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_SECTIONS_RANGE;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
@@ -51,8 +53,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import javax.ws.rs.core.UriBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -82,6 +82,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -99,6 +100,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * <p>
@@ -291,6 +293,7 @@ public abstract class AbstractBuilder {
                 String label = StringUtils.isNotBlank(configuredLabel) ? configuredLabel
                         : (field.contains("/") ? field.substring(field.indexOf("/") + 1) : field);
                 SolrTools.getTranslations(field, ele, this.translationLocales, (s1, s2) -> s1 + "; " + s2)
+                        .filter(value -> !StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED.equals(value.getValue().get()))
                         .map(value -> new Metadata(getLabel(label), value))
                         .ifPresent(manifest::addMetadata);
             }
@@ -862,6 +865,15 @@ public abstract class AbstractBuilder {
             return Optional.empty();
         } else {
             throw new PresentationException("No solr field configured containing external manifest urls");
+        }
+    }
+
+    protected String escapeURI(String uri) {
+        try {
+            // logger.trace("Encoding param: {}", replacement); //NOSONAR Debug
+            return URLEncoder.encode(uri, StringTools.DEFAULT_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            return uri;
         }
     }
 

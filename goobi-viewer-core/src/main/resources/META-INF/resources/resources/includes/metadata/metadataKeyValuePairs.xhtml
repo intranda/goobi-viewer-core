@@ -32,6 +32,9 @@
 									<h:outputText value="#{val.getParamLabelWithColon(ind0)}" escape="false" />
 								</dt>
 								<dd>
+                                    <ui:fragment rendered="#{val.accessRestricted}">
+                                        <span class="metadata__locked-value-icon" data-toggle="tooltip" title="#{msg.metadata__restricted_value_tooltip}"><i class="fa fa-unlock" /></span>
+                                    </ui:fragment>
 									<h:outputText value="#{val.getComboValueShort(ind0)}" escape="false" />
 								</dd>
 

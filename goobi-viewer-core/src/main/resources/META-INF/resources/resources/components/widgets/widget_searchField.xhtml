@@ -38,18 +38,20 @@
                                 	</c:otherwise>
                                 </c:choose>
                                 
+                                <!-- ONLY SEARCH ICON NO TEXT -->
 								<ui:fragment rendered="#{cc.attrs.onlySearchIcon == true}">
 			                        <div class="input-group-addon">
-				                        <button class="btn" aria-label="#{msg.search}" jsf:action="#{searchBean.searchSimple()}">
+				                        <button class="btn widget-searchfield__submit" aria-label="#{msg.search}" jsf:action="#{searchBean.searchSimple()}">
 					                        <f:setPropertyActionListener for="actionEvent" target="#{searchBean.activeSearchType}" value="0" />
 												<i class="fa fa-search"/>
 				                        </button>
 			                        </div>
 								</ui:fragment>
                                 
+                                <!-- BUTTON WITH TEXT -->
 								<ui:fragment rendered="#{cc.attrs.onlySearchIcon == false}">
 			                        <div class="input-group-addon">
-				                        <button class="btn btn--full" aria-label="#{msg.search}" jsf:action="#{searchBean.searchSimple()}">
+				                        <button class="btn btn--full widget-searchfield__submit" aria-label="#{msg.search}" jsf:action="#{searchBean.searchSimple()}">
 					                        <f:setPropertyActionListener for="actionEvent" target="#{searchBean.activeSearchType}" value="0" />
 											#{msg.search}
 				                        </button>

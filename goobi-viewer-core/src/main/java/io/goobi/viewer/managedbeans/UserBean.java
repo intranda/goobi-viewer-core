@@ -37,14 +37,13 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import javax.enterprise.context.SessionScoped;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -81,6 +80,7 @@ import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import jakarta.faces.context.FacesContext;
 import jakarta.mail.MessagingException;
 
 /**
@@ -330,7 +330,6 @@ public class UserBean implements Serializable {
                 if (redirectUrl == null && provider instanceof HttpHeaderProvider) {
                     this.redirectUrl = buildRedirectUrl();
                 }
-                logger.trace("redirectUrl: {}", redirectUrl);
                 provider.setRedirectUrl(this.redirectUrl);
                 provider.login(email, password).thenAccept(result -> completeLogin(provider, result));
             } finally {
@@ -406,16 +405,16 @@ public class UserBean implements Serializable {
                         logger.trace("Redirecting to {}", redirectUrl);
                         String url = this.redirectUrl;
                         this.redirectUrl = "";
-                        response.sendRedirect(url);
+                        doRedirect(response, url);
                     } else if (response != null) {
                         Optional<ViewerPath> currentPath = ViewHistory.getCurrentView(request);
                         if (currentPath.isPresent()) {
                             logger.trace("Redirecting to current URL: {}", currentPath.get().getCombinedPrettyfiedUrl());
-                            response.sendRedirect(
-                                    ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + currentPath.get().getCombinedPrettyfiedUrl());
+                            doRedirect(response, ServletUtils.getServletPathWithHostAsUrlFromRequest(request)
+                                    + currentPath.get().getCombinedPrettyfiedUrl());
                         } else {
                             logger.trace("Redirecting to start page");
-                            response.sendRedirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
+                            doRedirect(response, ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
                         }
                     }
 
@@ -455,6 +454,24 @@ public class UserBean implements Serializable {
             result.setRedirected();
             // Reset to local provider so that the email field is displayed
             setAuthenticationProvider(getLocalAuthenticationProvider());
+        }
+    }
+
+    /**
+     * Redirects to the given URL. The type of response
+     * @param response {@link HttpServletResponse} from {@link LoginResult}
+     * @param url Redirect URL
+     * @throws IOException
+     */
+    private static void doRedirect(HttpServletResponse response, String url) throws IOException {
+        if (response.equals(BeanUtils.getResponse())) {
+            // Local authentication: use Faces external context for redirection to avoid an IllegalStateException 
+            FacesContext.getCurrentInstance()
+                    .getExternalContext()
+                    .redirect(url);
+        } else {
+            // OpenID, etc.: Use response from LoginResult
+            response.sendRedirect(url);
         }
     }
 
@@ -544,7 +561,7 @@ public class UserBean implements Serializable {
     /**
      * Removes the user and permission attributes from the session.
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -565,22 +582,17 @@ public class UserBean implements Serializable {
 
             try {
                 BeanUtils.getBeanFromRequest(request, "collectionViewBean", CollectionViewBean.class)
-                        .ifPresentOrElse(CollectionViewBean::invalidate, () -> {
-                            logger.debug("Cannot invalidate CollectionViewBean. Not instantiated yet");
-                        });
+                        .ifPresentOrElse(CollectionViewBean::invalidate,
+                                () -> logger.trace("Cannot invalidate CollectionViewBean. Not instantiated yet"));
                 BeanUtils.getBeanFromRequest(request, "activeDocumentBean", ActiveDocumentBean.class)
-                        .ifPresentOrElse(ActiveDocumentBean::resetAccess, () -> {
-                            logger.debug("Cannot reset access permissions in ActiveDocumentBean. Not instantiated yet");
-                        });
+                        .ifPresentOrElse(ActiveDocumentBean::resetAccess,
+                                () -> logger.trace("Cannot reset access permissions in ActiveDocumentBean. Not instantiated yet"));
                 BeanUtils.getBeanFromRequest(request, "sessionBean", SessionBean.class)
-                        .ifPresentOrElse(SessionBean::cleanSessionObjects, () -> {
-                            logger.debug("Cannot clear session storage in SessionBean. Not instantiated yet");
-                        });
-
+                        .ifPresentOrElse(SessionBean::cleanSessionObjects,
+                                () -> logger.trace("Cannot clear session storage in SessionBean. Not instantiated yet"));
                 BeanUtils.getBeanFromRequest(request, "displayConditions", DisplayConditions.class)
-                        .ifPresentOrElse(DisplayConditions::clearCache, () -> {
-                            logger.debug("Cannot clear DosplayConditions cache. Not instantiated yet");
-                        });
+                        .ifPresentOrElse(DisplayConditions::clearCache,
+                                () -> logger.trace("Cannot clear DosplayConditions cache. Not instantiated yet"));
             } catch (Exception e) {
                 logger.warn(e.getMessage());
             }

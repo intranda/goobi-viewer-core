@@ -10,7 +10,7 @@
     	<composite:attribute name="mapId" required="false" default="geomap" />
     	<composite:attribute name="linkTarget" required="false" default="_self" />
     	<composite:attribute name="linkToSearch" required="false" default="true" />
-    	<composite:attribute name="linkTarget" required="false" default="_self" />
+    	<composite:attribute name="linkTarget" required="false" default="_bank" />
     	<composite:attribute name="popoverOnHover" type="java.lang.Boolean" required="false" default="#{true}"/>
     	<composite:attribute name="clusterMarkers" type="java.lang.Boolean" required="false" default="#{true}"/>
     	<composite:attribute name="popoverClass" required="false" default="geomap_popover"/>
@@ -64,7 +64,8 @@
 				           			}
 				           		},
 				           		search: {
-					            	searchUrlTemplate : '#{featureSet.queryResultSet ? geoMapBean.getCoordinateSearchQueryTemplate(featureSet) : ""}',			           			
+					            	searchUrlTemplate : '#{featureSet.queryResultSet ? featureSet.getCoordinateSearchQueryTemplate() : ""}',		
+					            	filterQueryTemplate : '#{featureSet.queryResultSet ? featureSet.getSolrQueryForSearch(true) : "WKT_COORDS:\"Intersects(POINT({lng} {lat})) distErrPct=0\""}',
 					            	openSearchOnMarkerClick: #{featureSet.queryResultSet},
 					            	linkTarget : "#{cc.attrs.linkTarget}",
 					            	loader: "##{cc.attrs.mapId} .ajax_loader",

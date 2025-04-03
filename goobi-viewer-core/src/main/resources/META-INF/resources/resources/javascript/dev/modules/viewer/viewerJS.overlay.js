@@ -50,7 +50,7 @@ var viewerJS = ( function( viewer ) {
                     $trigger.on("click", (event) => {
                         switch(type) {
                             case "modal":
-                                viewer.overlay.openModal($overlay, closable);
+                                viewer.overlay.openModal($overlay, closable, fullscreen);
                                 break;
                             default:
                                 viewer.overlay.open($node, closable, fullscreen);
@@ -61,17 +61,17 @@ var viewerJS = ( function( viewer ) {
             }
     }
     
-    viewer.overlay.openModal = function(node, closable, onClose) {
+    viewer.overlay.openModal = function(node, closable, fullscreen, onClose) {
         
         return new Promise( (resolve, reject) => {
         
-	        let $overlay = $(".overlay");
+	        let $overlay = $("#overlayModal");
 	        if($overlay.length > 0) {
 	            if($overlay.hasClass("active")) {
 	                defer.reject("overlay is already active");
 	                return;
 	            }
-	            
+	            console.log("open in ", $overlay);
 	            let $node = $(node);
 	            let $contentHeader = $node.find("[data-overlay-content='header']");
 	            let $contentBody = $node.find("[data-overlay-content='body']");
@@ -84,6 +84,7 @@ var viewerJS = ( function( viewer ) {
 	            if($areaHeader.length > 0 && $contentHeader.length > 0) {
 	                $areaHeader.append($contentHeader);
 	            }
+				console.log("append ", $contentBody, " to ", $areaBody);
 	            if($areaBody.length > 0 && $contentBody.length > 0) {
 	                $areaBody.append($contentBody);
 	            }
@@ -95,7 +96,7 @@ var viewerJS = ( function( viewer ) {
 	            let $modal = $("#overlayModal");
 	            $modal.modal({
 	                backdrop: true,
-	                keyboad: closable,
+	                keyboard: closable,
 	                focus: true,
 	                show: true
 	            })
@@ -113,10 +114,14 @@ var viewerJS = ( function( viewer ) {
 	                }
 	                $("body").off("click", ".close-modal");
 	            });
+				if(fullscreen) {
+	                $modal.addClass("fullscreen");
+	            }
 	            let $dismissButtons = $overlay.find("[data-overlay-action='dismiss']")
 	            if(closable === true) {      
 	                $dismissButtons.show();
 	                $( 'body' ).one( 'click.close-modal', "[data-overlay-action='dismiss']", event => {
+						$modal.removeClass("fullscreen");
 	                    $modal.modal("hide");
 	                });
 	            } else {
@@ -134,7 +139,7 @@ var viewerJS = ( function( viewer ) {
    
    		return new Promise( (resolve, reject) => {
 	        let $overlay = $(".overlay");
-   		console.log("open overlay", node, $overlay);
+   		// console.log("open overlay", node, $overlay);
 	        if($overlay.length > 0) {
 	            if($overlay.hasClass("active")) {
 	                reject("overlay is already active");
@@ -163,9 +168,14 @@ var viewerJS = ( function( viewer ) {
 		        }
 	                    
 	            
-	            let $dismissButtons = $overlay.find("[data-overlay-action='dismiss']")
+	            let $dismissButtons = $overlay.find("[data-overlay-action='dismiss']");
+				let $contentDismissButtons = $node.find("[data-overlay-action='dismiss']");
 	            if(closable === true) {      
-	                $dismissButtons.show();
+					if($contentDismissButtons.length) {
+						$contentDismissButtons.show();
+					} else {
+						$dismissButtons.show();
+					}
 	                $( 'body' ).one( 'click.close-modal', "[data-overlay-action='dismiss']", event => {
 	                    overlay.close();
 	                });

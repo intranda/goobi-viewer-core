@@ -24,25 +24,23 @@ package io.goobi.viewer.websockets;
 import java.io.IOException;
 import java.util.Collections;
 
-import javax.servlet.http.HttpSession;
-import javax.websocket.EndpointConfig;
-import javax.websocket.RemoteEndpoint.Basic;
-import javax.websocket.Session;
-
 import org.json.JSONObject;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.exceptions.DAOException;
-
+import jakarta.servlet.http.HttpSession;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.RemoteEndpoint.Basic;
+import jakarta.websocket.Session;
 
 /**
  * @author florian
  *
  */
-class CampaignEndpointTest extends AbstractDatabaseEnabledTest{
+class CampaignEndpointTest extends AbstractDatabaseEnabledTest {
 
     private final Session session1 = Mockito.mock(Session.class);
     private final Session session2 = Mockito.mock(Session.class);
@@ -64,22 +62,22 @@ class CampaignEndpointTest extends AbstractDatabaseEnabledTest{
     private final CampaignEndpoint endpoint2 = new CampaignEndpoint();
     private final CampaignEndpoint endpoint3 = new CampaignEndpoint();
 
-     @BeforeEach
-     public void setUp() throws Exception {
-         super.setUp();
-         Mockito.when(httpSession1.getId()).thenReturn("http1");
-         Mockito.when(httpSession2.getId()).thenReturn("http2");
-         Mockito.when(httpSession3.getId()).thenReturn("http3");
-         Mockito.when(config1.getUserProperties()).thenReturn(Collections.singletonMap(HttpSession.class.getName(), httpSession1));
-         Mockito.when(config2.getUserProperties()).thenReturn(Collections.singletonMap(HttpSession.class.getName(), httpSession2));
-         Mockito.when(config3.getUserProperties()).thenReturn(Collections.singletonMap(HttpSession.class.getName(), httpSession3));
-         Mockito.when(session1.getBasicRemote()).thenReturn(remote1);
-         Mockito.when(session2.getBasicRemote()).thenReturn(remote2);
-         Mockito.when(session3.getBasicRemote()).thenReturn(remote3);
-         endpoint1.onOpen(session1, config1);
-         endpoint2.onOpen(session2, config2);
-         endpoint3.onOpen(session3, config3);
-     }
+    @BeforeEach
+    public void setUp() throws Exception {
+        super.setUp();
+        Mockito.when(httpSession1.getId()).thenReturn("http1");
+        Mockito.when(httpSession2.getId()).thenReturn("http2");
+        Mockito.when(httpSession3.getId()).thenReturn("http3");
+        Mockito.when(config1.getUserProperties()).thenReturn(Collections.singletonMap(HttpSession.class.getName(), httpSession1));
+        Mockito.when(config2.getUserProperties()).thenReturn(Collections.singletonMap(HttpSession.class.getName(), httpSession2));
+        Mockito.when(config3.getUserProperties()).thenReturn(Collections.singletonMap(HttpSession.class.getName(), httpSession3));
+        Mockito.when(session1.getBasicRemote()).thenReturn(remote1);
+        Mockito.when(session2.getBasicRemote()).thenReturn(remote2);
+        Mockito.when(session3.getBasicRemote()).thenReturn(remote3);
+        endpoint1.onOpen(session1, config1);
+        endpoint2.onOpen(session2, config2);
+        endpoint3.onOpen(session3, config3);
+    }
 
     @Test
     void test() throws IOException, DAOException {

@@ -21,11 +21,15 @@
  */
 package io.goobi.viewer.api.rest.model;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * POST request parameters for IndexingResource (indexer ersion).
+ * POST request parameters for IndexingResource (indexer version).
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class IndexerDataRequestParameters {
 
     private String application;
@@ -36,6 +40,8 @@ public class IndexerDataRequestParameters {
     private String gitRevision;
     @JsonProperty("hotfolder-file-count")
     private int hotfolderFileCount;
+    @JsonProperty("record-identifiers")
+    private List<String> recordIdentifiers;
 
     /**
      * @return the application
@@ -107,4 +113,17 @@ public class IndexerDataRequestParameters {
         this.hotfolderFileCount = hotfolderFileCount;
     }
 
+    /**
+     * @return the recordIdentifiers
+     */
+    public List<String> getRecordIdentifiers() {
+        return recordIdentifiers;
+    }
+
+    /**
+     * @param recordIdentifiers the recordIdentifiers to set
+     */
+    public void setRecordIdentifiers(List<String> recordIdentifiers) {
+        this.recordIdentifiers = recordIdentifiers;
+    }
 }

@@ -34,12 +34,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.http.Part;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,7 +45,8 @@ import org.jdom2.Namespace;
 import org.omnifaces.cdi.Push;
 import org.omnifaces.cdi.PushContext;
 
-import de.unigoettingen.sub.commons.util.CacheUtils;
+import de.unigoettingen.sub.commons.cache.CacheUtils;
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -77,6 +72,11 @@ import io.goobi.viewer.model.translations.admin.TranslationGroup;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.Part;
 
 /**
  * Administration backend functions.
@@ -126,6 +126,8 @@ public class AdminBean implements Serializable {
     private Role memberRole;
 
     private transient Part uploadedAvatarFile;
+
+    private CacheUtils cacheUtils = new CacheUtils(ContentServerCacheManager.getInstance());
 
     /**
      * <p>
@@ -226,9 +228,11 @@ public class AdminBean implements Serializable {
      *
      * @return a {@link java.lang.String} object
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @deprecated Seems to be unused
      */
+    @Deprecated(since = "24.12")
     public String saveCurrentUserAction() throws DAOException {
-        if (this.saveUserAction(getCurrentUser())) {
+        if (this.saveUser(getCurrentUser(), true)) {
             return "pretty:adminUsers";
         }
 
@@ -241,12 +245,13 @@ public class AdminBean implements Serializable {
      * </p>
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object
+     * @param forceCheckCurrentPassword If true, even if an admin is changing their own password
      * @param returnPage a {@link java.lang.String} object
      * @return a {@link java.lang.String} object
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public String saveUserAction(User user, String returnPage) throws DAOException {
-        if (this.saveUserAction(user)) {
+    public String saveUserAction(User user, boolean forceCheckCurrentPassword, String returnPage) throws DAOException {
+        if (this.saveUser(user, forceCheckCurrentPassword)) {
             return returnPage;
         }
         return "";
@@ -272,10 +277,11 @@ public class AdminBean implements Serializable {
      * </p>
      *
      * @param user User to save
+     * @param forceCheckCurrentPassword If true, even if an admin is changing their own password
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean saveUserAction(User user) throws DAOException {
+    public boolean saveUser(User user, boolean forceCheckCurrentPassword) throws DAOException {
 
         //first check if current user has the right to edit the given user
         User activeUser = BeanUtils.getUserBean().getUser();
@@ -299,10 +305,9 @@ public class AdminBean implements Serializable {
         if (user.getId() != null) {
             // Existing user
             if (StringUtils.isNotEmpty(passwordOne) || StringUtils.isNotEmpty(passwordTwo)) {
-                // Only match current password if not an admin
-                // TODO Current logic will omit current password check for superuser accounts even when operating outside the admin backend
-                if (!activeUser.isSuperuser() && activeUser.getId().equals(user.getId()) && currentPassword != null
-                        && !new BCrypt().checkpw(currentPassword, user.getPasswordHash())) {
+                // Check current password entry if user not an admin or forceCheckCurrentPassword==true
+                if ((forceCheckCurrentPassword || (!activeUser.isSuperuser() && activeUser.getId().equals(user.getId())))
+                        && (currentPassword == null || !new BCrypt().checkpw(currentPassword, user.getPasswordHash()))) {
                     Messages.error("user_currentPasswordWrong");
                     return false;
                 }
@@ -1104,7 +1109,7 @@ public class AdminBean implements Serializable {
      * @return a int.
      */
     public int deleteFromCache(List<String> identifiers, boolean fromContentCache, boolean fromThumbnailCache) {
-        return CacheUtils.deleteFromCache(identifiers, fromContentCache, fromThumbnailCache);
+        return cacheUtils.deleteFromCache(identifiers, fromContentCache, fromThumbnailCache);
     }
 
     /**
@@ -1127,7 +1132,7 @@ public class AdminBean implements Serializable {
                 DownloadJobTools.removeJobsForRecord(identifier);
             }
         }
-        return CacheUtils.deleteFromCache(identifiers, fromContentCache, fromThumbnailCache, fromPdfCache);
+        return cacheUtils.deleteFromCache(identifiers, fromContentCache, fromThumbnailCache, fromPdfCache);
     }
 
     /**

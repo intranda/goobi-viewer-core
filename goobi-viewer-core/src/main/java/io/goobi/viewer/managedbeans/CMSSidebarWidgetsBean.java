@@ -29,11 +29,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.enterprise.context.RequestScoped;
-import javax.faces.component.UIComponent;
-import javax.faces.component.html.HtmlPanelGroup;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.component.html.HtmlPanelGroup;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -78,6 +78,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
     private static final long serialVersionUID = -6039330925483238481L;
 
     private static final Logger logger = LogManager.getLogger(CMSSidebarWidgetsBean.class);
+
 
     @Inject
     private CmsBean cmsBean;
@@ -179,7 +180,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
      *
      * @param elements a {@link java.util.List} object
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
-     * @return a {@link javax.faces.component.html.HtmlPanelGroup} object
+     * @return a {@link jakarta.faces.component.html.HtmlPanelGroup} object
      */
     public HtmlPanelGroup getSidebarGroup(List<CMSSidebarElement> elements, CMSPage page) {
         if (elements != null && !elements.isEmpty()) {
@@ -195,7 +196,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
     /**
      * <p>Getter for the field <code>sidebarGroup</code>.</p>
      *
-     * @return a {@link javax.faces.component.html.HtmlPanelGroup} object
+     * @return a {@link jakarta.faces.component.html.HtmlPanelGroup} object
      */
     public HtmlPanelGroup getSidebarGroup() {
         return Optional.ofNullable(cmsBean).map(CmsBean::getCurrentPage).map(page -> {
@@ -207,7 +208,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
     /**
      * <p>Setter for the field <code>sidebarGroup</code>.</p>
      *
-     * @param sidebarGroup a {@link javax.faces.component.html.HtmlPanelGroup} object
+     * @param sidebarGroup a {@link jakarta.faces.component.html.HtmlPanelGroup} object
      */
     public void setSidebarGroup(HtmlPanelGroup sidebarGroup) {
         this.sidebarGroup = sidebarGroup;

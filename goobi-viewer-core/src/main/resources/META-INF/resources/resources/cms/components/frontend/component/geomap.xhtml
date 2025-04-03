@@ -33,7 +33,7 @@
 
 				<div id="templateGeoMap" class="tpl-geomap">
 					<ui:fragment rendered="#{cc.attrs.component.hasContent('geomap')}">
-						<viewerComponent:geoMap clusterMarkers="true" geoMap="#{geoMapBean.getFromCache(cc.attrs.geomap)}"/>
+						<viewerComponent:geoMap showFeatureList="true" clusterMarkers="true" geoMap="#{geoMapBean.getFromCache(cc.attrs.geomap)}"/>
 					</ui:fragment>
 				</div>
 

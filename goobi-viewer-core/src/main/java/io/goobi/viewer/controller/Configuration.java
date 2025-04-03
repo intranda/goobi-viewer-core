@@ -27,6 +27,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -44,8 +46,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.faces.model.SelectItem;
 
 import org.apache.commons.configuration2.BaseHierarchicalConfiguration;
 import org.apache.commons.configuration2.HierarchicalConfiguration;
@@ -113,6 +113,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.collections.DcSortingList;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.faces.model.SelectItem;
 
 /**
  * <p>
@@ -906,7 +907,7 @@ public class Configuration extends AbstractConfiguration {
         }
 
         FeatureSetConfiguration config = new FeatureSetConfiguration("docStruct", "MD_TITLE",
-                DataManager.getInstance().getConfiguration().getRecordGeomapMarker(templateName, ""), "", "LABEL", Collections.emptyList());
+                DataManager.getInstance().getConfiguration().getRecordGeomapMarker(templateName), "", "LABEL", Collections.emptyList());
 
         return List.of(config);
     }
@@ -959,19 +960,6 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isDisplaySidebarRssFeed() {
         return getLocalBoolean("sidebar.sidebarRssFeed[@enabled]", true);
-    }
-
-    /**
-     * <p>
-     * isOriginalContentDownload.
-     * </p>
-     *
-     * @return a boolean.
-     * @deprecated Use Configuration.isDisplaySidebarWidgetAdditionalFiles()
-     */
-    @Deprecated(since = "2023.11")
-    public boolean isDisplaySidebarWidgetDownloads() {
-        return isDisplaySidebarWidgetAdditionalFiles();
     }
 
     /**
@@ -1056,6 +1044,18 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return new Metadata();
+    }
+
+    /**
+     *
+     * @return Map containing mappings DOCSTRCT -> citeproc type
+     * @should return all configured values
+     */
+    public Map<String, String> getSidebarWidgetUsageCitationRecommendationDocstructMapping() {
+        Map<String, String> ret = new HashMap<>();
+        this.getLocalConfigurationsAt("sidebar.sidebarWidgetUsage.citationRecommendation.source.csltypes.csltype")
+                .forEach(conf -> ret.put(conf.getString("[@docstrct]"), conf.getString(".")));
+        return ret;
     }
 
     /**
@@ -1681,6 +1681,62 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isAdvancedSearchEnabled() {
         return getLocalBoolean("search.advanced[@enabled]", true);
+    }
+
+    /**
+     * 
+     * @return List of configured template names
+     * @should return all values
+     */
+    public List<String> getAdvancedSearchTemplateNames() {
+        return getLocalList(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE + "[@name]", Collections.emptyList());
+    }
+
+    /**
+     * 
+     * @return _DEFAULT or the name of the first template in the list
+     */
+    public String getAdvancedSearchDefaultTemplateName() {
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
+        if (templateList == null || templateList.isEmpty()) {
+            logger.error("No advanced search template configurations found.");
+            return StringConstants.DEFAULT_NAME;
+        }
+
+        for (HierarchicalConfiguration<ImmutableNode> subElement : templateList) {
+            String name = subElement.getString(XML_PATH_ATTRIBUTE_NAME);
+            if (StringConstants.DEFAULT_NAME.equals(name)) {
+                logger.trace("Found _DEFAULT template.");
+                return name;
+            }
+        }
+
+        String firstTemplateName = templateList.get(0).getString(XML_PATH_ATTRIBUTE_NAME);
+        if (StringUtils.isNotEmpty(firstTemplateName)) {
+            logger.trace("Returning first template name: {}", firstTemplateName);
+            return firstTemplateName;
+        }
+
+        return StringConstants.DEFAULT_NAME;
+    }
+
+    /**
+     * 
+     * @param template
+     * @return Value of the query attribute; empty string if none found
+     * @should return correct value
+     */
+    public String getAdvancedSearchTemplateQuery(String template) {
+        List<HierarchicalConfiguration<ImmutableNode>> templateList = getLocalConfigurationsAt(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE);
+        if (templateList == null) {
+            return null;
+        }
+        HierarchicalConfiguration<ImmutableNode> usingTemplate = selectTemplate(templateList, template, false);
+        if (usingTemplate == null) {
+            return null;
+        }
+
+        return usingTemplate.getString("[@query]", "");
     }
 
     /**
@@ -2483,21 +2539,25 @@ public class Configuration extends AbstractConfiguration {
             String type = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@type]", "");
             String endpoint = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@endpoint]", null);
             String tokenEndpoint = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tokenEndpoint]", null);
+            String jwksUri = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@jwksUri]", null);
             String redirectionEndpoint = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@redirectionEndpoint]", null);
             String scope = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@scope]", null);
+            String responseType = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@responseType]", "code");
+            String responseMode = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@responseMode]");
             String image = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@image]", null);
             boolean enabled = myConfigToUse.getBoolean(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@enabled]", true);
+            String discoveryUri = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@discoveryUri]");
             String clientId = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@clientId]", null);
             String clientSecret = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@clientSecret]", null);
             String parameterType = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@parameterType]", null);
             String parameterName = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@parameterName]", null);
+            String issuer = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@issuer]");
+            long tokenCheckDelay = myConfigToUse.getLong(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tokenCheckDelay]", 0);
             String thirdPartyLoginUrl = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginUrl]", null);
             String thirdPartyLoginApiKey = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginApiKey]", null);
             String thirdPartyLoginScope = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginScope]", null);
             String thirdPartyLoginReqParamDef = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginReqParamDef]", null);
-            ;
             String thirdPartyLoginClaim = myConfigToUse.getString(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@tPLoginClaim]", null);
-            ;
             long timeoutMillis = myConfigToUse.getLong(XML_PATH_USER_AUTH_PROVIDERS_PROVIDER + i + ")[@timeout]", 60000);
 
             if (enabled) {
@@ -2509,9 +2569,15 @@ public class Configuration extends AbstractConfiguration {
                     case "openid":
                         providers.add(
                                 new OpenIdProvider(name, label, endpoint, image, timeoutMillis, clientId, clientSecret)
+                                        .setDiscoveryUri(discoveryUri)
                                         .setTokenEndpoint(tokenEndpoint)
                                         .setRedirectionEndpoint(redirectionEndpoint)
+                                        .setJwksUri(jwksUri)
                                         .setScope(scope)
+                                        .setResponseType(responseType)
+                                        .setResponseMode(responseMode)
+                                        .setIssuer(issuer)
+                                        .setTokenCheckDelay(tokenCheckDelay)
                                         .setThirdPartyVariables(thirdPartyLoginUrl, thirdPartyLoginApiKey, thirdPartyLoginScope,
                                                 thirdPartyLoginReqParamDef, thirdPartyLoginClaim));
                         break;
@@ -3706,7 +3772,8 @@ public class Configuration extends AbstractConfiguration {
             ChronoUnit unit = ChronoUnit.valueOf(unitString.toUpperCase());
             return Duration.of(amount, unit);
         } catch (IllegalArgumentException e) {
-            logger.warn("Could not read temporal unit from string '{}' in config field 'externalResource.deleteAfter.unit'. Assuming days");
+            logger.warn("Could not read temporal unit from string '{}' in config field 'externalResource.deleteAfter.unit'. Assuming days.",
+                    unitString);
             return Duration.of(amount, ChronoUnit.DAYS);
         }
     }
@@ -3851,24 +3918,28 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return a boolean.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public boolean useTiles(PageType view, ImageType image) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(view, image).getBoolean("[@tileImage]", false);
+    public boolean useTiles(PageType view, String imageMimeType) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(view, imageMimeType).getBoolean("[@tileImage]", false);
     }
 
     /**
      * whether to show a navigator element in the openseadragon viewe
      * 
      * @param view get settings for this pageType
-     * @param image get settings for this image type
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return true if navigator should be shown
      * @throws ViewerConfigurationException
      */
-    public boolean showImageNavigator(PageType view, ImageType image) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(view, image).getBoolean("navigator[@enabled]", false);
+    public boolean showImageNavigator(PageType view, String imageMimeType) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(view, imageMimeType).getBoolean("navigator[@enabled]", false);
+    }
+
+    public boolean showImageThumbnailGallery(PageType view, String imageMimeType) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(view, imageMimeType).getBoolean("thumbnailGallery[@enabled]", false);
     }
 
     /**
@@ -3901,62 +3972,12 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public int getFooterHeight(PageType view, ImageType image) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(view, image).getInt("[@footerHeight]", 50);
-    }
-
-    /**
-     * <p>
-     * getImageViewType.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    public String getImageViewType() throws ViewerConfigurationException {
-        return getZoomImageViewType(PageType.viewImage, null);
-    }
-
-    /**
-     * <p>
-     * getZoomFullscreenViewType.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    public String getZoomFullscreenViewType() throws ViewerConfigurationException {
-        return getZoomImageViewType(PageType.viewFullscreen, null);
-    }
-
-    /**
-     * <p>
-     * getZoomImageViewType.
-     * </p>
-     *
-     * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    public String getZoomImageViewType(PageType view, ImageType image) throws ViewerConfigurationException {
-        return getZoomImageViewConfig(view, image).getString(XML_PATH_ATTRIBUTE_TYPE);
-    }
-
-    /**
-     * <p>
-     * useOpenSeadragon.
-     * </p>
-     *
-     * @return a boolean.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    public boolean useOpenSeadragon() throws ViewerConfigurationException {
-        return "openseadragon".equalsIgnoreCase(getImageViewType());
+    public int getFooterHeight(PageType view, String imageMimeType) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(view, imageMimeType).getInt("[@footerHeight]", 50);
     }
 
     /**
@@ -3990,13 +4011,13 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return a {@link java.util.List} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public List<String> getImageViewZoomScales(PageType view, ImageType image) throws ViewerConfigurationException {
+    public List<String> getImageViewZoomScales(PageType view, String imageMimeType) throws ViewerConfigurationException {
         List<String> defaultList = new ArrayList<>();
-        BaseHierarchicalConfiguration zoomImageViewConfig = getZoomImageViewConfig(view, image);
+        BaseHierarchicalConfiguration zoomImageViewConfig = getZoomImageViewConfig(view, imageMimeType);
         if (zoomImageViewConfig != null) {
             String[] scales = zoomImageViewConfig.getStringArray("scale");
             if (scales != null) {
@@ -4024,13 +4045,13 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param view a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param image a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return a {@link java.util.Map} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public Map<Integer, List<Integer>> getTileSizes(PageType view, ImageType image) throws ViewerConfigurationException {
+    public Map<Integer, List<Integer>> getTileSizes(PageType view, String imageMimeType) throws ViewerConfigurationException {
         Map<Integer, List<Integer>> map = new HashMap<>();
-        List<HierarchicalConfiguration<ImmutableNode>> sizes = getZoomImageViewConfig(view, image).configurationsAt("tileSize");
+        List<HierarchicalConfiguration<ImmutableNode>> sizes = getZoomImageViewConfig(view, imageMimeType).configurationsAt("tileSize");
         if (sizes != null && !sizes.isEmpty()) {
             for (HierarchicalConfiguration<ImmutableNode> sizeConfig : sizes) {
                 int size = sizeConfig.getInt("size", 0);
@@ -4059,11 +4080,11 @@ public class Configuration extends AbstractConfiguration {
      * </p>
      *
      * @param pageType a {@link io.goobi.viewer.model.viewer.PageType} object.
-     * @param imageType a {@link de.unigoettingen.sub.commons.contentlib.imagelib.ImageType} object.
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return a {@link org.apache.commons.configuration2.SubnodeConfiguration} object.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public BaseHierarchicalConfiguration getZoomImageViewConfig(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
+    public BaseHierarchicalConfiguration getZoomImageViewConfig(PageType pageType, String imageMimeType) throws ViewerConfigurationException {
         List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("viewer.zoomImageView");
 
         for (HierarchicalConfiguration<ImmutableNode> subConfig : configs) {
@@ -4075,9 +4096,9 @@ public class Configuration extends AbstractConfiguration {
                 }
             }
 
-            if (imageType != null && imageType.getFormat() != null) {
+            if (StringUtils.isNotBlank(imageMimeType)) {
                 List<Object> mimeTypes = subConfig.getList("useFor.mimeType");
-                if (!mimeTypes.isEmpty() && !mimeTypes.contains(imageType.getFormat().getMimeType())) {
+                if (!mimeTypes.isEmpty() && !mimeTypes.contains(imageMimeType)) {
                     continue;
                 }
             }
@@ -4301,46 +4322,6 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isPreventProxyCaching() {
         return getLocalBoolean(("performance.preventProxyCaching"), false);
-    }
-
-    /**
-     * <p>
-     * isSolrUseHttp2.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isSolrUseHttp2() {
-        return getLocalBoolean(("performance.solr.useHttp2"), true);
-    }
-
-    /**
-     * <p>
-     * isSolrCompressionEnabled.
-     * </p>
-     *
-     * @return a boolean
-     * @should return correct value
-     * @deprecated Not supported when using HTTP2
-     */
-    @Deprecated(since = "24.01")
-    public boolean isSolrCompressionEnabled() {
-        return getLocalBoolean(("performance.solr.compressionEnabled"), true);
-    }
-
-    /**
-     * <p>
-     * isSolrBackwardsCompatible.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     * @deprecated Not supported when using HTTP2
-     */
-    @Deprecated(since = "24.01")
-    public boolean isSolrBackwardsCompatible() {
-        return getLocalBoolean(("performance.solr.backwardsCompatible"), false);
     }
 
     /**
@@ -5140,19 +5121,44 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
-     * isDoublePageNavigationEnabled.
-     * </p>
+     * Return true if double page navigation is enabled for the given {@link PageType} and {@link ImageType}. Default is false
      *
      * @should return correct value
+     * @param pageType The type of viewer page to which the configuration should apply
+     * @param imageMimeType the mimetype to which the configuration should apply.
      * @return a boolean.
+     * @throws ViewerConfigurationException
      */
-    public boolean isDoublePageNavigationEnabled() {
-        return getLocalBoolean("viewer.doublePageNavigation[@enabled]", false);
+    public boolean isDoublePageNavigationEnabled(PageType pageType, String imageMimeType) throws ViewerConfigurationException {
+        return !isSequencePageNavigationEnabled(pageType, imageMimeType)
+                && getZoomImageViewConfig(pageType, imageMimeType).getBoolean("doublePageNavigation[@enabled]", false);
     }
 
-    public boolean isDoublePageNavigationDefault() {
-        return isDoublePageNavigationEnabled() && getLocalBoolean("viewer.doublePageNavigation[@default]", false);
+    /**
+     * Return true if double page navigation should be used per default for the given {@link PageType} and {@link ImageType}. Default is false
+     *
+     * @should return correct value
+     * @param pageType The type of viewer page to which the configuration should apply
+     * @param imageMimeType the mimetype to which the configuration should apply.
+     * @return a boolean.
+     * @throws ViewerConfigurationException
+     */
+    public boolean isDoublePageNavigationDefault(PageType pageType, String imageMimeType) throws ViewerConfigurationException {
+        return isDoublePageNavigationEnabled(pageType, imageMimeType)
+                && getZoomImageViewConfig(pageType, imageMimeType).getBoolean("doublePageNavigation[@default]", false);
+    }
+
+    /**
+     * Return true if sequence page navigation is enabled for the given {@link PageType} and {@link ImageType}. Default is false
+     *
+     * @should return correct value
+     * @param pageType The type of viewer page to which the configuration should apply
+     * @param imageMimeType the mimetype to which the configuration should apply.
+     * @return a boolean.
+     * @throws ViewerConfigurationException
+     */
+    public boolean isSequencePageNavigationEnabled(PageType pageType, String imageMimeType) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(pageType, imageMimeType).getString("[@type]", "default").equalsIgnoreCase("sequence");
     }
 
     /**
@@ -5768,12 +5774,11 @@ public class Configuration extends AbstractConfiguration {
 
     }
 
-    public String getRecordGeomapMarker(String templateName, String type) {
+    public String getRecordGeomapMarker(String templateName) {
         HierarchicalConfiguration<ImmutableNode> template = selectTemplate(getLocalConfigurationsAt("maps.record.template"), templateName, true);
         if (template != null) {
             List<HierarchicalConfiguration<ImmutableNode>> configs = template.configurationsAt("marker");
             return configs.stream()
-                    .filter(config -> config.getString("[@type]", "").equals(type))
                     .findAny()
                     .map(config -> config.getString(".", ""))
                     .orElse("");
@@ -6008,8 +6013,7 @@ public class Configuration extends AbstractConfiguration {
                 continue;
             }
             int previewHitCount = groupNode.getInt("[@previewHitCount]", 10);
-            boolean useAsAdvancedSearchTemplate = groupNode.getBoolean("[@useAsAdvancedSearchTemplate]", false);
-            ret.add(new SearchResultGroup(name, query, previewHitCount, useAsAdvancedSearchTemplate));
+            ret.add(new SearchResultGroup(name, query, previewHitCount));
         }
 
         return ret;
@@ -6167,10 +6171,11 @@ public class Configuration extends AbstractConfiguration {
      * @param url
      * @return Configured value
      * @throws MalformedURLException
+     * @throws URISyntaxException
      * @should return true if host whitelisted
      */
-    public boolean isHostProxyWhitelisted(String url) throws MalformedURLException {
-        URL urlAsURL = new URL(url);
+    public boolean isHostProxyWhitelisted(String url) throws MalformedURLException, URISyntaxException {
+        URL urlAsURL = new URI(url).toURL();
         return getProxyWhitelist().contains(urlAsURL.getHost());
     }
 

@@ -24,9 +24,9 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.util.Locale;
 
-import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
-import javax.inject.Named;
+import jakarta.annotation.PostConstruct;
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -74,7 +74,7 @@ public class TermsOfUseEditBean implements Serializable, IPolyglott {
         if (translation == null) {
             translation = this.termsOfUse.setTitle(getSelectedLanguage(), "");
         }
-        return translation.getValue();
+        return translation.getTranslationValue();
     }
 
     public void setTitle(String value) {
@@ -86,7 +86,7 @@ public class TermsOfUseEditBean implements Serializable, IPolyglott {
         if (translation == null) {
             translation = this.termsOfUse.setDescription(getSelectedLanguage(), "");
         }
-        return translation.getValue();
+        return translation.getTranslationValue();
     }
 
     public void setDescription(String value) {

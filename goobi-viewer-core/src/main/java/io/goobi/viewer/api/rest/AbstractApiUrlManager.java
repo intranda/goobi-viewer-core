@@ -32,16 +32,16 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.MediaType;
-
 import org.apache.commons.collections4.iterators.ArrayIterator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.client.ClientProperties;
+
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * @author florian
@@ -314,15 +314,14 @@ public abstract class AbstractApiUrlManager {
      * @return {@link ApiInfo}
      */
     public ApiInfo getInfo() {
-        try {
-            Client client = ClientBuilder.newClient();
+        try (Client client = ClientBuilder.newClient()) {
             client.property(ClientProperties.CONNECT_TIMEOUT, 5000);
             client.property(ClientProperties.READ_TIMEOUT, 5000);
             return client
                     .target(getApiUrl() + "/")
                     .request(MediaType.APPLICATION_JSON)
                     .get(ApiInfo.class);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
             logger.error(e.getMessage());
             return new ApiInfo();
         }

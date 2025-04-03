@@ -59,7 +59,7 @@ public class TranslationListSerializer extends JsonSerializer<Collection<Transla
                 gen.writeObjectFieldStart(entry.getKey());
                 for (Translation translation : entry.getValue()) {
                     gen.writeArrayFieldStart(translation.getLanguage());
-                    gen.writeString(translation.getValue());
+                    gen.writeString(translation.getTranslationValue());
                     gen.writeEndArray();
                 }
                 gen.writeEndObject();

@@ -9,90 +9,42 @@
         <ignoreVersion type="regex">.*[-_\.](alpha|Alpha|ALPHA|beta|Beta|BETA|rc|RC|M|EA|B)[-_\.]?[0-9]?.*</ignoreVersion>
     </ignoreVersions>
 
-    <!-- The following rules exist, because updating to this major versions include changing the javax. to jakarta. namespaces.
-         Not all dependencies are compatible yet. Therefore excluding this is the best thing for now -->
     <rules>
-        <rule groupId="org.glassfish.jersey">
-            <ignoreVersions>
-                <ignoreVersion type="regex">3.0.*</ignoreVersion>
-                <ignoreVersion type="regex">3.1.*</ignoreVersion>
-            </ignoreVersions>
-        </rule>
-        <rule groupId="org.glassfish.jaxb">
-            <ignoreVersions>
-                <ignoreVersion>2.4.0-b180725.0644</ignoreVersion>
-                <ignoreVersion>2.4.0-b180830.0438</ignoreVersion>
-                <ignoreVersion type="regex">3.*</ignoreVersion>
-                <ignoreVersion type="regex">4.*</ignoreVersion>
-            </ignoreVersions>
-        </rule>
-        <!-- see here why no 2.4.0 https://balusc.omnifaces.org/2018/04/do-not-use-orgglassfish-mojarra-240.html -->
-        <rule groupId="org.glassfish" artifactId="javax.faces">
-            <ignoreVersions>
-                <ignoreVersion>2.4.0</ignoreVersion>
-            </ignoreVersions>
-        </rule>
-        <rule groupId="org.omnifaces" artifactId="omnifaces">
-            <ignoreVersions>
-                <ignoreVersion type="regex">4.*</ignoreVersion>
-            </ignoreVersions>
-        </rule>
-        <rule groupId="com.sun.xml.bind" artifactId="jaxb-*">
-            <ignoreVersions>
-                <ignoreVersion>3.0.0</ignoreVersion>
-            </ignoreVersions>
-        </rule>
-        <rule groupId="jakarta.annotation" artifactId="jakarta.annotation-api">
-            <ignoreVersions>
-                <ignoreVersion type="regex">2.*</ignoreVersion>
-                <ignoreVersion type="regex">3.*</ignoreVersion>
-            </ignoreVersions>
-        </rule>
+        <!-- This is Jakarta EE 11, Tomcat 11 ...-->
         <rule groupId="jakarta.servlet" artifactId="jakarta.servlet-api">
             <ignoreVersions>
-                <ignoreVersion>5.0.0</ignoreVersion>
-                <ignoreVersion>6.0.0</ignoreVersion>
                 <ignoreVersion>6.1.0</ignoreVersion>
             </ignoreVersions>
         </rule>
-        <rule groupId="jakarta.xml.bind" artifactId="jakarta.xml.bind-api">
+        <rule groupId="jakarta.websocket" artifactId="jakarta.websocket-*">
             <ignoreVersions>
-                <ignoreVersion>3.0.0</ignoreVersion>
+                <!-- Update is tested already -->
+                <!-- ignoreVersion>2.2.0</ignoreVersion -->
             </ignoreVersions>
         </rule>
-        <rule groupId="org.apache.tomcat" artifactId="tomcat-catalina">
+        <rule groupId="org.glassfish" artifactId="jakarta.faces">
             <ignoreVersions>
-                <ignoreVersion type="regex">10.*</ignoreVersion>
+                <!-- Update is tested already -->
+                <!-- ignoreVersion type="regex">4.1.*</ignoreVersion -->
             </ignoreVersions>
         </rule>
         <rule groupId="org.jboss.weld.servlet" artifactId="weld-servlet-shaded">
             <ignoreVersions>
-                <ignoreVersion type="regex">4.*</ignoreVersion>
-                <ignoreVersion type="regex">5.*</ignoreVersion>
                 <ignoreVersion type="regex">6.*</ignoreVersion>
             </ignoreVersions>
         </rule>
+        <rule groupId="jakarta.ws.rs" artifactId="jakarta.ws.rs-api">
+            <ignoreVersions>
+                <ignoreVersion type="regex">4.*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+
+
+        <!-- Other -->
         <rule groupId="xml-apis" artifactId="xml-apis">
             <ignoreVersions>
                 <ignoreVersion>2.0.0</ignoreVersion>
                 <ignoreVersion>2.0.2</ignoreVersion>
-            </ignoreVersions>
-        </rule>
-        <rule groupId="org.springframework" artifactId="spring-*">
-            <ignoreVersions>
-                <ignoreVersion type="regex">6.*</ignoreVersion>
-            </ignoreVersions>
-        </rule>
-        <rule groupId="jakarta" artifactId="jakarta.jms-api">
-            <ignoreVersions>
-                <ignoreVersion type="regex">3.*</ignoreVersion>
-            </ignoreVersions>
-        </rule>
-        <rule groupId="org.ocpsoft.rewrite" artifactId="rewrite-*">
-            <ignoreVersions>
-                <ignoreVersion type="regex">10.*.Final</ignoreVersion>
-                <ignoreVersion type="regex">9.*.Final</ignoreVersion>
-                <ignoreVersion type="regex">8.*.Final</ignoreVersion>
             </ignoreVersions>
         </rule>
     </rules>

@@ -38,20 +38,16 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.enterprise.context.SessionScoped;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.json.JSONObject;
+import org.omnifaces.cdi.Push;
+import org.omnifaces.cdi.PushContext;
+import org.omnifaces.util.Faces;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
@@ -68,6 +64,7 @@ import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
+import io.goobi.viewer.exceptions.IllegalUrlParameterException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordDeletedException;
@@ -106,6 +103,7 @@ import io.goobi.viewer.model.toc.TOCElement;
 import io.goobi.viewer.model.toc.export.pdf.TocWriter;
 import io.goobi.viewer.model.toc.export.pdf.WriteTocException;
 import io.goobi.viewer.model.translations.language.Language;
+import io.goobi.viewer.model.viewer.PageNavigation;
 import io.goobi.viewer.model.viewer.PageOrientation;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
@@ -117,6 +115,13 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * This bean opens the requested record and provides all data relevant to this record.
@@ -154,7 +159,7 @@ public class ActiveDocumentBean implements Serializable {
     /** URL parameter 'action'. */
     private String action = "";
     /** URL parameter 'imageToShow'. */
-    private String imageToShow = DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault() ? "1-1" : "1";
+    private String imageToShow = "1";
     /** URL parameter 'logid'. */
     private String logid = "";
     /** URL parameter 'tocCurrentPage'. */
@@ -192,6 +197,10 @@ public class ActiveDocumentBean implements Serializable {
     private Map<String, String> prevDocstructUrlCache = new HashMap<>();
     /* Next docstruct URL cache. TODO Implement differently once other views beside full-screen are used. */
     private Map<String, String> nextDocstructUrlCache = new HashMap<>();
+
+    @Inject
+    @Push
+    private PushContext tocUpdateChannel;
 
     /**
      * Empty constructor.
@@ -253,7 +262,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public void reset() throws IndexUnreachableException {
         synchronized (this) {
-            logger.trace("reset (thread {})", Thread.currentThread().getId());
+            logger.trace("reset (thread {})", Thread.currentThread().threadId());
             String pi = viewManager != null ? viewManager.getPi() : null;
             viewManager = null;
             topDocumentIddoc = null;
@@ -366,7 +375,7 @@ public class ActiveDocumentBean implements Serializable {
                     lastReceivedIdentifier = null;
                 }
             }
-            logger.debug("update(): (IDDOC {} ; page {} ; thread {})", topDocumentIddoc, imageToShow, Thread.currentThread().getId());
+            logger.debug("update(): (IDDOC {} ; page {} ; thread {})", topDocumentIddoc, imageToShow, Thread.currentThread().threadId());
             prevHit = null;
             nextHit = null;
             boolean doublePageMode = isDoublePageUrl();
@@ -468,11 +477,6 @@ public class ActiveDocumentBean implements Serializable {
                     }
                 }
             }
-
-            //update usage statistics
-            DataManager.getInstance()
-                    .getUsageStatisticsRecorder()
-                    .recordRequest(RequestType.RECORD_VIEW, viewManager.getPi(), BeanUtils.getRequest());
 
             // If LOGID is set, update the current element
             if (StringUtils.isNotEmpty(logid) && viewManager != null && !logid.equals(viewManager.getLogId())) {
@@ -583,7 +587,7 @@ public class ActiveDocumentBean implements Serializable {
      *         expected
      */
     private boolean isDoublePageUrl() {
-        return (StringUtils.isBlank(imageToShow) && DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault())
+        return (StringUtils.isBlank(imageToShow) && getViewManager().isDoublePageMode())
                 || (StringUtils.isNotBlank(imageToShow) && imageToShow.matches(DOUBLE_PAGE_PATTERN));
     }
 
@@ -629,6 +633,11 @@ public class ActiveDocumentBean implements Serializable {
                 if (navigationHelper == null || viewManager == null) {
                     return "";
                 }
+
+                //update usage statistics
+                DataManager.getInstance()
+                        .getUsageStatisticsRecorder()
+                        .recordRequest(RequestType.RECORD_VIEW, viewManager.getPi(), BeanUtils.getRequest());
 
                 IMetadataValue name = viewManager.getTopStructElement().getMultiLanguageDisplayLabel();
                 HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
@@ -751,19 +760,48 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * 
+     * @throws NumberFormatException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws IDDOCNotFoundException
+     * @throws RecordNotFoundException
+     * @throws RecordDeletedException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     * @throws RecordLimitExceededException
+     * @throws IllegalUrlParameterException
+     */
+    public void setCurrentImageOrderPerScript()
+            throws NumberFormatException, IndexUnreachableException, PresentationException, IDDOCNotFoundException, RecordNotFoundException,
+            RecordDeletedException, DAOException, ViewerConfigurationException, RecordLimitExceededException, IllegalUrlParameterException {
+        String order = Faces.getRequestParameter("order");
+        setImageToShow(order);
+        update();
+        Optional.ofNullable(this.viewManager).ifPresent(viewManager -> {
+            JSONObject json = new JSONObject();
+            json.put("iddoc", viewManager.getCurrentStructElementIddoc());
+            json.put("page", viewManager.getCurrentImageOrder());
+            this.tocUpdateChannel.send(json.toString());
+        });
+    }
+
+    /**
      * <p>
      * Setter for the field <code>imageToShow</code>.
      * </p>
      *
      * @param imageToShow Single page number (1) or range (2-3)
+     * @throws IllegalUrlParameterException
      */
-    public void setImageToShow(String imageToShow) {
+    public void setImageToShow(String imageToShow) throws IllegalUrlParameterException {
         synchronized (lock) {
             if (StringUtils.isNotEmpty(imageToShow) && imageToShow.matches("^\\d+(-\\d+)?$")) {
                 this.imageToShow = imageToShow;
             } else {
-                logger.warn("The passed image number '{}' contains illegal characters, setting to '1'...", imageToShow);
-                this.imageToShow = "1";
+                //                logger.warn("The passed image number '{}' contains illegal characters, setting to '1'...", imageToShow);
+                //                this.imageToShow = "1";
+                throw new IllegalUrlParameterException("Illegal page number(s): " + imageToShow);
             }
             if (viewManager != null) {
                 viewManager.setDropdownSelected(String.valueOf(this.imageToShow));
@@ -783,8 +821,11 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @throws io.goobi.viewer.exceptions.PresentationException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
+     * @throws ViewerConfigurationException
+     * @throws IllegalUrlParameterException
      */
-    public void setRepresentativeImage() throws PresentationException, IndexUnreachableException {
+    public void setRepresentativeImage()
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IllegalUrlParameterException {
         logger.trace("setRepresentativeImage"); //NOSONAR Debug
         synchronized (lock) {
             String image = "1";
@@ -799,7 +840,14 @@ public class ActiveDocumentBean implements Serializable {
                     logger.trace("{}  not found, using {}", SolrConstants.THUMBPAGENO, image);
                 }
             }
-            if (DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault()) {
+            boolean isDoublePageNavigation = Optional.ofNullable(this.viewManager)
+                    .map(ViewManager::getPageNavigation)
+                    .map(pageNavigation -> PageNavigation.DOUBLE == pageNavigation)
+                    .orElse(DataManager.getInstance()
+                            .getConfiguration()
+                            .isDoublePageNavigationDefault(this.navigationHelper.getCurrentPageType(),
+                                    Optional.ofNullable(this.getViewManager()).map(ViewManager::getMimeType).orElse(null)));
+            if (isDoublePageNavigation) {
                 image = String.format("%s-%s", image, image);
             }
             setImageToShow(image);
@@ -1008,48 +1056,6 @@ public class ActiveDocumentBean implements Serializable {
             }
             return "-";
         }
-    }
-
-    /**
-     * <p>
-     * getThumbPart.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @deprecated URL is now build in HTML
-     */
-    @Deprecated(since = "23.11")
-    public String getThumbPart() throws IndexUnreachableException {
-        if (viewManager != null) {
-            return new StringBuilder("/").append(getPersistentIdentifier())
-                    .append('/')
-                    .append(viewManager.getCurrentThumbnailPage())
-                    .append('/')
-                    .toString();
-        }
-
-        return "";
-    }
-
-    /**
-     * <p>
-     * getLogPart.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @deprecated URL is now build in HTML
-     */
-    @Deprecated(since = "23.11")
-    public String getLogPart() throws IndexUnreachableException {
-        return new StringBuilder("/").append(getPersistentIdentifier())
-                .append('/')
-                .append(imageToShow)
-                .append('/')
-                .append(getLogid())
-                .append('/')
-                .toString();
     }
 
     // navigation in work
@@ -1695,7 +1701,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getTitleBarLabel() throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         Locale locale = BeanUtils.getLocale();
-        if (locale != null) {
+        if (locale != null && StringUtils.isNotEmpty(locale.getLanguage())) {
             return getTitleBarLabel(locale.getLanguage());
         }
 
@@ -1720,15 +1726,15 @@ public class ActiveDocumentBean implements Serializable {
             return null;
         }
 
-        if (PageType.getByName(navigationHelper.getCurrentPage()) != null
-                && PageType.getByName(navigationHelper.getCurrentPage()).isDocumentPage() && viewManager != null) {
+        if (navigationHelper.getCurrentPage() != null && PageType.getByName(navigationHelper.getCurrentPage()) != null
+                && PageType.getByName(navigationHelper.getCurrentPage()).isDocumentPage() && getViewManager() != null) {
             // Prefer the label of the current TOC element
             TOC toc = getToc();
             if (toc != null && toc.getTocElements() != null && !toc.getTocElements().isEmpty()) {
                 String label = null;
                 String labelTemplate = StringConstants.DEFAULT_NAME;
-                if (getViewManager() != null) {
-                    labelTemplate = getViewManager().getTopStructElement().getDocStructType();
+                if (viewManager.getTopStructElement() != null) {
+                    labelTemplate = viewManager.getTopStructElement().getDocStructType();
                 }
                 if (DataManager.getInstance().getConfiguration().isDisplayAnchorLabelInTitleBar(labelTemplate)
                         && StringUtils.isNotBlank(viewManager.getAnchorPi())) {
@@ -2796,6 +2802,10 @@ public class ActiveDocumentBean implements Serializable {
      */
     public List<String> getGeomapFilters() {
         return List.of("MD_METADATATYPE", "MD_GENRE").stream().map(s -> "'" + s + "'").collect(Collectors.toList());
+    }
+
+    public void updatePageNavigation(PageType pageType) {
+        Optional.ofNullable(this.viewManager).ifPresent(vm -> vm.updatePageNavigation(pageType));
     }
 
 }

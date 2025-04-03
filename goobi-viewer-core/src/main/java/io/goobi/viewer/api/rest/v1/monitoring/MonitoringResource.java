@@ -25,16 +25,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -48,13 +38,20 @@ import io.goobi.viewer.api.rest.model.monitoring.MonitoringStatus;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.JsonTools;
-import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 
 @Path(ApiUrls.MONITORING)
 public class MonitoringResource {
@@ -103,20 +100,16 @@ public class MonitoringResource {
             logger.warn("DB monitoring check failed.");
         }
 
-        // Check image delivery
-        try {
-            NetTools.getWebContentGET(
-                    DataManager.getInstance().getConfiguration().getRestApiUrl() + "records/-/files/footer/-/full/100,/0/default.jpg");
-        } catch (HTTPException | IOException e) {
-            ret.getMonitoring().put(MonitoringStatus.KEY_IMAGES, MonitoringStatus.STATUS_ERROR);
-            logger.warn("Image delivery monitoring check failed.");
-        }
-
         // Check message queue status
         if (messageBroker != null) {
-            ret.getMonitoring()
-                    .put(MonitoringStatus.KEY_MESSAGE_QUEUE,
-                            messageBroker.isQueueRunning() ? MonitoringStatus.STATUS_OK : MonitoringStatus.STATUS_ERROR);
+            if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
+                ret.getMonitoring()
+                        .put(MonitoringStatus.KEY_MESSAGE_QUEUE,
+                                messageBroker.isQueueRunning() ? MonitoringStatus.STATUS_OK : MonitoringStatus.STATUS_ERROR);
+            } else {
+                ret.getMonitoring()
+                        .put(MonitoringStatus.KEY_MESSAGE_QUEUE, MonitoringStatus.STATUS_DISABLED);
+            }
         } else {
             logger.warn("MessageQueueManager injection failed.");
         }

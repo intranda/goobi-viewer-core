@@ -114,7 +114,7 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void getMimeTypeFromExtension_shouldReturnEmptyStringForUnknownFileExtensions() {
-        assertEquals("", BrowseElement.getMimeTypeFromExtension("foo.bar"));
+        assertEquals("", BrowseElement.getMimeTypeFromExtension("file:///opt/digiverso/foo.bar"));
     }
 
     /**

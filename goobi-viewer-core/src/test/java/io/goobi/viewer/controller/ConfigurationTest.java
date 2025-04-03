@@ -29,14 +29,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import javax.faces.model.SelectItem;
 
 import org.apache.commons.configuration2.HierarchicalConfiguration;
 import org.apache.commons.configuration2.tree.ImmutableNode;
@@ -79,6 +78,7 @@ import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.faces.model.SelectItem;
 
 class ConfigurationTest extends AbstractTest {
 
@@ -908,7 +908,7 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getSolrUrl_shouldReturnCorrectValue() {
-        assertEquals("https://viewer-testing-index.goobi.io/solr/collection1", DataManager.getInstance().getConfiguration().getSolrUrl());
+        assertEquals("https://viewer-testing-index.goobi.io/solr/current", DataManager.getInstance().getConfiguration().getSolrUrl());
     }
 
     /**
@@ -1154,24 +1154,6 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getZoomFullscreenViewType()
-     * @verifies return correct value
-     */
-    @Test
-    void getZoomFullscreenViewType_shouldReturnCorrectValue() throws Exception {
-        assertEquals("classic", DataManager.getInstance().getConfiguration().getZoomFullscreenViewType());
-    }
-
-    /**
-     * @see Configuration#getZoomImageViewType()
-     * @verifies return correct value
-     */
-    @Test
-    void getZoomImageViewType_shouldReturnCorrectValue() throws Exception {
-        assertEquals("openSeadragon", DataManager.getInstance().getConfiguration().getImageViewType());
-    }
-
-    /**
      * @see Configuration#isBookmarksEnabled()
      * @verifies return correct value
      */
@@ -1375,24 +1357,6 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void isPreventProxyCaching_shouldReturnCorrectValue() {
         assertEquals(true, DataManager.getInstance().getConfiguration().isPreventProxyCaching());
-    }
-
-    /**
-     * @see Configuration#isSolrCompressionEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    void isSolrCompressionEnabled_shouldReturnCorrectValue() {
-        assertFalse(DataManager.getInstance().getConfiguration().isSolrCompressionEnabled());
-    }
-
-    /**
-     * @see Configuration#isSolrBackwardsCompatible()
-     * @verifies return correct value
-     */
-    @Test
-    void isSolrBackwardsCompatible_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isSolrBackwardsCompatible());
     }
 
     /**
@@ -2101,6 +2065,26 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getAdvancedSearchTemplateNames()
+     * @verifies return all configured values
+     */
+    @Test
+    void getAdvancedSearchTemplateNames_shouldReturnCorrectValue() {
+        List<String> result = DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateNames();
+        Assertions.assertNotNull(result);
+        assertEquals(2, result.size());
+    }
+
+    /**
+     * @see Configuration#getAdvancedSearchTemplateQuery(String)
+     * @verifies return correct value
+     */
+    @Test
+    void getAdvancedSearchTemplateQuery_shouldReturnCorrectValue() {
+        assertEquals("DOCSTRCT:person", DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateQuery("person"));
+    }
+
+    /**
      * @see Configuration#isCalendarSearchEnabled()
      * @verifies return correct value
      */
@@ -2755,8 +2739,13 @@ class ConfigurationTest extends AbstractTest {
     }
 
     @Test
-    void isDoublePageNavigationEnabled_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled());
+    void isDoublePageNavigationEnabled_shouldReturnCorrectValue() throws ViewerConfigurationException {
+        assertTrue(DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(null, null));
+    }
+
+    @Test
+    void isSequencePageNavigationEnabled_shouldReturnCorrectValue() throws ViewerConfigurationException {
+        assertFalse(DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(null, null));
     }
 
     /**
@@ -3162,6 +3151,18 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getSidebarWidgetUsageCitationRecommendationDocstructMapping()
+     * @verifies return all configured values
+     */
+    @Test
+    void getSidebarWidgetUsageCitationRecommendationDocstructMapping_shouldReturnAllConfiguredValues() {
+        Map<String, String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationDocstructMapping();
+        assertEquals(2, result.size());
+        assertEquals("book", result.get("other_monograph"));
+        assertEquals("manuscript", result.get("other_manuscript"));
+    }
+
+    /**
      * @see Configuration#getSidebarWidgetUsageCitationLinks()
      * @verifies return all configured values
      */
@@ -3495,7 +3496,6 @@ class ConfigurationTest extends AbstractTest {
 
         assertEquals("lido_objects", groups.get(0).getName());
         assertEquals("SOURCEDOCFORMAT:LIDO", groups.get(0).getQuery());
-        assertTrue(groups.get(0).isUseAsAdvancedSearchTemplate());
     }
 
     /**
@@ -3599,11 +3599,12 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @throws MalformedURLException
+     * @throws URISyntaxException 
      * @see Configuration#isHostProxyWhitelisted(String)
      * @verifies return true if host whitelisted
      */
     @Test
-    void isHostProxyWhitelisted_shouldReturnTrueIfHostWhitelisted() throws MalformedURLException {
+    void isHostProxyWhitelisted_shouldReturnTrueIfHostWhitelisted() throws MalformedURLException, URISyntaxException {
         assertTrue(DataManager.getInstance().getConfiguration().isHostProxyWhitelisted("http://localhost:1234"));
     }
 

@@ -36,12 +36,7 @@
 		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
 			<widgetComponent:widget_browsing />
 		</h:panelGroup>
-	</ui:define>
-
-	<ui:define name="rssFeed">
-        <h:panelGroup rendered="#{configurationBean.displaySidebarRssFeed}">
-            <ui:include src="resources/includes/rssFeed.xhtml" />
-        </h:panelGroup>
+		<widgetComponent:widget_rssFeed/>
 	</ui:define>
 
 </ui:composition>

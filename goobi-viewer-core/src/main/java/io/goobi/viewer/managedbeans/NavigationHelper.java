@@ -43,15 +43,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
@@ -75,7 +66,6 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RedirectException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSStaticPage;
@@ -94,6 +84,14 @@ import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * This bean contains useful navigation parameters.
@@ -866,7 +864,7 @@ public class NavigationHelper implements Serializable {
         if (request != null) {
             URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
             if (url != null) {
-                return getApplicationUrl() + url.toURL().substring(1);
+                return getApplicationUrl() + StringTools.stripJS(url.toURL().substring(1));
             }
         }
         return null;
@@ -893,7 +891,7 @@ public class NavigationHelper implements Serializable {
      * </p>
      *
      * @return the complete Request Path, eg http://hostname.de/viewer/pathxyz/pathxyz/
-     * @param externalContext a {@link javax.faces.context.ExternalContext} object.
+     * @param externalContext a {@link jakarta.faces.context.ExternalContext} object.
      */
     public String getRequestPath(ExternalContext externalContext) {
         ExternalContext exContext = externalContext;
@@ -909,7 +907,7 @@ public class NavigationHelper implements Serializable {
      * getRequestPath.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param prettyFacesURI a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
@@ -942,7 +940,7 @@ public class NavigationHelper implements Serializable {
      * getFullRequestUrl.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param prettyFacesURI a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
@@ -1161,38 +1159,6 @@ public class NavigationHelper implements Serializable {
     @Deprecated(since = "24.10")
     public String getReadingModeUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewFullscreen.getName();
-    }
-
-    /**
-     * This method checks the Solr height attribute of the current page. If this is > 0, than the current page is displayed with OpenLayers
-     *
-     * @return the path which viewImageFullscreen.xhtml the user should see for the current page.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     */
-    public String getViewImagePathFullscreen() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
-        String imageDisplayType = DataManager.getInstance().getConfiguration().getZoomFullscreenViewType();
-        logger.trace("Detected display mode: {}", imageDisplayType);
-        if (StringUtils.isNotEmpty(imageDisplayType)) {
-            // MIX data exists
-            if (imageDisplayType.equalsIgnoreCase("openlayersimage") && BeanUtils.getActiveDocumentBean().getViewManager() != null
-                    && BeanUtils.getActiveDocumentBean().getViewManager().getCurrentPage().getPhysicalImageHeight() > 0) {
-                String path =
-                        "/resources/themes/" + DataManager.getInstance().getConfiguration().getTheme() + "/urlMappings/viewImageFullscreen.xhtml";
-                logger.debug("MIX data detected. Redirect to the Fullscreen view  (viewImageFullscreen.xhtml) of the '{}' theme.",
-                        DataManager.getInstance().getConfiguration().getTheme());
-                return path;
-            }
-            if (imageDisplayType.equalsIgnoreCase("classic")) {
-                logger.debug("No MIX data detected. Redirect to the normal /viewImageFullscreen.xhtml.");
-                return "/viewImageFullscreen.xhtml";
-            }
-        }
-        logger.error("No correct configuration, use the standard Fullscreen Image view. Detected: {} from <zoomFullscreenView/> in the {}.",
-                imageDisplayType, Configuration.CONFIG_FILE_NAME);
-
-        return "/viewImageFullscreen.xhtml";
     }
 
     /**
@@ -1532,7 +1498,7 @@ public class NavigationHelper implements Serializable {
         for (IModule module : DataManager.getInstance().getModules()) {
             try {
                 module.augmentResetRecord();
-            } catch (Exception e) {
+            } catch (NullPointerException | IllegalArgumentException e) {
                 logger.error(e.getMessage(), e);
             }
         }
@@ -1977,8 +1943,8 @@ public class NavigationHelper implements Serializable {
         return isRtl(getLocale());
     }
 
-    public boolean isRtl(String locale) {
-        return isRtl(new Locale(locale));
+    public boolean isRtl(String lang) {
+        return isRtl(Locale.forLanguageTag(lang));
     }
 
     public boolean isRtl(Locale locale) {
@@ -1991,8 +1957,8 @@ public class NavigationHelper implements Serializable {
 
     /**
      * If the current page url is a search page url without or with empty search parameters replace
-     * {@link ViewHistory#getCurrentView(javax.servlet.ServletRequest)} with a search url containing the default sort string. This is done so the view
-     * history contains the current random seed for random search list sorting and returning to the page yields the same ordering as the original
+     * {@link ViewHistory#getCurrentView(jakarta.servlet.ServletRequest)} with a search url containing the default sort string. This is done so the
+     * view history contains the current random seed for random search list sorting and returning to the page yields the same ordering as the original
      * call. Must be called in the pretty mappings for all search urls which deliver randomly sorted hitlists
      */
     public void addSearchUrlWithCurrentSortStringToHistory() {

@@ -51,4 +51,20 @@ class SearchFunctionalityTest extends AbstractSolrEnabledTest {
         Assertions.assertNotNull(uri);
         Assertions.assertEquals("monographs/FOO:bar/2/RELEVANCE/DC:varia;;", uri.getPath().toString());
     }
+    
+    /**
+     * @see SolrTools#getUrlPrefix()
+     * @verifies construct url prefix correctly
+     */
+    @Test
+    void getUrlPrefix_shouldConstructUrlPrefixCorrectly() {
+        SearchFunctionality sf = new SearchFunctionality(null, "https://example.com/search/");
+        sf.setSearchBean(new SearchBean());
+        sf.setActiveResultGroupName("monographs"); // Must be a configured result group
+        sf.setQueryString("FOO:bar");
+        sf.setPageNo(2);
+
+        String result = sf.getUrlPrefix();
+        Assertions.assertEquals("https://example.com/search/monographs/FOO%3Abar/", result);
+    }
 }

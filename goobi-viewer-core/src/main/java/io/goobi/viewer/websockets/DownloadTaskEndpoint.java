@@ -33,17 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.servlet.http.HttpSession;
-import javax.websocket.EndpointConfig;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
-import javax.ws.rs.core.UriBuilder;
-
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -67,12 +58,22 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.ExternalFilesDownloadJob;
 import io.goobi.viewer.model.job.mq.DownloadExternalResourceHandler;
+import jakarta.servlet.http.HttpSession;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerEndpoint;
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * Endpoint that maps HTTP session IDs to connected web sockets.
  */
 @ServerEndpoint(value = "/tasks/download/monitor.socket", configurator = GetHttpSessionConfigurator.class)
-public class DownloadTaskEndpoint {
+public class DownloadTaskEndpoint extends Endpoint {
 
     private static final Logger logger = LogManager.getLogger(DownloadTaskEndpoint.class);
 
@@ -83,6 +84,7 @@ public class DownloadTaskEndpoint {
     private Session session;
 
     @OnOpen
+    @Override
     public void onOpen(Session session, EndpointConfig config) {
         this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
         this.session = session;
@@ -91,7 +93,7 @@ public class DownloadTaskEndpoint {
     }
 
     @OnMessage
-    public void onMessage(String messageString) {
+    public synchronized void onMessage(String messageString) {
         try {
             SocketMessage message = JsonTools.getAsObject(messageString, SocketMessage.class);
             switch (message.action) {
@@ -101,8 +103,11 @@ public class DownloadTaskEndpoint {
                 case CANCELDOWNLOAD:
                     cancelDownload(message);
                     break;
+                case STATUS:
+                    sendUpdate(message, false);
+                    break;
                 case UPDATE:
-                    sendUpdate(message);
+                    sendUpdate(message, true);
                     break;
                 case LISTFILES:
                 default:
@@ -170,13 +175,14 @@ public class DownloadTaskEndpoint {
         sendMessage(answer);
     }
 
-    private void sendUpdate(SocketMessage message) throws JsonProcessingException {
+    private void sendUpdate(SocketMessage message, boolean startDownloadIfDormant) throws JsonProcessingException {
         SocketMessage answer = SocketMessage.buildAnswer(message, Status.DORMANT);
         ExternalFilesDownloadJob job = Optional.ofNullable(storageBean)
                 .flatMap(bean -> bean.getIfRecentOrRemove(message.url, 1, ChronoUnit.DAYS))
                 .map(ExternalFilesDownloadJob.class::cast)
                 .orElse(null);
         ViewerMessage queueMessage = queueManager.getMessageById(message.messageQueueId).orElse(null);
+
         if (queueMessage != null && job == null) {
             answer.status = Status.WAITING;
         } else if (job != null) {
@@ -208,6 +214,11 @@ public class DownloadTaskEndpoint {
             }
         } else if (isFilesExist(message.pi, message.url)) {
             answer.status = Status.COMPLETE;
+        } else if (startDownloadIfDormant && StringUtils.isNotBlank(message.messageQueueId)) {
+            //no job, but also no files. Either job finished without generating files or the files have been deleted after the job finished
+            //try downloading again
+            startDownload(message);
+            return; // don't send the original messagehere. #startDownload(message) takes care of that
         }
         sendMessage(answer);
     }
@@ -299,7 +310,11 @@ public class DownloadTaskEndpoint {
     }
 
     private synchronized void sendMessage(SocketMessage message) throws JsonProcessingException {
-        session.getAsyncRemote().sendText(JsonTools.getAsJson(message));
+        try {
+            session.getBasicRemote().sendText(JsonTools.getAsJson(message));
+        } catch (IOException e) {
+            logger.error("Experienced Exception while sending text {}", message, e);
+        }
     }
 
     public String getMimetype(String path) {
@@ -322,18 +337,19 @@ public class DownloadTaskEndpoint {
 
     @OnClose
     public void onClose(Session session) {
-        logger.info("Closing socket for sessio {}", this.httpSession);
+        logger.debug("Closing socket for session {}", this.httpSession);
     }
 
     @OnError
     public void onError(Session session, Throwable t) {
-        logger.warn(t, t);
+        logger.error(t, t);
     }
 
     public enum Action {
         STARTDOWNLOAD,
         CANCELDOWNLOAD,
         UPDATE,
+        STATUS,
         LISTFILES;
 
         @Override

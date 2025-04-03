@@ -23,25 +23,20 @@ package io.goobi.viewer.api.rest.v1.cache;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.unigoettingen.sub.commons.cache.CacheManagerInfo.CacheInfo;
+import de.unigoettingen.sub.commons.cache.CacheUtils;
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentServerCacheException;
-import de.unigoettingen.sub.commons.util.CacheUtils;
-import de.unigoettingen.sub.commons.util.ContentServerCache;
+import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.model.IResponseMessage;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
@@ -51,6 +46,16 @@ import io.goobi.viewer.model.job.download.DownloadJobTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 
 @Path(ApiUrls.CACHE)
 public class CacheResource {
@@ -60,30 +65,42 @@ public class CacheResource {
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
+    @Context
+    private ContentServerCacheManager cacheManager;
+    private ObjectMapper mapper = new ObjectMapper();
 
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Return information about internal cache status", tags = { "cache" })
     public String getCacheInfo() throws ContentServerCacheException {
-        ContentServerCache content = ContentServerCache.getContentCache();
-        ContentServerCache pdf = ContentServerCache.getPdfCache();
-        ContentServerCache thumbs = ContentServerCache.getThumbnailCache();
+        //        ContentServerCache content = ContentServerCache.getContentCache();
+        //        ContentServerCache pdf = ContentServerCache.getPdfCache();
+        //        ContentServerCache thumbs = ContentServerCache.getThumbnailCache();
 
         JSONObject jCaches = new JSONObject();
-        if (content != null) {
-            JSONObject jContent = new JSONObject();
-            jContent.append("objects", content.getElementsInCache());
-            jCaches.append("content", jContent);
+        if (ContentServerConfiguration.getInstance().getContentCacheUse()) {
+            try {
+                CacheInfo info = new CacheInfo(cacheManager.getContentCache());
+                jCaches.append("content", new JSONObject(mapper.writeValueAsString(info)));
+            } catch (JsonProcessingException | JSONException e) {
+                logger.error("Error creating cache info", e);
+            }
         }
-        if (pdf != null) {
-            JSONObject jPdf = new JSONObject();
-            jPdf.append("objects", pdf.getElementsInCache());
-            jCaches.append("pdf", jPdf);
+        if (ContentServerConfiguration.getInstance().getPdfCacheUse()) {
+            try {
+                CacheInfo info = new CacheInfo(cacheManager.getPdfCache());
+                jCaches.append("content", new JSONObject(mapper.writeValueAsString(info)));
+            } catch (JsonProcessingException | JSONException e) {
+                logger.error("Error creating cache info", e);
+            }
         }
-        if (thumbs != null) {
-            JSONObject jThumbs = new JSONObject();
-            jThumbs.append("objects", thumbs.getElementsInCache());
-            jCaches.append("thumbnails", jThumbs);
+        if (ContentServerConfiguration.getInstance().getThumbnailCacheUse()) {
+            try {
+                CacheInfo info = new CacheInfo(cacheManager.getThumbnailCache());
+                jCaches.append("content", new JSONObject(mapper.writeValueAsString(info)));
+            } catch (JsonProcessingException | JSONException e) {
+                logger.error("Error creating cache info", e);
+            }
         }
         return jCaches.toString();
     }
@@ -106,7 +123,7 @@ public class CacheResource {
         logger.trace("clearCache: {}/{}/{}", content, thumbs, pdf);
 
         // TODO delete all download jobs for all records here?
-        CacheUtils.emptyCache(content, thumbs, pdf);
+        new CacheUtils(cacheManager).emptyCache(content, thumbs, pdf);
 
         return new SuccessMessage(true, "Cache emptied successfully");
     }
@@ -138,7 +155,7 @@ public class CacheResource {
             return null;
         }
 
-        int deleted = CacheUtils.deleteFromCache(pi, content, thumbs, pdf);
+        int deleted = new CacheUtils(cacheManager).deleteFromCache(pi, content, thumbs, pdf);
 
         // Delete download jobs/files
         if (pdf) {

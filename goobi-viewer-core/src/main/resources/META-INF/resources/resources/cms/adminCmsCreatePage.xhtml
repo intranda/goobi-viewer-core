@@ -37,11 +37,11 @@
 		                    #{msg.cms_editPage}
 		                    </ui:fragment>
 							<ui:fragment
-								rendered="#{!cmsPageEditBean.editMode and page.template.isPresent()}">
-		                    #{msg.cms_createPage}: #{msg[cmsPageEditBean.selectedPage.template.get().title]}
+								rendered="#{!cmsPageEditBean.editMode and page.template != null}">
+		                    #{msg.cms_createPage}: #{msg[cmsPageEditBean.selectedPage.template.title]}
 		                    </ui:fragment>
 							<ui:fragment
-								rendered="#{!cmsPageEditBean.editMode and page.template.isEmpty()}">
+								rendered="#{!cmsPageEditBean.editMode and page.template == null}">
 		                    #{msg.cms_createPage}
 		                    </ui:fragment>
 						</h1>

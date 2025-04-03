@@ -22,14 +22,16 @@
 package io.goobi.viewer.model.security.authentication;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -76,13 +78,13 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
         this.parameterName = parameterName;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#login(java.lang.String, java.lang.String)
-     */
+    /** {@inheritDoc} */
     @Override
     public CompletableFuture<LoginResult> login(String ssoId, String password) throws AuthenticationProviderException {
         if (StringUtils.isNotEmpty(url)) {
-            String fullUrl = url + (StringUtils.isNoneEmpty(redirectUrl) ? "?redirectUrl=" + redirectUrl : "");
+            DataManager.getInstance().getAuthResponseListener().register(this);
+            String fullUrl =
+                    url + (StringUtils.isNotEmpty(redirectUrl) ? "?redirectUrl=" + URLEncoder.encode(redirectUrl, StandardCharsets.UTF_8) : "");
             try {
                 logger.trace("Redirecting to: {}", fullUrl);
                 BeanUtils.getResponse().sendRedirect(fullUrl);
@@ -95,7 +97,7 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
             synchronized (responseLock) {
                 try {
                     responseLock.wait(getTimeoutMillis());
-                    logger.trace("Returning result");
+                    logger.trace("Returning result: {}", this.loginResult);
                     return this.loginResult;
                 } catch (InterruptedException e) {
                     logger.trace("interrupted");
@@ -131,11 +133,12 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
     /**
      * 
      * @param ssoId User identifier
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
+     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
      * @return a {@link java.util.concurrent.Future} object.
      */
     public Future<Boolean> completeLogin(String ssoId, HttpServletRequest request, HttpServletResponse response) {
+        logger.trace("completeLogin: {}", ssoId);
         boolean success = true;
         try {
             User user = null;
@@ -166,7 +169,7 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
                     success = !user.isSuspended() && user.isActive();
                 }
             }
-            loginResult = new LoginResult(request, response, Optional.ofNullable(user), !success);
+            this.loginResult = new LoginResult(request, response, Optional.ofNullable(user), !success);
         } finally {
             synchronized (responseLock) {
                 responseLock.notifyAll();
@@ -177,49 +180,37 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
         return this.loginResult.isRedirected(getTimeoutMillis());
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#logout()
-     */
+    /** {@inheritDoc} */
     @Override
     public void logout() throws AuthenticationProviderException {
         // noop
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsPasswordChange()
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean allowsPasswordChange() {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsNicknameChange()
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean allowsNicknameChange() {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#allowsEmailChange()
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean allowsEmailChange() {
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#getAddUserToGroups()
-     */
+    /** {@inheritDoc} */
     @Override
     public List<String> getAddUserToGroups() {
         return Collections.emptyList();
     }
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.model.security.authentication.IAuthenticationProvider#setAddUserToGroups(java.util.List)
-     */
+    /** {@inheritDoc} */
     @Override
     public void setAddUserToGroups(List<String> addUserToGroups) {
         // noop

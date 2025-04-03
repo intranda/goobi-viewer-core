@@ -52,19 +52,6 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Optional;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.StreamingOutput;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -120,12 +107,24 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * @author florian
  *
  */
-@javax.ws.rs.Path(RECORDS_RECORD)
+@jakarta.ws.rs.Path(RECORDS_RECORD)
 @ViewerRestServiceBinding
 @CORSBinding
 public class RecordResource {
@@ -150,7 +149,7 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_RIS_FILE)
+    @jakarta.ws.rs.Path(RECORDS_RIS_FILE)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Download ris as file")
     @AccessConditionBinding
@@ -175,7 +174,7 @@ public class RecordResource {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
-    @javax.ws.rs.Path(RECORDS_RIS_TEXT)
+    @jakarta.ws.rs.Path(RECORDS_RIS_TEXT)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Get ris as text")
     public String getRISAsText()
@@ -188,7 +187,7 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_TOC)
+    @jakarta.ws.rs.Path(RECORDS_TOC)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Get table of contents of records")
     public String getTOCAsText()
@@ -200,7 +199,7 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_ANNOTATIONS)
+    @jakarta.ws.rs.Path(RECORDS_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record")
     public IAnnotationCollection getAnnotationsForRecord(
@@ -219,7 +218,7 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_COMMENTS)
+    @jakarta.ws.rs.Path(RECORDS_COMMENTS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List comments for a record")
     public IAnnotationCollection getCommentsForRecord(
@@ -239,7 +238,7 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_COMMENTS + "/{page}")
+    @jakarta.ws.rs.Path(RECORDS_COMMENTS + "/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
     public AnnotationPage getCommentPageForRecord(@PathParam("page") Integer page)
@@ -250,7 +249,7 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_METADATA_SOURCE)
+    @jakarta.ws.rs.Path(RECORDS_METADATA_SOURCE)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get record metadata source file")
     public StreamingOutput getSource() throws ContentNotFoundException, PresentationException, IndexUnreachableException {
@@ -282,7 +281,7 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_MANIFEST)
+    @jakarta.ws.rs.Path(RECORDS_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 manifest for record")
     @IIIFPresentationBinding
@@ -310,7 +309,7 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_LAYER)
+    @jakarta.ws.rs.Path(RECORDS_LAYER)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get a layer within a IIIF 2.1.1 manifest")
     @IIIFPresentationBinding
@@ -327,7 +326,7 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_NER_TAGS)
+    @jakarta.ws.rs.Path(RECORDS_NER_TAGS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records" }, summary = "Get NER tags for a record")
     public DocumentReference getNERTags(
@@ -341,9 +340,9 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_PLAINTEXT)
+    @jakarta.ws.rs.Path(RECORDS_PLAINTEXT)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "records" }, summary = "Get entire plaintext of record")
+    @Operation(tags = { "records" }, summary = "Get entire plaintext of record within a single text file")
     @CORSBinding
     @IIIFPresentationBinding
     public String getPlaintext() throws PresentationException, IndexUnreachableException, IOException {
@@ -355,9 +354,9 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_PLAINTEXT_ZIP)
+    @jakarta.ws.rs.Path(RECORDS_PLAINTEXT_ZIP)
     @Produces({ "application/zip" })
-    @Operation(tags = { "records" }, summary = "Get entire plaintext of record")
+    @Operation(tags = { "records" }, summary = "Get entire plaintext of record as a zip archive of text files per page")
     public StreamingOutput getPlaintextAsZip()
             throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         logger.trace("getPlaintextAsZip: {}", pi);
@@ -372,7 +371,7 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_ALTO)
+    @jakarta.ws.rs.Path(RECORDS_ALTO)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get entire alto document for record")
     public String getAlto() throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
@@ -384,9 +383,9 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_ALTO_ZIP)
+    @jakarta.ws.rs.Path(RECORDS_ALTO_ZIP)
     @Produces({ "application/zip" })
-    @Operation(tags = { "records" }, summary = "Get entire plaintext of record")
+    @Operation(tags = { "records" }, summary = "Get a zip archive of alto documents per page")
     public StreamingOutput getAltoAsZip() throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         checkFulltextAccessConditions(pi);
         if (servletResponse != null) {
@@ -399,7 +398,7 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_CMDI_LANG)
+    @jakarta.ws.rs.Path(RECORDS_CMDI_LANG)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get CMDI record file in the requested language.",
             description = "If possible, directly read a CMDI file associated with the record")
@@ -416,7 +415,7 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_TEI_LANG)
+    @jakarta.ws.rs.Path(RECORDS_TEI_LANG)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get TEI record file in the requested language.",
             description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
@@ -433,7 +432,7 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_TEI)
+    @jakarta.ws.rs.Path(RECORDS_TEI)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get text of record in TEI format.",
             description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
@@ -447,7 +446,7 @@ public class RecordResource {
     }
 
     @GET
-    @javax.ws.rs.Path(RECORDS_TEI_ZIP)
+    @jakarta.ws.rs.Path(RECORDS_TEI_ZIP)
     @Produces({ "application/zip" })
     @Operation(tags = { "records" }, summary = "Get text of record in TEI format as a zip file.",
             description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
@@ -486,7 +485,7 @@ public class RecordResource {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     @GET
-    @javax.ws.rs.Path(RECORDS_MANIFEST_SEARCH)
+    @jakarta.ws.rs.Path(RECORDS_MANIFEST_SEARCH)
     @Produces({ MediaType.APPLICATION_JSON })
     public SearchResult searchInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation,
             @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page)
@@ -510,7 +509,7 @@ public class RecordResource {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     @GET
-    @javax.ws.rs.Path(RECORDS_MANIFEST_AUTOCOMPLETE)
+    @jakarta.ws.rs.Path(RECORDS_MANIFEST_AUTOCOMPLETE)
     @Produces({ MediaType.APPLICATION_JSON })
     public AutoSuggestResult autoCompleteInManifest(@PathParam("pi") String pi, @QueryParam("q") String query,
             @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user,

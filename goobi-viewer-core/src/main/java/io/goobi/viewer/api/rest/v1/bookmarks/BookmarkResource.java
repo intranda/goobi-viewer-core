@@ -39,21 +39,21 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PATCH;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -299,7 +299,7 @@ public class BookmarkResource {
             throws DAOException, IOException, RestApiException, ContentLibException {
         BookmarkList list = getBookmarkList(id);
         String query = list.generateSolrQueryForItems();
-        return RSSFeed.createRssFeed(language, maxHits, null, query, null, servletRequest, null, true);
+        return RSSFeed.createRssFeedString(language, maxHits, null, query, null, servletRequest, null, true);
     }
 
     @GET
@@ -409,6 +409,6 @@ public class BookmarkResource {
             throws DAOException, RestApiException, ContentLibException {
         BookmarkList list = getSharedBookmarkListByKey(key);
         String query = list.generateSolrQueryForItems();
-        return RSSFeed.createRssFeed(language, maxHits, null, query, null, servletRequest, null, true);
+        return RSSFeed.createRssFeedString(language, maxHits, null, query, null, servletRequest, null, true);
     }
 }

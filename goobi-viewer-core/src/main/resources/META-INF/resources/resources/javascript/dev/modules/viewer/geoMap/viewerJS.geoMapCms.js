@@ -57,16 +57,16 @@
 		}
 		this.geoMap = new viewerJS.GeoMap(this.config.map);
    }
-   
+      
    viewer.GeoMapCms.prototype.init = function(view) {
 	    this.geoMap.layers.forEach(layer => {
 			layer.language = this.config.map.language;
 			//when clicking on features with an associated link, open that link
 	    	layer.onFeatureClick.subscribe(feature => {
-//				console.log("click on feature ", feature);
+				//console.log("click on feature ", feature);
 	   	       if(feature.properties?.link && !feature.properties.entities?.filter(e => e.visible !== false).filter(e => e.title != undefined && (typeof e.title == 'object' || e.title.length > 0)).length && !feature.properties.highlighted) {
 	   	           $(layer.config.search.loader).show();
-	   	           //window.location.assign(feature.properties.link);
+	   	           window.location.assign(feature.properties.link);
 	   	       }
 	   	    });
 	   	    //link to search url on feature click
@@ -74,21 +74,24 @@
 				let searchUrlTemplate = layer.config.search.searchUrlTemplate;
 	            layer.onFeatureClick.subscribe( (feature) => { 
 					// viewerJS.notifications.confirm("Do you want to show search results for this location?")
-					// .then(() => {
 						let featuresToShow = feature.properties?.entities?.filter(e => e.visible !== false).filter(e => e.title?.length > 0);
 //						console.log("click for search ", featuresToShow, feature.properties.count, feature.properties.link);
 						if(featuresToShow.length == 0 && (feature.properties.count > 1 || !feature.properties?.link?.length))  {
 							$(layer.config.search.loader).show();
-							let queryUrl = searchUrlTemplate.replace("{lng}", feature.geometry.coordinates[0]);
-							queryUrl = queryUrl.replace("{lat}", feature.geometry.coordinates[1]);
-							window.open(queryUrl, layer.config.search.linkTarget);
+							const locationQuery = this.createFilterQuery(layer.config.search.filterQueryTemplate, feature);
+							window.open(searchUrlTemplate + "?" + locationQuery, layer.config.search.linkTarget);
 						} 
-					// })
 	            });
 	        }
 		});
 	    return this.geoMap.init(view);
 	}
+	
+    viewer.GeoMapCms.prototype.createFilterQuery = (queryTemplate, feature) => {
+    	let query = queryTemplate.replaceAll("{lng}", feature.geometry.coordinates[0]).replaceAll("{lat}", feature.geometry.coordinates[1]).replaceAll("+", "_PLUS_");
+    	return "filterQuery=" + encodeURI(query).replaceAll("_PLUS_", "%2B");
+    }
+	
 	
 	return viewer;
 

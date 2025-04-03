@@ -35,9 +35,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -51,11 +48,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.intranda.api.annotation.oa.Motivation;
 import de.intranda.metadata.multilanguage.IMetadataValue;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
@@ -85,6 +82,8 @@ import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
 import io.goobi.viewer.model.viewer.record.views.FileType;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Physical element (page) containing an image, video or audio.
@@ -1118,7 +1117,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 wordCoordsFormat = CoordsFormat.ALTO;
             }
             return alto;
-        } catch (ContentNotFoundException | PresentationException e) {
+        } catch (FileNotFoundException | PresentationException e) {
             logger.error(e.getMessage());
         }
 
@@ -1471,7 +1470,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return true;
         } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            return AccessConditionUtils.checkAccessPermissionForImage(request, pi, fileName).isGranted();
+            return AccessConditionUtils.checkAccessPermissionForImage(request, pi, fileName).isGranted()
+                    && FilterTools.checkForConcurrentViewLimit(pi, request);
         } else {
             logger.trace("FacesContext not found");
         }
@@ -1615,7 +1615,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public int getFooterHeight() throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(PageType.viewImage.name()), getImageType());
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getFooterHeight(PageType.getByName(PageType.viewImage.name()), getImageType().getFormat().getMimeType());
     }
 
     /**
@@ -1628,7 +1630,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public int getFooterHeight(String pageType) throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(pageType), getImageType());
+        return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(pageType), getMimeType());
     }
 
     /**

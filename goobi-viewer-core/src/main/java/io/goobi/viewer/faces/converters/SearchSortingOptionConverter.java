@@ -21,10 +21,10 @@
  */
 package io.goobi.viewer.faces.converters;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.convert.Converter;
+import jakarta.faces.convert.FacesConverter;
 
 import io.goobi.viewer.model.search.SearchSortingOption;
 
@@ -36,7 +36,7 @@ import io.goobi.viewer.model.search.SearchSortingOption;
 public class SearchSortingOptionConverter implements Converter<SearchSortingOption> {
 
     /* (non-Javadoc)
-     * @see javax.faces.convert.Converter#getAsObject(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.String)
+     * @see jakarta.faces.convert.Converter#getAsObject(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.String)
      */
     @Override
     public SearchSortingOption getAsObject(FacesContext context, UIComponent component, String value) {
@@ -44,7 +44,7 @@ public class SearchSortingOptionConverter implements Converter<SearchSortingOpti
     }
 
     /* (non-Javadoc)
-     * @see javax.faces.convert.Converter#getAsString(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
+     * @see jakarta.faces.convert.Converter#getAsString(jakarta.faces.context.FacesContext, jakarta.faces.component.UIComponent, java.lang.Object)
      */
     @Override
     public String getAsString(FacesContext context, UIComponent component, SearchSortingOption value) {

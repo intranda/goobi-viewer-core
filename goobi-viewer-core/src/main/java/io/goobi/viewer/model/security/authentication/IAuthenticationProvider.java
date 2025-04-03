@@ -40,8 +40,8 @@ public interface IAuthenticationProvider {
 
     /**
      * Returns a future containing the login result upon completion. The result optionally contains the logged in
-     * {@link io.goobi.viewer.model.security.user.User} as well as the {@link javax.servlet.http.HttpServletRequest} and
-     * {@link javax.servlet.http.HttpServletResponse} to be used to complete the login and possible request forwarding If an error occurs and the
+     * {@link io.goobi.viewer.model.security.user.User} as well as the {@link jakarta.servlet.http.HttpServletRequest} and
+     * {@link jakarta.servlet.http.HttpServletResponse} to be used to complete the login and possible request forwarding If an error occurs and the
      * request can not be processed, an {@link io.goobi.viewer.exceptions.AuthenticationException} must be thrown. If a login has been refused, the
      * exact reasons can be determined using the methods {@link io.goobi.viewer.model.security.user.User#isActive},
      * {@link io.goobi.viewer.model.security.user.User#isSuspended} and {@link io.goobi.viewer.model.security.authentication.LoginResult#isRefused}

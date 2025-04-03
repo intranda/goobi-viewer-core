@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Optional;
 
 import jakarta.persistence.PersistenceException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -58,7 +58,7 @@ public class SessionStoreBookmarkManager {
      *
      * @return An optional containing the stored bookmark list if one exists
      * @throws java.lang.NullPointerException if the session is NULL
-     * @param session a {@link javax.servlet.http.HttpSession} object.
+     * @param session a {@link jakarta.servlet.http.HttpSession} object.
      */
     public Optional<BookmarkList> getBookmarkList(HttpSession session) {
         if (session == null) {
@@ -79,7 +79,7 @@ public class SessionStoreBookmarkManager {
     /**
      * Create a new BookmarkList and store it in the session store in the attribute "bookmarkList"
      *
-     * @param session a {@link javax.servlet.http.HttpSession} object.
+     * @param session a {@link jakarta.servlet.http.HttpSession} object.
      * @throws java.lang.IllegalArgumentException if a bookmark list already exists
      * @throws java.lang.IllegalStateException if the bookmark list could not be stored in the session
      * @throws java.lang.NullPointerException if the session is NULL
@@ -99,7 +99,7 @@ public class SessionStoreBookmarkManager {
     /**
      * Gets the bookmark list stored in the session. If no bookmark list exists, a new one is created, stored and returned
      *
-     * @param session a {@link javax.servlet.http.HttpSession} object.
+     * @param session a {@link jakarta.servlet.http.HttpSession} object.
      * @throws java.lang.NullPointerException if the session is NULL
      * @return a {@link io.goobi.viewer.model.bookmark.BookmarkList} object.
      */
@@ -111,7 +111,7 @@ public class SessionStoreBookmarkManager {
      * Adds the given item to the session bookmark list, creating a new bookmark list if required
      *
      * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
-     * @param session a {@link javax.servlet.http.HttpSession} object.
+     * @param session a {@link jakarta.servlet.http.HttpSession} object.
      * @return false if the item could not be added (usually because it already exists), true otherwise
      * @throws java.lang.NullPointerException if the session is NULL
      */
@@ -124,7 +124,7 @@ public class SessionStoreBookmarkManager {
      * exists, it doesn't contain the item or the item could not be removed for some other reason, false is returned
      *
      * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
-     * @param session a {@link javax.servlet.http.HttpSession} object.
+     * @param session a {@link jakarta.servlet.http.HttpSession} object.
      * @throws java.lang.NullPointerException if the session is NULL
      * @return a boolean.
      */
@@ -141,7 +141,7 @@ public class SessionStoreBookmarkManager {
      * deleteBookmarkList.
      * </p>
      *
-     * @param session a {@link javax.servlet.http.HttpSession} object.
+     * @param session a {@link jakarta.servlet.http.HttpSession} object.
      * @throws java.lang.NullPointerException if the session is NULL
      */
     public void deleteBookmarkList(HttpSession session) {
@@ -154,7 +154,7 @@ public class SessionStoreBookmarkManager {
      * </p>
      *
      * @param item a {@link io.goobi.viewer.model.bookmark.Bookmark} object.
-     * @param session a {@link javax.servlet.http.HttpSession} object.
+     * @param session a {@link jakarta.servlet.http.HttpSession} object.
      * @return a boolean.
      */
     public boolean isInBookmarkList(Bookmark item, HttpSession session) {
@@ -170,7 +170,7 @@ public class SessionStoreBookmarkManager {
      * generated name provided by {@link #generateNewBookmarkListName(List)}
      *
      * @param user a {@link io.goobi.viewer.model.security.user.User} object.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void addSessionBookmarkListToUser(User user, HttpServletRequest request) throws DAOException {

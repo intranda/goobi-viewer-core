@@ -39,12 +39,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -98,6 +92,11 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.collections.Sorting;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
  * CMS functions.
@@ -1216,7 +1215,7 @@ public class CmsBean implements Serializable {
      * getFacesContext.
      * </p>
      *
-     * @return a {@link javax.faces.context.FacesContext} object.
+     * @return a {@link jakarta.faces.context.FacesContext} object.
      */
     protected FacesContext getFacesContext() {
         return FacesContext.getCurrentInstance();
@@ -1484,6 +1483,8 @@ public class CmsBean implements Serializable {
             this.solrSortFields.add(SolrConstants.SORT_RELEVANCE);
             this.solrSortFields.add(SolrConstants.SORT_RANDOM);
             this.solrSortFields.add(SolrConstants.CURRENTNOSORT);
+            this.solrSortFields.add(SolrConstants.DATECREATED);
+            this.solrSortFields.add(SolrConstants.DATEUPDATED);
             this.solrSortFields.addAll(DataManager.getInstance().getSearchIndex().getAllSortFieldNames());
         }
         return this.solrSortFields;

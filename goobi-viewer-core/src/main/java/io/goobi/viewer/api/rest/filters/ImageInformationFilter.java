@@ -32,12 +32,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.ext.Provider;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.ext.Provider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -289,7 +289,10 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      */
     private List<Integer> getImageSizesFromConfig(boolean mayZoom) throws ViewerConfigurationException {
 
-        List<String> sizeStrings = DataManager.getInstance().getConfiguration().getImageViewZoomScales(pageType, imageType);
+        List<String> sizeStrings = DataManager.getInstance()
+                .getConfiguration()
+                .getImageViewZoomScales(pageType,
+                        Optional.ofNullable(imageType).map(ImageType::getFormat).map(ImageFileFormat::getMimeType).orElse(""));
         List<Integer> sizes = new ArrayList<>();
         int maxWidth = mayZoom ? Integer.MAX_VALUE : DataManager.getInstance().getConfiguration().getUnzoomedImageAccessMaxWidth();
         for (String string : sizeStrings) {
@@ -314,8 +317,12 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      */
     private List<ImageTile> getTileSizesFromConfig() throws ViewerConfigurationException {
         Map<Integer, List<Integer>> configSizes = Collections.emptyMap();
-        if (DataManager.getInstance().getConfiguration().useTiles(pageType, imageType)) {
-            configSizes = DataManager.getInstance().getConfiguration().getTileSizes(pageType, imageType);
+        if (DataManager.getInstance()
+                .getConfiguration()
+                .useTiles(pageType, Optional.ofNullable(imageType).map(ImageType::getFormat).map(ImageFileFormat::getMimeType).orElse(""))) {
+            configSizes = DataManager.getInstance()
+                    .getConfiguration()
+                    .getTileSizes(pageType, Optional.ofNullable(imageType).map(ImageType::getFormat).map(ImageFileFormat::getMimeType).orElse(""));
         }
         List<ImageTile> tiles = new ArrayList<>();
         for (Integer size : configSizes.keySet()) {

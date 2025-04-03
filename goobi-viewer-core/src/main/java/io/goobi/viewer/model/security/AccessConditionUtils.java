@@ -34,9 +34,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -50,6 +47,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -68,6 +66,8 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * <p>
@@ -90,7 +90,7 @@ public final class AccessConditionUtils {
      * checkAccess.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param action a {@link java.lang.String} object.
      * @param pi a {@link java.lang.String} object.
      * @param contentFileName a {@link java.lang.String} object.
@@ -358,7 +358,7 @@ public final class AccessConditionUtils {
      * @param identifier The PI to check.
      * @param logId The LOGID to check (optional).
      * @param privilegeName Particular privilege for which to check the permission.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -433,7 +433,7 @@ public final class AccessConditionUtils {
      */
     public static AccessPermission checkAccessPermissionBySolrDoc(SolrDocument doc, String originalQuery, String privilegeName,
             HttpServletRequest request) throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionBySolrDoc({}, {}, {})", identifier, logId, privilegeName); //NOSONAR Debug
+        // logger.trace("checkAccessPermissionBySolrDoc({}, {})", originalQuery, privilegeName); //NOSONAR Debug
         if (doc == null) {
             return AccessPermission.denied();
         }
@@ -474,7 +474,7 @@ public final class AccessConditionUtils {
      *
      * @param identifier a {@link java.lang.String} object.
      * @param privilegeName a {@link java.lang.String} object.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @return Map with true/false for each LOGID
      * @should fill map completely
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -495,9 +495,9 @@ public final class AccessConditionUtils {
         if (StringUtils.isNotEmpty(identifier)) {
             String query = new StringBuilder().append('+')
                     .append(SolrConstants.PI_TOPSTRUCT)
-                    .append(':')
+                    .append(":\"")
                     .append(identifier)
-                    .append(" +")
+                    .append("\" +")
                     .append(SolrConstants.DOCTYPE)
                     .append(':')
                     .append(DocType.DOCSTRCT.name())
@@ -554,7 +554,7 @@ public final class AccessConditionUtils {
      * Checks if the record with the given identifier should allow access to the given request
      *
      * @param identifier The PI of the work to check
-     * @param request The HttpRequest which may provide a {@link javax.servlet.http.HttpSession} to store the access map
+     * @param request The HttpRequest which may provide a {@link jakarta.servlet.http.HttpSession} to store the access map
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -663,7 +663,7 @@ public final class AccessConditionUtils {
      *
      * @param requiredAccessConditions a {@link java.util.Set} object.
      * @param privilegeName a {@link java.lang.String} object.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param query a {@link java.lang.String} object.
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -686,7 +686,7 @@ public final class AccessConditionUtils {
     /**
      * Checks access permission for the given image and puts the permission status into the corresponding session map.
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param pi a {@link java.lang.String} object.
      * @param contentFileName a {@link java.lang.String} object.
      * @return {@link AccessPermission}
@@ -702,7 +702,7 @@ public final class AccessConditionUtils {
     /**
      * Checks access permission for the given thumbnail and puts the permission status into the corresponding session map.
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param pi a {@link java.lang.String} object.
      * @param contentFileName a {@link java.lang.String} object.
      * @return {@link AccessPermission}
@@ -717,7 +717,7 @@ public final class AccessConditionUtils {
     /**
      * Checks access permission for the given image and puts the permission status into the corresponding session map.
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param page a {@link io.goobi.viewer.model.viewer.PhysicalElement} object.
      * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -737,7 +737,7 @@ public final class AccessConditionUtils {
      * checkAccessPermissionByIdentifierAndFilePathWithSessionMap.
      * </p>
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param filePath FILENAME_ALTO or FILENAME_FULLTEXT value
      * @param privilegeType a {@link java.lang.String} object.
      * @return {@link AccessPermission}
@@ -760,7 +760,7 @@ public final class AccessConditionUtils {
     /**
      * Checks access permission of the given privilege type for the given image and puts the permission status into the corresponding session map.
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @param pi a {@link java.lang.String} object.
      * @param contentFileName a {@link java.lang.String} object.
      * @param privilegeType a {@link java.lang.String} object.
@@ -871,7 +871,7 @@ public final class AccessConditionUtils {
             return AccessPermission.denied();
         }
 
-        Set<String> useAccessConditions = new HashSet<>(relevantLicenseTypes.size());
+        Set<String> useAccessConditions = HashSet.newHashSet(relevantLicenseTypes.size());
 
         // If all relevant license types allow the requested privilege by default, allow access
         boolean licenseTypeAllowsPriv = true;
@@ -1000,7 +1000,11 @@ public final class AccessConditionUtils {
                 continue;
             }
             // Check whether the license type contains conditions that exclude the given record, in that case disregard this license type
-            if (licenseType.isMovingWall() && StringUtils.isNotEmpty(query)) {
+            if (licenseType.isMovingWall() && StringUtils.isEmpty(query)) {
+                logger.warn("License type '{}' is in 'moving wall' mode, but no query was passed to check for relevance.", licenseType.getName());
+            }
+            if (licenseType.isMovingWall() && StringUtils.isNotEmpty(query)
+                    && !Boolean.TRUE.equals(licenseType.getRestrictionsExpired().get(query))) {
                 StringBuilder sbQuery = new StringBuilder().append("+(")
                         .append(query)
                         .append(") +")
@@ -1008,15 +1012,16 @@ public final class AccessConditionUtils {
                         .append(" -(")
                         .append(SearchHelper.getMovingWallQuery())
                         .append(')');
-                // logger.trace("License relevance query: {}", //NOSONAR Debug
-                // StringTools.stripPatternBreakingChars(StringTools.stripPatternBreakingChars(sbQuery.toString()))); //NOSONAR Debug
+                logger.trace("License relevance query: {}", //NOSONAR Debug
+                        StringTools.stripPatternBreakingChars(StringTools.stripPatternBreakingChars(sbQuery.toString()))); //NOSONAR Debug
                 if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
                     // logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to the moving wall condition.", //NOSONAR Debug
                     // licenseType.getName(), StringTools.stripPatternBreakingChars(query)); //NOSONAR Debug
                     if (licenseType.isMovingWall()) {
                         // Moving wall license type allow everything if the condition query doesn't match
-                        // logger.trace("License type '{}' is moving wall and its condition query doesn't match record query '{}'. //NOSONAR Debug
-                        // All restrictions lifted.", licenseType.getName(), StringTools.stripPatternBreakingChars(query)); //NOSONAR Debug
+                        logger.trace(
+                                "License type '{}' is moving wall and its condition query doesn't match record query '{}'. All restrictions lifted.",
+                                licenseType.getName(), StringTools.stripPatternBreakingChars(query)); //NOSONAR Debug
                         licenseType.getRestrictionsExpired().put(query, true);
                     } else {
                         continue;
@@ -1030,6 +1035,7 @@ public final class AccessConditionUtils {
         }
 
         return ret;
+
     }
 
     /**

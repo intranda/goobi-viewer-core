@@ -43,6 +43,7 @@ import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
+import io.goobi.viewer.model.cms.pages.content.CMSComponent.Property;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
 import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement;
@@ -314,6 +315,9 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
     }
 
     private boolean isUseFacetting(CMSComponent component) {
+        if (component.hasProperty(Property.FORCE_FACETING)) {
+            return true;
+        }
         List<CMSSidebarElement> widgets =
                 Optional.ofNullable(component).map(CMSComponent::getOwningPage).map(CMSPage::getSidebarElements).orElse(Collections.emptyList());
         for (CMSSidebarElement element : widgets) {

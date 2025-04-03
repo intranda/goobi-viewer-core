@@ -23,7 +23,7 @@ package io.goobi.viewer.model.viewer.pageloader;
 
 import java.util.Locale;
 
-import javax.faces.model.SelectItem;
+import jakarta.faces.model.SelectItem;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

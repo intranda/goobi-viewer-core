@@ -359,8 +359,8 @@ public class Search implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage,
-            Locale locale, boolean keepSolrDoc, SearchAggregationType aggregationType)
+    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, Locale locale, boolean keepSolrDoc,
+            SearchAggregationType aggregationType)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("execute");
         if (facets == null) {
@@ -558,7 +558,7 @@ public class Search implements Serializable {
         if (resp.getFacetFields() != null && generateAvailableFacets) {
             logger.trace("Generating facets");
             for (FacetField facetField : resp.getFacetFields()) {
-                logger.trace("Facet field: {}", facetField.getName());
+                // logger.trace("Facet field: {}", facetField.getName());
                 // Use non-FACET_ field names outside of the actual faceting query
                 String defacetifiedFieldName = SearchHelper.defacetifyField(facetField.getName());
                 if (SolrConstants.GROUPFIELD.equals(facetField.getName()) || facetField.getValues() == null
@@ -584,8 +584,8 @@ public class Search implements Serializable {
                                                 .contains(defacetifiedFieldName),
                                         DataManager.getInstance().getConfiguration().getGroupToLengthForFacetField(defacetifiedFieldName),
                                         facets.getLabelMap()));
-                logger.trace("{} facets generated for field {}", facets.getAvailableFacets().get(defacetifiedFieldName).size(),
-                        facetField.getName());
+                // logger.trace("{} facets generated for field {}", facets.getAvailableFacets().get(defacetifiedFieldName).size(),
+                //       facetField.getName());
             }
         }
         // If this is a group preview, use the group's configured hit count instead of paginator hits per page

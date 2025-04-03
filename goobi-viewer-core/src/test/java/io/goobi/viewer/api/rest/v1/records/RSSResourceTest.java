@@ -21,24 +21,23 @@
  */
 package io.goobi.viewer.api.rest.v1.records;
 
-import static io.goobi.viewer.api.rest.v1.ApiUrls.*;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RSS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RSS_JSON;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 import io.goobi.viewer.api.rest.model.ErrorMessage;
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.model.rss.Channel;
 import io.goobi.viewer.model.rss.RssItem;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @author florian
@@ -47,7 +46,7 @@ import io.goobi.viewer.model.rss.RssItem;
 class RSSResourceTest extends AbstractRestApiTest {
 
     @Test
-    void testRSSJsonMax() throws JsonMappingException, JsonProcessingException {
+    void testRSSJsonMax() throws JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .queryParam("max", 5)
                 .request()
@@ -62,7 +61,7 @@ class RSSResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    void testRSSJsonLang() throws JsonMappingException, JsonProcessingException {
+    void testRSSJsonLang() throws JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .queryParam("lang", "en")
                 .request()
@@ -77,7 +76,7 @@ class RSSResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    void testRSSJsonQuery() throws JsonMappingException, JsonProcessingException {
+    void testRSSJsonQuery() throws JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .queryParam("query", "MD_TITLE:Berlin")
                 .request()
@@ -94,7 +93,7 @@ class RSSResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    void testRSSJsonFacets() throws JsonMappingException, JsonProcessingException {
+    void testRSSJsonFacets() throws JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .queryParam("query", "MD_TITLE:Berlin")
                 .queryParam("facets", "DOCSTRCT:volume")
@@ -113,7 +112,7 @@ class RSSResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    void testRSSJsonSubtheme() throws JsonMappingException, JsonProcessingException {
+    void testRSSJsonSubtheme() throws JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .queryParam("subtheme", "subtheme2")
                 .request()
@@ -123,7 +122,7 @@ class RSSResourceTest extends AbstractRestApiTest {
             assertNotNull(response.getEntity(), "Should return user object as JSON");
             String entity = response.readEntity(String.class);
             Channel channel = mapper.readValue(entity, Channel.class);
-            Assertions.assertEquals(3, channel.getItems().size());
+            Assertions.assertEquals(2, channel.getItems().size());
         }
     }
 
@@ -151,7 +150,7 @@ class RSSResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    void testRSSInvalidType() throws JsonMappingException, JsonProcessingException {
+    void testRSSInvalidType() throws JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_RSS, RECORDS_RSS_JSON).build())
                 .request()
                 .accept(MediaType.TEXT_XML)

@@ -49,6 +49,8 @@ import org.apache.logging.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 
+import com.ctc.wstx.exc.WstxIOException;
+
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.Utils;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Line;
@@ -89,6 +91,8 @@ public final class ALTOTools {
     /** Constant <code>TAG_LABEL_IGNORE_REGEX</code>. */
     public static final String TAG_LABEL_IGNORE_REGEX =
             "(^[^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+)|([^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+$)";
+    /** Characters that can cause an "Invalid UTF-8 middle byte" error in the parser. */
+    public static final String ALTO_PROBLEMATIC_CHARS = "[ﬅﬆﬃﬄﬂﬁ�]";
 
     /**
      * Private constructor.
@@ -249,6 +253,9 @@ public final class ALTOTools {
             useAlto = XmlTools.getXMLOutputter().outputString(doc);
         }
 
+        // Remove problematic chars prior to parsing
+        useAlto = useAlto.replaceAll(ALTO_PROBLEMATIC_CHARS, " ");
+
         Map<String, String> neTypeMap = new HashMap<>();
         Map<String, String> neLabelMap = new HashMap<>();
         Map<String, String> neUriMap = new HashMap<>();
@@ -381,9 +388,10 @@ public final class ALTOTools {
                 }
                 parser.next();
             }
-        } catch (UnsupportedCharsetException e) {
+        } catch (UnsupportedCharsetException | WstxIOException e) {
             // Wrong charset can result in an exception being thrown by the underlying parser implementation
             logger.warn(e.getMessage());
+            strings.append("\n\n[COULD NOT PARSE THE REST OF THE ALTO DOCUMENT, PLEASE CHECK FILE ENCODING] ");
         } finally {
             if (parser != null) {
                 parser.close();
@@ -486,6 +494,7 @@ public final class ALTOTools {
         logger.trace("{} ALTO words found for this page.", words.size());
         List<String> coordList = new ArrayList<>();
         for (String s : searchTerms) {
+            s = StringTools.removeQuotations(s); // Remove quotation marks from phrase searches
             String[] searchWords = s.split("\\s+");
             if (searchWords == null || searchWords.length == 0 || StringUtils.isBlank(searchWords[0])) {
                 continue;
@@ -513,9 +522,8 @@ public final class ALTOTools {
                                     wordIndex--;
                                     match = false;
                                     break;
-                                } else {
-                                    remainingProximityReach--;
                                 }
+                                remainingProximityReach--;
                             } else {
                                 remainingProximityReach = proximitySearchDistance;
                             }

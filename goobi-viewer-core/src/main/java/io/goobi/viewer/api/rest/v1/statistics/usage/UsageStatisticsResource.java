@@ -28,17 +28,17 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -64,7 +64,7 @@ import io.swagger.v3.oas.annotations.Parameter;
  * @author florian
  *
  */
-@javax.ws.rs.Path(ApiUrls.STATISTICS_USAGE)
+@jakarta.ws.rs.Path(ApiUrls.STATISTICS_USAGE)
 @AuthorizationBinding
 public class UsageStatisticsResource {
 
@@ -81,7 +81,7 @@ public class UsageStatisticsResource {
     private ContainerResponseContext responseContext;
 
     @GET
-    @javax.ws.rs.Path(ApiUrls.STATISTICS_USAGE_DATE)
+    @jakarta.ws.rs.Path(ApiUrls.STATISTICS_USAGE_DATE)
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, StringConstants.MIMETYPE_TEXT_CSV })
     @Operation(summary = "Get usage statistics for a single day", tags = { "statistics" })
     public Response getStatisticsForDay(
@@ -115,7 +115,7 @@ public class UsageStatisticsResource {
     }
 
     @GET
-    @javax.ws.rs.Path(ApiUrls.STATISTICS_USAGE_DATE_RANGE)
+    @jakarta.ws.rs.Path(ApiUrls.STATISTICS_USAGE_DATE_RANGE)
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, StringConstants.MIMETYPE_TEXT_CSV })
     @Operation(summary = "Get a list of usage statistics for a time frame", tags = { "statistics" })
     public Response getStatisticsListForDates(

@@ -30,7 +30,8 @@ import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.controller.StringConstants;
+import io.goobi.viewer.solr.SolrConstants;
 
 class MetadataValueTest {
 
@@ -39,7 +40,7 @@ class MetadataValueTest {
      * @verifies construct param correctly
      */
     @Test
-    void getComboValueShort_shouldConstructParamCorrectly() throws Exception {
+    void getComboValueShort_shouldConstructParamCorrectly() {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("pre_");
         value.getParamValues().add(new ArrayList<>());
@@ -57,7 +58,7 @@ class MetadataValueTest {
      * @verifies construct multivalued param correctly
      */
     @Test
-    void getComboValueShort_shouldConstructMultivaluedParamCorrectly() throws Exception {
+    void getComboValueShort_shouldConstructMultivaluedParamCorrectly() {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("pre_");
         value.getParamValues().add(new ArrayList<>());
@@ -76,7 +77,7 @@ class MetadataValueTest {
      * @verifies return empty string if value index larger than number of values
      */
     @Test
-    void getComboValueShort_shouldReturnEmptyStringIfValueIndexLargerThanNumberOfValues() throws Exception {
+    void getComboValueShort_shouldReturnEmptyStringIfValueIndexLargerThanNumberOfValues() {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("prefix_");
         value.getParamValues().add(new ArrayList<>());
@@ -90,7 +91,7 @@ class MetadataValueTest {
      * @verifies return empty string if value is empty
      */
     @Test
-    void getComboValueShort_shouldReturnEmptyStringIfValueIsEmpty() throws Exception {
+    void getComboValueShort_shouldReturnEmptyStringIfValueIsEmpty() {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("prefix_");
         value.getParamValues().add(new ArrayList<>());
@@ -104,7 +105,7 @@ class MetadataValueTest {
      * @verifies not add prefix if first param
      */
     @Test
-    void getComboValueShort_shouldNotAddPrefixIfFirstParam() throws Exception {
+    void getComboValueShort_shouldNotAddPrefixIfFirstParam() {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add("prefix_");
         value.getParamValues().add(new ArrayList<>());
@@ -118,7 +119,7 @@ class MetadataValueTest {
      * @verifies not add null suffix
      */
     @Test
-    void getComboValueShort_shouldNotAddNullSuffix() throws Exception {
+    void getComboValueShort_shouldNotAddNullSuffix() {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamSuffixes().add(null);
         value.getParamValues().add(new ArrayList<>());
@@ -134,7 +135,7 @@ class MetadataValueTest {
      * @verifies not add empty prefix
      */
     @Test
-    void getComboValueShort_shouldNotAddEmptyPrefix() throws Exception {
+    void getComboValueShort_shouldNotAddEmptyPrefix() {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamPrefixes().add(null);
         value.getParamValues().add(new ArrayList<>());
@@ -150,7 +151,7 @@ class MetadataValueTest {
      * @verifies not add empty suffix
      */
     @Test
-    void getComboValueShort_shouldNotAddEmptySuffix() throws Exception {
+    void getComboValueShort_shouldNotAddEmptySuffix() {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamSuffixes().add(null);
         value.getParamValues().add(new ArrayList<>());
@@ -166,7 +167,7 @@ class MetadataValueTest {
      * @verifies add separator between values if no prefix used
      */
     @Test
-    void getComboValueShort_shouldAddSeparatorBetweenValuesIfNoPrefixUsed() throws Exception {
+    void getComboValueShort_shouldAddSeparatorBetweenValuesIfNoPrefixUsed() {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamSuffixes().add(null);
         value.getParamValues().add(new ArrayList<>());
@@ -180,7 +181,7 @@ class MetadataValueTest {
      * @verifies use master value fragment correctly
      */
     @Test
-    void getComboValueShort_shouldUseMasterValueFragmentCorrectly() throws Exception {
+    void getComboValueShort_shouldUseMasterValueFragmentCorrectly() {
         MetadataValue value = new MetadataValue("", "", "");
         value.getParamMasterValueFragments().add("foo {0} bar");
         value.getParamSuffixes().add("pre_");
@@ -202,7 +203,7 @@ class MetadataValueTest {
      * @verifies apply highlighting correctly
      */
     @Test
-    void applyHighlightingToParamValue_shouldApplyHighlightingCorrectly() throws Exception {
+    void applyHighlightingToParamValue_shouldApplyHighlightingCorrectly() {
         MetadataValue mdValue = new MetadataValue("", "", "");
         List<String> values = Arrays.asList("foobar", "something");
         mdValue.getParamValues().add(values);
@@ -215,7 +216,7 @@ class MetadataValueTest {
      * @verifies return true if all param values blank
      */
     @Test
-    void isAllParamValuesBlank_shouldReturnTrueIfAllParamValuesBlank() throws Exception {
+    void isAllParamValuesBlank_shouldReturnTrueIfAllParamValuesBlank() {
         MetadataValue mdValue = new MetadataValue("", "", "");
         List<String> values = Arrays.asList("", "");
         mdValue.getParamValues().add(values);
@@ -229,11 +230,55 @@ class MetadataValueTest {
      * @verifies return false if any param value not blank
      */
     @Test
-    void isAllParamValuesBlank_shouldReturnFalseIfAnyParamValueNotBlank() throws Exception {
+    void isAllParamValuesBlank_shouldReturnFalseIfAnyParamValueNotBlank() {
         MetadataValue mdValue = new MetadataValue("", "", "");
         List<String> values = Arrays.asList("", "foo");
         mdValue.getParamValues().add(values);
 
         Assertions.assertFalse(mdValue.isAllParamValuesBlank());
     }
+
+    /**
+     * @see Metadata#isAccessRestricted()
+     * @verifies return false if accessConditions empty
+     */
+    @Test
+    void isAccessRestricted_shouldReturnFalseIfAccessConditionsEmpty() {
+        MetadataValue val = new MetadataValue("123", "", "MD_FOO");
+        Assertions.assertFalse(val.isAccessRestricted());
+    }
+
+    /**
+     * @see Metadata#isAccessRestricted()
+     * @verifies return false if only value is open access
+     */
+    @Test
+    void isAccessRestricted_shouldReturnFalseIfOnlyValueIsOpenAccess() {
+        MetadataValue val = new MetadataValue("123", "", "MD_FOO");
+        val.getAccessConditions().add(SolrConstants.OPEN_ACCESS_VALUE);
+        Assertions.assertFalse(val.isAccessRestricted());
+    }
+
+    /**
+     * @see Metadata#isAccessRestricted()
+     * @verifies return false if random values contained
+     */
+    @Test
+    void isAccessRestricted_shouldReturnFalseIfRandomValuesContained() {
+        MetadataValue val = new MetadataValue("123", "", "MD_FOO");
+        val.getAccessConditions().add("top secret");
+        Assertions.assertFalse(val.isAccessRestricted());
+    }
+
+    /**
+     * @see Metadata#isAccessRestricted()
+     * @verifies return true if metadata access restricted condition contained
+     */
+    @Test
+    void isAccessRestricted_shouldReturnTrueIfMetadataAccessRestrictedConditionContained() {
+        MetadataValue val = new MetadataValue("123", "", "MD_FOO");
+        val.getAccessConditions().add(StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED);
+        Assertions.assertTrue(val.isAccessRestricted());
+    }
+
 }

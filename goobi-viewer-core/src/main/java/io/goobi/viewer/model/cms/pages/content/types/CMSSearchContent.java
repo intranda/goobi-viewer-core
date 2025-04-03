@@ -75,7 +75,7 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
 
     @Column(name = "view")
     private HitListView view = HitListView.DETAILS;
-
+    
     @Column(name = "sort_field", length = 40)
     private String sortField = DataManager.getInstance().getConfiguration().getDefaultSortField("");
 
@@ -223,19 +223,19 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
     public Functionality getFunctionality() {
         return getSearch();
     }
-
+    
     public int getElementsPerPage() {
         return elementsPerPage;
     }
-
+    
     public void setElementsPerPage(int elementsPerPage) {
         this.elementsPerPage = elementsPerPage;
     }
-
+    
     public String getSortField() {
         return sortField;
     }
-
+    
     public void setSortField(String sortField) {
         this.sortField = sortField;
     }

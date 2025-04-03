@@ -52,23 +52,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.StreamingOutput;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -78,10 +61,11 @@ import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
+import de.unigoettingen.sub.commons.cache.CacheUtils;
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import de.unigoettingen.sub.commons.util.CacheUtils;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.UserLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
@@ -107,6 +91,22 @@ import io.goobi.viewer.model.cms.media.MediaList;
 import io.goobi.viewer.model.security.user.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * <p>
@@ -115,7 +115,7 @@ import io.swagger.v3.oas.annotations.Parameter;
  *
  * @author Florian Alpers
  */
-@javax.ws.rs.Path(CMS_MEDIA)
+@jakarta.ws.rs.Path(CMS_MEDIA)
 @ViewerRestServiceBinding
 public class CMSMediaResource {
 
@@ -126,6 +126,8 @@ public class CMSMediaResource {
     protected HttpServletResponse servletResponse;
     @Context
     private IDAO dao;
+    @Context
+    private ContentServerCacheManager cacheManager;
 
     public CMSMediaResource() {
 
@@ -152,7 +154,7 @@ public class CMSMediaResource {
     @Operation(
             tags = { "media" },
             summary = "Get a list of CMS-Media Items of one or more categories")
-    @javax.ws.rs.Path(CMS_MEDIA_BY_CATEGORY)
+    @jakarta.ws.rs.Path(CMS_MEDIA_BY_CATEGORY)
     public MediaList getMediaOfCategories(
             @Parameter(description = "tag specifying the category the delivered media items must be associated with."
                     + " Multiple categories can be listed using '...' as separator") @PathParam("tags") String tags,
@@ -207,7 +209,7 @@ public class CMSMediaResource {
     }
 
     @GET
-    @javax.ws.rs.Path(CMS_MEDIA_ITEM_BY_ID)
+    @jakarta.ws.rs.Path(CMS_MEDIA_ITEM_BY_ID)
     @Produces({ MediaType.APPLICATION_JSON })
     public MediaItem getMediaItem(@PathParam("id") Long id) throws DAOException {
         CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(id);
@@ -220,13 +222,13 @@ public class CMSMediaResource {
      * </p>
      *
      * @param filename
-     * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+     * @param response a {@link jakarta.servlet.http.HttpServletResponse} object.
      * @return File contents as HTML
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
-    @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_PDF)
+    @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_PDF)
     @Produces("application/pdf")
     @CORSBinding
     public static StreamingOutput getPDFMediaItemContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
@@ -251,7 +253,7 @@ public class CMSMediaResource {
     }
 
     @GET
-    @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_SVG)
+    @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_SVG)
     @Produces("image/svg+xml")
     @CORSBinding
     public static StreamingOutput getSvgContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
@@ -276,7 +278,7 @@ public class CMSMediaResource {
     }
 
     @GET
-    @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_ICO)
+    @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_ICO)
     @Produces("image/x-icon")
     @CORSBinding
     public static StreamingOutput getIcoContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
@@ -301,7 +303,7 @@ public class CMSMediaResource {
     }
 
     @GET
-    @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_VIDEO)
+    @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_VIDEO)
     public String serveVideoContent(@PathParam("filename") String filename)
             throws PresentationException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -311,7 +313,7 @@ public class CMSMediaResource {
     }
 
     @GET
-    @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_AUDIO)
+    @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_AUDIO)
     public String serveAudioContent(@PathParam("filename") String filename)
             throws PresentationException, WebApplicationException {
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
@@ -331,7 +333,7 @@ public class CMSMediaResource {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
-    @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE_HTML)
+    @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_HTML)
     @Produces({ MediaType.TEXT_HTML })
     public static String getMediaItemContent(@PathParam("filename") String filename) throws ContentNotFoundException {
 
@@ -362,11 +364,11 @@ public class CMSMediaResource {
      * </p>
      *
      * @param filename a {@link java.lang.String} object.
-     * @return a {@link javax.ws.rs.core.Response} object.
+     * @return a {@link jakarta.ws.rs.core.Response} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @GET
-    @javax.ws.rs.Path(CMS_MEDIA_ITEM_BY_FILE)
+    @jakarta.ws.rs.Path(CMS_MEDIA_ITEM_BY_FILE)
     @Produces(MediaType.APPLICATION_JSON)
     public Response validateUploadMediaFiles(@PathParam("filename") String filename) throws DAOException {
 
@@ -387,7 +389,7 @@ public class CMSMediaResource {
      *
      */
     @GET
-    @javax.ws.rs.Path(CMS_MEDIA_FILES)
+    @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
     @UserLoggedInBinding
     public List<String> getAllFiles() throws PresentationException {
@@ -401,7 +403,7 @@ public class CMSMediaResource {
     }
 
     @DELETE
-    @javax.ws.rs.Path(CMS_MEDIA_FILES)
+    @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
     @AuthorizationBinding
     public void deleteAllFiles() throws IllegalRequestException {
@@ -409,7 +411,7 @@ public class CMSMediaResource {
     }
 
     @DELETE
-    @javax.ws.rs.Path(CMS_MEDIA_FILES_FILE)
+    @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE)
     @Produces(MediaType.APPLICATION_JSON)
     @AuthorizationBinding
     public void deleteFile() throws IllegalRequestException {
@@ -428,7 +430,7 @@ public class CMSMediaResource {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @POST
-    @javax.ws.rs.Path(CMS_MEDIA_FILES)
+    @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @UserLoggedInBinding
@@ -477,7 +479,7 @@ public class CMSMediaResource {
                     } else {
                         item.setFileName(mediaFile.getFileName().toString());
                         DataManager.getInstance().getDao().updateCMSMediaItem(item);
-                        removeFromImageCache(item);
+                        removeFromImageCache(item, cacheManager);
                     }
                     MediaItem jsonItem = new MediaItem(item, servletRequest);
                     return Response.status(Status.OK).entity(jsonItem).build();
@@ -504,11 +506,12 @@ public class CMSMediaResource {
 
     /**
      * @param item
+     * @param cacheManager
      */
-    public static void removeFromImageCache(CMSMediaItem item) {
+    public static void removeFromImageCache(CMSMediaItem item, ContentServerCacheManager cacheManager) {
         String identifier =
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder() + "_" + item.getFileName().replace(".", "-").replaceAll("\\s", "");
-        CacheUtils.deleteFromCache(identifier, true, true);
+        new CacheUtils(cacheManager).deleteFromCache(identifier, true, true);
     }
 
     /**

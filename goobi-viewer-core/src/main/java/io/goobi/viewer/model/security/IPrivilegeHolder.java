@@ -36,6 +36,9 @@ public interface IPrivilegeHolder {
     public static final String PREFIX_TICKET = "TICKET_";
     /** Constant <code>PREFIX_PRIV="PRIV_"</code> */
     public static final String PREFIX_PRIV = "PRIV_";
+    
+    /** Constant <code>PRIV_ARCHIVE_DISPLAY_NODE="PRIV_ARCHIVE_DISPLAY_NODE"</code> */
+    public static final String PRIV_ARCHIVE_DISPLAY_NODE = "ARCHIVE_DISPLAY_NODE";
     /** Constant <code>PRIV_LIST="LIST"</code> */
     public static final String PRIV_LIST = "LIST";
     /** Constant <code>PRIV_VIEW_IMAGES="VIEW_IMAGES"</code> */
@@ -50,6 +53,8 @@ public interface IPrivilegeHolder {
     public static final String PRIV_VIEW_AUDIO = "VIEW_AUDIO";
     /** Constant <code>PRIV_VIEW_UGC="PRIV_VIEW_UGC"</code> */
     public static final String PRIV_VIEW_UGC = "VIEW_UGC";
+    /** Constant <code>PRIV_VIEW_UGC="PRIV_VIEW_METADATA"</code> */
+    public static final String PRIV_VIEW_METADATA = "VIEW_METADATA";
     /** Constant <code>PRIV_DOWNLOAD_PDF="DOWNLOAD_PDF"</code> */
     public static final String PRIV_DOWNLOAD_PDF = "DOWNLOAD_PDF";
     /** Constant <code>PRIV_DOWNLOAD_PAGE_PDF="DOWNLOAD_PAGE_PDF"</code> */

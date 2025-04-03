@@ -98,19 +98,16 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
         Path altoFolder = dataFolders.get(ALTO);
         if (imageFolder != null && pdfFolder != null && Files.exists(imageFolder)) {
             List<Path> imageFiles = FileTools.listFiles(imageFolder, FileTools.IMAGE_NAME_FILTER);
-            List<Path> pdfFiles = FileTools.listFiles(pdfFolder, FileTools.PDF_NAME_FILTER);
             if (imageFiles.isEmpty()) {
                 logger.trace("No images in {}. Abandoning task", imageFolder);
-            } else if (imageFiles.size() == pdfFiles.size() && !force) {
-                logger.trace("PDF files already exist. Abandoning task");
             } else {
-                return createPdfFiles(configVariant, pdfFolder, altoFolder, imageFiles);
+                return createPdfFiles(configVariant, pdfFolder, altoFolder, imageFiles, force);
             }
         }
         return true;
     }
 
-    private boolean createPdfFiles(String configVariant, Path pdfFolder, Path altoFolder, List<Path> imageFiles) {
+    private boolean createPdfFiles(String configVariant, Path pdfFolder, Path altoFolder, List<Path> imageFiles, boolean force) {
         if (!Files.exists(pdfFolder)) {
             try {
                 Files.createDirectories(pdfFolder);
@@ -120,28 +117,35 @@ public class PrerenderPdfMessageHandler implements MessageHandler<MessageStatus>
             }
         }
         for (Path imagePath : imageFiles) {
-            if (!createPdfFile(imagePath, pdfFolder, altoFolder, configVariant)) {
+            try {
+                createPdfFile(imagePath, pdfFolder, altoFolder, configVariant, force);
+            } catch (PresentationException e) {
+                logger.error("Error creating pdf for {}. Abandoning task", imagePath);
                 return false;
             }
         }
         return true;
     }
 
-    private boolean createPdfFile(Path imagePath, Path pdfFolder, Path altoFolder, String configVariant) {
+    private boolean createPdfFile(Path imagePath, Path pdfFolder, Path altoFolder, String configVariant, boolean force) throws PresentationException {
         Map<String, String> params = Map.of(
                 "config", configVariant,
                 "ignoreCache", "true",
                 "altoSource", Optional.ofNullable(altoFolder).map(f -> PathConverter.toURI(f.toAbsolutePath()).toString()).orElse(""),
                 "imageSource", PathConverter.toURI(imagePath.getParent().toAbsolutePath()).toString());
         Path pdfPath = pdfFolder.resolve(FileTools.replaceExtension(imagePath.getFileName(), "pdf"));
-        try (OutputStream out = Files.newOutputStream(pdfPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-            SinglePdfRequest request = new SinglePdfRequest(imagePath.toString(), params);
-            new GetPdfAction().writePdf(request, this.contentServerConfiguration, out);
-        } catch (ContentLibException | IOException | URISyntaxException e) {
-            logger.error("Failed to create pdf file {} from {}. Reason: {}", pdfPath, imagePath, e.toString());
+        if (force || !Files.exists(pdfPath) || FileTools.isYoungerThan(imagePath, pdfPath)) {
+            try (OutputStream out = Files.newOutputStream(pdfPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+                SinglePdfRequest request = new SinglePdfRequest(imagePath.getFileName().toString(), params);
+                new GetPdfAction().writePdf(request, this.contentServerConfiguration, out);
+            } catch (ContentLibException | IOException | URISyntaxException e) {
+                throw new PresentationException("Failed to create pdf file {} from {}. Reason: {}", pdfPath, imagePath, e.toString());
+            }
+            return true;
+        } else {
+            logger.trace("No pdf created at {}, it already exists", pdfPath);
             return false;
         }
-        return true;
     }
 
     @Override

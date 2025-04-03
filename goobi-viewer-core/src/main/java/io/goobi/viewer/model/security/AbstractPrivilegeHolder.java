@@ -23,11 +23,14 @@ package io.goobi.viewer.model.security;
 
 public abstract class AbstractPrivilegeHolder implements IPrivilegeHolder {
 
+    protected AbstractPrivilegeHolder() {
+    }
+
     /** Constant array containing all constants for record privileges. */
     protected static final String[] PRIVS_RECORD =
-            { PRIV_LIST, PRIV_VIEW_THUMBNAILS, PRIV_VIEW_IMAGES, PRIV_VIEW_VIDEO, PRIV_VIEW_AUDIO, PRIV_VIEW_FULLTEXT, PRIV_ZOOM_IMAGES,
-                    PRIV_DOWNLOAD_IMAGES, PRIV_DOWNLOAD_ORIGINAL_CONTENT, PRIV_DOWNLOAD_PAGE_PDF, PRIV_DOWNLOAD_PDF, PRIV_DOWNLOAD_METADATA,
-                    PRIV_GENERATE_IIIF_MANIFEST, PRIV_VIEW_UGC, PRIV_DOWNLOAD_BORN_DIGITAL_FILES };
+            { PRIV_LIST, PRIV_VIEW_THUMBNAILS, PRIV_VIEW_IMAGES, PRIV_VIEW_VIDEO, PRIV_VIEW_AUDIO, PRIV_VIEW_FULLTEXT, PRIV_VIEW_METADATA,
+                    PRIV_ZOOM_IMAGES, PRIV_DOWNLOAD_IMAGES, PRIV_DOWNLOAD_ORIGINAL_CONTENT, PRIV_DOWNLOAD_PAGE_PDF, PRIV_DOWNLOAD_PDF,
+                    PRIV_DOWNLOAD_METADATA, PRIV_GENERATE_IIIF_MANIFEST, PRIV_VIEW_UGC, PRIV_DOWNLOAD_BORN_DIGITAL_FILES, PRIV_ARCHIVE_DISPLAY_NODE };
 
     /** Constant array containing all constants for CMS privileges. */
     protected static final String[] PRIVS_CMS =

@@ -141,8 +141,8 @@
 
                                     <!-- ACTIVE FACETS -->
                                     <c:forEach items="#{searchBean.facets.getActiveFacetsForField(field.key)}" var="facet">
-                                        <li class="active">
-                                            <h:commandLink action="#{searchBean.removeFacetAction(facet.link)}" title="#{msg.removeFacet}">
+                                        <li class="widget-search-facets__list-item active">
+                                            <h:commandLink styleClass="widget-search-facets__list-item-link" action="#{searchBean.removeFacetAction(facet.link)}" title="#{msg.removeFacet}">
                                                 <div class="row">
                                                     <div class="col-11">#{facet.translatedLabel}</div>
                                                     <div class="col-1">
@@ -158,10 +158,10 @@
                                     
                                     <!-- AVAILABLE FACETS -->
                                     <ui:repeat value="#{searchBean.facets.getLimitedFacetListForField(field.key)}" var="facet">
-                                        <li>
-                                            <h:outputLink
+                                        <li class="widget-search-facets__list-item">
+                                            <h:outputLink styleClass="widget-search-facets__list-item-link"
                                                 value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
-                                                #{msg[facet.translatedLabel]} (#{facet.count})
+                                                <span class="widget-search-facets__list-item-label">#{facet.translatedLabel}</span>  <span class="widget-search-facets__list-item-count">(#{facet.count})</span>
                                                 <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
                                             </h:outputLink>
                                         </li>

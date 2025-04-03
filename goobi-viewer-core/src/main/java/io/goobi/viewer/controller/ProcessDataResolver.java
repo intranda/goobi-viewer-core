@@ -32,8 +32,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -43,7 +41,6 @@ import org.apache.solr.common.SolrDocument;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -54,6 +51,7 @@ import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Utility class for retrieving data folders, data files and source files. Must be instantiated with {@link Configuration}, {@link SolrSearchIndex}
@@ -399,7 +397,7 @@ public class ProcessDataResolver {
      * @param altoFilePath ALTO file path relative to the repository root (e.g. "alto/PPN123/00000001.xml")
      * @param fulltextFilePath plain full-text file path relative to the repository root (e.g. "fulltext/PPN123/00000001.xml")
      * @param mergeLineBreakWords a boolean.
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @return a {@link java.lang.String} object.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      * @throws java.io.IOException if any.
@@ -423,18 +421,7 @@ public class ProcessDataResolver {
                 }
             } catch (ContentNotFoundException e) {
                 //try loading from content api url (same source as image content)
-                try {
-                    String filename = FileTools.getFilenameFromPathString(fulltextFilePath);
-                    String pi = FileTools.getBottomFolderFromPathString(fulltextFilePath);
-                    return this.restApiManager.getContentApiManager()
-                            .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PLAINTEXT).params(pi, filename).build())
-                            .map(NetTools::callUrlGET)
-                            .filter(array -> NetTools.isStatusOk(array[0]))
-                            .map(array -> array[1])
-                            .orElseThrow(() -> new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND));
-                } catch (ContentNotFoundException e1) {
-                    // fall through to loading alto
-                }
+                throw new FileNotFoundException(e.getMessage());
             } catch (PresentationException e) {
                 logger.error(e.getMessage());
             }
@@ -481,12 +468,7 @@ public class ProcessDataResolver {
             TextResourceBuilder builder = new TextResourceBuilder();
             return builder.getAltoDocument(pi, filename);
         } catch (ContentNotFoundException e) {
-            return new StringPair(this.restApiManager.getContentApiManager()
-                    .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_ALTO).params(pi, filename).build())
-                    .map(NetTools::callUrlGET)
-                    .filter(array -> NetTools.isStatusOk(array[0]))
-                    .map(array -> array[1])
-                    .orElseThrow(() -> new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND)), null);
+            throw new FileNotFoundException(e.getMessage());
         }
     }
 

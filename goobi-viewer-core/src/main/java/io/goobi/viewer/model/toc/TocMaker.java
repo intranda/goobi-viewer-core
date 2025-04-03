@@ -36,8 +36,8 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -266,7 +266,8 @@ public final class TocMaker {
                 queryField = SolrConstants.IDDOC;
             }
             while (currentDoc != null && currentDoc.getFieldValues(ancestorField) != null) {
-                StringBuilder sbQuery = new StringBuilder(queryField).append(':').append(currentDoc.getFieldValues(ancestorField).iterator().next());
+                StringBuilder sbQuery =
+                        new StringBuilder(queryField).append(":\"").append(currentDoc.getFieldValues(ancestorField).iterator().next()).append('"');
                 logger.trace("Ancestor query: {}", sbQuery);
                 // Get parent doc
                 currentDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(sbQuery.toString(), null);
@@ -571,8 +572,8 @@ public final class TocMaker {
                 }
 
                 TOCElement tocElement =
-                        new TOCElement(volumeLabel, String.valueOf(thumbPageNo), thumbPageNoLabel, volumeIddoc, volumeLogId, 1, topStructPi, thumbnailUrl,
-                                accessPermissionPdf, false, thumbnailUrl != null, volumeMimeType, docStructType, footerId);
+                        new TOCElement(volumeLabel, String.valueOf(thumbPageNo), thumbPageNoLabel, volumeIddoc, volumeLogId, 1, topStructPi,
+                                thumbnailUrl, accessPermissionPdf, false, thumbnailUrl != null, volumeMimeType, docStructType, footerId);
                 tocElement.getMetadata().put(SolrConstants.DOCSTRCT, docStructType);
                 tocElement.getMetadata().put(SolrConstants.CURRENTNO, (String) volumeDoc.getFieldValue(SolrConstants.CURRENTNO));
                 tocElement.getMetadata().put(SolrConstants.TITLE, (String) volumeDoc.getFirstValue(SolrConstants.TITLE));
@@ -702,21 +703,31 @@ public final class TocMaker {
             //  DataManager.getInstance().getConfiguration().getTocVolumeSortFieldsForTemplate
             // (SolrSearchIndex.getSingleFieldStringValue(doc, LuceneConstants.DOCSTRCT)));
             // TODO determine child docstruct type before fetching the child docs to determine the required fields
-            SolrDocumentList childDocs = DataManager.getInstance()
-                    .getSearchIndex()
-                    .search(new StringBuilder(ancestorField).append(':').append(queryValue).toString(), SolrSearchIndex.MAX_HITS,
-                            DataManager.getInstance()
-                                    .getConfiguration()
-                                    .getTocVolumeSortFieldsForTemplate(SolrTools.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT)),
-                            null);
-            boolean addSiblings = addAllSiblings && mainDocumentChain.contains(iddoc);
-            logger.trace("Loose children of {}: {}; add siblings: {}", queryValue, childDocs.size(), addSiblings);
-            if (!childDocs.isEmpty()) {
-                for (SolrDocument childDoc : childDocs) {
-                    // Add child, if either all siblings are requested or the path leads to the main record
-                    if (addSiblings || mainDocumentChain.contains(childDoc.getFieldValue(SolrConstants.IDDOC))) {
-                        populateTocTree(ret, mainDocumentChain, childDoc, level + 1, addChildren, sourceFormatPdfAllowed, mimeType, ancestorField,
-                                addSiblings, footerId);
+            if (StringUtils.isNotEmpty(queryValue)) {
+                String siblingQuery = new StringBuilder("+").append(ancestorField)
+                        .append(":\"")
+                        .append(queryValue)
+                        .append("\" +")
+                        .append(SolrConstants.PI)
+                        .append(":*")
+                        .toString();
+                logger.trace("Sibling query: {}", siblingQuery);
+                SolrDocumentList childDocs = DataManager.getInstance()
+                        .getSearchIndex()
+                        .search(siblingQuery, SolrSearchIndex.MAX_HITS,
+                                DataManager.getInstance()
+                                        .getConfiguration()
+                                        .getTocVolumeSortFieldsForTemplate(SolrTools.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT)),
+                                null);
+                boolean addSiblings = addAllSiblings && mainDocumentChain != null && mainDocumentChain.contains(iddoc);
+                logger.trace("Loose children of {}: {}; add siblings: {}", queryValue, childDocs.size(), addSiblings);
+                if (!childDocs.isEmpty()) {
+                    for (SolrDocument childDoc : childDocs) {
+                        // Add child, if either all siblings are requested or the path leads to the main record
+                        if (addSiblings || (mainDocumentChain != null && mainDocumentChain.contains(childDoc.getFieldValue(SolrConstants.IDDOC)))) {
+                            populateTocTree(ret, mainDocumentChain, childDoc, level + 1, addChildren, sourceFormatPdfAllowed, mimeType, ancestorField,
+                                    addSiblings, footerId);
+                        }
                     }
                 }
             }

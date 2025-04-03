@@ -28,16 +28,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.application.FacesMessage;
-import javax.faces.component.UIComponent;
-import javax.faces.component.UIInput;
-import javax.faces.context.FacesContext;
-import javax.faces.event.ValueChangeEvent;
-import javax.faces.validator.ValidatorException;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.component.UIInput;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.event.ValueChangeEvent;
+import jakarta.faces.validator.ValidatorException;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -407,7 +407,7 @@ public class BookmarkBean implements Serializable {
      * selectBookmarkListAction.
      * </p>
      *
-     * @param event a {@link javax.faces.event.ValueChangeEvent} object.
+     * @param event a {@link jakarta.faces.event.ValueChangeEvent} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void selectBookmarkListAction(ValueChangeEvent event) throws DAOException {
@@ -446,7 +446,7 @@ public class BookmarkBean implements Serializable {
      * userGroupSelectedAction.
      * </p>
      *
-     * @param event {@link javax.faces.event.ValueChangeEvent}
+     * @param event {@link jakarta.faces.event.ValueChangeEvent}
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void userGroupSelectedAction(ValueChangeEvent event) throws DAOException {
@@ -458,10 +458,10 @@ public class BookmarkBean implements Serializable {
      * validateName.
      * </p>
      *
-     * @param context a {@link javax.faces.context.FacesContext} object.
-     * @param toValidate a {@link javax.faces.component.UIComponent} object.
+     * @param context a {@link jakarta.faces.context.FacesContext} object.
+     * @param toValidate a {@link jakarta.faces.component.UIComponent} object.
      * @param value a {@link java.lang.Object} object.
-     * @throws javax.faces.validator.ValidatorException if any.
+     * @throws jakarta.faces.validator.ValidatorException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void validateName(FacesContext context, UIComponent toValidate, Object value) throws ValidatorException, DAOException {

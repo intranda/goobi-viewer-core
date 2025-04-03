@@ -21,8 +21,8 @@
  */
 package io.goobi.viewer.servlets;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -81,37 +81,4 @@ class PpnResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(MetsResolver.ERRTXT_ILLEGAL_IDENTIFIER + ": a:b", response.getErrorMessage());
 
     }
-
-    //    /**
-    //     * @see PpnResolver#doGet(HttpServletRequest,HttpServletResponse)
-    //     * @verifies forward to relative url
-    //     */
-    //    @Test
-    //    void doGet_shouldForwardToRelativeUrl() throws Exception {
-    //        PpnResolver resolver = new PpnResolver();
-    //        String page = "/object/PPN517154005/1/LOG_0000/";
-    //        HttpServletRequest request = TestUtils.mockHttpRequest(page);
-    //        HttpServletResponse response = TestUtils.mockHttpResponse();
-    //        request.setAttribute("id", PI_KLEIUNIV);
-    //        Assertions.assertEquals(PI_KLEIUNIV, request.getAttribute("id"));
-    //        resolver.service(request, response);
-    //        Assertions.assertNotNull(request.getRequestDispatcher(page));
-    //        request.getRequestDispatcher(page).forward(request, response);
-    //    }
-    //
-    //    /**
-    //     * @see PpnResolver#doGet(HttpServletRequest,HttpServletResponse)
-    //     * @verifies redirect to full url
-    //     */
-    //    @Test
-    //    void doGet_shouldRedirectToFullUrl() throws Exception {
-    //        DataManager.getInstance().getConfiguration().overrideValue("collections.redirectToWork", true);
-    //        Assertions.assertTrue(DataManager.getInstance().getConfiguration().isAllowRedirectCollectionToWork());
-    //
-    //        ServletUnitClient sc = sr.newClient();
-    //        WebRequest request = new GetMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
-    //        request.setParameter("id", PI_KLEIUNIV);
-    //        WebResponse response = sc.getResponse(request);
-    //        Assertions.assertEquals(200, response.getResponseCode());
-    //    }
 }

@@ -23,20 +23,29 @@ package io.goobi.viewer.servlets;
 
 import java.nio.charset.StandardCharsets;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.jdom2.Document;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.XmlTools;
 
 class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
+    
+    @Override
+    @BeforeEach
+    public void setUp() throws Exception {
+        super.setUp();
+        DataManager.getInstance().getConfiguration().overrideValue("configFolder", "src/test/resources/xsl/");
+    }
 
     /**
      * @see MetsResolver#doGet(HttpServletRequest,HttpServletResponse)
@@ -50,7 +59,7 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
         MetsResolver resolver = new MetsResolver();
         resolver.doGet(request, response);
-        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus(), response.getErrorMessage());
         String xml = response.getContentAsString();
         Document mets = XmlTools.getDocumentFromString(xml, StandardCharsets.UTF_8.name());
         Assertions.assertNotNull(mets);
@@ -68,7 +77,7 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
         MetsResolver resolver = new MetsResolver();
         resolver.doGet(request, response);
-        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus(), response.getErrorMessage());
         String xml = response.getContentAsString();
         Document mets = XmlTools.getDocumentFromString(xml, StandardCharsets.UTF_8.name());
         Assertions.assertNotNull(mets);
@@ -86,7 +95,7 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
         MetsResolver resolver = new MetsResolver();
         resolver.doGet(request, response);
-        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus(), response.getErrorMessage());
         String xml = response.getContentAsString();
         Document lido = XmlTools.getDocumentFromString(xml, StandardCharsets.UTF_8.name());
         Assertions.assertNotNull(lido);
@@ -105,7 +114,7 @@ class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
         MetsResolver resolver = new MetsResolver();
         resolver.doGet(request, response);
-        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        Assertions.assertEquals(HttpServletResponse.SC_OK, response.getStatus(), response.getErrorMessage());
         String xml = response.getContentAsString();
         Document ead = XmlTools.getDocumentFromString(xml, StandardCharsets.UTF_8.name());
         Assertions.assertNotNull(ead);

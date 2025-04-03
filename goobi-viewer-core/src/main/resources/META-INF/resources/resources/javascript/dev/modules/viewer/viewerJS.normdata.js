@@ -90,7 +90,7 @@ var viewerJS = ( function( viewer ) {
             
             
             // first level click
-            $( _defaults.linkSelector ).on( 'click', function(event) {
+            $("body").on( 'click',  _defaults.linkSelector, function(event) {
             	_$this = $( this );
                 
                 _$this.off( 'focus' );

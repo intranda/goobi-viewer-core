@@ -31,11 +31,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.model.SelectItem;
-import javax.faces.model.SelectItemGroup;
-import javax.inject.Named;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.model.SelectItem;
+import jakarta.faces.model.SelectItemGroup;
+import jakarta.inject.Named;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -973,9 +973,17 @@ public class AdminLicenseBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public long getNumRecordsWithAccessCondition(String accessCondition) throws IndexUnreachableException, PresentationException {
-        return DataManager.getInstance()
+        long records = DataManager.getInstance()
                 .getSearchIndex()
                 .getHitCount(SearchHelper.getQueryForAccessCondition(accessCondition, false));
+        if (records == 0) {
+            // Alternative query for metadata-only restrictions
+            records = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount("+DOCTYPE:METADATA +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"");
+        }
+
+        return records;
     }
 
     /**

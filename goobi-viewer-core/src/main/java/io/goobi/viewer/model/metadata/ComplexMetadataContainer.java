@@ -27,16 +27,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -44,25 +41,10 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 public class ComplexMetadataContainer {
 
     private static final String QUERY_FORMAT = "+DOCTYPE:METADATA +PI_TOPSTRUCT:%s";
-    private static final String DEFAULT_SORTING = "desc";
 
-    protected final Map<String, List<ComplexMetadata>> metadataMap;
+    protected final Map<String, ComplexMetadataList> metadataMap;
 
-    private String sorting = DEFAULT_SORTING;
-
-    public void setSorting(String sorting) {
-        this.sorting = sorting;
-    }
-
-    public String getSorting() {
-        return sorting;
-    }
-
-    public boolean isDescendingOrder() {
-        return "desc".equalsIgnoreCase(sorting);
-    }
-
-    public ComplexMetadataContainer(Map<String, List<ComplexMetadata>> metadataMap) {
+    public ComplexMetadataContainer(Map<String, ComplexMetadataList> metadataMap) {
         this.metadataMap = metadataMap;
     }
 
@@ -74,35 +56,54 @@ public class ComplexMetadataContainer {
         this.metadataMap = ComplexMetadata.getMetadataFromDocuments(metadataDocs)
                 .stream()
                 .filter(doc -> fieldNameFilter.test(doc.getField()))
-                .collect(Collectors.toMap(ComplexMetadata::getField, List::of, ListUtils::union));
+                .collect(Collectors.toMap(ComplexMetadata::getField, ComplexMetadataList::new, ComplexMetadataList::union));
     }
 
-    public List<ComplexMetadata> getMetadata(String field, String sortField, Locale sortLanguage, String filterField, String filterValue,
+    public List<ComplexMetadata> getMetadata(String field, Locale sortLanguage, String filterField, String filterValue,
             long limit) {
-        return streamMetadata(field, sortField, sortLanguage, filterField, filterValue, limit).collect(Collectors.toList());
+        return streamMetadata(field, sortLanguage, filterField, filterValue, limit).collect(Collectors.toList());
     }
 
     public long getNumEntries(String field, String filterField, String filterMatcher) {
-        return getMetadata(field).stream()
-                .filter(m -> StringUtils.isBlank(filterField) || Pattern.matches(filterMatcher, m.getFirstValue(filterField, null)))
-                .count();
+        return getList(field).getNumEntries(filterField, filterMatcher);
     }
 
-    protected Stream<ComplexMetadata> streamMetadata(String field, String sortField, Locale sortLanguage, String filterField, String filterMatcher,
+    public Map<String, List<ComplexMetadata>> getGroupedMetadata(String field, Locale sortLanguage,
+            List<Map<String, List<String>>> categories, long limit) {
+        return getList(field).getGroupedMetadata(sortLanguage, categories, limit);
+    }
+
+    public Map<String, List<ComplexMetadata>> getGroupedMetadata(String field, Locale sortLanguage,
+            Map<String, List<String>> categories, long limit) {
+        return getList(field).getGroupedMetadata(sortLanguage, categories, limit);
+    }
+
+    protected Stream<ComplexMetadata> streamMetadata(String field, Locale sortLanguage, String filterField, String filterMatcher,
             long listSizeLimit) {
-        Stream<ComplexMetadata> stream = getMetadata(field).stream()
-                .filter(m -> StringUtils.isBlank(filterField) || Pattern.matches(filterMatcher, m.getFirstValue(filterField, null)));
-        List<ComplexMetadata> list = stream.collect(Collectors.toList());
-        stream = list.stream();
-        if (StringUtils.isNotBlank(sortField)) {
-            stream = stream.sorted((m1, m2) -> m1.getFirstValue(sortField, sortLanguage).compareTo(m2.getFirstValue(sortField, sortLanguage))
-                    * (isDescendingOrder() ? -1 : 1));
+        return getList(field).streamMetadata(sortLanguage, filterField, filterMatcher, listSizeLimit);
+    }
+
+    public ComplexMetadataList getList(String field) {
+        return getList(field, "");
+    }
+
+    public ComplexMetadataList getList(String field, String defaultSortField) {
+        return getList(field, defaultSortField, "asc");
+    }
+
+    public ComplexMetadataList getList(String field, String defaultSortField, String defaultSortOrder) {
+        ComplexMetadataList list = metadataMap.getOrDefault(field, new ComplexMetadataList(Collections.emptyList()));
+        if (StringUtils.isNotBlank(defaultSortField) && StringUtils.isBlank(list.getSortField())) {
+            list.setSortField(defaultSortField);
         }
-        return stream.limit(listSizeLimit);
+        if (StringUtils.isNotBlank(defaultSortOrder) && StringUtils.isBlank(list.getSortOrder())) {
+            list.setSortOrder(defaultSortOrder);
+        }
+        return list;
     }
 
     public List<ComplexMetadata> getMetadata(String field) {
-        return metadataMap.getOrDefault(field, Collections.emptyList());
+        return metadataMap.getOrDefault(field, new ComplexMetadataList(Collections.emptyList())).getMetadata();
     }
 
     public Collection<String> getFieldNames() {
@@ -135,7 +136,8 @@ public class ComplexMetadataContainer {
         return new ComplexMetadataContainer(metadataDocs);
     }
 
-    public static ComplexMetadataContainer loadMetadataDocuments(String pi, SolrSearchIndex searchIndex, Predicate<String> fieldNameFilter)
+    public static ComplexMetadataContainer loadMetadataDocuments(String pi, SolrSearchIndex searchIndex,
+            Predicate<String> fieldNameFilter)
             throws PresentationException, IndexUnreachableException {
         SolrDocumentList metadataDocs = searchIndex.search(String.format(QUERY_FORMAT, pi));
         return new ComplexMetadataContainer(metadataDocs, fieldNameFilter);

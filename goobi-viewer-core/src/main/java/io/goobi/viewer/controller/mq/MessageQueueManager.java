@@ -45,13 +45,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.InjectionTarget;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
@@ -84,6 +77,13 @@ import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.managedbeans.MessageQueueBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.job.TaskType;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.InjectionTarget;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.jms.Connection;
 import jakarta.jms.DeliveryMode;
 import jakarta.jms.Destination;
@@ -158,6 +158,7 @@ public class MessageQueueManager {
 
     @PreDestroy
     public void shutdown() {
+        this.closeMessageServer();
         if (creationalContext != null) {
             creationalContext.release();
         }

@@ -179,7 +179,7 @@
 									<div class="admin__developer-autopull-commit-message"><span class="admin__developer-autopull-version-info-label">#{msg.admin__developer__pull_theme_message}: </span><span>#{versionInfo.commitMessage}</span></div>
  
  									<div class="admin__developer-autopull-status-button-wrapper">
-										<o:commandScript name="updateTheme" render="updateThemeGroup"></o:commandScript>
+										<h:commandScript name="updateTheme" render="updateThemeGroup"></h:commandScript>
 										<h:commandButton styleClass="btn btn--default mt-3"
 											action="#{adminDeveloperBean.triggerPullTheme}" 
 											value="#{msg.admin__developer__pull_theme_button}">

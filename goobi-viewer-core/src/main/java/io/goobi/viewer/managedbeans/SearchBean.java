@@ -52,14 +52,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
@@ -119,6 +111,13 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.collections.BrowseDcElement;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * SearchBean
@@ -170,8 +169,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     private SearchResultGroup activeResultGroup;
     /** Selected advanced search field configuration template. */
-    private String advancedSearchFieldTemplate = StringConstants.DEFAULT_NAME;
-    private boolean phraseSearch = false;
+    private String advancedSearchFieldTemplate = DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultTemplateName();
     /** Current search result page. */
     private int currentPage = 1;
     /** Index of the currently open search result (used for search result browsing). */
@@ -203,6 +201,8 @@ public class SearchBean implements SearchInterface, Serializable {
 
     private volatile FutureTask<Boolean> downloadReady; //NOSONAR   Future is thread-save
     private volatile FutureTask<Boolean> downloadComplete; //NOSONAR   Future is thread-save
+
+    private String filterQuery = "";
 
     /** Reusable Random object. */
     private Random random = new SecureRandom();
@@ -269,7 +269,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public String search() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        return search("");
+        return search(this.filterQuery);
     }
 
     /**
@@ -552,7 +552,6 @@ public class SearchBean implements SearchInterface, Serializable {
                         calendarBean.resetCurrentSelection();
                     }
                     break;
-                case SearchHelper.SEARCH_TYPE_TIMELINE:
                 case SearchHelper.SEARCH_TYPE_CALENDAR:
                     resetSimpleSearchParameters();
                     resetAdvancedSearchParameters();
@@ -920,8 +919,26 @@ public class SearchBean implements SearchInterface, Serializable {
         currentSearch.setPage(currentPage);
         currentSearch.setSortString(searchSortingOption != null ? searchSortingOption.getSortString() : null);
         currentSearch.setFacetString(facets.getActiveFacetString());
-        currentSearch.setCustomFilterQuery(filterQuery);
         currentSearch.setProximitySearchDistance(proximitySearchDistance);
+        StringBuilder sbFilterQuery = new StringBuilder();
+        String templateQuery = DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateQuery(advancedSearchFieldTemplate);
+        if (StringUtils.isNotEmpty(templateQuery)) {
+            sbFilterQuery.append(" +(").append(templateQuery).append(")");
+        }
+        if (StringUtils.isNotEmpty(filterQuery) && !filterQuery.startsWith("{!")) {
+            sbFilterQuery.append(" +(").append(filterQuery).append(")");
+        } else if (StringUtils.isNotEmpty(filterQuery)) {
+            sbFilterQuery.append(filterQuery);
+        }
+
+        if (StringUtils.isNotEmpty(this.filterQuery) && !this.filterQuery.startsWith("{!")) {
+            sbFilterQuery.append(" +(").append(this.filterQuery).append(")");
+        } else if (StringUtils.isNotEmpty(this.filterQuery)) {
+            sbFilterQuery.append(this.filterQuery);
+        }
+
+        currentSearch.setCustomFilterQuery(sbFilterQuery.toString().trim());
+        // logger.trace("Custom filter query: {}", sbFilterQuery.toString().trim());
 
         // When searching in MONTHDAY, add a term so that an expand query is created
         if (searchStringInternal.startsWith(SolrConstants.MONTHDAY)) {
@@ -951,7 +968,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     : SearchHelper.generateExpandQuery(
                             SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedSearchQueryGroup,
                                     additionalExpandQueryfields),
-                            searchTerms, phraseSearch, proximitySearchDistance);
+                            searchTerms, proximitySearchDistance);
             if (StringUtils.isEmpty(expandQuery) && activeSearchType == SearchHelper.SEARCH_TYPE_TERMS) {
                 expandQuery = searchStringInternal;
             }
@@ -1226,7 +1243,6 @@ public class SearchBean implements SearchInterface, Serializable {
         // Reset internal query etc. only after confirming the given search string is not empty
         searchStringInternal = "";
         searchTerms.clear();
-        phraseSearch = false;
 
         if ("*".equals(tempSearchString)) {
             searchStringInternal = SearchHelper.prepareQuery("");
@@ -1240,7 +1256,6 @@ public class SearchBean implements SearchInterface, Serializable {
 
         if (tempSearchString.contains("\"")) {
             // Phrase search
-            phraseSearch = true;
             // Determine proximity search distance if token present, then remove it from the term
             proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(tempSearchString);
             if (proximitySearchDistance > 0) {
@@ -1250,7 +1265,7 @@ public class SearchBean implements SearchInterface, Serializable {
             StringBuilder sb = new StringBuilder();
             for (String p : toSearch) {
                 String phrase = p.replace("\"", "");
-                if (phrase.length() > 0) {
+                if (!phrase.isEmpty()) {
                     if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
                         // For aggregated searches include both SUPER and regular DEFAULT/FULLTEXT fields
                         sb.append(SolrConstants.SUPERDEFAULT).append(":(\"").append(phrase).append("\") OR ");
@@ -1503,17 +1518,6 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * JSF expects a getter, too.
-     *
-     * @return a {@link java.lang.String} object.
-     * @deprecated user SearchBean.getExactSearchString()
-     */
-    @Deprecated(since = "24.01")
-    public String getExactSearchStringResetGui() {
-        return getExactSearchString();
-    }
-
-    /**
      * For unit tests.
      * 
      * @return the searchStringInternal
@@ -1633,9 +1637,11 @@ public class SearchBean implements SearchInterface, Serializable {
      *
      * @return activeResultGroup name; "-" if none set
      */
-    public String getActiveResultGroupName() {
+    public String getActiveContext() {
         if (activeResultGroup != null) {
             return activeResultGroup.getName();
+        } else if (advancedSearchFieldTemplate != null && !StringConstants.DEFAULT_NAME.equals(advancedSearchFieldTemplate)) {
+            return advancedSearchFieldTemplate;
         }
 
         return "-";
@@ -1653,16 +1659,42 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
+     * Depending on configuration settings, sets the given value as the active search result group name and/or active advanced search template.
+     *
+     * @param activeContext Name of the active context
+     */
+    public void setActiveContext(String activeContext) {
+        logger.trace("setActiveContext: {}", activeContext);
+        if (DataManager.getInstance().getConfiguration().isSearchResultGroupsEnabled()) {
+            setActiveResultGroupName(activeContext);
+        }
+        if (DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateNames().size() > 1) {
+            setAdvancedSearchFieldTemplate(activeContext);
+        }
+    }
+
+    /**
      * <p>
-     * setActiveResultGroupName.
+     * getActiveResultGroupName.
      * </p>
      *
-     * @param activeResultGroupName a {@link java.lang.String} object
+     * @return activeResultGroup name; "-" if none set
+     */
+    public String getActiveResultGroupName() {
+        if (activeResultGroup != null) {
+            return activeResultGroup.getName();
+        }
+
+        return "-";
+    }
+
+    /**
+     * Sets activeResultGroup via the given name.
+     *
+     * @param activeResultGroupName Name of the active context
      * @should select result group correctly
      * @should reset result group if new name not configured
      * @should reset result group if empty name given
-     * @should reset advanced search query items if new group used as field template
-     * @should reset advanced search query items if old group used as field template
      */
     public void setActiveResultGroupName(String activeResultGroupName) {
         logger.trace("setActiveResultGroupName: {}", activeResultGroupName);
@@ -1674,28 +1706,47 @@ public class SearchBean implements SearchInterface, Serializable {
             for (SearchResultGroup resultGroup : DataManager.getInstance().getConfiguration().getSearchResultGroups()) {
                 if (resultGroup.getName().equals(activeResultGroupName)) {
                     activeResultGroup = resultGroup;
-                    if (resultGroup.isUseAsAdvancedSearchTemplate()) {
-                        this.advancedSearchFieldTemplate = resultGroup.getName();
-                        // Reset query items
-                        resetAdvancedSearchParameters();
-                        // Reset slider ranges
-                        facets.resetSliderRange();
-                        // Reset avalable facets
-                        facets.resetAvailableFacets();
-                    }
                     return;
                 }
             }
             logger.warn("Search result group name not found: {}", activeResultGroupName);
         }
 
-        // Reset query items and slider ranges if active group is used as item field template
-        if (activeResultGroup != null && activeResultGroup.isUseAsAdvancedSearchTemplate()) {
-            resetAdvancedSearchParameters();
-            facets.resetSliderRange();
-        }
         activeResultGroup = null;
-        this.advancedSearchFieldTemplate = StringConstants.DEFAULT_NAME;
+    }
+
+    /**
+     * @return the advancedSearchFieldTemplate
+     */
+    public String getAdvancedSearchFieldTemplate() {
+        return advancedSearchFieldTemplate;
+    }
+
+    /**
+     * 
+     * @param advancedSearchFieldTemplate
+     */
+    public void setAdvancedSearchFieldTemplate(String advancedSearchFieldTemplate) {
+        logger.trace("setAdvancedSearchFieldTemplate: {}", advancedSearchFieldTemplate);
+        if (advancedSearchFieldTemplate != null && advancedSearchFieldTemplate.equals(this.advancedSearchFieldTemplate)) {
+            return;
+        }
+
+        if (advancedSearchFieldTemplate != null && !"-".equals(advancedSearchFieldTemplate)) {
+            this.advancedSearchFieldTemplate = advancedSearchFieldTemplate;
+            // Reset query items
+            resetAdvancedSearchParameters();
+            // Reset slider ranges
+            facets.resetSliderRange();
+            // Reset available facets
+            facets.resetAvailableFacets();
+            return;
+        }
+
+        this.advancedSearchFieldTemplate = DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultTemplateName();
+        // Reset query items and slider ranges if active group is used as item field template
+        resetAdvancedSearchParameters();
+        facets.resetSliderRange();
     }
 
     /**
@@ -1710,7 +1761,8 @@ public class SearchBean implements SearchInterface, Serializable {
     public void mirrorAdvancedSearchCurrentHierarchicalFacets() {
         logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets");
         if (facets.getActiveFacets().isEmpty()) {
-            for (SearchQueryItem item : advancedSearchQueryGroup.getQueryItems()) {
+            List<SearchQueryItem> queryItems = new ArrayList<>(advancedSearchQueryGroup.getQueryItems());
+            for (SearchQueryItem item : queryItems) {
                 if (item.isHierarchical()) {
                     logger.trace("resetting current field value in advanced search: {}", item.getField());
                     item.setValue(null);
@@ -1753,21 +1805,6 @@ public class SearchBean implements SearchInterface, Serializable {
                 }
             }
         }
-    }
-
-    /**
-     * <p>
-     * removeChronologyFacetAction.
-     * </p>
-     *
-     * @return Navigation outcome
-     * @deprecated No longer relevant for current implementation
-     */
-    @Deprecated(since = "2023.01")
-    public String removeChronologyFacetAction() {
-        String facet = SolrConstants.YEAR + ":" + facets.getTempValue();
-        facets.setTempValue("");
-        return removeFacetAction(facet);
     }
 
     /**
@@ -3418,6 +3455,14 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public String getCombinedFilterQueryEscaped() {
         return StringTools.encodeUrl(getCombinedFilterQuery());
+    }
+
+    public String getFilterQuery() {
+        return filterQuery;
+    }
+
+    public void setFilterQuery(String filterQuery) {
+        this.filterQuery = filterQuery;
     }
 
     /**

@@ -41,13 +41,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.inject.Named;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.model.DataModel;
+import jakarta.faces.model.ListDataModel;
+import jakarta.inject.Named;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.logging.log4j.LogManager;
@@ -218,7 +218,7 @@ public class AdminConfigEditorBean implements Serializable {
      * getFileRecordsModel.
      * </p>
      *
-     * @return a {@link javax.faces.model.DataModel} object
+     * @return a {@link jakarta.faces.model.DataModel} object
      */
     public DataModel<FileRecord> getFileRecordsModel() {
         return filesListing.getFileRecordsModel();
@@ -295,7 +295,7 @@ public class AdminConfigEditorBean implements Serializable {
      * Getter for the field <code>backupRecordsModel</code>.
      * </p>
      *
-     * @return a {@link javax.faces.model.DataModel} object
+     * @return a {@link jakarta.faces.model.DataModel} object
      */
     public DataModel<BackupRecord> getBackupRecordsModel() {
         return backupRecordsModel;

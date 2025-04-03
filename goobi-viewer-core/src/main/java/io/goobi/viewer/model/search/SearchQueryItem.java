@@ -31,7 +31,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.faces.event.ValueChangeEvent;
+import jakarta.faces.event.ValueChangeEvent;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -305,7 +305,6 @@ public class SearchQueryItem implements Serializable {
      * @return the field
      */
     public String getField() {
-        logger.trace("getField: {}", field);
         return field;
     }
 
@@ -382,7 +381,11 @@ public class SearchQueryItem implements Serializable {
     public void setValue(final String value) {
         // logger.trace("setValue: {}", value); //NOSONAR Debug
         String val = StringTools.stripJS(value);
-        values.add(0, val);
+        if (values.isEmpty()) {
+            values.add(0, val);
+        } else {
+            values.set(0, val);
+        }
     }
 
     /**
@@ -457,7 +460,7 @@ public class SearchQueryItem implements Serializable {
     /**
      * This is called after <code>setField</code>, so no point in calling <code>toggleDisplaySelectItems</code> here.
      *
-     * @param ev a {@link javax.faces.event.ValueChangeEvent} object.
+     * @param ev a {@link jakarta.faces.event.ValueChangeEvent} object.
      */
     public void selectOneMenuListener(ValueChangeEvent ev) {
         //
@@ -622,7 +625,7 @@ public class SearchQueryItem implements Serializable {
                     }
                     String useValue = value.trim();
                     this.proximitySearchDistance = SearchHelper.extractProximitySearchDistanceFromQuery(useValue);
-                    logger.trace("proximity distance: {}", proximitySearchDistance);
+                    // logger.trace("proximity distance: {}", proximitySearchDistance); //NOSONAR Debug
 
                     sbItem.append(useField).append(':');
                     if (useValue.charAt(0) != '"') {
@@ -635,7 +638,7 @@ public class SearchQueryItem implements Serializable {
                     if (SolrConstants.FULLTEXT.equals(useField) || SolrConstants.SUPERFULLTEXT.equals(useField)) {
                         // Remove quotation marks to add to search terms
                         String val = useValue.replace("\"", "");
-                        if (val.length() > 0) {
+                        if (!val.isEmpty()) {
                             searchTerms.add(val);
                         }
                     }
@@ -664,7 +667,7 @@ public class SearchQueryItem implements Serializable {
                     boolean moreThanOneValue = false;
                     for (final String v : valueSplit) {
                         String val = v.trim();
-                        if (val.length() == 0) {
+                        if (val.isEmpty()) {
                             continue;
                         }
                         if (val.charAt(0) == '"') {
@@ -677,7 +680,7 @@ public class SearchQueryItem implements Serializable {
                             val = val.substring(0, val.length() - 1);
                         }
 
-                        if (val.charAt(0) == '-' && val.length() > 1) {
+                        if (val.charAt(0) == '-' && val.length() > 1 && !isRange()) {
                             // negation
                             sbItem.append(" -");
                             val = val.substring(1);
@@ -708,7 +711,7 @@ public class SearchQueryItem implements Serializable {
                                 break;
                         }
 
-                        if (val.contains("-")) {
+                        if (val.contains("-") && !isRange()) {
                             if (allowFuzzySearch) {
                                 //remove wildcards; they don't work with search containing hyphen
                                 String tempValue = SearchHelper.getWildcardsTokens(val)[1];
@@ -734,10 +737,25 @@ public class SearchQueryItem implements Serializable {
                             }
                             if (isRange() && values.size() > 1 && StringUtils.isNotBlank(values.get(1))) {
                                 // Range search
+                                String val1 = ClientUtils.escapeQueryChars(useValue).replace("\\-", "-");
+                                String val2 = ClientUtils.escapeQueryChars(values.get(1).trim()).replace("\\-", "-");
+                                if (SolrConstants.YEAR.equals(field) || field.startsWith(SolrConstants.PREFIX_MDNUM)) {
+                                    // Prevent exception if not a number
+                                    if (StringTools.parseInt(val1).isEmpty()) {
+                                        val1 = "0";
+                                        this.values.remove(0);
+                                        this.values.add(0, "NaN");
+                                    }
+                                    if (StringTools.parseInt(val2).isEmpty()) {
+                                        val2 = "0";
+                                        this.values.remove(1);
+                                        this.values.add("NaN");
+                                    }
+                                }
                                 sbItem.append('[')
-                                        .append(ClientUtils.escapeQueryChars(useValue))
+                                        .append(val1)
                                         .append(" TO ")
-                                        .append(ClientUtils.escapeQueryChars(values.get(1).trim()))
+                                        .append(val2)
                                         .append("]");
                             } else {
                                 // Regular search
@@ -752,7 +770,7 @@ public class SearchQueryItem implements Serializable {
                         }
                         if (SolrConstants.FULLTEXT.equals(useField) || SolrConstants.SUPERFULLTEXT.equals(useField)) {
                             String v2 = val.replace("\"", "");
-                            if (v2.length() > 0) {
+                            if (!v2.isEmpty()) {
                                 searchTerms.add(v2);
                                 // TODO do not add negated terms
                             }

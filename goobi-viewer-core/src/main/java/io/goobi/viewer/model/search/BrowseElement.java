@@ -22,8 +22,6 @@
 package io.goobi.viewer.model.search;
 
 import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -532,16 +530,12 @@ public class BrowseElement implements Serializable {
      * @should return empty string for unknown file extensions
      */
     static String getMimeTypeFromExtension(String filename) {
-        try {
-            URL fileUrl = new URL(filename);
-            ImageFileFormat format = ImageFileFormat.getImageFileFormatFromFileExtension(fileUrl.getPath());
-            if (format != null) {
-                return format.getMimeType();
-            }
-        } catch (MalformedURLException e) {
-            logger.warn(e.getMessage());
+        ImageFileFormat format = ImageFileFormat.getImageFileFormatFromFileExtension(filename);
+        if (format != null) {
+            return format.getMimeType();
+        } else {
+            return "";
         }
-        return "";
     }
 
     /**
@@ -641,14 +635,14 @@ public class BrowseElement implements Serializable {
             String germanTitle = null;
             String anyTitle = null;
             for (String key : se.getMetadataFields().keySet()) {
-                if (key.equals(SolrConstants.TITLE + "_LANG_" + locale.getLanguage().toUpperCase())) {
+                if (key.equals(SolrConstants.TITLE + SolrConstants.MIDFIX_LANG + locale.getLanguage().toUpperCase())) {
                     ret = se.getMetadataValue(key);
                     break;
-                } else if (key.equals(SolrConstants.TITLE + "_LANG_DE")) {
+                } else if (key.equals(SolrConstants.TITLE + SolrConstants.MIDFIX_LANG + "DE")) {
                     germanTitle = se.getMetadataValue(key);
-                } else if (key.equals(SolrConstants.TITLE + "_LANG_EN")) {
+                } else if (key.equals(SolrConstants.TITLE + SolrConstants.MIDFIX_LANG + "EN")) {
                     englishTitle = se.getMetadataValue(key);
-                } else if (key.matches(SolrConstants.TITLE + "_LANG_[A-Z][A-Z]")) {
+                } else if (key.matches(SolrConstants.TITLE + SolrConstants.MIDFIX_LANG + "[A-Z][A-Z]")) {
                     anyTitle = se.getMetadataValue(key);
                 }
             }

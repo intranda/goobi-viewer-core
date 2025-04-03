@@ -27,26 +27,37 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.jboss.weld.contexts.ContextNotActiveException;
+import org.jdom2.Document;
+import org.jdom2.JDOMException;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.transform.XSLTransformException;
+import org.jdom2.transform.XSLTransformer;
 
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
+import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.faces.validators.PIValidator;
+import io.goobi.viewer.managedbeans.UserBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
 
 /**
@@ -67,6 +78,7 @@ public class MetsResolver extends HttpServlet {
 
     /**
      * {@inheritDoc}
+     * 
      * @should return METS file correctly via pi
      * @should return METS file correctly via urn
      * @should return LIDO file correctly
@@ -159,6 +171,19 @@ public class MetsResolver extends HttpServlet {
             return;
         }
 
+        User user = BeanUtils.getUserFromRequest(request);
+        if (user == null) {
+            UserBean userBean = BeanUtils.getUserBean();
+            if (userBean != null) {
+                try {
+                    user = userBean.getUser();
+                } catch (ContextNotActiveException e) {
+                    logger.trace("Cannot access bean method from different thread: UserBean.getUser()");
+                }
+            }
+        }
+        boolean superuserAccess = user != null ? user.isSuperuser() : false;
+
         String format = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
         String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
 
@@ -169,16 +194,33 @@ public class MetsResolver extends HttpServlet {
         response.setContentType(StringConstants.MIMETYPE_TEXT_XML);
         File file = new File(filePath);
         response.setHeader("Content-Disposition", "filename=\"" + file.getName() + "\"");
+
         try (FileInputStream fis = new FileInputStream(file); ServletOutputStream out = response.getOutputStream()) {
-            int bytesRead = 0;
-            byte[] byteArray = new byte[300];
-            try {
-                while ((bytesRead = fis.read(byteArray)) != -1) {
-                    out.write(byteArray, 0, bytesRead);
+            if (!superuserAccess && SolrConstants.SOURCEDOCFORMAT_METS.equals(format)) {
+                // Filters METS documents, unless client has superuser access
+                try {
+                    Document metsDoc = XmlTools.readXmlFile(filePath);
+                    Document cleanDoc = filterRestrictedMetadata(metsDoc);
+                    if (cleanDoc != null) {
+                        XMLOutputter outputter = XmlTools.getXMLOutputter();
+                        outputter.setFormat(Format.getPrettyFormat());
+                        outputter.output(cleanDoc, response.getOutputStream());
+                    }
+                } catch (IOException | JDOMException e) {
+                    logger.error(e.getMessage());
                 }
-                out.flush();
-            } catch (IOException e) {
-                logger.error(e.getMessage());
+            } else {
+                // Unfiltered access
+                int bytesRead = 0;
+                byte[] byteArray = new byte[300];
+                try {
+                    while ((bytesRead = fis.read(byteArray)) != -1) {
+                        out.write(byteArray, 0, bytesRead);
+                    }
+                    out.flush();
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                }
             }
         } catch (FileNotFoundException e) {
             logger.debug(e.getMessage());
@@ -195,5 +237,24 @@ public class MetsResolver extends HttpServlet {
                 logger.error(e1.getMessage());
             }
         }
+    }
+
+    /**
+     * 
+     * @param metsDoc
+     * @return {@link Document} without restricted metadata elements
+     */
+    static Document filterRestrictedMetadata(Document metsDoc) {
+        String stylesheetFilePath = DataManager.getInstance().getConfiguration().getConfigLocalPath() + "METS_filter.xsl";
+        try (FileInputStream fis = new FileInputStream(stylesheetFilePath)) {
+            XSLTransformer transformer = new XSLTransformer(fis);
+            return transformer.transform(metsDoc);
+        } catch (FileNotFoundException e) {
+            logger.error(e.getMessage());
+        } catch (IOException | XSLTransformException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return null;
     }
 }

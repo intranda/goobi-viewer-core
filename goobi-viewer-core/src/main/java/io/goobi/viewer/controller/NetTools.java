@@ -35,9 +35,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.core.UriBuilder;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -312,9 +312,6 @@ public final class NetTools {
                 default:
                     return "";
             }
-            //            if (StringUtils.isNotEmpty(contentType)) {
-            //                requestBase.setHeader("Content-Type", contentType);
-            //            }
             if (headers != null && !headers.isEmpty()) {
                 for (String key : headers.keySet()) {
                     requestBase.addHeader(key, headers.get(key));
@@ -547,7 +544,7 @@ public final class NetTools {
      * Returns the remote IP address of the given HttpServletRequest. If multiple addresses are found in x-forwarded-for, the last in the list is
      * returned.
      *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
      * @return a {@link java.lang.String} object.
      */
     public static String getIpAddress(HttpServletRequest request) {

@@ -100,7 +100,6 @@ var viewerJS = ( function( viewer ) {
     }
     
     viewer.ShareImageFragment.prototype.initImageFragmentLinks = function(fragment) {
-        // let $wrapper = $(".widget-usage__image-fragment-wrapper");
         let $wrapper = $('[data-fragment-link="wrapper"]');
         
         if(!fragment) {                 
@@ -109,8 +108,6 @@ var viewerJS = ( function( viewer ) {
         if(fragment) {
             var pageUrl = window.location.origin + window.location.pathname + "#xywh=" + fragment;
             var imageUrl = viewImage.getRegionUrl(fragment);
-//            $wrapper.find(".widget-usage__image-fragment-page").attr("data-copy-share-image", pageUrl);
-//            $wrapper.find(".widget-usage__image-fragment-image").attr("data-copy-share-image", imageUrl);
             $wrapper.find('[data-fragment-link="page"]').attr("data-copy-share-image", pageUrl);
             $wrapper.find('[data-fragment-link="iiif"]').attr("data-copy-share-image", imageUrl);
 			// ACTIVATE COPY TO CLIPBOARD 

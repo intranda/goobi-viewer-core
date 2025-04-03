@@ -52,11 +52,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.commons.lang3.StringUtils;
@@ -165,6 +165,10 @@ public class MessageQueueBean implements Serializable {
      */
     @PreDestroy
     public void close() throws JMSException {
+        log.debug("MessageQueueBean.close()");
+        for (DefaultQueueListener listener : getListeners()) {
+            listener.close();
+        }
         if (this.queueSession != null) {
             this.queueSession.close();
         }

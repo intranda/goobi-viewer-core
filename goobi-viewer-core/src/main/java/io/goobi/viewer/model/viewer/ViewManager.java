@@ -43,24 +43,22 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.DateTimeException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import javax.faces.context.FacesContext;
-import javax.faces.event.ValueChangeEvent;
-import javax.faces.model.SelectItem;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -72,6 +70,9 @@ import org.jdom2.JDOMException;
 import org.json.JSONObject;
 import org.omnifaces.util.Faces;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import de.intranda.api.iiif.image.ImageInformation;
 import de.undercouch.citeproc.CSL;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -88,6 +89,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.controller.StringConstants;
@@ -140,6 +142,10 @@ import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.SelectPageItem;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.event.ValueChangeEvent;
+import jakarta.faces.model.SelectItem;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Holds information about the currently open record (structure, pages, etc.). Used to reduced the size of ActiveDocumentBean.
@@ -194,7 +200,6 @@ public class ViewManager implements Serializable {
     private String contextObject = null;
     private List<String> versionHistory = null;
     private PageOrientation firstPageOrientation = PageOrientation.RIGHT;
-    private boolean doublePageMode;
     private int firstPdfPage;
     private int lastPdfPage;
     private CalendarView calendarView;
@@ -210,6 +215,9 @@ public class ViewManager implements Serializable {
     private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
     private Map<CitationLinkLevel, List<CitationLink>> citationLinks = new HashMap<>();
     private List<String> externalResourceUrls = null;
+    private List<PhysicalResource> downloadResources = null;
+
+    private PageNavigation pageNavigation = PageNavigation.SINGLE;
 
     /**
      * <p>
@@ -234,7 +242,6 @@ public class ViewManager implements Serializable {
         this.pageLoader = pageLoader;
         this.currentStructElementIddoc = currentDocumentIddoc;
         this.logId = logId;
-        this.doublePageMode = DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault();
         if (topStructElementIddoc.equals(currentDocumentIddoc)) {
             currentStructElement = topDocument;
         } else {
@@ -260,6 +267,8 @@ public class ViewManager implements Serializable {
         this.mimeType = mimeType;
         logger.trace("mimeType: {}", mimeType);
 
+        this.pageNavigation = getDefaultPageNavigation(null);
+
         // Linked archive node
         try {
             String archiveId = getArchiveEntryIdentifier();
@@ -270,6 +279,21 @@ public class ViewManager implements Serializable {
             }
         } catch (ArchiveException e) {
             logger.error("Error creating archive link for {}: {}", this.pi, e.getMessage());
+        }
+    }
+
+    protected PageNavigation getDefaultPageNavigation(PageType pageType) {
+        try {
+            if (DataManager.getInstance().getConfiguration().isSequencePageNavigationEnabled(pageType, this.mimeType)) {
+                return PageNavigation.SEQUENCE;
+            } else if (DataManager.getInstance().getConfiguration().isDoublePageNavigationDefault(pageType, this.mimeType)) {
+                return PageNavigation.DOUBLE;
+            } else {
+                return PageNavigation.SINGLE;
+            }
+        } catch (ViewerConfigurationException e) {
+            logger.error("Error reading default page navigation from config", e);
+            return PageNavigation.SINGLE;
         }
     }
 
@@ -338,21 +362,32 @@ public class ViewManager implements Serializable {
         return imageDeliveryBean.getImages().getImageUrl(null, pi, representative.getFileName());
     }
 
-    /**
-     * <p>
-     * getCurrentImageInfo.
-     * </p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public String getCurrentImageInfo() throws IndexUnreachableException, DAOException {
-        if (getCurrentPage() != null && getCurrentPage().getMimeType().startsWith("image")) {
-            return getCurrentImageInfo(BeanUtils.getNavigationHelper().getCurrentPageType());
+    public Map<Integer, String> getImageInfos(PageType pageType) throws IndexUnreachableException, DAOException {
+        Map<Integer, String> infos = new LinkedHashMap<>();
+
+        switch (getPageNavigation()) {
+            case SINGLE:
+                infos.put(getCurrentImageOrder(), getImageInfo(getCurrentPage(), pageType));
+                break;
+            case DOUBLE:
+                getCurrentLeftPage().filter(p -> !p.isDoubleImage()).ifPresent(p -> infos.put(p.getOrder(), getImageInfo(p, pageType)));
+                getCurrentRightPage().filter(p -> !p.isDoubleImage() || infos.isEmpty())
+                        .ifPresent(p -> infos.put(p.getOrder(), getImageInfo(p, pageType)));
+                break;
+            case SEQUENCE:
+                for (PhysicalElement page : this.getAllPages()) {
+                    infos.put(page.getOrder(), getImageInfo(page, pageType));
+                }
+                break;
+            default:
+                break;
         }
 
-        return "{}";
+        return infos;
+    }
+
+    public String getImageInfosAsJson(PageType pageType) throws IndexUnreachableException, DAOException {
+        return JSONObject.wrap(getImageInfos(pageType)).toString();
     }
 
     /**
@@ -437,9 +472,24 @@ public class ViewManager implements Serializable {
      * @param page
      * @param pageType
      * @return Image URL
+     * @throws ViewerConfigurationException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws URISyntaxException
+     * @throws ContentLibException
+     * @throws JsonProcessingException
      */
     private String getImageInfo(PhysicalElement page, PageType pageType) {
-        return imageDeliveryBean.getImages().getImageUrl(page, pageType);
+        try {
+            ImageInformation info = imageDeliveryBean.getImages().getImageInformation(page, pageType);
+            if (info.getWidth() * info.getHeight() == 0) {
+                return info.getId().toString();
+            }
+            return JsonTools.getAsJson(info);
+        } catch (ContentLibException | ViewerConfigurationException | URISyntaxException | JsonProcessingException e) {
+            logger.warn("Error creating image information for {}: {}", page, e.toString());
+            return imageDeliveryBean.getImages().getImageUrl(page, pageType);
+        }
     }
 
     /**
@@ -551,7 +601,11 @@ public class ViewManager implements Serializable {
 
         int size = DataManager.getInstance()
                 .getConfiguration()
-                .getImageViewZoomScales(view, Optional.ofNullable(getCurrentPage()).map(page -> page.getImageType()).orElse(null))
+                .getImageViewZoomScales(view,
+                        Optional.ofNullable(getCurrentPage())
+                                .map(page -> page.getImageType())
+                                .map(type -> type.getFormat().getMimeType())
+                                .orElse(null))
                 .stream()
                 .map(string -> "max".equalsIgnoreCase(string) ? 0 : Integer.parseInt(string))
                 .sorted((s1, s2) -> s1 == 0 ? -1 : (s2 == 0 ? 1 : Integer.compare(s2, s1)))
@@ -608,7 +662,9 @@ public class ViewManager implements Serializable {
         StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getFullImageUrl(page, scale, "MASTER"));
         logger.trace("Master image URL: {}", sb);
         try {
-            if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, page.getImageType()) > 0) {
+            if (DataManager.getInstance()
+                    .getConfiguration()
+                    .getFooterHeight(pageType, Optional.ofNullable(page).map(PhysicalElement::getMimeType).orElse(null)) > 0) {
                 sb.append("?ignoreWatermark=false");
                 sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(page).map(text -> {
                     try {
@@ -646,7 +702,9 @@ public class ViewManager implements Serializable {
 
         StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getThumbnailUrl(page, scale));
         try {
-            if (DataManager.getInstance().getConfiguration().getFooterHeight(pageType, page.getImageType()) > 0) {
+            if (DataManager.getInstance()
+                    .getConfiguration()
+                    .getFooterHeight(pageType, Optional.ofNullable(page).map(PhysicalElement::getMimeType).orElse(null)) > 0) {
                 sb.append("?ignoreWatermark=false");
                 sb.append(imageDeliveryBean.getFooter()
                         .getWatermarkTextIfExists(page)
@@ -675,7 +733,7 @@ public class ViewManager implements Serializable {
     private String getCurrentImageUrl(PageType view, int size) {
         StringBuilder sb = new StringBuilder(imageDeliveryBean.getThumbs().getThumbnailUrl(getCurrentPage(), size, size));
         try {
-            if (DataManager.getInstance().getConfiguration().getFooterHeight(view, getCurrentPage().getImageType()) > 0) {
+            if (DataManager.getInstance().getConfiguration().getFooterHeight(view, getCurrentPage().getImageType().getFormat().getMimeType()) > 0) {
                 sb.append("?ignoreWatermark=false");
                 sb.append(imageDeliveryBean.getFooter().getWatermarkTextIfExists(getCurrentPage()).map(text -> {
                     try {
@@ -730,6 +788,7 @@ public class ViewManager implements Serializable {
             case "jpeg":
                 return getThumbnailUrlForDownload(scale, page);
             default:
+                // If master image URL is an empty string, check the indexed mime type (i.e. "image/tif" instead of "image/tiff")!
                 return getMasterImageUrl(scale, page);
         }
     }
@@ -1188,13 +1247,36 @@ public class ViewManager implements Serializable {
      * @return true if record is born digital material (no scanned images); false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @deprecated replc
      */
+    @Deprecated(since = "25.02")
     public boolean isBornDigital() throws IndexUnreachableException, DAOException {
         return isHasPages() && isFilesOnly();
     }
 
     public boolean isHasExternalResources() throws IndexUnreachableException {
         return Optional.ofNullable(getExternalResourceUrls()).map(list -> !list.isEmpty()).orElse(false);
+    }
+
+    public boolean isHasDownloadResources() throws PresentationException, IndexUnreachableException {
+        return Optional.ofNullable(getDownloadResources()).map(list -> !list.isEmpty()).orElse(false);
+    }
+
+    public List<PhysicalResource> getDownloadResources() throws PresentationException, IndexUnreachableException {
+        if (this.downloadResources == null) {
+            this.downloadResources = loadDownloadResources();
+        }
+        return this.downloadResources;
+    }
+
+    private List<PhysicalResource> loadDownloadResources() throws PresentationException, IndexUnreachableException {
+        String query = "+PI_TOPSTRUCT:%s +DOCTYPE:DOWNLOAD_RESOURCE".formatted(pi);
+        List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().getDocs(query, null);
+        if (docs != null) {
+            return docs.stream().map(PhysicalResource::create).filter(Objects::nonNull).toList();
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     /**
@@ -1372,6 +1454,16 @@ public class ViewManager implements Serializable {
         return currentImageOrder;
     }
 
+    public void setCurrentImageOrderPerScript()
+            throws NumberFormatException, IndexUnreachableException, PresentationException, IDDOCNotFoundException {
+        String order = Faces.getRequestParameter("order");
+        if (StringUtils.isNotBlank(order) && order.matches("\\d+")) {
+            setCurrentImageOrder(Integer.parseInt(order));
+        } else {
+            throw new PresentationException("Order parameter invalid: " + order);
+        }
+    }
+
     /**
      * <p>
      * currentPageOrder.
@@ -1421,6 +1513,36 @@ public class ViewManager implements Serializable {
         }
         if (currentStructElement == null || !Objects.equals(currentStructElement.getLuceneId(), currentStructElementIddoc)) {
             setCurrentStructElement(new StructElement(currentStructElementIddoc));
+        }
+    }
+
+    protected void setPageNavigation(PageNavigation navigation) {
+        this.pageNavigation = navigation;
+    }
+
+    public void updatePageNavigation(PageType pageType) {
+        this.pageNavigation = calculateCurrentPageNavigation(pageType);
+    }
+
+    protected PageNavigation calculateCurrentPageNavigation(PageType pageType) {
+        try {
+            PageNavigation defaultPageNavigation = getDefaultPageNavigation(pageType);
+            if (this.pageNavigation == defaultPageNavigation) {
+                return this.pageNavigation;
+            } else if (defaultPageNavigation == PageNavigation.SEQUENCE) {
+                return defaultPageNavigation;
+            } else if (this.pageNavigation == PageNavigation.SINGLE) {
+                return this.pageNavigation;
+            } else if (this.pageNavigation == PageNavigation.DOUBLE
+                    && DataManager.getInstance().getConfiguration().isDoublePageNavigationEnabled(pageType, this.mimeType)) {
+                return this.pageNavigation;
+            } else {
+                return defaultPageNavigation;
+            }
+
+        } catch (ViewerConfigurationException | NullPointerException | IllegalArgumentException e) {
+            logger.error("Failed to set view mode: {}", e.toString());
+            return PageNavigation.SINGLE;
         }
     }
 
@@ -1591,6 +1713,16 @@ public class ViewManager implements Serializable {
         return dropdownPages;
     }
 
+    public List<String> getDropdownPagesAsJson() {
+        return getDropdownPages().stream().map(item -> {
+            JSONObject obj = new JSONObject();
+            obj.put("label", item.getLabel());
+            obj.put("description", item.getDescription());
+            obj.put("value", item.getValue());
+            return obj.toString();
+        }).toList();
+    }
+
     /**
      * <p>
      * Getter for the field <code>dropdownFulltext</code>.
@@ -1600,6 +1732,16 @@ public class ViewManager implements Serializable {
      */
     public List<SelectPageItem> getDropdownFulltext() {
         return dropdownFulltext;
+    }
+
+    public List<String> getDropdownFulltextAsJson() {
+        return getDropdownFulltext().stream().map(item -> {
+            JSONObject obj = new JSONObject();
+            obj.put("label", item.getLabel());
+            obj.put("description", item.getDescription());
+            obj.put("value", item.getValue());
+            return obj.toString();
+        }).toList();
     }
 
     /**
@@ -1769,11 +1911,15 @@ public class ViewManager implements Serializable {
      * </p>
      */
     public void updateDropdownSelected() {
-        if (doublePageMode) {
+        if (PageNavigation.DOUBLE.equals(getPageNavigation())) {
             setDropdownSelected(String.valueOf(currentImageOrder) + "-" + currentImageOrder);
         } else {
             setDropdownSelected(String.valueOf(currentImageOrder));
         }
+    }
+
+    public PageNavigation getPageNavigation() {
+        return pageNavigation;
     }
 
     /**
@@ -1781,7 +1927,7 @@ public class ViewManager implements Serializable {
      * dropdownAction.
      * </p>
      *
-     * @param event {@link javax.faces.event.ValueChangeEvent}
+     * @param event {@link jakarta.faces.event.ValueChangeEvent}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws java.lang.NumberFormatException if any.
@@ -2345,19 +2491,6 @@ public class ViewManager implements Serializable {
 
     /**
      * <p>
-     * isDisplayTitleBarPdfLink.
-     * </p>
-     *
-     * @return a boolean.
-     * @deprecated title.xhtml no longer exists
-     */
-    @Deprecated(since = "22.08")
-    public boolean isDisplayTitleBarPdfLink() {
-        return DataManager.getInstance().getConfiguration().isTitlePdfEnabled() && isAccessPermissionPdf();
-    }
-
-    /**
-     * <p>
      * isDisplayMetadataPdfLink.
      * </p>
      *
@@ -2801,6 +2934,13 @@ public class ViewManager implements Serializable {
         return pagesWithAlto >= threshold;
     }
 
+    /**
+     * 
+     * @param localFilesOnly
+     * @return Map with mime type and file names for each
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
     public Map<String, List<String>> getFilenamesByMimeType(boolean localFilesOnly) throws IndexUnreachableException, PresentationException {
         List<SolrDocument> pageDocs = DataManager.getInstance()
                 .getSearchIndex()
@@ -2819,14 +2959,19 @@ public class ViewManager implements Serializable {
                 .stream()
                 .map(doc -> doc.getFieldValue(SolrConstants.FILENAME))
                 .map(Object::toString)
-                .filter(path -> localFilesOnly ? !path.matches("(?i)^https?:.*") : true)
+                .filter(path -> !localFilesOnly || !path.matches("(?i)^https?:.*"))
                 .collect(Collectors.toMap(
-                        filename -> getMimetype((String) filename),
-                        filename -> List.of(filename),
-                        (set1, set2) -> new ArrayList<>(CollectionUtils.union((List<? extends String>) set1, (List<? extends String>) set2))));
+                        this::getMimeTypeViaFileName,
+                        List::of,
+                        (set1, set2) -> new ArrayList<>(CollectionUtils.union(set1, set2))));
     }
 
-    public String getMimetype(String filename) {
+    /**
+     * 
+     * @param filename
+     * @return {@link String}
+     */
+    public String getMimeTypeViaFileName(String filename) {
         try {
             return MimeType.getMimeTypeFromExtension(filename);
         } catch (UnknownMimeTypeException e) {
@@ -3561,7 +3706,7 @@ public class ViewManager implements Serializable {
      * @param doublePageMode the doublePageMode to set
      */
     public void setDoublePageMode(boolean doublePageMode) {
-        this.doublePageMode = doublePageMode;
+        setPageNavigation(doublePageMode ? PageNavigation.DOUBLE : PageNavigation.SINGLE);
         this.setDoublePageModeForDropDown(doublePageMode);
     }
 
@@ -3573,7 +3718,11 @@ public class ViewManager implements Serializable {
      * @return the doublePageMode
      */
     public boolean isDoublePageMode() {
-        return doublePageMode;
+        return PageNavigation.DOUBLE.equals(getPageNavigation());
+    }
+
+    public boolean isSequenceMode() {
+        return PageNavigation.SEQUENCE.equals(getPageNavigation());
     }
 
     /**
@@ -3628,19 +3777,24 @@ public class ViewManager implements Serializable {
     public void generatePageRangePdf() {
         logger.debug("Generating pdf of {} from pages {} to {}", this.pi, this.firstPdfPage, this.lastPdfPage);
         String filename = String.format("%s_%s_%s.pdf", this.pi, this.firstPdfPage, this.lastPdfPage);
-        try (PipedInputStream in = new PipedInputStream(); OutputStream out = new PipedOutputStream(in)) {
-            String firstPageName =
-                    Optional.ofNullable(this.firstPdfPage).flatMap(this::getPage).map(PhysicalElement::getFileName).orElse(null);
-            String lastPageName =
-                    Optional.ofNullable(this.lastPdfPage).flatMap(this::getPage).map(PhysicalElement::getFileName).orElse(null);
+        try (PipedInputStream in = new PipedInputStream(); OutputStream out = new PipedOutputStream(in);
+                ExecutorService executor = Executors.newFixedThreadPool(1)) {
 
-            SinglePdfRequest request = new SinglePdfRequest(Map.of(
-                    "imageSource", DataFileTools.getMediaFolder(this.pi).toAbsolutePath().toString(),
-                    "pdfSource", DataFileTools.getPdfFolder(this.pi).toAbsolutePath().toString(),
-                    "altoSource", DataFileTools.getAltoFolder(this.pi).toAbsolutePath().toString(),
-                    "first", firstPageName,
-                    "last", lastPageName));
-            Executors.newFixedThreadPool(1).submit(() -> {
+            Map<String, String> params = new HashMap<>();
+            params.put("imageSource", DataFileTools.getMediaFolder(this.pi).toAbsolutePath().toString());
+            params.put("pdfSource", DataFileTools.getPdfFolder(this.pi).toAbsolutePath().toString());
+            params.put("altoSource", DataFileTools.getAltoFolder(this.pi).toAbsolutePath().toString());
+            Optional.ofNullable(this.firstPdfPage)
+                    .flatMap(this::getPage)
+                    .map(PhysicalElement::getFileName)
+                    .ifPresent(first -> params.put("first", first));
+            Optional.ofNullable(this.lastPdfPage)
+                    .flatMap(this::getPage)
+                    .map(PhysicalElement::getFileName)
+                    .ifPresent(last -> params.put("last", last));
+
+            SinglePdfRequest request = new SinglePdfRequest(params);
+            executor.submit(() -> {
                 try {
                     new GetPdfAction().writePdf(request, ContentServerConfiguration.getInstance(), out);
                 } catch (URISyntaxException | ContentLibException | IOException e) {
@@ -3982,7 +4136,17 @@ public class ViewManager implements Serializable {
                 Citation citation = new Citation(pi, processor, citationProcessorWrapper.getCitationItemDataProvider(),
                         CitationTools.getCSLTypeForDocstrct(topStructElement.getDocStructType(), topStructElement.getDocStructType()),
                         val.getCitationValues());
-                return citation.getCitationString(outputFormat);
+                try {
+                    return citation.getCitationString(outputFormat);
+                } catch (DateTimeException e) {
+                    logger.error("Citeproc encountered exception parsing date: {}", e.toString());
+                    if ("html".equalsIgnoreCase(outputFormat)) {
+                        return "<span style=\"color: red;\">Citation engine encountered exception parsing date: <span style=\"font-weight: bold;\">"
+                                + e.getLocalizedMessage() + "</span></span>";
+                    } else {
+                        return "Citation engine encountered exception parsing date:" + e.getLocalizedMessage();
+                    }
+                }
             }
         }
 
@@ -4269,4 +4433,16 @@ public class ViewManager implements Serializable {
         return value;
     }
 
+    public boolean isDoublePageNavigationEnabled(PageType pageType) throws ViewerConfigurationException {
+        return DataManager.getInstance()
+                .getConfiguration()
+                .isDoublePageNavigationEnabled(pageType, Optional.ofNullable(getCurrentPage()).map(PhysicalElement::getMimeType).orElse(null));
+    }
+
+    public boolean showImageThumbnailGallery(PageType pageType) throws ViewerConfigurationException {
+        return DataManager.getInstance()
+                .getConfiguration()
+                .showImageThumbnailGallery(pageType, Optional.ofNullable(getCurrentPage()).map(PhysicalElement::getMimeType).orElse(null));
+
+    }
 }
