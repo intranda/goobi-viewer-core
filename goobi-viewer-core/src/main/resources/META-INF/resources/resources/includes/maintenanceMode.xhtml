@@ -19,7 +19,7 @@
 						<i class="fa fa-coffee maintenance-banner__icon"></i>
 						<h:outputText styleClass="maintenance-banner__text" escape="false"
 							value="#{adminBean.maintenanceMode.getText(navigationHelper.localeString)}"></h:outputText>
-						<button class="maintenance-banner__close-button" type="button"
+						<button class="maintenance-banner__close-button" type="button" aria-label="#{msg.maintenance_mode__close_banner}"
 							data-trigger="closeMaintenanceInfo">
 							<i class="fa fa-times"></i>
 						</button>
@@ -27,9 +27,9 @@
 				</div>
 			</div>
 		</div>
+		<script>
+		$(document).ready(() => viewerJS.maintenanceMode.init());
+	    </script>
 	</ui:fragment>
 
-	<script>
-	$(document).ready(() => viewerJS.maintenanceMode.init());
-    </script>
 </ui:composition>

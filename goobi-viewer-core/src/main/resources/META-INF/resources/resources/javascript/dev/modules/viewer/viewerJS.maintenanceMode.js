@@ -33,8 +33,6 @@ var viewerJS = ( function( viewer ) {
     };
     
     viewer.maintenanceMode = {
-//        bannerStatus : true,
-//   		bannerHash : '',
         /**
          * Method to initialize the maintenance mode banner.
          * 
@@ -51,27 +49,21 @@ var viewerJS = ( function( viewer ) {
             this.config = $.extend(true, {}, _defaults, config );
             if(_debug)console.log("init maintenance mode with config", this.config);
 
-			// Close maintenance banner and set session storage item
-			$( '[data-trigger="closeMaintenanceInfo"]' ).off().on( 'click', () => this.hideInfo(true) );
-
-			// Check if user already closed maintenance banner in this session
-			
-			if ( sessionStorage.getItem( 'hideMaintenanceBanner' ) === 'true' ) {
-				// DO NOTHING
-			} else {
-				// SHOW THE BANNER
-				$('#maintenanceModeBanner').slideDown();
-			}
-			
-			
-			
 			if(this.config.active) {
-				
-			} else {
+				// Close maintenance banner and set session storage item
+				$( '[data-trigger="closeMaintenanceInfo"]' ).off().on( 'click', () => this.hideInfo(true) );
 
+				// Check if user already closed maintenance banner in this session
+
+				if ( sessionStorage.getItem( 'hideMaintenanceBanner' ) === 'true' ) {
+					// DO NOTHING
+				} else {
+					// SHOW THE BANNER
+					$('#maintenanceModeBanner').slideDown();
+				}
 			}
-			
-			},
+ 
+		},
 			
 			hideInfo() {
 			 	if ( _debug ) {
@@ -82,7 +74,7 @@ var viewerJS = ( function( viewer ) {
 				}); 
 			},
 			
-            };
+        };
 
     return viewer;
     

@@ -4294,7 +4294,7 @@ riot.tag2('simplepaginator', '<div if="{opts.itemCount > 1}" class="{opts.rtl ? 
             for (let i = this.opts.firstItem; i < lastItem; i++) {
                 result.push(i);
             }
-            console.log("get first items", result);
+
             return result;
         }.bind(this)
 

@@ -42,13 +42,12 @@
 						<div class="admin__info-text">#{msg.cms_widgets__description}</div>
 						
 						
-                            <div class="cms-widgets-overview__grid">
+                            <div class="admin__entry-list">
                                 <!--  INDIVIDUAL WIDGETS-->
                                 <ui:repeat var="widget" value="#{cmsSidebarWidgetsBean.getAllWidgets(true).stream().sorted().toList()}">
                                 
                                 
-                                <div class="cms-widgets-overview__single-widget-wrapper">
-                                    <div class="admin__boxed-entry">
+                                    <div class="admin__boxed-entry -w25"> 
 
                                     	<!-- TITLE -->
                                         <div class="cms-widgets-overview__single-widget-title-wrapper">                                    	
@@ -152,7 +151,6 @@
                                         </div>
                                         </ui:fragment>
                                     </div>
-                                   </div>
 
                                </ui:repeat>
                            </div>

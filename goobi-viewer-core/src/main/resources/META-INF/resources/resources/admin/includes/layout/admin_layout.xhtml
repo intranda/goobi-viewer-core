@@ -21,9 +21,6 @@
 
 	<div class="admin__topbar-wrapper">
 
-		<!-- MAINTENANCE INFO -->
-		<ui:include src="/resources/includes/maintenanceMode.xhtml" />
-
 		<!-- ADMIN TOPBAR (ACTION MENU) -->
 		<div class="admin__topbar-backend" role="navigation"
 			aria-label="#{msg.aria_label__nav_main}">
@@ -52,7 +49,7 @@
 				href="#{request.contextPath}/" title="#{msg.admin__view_frontend}"
 				aria-label="#{msg.admin__view_frontend}"> <i class="fa fa-home"
 				aria-hidden="true"></i>
-				#{adminThemesBean.getThemeLabel(configurationBean.name)}
+				<span class="admin__topbar-backend-view-frontend-link-text">#{adminThemesBean.getThemeLabel(configurationBean.name)}</span>
 			</a>
 
 			<!-- ADD SOMETHING NEW -->
