@@ -32,6 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 
@@ -67,7 +69,8 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
     private static final String PI = "PPN743674162";
     private static final String FILENAME = "00000010";
     private static final String PI_SPECIAL_CHARACTERS = "ARVIErdm5";
-    private static final String FILENAME_SPECIAL_CHARACTERS = "erdmagnetisches+observatorium+vi_blatt_5.tif";
+    private static final String FILENAME_SPECIAL_CHARACTERS =
+            "http://lingoobi60.bsh.de/viewer/content/ARVIErdm5/800/0/erdmagnetisches observatorium vi_blatt_5.jpg";
     private static final String REGION = "full";
     private static final String SIZE = "5,5";
     private static final String ROTATION = "0";
@@ -128,13 +131,15 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
 
     @Test
     void testGetImageInformationSpecialCharacters() {
-        String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO).params(PI_SPECIAL_CHARACTERS, FILENAME_SPECIAL_CHARACTERS).build();
+        String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_INFO)
+                .params(PI_SPECIAL_CHARACTERS, URLEncoder.encode(FILENAME_SPECIAL_CHARACTERS, StandardCharsets.UTF_8).replace(" ", "+"))
+                .build();
         String id = urls.path(RECORDS_FILES_IMAGE).params(PI_SPECIAL_CHARACTERS, FILENAME_SPECIAL_CHARACTERS).build();
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertEquals(200, response.getStatus(), response.getStatusInfo().getReasonPhrase());
             assertNotNull(response.getEntity(), "Should return user object as JSON");
             String responseString = response.readEntity(String.class);
             JSONObject info = new JSONObject(responseString);
@@ -145,7 +150,7 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
     @Test
     void testGetImageSpecialCharacters() {
         String url = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_IIIF)
-                .params(PI_SPECIAL_CHARACTERS, FILENAME_SPECIAL_CHARACTERS, REGION, SIZE, ROTATION, QUALITY, FORMAT)
+                .params(PI_SPECIAL_CHARACTERS, URLEncoder.encode(FILENAME_SPECIAL_CHARACTERS, StandardCharsets.UTF_8), REGION, SIZE, ROTATION, QUALITY, FORMAT)
                 .build();
         try (Response response = target(url)
                 .request()
@@ -155,7 +160,7 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
             String contentLocation = response.getHeaderString("Content-Location");
             byte[] entity = response.readEntity(byte[].class);
             assertEquals(200, status, "Should return status 200. Error message: " + new String(entity));
-            assertEquals("file:///opt/digiverso/viewer/data/3/media/" + PI_SPECIAL_CHARACTERS.replace("+", "%20") + "/"
+            assertEquals("file:///opt/digiverso/viewer/data/2/media/" + PI_SPECIAL_CHARACTERS.replace("+", "%20") + "/"
                     + FILENAME_SPECIAL_CHARACTERS.replace("+", "%20"), contentLocation);
             assertTrue(entity.length >= 5 * 5 * 8 * 3); //entity is at least as long as the image data
         }
