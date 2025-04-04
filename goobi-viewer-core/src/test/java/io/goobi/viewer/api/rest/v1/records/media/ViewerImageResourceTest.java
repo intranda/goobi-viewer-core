@@ -69,7 +69,7 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
     private static final String PI = "PPN743674162";
     private static final String FILENAME = "00000010";
     private static final String PI_SPECIAL_CHARACTERS = "4fda256e-70b3-11ea-b891-08606e6a464a";
-    private static final String FILENAME_SPECIAL_CHARACTERS = "IMG 20200322 144253.jpg";
+    private static final String FILENAME_SPECIAL_CHARACTERS = "IMG+20200322+144253.jpg";
     private static final String REGION = "full";
     private static final String SIZE = "5,5";
     private static final String ROTATION = "0";
