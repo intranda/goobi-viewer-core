@@ -47,8 +47,8 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
 
     private static final String PI = "PPN743674162";
     private static final String FILENAME = "00000010";
-    private static final String PI_SPECIAL_CHARACTERS = "ARVIErdm5";
-    private static final String FILENAME_SPECIAL_CHARACTERS = "erdmagnetisches+observatorium+vi_blatt_5.tif";
+    private static final String PI_SPECIAL_CHARACTERS = "4fda256e-70b3-11ea-b891-08606e6a464a";
+    private static final String FILENAME_SPECIAL_CHARACTERS = "IMG+20200322+144253.jpg";
     private static final String REGION = "full";
     private static final String SIZE = "5,5";
     private static final String ROTATION = "0";
@@ -132,7 +132,7 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
             String contentLocation = response.getHeaderString("Content-Location");
             byte[] entity = response.readEntity(byte[].class);
             assertEquals(200, status, "Should return status 200. Error message: " + new String(entity));
-            assertEquals("file:///opt/digiverso/viewer/data/3/media/" + PI_SPECIAL_CHARACTERS.replace("+", "%20") + "/"
+            assertEquals("file:///opt/digiverso/viewer/data/2/media/" + PI_SPECIAL_CHARACTERS.replace("+", "%20") + "/"
                     + FILENAME_SPECIAL_CHARACTERS.replace("+", "%20"), contentLocation);
             assertTrue(entity.length >= 5 * 5 * 8 * 3); //entity is at least as long as the image data
         }
