@@ -321,4 +321,8 @@ public class MetadataContainer {
         return createMetadataEntity(doc, Collections.emptyList(), s -> true, s -> true);
     }
 
+    public boolean containsField(String field) {
+        return this.metadata.containsKey(field);
+    }
+
 }

@@ -39,6 +39,9 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue.ValuePair;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.model.metadata.MetadataContainer;
+import mil.nga.sf.geojson.FeatureConverter;
+import mil.nga.sf.geojson.Geometry;
+import mil.nga.sf.geojson.Point;
 
 /**
  * @author florian
@@ -49,7 +52,7 @@ public class GeoMapFeature {
     private IMetadataValue title;
     private IMetadataValue description;
     private String link;
-    private String json;
+    private Geometry geometry;
     private int count = 1;
     //This is used to identify the feature with a certain document, specifically a LOGID of a TOC element
     private String documentId = null;
@@ -64,7 +67,7 @@ public class GeoMapFeature {
      * @param jsonString
      */
     public GeoMapFeature(String jsonString) {
-        this.json = jsonString;
+        this.geometry = FeatureConverter.toGeometry(jsonString);
     }
 
     /**
@@ -122,11 +125,11 @@ public class GeoMapFeature {
     public String getDocumentId() {
         return documentId;
     }
-    
+
     public Integer getPageNo() {
         return pageNo;
     }
-    
+
     public void setPageNo(Integer pageNo) {
         this.pageNo = pageNo;
     }
@@ -135,14 +138,14 @@ public class GeoMapFeature {
      * @return the json
      */
     public String getJson() {
-        return json;
+        return FeatureConverter.toStringValue(this.geometry);
     }
 
     /**
      * @param json the json to set
      */
     public void setJson(String json) {
-        this.json = json;
+        this.geometry = FeatureConverter.toGeometry(json);
     }
 
     /**
@@ -171,9 +174,14 @@ public class GeoMapFeature {
         this.entities.add(entity);
     }
 
-    public JSONObject getJsonObject() {
+    public double getLatitude() {
+        if (this.geometry instanceof Point point) {
+            point.getPosition().getY();
+        }
+    }
 
-        JSONObject object = new JSONObject(this.json);
+    public JSONObject getJsonObject() {
+        JSONObject object = new JSONObject(getJson());
         JSONObject jsonProperties = getProperties(object);
         if (this.title != null && !this.title.isEmpty()) {
             jsonProperties.put("title", JsonTools.getAsObjectForJson(this.title));
@@ -236,7 +244,7 @@ public class GeoMapFeature {
      */
     @Override
     public int hashCode() {
-        int jsonCode = this.json == null ? "".hashCode() : this.json.hashCode();
+        int jsonCode = this.geojson == null ? "".hashCode() : this.geojson.hashCode();
         int titleCode = this.title == null ? "".hashCode() : getIndentifyingString(this.title).hashCode();
         return jsonCode + 31 * (titleCode);
     }
@@ -251,7 +259,7 @@ public class GeoMapFeature {
         }
         if (obj.getClass().equals(this.getClass())) {
             GeoMapFeature other = (GeoMapFeature) obj;
-            return Objects.equals(this.json, other.json)
+            return Objects.equals(this.geojson, other.geojson)
                     && Objects.equals(getIndentifyingString(this.title), getIndentifyingString(other.title));
         }
 
@@ -263,7 +271,7 @@ public class GeoMapFeature {
      */
     @Override
     public String toString() {
-        return this.json;
+        return getJson();
     }
 
     private String getIndentifyingString(IMetadataValue md) {

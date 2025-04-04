@@ -117,10 +117,7 @@ public class SolrFeatureSet extends FeatureSet {
             //No features required since they will be loaded dynamically with the heatmap
             return "[]";
         }
-        GeoCoordinateConverter converter = new GeoCoordinateConverter(this.markerTitleField);
-        List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
-        Collection<GeoMapFeature> featuresFromSolr = converter.getFeaturesFromSolrQuery(getSolrQuery(isAggregateResults()), Collections.emptyList(),
-                coordinateFields, getMarkerTitleField(), isAggregateResults());
+        Collection<GeoMapFeature> featuresFromSolr = createFeatures();
         String ret = featuresFromSolr.stream()
                 .distinct()
                 .map(GeoMapFeature::getJsonObject)
@@ -129,6 +126,14 @@ public class SolrFeatureSet extends FeatureSet {
                 .collect(Collectors.joining(","));
 
         return "[" + ret + "]";
+    }
+
+    protected Collection<GeoMapFeature> createFeatures() throws PresentationException, IndexUnreachableException {
+        GeoCoordinateConverter converter = new GeoCoordinateConverter(this.markerTitleField);
+        List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
+        Collection<GeoMapFeature> featuresFromSolr = converter.getFeaturesFromSolrQuery(getSolrQuery(isAggregateResults()), Collections.emptyList(),
+                coordinateFields, getMarkerTitleField(), isAggregateResults());
+        return featuresFromSolr;
     }
 
     public String getSolrQuery() {

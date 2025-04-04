@@ -1428,6 +1428,7 @@
 	  	<field>MD_GEOJSON_POINT</field>
 	  	<field>NORM_COORDS_GEOJSON</field>
 	  	<field>MD_COORDINATES</field>
+	  	<field>MD_GPS_POLYGON</field>
 	  </coordinateFields>
 	  <mapbox>
 	    <token>some.token</token>

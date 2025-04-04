@@ -149,6 +149,7 @@
 		<weld-servlet-shaded.version>5.1.5.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
+		<sf-geojson.version>3.3.3</sf-geojson.version>
 	</properties>
 
 
@@ -247,6 +248,11 @@
 			<artifactId>xml-apis</artifactId>
 			<version>${xml-apis.version}</version>
 			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>mil.nga.sf</groupId>
+			<artifactId>sf-geojson</artifactId>
+			<version>${sf-geojson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.undercouch</groupId>
