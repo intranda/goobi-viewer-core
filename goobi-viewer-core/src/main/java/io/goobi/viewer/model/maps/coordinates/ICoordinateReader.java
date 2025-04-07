@@ -1,8 +1,11 @@
 package io.goobi.viewer.model.maps.coordinates;
 
-public class ICoordinateReader {
+import mil.nga.sf.geojson.Geometry;
+
+public interface ICoordinateReader {
 
     public boolean canRead(String value);
-    
-    public 
+
+    public Geometry read(String value);
+
 }

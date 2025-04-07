@@ -42,6 +42,8 @@ import io.goobi.viewer.model.metadata.MetadataContainer;
 import mil.nga.sf.geojson.FeatureConverter;
 import mil.nga.sf.geojson.Geometry;
 import mil.nga.sf.geojson.Point;
+import mil.nga.sf.geojson.Polygon;
+import mil.nga.sf.geojson.Position;
 
 /**
  * @author florian
@@ -176,7 +178,21 @@ public class GeoMapFeature {
 
     public double getLatitude() {
         if (this.geometry instanceof Point point) {
-            point.getPosition().getY();
+            return point.getPosition().getY();
+        } else if (this.geometry instanceof Polygon polygon) {
+            return polygon.getCoordinates().stream().flatMap(l -> l.stream()).mapToDouble(Position::getY).average().orElse(0);
+        } else {
+            throw new IllegalStateException("Not implemented for geometry " + this.geometry.getType());
+        }
+    }
+
+    public double getLongitude() {
+        if (this.geometry instanceof Point point) {
+            return point.getPosition().getX();
+        } else if (this.geometry instanceof Polygon polygon) {
+            return polygon.getCoordinates().stream().flatMap(l -> l.stream()).mapToDouble(Position::getX).average().orElse(0);
+        } else {
+            throw new IllegalStateException("Not implemented for geometry " + this.geometry.getType());
         }
     }
 
@@ -244,7 +260,7 @@ public class GeoMapFeature {
      */
     @Override
     public int hashCode() {
-        int jsonCode = this.geojson == null ? "".hashCode() : this.geojson.hashCode();
+        int jsonCode = this.geometry == null ? "".hashCode() : this.geometry.hashCode();
         int titleCode = this.title == null ? "".hashCode() : getIndentifyingString(this.title).hashCode();
         return jsonCode + 31 * (titleCode);
     }
@@ -259,7 +275,7 @@ public class GeoMapFeature {
         }
         if (obj.getClass().equals(this.getClass())) {
             GeoMapFeature other = (GeoMapFeature) obj;
-            return Objects.equals(this.geojson, other.geojson)
+            return Objects.equals(this.geometry, other.geometry)
                     && Objects.equals(getIndentifyingString(this.title), getIndentifyingString(other.title));
         }
 
