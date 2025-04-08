@@ -65,7 +65,7 @@ class ViewerRecordPDFResourceTest extends AbstractRestApiTest {
                 .header("x-forwarded-for", "1.2.3.4")
                 .accept("application/pdf")
                 .get()) {
-            assertEquals(403, response.getStatus(), "Should return status 403");
+            assertEquals(403, response.getStatus(), response.getStatusInfo().getReasonPhrase());
         }
     }
 }
