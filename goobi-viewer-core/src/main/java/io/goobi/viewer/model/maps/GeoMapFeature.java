@@ -68,8 +68,8 @@ public class GeoMapFeature {
     /**
      * @param jsonString
      */
-    public GeoMapFeature(String jsonString) {
-        this.geometry = FeatureConverter.toGeometry(jsonString);
+    public GeoMapFeature(Geometry geometry) {
+        this.geometry = geometry;
     }
 
     /**

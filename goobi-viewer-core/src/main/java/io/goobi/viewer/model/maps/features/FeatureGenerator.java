@@ -9,25 +9,24 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.maps.GeoMapFeature;
+import io.goobi.viewer.model.maps.coordinates.CoordinateReaderProvider;
+import io.goobi.viewer.model.metadata.ComplexMetadata;
 import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.servlets.IdentifierResolver;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 import jakarta.ws.rs.core.UriBuilder;
+import mil.nga.sf.geojson.Geometry;
 
 public class FeatureGenerator {
 
@@ -79,6 +78,15 @@ public class FeatureGenerator {
                 .collect(Collectors.toList());
 
         return features;
+    }
+
+    private List<GeoMapFeature> getFeaturesFromDoc(SolrDocument doc) {
+        return getFeaturesFromDocs(List.of(doc));
+    }
+
+    private List<GeoMapFeature> getFeaturesFromDocs(List<SolrDocument> docs) {
+        List<ComplexMetadata> mdList = ComplexMetadata.getMetadataFromDocuments(docs);
+
     }
 
     /**
@@ -142,43 +150,10 @@ public class FeatureGenerator {
         List<GeoMapFeature> docFeatures = new ArrayList<>();
         for (String point : points) {
             try {
-                if (point.matches(POINT_LAT_LNG_PATTERN)) { //NOSONAR  no catastrophic backtracking detected
-                    GeoMapFeature feature = new GeoMapFeature();
-
-                    Matcher matcher = Pattern.compile(POINT_LAT_LNG_PATTERN).matcher(point); // NOSONAR  no catastrophic backtracking detected
-                    matcher.find();
-                    Double lat = Double.valueOf(matcher.group(1));
-                    Double lng = Double.valueOf(matcher.group(2));
-
-                    JSONObject json = new JSONObject();
-                    json.put("type", "Feature");
-                    JSONObject geom = new JSONObject();
-                    geom.put("type", "Point");
-                    geom.put("coordinates", new double[] { lng, lat });
-                    json.put("geometry", geom);
-                    feature.setJson(json.toString());
-                    docFeatures.add(feature);
-                } else if (point.matches(POLYGON_LAT_LNG_PATTERN)) {
-                    GeoMapFeature feature = new GeoMapFeature();
-
-                    Matcher matcher = Pattern.compile(POLYGON_LAT_LNG_PATTERN).matcher(point); // NOSONAR  no catastrophic backtracking detected
-                    matcher.find();
-                    Double lat = Double.valueOf(matcher.group(1));
-                    Double lng = Double.valueOf(matcher.group(2));
-
-                    JSONObject json = new JSONObject();
-                    json.put("type", "Feature");
-                    JSONObject geom = new JSONObject();
-                    geom.put("type", "Point");
-                    geom.put("coordinates", new double[] { lng, lat });
-                    json.put("geometry", geom);
-                    feature.setJson(json.toString());
-                    docFeatures.add(feature);
-                } else {
-                    docFeatures.addAll(createFeaturesFromJson(point));
-                }
-            } catch (JSONException | NumberFormatException e) {
-                logger.error("Encountered non-json feature: {}", point);
+                Geometry geometry = CoordinateReaderProvider.getReader(point).read(point);
+                docFeatures.add(new GeoMapFeature(geometry));
+            } catch (IllegalArgumentException e) {
+                logger.error(e.toString());
             }
         }
         return docFeatures;
