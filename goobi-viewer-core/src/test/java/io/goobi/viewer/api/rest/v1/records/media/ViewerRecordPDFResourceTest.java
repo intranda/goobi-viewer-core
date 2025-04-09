@@ -27,38 +27,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import jakarta.ws.rs.core.Response;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @author florian
  *
  */
 class ViewerRecordPDFResourceTest extends AbstractRestApiTest {
-    private static final String PI_ACCESS_PAST_MOVING_WALL = "13473260X";
     private static final String PI_ACCESS_RESTRICTED = "557335825";
     private static final String PI = "02008031921530";
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @BeforeEach
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @AfterEach
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
 
     @Test
     void testGetPdf() {
@@ -68,7 +48,7 @@ class ViewerRecordPDFResourceTest extends AbstractRestApiTest {
                 .header("x-forwarded-for", "1.2.3.4")
                 .accept("application/pdf")
                 .get()) {
-            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertEquals(200, response.getStatus(), response.getStatusInfo().getReasonPhrase());
             assertNotNull(response.getEntity(), "Should return user object as JSON");
             byte[] entity = response.readEntity(byte[].class);
             String contentDisposition = response.getHeaderString("Content-Disposition");
@@ -85,7 +65,8 @@ class ViewerRecordPDFResourceTest extends AbstractRestApiTest {
                 .header("x-forwarded-for", "1.2.3.4")
                 .accept("application/pdf")
                 .get()) {
-            assertEquals(403, response.getStatus(), "Should return status 403");
+            String entity = response.readEntity(String.class);
+            assertEquals(403, response.getStatus(), "Should return status 403; response: " + entity);
         }
     }
 }
