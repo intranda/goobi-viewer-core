@@ -1057,9 +1057,9 @@
                 <!-- links: Citation link configurations. -->
                 <links>
                     <link type="URL" for="record" label="LABEL_URN" field="URN" pattern="https://nbn-resolving.org/{value}/" topstructValueFallback="true"  />
-                    <link type="URL" for="image"  label="LINK" field="MD_LINK" pattern="https://nbn-resolving.org/{value}/fragment/page={page}" topstructValueFallback="true" />
                     <link type="INTERNAL" for="docstruct" label="LABEL_VIEWER_PURL" />
                     <link type="INTERNAL" for="image" label="LABEL_VIEWER_PURL" />
+                    <link type="URL" for="image"  label="LINK" field="MD_LINK" pattern="https://nbn-resolving.org/{value}/fragment/page={page}" topstructValueFallback="true" />
                     
                 </links>
             </citationLinks>
