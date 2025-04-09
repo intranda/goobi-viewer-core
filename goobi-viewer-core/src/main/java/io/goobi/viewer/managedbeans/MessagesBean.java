@@ -68,17 +68,18 @@ public class MessagesBean {
      * @param params
      * @return msg with params
      */
-    public String addMessageParams(String msg, String... params) {
+    public String addMessageParams(final String msg, String... params) {
         if (msg == null) {
             return null;
         }
 
+        String ret = msg;
         if (params != null && params.length > 0) {
             for (int i = 0; i < params.length; ++i) {
-                msg = msg.replace("{" + i + "}", params[i]);
+                ret = ret.replace("{" + i + "}", params[i]);
             }
         }
 
-        return msg;
+        return ret;
     }
 }

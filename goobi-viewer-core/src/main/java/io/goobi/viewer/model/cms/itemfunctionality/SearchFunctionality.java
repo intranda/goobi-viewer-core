@@ -118,7 +118,8 @@ public class SearchFunctionality implements Functionality, SearchInterface {
                     final FacesContext context = FacesContext.getCurrentInstance();
                     String redirectUrl = path.getApplicationName() + path.getCombinedPrettyfiedUrl(false);
                     redirectUrl = StringTools.appendTrailingSlash(redirectUrl);
-                    redirectUrl = redirectUrl + (StringUtils.isNotEmpty(path.getQueryString()) ? ("?" + path.getQueryString()) : ""); // Add GET params after the slash
+                    // Add GET params after the slash
+                    redirectUrl = redirectUrl + (StringUtils.isNotEmpty(path.getQueryString()) ? ("?" + path.getQueryString()) : "");
                     try {
                         context.getExternalContext().redirect(redirectUrl);
                     } catch (IOException e) {
