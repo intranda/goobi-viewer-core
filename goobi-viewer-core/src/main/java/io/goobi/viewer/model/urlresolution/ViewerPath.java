@@ -25,18 +25,14 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.Optional;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.viewer.PageType;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Stores the url path of a http request organized by its logical parts so application url, application name, view type and parameter urls can be
@@ -58,8 +54,6 @@ import io.goobi.viewer.model.viewer.PageType;
 public class ViewerPath implements Serializable {
 
     private static final long serialVersionUID = 3200000636800001722L;
-
-    private static final Logger logger = LogManager.getLogger(SearchFunctionality.class);
 
     /**
      * The absolute url of the web-application, e.g. {@code "http://localhost:8080/viewer"}. The {@link #applicationName} is always the last part of
@@ -273,6 +267,8 @@ public class ViewerPath implements Serializable {
      *
      * @param addQueryString If true, the GET query parameter part will be added
      * @return the entire {@link #getPrettifiedPagePath() prettified} url as a path <b>except</b> the application url
+     * @should return url with get params correctly
+     * @should return url without get params correctly
      */
     public String getCombinedPrettyfiedUrl(boolean addQueryString) {
         return ("/" + getCombinedPrettyfiedPath(addQueryString).toString()).replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
