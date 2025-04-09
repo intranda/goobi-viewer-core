@@ -77,6 +77,9 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     private static final String RECORD_NOTE_TYPE_SINGLE = "SINGLE";
     private static final String RECORD_NOTE_TYPE_MULTI = "MULTI";
 
+    /** Disables Faces/forwarding in tests. */
+    private boolean testMode = false;
+
     @Inject
     private transient FacesContext facesContext;
 
@@ -159,7 +162,10 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
 
     /**
      * Save the selected note to the database
-     *
+     * 
+     * @should do nothing if node null
+     * @should save new note correctly
+     * @should update note correctly
      */
     public void save() {
         try {
@@ -184,11 +190,13 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
                 return;
             }
             CMSRecordNote persistentNote = this.note.copy();
-            String url = PrettyUrlTools.getAbsolutePageUrl("adminCmsRecordNoteEdit", persistentNote.getId());
-            try {
-                facesContext.getExternalContext().redirect(url);
-            } catch (IOException | NullPointerException e) {
-                logger.error("Error redirecting to database url {}: {}", url, e.toString());
+            if (!testMode) {
+                String url = PrettyUrlTools.getAbsolutePageUrl("adminCmsRecordNoteEdit", persistentNote.getId());
+                try {
+                    facesContext.getExternalContext().redirect(url);
+                } catch (IOException | NullPointerException e) {
+                    logger.error("Error redirecting to database url {}: {}", url, e.toString());
+                }
             }
         } catch (DAOException e) {
             logger.error("Error saving RecordNote", e);
@@ -360,4 +368,14 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     public boolean isSingleRecordNote() {
         return this.note instanceof CMSSingleRecordNote;
     }
+
+    /**
+     * For unit tests.
+     * 
+     * @param testMode the testMode to set
+     */
+    void setTestMode(boolean testMode) {
+        this.testMode = testMode;
+    }
+
 }
