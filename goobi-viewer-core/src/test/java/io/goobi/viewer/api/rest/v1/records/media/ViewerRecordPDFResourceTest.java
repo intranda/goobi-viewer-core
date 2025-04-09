@@ -27,10 +27,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
+import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.DataManager;
 import jakarta.ws.rs.core.Response;
 
 /**
@@ -40,6 +48,31 @@ import jakarta.ws.rs.core.Response;
 class ViewerRecordPDFResourceTest extends AbstractRestApiTest {
     private static final String PI_ACCESS_RESTRICTED = "557335825";
     private static final String PI = "02008031921530";
+
+    @BeforeAll
+    public static void setUpClass() throws Exception {
+        AbstractDatabaseAndSolrEnabledTest.setUpClass();
+    }
+
+    /**
+     * @throws java.lang.Exception
+     */
+    @Override
+    @BeforeEach
+    public void setUp() throws Exception {
+        super.setUp();
+        DataManager.getInstance()
+                .injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_no_local_access.test.xml").getAbsolutePath()));
+    }
+
+    /**
+     * @throws java.lang.Exception
+     */
+    @Override
+    @AfterEach
+    public void tearDown() throws Exception {
+        super.tearDown();
+    }
 
     @Test
     void testGetPdf() {
