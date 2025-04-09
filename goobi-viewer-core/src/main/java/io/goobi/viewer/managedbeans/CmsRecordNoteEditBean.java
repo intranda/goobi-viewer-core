@@ -163,8 +163,8 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
      */
     public void save() {
         try {
-            CMSRecordNote persistentNote = this.note.copy();
             if (this.note != null && this.note.getId() != null) {
+                CMSRecordNote persistentNote = this.note.copy();
                 boolean success = DataManager.getInstance().getDao().updateRecordNote(persistentNote);
                 if (success) {
                     Messages.info(null, "button__save__success", persistentNote.getNoteTitle().getText());
@@ -172,6 +172,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
                     Messages.error("button__save__error");
                 }
             } else if (this.note != null) {
+                CMSRecordNote persistentNote = this.note.copy();
                 boolean success = DataManager.getInstance().getDao().addRecordNote(persistentNote);
                 if (success) {
                     Messages.info(null, "button__save__success", persistentNote.getNoteTitle().getText());
@@ -180,7 +181,9 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
                 }
             } else {
                 logger.warn("Attempting to save note, but no note is selected");
+                return;
             }
+            CMSRecordNote persistentNote = this.note.copy();
             String url = PrettyUrlTools.getAbsolutePageUrl("adminCmsRecordNoteEdit", persistentNote.getId());
             try {
                 facesContext.getExternalContext().redirect(url);
@@ -202,8 +205,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     public MetadataElement getMetadataElement() {
-        if (this.metadataElement == null && this.note != null && this.note instanceof CMSSingleRecordNote) {
-            CMSSingleRecordNote n = (CMSSingleRecordNote) this.note;
+        if (this.metadataElement == null && this.note != null && this.note instanceof CMSSingleRecordNote n) {
             try {
                 this.metadataElement = loadMetadataElement(n.getRecordPi(), 0);
             } catch (PresentationException | IndexUnreachableException e) {
@@ -253,8 +255,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
      * @return {@link TranslatedText}
      */
     public TranslatedText createRecordTitle(IMetadataValue label) {
-        if (label instanceof MultiLanguageMetadataValue) {
-            MultiLanguageMetadataValue mLabel = (MultiLanguageMetadataValue) label;
+        if (label instanceof MultiLanguageMetadataValue mLabel) {
             return new TranslatedText(mLabel);
         }
 
