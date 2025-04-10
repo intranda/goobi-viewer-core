@@ -34,8 +34,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import jakarta.faces.context.FacesContext;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,6 +50,8 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
+import io.goobi.viewer.model.citation.CitationLink;
+import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
@@ -60,6 +60,7 @@ import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.faces.context.FacesContext;
 
 class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -746,6 +747,29 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         LabeledLink link = viewManager.getLinkToDownloadFile(filename);
         assertTrue(link.getUrl().endsWith(filenameEncoded));
 
+    }
+
+    @Test
+    void test_updateCiteLinksOnPageChange() throws IndexUnreachableException, PresentationException, DAOException, IDDOCNotFoundException {
+        String linkPattern = "https://nbn-resolving.org/{value}/fragment/page={page}";
+        String linkValue = "http://resolver.sub.uni-goettingen.de/purl?PPN517154005";
+        int page1 = 10;
+        int page2 = 15;
+        StructElement se = new StructElement(iddocKleiuniv);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+        viewManager.setCurrentImageOrder(page1);
+        List<CitationLink> citeLinks = viewManager.getSidebarWidgetUsageCitationLinksForLevel(CitationLinkLevel.IMAGE.name());
+        Assertions.assertFalse(citeLinks.isEmpty());
+        CitationLink link = citeLinks.stream().filter(l -> l.getLabel().equals("LINK")).findAny().orElse(null);
+        Assertions.assertNotNull(link);
+        Assertions.assertEquals(linkPattern.replace("{value}", linkValue).replace("{page}", Integer.toString(page1)), link.getValue());
+
+        viewManager.setCurrentImageOrder(page2);
+        citeLinks = viewManager.getSidebarWidgetUsageCitationLinksForLevel(CitationLinkLevel.IMAGE.name());
+        Assertions.assertFalse(citeLinks.isEmpty());
+        link = citeLinks.stream().filter(l -> l.getLabel().equals("LINK")).findAny().orElse(null);
+        Assertions.assertNotNull(link);
+        Assertions.assertEquals(linkPattern.replace("{value}", linkValue).replace("{page}", Integer.toString(page2)), link.getValue());
     }
 
 }
