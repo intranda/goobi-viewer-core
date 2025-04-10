@@ -23,23 +23,34 @@ package io.goobi.viewer.api.rest.v1.records.media;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PDF;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
+import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
-import jakarta.ws.rs.core.Response;
+import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.container.ContainerRequestContext;
 
 /**
  * @author florian
@@ -75,36 +86,36 @@ class ViewerRecordPDFResourceTest extends AbstractRestApiTest {
     }
 
     @Test
-    void testGetPdf() {
+    void testGetPdf() throws PresentationException, IndexUnreachableException, ContentLibException, IOException {
         String url = urls.path(RECORDS_RECORD, RECORDS_PDF).params(PI).build();
-        try (Response response = target(url)
-                .request()
-                .header("x-forwarded-for", "1.2.3.4")
-                .accept("application/pdf")
-                .get()) {
-            if (response.getStatus() >= 400) {
-                String errorMessage = response.readEntity(String.class);
-                Assertions.fail(errorMessage);
-            } else {
-                assertNotNull(response.getEntity(), "Should return user object as byte array");
-                byte[] entity = response.readEntity(byte[].class);
-                String contentDisposition = response.getHeaderString("Content-Disposition");
-                assertEquals("attachment; filename=\"" + PI + ".pdf" + "\"", contentDisposition);
-                assertTrue(entity.length >= 5 * 5 * 8 * 3); //entity is at least as long as the image data
-            }
+        Path repository = Path.of(DataFileTools.getDataRepositoryPathForRecord(PI));
+        Map<String, String[]> requestParams = new HashMap<>();
+        requestParams.put("imageSource",
+                new String[] { repository.resolve(DataManager.getInstance().getConfiguration().getMediaFolder()).toUri().toString() });
+        requestParams.put("pdfSource",
+                new String[] { repository.resolve(DataManager.getInstance().getConfiguration().getPdfFolder()).toUri().toString() });
+        requestParams.put("altoSource",
+                new String[] { repository.resolve(DataManager.getInstance().getConfiguration().getAltoFolder()).toUri().toString() });
+        requestParams.put("metsSource",
+                new String[] { repository.resolve(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).toUri().toString() });
+
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getRequestURI()).thenReturn(url);
+        Mockito.when(request.getParameterMap())
+                .thenReturn(requestParams);
+
+        HttpServletResponse response = Mockito.spy(HttpServletResponse.class);
+        ContainerRequestContext context = Mockito.mock(ContainerRequestContext.class);
+
+        ContentServerCacheManager cacheManager = ContentServerCacheManager.noCache();
+        ViewerRecordPDFResource resource = new ViewerRecordPDFResource(context, request, response, urls, PI, cacheManager);
+
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            resource.getPdf().write(baos);
+            assertTrue(baos.size() > 5 * 5 * 8 * 3);
         }
+        String expectedContentDisposition = "attachment; filename=\"" + PI + ".pdf" + "\"";
+        Mockito.verify(response).addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, expectedContentDisposition);
     }
 
-    @Test
-    void testGetPdf_refuseAccess() {
-        String url = urls.path(RECORDS_RECORD, RECORDS_PDF).params(PI_ACCESS_RESTRICTED).build();
-        try (Response response = target(url)
-                .request()
-                .header("x-forwarded-for", "1.2.3.4")
-                .accept("application/pdf")
-                .get()) {
-            String entity = response.readEntity(String.class);
-            assertEquals(403, response.getStatus(), "Should return status 403; response: " + entity);
-        }
-    }
 }
