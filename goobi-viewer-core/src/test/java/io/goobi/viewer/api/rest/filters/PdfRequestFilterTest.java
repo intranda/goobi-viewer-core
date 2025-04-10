@@ -29,14 +29,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.container.ContainerRequestContext;
 
-class PdfRequestFilterTest extends AbstractTest {
+class PdfRequestFilterTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see PdfRequestFilter#getNumAllowedPages(int,int)
