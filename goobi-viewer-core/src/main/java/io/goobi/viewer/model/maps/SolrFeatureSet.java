@@ -141,7 +141,7 @@ public class SolrFeatureSet extends FeatureSet {
     }
 
     public String getSolrQuery(boolean aggregateResults) {
-        if (false) {
+        if (aggregateResults) {
             return String.format("{!join from=PI_TOPSTRUCT to=PI} %s", this.solrQuery);
         }
 

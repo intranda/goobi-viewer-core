@@ -62,6 +62,7 @@ import io.goobi.viewer.model.maps.IArea;
 import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.maps.Point;
 import io.goobi.viewer.model.maps.Polygon;
+import io.goobi.viewer.model.maps.coordinates.CoordinateReaderProvider;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataBuilder;
 import io.goobi.viewer.model.metadata.MetadataContainer;
@@ -72,6 +73,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.UriBuilder;
+import mil.nga.sf.geojson.Geometry;
 
 /**
  * Utility methods for converting geo-coordinated between different formats
@@ -563,7 +565,8 @@ public class GeoCoordinateConverter {
                 array.forEach(f -> {
                     if (f instanceof JSONObject jsonObj) {
                         String jsonString = jsonObj.toString();
-                        GeoMapFeature feature = new GeoMapFeature(jsonString);
+                        Geometry geometry = CoordinateReaderProvider.getReader(jsonString).read(jsonString);
+                        GeoMapFeature feature = new GeoMapFeature(geometry);
                         if (!features.contains(feature)) {
                             features.add(feature);
                         }
@@ -571,7 +574,8 @@ public class GeoCoordinateConverter {
                 });
             }
         } else if ("Feature".equalsIgnoreCase(type)) {
-            GeoMapFeature feature = new GeoMapFeature(json.toString());
+            Geometry geometry = CoordinateReaderProvider.getReader(json.toString()).read(json.toString());
+            GeoMapFeature feature = new GeoMapFeature(geometry);
             features.add(feature);
         }
         return features;

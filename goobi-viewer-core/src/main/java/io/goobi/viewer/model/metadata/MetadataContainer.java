@@ -262,10 +262,6 @@ public class MetadataContainer {
         Map<String, List<IMetadataValue>> translatedMetadata = SolrTools.getTranslatedMetadata(doc, mainDocFieldNameFilter::test);
         MetadataContainer entity = new MetadataContainer(
                 SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC), "");
-        //        MetadataContainer entity = new MetadataContainer(
-        //                SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC),
-        //                Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL))
-        //                        .orElse(Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_VALUE)).orElse("")));
 
         Set<String> childLabels = children.stream()
                 .map(c -> SolrTools.getSingleFieldStringValue(c, SolrConstants.LABEL))

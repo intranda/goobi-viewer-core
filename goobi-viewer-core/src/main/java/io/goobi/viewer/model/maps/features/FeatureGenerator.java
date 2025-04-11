@@ -12,6 +12,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
@@ -80,13 +81,22 @@ public class FeatureGenerator {
         return features;
     }
 
-    private List<GeoMapFeature> getFeaturesFromDoc(SolrDocument doc) {
-        return getFeaturesFromDocs(List.of(doc));
+    private List<GeoMapFeature> getFeaturesFromDoc(SolrDocument doc, String coordinateField) {
+        return getFeaturesFromDocs(List.of(doc), coordinateField);
     }
 
-    private List<GeoMapFeature> getFeaturesFromDocs(List<SolrDocument> docs) {
-        List<ComplexMetadata> mdList = ComplexMetadata.getMetadataFromDocuments(docs);
+    private List<GeoMapFeature> getFeaturesFromDocs(SolrDocument doc, List<SolrDocument> metadataDocs, String coordinateField) {
+        return mdList.stream().flatMap(md -> getGeojsonPoints(md, coordinateField).stream()).toList();
+    }
 
+    private List<GeoMapFeature> getGeojsonPoints(ComplexMetadata md, String coordinateField) {
+        List<String> points =
+                md.getValues(coordinateField).stream().map(value -> value.getValue().orElse("")).filter(StringUtils::isNotBlank).toList();
+        List<GeoMapFeature> docFeatures = getFeatures(points);
+        addEntityToFeatures(md, Collections.emptyList(), docFeatures);
+        docFeatures.forEach(feature -> setLink(feature, doc));
+        docFeatures.forEach(f -> f.setDocumentId((String) doc.getFieldValue(SolrConstants.LOGID)));
+        docFeatures.forEach(this::setLabels);
     }
 
     /**
@@ -160,9 +170,7 @@ public class FeatureGenerator {
     }
 
     private static void addEntityToFeatures(SolrDocument doc, List<SolrDocument> children, List<GeoMapFeature> docFeatures) {
-
-        MetadataContainer entity = MetadataContainer.createMetadataEntity(doc, children,
-                getFeatureFieldFilter(children != null && !children.isEmpty()), getEntityFieldFilter());
+        MetadataContainer entity = MetadataContainer.createMetadataEntity(doc, children, f -> true, f -> true);
         docFeatures.forEach(f -> f.addEntity(entity));
     }
 

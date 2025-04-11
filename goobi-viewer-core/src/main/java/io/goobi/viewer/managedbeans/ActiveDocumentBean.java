@@ -88,6 +88,7 @@ import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.maps.RecordGeoMap;
+import io.goobi.viewer.model.maps.coordinates.CoordinateReaderProvider;
 import io.goobi.viewer.model.metadata.ComplexMetadataContainer;
 import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.model.metadata.RelationshipMetadataContainer;
@@ -122,6 +123,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import mil.nga.sf.geojson.Geometry;
 
 /**
  * This bean opens the requested record and provides all data relevant to this record.
@@ -2572,7 +2574,8 @@ public class ActiveDocumentBean implements Serializable {
                     .toList();
             for (DisplayUserGeneratedContent anno : annos) {
                 if (anno.getAnnotationBody() instanceof TypedResource tr) {
-                    GeoMapFeature feature = new GeoMapFeature(tr.asJson());
+                    Geometry geometry = CoordinateReaderProvider.getReader(tr.asJson()).read(tr.asJson());
+                    GeoMapFeature feature = new GeoMapFeature(geometry);
                     features.add(feature);
                 }
             }
