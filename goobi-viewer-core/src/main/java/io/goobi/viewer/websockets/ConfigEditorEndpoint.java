@@ -93,6 +93,7 @@ public class ConfigEditorEndpoint extends Endpoint {
         lockedFilePath.ifPresent(path -> httpSessionId.ifPresent(sessionId -> AdminConfigEditorBean.unlockFile(path, sessionId)));
     }
 
+    @Override
     @OnError
     public void onError(Session session, Throwable t) {
         logger.warn(t.getMessage());

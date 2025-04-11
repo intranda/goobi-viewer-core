@@ -35,16 +35,16 @@ public class AnyMatchCondition<T> extends Condition<Collection<T>> {
 
     public static <T> AnyMatchCondition<T> of(Collection<T> value, boolean matchIfEqual) {
         if (value == null || value.isEmpty()) {
-            return new AnyMatchCondition<T>(Collections.emptyList(), true);
-        } else {
-            return new AnyMatchCondition<T>(value, matchIfEqual);
+            return new AnyMatchCondition<>(Collections.emptyList(), true);
         }
+        return new AnyMatchCondition<>(value, matchIfEqual);
     }
 
     protected AnyMatchCondition(Collection<T> value, boolean matchIfEqual) {
         super(value, matchIfEqual);
     }
 
+    @Override
     public boolean matches(Collection<T> testValue) {
         if (this.getValue() == null || this.getValue().isEmpty()) {
             return true;
@@ -61,7 +61,7 @@ public class AnyMatchCondition<T> extends Condition<Collection<T>> {
     }
 
     public static AnyMatchCondition<? extends Object> none() {
-        return new AnyMatchCondition<Object>(Collections.emptyList(), true);
+        return new AnyMatchCondition<>(Collections.emptyList(), true);
     }
 
 }

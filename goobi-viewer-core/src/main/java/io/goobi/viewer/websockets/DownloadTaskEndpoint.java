@@ -340,6 +340,7 @@ public class DownloadTaskEndpoint extends Endpoint {
         logger.debug("Closing socket for session {}", this.httpSession);
     }
 
+    @Override
     @OnError
     public void onError(Session session, Throwable t) {
         logger.error(t, t);

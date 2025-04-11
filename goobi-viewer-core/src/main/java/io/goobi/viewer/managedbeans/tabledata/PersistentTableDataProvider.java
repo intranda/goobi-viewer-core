@@ -35,6 +35,8 @@ import java.util.Optional;
  */
 public class PersistentTableDataProvider<T> extends TableDataProvider<T> {
 
+    private static final long serialVersionUID = 5044918996049699979L;
+    
     private Optional<List<T>> currentList = Optional.empty();
 
     /**
@@ -62,6 +64,7 @@ public class PersistentTableDataProvider<T> extends TableDataProvider<T> {
      * resetCurrentList.
      * </p>
      */
+    @Override
     protected void resetCurrentList() {
         this.currentList = Optional.empty();
     }
