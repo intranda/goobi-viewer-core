@@ -4546,7 +4546,7 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
         		this.showStandardNav = true;
     	} else {
     		this.showStandardNav = false;
-    		console.log('std nav hidden');
+
     	}
 
 	}.bind(this)

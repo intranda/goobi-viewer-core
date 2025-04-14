@@ -227,11 +227,11 @@
 		}
 	  	
     	if(swiperConfig.navigation && swiperConfig.navigation.prevEl == '.swiper-button-prev' && swiperConfig.navigation.nextEl == '.swiper-button-next')  {
-				console.log('std navigation activated')
+				// console.log('std navigation activated')
         		this.showStandardNav = true;
     	} else {
     		this.showStandardNav = false;
-    		console.log('std nav hidden');
+    		// console.log('std nav hidden');
     	}
 	  	 
 	}
