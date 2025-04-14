@@ -16,16 +16,18 @@
 
     <composite:implementation>
         
-            <div rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks and displayConditions.getTag('widgetCitation').getChildCount('widget-element') > 0}"
-            jsf:id="widgetCitation" class="widget widget-citation">
-
-	            <div class="widget-citation__topbar widget__topbar">
-	                <!-- WIDGET TITLE -->
+            <div 
+            	rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks and displayConditions.getTag('widgetCitation').getChildCount('widget-element') > 0}"
+            	jsf:id="widgetCitation" 
+            	class="widget widget-citation"
+            >
+	            <div class="widget__topbar widget-citation__topbar">
 					<h2
 						tabindex="0"
 						role="button"
-						class="widget__title widget-citation__title #{cc.attrs.collapsible ? 'collapseable' : ''}">
-	                    <span>#{msg.widget_citation}</span>
+						class="widget__title widget-citation__title #{cc.attrs.collapsible ? 'collapseable' : ''}"
+					>
+	                    #{msg.widget_citation}
 	                    <div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
 							<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
 						</div>

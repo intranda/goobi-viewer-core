@@ -12,43 +12,36 @@
 .widget-geomap {
 	position: relative;
 	display: none;
-	h2 {
-		display: flex;
-		justify-content: space-between;
-		padding: 2rem 2rem 0 2rem;
-	}
-	&__expand {
-		color: inherit;
+	
+	&__body {
 		padding: 0;
-		background: transparent;
-		border: none;
-		&:hover,
-		&:active,
-		&:focus {
-			text-decoration: none;
-			color: inherit;
-			background: none;
-			}	
 	}
+	
+	&__expand {
+		padding: 0;
+	}
+	
 	.geomap {
 		min-height: 350px;
+		
 		.mapboxgl-popup-content {
 		    padding: 20px 15px 10px 15px;
 		}
+		
 		.leaflet-popup-content {
 	    	max-width: 200px;
 		}
+		
 		.leaflet-control-zoom  {
 			a {
 				padding: 0;
 				display: block;
 			}
 		}
+		
 		.leaflet-control-container {
-			.leaflet-top {
-				a {					
-				}
-			}
+			.leaflet-top {}
+			
 			.leaflet-bottom {
 				a {
 					display: inline;
@@ -60,6 +53,7 @@
 	h4 {
     	margin-bottom: 5px;
     }
+	
     &__input {
     	.mx-clearfloats;
     	margin-bottom: 20px;
@@ -77,12 +71,13 @@
     		resize: vertical;
     	}
     }
+	
     &__input-spacer {
     	margin: 10px 0;
     	width: 100%;
     	height: 1px;
-    	background-color: @middlegray;
     }
+	
     &__action {
     	position: relative;
     	z-index: 10;
@@ -90,7 +85,6 @@
 		    margin: -32px 0 0 -6px;
     		padding: 0 0 21px 0;
 		    text-align: right;
-		    border-bottom: 1px solid @middlegray;
     	}
     	a {
     		&:hover,
@@ -100,6 +94,7 @@
     		}
     	}
     }
+	
     &__overlay-check {
     	.mx-clearfloats;
     	float: left;

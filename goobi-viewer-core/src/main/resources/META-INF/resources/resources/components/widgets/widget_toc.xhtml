@@ -35,44 +35,46 @@
 
 		    	<h:form id="widgetTocForm" prependId="false">
                     <!-- TITLE -->
-                    <div class="widget-toc__title">
-                        <h2 class="widget__title">
-                        	<span>#{msg.sidebarTocAnchor}</span>
-                        </h2>
-                       	<div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
-							<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
-						</div>	
-
-                        <!-- EXPAND ALL -->
-                        <ui:fragment rendered="#{configurationBean.sidebarTocTreeView and activeDocumentBean.toc.maxTocDepth > 0}">
-                            <div class="widget-toc__title-expand">
-                                <!-- LOADER -->
-                                <div class="widget-toc__loader"></div>
-
-                                <!-- CLOSE -->
-                                <h:commandLink styleClass="btn btn--clean" action="#{activeDocumentBean.toc.collapseAll}" title="#{msg.allClose}">
-                                    <i class="fa fa-minus-square-o" aria-hidden="true"></i>
-                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
-									<f:passThroughAttribute name="data-placement" value="top" />
-									<f:passThroughAttribute name="aria-label" value="#{msg.allClose}"/>
-									<f:passThroughAttribute name="role" value="button"/>
-                                    <f:ajax render="widgetTocForm" />
-                                </h:commandLink>
-                                <!-- OPEN -->
-                                <h:commandLink styleClass="btn btn--clean" action="#{activeDocumentBean.toc.expandAll}" title="#{msg.allOpen}">
-                                    <i class="fa fa-plus-square-o" aria-hidden="true"></i>
-                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
-									<f:passThroughAttribute name="data-placement" value="top" />
-									<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}"/>
-									<f:passThroughAttribute name="role" value="button"/>
-                                    <f:ajax render="widgetTocForm" />
-                                </h:commandLink>
-                            </div>
-                        </ui:fragment>
+                    <div class="widget__topbar widget-toc__topbar">
+                    	<div class="widget-toc__title">
+	                        <h2 class="widget__title">
+	                        	#{msg.sidebarTocAnchor}
+	                        </h2>
+	                        
+	                       	<div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
+								<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+							</div>	
+							
+	                        <!-- EXPAND ALL -->
+	                        <ui:fragment rendered="#{configurationBean.sidebarTocTreeView and activeDocumentBean.toc.maxTocDepth > 0}">
+	                            <div class="widget-toc__title-expand">
+	                                <!-- LOADER -->
+	                                <div class="widget-toc__loader"></div>
+	
+	                                <!-- CLOSE -->
+	                                <h:commandLink styleClass="btn btn--clean" action="#{activeDocumentBean.toc.collapseAll}" title="#{msg.allClose}">
+	                                    <i class="fa fa-minus-square-o" aria-hidden="true"></i>
+	                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
+										<f:passThroughAttribute name="data-placement" value="top" />
+										<f:passThroughAttribute name="aria-label" value="#{msg.allClose}"/>
+										<f:passThroughAttribute name="role" value="button"/>
+	                                    <f:ajax render="widgetTocForm" />
+	                                </h:commandLink>
+	                                <!-- OPEN -->
+	                                <h:commandLink styleClass="btn btn--clean" action="#{activeDocumentBean.toc.expandAll}" title="#{msg.allOpen}">
+	                                    <i class="fa fa-plus-square-o" aria-hidden="true"></i>
+	                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
+										<f:passThroughAttribute name="data-placement" value="top" />
+										<f:passThroughAttribute name="aria-label" value="#{msg.allOpen}"/>
+										<f:passThroughAttribute name="role" value="button"/>
+	                                    <f:ajax render="widgetTocForm" />
+	                                </h:commandLink>
+	                            </div>
+	                        </ui:fragment>
+	                    </div>
                     </div>
-
                     <!-- ELEMENTS -->
-                    <div jsf:id="sidebarTocTree" class="widget-toc__elements">
+                    <div jsf:id="sidebarTocTree" class="widget__body widget-toc__body widget-toc__elements">
                         <!-- TREE VIEW -->
 		            	<ui:fragment rendered="#{configurationBean.sidebarTocTreeView}">
 							<ul>

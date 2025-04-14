@@ -13,79 +13,79 @@
 	<composite:interface>
 		<composite:attribute name="metadataElement" type="io.goobi.viewer.model.metadata.MetadataElement" required="false" default="#{metadataBean.getBottomMetadataElement(0)}" />
 	</composite:interface>
-	
-	
 
 	<composite:implementation>
 		<h:panelGroup id="sidebarMetadataGroup" rendered="#{cc.attrs.metadataElement.hasSidebarMetadata and not (activeDocumentBean.anchor or activeDocumentBean.group)}">
-			
-                <!-- SIDEBAR METADATA -->
-				<div id="widgetMetadata" class="widget widget-metadata">
-					<h2 class="widget__title">
-						<span>#{msg[metadataBean.defaultSidebarMetadataLabel]}</span>
+	        <!-- SIDEBAR METADATA -->
+			<div id="widgetMetadata" class="widget widget-metadata">
+				<div class="widget__topbar widget-metadata__topbar">
+					<h2 class="widget__title widget-metadata__title">
+						#{msg[metadataBean.defaultSidebarMetadataLabel]}
 						<div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
 							<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
 						</div>
 					</h2>
-					
+				</div>
+				
+				<div class="widget__body widget-metadata__body">
 					<dl jsf:id="sidebarMetadataList">
 						<c:forEach items="#{cc.attrs.metadataElement.sidebarMetadataList}" var="metadata">
 							<dt title="#{metadata.label}">
 								<h:outputText value="#{msg[metadata.label]}:" escape="false" />
 							</dt>
-	
+		
 							<!-- Grouped metadata -->
 							<h:panelGroup rendered="#{metadata.group}">
-                                <!-- Single label for all values, each value is a single string -->
-                                <h:panelGroup rendered="#{metadata.singleString}">
-                                    <c:forEach items="#{metadata.values}" var="val">
-                                        <dd>
-                                            <!-- Metadata value -->
-                                            <h:panelGroup rendered="#{metadata.singleString}">
-                                                <ui:fragment rendered="#{val.accessRestricted}">
-                                                    <span class="metadata__locked-value-icon" data-toggle="tooltip" title="#{msg.metadata__restricted_value_tooltip}"><i class="fa fa-unlock" /></span>
-                                                </ui:fragment>
-                                                <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}" escape="false">
-                                                </h:outputFormat>
-                                            </h:panelGroup>
-    
-                                            <!-- Nested child metadata -->
-                                            <c:forEach var="child" items="#{metadata.childMetadata}" varStatus="status">
-                                                <ui:fragment rendered="#{!child.isBlank(val.iddoc)}">
-                                                    <ui:fragment rendered="#{child.singleString}">
-                                                        <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
-                                                            <ui:param name="metadata" value="#{metadata.childMetadata[status.index]}" />
-                                                        </ui:include>
-                                                    </ui:fragment>
-                                                    <ui:fragment rendered="#{!child.singleString}">
-                                                        <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
-                                                            <ui:param name="metadata" value="#{metadata.childMetadata[status.index]}" />
-                                                        </ui:include>
-                                                    </ui:fragment>
-                                                </ui:fragment>
-                                            </c:forEach>
-                                        </dd>
-                                    </c:forEach>
-                                </h:panelGroup>
-
-                                <!-- Each value has a label column and a value column -->
-                                <h:panelGroup rendered="#{!metadata.singleString}">
-                                    <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind0">
-                                        <ui:fragment rendered="#{!val.isParamValueBlank(ind0)}">
-                                            <dt>
-                                                <h:outputText value="#{val.getParamLabelWithColon(ind0)}" escape="false" />
-                                            </dt>
-                                            <dd>
-                                                <ui:fragment rendered="#{val.accessRestricted}">
-                                                    <span class="metadata__locked-value-icon" data-toggle="tooltip" title="#{msg.metadata__restricted_value_tooltip}"><i class="fa fa-unlock" /></span>
-                                                </ui:fragment>
-                                                <h:outputText value="#{val.getComboValueShort(ind0)}" escape="false" />
-                                            </dd>
-                                        </ui:fragment>
-                                    </c:forEach>
-                                </h:panelGroup>
+		                              <!-- Single label for all values, each value is a single string -->
+		                              <h:panelGroup rendered="#{metadata.singleString}">
+		                                  <c:forEach items="#{metadata.values}" var="val">
+		                                      <dd>
+		                                          <!-- Metadata value -->
+		                                          <h:panelGroup rendered="#{metadata.singleString}">
+		                                              <ui:fragment rendered="#{val.accessRestricted}">
+		                                                  <span class="metadata__locked-value-icon" data-toggle="tooltip" title="#{msg.metadata__restricted_value_tooltip}"><i class="fa fa-unlock" /></span>
+		                                              </ui:fragment>
+		                                              <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale, true)}" escape="false">
+		                                              </h:outputFormat>
+		                                          </h:panelGroup>
+		  
+		                                          <!-- Nested child metadata -->
+		                                          <c:forEach var="child" items="#{metadata.childMetadata}" varStatus="status">
+		                                              <ui:fragment rendered="#{!child.isBlank(val.iddoc)}">
+		                                                  <ui:fragment rendered="#{child.singleString}">
+		                                                      <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
+		                                                          <ui:param name="metadata" value="#{metadata.childMetadata[status.index]}" />
+		                                                      </ui:include>
+		                                                  </ui:fragment>
+		                                                  <ui:fragment rendered="#{!child.singleString}">
+		                                                      <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
+		                                                          <ui:param name="metadata" value="#{metadata.childMetadata[status.index]}" />
+		                                                      </ui:include>
+		                                                  </ui:fragment>
+		                                              </ui:fragment>
+		                                          </c:forEach>
+		                                      </dd>
+		                                  </c:forEach>
+		                              </h:panelGroup>
+		
+		                              <!-- Each value has a label column and a value column -->
+		                              <h:panelGroup rendered="#{!metadata.singleString}">
+		                                  <c:forEach begin="0" end="#{metadata.paramCount - 0}" var="ind0">
+		                                      <ui:fragment rendered="#{!val.isParamValueBlank(ind0)}">
+		                                          <dt>
+		                                              <h:outputText value="#{val.getParamLabelWithColon(ind0)}" escape="false" />
+		                                          </dt>
+		                                          <dd>
+		                                              <ui:fragment rendered="#{val.accessRestricted}">
+		                                                  <span class="metadata__locked-value-icon" data-toggle="tooltip" title="#{msg.metadata__restricted_value_tooltip}"><i class="fa fa-unlock" /></span>
+		                                              </ui:fragment>
+		                                              <h:outputText value="#{val.getComboValueShort(ind0)}" escape="false" />
+		                                          </dd>
+		                                      </ui:fragment>
+		                                  </c:forEach>
+		                              </h:panelGroup>
 							</h:panelGroup>
-	
+		
 							<!-- Non-grouped metadata -->
 							<h:panelGroup rendered="#{!metadata.group}">
 								<dd>
@@ -99,53 +99,54 @@
 						</c:forEach>
 					</dl>
 				</div>
+			</div>
 				
-				<!-- LIDO -->
-				<ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.lidoRecord}">
-                
-                    <!-- LIDO event sidebar metadata (event metadata explicitly configured in the sidebar metadata list) -->
-                    <ui:fragment rendered="#{fn:length(metadataBean.events) > 0}">
-                        <div id="widgetMetadata" class="widget widget-metadata">
-                            <ui:repeat value="#{metadataBean.events}" var="event">
-                                <ui:fragment rendered="#{event.hasSidebarMetadata}">
-                                <h2 >#{msg[event.label]}</h2>
-                                <dl>
-                                    <ui:repeat value="#{event.sidebarMetadata}" var="metadata">
-                                        <h:panelGroup rendered="#{!metadata.blank}">
-                                            <dt>
-                                                <h:outputText value="#{msg[metadata.label]}:" escape="false" />
-                                            </dt>
-                                            <h:panelGroup>
-                                                <dd>
-                                                    <ui:repeat value="#{metadata.values}" var="val">
-                                                        <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
-                                                        </h:outputFormat>
-                                                    </ui:repeat>
-                                                </dd>
-                                            </h:panelGroup>
-                                        </h:panelGroup>
-                                    </ui:repeat>
-                                    </dl>
-                                </ui:fragment>
-                            </ui:repeat>
-                        </div>
-                    </ui:fragment>
+			<!-- LIDO -->
+			<ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.lidoRecord}">
+	              
+	                  <!-- LIDO event sidebar metadata (event metadata explicitly configured in the sidebar metadata list) -->
+	                  <ui:fragment rendered="#{fn:length(metadataBean.events) > 0}">
+	                      <div id="widgetMetadata" class="widget widget-metadata">
+	                          <ui:repeat value="#{metadataBean.events}" var="event">
+	                              <ui:fragment rendered="#{event.hasSidebarMetadata}">
+	                              <h2>#{msg[event.label]}</h2>
+	                              <dl>
+	                                  <ui:repeat value="#{event.sidebarMetadata}" var="metadata">
+	                                      <h:panelGroup rendered="#{!metadata.blank}">
+	                                          <dt>
+	                                              <h:outputText value="#{msg[metadata.label]}:" escape="false" />
+	                                          </dt>
+	                                          <h:panelGroup>
+	                                              <dd>
+	                                                  <ui:repeat value="#{metadata.values}" var="val">
+	                                                      <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
+	                                                      </h:outputFormat>
+	                                                  </ui:repeat>
+	                                              </dd>
+	                                          </h:panelGroup>
+	                                      </h:panelGroup>
+	                                  </ui:repeat>
+	                                  </dl>
+	                              </ui:fragment>
+	                          </ui:repeat>
+	                      </div>
+	                  </ui:fragment>
+                  
+           	</ui:fragment>
                     
-                </ui:fragment>
-                    
-            <script type="text/javascript">
-                var normdataWidgetConfig = {
-                    path: "#{request.contextPath}",
-                    lang: {
-                        popoverTitle: "#{msg.normdataPopoverTitle}",
-                        popoverClose: "#{msg.normdataPopoverClose}",
-                        showNormdata: "#{msg.normdataExpand}"
-                    },
-                    elemWrapper: $( "#widgetMetadata" )
-                };
-                
-                viewerJS.normdata.init( normdataWidgetConfig );
-            </script>
+	        <script type="text/javascript">
+	            var normdataWidgetConfig = {
+	                path: "#{request.contextPath}",
+	                lang: {
+	                    popoverTitle: "#{msg.normdataPopoverTitle}",
+	                    popoverClose: "#{msg.normdataPopoverClose}",
+	                    showNormdata: "#{msg.normdataExpand}"
+	                },
+	                elemWrapper: $( "#widgetMetadata" )
+	            };
+	            
+	            viewerJS.normdata.init( normdataWidgetConfig );
+	        </script>
 		</h:panelGroup>
 	</composite:implementation>
 </ui:composition>

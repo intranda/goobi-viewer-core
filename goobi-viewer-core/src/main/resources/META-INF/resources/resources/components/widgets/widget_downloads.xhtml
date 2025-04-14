@@ -14,24 +14,29 @@
 	</composite:interface>
 
 	<composite:implementation>
-			<div jsf:id="widgetDownloads" class="widget widget-downloads" rendered="#{activeDocumentBean.viewManager != null and displayConditions.getTag('widgetDownloads').getChildCount('widget-element') > 0}"
-			data-numChildren="#{displayConditions.getTag('widgetDownloadsBody').getChildCount('widget-element')}">
-				<div class="widget-downloads__topbar widget__topbar">
-					<!-- WIDGET TITLE -->
-					<h2 tabindex="0" role="button"
-						class="widget__title widget-downloads__title #{cc.attrs.collapsible  ? 'collapseable' : ''}">
-						<span>#{msg.widget__downloads__title}</span> 
+			<div 
+				jsf:id="widgetDownloads" 
+				class="widget widget-downloads" 
+				rendered="#{activeDocumentBean.viewManager != null and displayConditions.getTag('widgetDownloads').getChildCount('widget-element') > 0}"
+				data-numChildren="#{displayConditions.getTag('widgetDownloadsBody').getChildCount('widget-element')}"
+			>
+				<div class="widget__topbar widget-downloads__topbar">
+					<h2 
+						tabindex="0" 
+						role="button"
+						class="widget__title widget-downloads__title #{cc.attrs.collapsible  ? 'collapseable' : ''}"
+					>
+						#{msg.widget__downloads__title}
 						<div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
 							<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
 						</div>
-						<i class="fa fa-angle-down"
-							aria-hidden="true"></i>
+						<i class="fa fa-angle-down" aria-hidden="true"></i>
 					</h2>
 				</div>
 
 				<!-- WIDGET BODY -->
 				<div id="widgetDownloadsBody"
-					class="widget__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
+					class="widget__body widget-downloads__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
 					<!-- INTRODUCTION TEXT -->
 					<ui:fragment
 						rendered="#{fn:length(msg['widget__downloads__intro_text_object_downloads']) > 0 and displayConditions.matchRecord('{pageType:[viewObject, cmsPage]}') }">

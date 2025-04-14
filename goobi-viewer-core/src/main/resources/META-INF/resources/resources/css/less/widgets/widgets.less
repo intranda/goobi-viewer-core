@@ -6,76 +6,80 @@
 /* BLOcK */
 .widget {
   margin-bottom: 20px;
-  /* ELEMENT */
-  h1 {
-    word-break: break-word;
+  width: 100%;
+  
+  &__topbar {
+  	padding: 0.7rem 1.5rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+  	
+  	.fa {
+		margin-left: auto;
+  	 }
   }
-  ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  li {
-    &.active {
-      a {
-      }
-    }
-    &.unpublished {
-      a {
-        font-style: italic;
-        opacity: 0.5;
-      }
-    }
-  }
-  a {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    &:hover,
-    &:active,
-    &:focus {
-    }
-  }
-  dl {
-    margin: 0;
-  }
-  dt {
-    a {
-      text-overflow: ellipsis;
-      overflow: hidden;
-    }
-  }
-  dd {
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
+
   &__title {
-    display: flex;
-    align-items: center;
-    .fa {
-      display: none;
-      margin-left: auto;
-      transition: all 0.2s linear;
-    }
-    &.collapseable {
-      cursor: pointer;
-      .fa {
-        font-size: @fontNormal;
-        display: inline-block;
-      }
-      &.in {
-        .fa-angle-down {
-          transform: rotate(-180deg);
-        }
-      }
-    }
+  	  margin-top: 0;
+  	  margin-bottom: 0;
+	  display: flex;
+	  
+	  &.collapseable {
+	  	cursor: pointer;
+
+	  .fa {
+	        font-size: @fontNormal;
+	        display: inline-block;
+	      }
+
+	      &.in {
+	        .fa-angle-down {
+	          transform: rotate(-180deg);
+	        }
+	      }
+	  }
   }
+
   &__body {
-    padding: 10px;
-    word-break: break-word;
-    &.collapseable {
-      display: none;
-    }
+  	padding: 1rem 1.5rem;
+	word-break: break-word;
+	
+	&.collapseable {
+	    display: none;
+	}
+	
+	a {
+		display: block;
+		padding: 0.5rem 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	
+	ul {
+	    list-style: none;
+	    margin: 0;
+	    padding: 0;
+	}
+	
+	li {
+	  &.unpublished {
+	    a {
+	      font-style: italic;
+	      opacity: 0.5;
+	    }
+	  }
+	}
+	
+	dl {
+	  margin: 0;
+	}
+	
+	dd {
+	  text-overflow: ellipsis;
+	  overflow: hidden;
+	}
   }
+
   &__badge-container {
 	margin-bottom: 18px;
 	display: flex;
@@ -86,26 +90,16 @@
 	&:nth-last-child(2) + .widget__badge-container {
 		margin-bottom: 5px;
 	}
-	a, form, button {
 
-	}
 	.badge {
 		padding: 0.5rem 0.7rem;
-		// line-height: 1.2rem; 
-		min-height: 24px;
 		display: inline-flex;
-		font-size: 12px;
 		border: none;
 		align-items: center;
 		gap: 4px;
-		&:hover,  
-		&:active,
-		&:focus {
-			color: @white; 
-			background-color: @labelHoverGray;
-		}
 	}
   }
+  
   &__badge-container-heading {
 	 margin-bottom: 0px;
 	 flex: 0 0 100%;
