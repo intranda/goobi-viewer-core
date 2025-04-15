@@ -131,7 +131,7 @@
             for (let i = this.opts.firstItem; i < lastItem; i++) {
                 result.push(i);
             }
-            console.log("get first items", result);
+            // console.log("get first items", result);
             return result;
         }
 

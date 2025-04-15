@@ -68,7 +68,7 @@ var viewerJS = ( function( viewer ) {
 				if ($(".admin__sidebar").length) {
 					$(".admin__sidebar-inner").hcSticky({
 						stickTo: $('.admin')[0],
-						innerTop: 0
+						innerTop: -35
 					});
 				}
 	

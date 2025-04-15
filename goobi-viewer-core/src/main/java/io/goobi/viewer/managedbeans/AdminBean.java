@@ -59,6 +59,7 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.administration.MaintenanceMode;
 import io.goobi.viewer.model.job.download.DownloadJobTools;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
@@ -74,6 +75,7 @@ import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.solr.SolrConstants;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.event.ValueChangeEvent;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.servlet.http.Part;
@@ -113,6 +115,7 @@ public class AdminBean implements Serializable {
     private UserRole currentUserRole = null;
     private IpRange currentIpRange = null;
     private TranslationGroup currentTranslationGroup = null;
+    private MaintenanceMode maintenanceMode;
 
     /** Current password for password change */
     private String currentPassword = null;
@@ -771,6 +774,36 @@ public class AdminBean implements Serializable {
      */
     public void resetCurrentIpRangeAction() {
         currentIpRange = new IpRange();
+    }
+
+    /**
+     * <p>
+     * saveMaintenanceModeAction.
+     * </p>
+     *
+     * @return Navigation outcome
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public String saveMaintenanceModeAction() throws DAOException {
+        if (DataManager.getInstance().getDao().updateMaintenanceMode(getMaintenanceMode())) {
+            Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
+        } else {
+            Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
+            return "pretty:adminIpRangeEdit";
+        }
+
+        return "pretty:adminMaintenanceMode";
+    }
+
+    /**
+     * This method must accept a {@link ValueChangeEvent} to work as a passed action method of a toggleSwitch component.
+     * 
+     * @param event
+     * @throws DAOException
+     */
+    public void saveMaintenanceModeActionListener(ValueChangeEvent event) throws DAOException {
+        logger.trace("saveMaintenanceModeActionListener");
+        saveMaintenanceModeAction();
     }
 
     /*********************************** Getter and Setter ***************************************/
@@ -1627,5 +1660,26 @@ public class AdminBean implements Serializable {
      */
     public Part getUploadedAvatarFile() {
         return uploadedAvatarFile;
+    }
+
+    /**
+     * @return the maintenanceMode
+     */
+    public MaintenanceMode getMaintenanceMode() {
+        if (this.maintenanceMode == null) {
+            try {
+                this.maintenanceMode = DataManager.getInstance().getDao().getMaintenanceMode();
+            } catch (DAOException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+        return maintenanceMode;
+    }
+
+    /**
+     * @param maintenanceMode the maintenanceMode to set
+     */
+    public void setMaintenanceMode(MaintenanceMode maintenanceMode) {
+        this.maintenanceMode = maintenanceMode;
     }
 }
