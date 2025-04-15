@@ -168,9 +168,8 @@ public class Configuration extends AbstractConfiguration {
             } catch (ConfigurationException e) {
                 logger.error(e.getMessage(), e);
             }
-            builder.addEventListener(ConfigurationBuilderEvent.CONFIGURATION_REQUEST, event -> {
-                builder.getReloadingController().checkForReloading(null);
-            });
+            builder.addEventListener(ConfigurationBuilderEvent.CONFIGURATION_REQUEST,
+                    event -> builder.getReloadingController().checkForReloading(null));
         } else {
             logger.error("Default configuration file not found: {}; Base path is {}", builder.getFileHandler().getFile().getAbsoluteFile(),
                     builder.getFileHandler().getBasePath());
@@ -191,9 +190,8 @@ public class Configuration extends AbstractConfiguration {
             } catch (ConfigurationException e) {
                 logger.error(e.getMessage(), e);
             }
-            builderLocal.addEventListener(ConfigurationBuilderEvent.CONFIGURATION_REQUEST, event -> {
-                builderLocal.getReloadingController().checkForReloading(null);
-            });
+            builderLocal.addEventListener(ConfigurationBuilderEvent.CONFIGURATION_REQUEST,
+                    event -> builderLocal.getReloadingController().checkForReloading(null));
         }
 
         // Load stopwords
