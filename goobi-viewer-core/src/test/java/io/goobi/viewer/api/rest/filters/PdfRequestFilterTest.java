@@ -21,12 +21,22 @@
  */
 package io.goobi.viewer.api.rest.filters;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
-import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.container.ContainerRequestContext;
 
-class PdfRequestFilterTest extends AbstractTest {
+class PdfRequestFilterTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see PdfRequestFilter#getNumAllowedPages(int,int)
@@ -65,5 +75,41 @@ class PdfRequestFilterTest extends AbstractTest {
         Assertions.assertEquals(3, PdfRequestFilter.getNumAllowedPages(35, 10));
         Assertions.assertEquals(1, PdfRequestFilter.getNumAllowedPages(19, 10));
         Assertions.assertEquals(0, PdfRequestFilter.getNumAllowedPages(9, 10));
+    }
+
+    @Test
+    void test_shouldGrantAccess() throws IOException, PresentationException, IndexUnreachableException {
+        String pi = "15929110";
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        Mockito.when(session.getAttributeNames()).thenReturn(Collections.enumeration(List.of("pi")));
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getSession()).thenReturn(session);
+        Mockito.when(request.getAttribute("pi"))
+                .thenReturn(pi);
+        ContainerRequestContext context = Mockito.spy(ContainerRequestContext.class);
+
+        PdfRequestFilter filter = new PdfRequestFilter(request);
+        filter.filter(context);
+
+        Mockito.verify(context, Mockito.never()).abortWith(Mockito.any());
+    }
+
+    @Test
+    void test_shouldRefuseAccess() throws IOException, PresentationException, IndexUnreachableException {
+        String pi = "PPNsas1_2_194";
+
+        HttpSession session = Mockito.mock(HttpSession.class);
+        Mockito.when(session.getAttributeNames()).thenReturn(Collections.enumeration(List.of("pi")));
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getSession()).thenReturn(session);
+        Mockito.when(request.getAttribute("pi"))
+                .thenReturn(pi);
+        ContainerRequestContext context = Mockito.spy(ContainerRequestContext.class);
+
+        PdfRequestFilter filter = new PdfRequestFilter(request);
+        filter.filter(context);
+
+        Mockito.verify(context).abortWith(Mockito.any());
     }
 }

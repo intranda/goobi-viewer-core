@@ -116,6 +116,7 @@ import io.goobi.viewer.model.calendar.CalendarView;
 import io.goobi.viewer.model.citation.Citation;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
+import io.goobi.viewer.model.citation.CitationList;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.files.external.ExternalFilesDownloader;
@@ -213,7 +214,7 @@ public class ViewManager implements Serializable {
     private Pair<Optional<String>, Optional<String>> archiveTreeNeighbours = Pair.of(Optional.empty(), Optional.empty());
     private List<CopyrightIndicatorStatus> copyrightIndicatorStatuses = null;
     private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
-    private Map<CitationLinkLevel, List<CitationLink>> citationLinks = new HashMap<>();
+    private Map<CitationLinkLevel, CitationList> citationLinks = new HashMap<>();
     private List<String> externalResourceUrls = null;
     private List<PhysicalResource> downloadResources = null;
 
@@ -4196,12 +4197,14 @@ public class ViewManager implements Serializable {
         }
 
         // Populate values
-        if (this.citationLinks.get(level) == null) {
-            this.citationLinks.put(level, CitationTools
-                    .generateCitationLinksForLevel(DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks(), level, this));
+        if (this.citationLinks.get(level) == null || !this.citationLinks.get(level).isCurrent(this)) {
+            this.citationLinks.put(level, new CitationList(CitationTools
+                    .generateCitationLinksForLevel(DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks(), level, this),
+                    level,
+                    this));
         }
 
-        return this.citationLinks.get(level);
+        return this.citationLinks.get(level).getList();
     }
 
     /**

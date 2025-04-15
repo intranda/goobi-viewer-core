@@ -137,11 +137,11 @@
 		* or if it should be full named (useShortFileNames=false, more secure option) 
 		* * sample: <contentCache useCache="false" path="/home/goobi/gcsCache" size="300"/> 
 		*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-	<contentCache useCache="true" useShortFileNames="false"/>
+	<contentCache useCache="false" useShortFileNames="false"/>
 
-	<thumbnailCache useCache="true" useShortFileNames="false"/>
+	<thumbnailCache useCache="false" useShortFileNames="false"/>
 		
-	<pdfCache useCache="true" path="/opt/digiverso/viewer/cache_pdf/" size="30000" useShortFileNames="false" />
+	<pdfCache useCache="false" path="/opt/digiverso/viewer/cache_pdf/" size="30000" useShortFileNames="false" />
 
 	<memoryUsage maximalParallelRequests="0" lowMemoryThreshold="1000000000"></memoryUsage>
 
