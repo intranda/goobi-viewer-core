@@ -28,9 +28,12 @@ import java.util.Optional;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.viewer.PageType;
@@ -55,6 +58,8 @@ import io.goobi.viewer.model.viewer.PageType;
 public class ViewerPath implements Serializable {
 
     private static final long serialVersionUID = 3200000636800001722L;
+
+    private static final Logger logger = LogManager.getLogger(SearchFunctionality.class);
 
     /**
      * The absolute url of the web-application, e.g. {@code "http://localhost:8080/viewer"}. The {@link #applicationName} is always the last part of
@@ -250,11 +255,27 @@ public class ViewerPath implements Serializable {
      * <p>
      * getCombinedPrettyfiedPath.
      * </p>
-     *
+     * 
+     * @param addQueryString If true, the GET query parameter part will be added
      * @return the entire {@link #getPrettifiedPagePath() prettified} url <b>except</b> the application url
      */
-    public URI getCombinedPrettyfiedPath() {
-        return ViewerPathBuilder.resolve(getPrettifiedPagePath(), getParameterPath(), "", getQueryString());
+    public URI getCombinedPrettyfiedPath(boolean addQueryString) {
+        if (addQueryString) {
+            return ViewerPathBuilder.resolve(getPrettifiedPagePath(), getParameterPath(), "", getQueryString());
+        }
+        return ViewerPathBuilder.resolve(getPrettifiedPagePath(), getParameterPath(), "", "");
+    }
+
+    /**
+     * <p>
+     * getCombinedPrettyfiedUrl.
+     * </p>
+     *
+     * @param addQueryString If true, the GET query parameter part will be added
+     * @return the entire {@link #getPrettifiedPagePath() prettified} url as a path <b>except</b> the application url
+     */
+    public String getCombinedPrettyfiedUrl(boolean addQueryString) {
+        return ("/" + getCombinedPrettyfiedPath(addQueryString).toString()).replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
     }
 
     /**
@@ -265,7 +286,7 @@ public class ViewerPath implements Serializable {
      * @return the entire {@link #getPrettifiedPagePath() prettified} url as a path <b>except</b> the application url
      */
     public String getCombinedPrettyfiedUrl() {
-        return ("/" + getCombinedPrettyfiedPath().toString()).replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
+        return getCombinedPrettyfiedUrl(true);
     }
 
     /**
