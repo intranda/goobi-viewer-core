@@ -1428,6 +1428,16 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * Safe reset method that prevents NPE in EL.
+     */
+    public void resetCurrentTranslationGroupStatusCount() {
+        TranslationGroup group = getCurrentTranslationGroup();
+        if (group != null) {
+            group.resetStatusCount();
+        }
+    }
+
+    /**
      * <p>
      * Setter for the field <code>currentTranslationGroup</code>.
      * </p>

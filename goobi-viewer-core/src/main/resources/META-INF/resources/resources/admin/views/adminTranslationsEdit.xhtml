@@ -10,9 +10,9 @@
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminTranslationsEdit', [[ adminBean.currentTranslationGroup.selectedEntry.newEntryMode ? 'admin__translations__add_new_entry':'admin__translations__translate_field', msg[adminBean.currentTranslationGroup.name]]])}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminTranslationsEdit', [[ adminBean.currentTranslationGroup.selectedEntry.newEntryMode ? 'admin__translations__add_new_entry':'admin__translations__translate_field', adminBean.currentTranslationGroup != null ? msg[adminBean.currentTranslationGroup.name] : '']])}" />
             <!-- reset TranslationGroup#fullyTranslatedEntryCount and TranslationGroup#untranslatedEntryCount to update progress bar. Gets called at every page reload and ajax call -->
-            <f:event type="preRenderView" listener="#{adminBean.currentTranslationGroup.resetStatusCount()}" />
+            <f:event type="preRenderView" listener="#{adminBean.resetCurrentTranslationGroupStatusCount()}" />
         </f:metadata>
     </ui:define>
 
