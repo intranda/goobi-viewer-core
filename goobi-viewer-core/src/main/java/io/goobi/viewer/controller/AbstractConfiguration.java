@@ -41,8 +41,12 @@ public abstract class AbstractConfiguration {
 
     private static final Logger logger = LogManager.getLogger(AbstractConfiguration.class);
 
+    private static final String MSG_FALLBACK_DEFAULT_CONFIG = "{} - Disabling local configuration until next file reload.";
+
     protected ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builder;
     protected ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builderLocal;
+
+    protected boolean localConfigDisabled = false;
 
     /**
      *
@@ -61,13 +65,17 @@ public abstract class AbstractConfiguration {
     /**
      *
      * @return {@link XMLConfiguration} that is synced with the current state of the config file
+     * @throws ConfigurationException
      */
     protected XMLConfiguration getConfigLocal() {
         if (builderLocal != null) {
             try {
                 return builderLocal.getConfiguration();
             } catch (ConfigurationException e) {
-                logger.trace(e.getMessage());
+                if (!localConfigDisabled) {
+                    logger.error(MSG_FALLBACK_DEFAULT_CONFIG, e.getMessage());
+                }
+                localConfigDisabled = true;
             }
         }
 
@@ -167,8 +175,7 @@ public abstract class AbstractConfiguration {
      * @return a {@link java.util.List} object.
      */
     protected List<Object> getLocalNodeList(String inPath) {
-        List<Object> objects = ((HierarchicalConfiguration<ImmutableNode>) getConfigLocal()).getList(inPath,
-                ((HierarchicalConfiguration<ImmutableNode>) getConfig()).getList(inPath));
+        List<Object> objects = getConfigLocal().getList(inPath, getConfig().getList(inPath));
         if (objects != null && !objects.isEmpty()) {
             List<Object> ret = new ArrayList<>(objects.size());
             for (Object obj : objects) {
@@ -297,7 +304,7 @@ public abstract class AbstractConfiguration {
         try {
             ret = getConfigLocal().configurationsAt(inPath);
             if (ret == null || ret.isEmpty()) {
-                throw new IllegalArgumentException();
+                ret = getConfig().configurationsAt(inPath);
             }
         } catch (IllegalArgumentException e) {
             ret = getConfig().configurationsAt(inPath);
