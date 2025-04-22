@@ -47,6 +47,7 @@ public abstract class AbstractConfiguration {
     protected ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builderLocal;
 
     protected boolean localConfigDisabled = false;
+    protected long localConfigDisabledTimestamp = 0;
 
     /**
      *
@@ -76,6 +77,7 @@ public abstract class AbstractConfiguration {
                     logger.error(MSG_FALLBACK_DEFAULT_CONFIG, e.getMessage());
                 }
                 localConfigDisabled = true;
+                localConfigDisabledTimestamp = System.currentTimeMillis();
             }
         }
 

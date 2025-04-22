@@ -195,10 +195,12 @@ public class Configuration extends AbstractConfiguration {
             logger.trace("adding event listener");
             builderLocal.addEventListener(ConfigurationBuilderEvent.CONFIGURATION_REQUEST,
                     event -> {
-                        logger.trace("request event");
+                        // logger.trace("request event");
                         if (builderLocal.getReloadingController().checkForReloading(null)) {
-                            localConfigDisabled = false;
-                            logger.info("Local configuration file '{}' reloaded.", fileLocal.getAbsolutePath());
+                            if (System.currentTimeMillis() - localConfigDisabledTimestamp > 1000) {
+                                localConfigDisabled = false;
+                                logger.info("Local configuration file '{}' reloaded.", fileLocal.getAbsolutePath());
+                            }
                         }
                     });
         }
@@ -239,6 +241,7 @@ public class Configuration extends AbstractConfiguration {
             return new HashSet<>();
         }
 
+        stopwordsFilePath = FileTools.adaptPathForWindows(stopwordsFilePath);
         Set<String> ret = new HashSet<>();
         try (FileReader fr = new FileReader(stopwordsFilePath); BufferedReader br = new BufferedReader(fr)) {
             String line;
