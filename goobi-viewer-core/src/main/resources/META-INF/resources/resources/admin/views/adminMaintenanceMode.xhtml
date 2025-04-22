@@ -46,13 +46,23 @@
 									<div class="control-label mr-3 admin__form-label">#{msg.admin__maintenance_mode_enabled_label}:</div>
 									<div class="admin__form-input">
 										<div class="col-9 admin__form-input">
-
-											<viewerComponent:toggleSwitch
-												name="maintenanceModeEnabledToggle"
-												value="#{adminBean.maintenanceMode.enabled}"
-												render=":messages"
-												toggleTarget="#maintenanceModeEditWrapper"
-												actionListener="#{adminBean.saveMaintenanceModeActionListener}" />
+                                            <!-- Using h:selectOneRadio here instead viewerComponent:toggleSwitch, because otherwise the Ajax listener won't be called. -->
+                                            <!-- A valueChangeListener, on the other hand, causes the listener to fire before the setter, saving the previous value. -->
+                                            <div class="admin__radio-switch" id="maintenanceModeActivateWrapper">
+                                                <h:selectOneRadio group="maintenanceModeEnabledToggle" value="#{adminBean.maintenanceMode.enabled}" disabled="false">
+                                                    <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
+                                                    <f:ajax render=":messages" execute="@this" listener="#{adminBean.maintenanceModeToggleChangedListener}" />
+                                                    <f:passThroughAttribute name="data-toggle-action" value="hide" />
+                                                    <f:passThroughAttribute name="data-toggle-target" value="#maintenanceModeEditWrapper" />
+                                                </h:selectOneRadio>
+                                                <h:selectOneRadio group="maintenanceModeEnabledToggle" value="#{adminBean.maintenanceMode.enabled}" disabled="false">
+                                                    <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
+                                                    <f:ajax render=":messages" execute="@this" listener="#{adminBean.maintenanceModeToggleChangedListener}" />
+                                                    <f:passThroughAttribute name="data-toggle-action" value="show" />
+                                                    <f:passThroughAttribute name="data-toggle-target" value="#maintenanceModeEditWrapper" />
+                                                </h:selectOneRadio>
+                                                <span class="toggle-outside"><span class="toggle-inside"></span></span>
+                                            </div>
 										</div>
 									</div>
 								</div>
