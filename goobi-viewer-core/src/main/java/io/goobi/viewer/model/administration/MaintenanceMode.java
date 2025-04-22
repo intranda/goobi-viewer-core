@@ -5,12 +5,15 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import io.goobi.viewer.api.rest.serialization.TranslationListSerializer;
+import io.goobi.viewer.dao.impl.JPADAO;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.Translation;
@@ -28,6 +31,8 @@ import jakarta.persistence.Transient;
 @Entity
 @Table(name = "maintenance_mode")
 public class MaintenanceMode implements IPolyglott {
+    
+    private static final Logger logger = LogManager.getLogger(MaintenanceMode.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -77,6 +82,7 @@ public class MaintenanceMode implements IPolyglott {
      * @param enabled the enabled to set
      */
     public void setEnabled(boolean enabled) {
+        logger.trace("setEnabled: {}", enabled);
         this.enabled = enabled;
     }
 

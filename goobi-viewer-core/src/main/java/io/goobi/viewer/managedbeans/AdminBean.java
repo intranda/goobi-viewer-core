@@ -75,7 +75,7 @@ import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.solr.SolrConstants;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.event.ValueChangeEvent;
+import jakarta.faces.event.AjaxBehaviorEvent;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.servlet.http.Part;
@@ -796,13 +796,14 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * This method must accept a {@link ValueChangeEvent} to work as a passed action method of a toggleSwitch component.
+     * Ajax event listener for saving the maintenance mode after the enabled/disabled status has been toggled. Using a valueChangeListener instead
+     * (via viewerComponent:toggleSwitch) resulted in the listener firing before the setter.
      * 
-     * @param event
+     * @param event {@link AjaxBehaviorEvent}
      * @throws DAOException
      */
-    public void saveMaintenanceModeActionListener(ValueChangeEvent event) throws DAOException {
-        logger.trace("saveMaintenanceModeActionListener");
+    public void maintenanceModeToggleChangedListener(AjaxBehaviorEvent event) throws DAOException {
+        // logger.trace("maintenanceModeToggleChangedListener"); //NOSONAR Debug
         saveMaintenanceModeAction();
     }
 
