@@ -11,64 +11,67 @@
 	<composite:implementation>
 		<!-- (ADMIN) WIDGET FOR ARCHIVE INTERACTIONS -->
 		<h:panelGroup rendered="#{userBean.loggedIn and userBean.admin}">
-			<div id="widgetArchivesInteractions"
-				class="widget widget-archives-interactions">
-				<h:form id="widgetArchivesInteractionsStandardForm"
-					prependId="false">
-					<h2>#{msg.menuUser_workInteractions}</h2>
+			<div id="widgetArchivesInteractions"class="widget widget-archives-interactions">
+				<h:form id="widgetArchivesInteractionsStandardForm" prependId="false">
+					<div class="widget__topbar widget-archives-interactions__topbar">
+						<h2 class="widget__title widget-archives-interactions__title">
+							#{msg.menuUser_workInteractions}
+						</h2>
+					</div>
 					<!-- <h3>#{msg.archives__current_collection}</h3> -->
-					<ul>
-						<!-- RE-INDEX ARCHIVE -->
-						<h:panelGroup rendered="#{userBean.admin}">
-							<li><h:commandLink
-									action="#{archiveBean.reIndexArchiveAction}">
-	                                   #{msg.archives__widget__action_reindex_archive}
-	                               </h:commandLink></li>
-						</h:panelGroup>
-
-						<!-- 						<h3>#{msg.archives__widget__single_unit}</h3> -->
-						<!-- 						<ul> -->
-						<!-- LINK CMS PAGE -->
-						<!-- 							<h:panelGroup rendered="#{userBean.user.cmsAdmin}"> -->
-						<!-- 								<li><a -->
-						<!-- 									href="#{cmsPageEditBean.createAndOpenNewPage(msg.overviewPage, archiveBean.currentArchive.resourceId)}">#{msg.action__create_linked_cms_page__label}</a> -->
-						<!-- 								</li> -->
-						<!-- 							</h:panelGroup> -->
-						<!-- ADD RECORD NOTES -->
-						<!--                         <h:panelGroup  rendered="#{userBean.admin}"> -->
-						<!--                             <li> -->
-						<!--                             	<a href="#{request.contextPath}/admin/cms/recordnotes/new/?pi=#{archiveBean.currentArchive.resourceId}"> #{msg.cms__record_notes__add_note}</a> -->
-						<!--                             </li> -->
-						<!--                         </h:panelGroup> -->
-
-
-						<!-- 						</ul> -->
-
-						<!-- DOWNLOAD EAD FILE -->
-						<h:panelGroup rendered="#{userBean.user.cmsAdmin}">
-							<li>
-		                        <ui:fragment visibility-class="widget-element">
-		                            <a href="#{archiveBean.eadResolverUrl}" download="true" target="_blank"> 
-		                                #{msg.archives__widget__action_download_archive}
-		                            </a>
-		                        </ui:fragment>
-							</li>
-						</h:panelGroup>
-
-						<!-- DELETE ARCHIVE -->
-						<h:panelGroup rendered="#{userBean.admin}">
-							<li>
-
-								<button class="widget-archives-interactions__delete-button"
-									data-require-confirmation="true"
-									data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.archives__widget__action_delete_confirmation)}"
-									jsf:action="#{archiveBean.deleteArchiveAction}"
-									aria-label="#{msg.delete}: #{ticket.id}">
-									#{msg.archives__widget__action_delete_archive}</button> 
-
-							</li>
-						</h:panelGroup>
-					</ul>
+					<div class="widget__body widget-archives-interactions__body">
+						<ul>
+							<!-- RE-INDEX ARCHIVE -->
+							<h:panelGroup rendered="#{userBean.admin}">
+								<li>
+									<h:commandLink action="#{archiveBean.reIndexArchiveAction}">
+		                             	#{msg.archives__widget__action_reindex_archive}
+		                            </h:commandLink>
+		                        </li>
+							</h:panelGroup>
+	
+							<!-- 						<h3>#{msg.archives__widget__single_unit}</h3> -->
+							<!-- 						<ul> -->
+							<!-- LINK CMS PAGE -->
+							<!-- 							<h:panelGroup rendered="#{userBean.user.cmsAdmin}"> -->
+							<!-- 								<li><a -->
+							<!-- 									href="#{cmsPageEditBean.createAndOpenNewPage(msg.overviewPage, archiveBean.currentArchive.resourceId)}">#{msg.action__create_linked_cms_page__label}</a> -->
+							<!-- 								</li> -->
+							<!-- 							</h:panelGroup> -->
+							<!-- ADD RECORD NOTES -->
+							<!--                         <h:panelGroup  rendered="#{userBean.admin}"> -->
+							<!--                             <li> -->
+							<!--                             	<a href="#{request.contextPath}/admin/cms/recordnotes/new/?pi=#{archiveBean.currentArchive.resourceId}"> #{msg.cms__record_notes__add_note}</a> -->
+							<!--                             </li> -->
+							<!--                         </h:panelGroup> -->
+	
+	
+							<!-- 						</ul> -->
+	
+							<!-- DOWNLOAD EAD FILE -->
+							<h:panelGroup rendered="#{userBean.user.cmsAdmin}">
+								<li>
+			                        <ui:fragment visibility-class="widget-element">
+			                            <a href="#{archiveBean.eadResolverUrl}" download="true" target="_blank"> 
+			                                #{msg.archives__widget__action_download_archive}
+			                            </a>
+			                        </ui:fragment>
+								</li>
+							</h:panelGroup>
+	
+							<!-- DELETE ARCHIVE -->
+							<h:panelGroup rendered="#{userBean.admin}">
+								<li>
+									<button class="widget-archives-interactions__delete-button"
+										data-require-confirmation="true"
+										data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.archives__widget__action_delete_confirmation)}"
+										jsf:action="#{archiveBean.deleteArchiveAction}"
+										aria-label="#{msg.delete}: #{ticket.id}">
+										#{msg.archives__widget__action_delete_archive}</button> 
+								</li>
+							</h:panelGroup>
+						</ul>
+					</div>
 				</h:form>
 			</div>
 		</h:panelGroup>
