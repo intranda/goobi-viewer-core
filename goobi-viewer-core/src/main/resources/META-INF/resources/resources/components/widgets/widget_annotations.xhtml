@@ -19,19 +19,21 @@
 		<h:panelGroup
 			rendered="#{!configurationBean.displayUserGeneratedContentBelowImage and not empty contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).stream().filter(content -> !content.isEmpty() and content.type != 'GEOLOCATION').toList()}">
 			<div id="widgetAnnotations" class="widget widget-annotations">
-
 				<!-- TODO: IF MORE THAN 3 annotations > ELEMENT COLLAPSED -->
-				<h2
-					class="widget__title #{(cc.attrs.collapsible and contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() gt 3) ? 'collapseable' : ''}">
-					<span>#{msg.admin__crowdsourcing_annotations}</span> 
+				<div class="widget__topbar widget-annotations__topbar #{(cc.attrs.collapsible and contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() gt 3) ? 'collapseable' : ''}">
+					<h2 class="widget__title widget-annotations__title">
+						#{msg.admin__crowdsourcing_annotations}
+					</h2>
 					<div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
 						<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
 					</div>	
 					<i class="fa fa-angle-down" aria-hidden="true"></i>
-				</h2>
+				</div>
 
-				<h:panelGroup layout="block" 
-					styleClass="widget__body #{(cc.attrs.collapsible and contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() gt 3) ? 'collapseable' : ''}">
+				<h:panelGroup 
+					layout="block" 
+					styleClass="widget__body widget-annotations__body #{(cc.attrs.collapsible and contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() gt 3) ? 'collapseable' : ''}"
+				>
 					<viewerComponent:annotationList id="widgetAnnotationList" contentList="#{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi)}" sidebar="true"/>
 				</h:panelGroup>
 			</div>

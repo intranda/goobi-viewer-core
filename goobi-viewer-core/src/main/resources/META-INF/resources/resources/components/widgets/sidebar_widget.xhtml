@@ -19,18 +19,17 @@
 	<composite:implementation>
 		<div>children: #{displayConditions.getTag(cc.clientId).getChildCount('widget-element')}</div>
 	
-		<div class="widget #{cc.attrs.styleClass}" jsf:id="#{cc.clientId}">
+		<div class="widget widget-sidebar #{cc.attrs.styleClass}" jsf:id="#{cc.clientId}">
 		
-			<div class="widget__topbar">
-				<h2 role="button" class="widget__title #{cc.attrs.collapsible ? 'collapseable' : ''}">
-					<span>#{cc.attrs.widgetTitle}</span> 
-					<i class="fa fa-angle-down" aria-hidden="true"></i>
+			<div class="widget__topbar widget-sidebar__topbar #{cc.attrs.collapsible ? 'collapseable' : ''}">
+				<h2 role="button" class="widget__title">
+					#{cc.attrs.widgetTitle}
 				</h2>
+				<i class="fa fa-angle-down" aria-hidden="true"></i>
 			</div>
 
 			<div class="widget__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
 				<composite:insertChildren ></composite:insertChildren>
-
 			</div>
 
 		</div>
