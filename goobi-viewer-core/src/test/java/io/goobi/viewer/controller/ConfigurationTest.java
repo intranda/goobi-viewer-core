@@ -2564,7 +2564,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void testBrokenConfig() {
         DataManager.getInstance()
-                .injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_broken.test.xml").getAbsolutePath()));
+                .injectConfiguration(new Configuration(new File("src/test/resources/localConfig/config_viewer_broken.test.xml").getAbsolutePath()));
         assertEquals("src/test/resources/localConfig/", DataManager.getInstance().getConfiguration().getConfigLocalPath());
         assertEquals("src/test/resources/data/viewer/broken", DataManager.getInstance().getConfiguration().getViewerHome());
         assertEquals("src/test/resources/data/viewer/data/broken", DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
