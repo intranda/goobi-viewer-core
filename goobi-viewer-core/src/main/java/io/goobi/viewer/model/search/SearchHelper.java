@@ -2231,7 +2231,7 @@ public final class SearchHelper {
             throw new IllegalArgumentException("query may not be null");
         }
 
-        String q = query.replace(":", " ");
+        String q = query;
         Set<String> stopwords = DataManager.getInstance().getConfiguration().getStopwords();
         // Do not extract a currently set discriminator value
         if (StringUtils.isNotEmpty(discriminatorValue)) {
