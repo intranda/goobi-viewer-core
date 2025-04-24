@@ -102,9 +102,9 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
             SearchQueryItem item = new SearchQueryItem();
             item.setOperator(SearchItemOperator.OR);
             item.setField(SolrConstants.DEFAULT);
-            item.setValue("[foo] :bar:");
+            item.setValue("[foo] {bar}");
             Set<String> searchTerms = new HashSet<>(2);
-            Assertions.assertEquals("(SUPERDEFAULT:(\\[foo\\] AND \\:bar\\:) DEFAULT:(\\[foo\\] AND \\:bar\\:))",
+            Assertions.assertEquals("(SUPERDEFAULT:(\\[foo\\] AND \\{bar\\}) DEFAULT:(\\[foo\\] AND \\{bar\\}))",
                     item.generateQuery(searchTerms, true, false));
         }
         {
