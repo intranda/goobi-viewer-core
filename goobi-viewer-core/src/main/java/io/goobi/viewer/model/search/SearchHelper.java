@@ -115,7 +115,9 @@ public final class SearchHelper {
     /** Constant <code>PARAM_NAME_FILTER_QUERY_SUFFIX="filterQuerySuffix"</code> */
     public static final String PARAM_NAME_FILTER_QUERY_SUFFIX = "filterQuerySuffix";
     /** Constant <code>SEARCH_TERM_SPLIT_REGEX</code> */
-    public static final String SEARCH_TERM_SPLIT_REGEX = "[ ,・]";
+    public static final String SEARCH_QUERY_SPLIT_REGEX = "[ ,・]";
+    /** Regex for splitting search values (including colons). */
+    public static final String SEARCH_TERM_SPLIT_REGEX = "[ ,・:]";
     /** Constant <code>PLACEHOLDER_HIGHLIGHTING_START="##HLS##"</code> */
     public static final String PLACEHOLDER_HIGHLIGHTING_START = "##ĦŁ$##";
     /** Constant <code>PLACEHOLDER_HIGHLIGHTING_END="##HLE##"</code> */
@@ -2229,7 +2231,7 @@ public final class SearchHelper {
             throw new IllegalArgumentException("query may not be null");
         }
 
-        String q = query;
+        String q = query.replace(":", " ");
         Set<String> stopwords = DataManager.getInstance().getConfiguration().getStopwords();
         // Do not extract a currently set discriminator value
         if (StringUtils.isNotEmpty(discriminatorValue)) {
@@ -2301,7 +2303,7 @@ public final class SearchHelper {
         }
 
         // Split into FIELD:value pairs
-        String[] querySplit = q.split(SEARCH_TERM_SPLIT_REGEX);
+        String[] querySplit = q.split(SEARCH_QUERY_SPLIT_REGEX);
         String currentField = null;
         for (final String queryPart : querySplit) {
             String s = queryPart.replace("@", " ").trim();
