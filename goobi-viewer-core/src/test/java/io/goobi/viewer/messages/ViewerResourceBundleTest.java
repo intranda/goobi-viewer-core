@@ -24,7 +24,6 @@ package io.goobi.viewer.messages;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -133,8 +132,12 @@ class ViewerResourceBundleTest extends AbstractTest {
         List<Locale> locales = Arrays.asList(new Locale[] { Locale.ENGLISH, Locale.GERMAN });
         Assertions.assertEquals(2, locales.size());
 
+        String origConfigLocalPath = DataManager.getInstance().getConfiguration().getConfigLocalPath();
+        DataManager.getInstance().getConfiguration().overrideValue("configFolder", "target/config_temp/");
+        Assertions.assertEquals("target/config_temp/", DataManager.getInstance().getConfiguration().getConfigLocalPath());
+
         // Create config folder
-        Path configFolder = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath(), "config_temp");
+        Path configFolder = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
         try {
             if (!Files.exists(configFolder)) {
                 Files.createDirectories(configFolder);
@@ -159,6 +162,7 @@ class ViewerResourceBundleTest extends AbstractTest {
             if (Files.exists(configFolder)) {
                 FileUtils.deleteDirectory(configFolder.toFile());
             }
+            DataManager.getInstance().getConfiguration().overrideValue("configFolder", origConfigLocalPath);
         }
     }
 
