@@ -31,11 +31,12 @@
 
 						<div class="admin__content-inner-content">
 
-							<div class="cms-create-page__choose-template-wrapper">
+
+							<div class="admin__entry-list">
 								<ui:fragment
 									rendered="#{userBean.user.hasPriviledgeForAllTemplates()}">
 
-									<div class="cms-create-page__choose-template-box">
+									<div class="admin__boxed-entry -std-bottom-pad -w33 cms-create-page__choose-template-box">
 										<div class="cms-create-page__choose-template-box-start">
 											<img
 												src="#{request.contextPath}/resources/images/backend/empty_template.jpg"
@@ -52,7 +53,7 @@
 										</div>
 									</div>
 
-									<div class="cms-create-page__choose-template-box">
+									<div class="admin__boxed-entry -std-bottom-pad -w33 cms-create-page__choose-template-box">
 										<div class="cms-create-page__choose-template-box-start">
 											<img
 												src="#{request.contextPath}/resources/images/backend/template_selection.jpg"
@@ -69,7 +70,7 @@
 									</div>
 
 
-									<div class="cms-create-page__choose-template-box">
+									<div class="admin__boxed-entry -std-bottom-pad -w33 cms-create-page__choose-template-box">
 
 										<div class="cms-create-page__choose-template-box-start">
 											<img
@@ -100,19 +101,19 @@
 
 							<div class="cms-select-template__filters">
 								<button type="button"
-									onclick="setTemplateFilter('.admin__entry-list-grid .admin__boxed-entry', this)"
+									onclick="setTemplateFilter('.cms_select-template__list .admin__boxed-entry', this)"
 									class="admin__content-component-option -active">#{msg.cms__template_selection_option__all}
 								</button>
 								<button type="button"
-									onclick="setTemplateFilter('.admin__entry-list-grid .-published:not(.-legacy-template)', this)"
+									onclick="setTemplateFilter('.cms_select-template__list .-published:not(.-legacy-template)', this)"
 									class="admin__content-component-option">#{msg.cms__template_selection_option__published}
 								</button>
 								<button type="button"
-									onclick="setTemplateFilter('.admin__entry-list-grid .admin__boxed-entry:not(.-published)', this)"
+									onclick="setTemplateFilter('.cms_select-template__list .admin__boxed-entry:not(.-published)', this)"
 									class="admin__content-component-option">#{msg.cms__template_selection_option__not_published}
 								</button>
 								<button type="button"
-									onclick="setTemplateFilter('.admin__entry-list-grid .-legacy-template', this)"
+									onclick="setTemplateFilter('.cms_select-template__list .-legacy-template', this)"
 									class="admin__content-component-option">#{msg.cms__template_selection_option__legacy}
 								</button>
 
@@ -124,7 +125,7 @@
 
 								
 									function hideAll() {
-										$('.admin__entry-list-grid .admin__boxed-entry').hide();
+										$('.cms_select-template__list .admin__boxed-entry').hide();
 										if ($('.cms-select-template__single').length != 0) {
 											$('.cms-select-template__wrapper').show();
 										}
@@ -140,11 +141,11 @@
 							</div>
 
 							<div id="cmsSelectTemplateWrapper" data-target="cmsSelectTemplateList"
-								class="cms-select-template__wrapper admin__entry-list-grid -w25">
+								class="cms_select-template__list cms-select-template__wrapper admin__entry-list">
 								<ui:repeat value="#{cmsBean.getAllowedTemplates(userBean.user)}"
 									var="template">
 									<div
-										class="admin__boxed-entry -std-bottom-pad cms-select-template__single #{template.legacyTemplate ? '-legacy-template':''} #{template.published ? '-published':''}">
+										class="admin__boxed-entry -w25 cms-select-template__single #{template.legacyTemplate ? '-legacy-template':''} #{template.published ? '-published':''}">
 										<!-- TEMPLATE -->
 										<div class="d-flex flex-column h-100">
 											<div>

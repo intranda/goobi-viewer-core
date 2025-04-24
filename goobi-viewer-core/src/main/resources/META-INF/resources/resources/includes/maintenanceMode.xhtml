@@ -1,0 +1,35 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+	<!-- MAINTENANCE BANNER -->
+	<!-- ONLY RENDER IF ACTIVATED -->
+	<ui:fragment rendered="#{adminBean.maintenanceMode.enabled}">
+		<div id="maintenanceModeBanner" class="maintenance-banner">
+			<div id="maintenanceModeBanner" class="maintenance-banner__outer">
+				<div class="container">
+					<div class="maintenance-banner__wrapper">
+						<i class="fa fa-coffee maintenance-banner__icon"></i>
+						<h:outputText styleClass="maintenance-banner__text" escape="false"
+							value="#{adminBean.maintenanceMode.getText(navigationHelper.localeString)}"></h:outputText>
+						<button class="maintenance-banner__close-button" type="button" aria-label="#{msg.maintenance_mode__close_banner}"
+							data-trigger="closeMaintenanceInfo">
+							<i class="fa fa-times"></i>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+		$(document).ready(() => viewerJS.maintenanceMode.init());
+	    </script>
+	</ui:fragment>
+
+</ui:composition>

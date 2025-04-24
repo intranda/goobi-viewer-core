@@ -65,6 +65,8 @@ public class SearchFunctionality implements Functionality, SearchInterface {
 
     private static final Logger logger = LogManager.getLogger(SearchFunctionality.class);
 
+    private static final String ERROR_SEARCHBEAN_NULL = "Cannot search: SearchBean is null";
+
     private SearchBean searchBean = BeanUtils.getSearchBean();
 
     /**
@@ -106,6 +108,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      * @param keepUrlParameter a boolean.
      */
     public void redirectToSearchUrl(boolean keepUrlParameter) {
+        logger.trace("redirectToSearchUrl({})", keepUrlParameter);
         try {
             ViewerPathBuilder.createPath(BeanUtils.getRequest(), this.baseUrl).ifPresent(path -> {
                 if (path != null) {
@@ -113,8 +116,10 @@ public class SearchFunctionality implements Functionality, SearchInterface {
                         path.setParameterPath(getParameterPath());
                     }
                     final FacesContext context = FacesContext.getCurrentInstance();
-                    String redirectUrl = path.getApplicationName() + path.getCombinedPrettyfiedUrl();
+                    String redirectUrl = path.getApplicationName() + path.getCombinedPrettyfiedUrl(false);
                     redirectUrl = StringTools.appendTrailingSlash(redirectUrl);
+                    // Add GET params after the slash
+                    redirectUrl = redirectUrl + (StringUtils.isNotEmpty(path.getQueryString()) ? ("?" + path.getQueryString()) : "");
                     try {
                         context.getExternalContext().redirect(redirectUrl);
                     } catch (IOException e) {
@@ -132,7 +137,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     public String searchSimple() {
         logger.trace("searchSimple");
         if (getSearchBean() == null) {
-            logger.error("Cannot search: SearchBean is null");
+            logger.error(ERROR_SEARCHBEAN_NULL);
         } else {
             getSearchBean().searchSimple(true, false);
             redirectToSearchUrl(true);
@@ -145,7 +150,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     public String searchAdvanced() {
         logger.trace("searchAdvanced");
         if (getSearchBean() == null) {
-            logger.error("Cannot search: SearchBean is null");
+            logger.error(ERROR_SEARCHBEAN_NULL);
         } else {
             getSearchBean().searchAdvanced();
             redirectToSearchUrl(true);
@@ -161,7 +166,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     public void searchFacetted() {
         logger.trace("searchSimple");
         if (getSearchBean() == null) {
-            logger.error("Cannot search: SearchBean is null");
+            logger.error(ERROR_SEARCHBEAN_NULL);
         } else {
             getSearchBean().searchSimple(true, true);
             redirectToSearchUrl(true);
@@ -181,12 +186,11 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      */
     public void search(String subtheme) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("searchAction");
-        SearchBean searchBean = getSearchBean();
-        if (searchBean == null) {
-            logger.error("Cannot search: SearchBean is null");
+        if (getSearchBean() == null) {
+            logger.error(ERROR_SEARCHBEAN_NULL);
             return;
         }
-        searchBean.search(getCompleteFilterString(subtheme));
+        getSearchBean().search(getCompleteFilterString(subtheme));
     }
 
     /**

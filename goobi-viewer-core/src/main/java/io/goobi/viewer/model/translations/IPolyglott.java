@@ -47,7 +47,7 @@ public interface IPolyglott {
     public boolean isComplete(Locale locale);
 
     /**
-     * Only meaningfull for the default language for which all required fields must be filled
+     * Only meaningful for the default language for which all required fields must be filled
      *
      * @param locale
      * @return true if all required fields contain a value in the given locale

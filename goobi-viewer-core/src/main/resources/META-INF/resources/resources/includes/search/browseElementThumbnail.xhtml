@@ -20,7 +20,7 @@
 					value="#{navigationHelper.applicationUrl}#{browseElement.url}"
 					rendered="#{browseElement.thumbnailUrl != null and !browseElement.anchor}"
 					title="#{browseElement.label}">
-					<img data-src="#{browseElement.thumbnailUrl}"
+					<img src="#{browseElement.thumbnailUrl}"
 						alt="#{browseElement.label}" data-viewer-thumbnail="thumbnail" />
 				</h:outputLink>
 
@@ -30,7 +30,7 @@
 					rendered="#{browseElement.thumbnailUrl == null and !browseElement.anchor}"
 					title="#{browseElement.label}">
 					<img
-						data-src="/resources/themes/#{navigationHelper.theme}/images/image_not_found.png"
+						src="/resources/themes/#{navigationHelper.theme}/images/image_not_found.png"
 						alt="#{browseElement.label}" data-viewer-thumbnail="thumbnail" />
 				</h:outputLink>
 
@@ -39,7 +39,7 @@
 					value="#{navigationHelper.applicationUrl}#{browseElement.url}"
 					rendered="#{browseElement.anchor}" styleClass="stackedThumbEffect">
 					<div class="stackedThumbEffect-inner">
-						<img data-src="#{browseElement.thumbnailUrl}"
+						<img src="#{browseElement.thumbnailUrl}"
 							data-viewer-thumbnail="thumbnail"
 							class="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}"
 							alt="Thumbnail" />

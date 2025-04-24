@@ -64,7 +64,7 @@ class SolrEADParserTest extends AbstractSolrEnabledTest {
      * @verifies format timestamp correctly
      */
     @Test
-    void formatDate_shouldFormatTimestampCorrectly() throws Exception {
+    void formatDate_shouldFormatTimestampCorrectly() {
         Assertions.assertNull(SolrEADParser.formatDate(null));
         Assertions.assertEquals("2024-02-28T14:29:55Z",
                 SolrEADParser.formatDate(DateTools.getMillisFromLocalDateTime(LocalDateTime.of(2024, 02, 28, 14, 29, 55), false)));

@@ -3169,7 +3169,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getSidebarWidgetUsageCitationLinks_shouldReturnAllConfiguredValues() {
         List<CitationLink> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks();
-        assertEquals(3, result.size());
+        assertEquals(4, result.size());
         {
             CitationLink link = result.get(0);
             assertEquals(CitationLinkType.URL, link.getType());
@@ -3599,7 +3599,7 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @throws MalformedURLException
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      * @see Configuration#isHostProxyWhitelisted(String)
      * @verifies return true if host whitelisted
      */

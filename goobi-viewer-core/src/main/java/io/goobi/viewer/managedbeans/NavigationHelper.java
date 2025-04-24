@@ -508,8 +508,13 @@ public class NavigationHelper implements Serializable {
 
     }
 
+    /**
+     * 
+     * @param pageType
+     * @param labels
+     * @return List<LabeledLink>
+     */
     protected List<LabeledLink> createAdminBreadcrumbs(PageType pageType, List<List<String>> labels) {
-
         PageType breadcrumbType = pageType;
         List<LabeledLink> links = new ArrayList<>();
         Iterator<List<String>> labelIterator = labels.iterator();

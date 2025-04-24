@@ -977,12 +977,19 @@
     <url-mapping id="adminConfigEditorFilename">
         <pattern value="/admin/config/edit/#{currentFileName:adminConfigEditorBean.currentFileName}/" />
         <view-id value="/resources/admin/views/adminConfigEditor.xhtml" />
-    </url-mapping>
+    </url-mapping>   
 
+    <!-- MESSAGE QUEUE -->
     <url-mapping id="adminMessageQueue">
         <pattern value="/admin/tasks/" />
         <view-id value="/resources/admin/views/adminTasks.xhtml" />
     </url-mapping>
+    
+        <!-- MAINTENANCE MODE -->
+    <url-mapping id="adminMaintenanceMode">
+        <pattern value="/admin/maintenance/" />
+        <view-id value="/resources/admin/views/adminMaintenanceMode.xhtml" />
+    </url-mapping> 
 
     <!-- ADMIN STYLES FOR DEVS -->
     <url-mapping id="adminEditTranslations">
