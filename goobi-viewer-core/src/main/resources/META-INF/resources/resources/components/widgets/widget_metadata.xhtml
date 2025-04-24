@@ -109,24 +109,29 @@
 	                      <div id="widgetMetadata" class="widget widget-metadata">
 	                          <ui:repeat value="#{metadataBean.events}" var="event">
 	                              <ui:fragment rendered="#{event.hasSidebarMetadata}">
-	                              <h2>#{msg[event.label]}</h2>
-	                              <dl>
-	                                  <ui:repeat value="#{event.sidebarMetadata}" var="metadata">
-	                                      <h:panelGroup rendered="#{!metadata.blank}">
-	                                          <dt>
-	                                              <h:outputText value="#{msg[metadata.label]}:" escape="false" />
-	                                          </dt>
-	                                          <h:panelGroup>
-	                                              <dd>
-	                                                  <ui:repeat value="#{metadata.values}" var="val">
-	                                                      <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
-	                                                      </h:outputFormat>
-	                                                  </ui:repeat>
-	                                              </dd>
-	                                          </h:panelGroup>
-	                                      </h:panelGroup>
-	                                  </ui:repeat>
-	                                  </dl>
+	                              <div class="widget__topbar widget-metadata__topbar">
+	                              	  <h2 class="widget__title widget-metadata__title">#{msg[event.label]}</h2>
+	                              </div>
+	                              
+	                              <div class="widget__body widget-metadata__body">
+		                              <dl>
+		                                  <ui:repeat value="#{event.sidebarMetadata}" var="metadata">
+		                                      <h:panelGroup rendered="#{!metadata.blank}">
+		                                          <dt>
+		                                              <h:outputText value="#{msg[metadata.label]}:" escape="false" />
+		                                          </dt>
+		                                          <h:panelGroup>
+		                                              <dd>
+		                                                  <ui:repeat value="#{metadata.values}" var="val">
+		                                                      <h:outputFormat value="#{val.getDisplayValue(navigationHelper.locale)}" escape="false">
+		                                                      </h:outputFormat>
+		                                                  </ui:repeat>
+		                                              </dd>
+		                                          </h:panelGroup>
+		                                      </h:panelGroup>
+		                                  </ui:repeat>
+		                              </dl>
+	                              </div>
 	                              </ui:fragment>
 	                          </ui:repeat>
 	                      </div>
