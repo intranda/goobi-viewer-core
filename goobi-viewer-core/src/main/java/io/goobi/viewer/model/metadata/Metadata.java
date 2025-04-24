@@ -1515,4 +1515,9 @@ public class Metadata implements Serializable {
     public String getCombinedValue(String separator) {
         return this.getValues().stream().map(MetadataValue::getCombinedValue).collect(Collectors.joining(separator));
     }
+
+    public static Metadata forField(String field) {
+        return new Metadata(field, "{%s}".formatted(field), List.of(new MetadataParameter(MetadataParameterType.FIELD, field)));
+
+    }
 }

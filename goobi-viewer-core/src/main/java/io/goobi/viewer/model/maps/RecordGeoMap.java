@@ -50,6 +50,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
+import io.goobi.viewer.model.maps.coordinates.CoordinateReaderProvider;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataBuilder;
 import io.goobi.viewer.model.metadata.MetadataContainer;
@@ -244,7 +245,7 @@ public class RecordGeoMap {
                     .toList();
             for (DisplayUserGeneratedContent anno : annos) {
                 if (anno.getAnnotationBody() instanceof TypedResource tr) {
-                    GeoMapFeature feature = new GeoMapFeature(tr.asJson());
+                    GeoMapFeature feature = new GeoMapFeature(CoordinateReaderProvider.getReader(tr.toString()).read(tr.toString()));
                     feature.setPageNo(anno.getPage());
                     feature.setDocumentId(anno.getId().toString());
                     features.add(feature.getJsonObject().toString());

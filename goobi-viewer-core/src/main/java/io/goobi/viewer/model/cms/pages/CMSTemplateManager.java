@@ -243,6 +243,9 @@ public class CMSTemplateManager implements Serializable {
         Optional<URL> fileUrl = Optional.empty();
         if (servletContext != null) {
             String basePath = servletContext.getRealPath(templateFolderUrl);
+            if (basePath == null) {
+                throw new IllegalStateException("CMS template folder '" + templateFolderUrl + "' could not be found in viewer webapp folder");
+            }
             logger.trace("basePath: {}", basePath);
             Path path = Paths.get(basePath);
             if (Files.exists(path)) {

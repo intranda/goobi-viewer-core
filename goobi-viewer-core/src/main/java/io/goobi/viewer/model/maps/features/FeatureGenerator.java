@@ -12,7 +12,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
@@ -21,7 +20,6 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.maps.coordinates.CoordinateReaderProvider;
-import io.goobi.viewer.model.metadata.ComplexMetadata;
 import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.servlets.IdentifierResolver;
 import io.goobi.viewer.solr.SolrConstants;
@@ -54,11 +52,11 @@ public class FeatureGenerator {
             List<SolrDocument> children = entry.getValue();
 
             for (String field : this.coordinateFields) {
-                features.addAll(getGeojsonPoints(doc, field));
+                features.addAll(getFeaturesFromDoc(doc, field));
                 Map<String, List<SolrDocument>> metadataDocs =
                         children.stream().collect(Collectors.toMap(SolrTools::getReferenceId, List::of, ListUtils::union));
                 for (List<SolrDocument> childDocs : metadataDocs.values()) {
-                    Collection<GeoMapFeature> tempFeatures = getGeojsonPoints(doc, childDocs, field);
+                    Collection<GeoMapFeature> tempFeatures = getFeaturesFromDocs(doc, childDocs, field);
                     features.addAll(tempFeatures);
                 }
             }
@@ -82,30 +80,28 @@ public class FeatureGenerator {
     }
 
     private List<GeoMapFeature> getFeaturesFromDoc(SolrDocument doc, String coordinateField) {
-        return getFeaturesFromDocs(List.of(doc), coordinateField);
+        return getGeojsonPoints(doc, Collections.emptyList(), coordinateField).stream().toList();
     }
 
     private List<GeoMapFeature> getFeaturesFromDocs(SolrDocument doc, List<SolrDocument> metadataDocs, String coordinateField) {
-        return mdList.stream().flatMap(md -> getGeojsonPoints(md, coordinateField).stream()).toList();
+        return getGeojsonPoints(doc, metadataDocs, coordinateField).stream().toList();
     }
 
-    private List<GeoMapFeature> getGeojsonPoints(ComplexMetadata md, String coordinateField) {
-        List<String> points =
-                md.getValues(coordinateField).stream().map(value -> value.getValue().orElse("")).filter(StringUtils::isNotBlank).toList();
-        List<GeoMapFeature> docFeatures = getFeatures(points);
-        addEntityToFeatures(md, Collections.emptyList(), docFeatures);
-        docFeatures.forEach(feature -> setLink(feature, doc));
-        docFeatures.forEach(f -> f.setDocumentId((String) doc.getFieldValue(SolrConstants.LOGID)));
-        docFeatures.forEach(this::setLabels);
+    public Collection<GeoMapFeature> getGeojsonPoints(SolrDocument mainDocument, List<SolrDocument> metadataDocs, String metadataField) {
+        List<String> points = new ArrayList<>();
+        for (SolrDocument metadataDoc : metadataDocs) {
+            List<String> mdPoints = new ArrayList<>();
+            mdPoints.addAll(SolrTools.getMetadataValues(metadataDoc, metadataField));
+            List<GeoMapFeature> docFeatures = getFeatures(points);
+
+        }
     }
 
     /**
      * Collect all point coordinate in the given metadata field within the given solr document
      * 
      * @param doc the document containing the coordinates
-     * @param children
      * @param metadataField The name of the solr field to search in
-     * @param titleField solr field containing a title for the coordinates
      * @return Collection<GeoMapFeature>
      */
     public Collection<GeoMapFeature> getGeojsonPoints(SolrDocument doc, String metadataField) {
@@ -139,9 +135,12 @@ public class FeatureGenerator {
     private String getType(MetadataContainer container) {
         if (container.containsField(SolrConstants.DOCSTRCT)) {
             return container.getFirstValue(SolrConstants.DOCSTRCT);
-        } else {
+        } else if (container.containsField(SolrConstants.LABEL)) {
             return container.getFirstValue(SolrConstants.LABEL);
+        } else {
+            return "_DEFAULT";
         }
+
     }
 
     /**

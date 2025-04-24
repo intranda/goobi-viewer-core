@@ -65,9 +65,6 @@ public class GeoMapFeature {
     public GeoMapFeature() {
     }
 
-    /**
-     * @param jsonString
-     */
     public GeoMapFeature(Geometry geometry) {
         this.geometry = geometry;
     }
