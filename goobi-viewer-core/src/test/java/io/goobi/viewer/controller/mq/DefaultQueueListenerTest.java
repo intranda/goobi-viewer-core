@@ -51,47 +51,47 @@ class DefaultQueueListenerTest extends AbstractDatabaseEnabledTest {
     MessageQueueManager broker;
     Path schedulerDirectory;
 
-//    @BeforeEach
-//    public void setUp() throws Exception {
-//        super.setUp();
-//        this.dao = Mockito.mock(IDAO.class);
-//        Mockito.when(dao.addViewerMessage(Mockito.any())).thenReturn(true);
-//        Mockito.when(dao.updateViewerMessage(Mockito.any())).thenReturn(true);
-//
-//        PdfMessageHandler pdfHandler = Mockito.mock(PdfMessageHandler.class);
-//        Mockito.when(pdfHandler.call(Mockito.any(), Mockito.any())).thenReturn(MessageStatus.FINISH);
-//        ActiveMQConfig activeMQConfig = new ActiveMQConfig(Paths.get(activeMqConfigPath));
-//        MessageQueueManager tempBroker = new MessageQueueManager(activeMQConfig, this.dao, Map.of(TaskType.DOWNLOAD_PDF.name(), pdfHandler));
-//        broker = Mockito.spy(tempBroker);
-//        assertTrue(broker.initializeMessageServer("localhost", 1088, 0), "Failed to start message queue. See log for details");
-//
-//        //delete messages from other tests
-//        List<ViewerMessage> messages = this.dao.getViewerMessages(0, 500, "", false, Collections.emptyMap());
-//        for (ViewerMessage viewerMessage : messages) {
-//            this.dao.deleteViewerMessage(viewerMessage);
-//        }
-//
-//        schedulerDirectory = Paths.get(activeMQConfig.getSchedulerDirectory());
-//        if (Files.exists(schedulerDirectory)) {
-//            FileUtils.deleteDirectory(schedulerDirectory.toFile());
-//        }
-//    }
-//
-//    @AfterEach
-//    public void tearDown() throws IOException {
-//        broker.closeMessageServer();
-//        if (schedulerDirectory != null && Files.exists(schedulerDirectory)) {
-//            FileUtils.deleteDirectory(schedulerDirectory.toFile());
-//        }
-//    }
-//
-//    @Test
-//    void testStartQueues() throws MessageQueueException {
-//
-//        ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
-//        String messageId = broker.addToQueue(message);
-//        Mockito.verify(broker, Mockito.timeout(8000).times(1)).handle(Mockito.argThat(m -> m.getMessageId().equals(messageId)));
-//        //        Mockito.verify(broker, Mockito.timeout(8000).times(1)).initializeMessageServer(Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt());
-//    }
+    @BeforeEach
+    public void setUp() throws Exception {
+        super.setUp();
+        this.dao = Mockito.mock(IDAO.class);
+        Mockito.when(dao.addViewerMessage(Mockito.any())).thenReturn(true);
+        Mockito.when(dao.updateViewerMessage(Mockito.any())).thenReturn(true);
+
+        PdfMessageHandler pdfHandler = Mockito.mock(PdfMessageHandler.class);
+        Mockito.when(pdfHandler.call(Mockito.any(), Mockito.any())).thenReturn(MessageStatus.FINISH);
+        ActiveMQConfig activeMQConfig = new ActiveMQConfig(Paths.get(activeMqConfigPath));
+        MessageQueueManager tempBroker = new MessageQueueManager(activeMQConfig, this.dao, Map.of(TaskType.DOWNLOAD_PDF.name(), pdfHandler));
+        broker = Mockito.spy(tempBroker);
+        assertTrue(broker.initializeMessageServer("localhost", 1088, 0), "Failed to start message queue. See log for details");
+
+        //delete messages from other tests
+        List<ViewerMessage> messages = this.dao.getViewerMessages(0, 500, "", false, Collections.emptyMap());
+        for (ViewerMessage viewerMessage : messages) {
+            this.dao.deleteViewerMessage(viewerMessage);
+        }
+
+        schedulerDirectory = Paths.get(activeMQConfig.getSchedulerDirectory());
+        if (Files.exists(schedulerDirectory)) {
+            FileUtils.deleteDirectory(schedulerDirectory.toFile());
+        }
+    }
+
+    @AfterEach
+    public void tearDown() throws IOException {
+        broker.closeMessageServer();
+        if (schedulerDirectory != null && Files.exists(schedulerDirectory)) {
+            FileUtils.deleteDirectory(schedulerDirectory.toFile());
+        }
+    }
+
+    @Test
+    void testStartQueues() throws MessageQueueException {
+
+        ViewerMessage message = new ViewerMessage(TaskType.DOWNLOAD_PDF.name());
+        String messageId = broker.addToQueue(message);
+        Mockito.verify(broker, Mockito.timeout(8000).times(1)).handle(Mockito.argThat(m -> m.getMessageId().equals(messageId)));
+        //        Mockito.verify(broker, Mockito.timeout(8000).times(1)).initializeMessageServer(Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt());
+    }
 
 }
