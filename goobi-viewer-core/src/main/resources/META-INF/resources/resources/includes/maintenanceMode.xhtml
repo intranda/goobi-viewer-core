@@ -19,17 +19,20 @@
 						<i class="fa fa-coffee maintenance-banner__icon"></i>
 						<h:outputText styleClass="maintenance-banner__text" escape="false"
 							value="#{adminBean.maintenanceMode.getText(navigationHelper.localeString)}"></h:outputText>
-						<button class="maintenance-banner__close-button" type="button" aria-label="#{msg.maintenance_mode__close_banner}"
-							data-trigger="closeMaintenanceInfo">
-							<i class="fa fa-times"></i>
-						</button>
+
+						<button type="button"
+							class="fancy-close maintenance-banner__close-button"
+							data-dismiss="modal"
+							aria-label="#{msg.maintenance_mode__close_banner}"
+							data-trigger="closeMaintenanceInfo"></button>
+
 					</div>
 				</div>
 			</div>
 		</div>
 		<script>
-		viewerJS.maintenanceMode.init();
-	    </script>
+			viewerJS.maintenanceMode.init();
+		</script>
 	</ui:fragment>
 
 </ui:composition>
