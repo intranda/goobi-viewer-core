@@ -59,7 +59,7 @@ var viewerJS = ( function( viewer ) {
 					// DO NOTHING
 				} else {
 					// SHOW THE BANNER
-					$('#maintenanceModeBanner').slideDown();
+					$('#maintenanceModeBanner').show();
 				}
 			}
  
