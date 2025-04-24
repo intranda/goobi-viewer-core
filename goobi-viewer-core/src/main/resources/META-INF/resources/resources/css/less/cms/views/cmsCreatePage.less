@@ -472,13 +472,9 @@
 		gap: 20px;
 	}
 	&__choose-template-box {
-		background: #fff;
-		padding: 2rem;
-		transition: background .2s ease;
-		border: 1px solid #ccc;
-		position: relative;
 		display: flex;
 		gap: 20px;
+		flex-wrap: wrap;
 	}
 	&__choose-template-box-start {
 		height: 125px;
@@ -490,8 +486,9 @@
 		flex-grow: 1;
 		display: flex;
 		flex-direction: column;
-		// gap: 20px;
 		align-items: flex-end;
+		word-wrap: anywhere;
+		flex: 1 1;
 		h2 {
 			align-self: flex-start;
 		}

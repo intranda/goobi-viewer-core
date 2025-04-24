@@ -54,8 +54,6 @@ import org.apache.commons.configuration2.builder.ConfigurationBuilderEvent;
 import org.apache.commons.configuration2.builder.ReloadingFileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
-import org.apache.commons.configuration2.event.Event;
-import org.apache.commons.configuration2.event.EventListener;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
@@ -154,7 +152,6 @@ public class Configuration extends AbstractConfiguration {
      *
      * @param configFilePath a {@link java.lang.String} object.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Configuration(String configFilePath) {
         // Load default config file
         builder =
@@ -172,13 +169,7 @@ public class Configuration extends AbstractConfiguration {
                 logger.error(e.getMessage(), e);
             }
             builder.addEventListener(ConfigurationBuilderEvent.CONFIGURATION_REQUEST,
-                    new EventListener() {
-
-                        @Override
-                        public void onEvent(Event event) {
-                            builder.getReloadingController().checkForReloading(null);
-                        }
-                    });
+                    event -> builder.getReloadingController().checkForReloading(null));
         } else {
             logger.error("Default configuration file not found: {}; Base path is {}", builder.getFileHandler().getFile().getAbsoluteFile(),
                     builder.getFileHandler().getBasePath());
@@ -200,13 +191,7 @@ public class Configuration extends AbstractConfiguration {
                 logger.error(e.getMessage(), e);
             }
             builderLocal.addEventListener(ConfigurationBuilderEvent.CONFIGURATION_REQUEST,
-                    new EventListener() {
-
-                        @Override
-                        public void onEvent(Event event) {
-                            builderLocal.getReloadingController().checkForReloading(null);
-                        }
-                    });
+                    event -> builderLocal.getReloadingController().checkForReloading(null));
         }
 
         // Load stopwords
@@ -216,10 +201,10 @@ public class Configuration extends AbstractConfiguration {
 
         FileNotFoundException e) {
             logger.error(e.getMessage());
-            stopwords = new HashSet<>(0);
+            stopwords = HashSet.newHashSet(0);
         } catch (IOException | IllegalArgumentException e) {
             logger.error(e.getMessage(), e);
-            stopwords = new HashSet<>(0);
+            stopwords = HashSet.newHashSet(0);
         }
     }
 

@@ -4,8 +4,7 @@
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:o="http://omnifaces.org/ui"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" xmlns:o="http://omnifaces.org/ui"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
@@ -20,7 +19,8 @@
 			infoClass="alert alert-success" errorClass="alert alert-danger" />
 	</div>
 
-	<div class="admin">
+	<div class="admin__topbar-wrapper">
+
 		<!-- ADMIN TOPBAR (ACTION MENU) -->
 		<div class="admin__topbar-backend" role="navigation"
 			aria-label="#{msg.aria_label__nav_main}">
@@ -49,7 +49,7 @@
 				href="#{request.contextPath}/" title="#{msg.admin__view_frontend}"
 				aria-label="#{msg.admin__view_frontend}"> <i class="fa fa-home"
 				aria-hidden="true"></i>
-				#{adminThemesBean.getThemeLabel(configurationBean.name)}
+				<span class="admin__topbar-backend-view-frontend-link-text">#{adminThemesBean.getThemeLabel(configurationBean.name)}</span>
 			</a>
 
 			<!-- ADD SOMETHING NEW -->
@@ -79,7 +79,8 @@
 			<!-- RIGHT AREA TOPBAR -->
 			<div class="admin__topbar-backend-right">
 
-				<ui:include src="../../../includes/topbar/backgroundTaskMonitor.xhtml"></ui:include>
+				<ui:include
+					src="../../../includes/topbar/backgroundTaskMonitor.xhtml"></ui:include>
 
 				<div class="admin__topbar-frontend-hotfolder">
 					<!-- COUNT FILES PROCESSING -->
@@ -151,43 +152,50 @@
 			</div>
 
 		</div>
+	</div>
 
-		<!-- SIDEBAR BACKGROUND -->
-		<div class="admin__sidebar-background"></div>
+	<div class="admin">
 
-		<!-- SIDEBAR -->
-		<aside id="adminSidebar" class="admin__sidebar"
-			aria-label="Admin sidebar">
-			<div class="admin__sidebar-inner -refreshHCsticky">
-				<div class="admin__sidebar-inner__title">
-					<a href="#{request.contextPath}/admin/">Goobi viewer</a>
-				</div>
 
-				<!-- DASHBOARD -->
-				<ui:fragment rendered="#{userBean.hasAdminBackendAccess}">
-					<div class="admin__sidebar-dashboard admin-widget">
-						<div class="admin-widget__header">#{msg.admin__general_title}</div>
-						<ul>
-							<li
-								class="#{navigationHelper.currentPage == 'adminDashboard' ? 'active' : ''}">
-								<a href="#{request.contextPath}/admin/"> <i
-									class="fa fa-tachometer" aria-hidden="true"></i> <span>#{msg.admin__dashboard}</span>
-							</a>
-							</li>
-						</ul>
+		<div class="admin__sidebar-wrapper">
+
+			<!-- SIDEBAR BACKGROUND -->
+			<div class="admin__sidebar-background"></div>
+
+			<!-- SIDEBAR -->
+			<aside id="adminSidebar" class="admin__sidebar"
+				aria-label="Admin sidebar">
+				<div class="admin__sidebar-inner -refreshHCsticky">
+					<div class="admin__sidebar-inner__title">
+						<a href="#{request.contextPath}/admin/">Goobi viewer</a>
 					</div>
-				</ui:fragment>
 
-				<!-- WIDGETS -->
-				<div class="admin__sidebar-widgets">
-					<adminWidget:widget_admin id="sidebarAdminWidget" />
-					<adminWidget:widget_legal />
-					<adminWidget:widget_crowdsourcing />
-					<adminWidget:widget_cms />
+					<!-- DASHBOARD -->
+					<ui:fragment rendered="#{userBean.hasAdminBackendAccess}">
+						<div class="admin__sidebar-dashboard admin-widget">
+							<div class="admin-widget__header">#{msg.admin__general_title}</div>
+							<ul>
+								<li
+									class="#{navigationHelper.currentPage == 'adminDashboard' ? 'active' : ''}">
+									<a href="#{request.contextPath}/admin/"> <i
+										class="fa fa-tachometer" aria-hidden="true"></i> <span>#{msg.admin__dashboard}</span>
+								</a>
+								</li>
+							</ul>
+						</div>
+					</ui:fragment>
+
+					<!-- WIDGETS -->
+					<div class="admin__sidebar-widgets">
+						<adminWidget:widget_admin id="sidebarAdminWidget" />
+						<adminWidget:widget_legal />
+						<adminWidget:widget_crowdsourcing />
+						<adminWidget:widget_cms />
+					</div>
+
 				</div>
-
-			</div>
-		</aside>
+			</aside>
+		</div>
 
 		<!-- CONTENT BACKGROUND -->
 		<div class="admin__content-background"></div>
@@ -198,5 +206,6 @@
 				<ui:insert name="content" />
 			</div>
 		</main>
+
 	</div>
 </ui:composition>
