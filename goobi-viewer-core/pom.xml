@@ -383,13 +383,11 @@
 			<artifactId>jakarta.mail</artifactId>
 			<version>${angus-mail.version}</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/jakarta.websocket/jakarta.websocket-api -->
 		<dependency>
 			<groupId>jakarta.websocket</groupId>
 			<artifactId>jakarta.websocket-api</artifactId>
 			<version>${jakarta.websocket.version}</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/jakarta.websocket/jakarta.websocket-client-api -->
 		<dependency>
 			<groupId>jakarta.websocket</groupId>
 			<artifactId>jakarta.websocket-client-api</artifactId>
@@ -415,7 +413,12 @@
 			<groupId>jakarta.persistence</groupId>
 			<artifactId>jakarta.persistence-api</artifactId>
 			<version>${jakarta.persistence.version}</version>
-		</dependency>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+            <version>2.0.1</version>
+        </dependency>
 		<dependency>
 			<groupId>jakarta.xml.bind</groupId>
 			<artifactId>jakarta.xml.bind-api</artifactId>
@@ -933,6 +936,9 @@
 
 								<!-- jakarta.annotation is not part of jdk 11 anymore -->
 								<ignoredUnusedDeclaredDependency>jakarta.annotation:jakarta.annotation-api</ignoredUnusedDeclaredDependency>
+
+								<!--  jakarta.transaction is needed since eclipselink 4.0.6 -->
+                                <ignoredUnusedDeclaredDependency>jakarta.transaction:jakarta.transaction-api</ignoredUnusedDeclaredDependency>
 
 								<!-- jakarta.enterprise.cdi-* is needed for EclipseLink Unit Tests, otherwise we will see a
 									 Target Invocation Exception: java.lang.NoClassDefFoundError: jakarta/enterprise/inject/spi/el/ELAwareBeanManager -->
