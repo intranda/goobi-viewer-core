@@ -496,6 +496,7 @@ public final class SearchHelper {
      * @return {@link HitType} for doc
      */
     public static HitType getHitType(SolrDocument doc) {
+        // logger.trace("getHitType: {}", doc.getFieldValue(SolrConstants.IDDOC)); //NOSONAR Debug
         String docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
         HitType hitType = HitType.getByName(docType);
         if (DocType.UGC.name().equals(docType)) {
@@ -3545,7 +3546,9 @@ public final class SearchHelper {
      */
     public static String getQueryForAccessCondition(final String accessCondition, boolean escapeAccessCondition) {
         String ac = escapeAccessCondition ? BeanUtils.escapeCriticalUrlChracters(accessCondition) : accessCondition;
-        return "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"" + ac + "\"";
+        return "+(" + SolrConstants.ISWORK + ":true " + SolrConstants.ISANCHOR + ":true " + SolrConstants.DOCTYPE
+                + ":" + DocType.UGC.name() + " " + SolrConstants.DOCTYPE + ":" + DocType.METADATA.name() + ") +"
+                + SolrConstants.ACCESSCONDITION + ":\"" + ac + "\"";
     }
 
     /**
