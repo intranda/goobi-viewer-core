@@ -136,7 +136,7 @@
 		<mockserver.version>5.15.0</mockserver.version>
 		<omnifaces.version>4.6.1</omnifaces.version>
 		<openpdf.version>2.0.3</openpdf.version>
-		<poi.version>5.4.0</poi.version>
+		<poi.version>5.4.1</poi.version>
 		<prettyfaces.version>10.0.2.Final</prettyfaces.version>
 		<quartz.version>2.5.0</quartz.version>
 		<reflections.version>0.10.2</reflections.version>
