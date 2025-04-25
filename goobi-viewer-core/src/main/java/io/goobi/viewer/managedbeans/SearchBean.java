@@ -1345,7 +1345,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 term = SearchHelper.cleanUpSearchTerm(term);
                 String unescapedTerm = term;
                 term = term.replace("\\*", "*"); // unescape falsely escaped truncation
-                if (term.length() > 0 && !DataManager.getInstance().getConfiguration().getStopwords().contains(term)) {
+                if (!term.isEmpty() && !DataManager.getInstance().getConfiguration().getStopwords().contains(term)) {
                     if (fuzzySearchEnabled) {
                         // Fuzzy search term augmentation
                         String[] wildcards = SearchHelper.getWildcardsTokens(term);
@@ -1378,7 +1378,7 @@ public class SearchBean implements SearchInterface, Serializable {
             }
             // Construct inner query part
             String innerQuery = SearchHelper.buildTermQuery(preparedTerms);
-            if (innerQuery.length() > 0) {
+            if (!innerQuery.isEmpty()) {
                 StringBuilder sbOuter = new StringBuilder();
                 if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
                     // No filters defined or ALL

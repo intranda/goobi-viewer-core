@@ -115,7 +115,9 @@ public final class SearchHelper {
     /** Constant <code>PARAM_NAME_FILTER_QUERY_SUFFIX="filterQuerySuffix"</code> */
     public static final String PARAM_NAME_FILTER_QUERY_SUFFIX = "filterQuerySuffix";
     /** Constant <code>SEARCH_TERM_SPLIT_REGEX</code> */
-    public static final String SEARCH_TERM_SPLIT_REGEX = "[ ,・]";
+    public static final String SEARCH_QUERY_SPLIT_REGEX = "[ ,・]";
+    /** Regex for splitting search values (including colons). */
+    public static final String SEARCH_TERM_SPLIT_REGEX = "[ ,・:]";
     /** Constant <code>PLACEHOLDER_HIGHLIGHTING_START="##HLS##"</code> */
     public static final String PLACEHOLDER_HIGHLIGHTING_START = "##ĦŁ$##";
     /** Constant <code>PLACEHOLDER_HIGHLIGHTING_END="##HLE##"</code> */
@@ -494,6 +496,7 @@ public final class SearchHelper {
      * @return {@link HitType} for doc
      */
     public static HitType getHitType(SolrDocument doc) {
+        // logger.trace("getHitType: {}", doc.getFieldValue(SolrConstants.IDDOC)); //NOSONAR Debug
         String docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
         HitType hitType = HitType.getByName(docType);
         if (DocType.UGC.name().equals(docType)) {
@@ -2301,7 +2304,7 @@ public final class SearchHelper {
         }
 
         // Split into FIELD:value pairs
-        String[] querySplit = q.split(SEARCH_TERM_SPLIT_REGEX);
+        String[] querySplit = q.split(SEARCH_QUERY_SPLIT_REGEX);
         String currentField = null;
         for (final String queryPart : querySplit) {
             String s = queryPart.replace("@", " ").trim();
@@ -3543,7 +3546,9 @@ public final class SearchHelper {
      */
     public static String getQueryForAccessCondition(final String accessCondition, boolean escapeAccessCondition) {
         String ac = escapeAccessCondition ? BeanUtils.escapeCriticalUrlChracters(accessCondition) : accessCondition;
-        return "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"" + ac + "\"";
+        return "+(" + SolrConstants.ISWORK + ":true " + SolrConstants.ISANCHOR + ":true " + SolrConstants.DOCTYPE
+                + ":" + DocType.UGC.name() + " " + SolrConstants.DOCTYPE + ":" + DocType.METADATA.name() + ") +"
+                + SolrConstants.ACCESSCONDITION + ":\"" + ac + "\"";
     }
 
     /**

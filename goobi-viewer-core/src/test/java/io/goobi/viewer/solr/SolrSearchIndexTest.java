@@ -70,6 +70,7 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     void isSolrIndexOnline_shouldReturnFalseIfSolrOffline() {
         String solrUrl = DataManager.getInstance().getConfiguration().getSolrUrl();
         DataManager.getInstance().getConfiguration().overrideValue("urls.solr", "https://locahost:1234/solr");
+        assertEquals("https://locahost:1234/solr", DataManager.getInstance().getConfiguration().getSolrUrl());
         try {
             assertFalse(DataManager.getInstance().getSearchIndex().isSolrIndexOnline());
         } finally {

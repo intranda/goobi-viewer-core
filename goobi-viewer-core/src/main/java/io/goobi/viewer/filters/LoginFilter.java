@@ -140,7 +140,7 @@ public class LoginFilter implements Filter {
         if (localUri.matches("/?viewer/.*")) {
             localUri = localUri.replaceAll("/?viewer/", "/");
         }
-        logger.trace("uri: {}", localUri);
+        // logger.trace("uri: {}", localUri);
         switch (localUri.trim()) {
             case "/myactivity/":
                 return true;
