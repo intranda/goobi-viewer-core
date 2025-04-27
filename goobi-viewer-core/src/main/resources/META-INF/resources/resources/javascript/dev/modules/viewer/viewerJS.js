@@ -320,7 +320,7 @@ var viewerJS = (function () {
     }
   
     viewer.initSidebarCollapseable = function() {
-    	$('body').on('click', '.widget__title.collapseable', function (e) {
+    	$('body').on('click', '.widget__topbar.collapseable', function (e) {
 			$(this).toggleClass('in').closest('.widget').find('.widget__body.collapseable').slideToggle(300, function() {
 				viewer.toggledCollapseable.next(e);
 		    })

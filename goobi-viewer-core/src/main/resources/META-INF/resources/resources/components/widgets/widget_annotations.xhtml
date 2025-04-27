@@ -20,7 +20,11 @@
 			rendered="#{!configurationBean.displayUserGeneratedContentBelowImage and not empty contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).stream().filter(content -> !content.isEmpty() and content.type != 'GEOLOCATION').toList()}">
 			<div id="widgetAnnotations" class="widget widget-annotations">
 				<!-- TODO: IF MORE THAN 3 annotations > ELEMENT COLLAPSED -->
-				<div class="widget__topbar widget-annotations__topbar #{(cc.attrs.collapsible and contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() gt 3) ? 'collapseable' : ''}">
+				<div 
+					tabindex="0"
+					role="button"
+					class="widget__topbar widget-annotations__topbar #{(cc.attrs.collapsible and contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() gt 3) ? 'collapseable' : ''}"
+				>
 					<h2 class="widget__title widget-annotations__title">
 						#{msg.admin__crowdsourcing_annotations}
 					</h2>

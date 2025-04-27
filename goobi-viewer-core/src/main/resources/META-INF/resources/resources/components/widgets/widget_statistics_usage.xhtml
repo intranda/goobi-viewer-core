@@ -37,13 +37,18 @@
 			<h:panelGroup rendered="#{cc.attrs.collapse == false}">
 				<div id="widgetUsageStatistics" class="widget widget-statistics-usage">
 					<div 
+						tabindex="0"
+						role="button"
 						class="widget__topbar widget-statistics-usage__topbar #{statisticsBean.recordStatisticWidgetCollapsible ? 'collapseable' : ''}"
 						onclick="toggleStatistics()"
 					>
 						<h2 class="widget__title widget-statistics-usage__title">
 							#{msg.widget_usage_statistics__title} 
 						</h2>
-						<i class="fa fa-angle-down" aria-hidden="true"></i>
+						
+						<div class="widget__topbar__icons-container">
+							<i class="fa fa-angle-down" aria-hidden="true"></i>
+						</div>
 					</div>
 
 					<div class="widget__body widget-statistics-usage__body #{statisticsBean.recordStatisticWidgetCollapsible ? 'collapseable' : ''}">

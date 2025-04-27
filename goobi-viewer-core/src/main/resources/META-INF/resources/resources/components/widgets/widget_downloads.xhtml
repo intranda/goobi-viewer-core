@@ -20,12 +20,12 @@
 				rendered="#{activeDocumentBean.viewManager != null and displayConditions.getTag('widgetDownloads').getChildCount('widget-element') > 0}"
 				data-numChildren="#{displayConditions.getTag('widgetDownloadsBody').getChildCount('widget-element')}"
 			>
-				<div class="widget__topbar widget-downloads__topbar">
-					<h2 
-						tabindex="0" 
-						role="button"
-						class="widget__title widget-downloads__title #{cc.attrs.collapsible  ? 'collapseable' : ''}"
-					>
+				<div 
+					tabindex="0"
+					role="button"
+					class="widget__topbar widget-downloads__topbar #{cc.attrs.collapsible  ? 'collapseable' : ''}"
+				>
+					<h2 class="widget__title widget-downloads__title">
 						#{msg.widget__downloads__title}
 					</h2>
 					

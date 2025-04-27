@@ -21,11 +21,18 @@
 	
 		<div class="widget widget-sidebar #{cc.attrs.styleClass}" jsf:id="#{cc.clientId}">
 		
-			<div class="widget__topbar widget-sidebar__topbar #{cc.attrs.collapsible ? 'collapseable' : ''}">
-				<h2 role="button" class="widget__title">
+			<div 
+				tabindex="0"
+				role="button"
+				class="widget__topbar widget-sidebar__topbar #{cc.attrs.collapsible ? 'collapseable' : ''}"
+			>
+				<h2 class="widget__title widget-sidebar__title">
 					#{cc.attrs.widgetTitle}
 				</h2>
-				<i class="fa fa-angle-down" aria-hidden="true"></i>
+				
+				<div class="widget__topbar__icons-container">
+					<i class="fa fa-angle-down" aria-hidden="true"></i>
+				</div>
 			</div>
 
 			<div class="widget__body widget-sidebar__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
