@@ -3,7 +3,6 @@
    style declarations for widget_metadata.xhtml
    ==============================================================*/
 #widgetMetadata {
-    h2 {}
     dl {
         dt {}
         dd {
@@ -15,14 +14,16 @@
         	}
         }
     }
-    .meta-museal {
-    	
-    }
 }
 
 .widget-metadata {
-	&__lido {}
-	&__events {}
+	&__topbar {
+		margin-top: 20px;
+	}
+
+	&__topbar:first-child {
+		margin-top: none;
+	}
 }
 
 

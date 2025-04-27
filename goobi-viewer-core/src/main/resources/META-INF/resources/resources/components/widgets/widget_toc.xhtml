@@ -41,9 +41,11 @@
 	                        	#{msg.sidebarTocAnchor}
 	                        </h2>
 	                        
-	                       	<div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
-								<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
-							</div>	
+	                        <div class="widget__topbar__icons-container">
+		                       	<div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
+									<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+								</div>	
+							</div>
 							
 	                        <!-- EXPAND ALL -->
 	                        <ui:fragment rendered="#{configurationBean.sidebarTocTreeView and activeDocumentBean.toc.maxTocDepth > 0}">
