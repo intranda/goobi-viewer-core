@@ -450,8 +450,11 @@ public class ArchiveEntry implements Serializable {
                 logger.trace("Access denied to {}", label);
             }
             return ret;
-        } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
+        } catch (IndexUnreachableException | DAOException e) {
             logger.error(e.getMessage(), e);
+            return false;
+        } catch (RecordNotFoundException e) {
+            logger.error(e.getMessage());
             return false;
         }
     }
