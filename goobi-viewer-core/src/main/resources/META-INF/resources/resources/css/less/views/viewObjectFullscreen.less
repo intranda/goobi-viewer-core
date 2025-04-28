@@ -6,16 +6,20 @@
 #fullscreen {
   padding: 0;
   background-color: @white;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .fullscreen {
   position: relative;
   height: 100%;
   overflow: hidden;
-
+    display: flex;
+    flex-direction: column;
   /* HEADER */
   &__header {
-    position: fixed;
+    position: absolute;
     top: 0;
     right: 0;
     left: 0;
@@ -174,6 +178,9 @@
 
   /* VIEW */
   &__view {
+	display: flex;
+	  flex-direction: column;
+	  height: 100%;
     position: relative;
     transition: all 0.3s linear;
   }
@@ -218,8 +225,7 @@
 
     &__object-3d-world,
     &__image-map {
-      height: 100vh;
-
+		height: 100%;
       img {
         display: block;
         height: 100%;
@@ -229,6 +235,7 @@
   }
 
   &__view-image {
+	flex-grow: 1;
     .view-object__object-3d-world-before-load-text {
       background: rgb(255, 255, 255);
       border: 1px solid #ccc;
@@ -236,6 +243,7 @@
   }
 
   &__view-image-inner {
+	height: 100%;
     position: relative;
     background: repeating-linear-gradient(-55deg,
         #222,
@@ -247,6 +255,7 @@
 
       &__object-3d,
       &__image {
+		height: 100%;
         padding: 0;
         border: 0;
         background-color: transparent;

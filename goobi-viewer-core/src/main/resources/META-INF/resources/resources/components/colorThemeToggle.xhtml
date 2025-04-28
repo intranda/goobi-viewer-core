@@ -12,7 +12,7 @@
 	<composite:implementation>
 		<!-- COLOR SWITCHER FUNCTION -->
 		<h:form prependId="false">
-        	<button aria-label="#{msg.button__theme_color_switch}" jsf:id="darkModeSwitch"
+        	<button aria-label="#{msg.button__theme_color_switch_dark}" jsf:id="darkModeSwitch"
 				class="btn btn--clean color-theme-switch color-theme-switch-dark #{(sessionBean.get('colorTheme') eq 'color-theme-light') ? 'active' : ''} #{(sessionBean.get('colorTheme') eq 'color-theme-dark') ? 'hide' : ''}"
 				jsf:action="#{sessionBean.put('colorTheme', 'color-theme-dark')}">
 				 
@@ -25,7 +25,7 @@
 				</svg>
 				<f:ajax render="@none"></f:ajax>
 			</button>
-			<button aria-label="#{msg.button__theme_color_switch}" jsf:id="lightModeSwitch"
+			<button aria-label="#{msg.button__theme_color_switch_light}" jsf:id="lightModeSwitch"
 				class="btn btn--clean color-theme-switch color-theme-switch-light #{((sessionBean.get('colorTheme') eq 'color-theme-dark')) ? 'active' : ''} #{(sessionBean.get('colorTheme') eq 'color-theme-light') ? 'hide' : ''}"
 				jsf:action="#{sessionBean.put('colorTheme', 'color-theme-light')}">
 				

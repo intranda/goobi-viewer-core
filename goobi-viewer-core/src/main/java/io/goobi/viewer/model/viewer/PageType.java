@@ -132,6 +132,7 @@ public enum PageType {
     adminCmsSlidersEdit("admin/cms/slider/edit", "cms__edit_slider__title", adminCmsSliders),
     adminCookieBanner("admin/legal/cookies", "label__cookie_banner", adminDashboard),
     adminDisclaimer("admin/legal/disclaimer", "label__disclaimer", adminDashboard),
+    adminMaintenanceMode("admin/maintenance", "admin__maintenance_mode__title", adminDashboard),
     cmsPageOfWork("page"),
     cmsPage("cms"),
     //admin/crowdsourcing

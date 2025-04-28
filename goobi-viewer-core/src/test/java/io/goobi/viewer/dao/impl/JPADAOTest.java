@@ -60,6 +60,7 @@ import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.administration.MaintenanceMode;
 import io.goobi.viewer.model.administration.legal.TermsOfUse;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
@@ -3373,4 +3374,38 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @see JPADAO#getMaintenanceMode()
+     * @verifies return correct object
+     */
+    @Test
+    void getMaintenanceMode_shouldReturnCorrectObject() throws Exception {
+        MaintenanceMode mm = DataManager.getInstance().getDao().getMaintenanceMode();
+        assertNotNull(mm);
+        assertEquals(1, mm.getId());
+        assertTrue(mm.isEnabled());
+        assertEquals(2, mm.getTranslations().size());
+        assertEquals("Maintenance mode EN", mm.getText("en"));
+        assertEquals("Maintenance mode DE", mm.getText("de"));
+    }
+    
+    /**
+     * @see JPADAO#updateMaintenanceMode(MaintenanceMode)
+     * @verifies update object correctly
+     */
+    @Test
+    void updateMaintenanceMode_shouldUpdateObjectCorrectly() throws Exception {
+        MaintenanceMode mm = DataManager.getInstance().getDao().getMaintenanceMode();
+        assertNotNull(mm);
+        mm.setEnabled(false);
+        mm.setText("Maintenance mode EN NEW", "en");
+        mm.setText("Maintenance mode JP", "jp");
+        DataManager.getInstance().getDao().updateMaintenanceMode(mm);
+        
+        MaintenanceMode mm2 = DataManager.getInstance().getDao().getMaintenanceMode();
+        assertEquals(mm, mm2);
+        assertFalse(mm2.isEnabled());
+        assertEquals(3, mm2.getTranslations().size());
+        assertEquals("Maintenance mode EN NEW", mm.getText("en"));
+    }
 }

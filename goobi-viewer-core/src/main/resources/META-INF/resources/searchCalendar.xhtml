@@ -59,9 +59,9 @@
 									</h:outputFormat>
 								</h2>
 								
-								<div class="search-calendar__century-grid">
+								<ul class="search-calendar__century-grid">
 									<ui:repeat var="year" value="#{century.years}">
-										<div class="search-calendar__century-year">
+										<li class="search-calendar__century-year">
 											
 											<!-- YEAR HAS ENTRIES SO LINK RENDERED -->
 											<span jsf:id="yearLink" class="search-calendar__century-year-link" jsf:rendered="#{!year.isEmpty()}" data-toggle="tooltip" title="#{year.hits} #{msg.currentwitsForYear}">
@@ -70,9 +70,9 @@
 											<!-- YEAR HAS 0 ENTRIES SO NO LINK RENDERED -->
 											<span aria-hidden="true" class="search-calendar__century-year-text" jsf:id="yearLabel" jsf:rendered="#{year.isEmpty()}">#{year.name}</span>
 
-										</div>
+										</li>
 									</ui:repeat>
-								</div>
+								</ul>
 							</ui:repeat>
 						</div>
 

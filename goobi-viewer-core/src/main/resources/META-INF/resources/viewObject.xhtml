@@ -144,8 +144,8 @@
 	            	                rtl: #{activeDocumentBean.viewManager.topStructElement.rtl},
 	            	                classSuffix: "",
 	            	                positionBottom: false,
-	            	                update: imageOrderChanged,
-									onUpdate: (pageNumber) => changeImageOrder.next(pageNumber),
+	            	                update: typeof imageOrderChanged !== 'undefined' ? imageOrderChanged : undefined,
+									onUpdate: typeof imageOrderChanged !== 'undefined' ? (pageNumber) => changeImageOrder.next(pageNumber) : undefined,
 	            	             	msg: {
 	            	             		aria_label__pagination_bottom: "#{msg.aria_label__pagination_bottom}",
 	            	             		aria_label__pagination_pages: "#{msg.aria_label__pagination_pages}",
