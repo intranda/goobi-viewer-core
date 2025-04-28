@@ -56,6 +56,7 @@ import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.ImmutableNode;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -176,7 +177,8 @@ public class Configuration extends AbstractConfiguration {
         }
 
         // Load local config file
-        File fileLocal = new File(getConfigLocalPath() + CONFIG_FILE_NAME);
+        String fileName = FilenameUtils.getName(configFilePath);
+        File fileLocal = new File(getConfigLocalPath() + fileName);
         builderLocal =
                 new ReloadingFileBasedConfigurationBuilder<>(XMLConfiguration.class)
                         .configure(new Parameters().properties()
@@ -190,16 +192,23 @@ public class Configuration extends AbstractConfiguration {
             } catch (ConfigurationException e) {
                 logger.error(e.getMessage(), e);
             }
+            logger.trace("adding event listener");
             builderLocal.addEventListener(ConfigurationBuilderEvent.CONFIGURATION_REQUEST,
-                    event -> builderLocal.getReloadingController().checkForReloading(null));
+                    event -> {
+                        // logger.trace("request event");
+                        if (builderLocal.getReloadingController().checkForReloading(null)) {
+                            if (System.currentTimeMillis() - localConfigDisabledTimestamp > 1000) {
+                                localConfigDisabled = false;
+                                logger.info("Local configuration file '{}' reloaded.", fileLocal.getAbsolutePath());
+                            }
+                        }
+                    });
         }
 
         // Load stopwords
         try {
             stopwords = loadStopwords(getStopwordsFilePath());
-        } catch (
-
-        FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             logger.error(e.getMessage());
             stopwords = HashSet.newHashSet(0);
         } catch (IOException | IllegalArgumentException e) {
@@ -232,6 +241,7 @@ public class Configuration extends AbstractConfiguration {
             return new HashSet<>();
         }
 
+        stopwordsFilePath = FileTools.adaptPathForWindows(stopwordsFilePath);
         Set<String> ret = new HashSet<>();
         try (FileReader fr = new FileReader(stopwordsFilePath); BufferedReader br = new BufferedReader(fr)) {
             String line;
@@ -2478,7 +2488,7 @@ public class Configuration extends AbstractConfiguration {
                 logger.warn("Security question '{}' has no configured answers, skipping...", questionKey);
                 continue;
             }
-            Set<String> allowedAnswers = new HashSet<>(answerNodes.size());
+            Set<String> allowedAnswers = HashSet.newHashSet(answerNodes.size());
             for (Object answer : answerNodes) {
                 allowedAnswers.add(((String) answer).toLowerCase());
             }

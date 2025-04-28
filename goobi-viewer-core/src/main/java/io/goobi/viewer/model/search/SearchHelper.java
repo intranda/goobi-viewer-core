@@ -411,19 +411,21 @@ public final class SearchHelper {
                     // if this is a metadata/docStruct hit directly in the top document, don't add to hit count
                     // It will simply be added to the metadata list of the main hit
                     HitType hitType = getHitType(childDoc);
-                    switch (hitType) {
-                        case METADATA:
-                            break;
-                        case PAGE:
-                            if (fulltextAccessGranted) {
+                    if (hitType != null) {
+                        switch (hitType) {
+                            case METADATA:
+                                break;
+                            case PAGE:
+                                if (fulltextAccessGranted) {
+                                    int hitTypeCount = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
+                                    hit.getHitTypeCounts().put(hitType, hitTypeCount + 1);
+                                }
+                                break;
+                            default:
                                 int hitTypeCount = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
                                 hit.getHitTypeCounts().put(hitType, hitTypeCount + 1);
-                            }
-                            break;
-                        default:
-                            int hitTypeCount = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
-                            hit.getHitTypeCounts().put(hitType, hitTypeCount + 1);
-                            break;
+                                break;
+                        }
                     }
                 }
             }
@@ -496,14 +498,15 @@ public final class SearchHelper {
      * @return {@link HitType} for doc
      */
     public static HitType getHitType(SolrDocument doc) {
+        // logger.trace("getHitType: {}", doc.getFieldValue(SolrConstants.IDDOC)); //NOSONAR Debug
         String docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
         HitType hitType = HitType.getByName(docType);
         if (DocType.UGC.name().equals(docType)) {
             // For user-generated content hits use the metadata type for the hit type
             String ugcType = (String) doc.getFieldValue(SolrConstants.UGCTYPE);
-            logger.trace("ugcType: {}", ugcType);
+            // logger.trace("ugcType: {}", ugcType); //NOSONAR Debug
             if (StringUtils.isNotEmpty(ugcType)) {
-                hitType = HitType.getByName(ugcType);
+                // hitType = HitType.getByName(ugcType); //NOSONAR Debug
                 logger.trace("hit type found: {}", hitType);
             }
         }
@@ -3545,7 +3548,9 @@ public final class SearchHelper {
      */
     public static String getQueryForAccessCondition(final String accessCondition, boolean escapeAccessCondition) {
         String ac = escapeAccessCondition ? BeanUtils.escapeCriticalUrlChracters(accessCondition) : accessCondition;
-        return "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"" + ac + "\"";
+        return "+(" + SolrConstants.ISWORK + ":true " + SolrConstants.ISANCHOR + ":true " + SolrConstants.DOCTYPE
+                + ":" + DocType.UGC.name() + " " + SolrConstants.DOCTYPE + ":" + DocType.METADATA.name() + ") +"
+                + SolrConstants.ACCESSCONDITION + ":\"" + ac + "\"";
     }
 
     /**
