@@ -454,7 +454,7 @@ public class ArchiveEntry implements Serializable {
             logger.error(e.getMessage(), e);
             return false;
         } catch (RecordNotFoundException e) {
-            logger.error(e.getMessage());
+            logger.warn("Archive not found in index: {}", e.getMessage());
             return false;
         }
     }
