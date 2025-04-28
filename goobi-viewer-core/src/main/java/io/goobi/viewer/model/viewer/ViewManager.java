@@ -339,8 +339,17 @@ public class ViewManager implements Serializable {
      */
     public CalendarView createCalendarView() throws IndexUnreachableException, PresentationException {
         // Init calendar view
-        String anchorPi = anchorStructElement != null ? anchorStructElement.getPi() : (topStructElement.isAnchor() ? pi : null);
-        return new CalendarView(pi, anchorPi, topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants.CALENDAR_YEAR));
+        String anchorPi = null;
+        if (anchorStructElement != null) {
+            anchorPi = anchorStructElement.getPi();
+        } else if (topStructElement.isAnchor() || topStructElement.isGroup()) {
+            anchorPi = pi;
+        } else if (topStructElement.isGroupMember()) {
+            anchorPi = topStructElement.getGroupMemberships().get(topStructElement.getGroupIdField());
+        }
+        String anchorField = topStructElement.isVolume() ? SolrConstants.PI_ANCHOR : topStructElement.getGroupIdField();
+        return new CalendarView(pi, anchorPi, anchorField,
+                topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants.CALENDAR_YEAR));
 
     }
 
