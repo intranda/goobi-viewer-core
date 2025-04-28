@@ -82,13 +82,17 @@ public class CitationList {
      *         false otherwise
      */
     public boolean isCurrent(ViewManager viewManager) {
-        switch (level) {
-            case RECORD:
-                return true;
-            case DOCSTRUCT:
-                return Objects.equals(viewManager.getLogId(), this.logId);
-            case IMAGE:
-                return Objects.equals(viewManager.getCurrentImageOrder(), this.page);
+        if (level != null) {
+            switch (level) {
+                case RECORD:
+                    return true;
+                case DOCSTRUCT:
+                    return Objects.equals(viewManager.getLogId(), this.logId);
+                case IMAGE:
+                    return Objects.equals(viewManager.getCurrentImageOrder(), this.page);
+                default:
+                    return true;
+            }
         }
         return true;
     }

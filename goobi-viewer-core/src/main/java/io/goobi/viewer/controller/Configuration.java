@@ -231,19 +231,14 @@ public class Configuration extends AbstractConfiguration {
      * @should throw IllegalArgumentException if stopwordsFilePath empty
      * @should throw FileNotFoundException if file does not exist
      */
-    protected static Set<String> loadStopwords(String stopwordsFilePath) throws IOException {
+    protected static Set<String> loadStopwords(final String stopwordsFilePath) throws IOException {
         if (StringUtils.isEmpty(stopwordsFilePath)) {
             throw new IllegalArgumentException("stopwordsFilePath may not be null or empty");
         }
 
-        if (StringUtils.isEmpty(stopwordsFilePath)) {
-            logger.warn("'stopwordsFile' not configured. Stop words cannot be filtered from search queries.");
-            return new HashSet<>();
-        }
-
-        stopwordsFilePath = FileTools.adaptPathForWindows(stopwordsFilePath);
+        String useStopwordsFilePath = FileTools.adaptPathForWindows(stopwordsFilePath);
         Set<String> ret = new HashSet<>();
-        try (FileReader fr = new FileReader(stopwordsFilePath); BufferedReader br = new BufferedReader(fr)) {
+        try (FileReader fr = new FileReader(useStopwordsFilePath); BufferedReader br = new BufferedReader(fr)) {
             String line;
             while ((line = br.readLine()) != null) {
                 line = line.trim();
