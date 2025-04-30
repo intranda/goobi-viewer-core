@@ -28,11 +28,18 @@
 						</div>
 					</h2>
 					
-					<dl jsf:id="sidebarMetadataList">
-					<c:forEach items="#{cc.attrs.metadataElementList}" var="metadataElement">
+					<c:forEach items="#{cc.attrs.metadataElementList}" var="metadataElement" varStatus="status">
+					
+					    <ui:fragment rendered="#{fn:length(cc.attrs.metadataElementList) gt 1}">
+                            <h3 class="metadata__elements-h3">
+                                <h:outputText value="#{msg[metadataElement.docStructTypeLabel]}" />
+                            </h3>
+                        </ui:fragment>
+                        
+					    <dl jsf:id="sidebarMetadataList-#{status.index}">
 						<c:forEach items="#{metadataElement.sidebarMetadataList}" var="metadata">
 							<dt title="#{metadata.label}">
-								<h:outputText value="#{msg[metadata.label]}:" escape="false" />
+							    <h:outputText value="#{msg[metadata.label]}:" escape="false" />
 							</dt>
 	
 							<!-- Grouped metadata -->
@@ -98,8 +105,8 @@
 								</dd>
 							</h:panelGroup>
 						</c:forEach>
+                        </dl>
 					</c:forEach>
-					</dl>
 				</div>
 				
 				<!-- LIDO -->
