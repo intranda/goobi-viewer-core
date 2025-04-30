@@ -119,6 +119,28 @@
   }
 }
 
+.widget-admin {
+	background-color: @adminBackend-bg;
+	color: @white;
+	
+	&__topbar {}
+	
+	&__title {
+		padding: .7rem 1.5rem;
+		margin-bottom: 1rem;
+	}
+	
+	&__body {
+		padding: 1rem 1.5rem;
+		
+		ul,li {
+			list-style: none;
+		    margin: 0;
+		    padding: 0;
+		}
+	}
+}
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }

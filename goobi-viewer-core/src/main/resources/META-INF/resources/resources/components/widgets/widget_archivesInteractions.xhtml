@@ -11,15 +11,15 @@
 	<composite:implementation>
 		<!-- (ADMIN) WIDGET FOR ARCHIVE INTERACTIONS -->
 		<h:panelGroup rendered="#{userBean.loggedIn and userBean.admin}">
-			<div id="widgetArchivesInteractions" class="widget widget-archives-interactions">
+			<div id="widgetArchivesInteractions" class="widget-admin widget-archives-interactions">
 				<h:form id="widgetArchivesInteractionsStandardForm" prependId="false">
-					<div class="widget__topbar widget-archives-interactions__topbar">
-						<h2 class="widget__title widget-archives-interactions__title">
+					<div class="widget-admin__topbar widget-archives-interactions__topbar">
+						<h2 class="widget-admin__title widget-archives-interactions__title">
 							#{msg.menuUser_workInteractions}
 						</h2>
 					</div>
 					<!-- <h3>#{msg.archives__current_collection}</h3> -->
-					<div class="widget__body widget-archives-interactions__body">
+					<div class="widget-admin__body widget-archives-interactions__body">
 						<ul>
 							<!-- RE-INDEX ARCHIVE -->
 							<h:panelGroup rendered="#{userBean.admin}">
