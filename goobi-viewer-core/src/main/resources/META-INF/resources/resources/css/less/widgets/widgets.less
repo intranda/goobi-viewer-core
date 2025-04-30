@@ -20,27 +20,28 @@
 		align-items: center;
 		gap: 5px;
   	}
+
+	&.collapseable {
+		cursor: pointer;
+
+	.fa {
+	      font-size: @fontNormal;
+	      display: inline-block;
+	    }
+
+	    &.in {
+	      .fa-angle-down {
+	        transform: rotate(-180deg);
+	      }
+	    }
+	}
+	
   }
 
   &__title {
   	  margin-top: 0;
   	  margin-bottom: 0;
 	  display: flex;
-	  
-	  &.collapseable {
-	  	cursor: pointer;
-
-	  .fa {
-	        font-size: @fontNormal;
-	        display: inline-block;
-	      }
-
-	      &.in {
-	        .fa-angle-down {
-	          transform: rotate(-180deg);
-	        }
-	      }
-	  }
   }
 
   &__body {
