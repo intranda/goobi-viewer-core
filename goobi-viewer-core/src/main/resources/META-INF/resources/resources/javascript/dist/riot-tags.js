@@ -4542,7 +4542,7 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
 		}
 
     	if(swiperConfig.navigation && swiperConfig.navigation.prevEl == '.swiper-button-prev' && swiperConfig.navigation.nextEl == '.swiper-button-next')  {
-				console.log('std navigation activated')
+
         		this.showStandardNav = true;
     	} else {
     		this.showStandardNav = false;
