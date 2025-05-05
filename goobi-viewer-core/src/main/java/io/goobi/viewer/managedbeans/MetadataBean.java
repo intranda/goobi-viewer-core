@@ -208,11 +208,11 @@ public class MetadataBean {
      * metadata, the next higher element is checked until an element with sidebar metadata is found. TODO for some reason this method is called 6-15
      * times per page
      *
-     * @param index Metadata view index
+     * @param metadataViewIndex Metadata view index
      * @return a {@link io.goobi.viewer.model.metadata.MetadataElement} object.
      */
-    public MetadataElement getBottomMetadataElement(int index) {
-        List<MetadataElement> metadataElementList = getMetadataElementList(index);
+    public MetadataElement getBottomMetadataElement(int metadataViewIndex) {
+        List<MetadataElement> metadataElementList = getMetadataElementList(metadataViewIndex);
         if (metadataElementList == null || metadataElementList.isEmpty()) {
             return null;
         }
@@ -223,6 +223,22 @@ public class MetadataBean {
         }
 
         return metadataElementList.get(i);
+    }
+
+    /**
+     * 
+     * 
+     * @param metadataViewIndex
+     * @return
+     */
+    public List<MetadataElement> getBottomMetadataElementAsList(int metadataViewIndex) {
+        // logger.trace("getBottomMetadataElementAsList: {}", metadataViewIndex);
+        MetadataElement bottomElement = getBottomMetadataElement(metadataViewIndex);
+        if (bottomElement != null) {
+            return Collections.singletonList(bottomElement);
+        }
+
+        return Collections.emptyList();
     }
 
     /**
