@@ -343,6 +343,22 @@ public class ManifestBuilder extends AbstractBuilder {
         });
     }
 
+    protected boolean isPlaintextAvailable(StructElement ele, Optional<PhysicalElement> page) {
+        return page.map(PhysicalElement::isFulltextAvailable).orElse(ele.isFulltextAvailable());
+    }
+
+    protected boolean isAltoAvailable(StructElement ele, Optional<PhysicalElement> page) {
+        try {
+            return page.map(PhysicalElement::isAltoAvailable).orElse(ele.isAltoAvailable());
+        } catch (IndexUnreachableException | PresentationException e) {
+            return false;
+        }
+    }
+
+    protected boolean isHasPages(StructElement ele, Optional<PhysicalElement> page) {
+        return page.map(p -> true).orElse(ele.getNumPages() > 0);
+    }
+
     /**
      * 
      * @param page
@@ -357,11 +373,17 @@ public class ManifestBuilder extends AbstractBuilder {
                 uri = URI.create(getViewUrl(page, PageType.viewObject));
                 break;
             case ALTO:
+                if (!page.isAltoAvailable()) {
+                    return null;
+                }
                 uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_ALTO)
                         .params(page.getPi(), Path.of(Optional.ofNullable(page.getAltoFileName()).orElse("-")).getFileName())
                         .buildURI();
                 break;
             case PLAINTEXT:
+                if (!page.isFulltextAvailable()) {
+                    return null;
+                }
                 uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT)
                         .params(page.getPi(),
                                 Path.of(Optional.ofNullable(page.getFulltextFileName())
@@ -406,12 +428,21 @@ public class ManifestBuilder extends AbstractBuilder {
                 }
                 break;
             case ALTO:
+                if (!ele.isAltoAvailable()) {
+                    return null;
+                }
                 uri = this.urls.path(RECORDS_RECORD, RECORDS_ALTO).params(ele.getPi()).buildURI();
                 break;
             case PLAINTEXT:
+                if (!ele.isFulltextAvailable()) {
+                    return null;
+                }
                 uri = this.urls.path(RECORDS_RECORD, RECORDS_PLAINTEXT).params(ele.getPi()).buildURI();
                 break;
             case PDF:
+                if (ele.getNumPages() < 1) {
+                    return null;
+                }
                 String pdfDownloadUrl = BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(ele, ele.getLabel());
                 uri = URI.create(pdfDownloadUrl);
                 break;

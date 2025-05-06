@@ -380,21 +380,26 @@ public class ManifestBuilder extends AbstractBuilder {
             getCmsPageLinks(ele.getPi()).forEach(manifest::addHomepage);
         }
 
-        if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF()) {
+        if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPDF() && ele.isHasImages()) {
             URI uri = urls.path(RECORDS_RECORD, RECORDS_PDF).params(ele.getPi()).buildURI();
             LinkingProperty pdf =
                     new LinkingProperty(LinkingTarget.PDF, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF()));
             manifest.addRendering(pdf.getResource(uri));
         }
 
-        if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto()) {
-            URI uri = urls.path(RECORDS_RECORD, RECORDS_ALTO).params(ele.getPi()).buildURI();
-            LinkingProperty alto =
-                    new LinkingProperty(LinkingTarget.ALTO, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingAlto()));
-            manifest.addSeeAlso(alto.getResource(uri));
+        try {
+            if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto() && ele.isAltoAvailable()) {
+                URI uri = urls.path(RECORDS_RECORD, RECORDS_ALTO).params(ele.getPi()).buildURI();
+                LinkingProperty alto =
+                        new LinkingProperty(LinkingTarget.ALTO,
+                                createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingAlto()));
+                manifest.addSeeAlso(alto.getResource(uri));
+            }
+        } catch (IndexUnreachableException | PresentationException e) {
+            logger.error("Unable to check existence of ALTO for {}. Reason: {}", ele.getPi(), e.toString());
         }
 
-        if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext()) {
+        if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext() && ele.isFulltextAvailable()) {
             URI uri = urls.path(RECORDS_RECORD, RECORDS_PLAINTEXT).params(ele.getPi()).buildURI();
             LinkingProperty text = new LinkingProperty(LinkingTarget.PLAINTEXT,
                     createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPlaintext()));
