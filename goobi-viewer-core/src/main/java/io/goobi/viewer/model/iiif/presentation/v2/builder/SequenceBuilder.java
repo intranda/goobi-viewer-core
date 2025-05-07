@@ -32,6 +32,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -400,9 +401,18 @@ public class SequenceBuilder extends AbstractBuilder {
                         .buildURI();
                 break;
             case PLAINTEXT:
-                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT)
-                        .params(page.getPi(), URLEncoder.encode(page.getFileName("txt"), StandardCharsets.UTF_8))
-                        .buildURI();
+                if (StringUtils.isBlank(page.getFulltextFileName())) {
+                    //create for alto file
+                    uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT)
+                            .params(page.getPi(), URLEncoder.encode(Path.of(page.getAltoFileName()).getFileName().toString(), StandardCharsets.UTF_8))
+                            .buildURI();
+                } else {
+                    //create for txt file
+                    uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT)
+                            .params(page.getPi(),
+                                    URLEncoder.encode(Path.of(page.getFulltextFileName()).getFileName().toString(), StandardCharsets.UTF_8))
+                            .buildURI();
+                }
                 break;
             case PDF:
                 uri = URI.create(imageDelivery.getPdf().getPdfUrl(null, page));
