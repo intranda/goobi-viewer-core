@@ -55,6 +55,10 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.Metadata;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -233,6 +237,22 @@ public class VariableReplacer {
     public void addReplacement(String s, String value) {
         Map<String, List<String>> map = this.replacementsMap.computeIfAbsent("custom", key -> new HashMap<String, List<String>>());
         map.put(s, List.of(value));
+    }
+
+    public Metadata replace(Metadata metadata) {
+        return new Metadata(metadata.getLabel(), this.replace(metadata.getValue()));
+    }
+
+    public IMetadataValue replace(IMetadataValue value) {
+        if (value instanceof SimpleMetadataValue simple) {
+            return new SimpleMetadataValue(this.replaceFirst(simple.getValue().orElse("")));
+        } else if (value instanceof MultiLanguageMetadataValue multi) {
+            Map<String, String> valueMap =
+                    multi.getValues().stream().collect(Collectors.toMap(pair -> pair.getLanguage(), pair -> this.replaceFirst(pair.getValue())));
+            return new MultiLanguageMetadataValue(valueMap);
+        } else {
+            return value;
+        }
     }
 
 }

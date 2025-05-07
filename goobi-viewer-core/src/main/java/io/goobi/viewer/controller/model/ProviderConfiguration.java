@@ -30,6 +30,8 @@ import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.variables.NoopVariableReplacer;
+import io.goobi.viewer.model.variables.VariableReplacer;
 
 /**
  * This class bundles provider configurations for IIIF manifests int a s single object
@@ -61,22 +63,26 @@ public class ProviderConfiguration {
         this.label = label;
     }
 
+    public ProviderConfiguration(HierarchicalConfiguration<ImmutableNode> config) throws PresentationException {
+        this(config, new NoopVariableReplacer());
+    }
+
     /**
      * 
      * @param config
      * @throws PresentationException
      */
-    public ProviderConfiguration(HierarchicalConfiguration<ImmutableNode> config) throws PresentationException {
-        this(config.getString("url", null), config.getString("label", null));
+    public ProviderConfiguration(HierarchicalConfiguration<ImmutableNode> config, VariableReplacer vr) throws PresentationException {
+        this(vr.replaceFirst(config.getString("url", "")), vr.replaceFirst(config.getString("label", null)));
 
         List<Object> logos = config.getList("logo");
         logos.forEach(logo -> {
-            this.logos.add(URI.create(logo.toString()));
+            this.logos.add(URI.create(vr.replaceFirst(logo.toString())));
         });
 
         List<HierarchicalConfiguration<ImmutableNode>> hp = config.configurationsAt("homepage");
         for (HierarchicalConfiguration<ImmutableNode> homepage : hp) {
-            this.homepages.add(new WebResourceConfiguration(homepage));
+            this.homepages.add(new WebResourceConfiguration(homepage, vr));
         }
 
     }

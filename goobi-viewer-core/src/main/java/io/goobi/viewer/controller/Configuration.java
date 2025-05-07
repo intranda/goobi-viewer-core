@@ -108,6 +108,7 @@ import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
+import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.collections.DcSortingList;
@@ -5331,6 +5332,20 @@ public class Configuration extends AbstractConfiguration {
         List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("webapi.iiif.provider");
         for (HierarchicalConfiguration<ImmutableNode> config : configs) {
             provider.add(new ProviderConfiguration(config));
+        }
+        return provider;
+    }
+
+    /**
+     *
+     * @return The list of configurations for IIIF3 providers
+     * @throws PresentationException if a provider or a homepage configuration misses the url or label element
+     */
+    public List<ProviderConfiguration> getIIIFProvider(VariableReplacer vr) throws PresentationException {
+        List<ProviderConfiguration> provider = new ArrayList<>();
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("webapi.iiif.provider");
+        for (HierarchicalConfiguration<ImmutableNode> config : configs) {
+            provider.add(new ProviderConfiguration(config, vr));
         }
         return provider;
     }

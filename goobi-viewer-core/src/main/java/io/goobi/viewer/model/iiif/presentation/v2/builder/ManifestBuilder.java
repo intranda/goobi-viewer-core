@@ -74,6 +74,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.metadata.Metadata;
+import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -167,7 +168,8 @@ public class ManifestBuilder extends AbstractBuilder {
      */
     public void populate(StructElement ele, final AbstractPresentationModelElement2 manifest, List<PhysicalElement> pages)
             throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException {
-        this.getAttributions().forEach(manifest::addAttribution);
+        VariableReplacer vr = new VariableReplacer(ele);
+        this.getAttributions().stream().map(vr::replace).forEach(manifest::addAttribution);
         IMetadataValue label = getLabel(ele).orElse(new SimpleMetadataValue(ele.getLabel()));
         manifest.setLabel(label);
         getDescription(ele).ifPresent(manifest::setDescription);
@@ -177,7 +179,7 @@ public class ManifestBuilder extends AbstractBuilder {
         addThumbnail(ele, manifest, pages.stream().findFirst());
 
         addLogo(ele, manifest);
-        addLicences(manifest);
+        addLicences(ele, manifest);
         addNavDate(ele, manifest);
         addSeeAlsos(manifest, ele);
         if (pages.isEmpty()) {
@@ -244,10 +246,12 @@ public class ManifestBuilder extends AbstractBuilder {
         }
     }
 
-    private static void addLicences(final AbstractPresentationModelElement2 manifest) {
+    private static void addLicences(StructElement ele, final AbstractPresentationModelElement2 manifest) {
+        VariableReplacer vr = new VariableReplacer(ele);
         for (String license : DataManager.getInstance().getConfiguration().getIIIFLicenses()) {
+            String licenseReplaced = vr.replaceFirst(license);
             try {
-                URI uri = new URI(license);
+                URI uri = new URI(licenseReplaced);
                 manifest.addLicense(uri);
             } catch (URISyntaxException e) {
                 logger.error("Configured license '{}' is not a URI", license);

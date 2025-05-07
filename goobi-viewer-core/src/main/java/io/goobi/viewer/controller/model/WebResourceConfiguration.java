@@ -28,6 +28,8 @@ import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.variables.NoopVariableReplacer;
+import io.goobi.viewer.model.variables.VariableReplacer;
 
 /**
  * Bundles configuration for a web resource containing a URI and a label
@@ -57,13 +59,17 @@ public class WebResourceConfiguration {
         this.label = label;
     }
 
+    public WebResourceConfiguration(HierarchicalConfiguration<ImmutableNode> config) throws PresentationException {
+        this(config, new NoopVariableReplacer());
+    }
+
     /**
      * 
      * @param config
      * @throws PresentationException
      */
-    public WebResourceConfiguration(HierarchicalConfiguration<ImmutableNode> config) throws PresentationException {
-        this(config.getString("url", null), config.getString("label", null));
+    public WebResourceConfiguration(HierarchicalConfiguration<ImmutableNode> config, VariableReplacer vr) throws PresentationException {
+        this(vr.replaceFirst(config.getString("url", null)), vr.replaceFirst(config.getString("label", null)));
     }
 
     /**
