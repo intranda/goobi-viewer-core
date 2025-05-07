@@ -1632,7 +1632,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * <p>
-     * getActiveResultGroupName.
+     * getActiveContext.
      * </p>
      *
      * @return activeResultGroup name; "-" if none set
@@ -1679,7 +1679,9 @@ public class SearchBean implements SearchInterface, Serializable {
      * </p>
      *
      * @return activeResultGroup name; "-" if none set
+     * @deprecated Use getActiveContext()
      */
+    @Deprecated(since = "25.04")
     public String getActiveResultGroupName() {
         if (activeResultGroup != null) {
             return activeResultGroup.getName();

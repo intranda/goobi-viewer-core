@@ -39,7 +39,7 @@
 					        <li class="content-component__search-facets-list-entry">
                             <ui:fragment>
                                 <h:outputLink styleClass="content-component__search-facets-link #{searchBean.facets.isFacetCurrentlyUsed(facet) ? '-active' : ''}"
-                                    value="#{cmsBean.currentPage.pageUrl}#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{facet.urlEscapedLink}/">
+                                    value="#{cmsBean.currentPage.pageUrl}#{searchBean.activeContext}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{facet.urlEscapedLink}/">
 									#{facet.label}
                                     <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.label}" />
                                 </h:outputLink>
@@ -47,7 +47,7 @@
                             </li>
                         </ui:repeat>
 	                        <h:outputLink rendered="#{not empty searchBean.facets.activeFacets}" styleClass="content-component__search-facets-reset"
-	                            value="#{cmsBean.currentPage.pageUrl}#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/-/">
+	                            value="#{cmsBean.currentPage.pageUrl}#{searchBean.activeContext}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/-/">
 								#{msg.reset}
 	                        </h:outputLink>
                         </ul>
