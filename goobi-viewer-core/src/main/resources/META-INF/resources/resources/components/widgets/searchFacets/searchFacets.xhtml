@@ -59,7 +59,7 @@
 													<h:outputLink
 														styleClass="btn widget-search-facets__boolean-button"
 														title="#{msg.yes} (#{searchBean.facets.getFacet(field.key,'true').count})"
-														value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:true/">
+														value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:true/">
 	                                                    #{msg.yes}
 	                                                    <f:passThroughAttribute name="data-triggerjs" value="clickedFacet" />
 	                                                    <f:passThroughAttribute
@@ -94,7 +94,7 @@
 													<h:outputLink
 														styleClass="btn widget-search-facets__boolean-button"
 														title="#{msg.no} (#{searchBean.facets.getFacet(field.key,'false').count})"
-														value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:false/">
+														value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:false/">
 	                                                    #{msg.no}
 	                                                    <f:passThroughAttribute name="data-triggerjs" value="clickedFacet" />
 	                                                    <f:passThroughAttribute
@@ -160,7 +160,7 @@
                                     <ui:repeat value="#{searchBean.facets.getLimitedFacetListForField(field.key)}" var="facet">
                                         <li class="widget-search-facets__list-item">
                                             <h:outputLink styleClass="widget-search-facets__list-item-link"
-                                                value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
+                                                value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
                                                 <span class="widget-search-facets__list-item-label">#{facet.translatedLabel}</span>  <span class="widget-search-facets__list-item-count">(#{facet.count})</span>
                                                 <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
                                             </h:outputLink>

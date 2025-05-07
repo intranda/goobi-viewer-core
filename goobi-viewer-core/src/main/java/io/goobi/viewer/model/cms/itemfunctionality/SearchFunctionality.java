@@ -236,7 +236,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     public String getUrlPrefix() {
         StringBuilder sb = new StringBuilder();
         sb.append(getBaseUrl());
-        sb.append(getActiveResultGroupName()).append("/");
+        sb.append(getActiveContext()).append("/");
         sb.append(getQueryString()).append("/");
         return sb.toString();
     }
@@ -317,14 +317,14 @@ public class SearchFunctionality implements Functionality, SearchInterface {
 
     /** {@inheritDoc} */
     @Override
-    public String getActiveResultGroupName() {
-        return getSearchBean().getActiveResultGroupName();
+    public String getActiveContext() {
+        return getSearchBean().getActiveContext();
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setActiveResultGroupName(String activeResultGroupName) {
-        getSearchBean().setActiveResultGroupName(activeResultGroupName);
+    public void setActiveContext(String activeContext) {
+        getSearchBean().setActiveContext(activeContext);
     }
 
     /** {@inheritDoc} */
@@ -409,7 +409,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         URI path = URI.create("");
         // URL-encoder query, if necessary (otherwise, exceptions might occur)
         String queryString = getQueryString();
-        path = ViewerPathBuilder.resolve(path, getActiveResultGroupName());
+        path = ViewerPathBuilder.resolve(path, getActiveContext());
         path = ViewerPathBuilder.resolve(path, queryString);
         path = ViewerPathBuilder.resolve(path, Integer.toString(getPageNo()));
         path = ViewerPathBuilder.resolve(path, getSortString());
@@ -471,7 +471,7 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      */
     public String getFacettedUrl(String facetString) {
         Path path = Paths.get(getBaseUrl());
-        path = path.resolve(getActiveResultGroupName());
+        path = path.resolve(getActiveContext());
         path = path.resolve(getQueryString());
         path = path.resolve(Integer.toString(getPageNo()));
         path = path.resolve(getSortString());

@@ -71,14 +71,14 @@ public interface SearchInterface {
     public int getLastPage();
     
     /**
-     * @return The selected result group name
+     * @return The selected result group name or advanced search template
      */
-    public String getActiveResultGroupName();
+    public String getActiveContext();
 
     /**
-     * @param activeResultGroupName a {@link java.lang.String} object.
+     * @param activeContext a {@link java.lang.String} object.
      */
-    public void setActiveResultGroupName(String activeResultGroupName);
+    public void setActiveContext(String activeContext);
 
     /**
      * Return the search string for the selected sort option
