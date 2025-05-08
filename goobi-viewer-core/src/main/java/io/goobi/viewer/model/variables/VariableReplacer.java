@@ -176,6 +176,9 @@ public class VariableReplacer {
     }
 
     public List<String> getReplacementStrings(String template) {
+        if (StringUtils.isBlank(template)) {
+            return List.of("");
+        }
         Pattern pattern = Pattern.compile(REPLACEMENT_REGEX);
         Matcher matcher = pattern.matcher(template);
         List<String> replacementStrings = new ArrayList<>();
