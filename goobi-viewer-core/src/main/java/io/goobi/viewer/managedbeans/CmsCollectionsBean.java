@@ -574,10 +574,10 @@ public class CmsCollectionsBean implements Serializable {
      */
     public String resetCurrentCollection() throws DAOException {
         logger.trace("resetCurrentCollection");
-        if (getCurrentCollection() != null) {
-            // TODO do not refresh unmanaged objects
-            //            DataManager.getInstance().getDao().refreshCMSCollection(getCurrentCollection());
-        }
+        //        if (getCurrentCollection() != null) {
+        //            TODO do not refresh unmanaged objects
+        //            DataManager.getInstance().getDao().refreshCMSCollection(getCurrentCollection());
+        //        }
         return "pretty:adminCmsCollections";
     }
 
