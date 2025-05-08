@@ -199,7 +199,7 @@ public final class IndexerTools {
         for (IndexAugmenter module : augmenters) {
             try {
                 module.augmentReIndexRecord(pi, dataRepository, namingScheme);
-            } catch (Exception e) {
+            } catch (DAOException | IOException e) {
                 logger.error(e.getMessage(), e);
             }
         }

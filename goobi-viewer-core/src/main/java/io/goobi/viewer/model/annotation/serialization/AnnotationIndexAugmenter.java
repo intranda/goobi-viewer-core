@@ -78,7 +78,7 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
      * @see io.goobi.viewer.modules.interfaces.IndexAugmenter#augmentReIndexRecord(java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public void augmentReIndexRecord(String pi, String dataRepository, String namingScheme) throws Exception {
+    public void augmentReIndexRecord(String pi, String dataRepository, String namingScheme) throws DAOException {
 
         Collection<PersistentAnnotation> annos = this.annotations != null ? this.annotations : loadAllAnnotations(pi);
 
@@ -93,7 +93,7 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
      * java.lang.String, java.lang.String)
      */
     @Override
-    public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String dataRepository, String namingScheme) throws Exception {
+    public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String dataRepository, String namingScheme) throws DAOException {
 
         Collection<PersistentAnnotation> annos = this.annotations != null ? this.annotations : loadAllAnnotations(pi, page);
 
