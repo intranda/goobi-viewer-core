@@ -747,7 +747,6 @@ public class Configuration extends AbstractConfiguration {
                 .setSeparator(separator)
                 .setIndentation(indentation)
                 .setFilterQuery(filterQuery);
-        ;
 
         // Recursively add nested metadata configurations
         List<HierarchicalConfiguration<ImmutableNode>> children = sub.configurationsAt("metadata");
@@ -5333,11 +5332,12 @@ public class Configuration extends AbstractConfiguration {
         for (HierarchicalConfiguration<ImmutableNode> config : configs) {
             provider.add(new ProviderConfiguration(config));
         }
+        
         return provider;
     }
 
     /**
-     *
+     * @param vr {@link VariableReplacer}
      * @return The list of configurations for IIIF3 providers
      * @throws PresentationException if a provider or a homepage configuration misses the url or label element
      */
@@ -5347,6 +5347,7 @@ public class Configuration extends AbstractConfiguration {
         for (HierarchicalConfiguration<ImmutableNode> config : configs) {
             provider.add(new ProviderConfiguration(config, vr));
         }
+        
         return provider;
     }
 

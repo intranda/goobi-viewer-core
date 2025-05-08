@@ -63,6 +63,11 @@ public class ProviderConfiguration {
         this.label = label;
     }
 
+    /**
+     * 
+     * @param config
+     * @throws PresentationException
+     */
     public ProviderConfiguration(HierarchicalConfiguration<ImmutableNode> config) throws PresentationException {
         this(config, new NoopVariableReplacer());
     }
@@ -70,6 +75,7 @@ public class ProviderConfiguration {
     /**
      * 
      * @param config
+     * @param vr
      * @throws PresentationException
      */
     public ProviderConfiguration(HierarchicalConfiguration<ImmutableNode> config, VariableReplacer vr) throws PresentationException {

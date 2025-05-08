@@ -229,10 +229,10 @@ public class MetadataBean {
      * 
      * 
      * @param metadataViewIndex
-     * @return
+     * @return List<MetadataElement>
      */
     public List<MetadataElement> getBottomMetadataElementAsList(int metadataViewIndex) {
-        // logger.trace("getBottomMetadataElementAsList: {}", metadataViewIndex);
+        // logger.trace("getBottomMetadataElementAsList: {}", metadataViewIndex); //NOSONAR Debug
         MetadataElement bottomElement = getBottomMetadataElement(metadataViewIndex);
         if (bottomElement != null) {
             return Collections.singletonList(bottomElement);

@@ -59,6 +59,11 @@ public class WebResourceConfiguration {
         this.label = label;
     }
 
+    /**
+     * 
+     * @param config
+     * @throws PresentationException
+     */
     public WebResourceConfiguration(HierarchicalConfiguration<ImmutableNode> config) throws PresentationException {
         this(config, new NoopVariableReplacer());
     }
@@ -66,6 +71,7 @@ public class WebResourceConfiguration {
     /**
      * 
      * @param config
+     * @param vr
      * @throws PresentationException
      */
     public WebResourceConfiguration(HierarchicalConfiguration<ImmutableNode> config, VariableReplacer vr) throws PresentationException {
