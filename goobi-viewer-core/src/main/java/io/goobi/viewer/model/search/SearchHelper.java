@@ -451,10 +451,12 @@ public final class SearchHelper {
             HitType hitType = getHitType(doc);
             String ownerIDDoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_OWNER);
             String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
+            if (hitType == HitType.METADATA && !Objects.equals(mainIdDoc, ownerIDDoc)) {
+                //ignore metadata docs not in the main doc
+                continue;
+            }
             if (hitType == HitType.PAGE) {
                 filteredList.add(doc);
-            } else if (hitType == HitType.METADATA && !Objects.equals(mainIdDoc, ownerIDDoc)) {
-                //ignore metadata docs not in the main doc
             } else if (containsSearchTerms(doc, searchTerms, factory)) {
                 filteredList.add(doc);
                 if (hitType == HitType.DOCSTRCT) {

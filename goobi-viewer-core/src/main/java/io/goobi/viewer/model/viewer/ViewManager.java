@@ -845,6 +845,7 @@ public class ViewManager implements Serializable {
                     }
                 } else if (dim.width * dim.height == 0 || (maxWidth > 0 && maxWidth < dim.width) || (maxHeight > 0 && maxHeight < dim.height)) {
                     // nothing
+                    continue; //NOSONAR Checkstyle tweak
                 } else if (origImageSize == null || origImageSize.height * origImageSize.width == 0) {
                     options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), option.getBoxSizeInPixel()));
                 } else {
