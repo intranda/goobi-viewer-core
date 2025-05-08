@@ -41,6 +41,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexAugmenterException;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
@@ -78,13 +79,15 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
      * @see io.goobi.viewer.modules.interfaces.IndexAugmenter#augmentReIndexRecord(java.lang.String, java.lang.String, java.lang.String)
      */
     @Override
-    public void augmentReIndexRecord(String pi, String dataRepository, String namingScheme) throws DAOException {
-
-        Collection<PersistentAnnotation> annos = this.annotations != null ? this.annotations : loadAllAnnotations(pi);
-
-        if (!annos.isEmpty()) {
-            logger.debug("Found {} annotations for this record.", annos.size());
-            writeToHotfolder(namingScheme, annos);
+    public void augmentReIndexRecord(String pi, String dataRepository, String namingScheme) throws IndexAugmenterException {
+        try {
+            Collection<PersistentAnnotation> annos = this.annotations != null ? this.annotations : loadAllAnnotations(pi);
+            if (!annos.isEmpty()) {
+                logger.debug("Found {} annotations for this record.", annos.size());
+                writeToHotfolder(namingScheme, annos);
+            }
+        } catch (DAOException e) {
+            throw new IndexAugmenterException(e.getMessage(), e);
         }
     }
 
@@ -93,15 +96,19 @@ public class AnnotationIndexAugmenter implements IndexAugmenter {
      * java.lang.String, java.lang.String)
      */
     @Override
-    public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String dataRepository, String namingScheme) throws DAOException {
+    public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String dataRepository, String namingScheme)
+            throws IndexAugmenterException {
+        try {
+            Collection<PersistentAnnotation> annos = this.annotations != null ? this.annotations : loadAllAnnotations(pi, page);
 
-        Collection<PersistentAnnotation> annos = this.annotations != null ? this.annotations : loadAllAnnotations(pi, page);
-
-        if (!annos.isEmpty()) {
-            logger.debug("Found {} annotations for this record.", annos.size());
-            writeToHotfolder(namingScheme, annos);
+            if (!annos.isEmpty()) {
+                logger.debug("Found {} annotations for this record.", annos.size());
+                writeToHotfolder(namingScheme, annos);
+            }
+            return true;
+        } catch (DAOException e) {
+            throw new IndexAugmenterException(e.getMessage(), e);
         }
-        return true;
     }
 
     private void writeToHotfolder(String namingScheme, Collection<PersistentAnnotation> annotations) {

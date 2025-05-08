@@ -40,6 +40,7 @@ import org.apache.solr.common.SolrDocument;
 import org.jdom2.Document;
 
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexAugmenterException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
@@ -199,7 +200,7 @@ public final class IndexerTools {
         for (IndexAugmenter module : augmenters) {
             try {
                 module.augmentReIndexRecord(pi, dataRepository, namingScheme);
-            } catch (DAOException | IOException e) {
+            } catch (IndexAugmenterException e) {
                 logger.error(e.getMessage(), e);
             }
         }
@@ -317,7 +318,7 @@ public final class IndexerTools {
                 if (!module.augmentReIndexPage(pi, page, doc, dataRepository, sbNamingScheme.toString())) {
                     writeTriggerFile = false;
                 }
-            } catch (Exception e) {
+            } catch (IndexAugmenterException e) {
                 logger.error(e.getMessage(), e);
             }
         }

@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.controller;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,8 +29,7 @@ import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.exceptions.IndexAugmenterException;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
@@ -141,8 +139,7 @@ class DataManagerTest {
              * @see io.goobi.viewer.modules.IModule#augmentReIndexRecord(java.lang.String, java.lang.String, java.lang.String)
              */
             @Override
-            public void augmentReIndexRecord(String pi, String dataRepository, String namingScheme)
-                    throws DAOException, IOException, RecordNotFoundException {
+            public void augmentReIndexRecord(String pi, String dataRepository, String namingScheme) throws IndexAugmenterException {
                 //
             }
 
@@ -151,7 +148,7 @@ class DataManagerTest {
              */
             @Override
             public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String dataRepository, String namingScheme)
-                    throws DAOException, IOException, RecordNotFoundException {
+                    throws IndexAugmenterException {
                 return false;
             }
 
