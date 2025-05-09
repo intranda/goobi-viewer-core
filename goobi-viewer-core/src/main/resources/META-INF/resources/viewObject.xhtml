@@ -72,7 +72,7 @@
 				<h:form>
 					<h:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" 
 					onevent="onPageUpdateEvent" onerror="onPageUpdateEvent"
-					render=":viewMetadata :userCommentsForm :userGeneratedContentGroup :sidebar:widgetViews:widgetViewsForm :sidebar:widgetMetadata:sidebarMetadataList :sidebar:widgetDownloads:pageDownloads :sidebar:widgetCitations:pageCitations :sidebar:widgetAnnotations:widgetAnnotationList:annotationList :sidebar:widgetTechnical:technicalMetadataList"></h:commandScript>
+					render="imageControls:fullscreenLink :viewMetadata :userCommentsForm :userGeneratedContentGroup :sidebar:widgetViews:widgetViewsForm :sidebar:widgetMetadata:sidebarMetadataList :sidebar:widgetDownloads:pageDownloads :sidebar:widgetCitations:pageCitations :sidebar:widgetAnnotations:widgetAnnotationList:annotationList :sidebar:widgetTechnical:technicalMetadataList"></h:commandScript>
 					
 					<script>
 						function onPageUpdateEvent(data) {
@@ -90,7 +90,7 @@
                 <!-- IMAGE CONTROLS -->
 	                <h:panelGroup
 	                    rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'video' and activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'audio'}">
-	                    <viewerComponent:imageControls />
+	                    <viewerComponent:imageControls id="imageControls" />
 	                </h:panelGroup>
 
                 <!-- VIEW IMAGE -->

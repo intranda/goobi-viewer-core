@@ -169,7 +169,7 @@
                             <!-- FULLSCREEN -->
                             <ui:fragment rendered="#{navigationHelper.currentPage != 'fullscreen'}">
                                 <li class="image-controls__action enter-fullscreen">
-                                    <h:outputLink value="#{activeDocumentBean.fullscreenImageUrl}" title="#{msg.fullscreen_enter}">
+                                    <h:outputLink id="fullscreenLink" value="#{activeDocumentBean.fullscreenImageUrl}" title="#{msg.fullscreen_enter}">
                                         <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-fullscreen.svg')}" />
                                         <span id="fullScreenLabel" class="labeltext">#{msg.enterFullscreen}</span>
                                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
