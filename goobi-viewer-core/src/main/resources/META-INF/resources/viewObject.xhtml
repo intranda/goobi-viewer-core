@@ -72,7 +72,7 @@
 				<h:form>
 					<h:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" 
 					onevent="onPageUpdateEvent" onerror="onPageUpdateEvent"
-					render=":viewMetadata :userCommentsForm :userGeneratedContentGroup :sidebar:widgetViews:widgetViewsForm :sidebar:widgetMetadata:sidebarMetadataList :sidebar:widgetDownloads:pageDownloads :sidebar:widgetCitations:pageCitations :sidebar:widgetAnnotations:widgetAnnotationList:annotationList :sidebar:widgetTechnical:technicalMetadataList"></h:commandScript>
+					render="imageControls:fullscreenLink :viewMetadata :userCommentsForm :userGeneratedContentGroup :sidebar:widgetViews:widgetViewsForm :sidebar:widgetMetadata:sidebarMetadataList :sidebar:widgetDownloads:pageDownloads :sidebar:widgetCitations:pageCitations :sidebar:widgetAnnotations:widgetAnnotationList:annotationList :sidebar:widgetTechnical:technicalMetadataList"></h:commandScript>
 					
 					<script>
 						function onPageUpdateEvent(data) {
@@ -90,7 +90,7 @@
                 <!-- IMAGE CONTROLS -->
 	                <h:panelGroup
 	                    rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'video' and activeDocumentBean.viewManager.currentPage.baseMimeType.name != 'audio'}">
-	                    <viewerComponent:imageControls />
+	                    <viewerComponent:imageControls id="imageControls" />
 	                </h:panelGroup>
 
                 <!-- VIEW IMAGE -->
@@ -144,8 +144,8 @@
 	            	                rtl: #{activeDocumentBean.viewManager.topStructElement.rtl},
 	            	                classSuffix: "",
 	            	                positionBottom: false,
-	            	                update: imageOrderChanged,
-									onUpdate: (pageNumber) => changeImageOrder.next(pageNumber),
+	            	                update: typeof imageOrderChanged !== 'undefined' ? imageOrderChanged : undefined,
+									onUpdate: typeof imageOrderChanged !== 'undefined' ? (pageNumber) => changeImageOrder.next(pageNumber) : undefined,
 	            	             	msg: {
 	            	             		aria_label__pagination_bottom: "#{msg.aria_label__pagination_bottom}",
 	            	             		aria_label__pagination_pages: "#{msg.aria_label__pagination_pages}",

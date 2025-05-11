@@ -31,7 +31,6 @@ import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -108,7 +107,7 @@ public class ExternalImageResource extends ImageResource {
         int baseEndIndex = baseStartIndex + baseImageUrl.length();
         String imageRequestPath = requestUrl.substring(baseEndIndex);
 
-        List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+        List<String> parts = Arrays.stream(imageRequestPath.split("/")).filter(StringUtils::isNotBlank).toList();
         if (parts.size() == 4) {
             //image request
             String region = parts.get(0);
@@ -132,6 +131,7 @@ public class ExternalImageResource extends ImageResource {
         }
     }
 
+    @Override
     @GET
     @Path(RECORDS_FILES_IMAGE_PDF)
     @Produces("application/pdf")

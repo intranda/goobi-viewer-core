@@ -60,6 +60,7 @@ import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.administration.MaintenanceMode;
 import io.goobi.viewer.model.administration.legal.TermsOfUse;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.comments.Comment;
@@ -126,8 +127,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
-        File webContent = new File("WebContent/").getAbsoluteFile();
-        String webContentPath = webContent.toURI().toString();
+        // File webContent = new File("WebContent/").getAbsoluteFile();
+        // String webContentPath = webContent.toURI().toString();
     }
 
     // Users
@@ -135,33 +136,33 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getAllUsersTest() throws DAOException {
         List<User> users = DataManager.getInstance().getDao().getAllUsers(false);
-        Assertions.assertEquals(3, users.size());
+        assertEquals(3, users.size());
     }
 
     @Test
     void getUserByIdTest() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(1);
-        Assertions.assertNotNull(user);
-        Assertions.assertEquals(2, user.getOpenIdAccounts().size());
-        Assertions.assertEquals(LocalDateTime.of(2012, 3, 3, 11, 22, 33), user.getLastLogin());
+        assertNotNull(user);
+        assertEquals(2, user.getOpenIdAccounts().size());
+        assertEquals(LocalDateTime.of(2012, 3, 3, 11, 22, 33), user.getLastLogin());
     }
 
     @Test
     void getUserByEmailTest() throws DAOException {
         User user = DataManager.getInstance().getDao().getUserByEmail("1@UsErS.oRg");
-        Assertions.assertNotNull(user);
+        assertNotNull(user);
     }
 
     @Test
     void getUserByOpenIdTest() throws DAOException {
         User user = DataManager.getInstance().getDao().getUserByOpenId("user_1_claimed_identifier_2");
-        Assertions.assertNotNull(user);
+        assertNotNull(user);
     }
 
     @Test
     void getUserByNicknameTest() throws DAOException {
         User user = DataManager.getInstance().getDao().getUserByNickname("admin");
-        Assertions.assertNotNull(user);
+        assertNotNull(user);
     }
 
     @Test
@@ -183,25 +184,25 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         DataManager.getInstance().getDao().addUser(user);
 
         User user2 = DataManager.getInstance().getDao().getUser(user.getId());
-        Assertions.assertNotNull(user2);
-        Assertions.assertEquals(user.getPasswordHash(), user2.getPasswordHash());
-        Assertions.assertEquals(user.getActivationKey(), user2.getActivationKey());
-        Assertions.assertEquals(user.getFirstName(), user2.getFirstName());
-        Assertions.assertEquals(user.getLastName(), user2.getLastName());
-        Assertions.assertEquals(user.getNickName(), user2.getNickName());
-        Assertions.assertEquals(user.getComments(), user2.getComments());
-        Assertions.assertEquals(user.getAvatarType(), user2.getAvatarType());
-        Assertions.assertEquals(user.getLastLogin(), now);
-        Assertions.assertEquals(user.isActive(), user2.isActive());
-        Assertions.assertEquals(user.isSuspended(), user2.isSuspended());
-        Assertions.assertEquals(user.isSuperuser(), user2.isSuperuser());
+        assertNotNull(user2);
+        assertEquals(user.getPasswordHash(), user2.getPasswordHash());
+        assertEquals(user.getActivationKey(), user2.getActivationKey());
+        assertEquals(user.getFirstName(), user2.getFirstName());
+        assertEquals(user.getLastName(), user2.getLastName());
+        assertEquals(user.getNickName(), user2.getNickName());
+        assertEquals(user.getComments(), user2.getComments());
+        assertEquals(user.getAvatarType(), user2.getAvatarType());
+        assertEquals(user.getLastLogin(), now);
+        assertEquals(user.isActive(), user2.isActive());
+        assertEquals(user.isSuspended(), user2.isSuspended());
+        assertEquals(user.isSuperuser(), user2.isSuperuser());
     }
 
     @Test
     void updateUserTest() throws DAOException {
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllUsers(false).size());
+        assertEquals(3, DataManager.getInstance().getDao().getAllUsers(false).size());
         User user = DataManager.getInstance().getDao().getUser(1);
-        Assertions.assertNotNull(user);
+        assertNotNull(user);
         user.setEmail("b@b.com");
         user.setPasswordHash("EFEFEF");
         user.setFirstName("first");
@@ -216,24 +217,24 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         user.setAgreedToTermsOfUse(true);
         DataManager.getInstance().getDao().updateUser(user);
 
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllUsers(false).size());
+        assertEquals(3, DataManager.getInstance().getDao().getAllUsers(false).size());
 
         User user2 = DataManager.getInstance().getDao().getUser(user.getId());
-        Assertions.assertNotNull(user2);
-        Assertions.assertEquals(user.getId(), user2.getId());
-        Assertions.assertEquals(user.getEmail(), user2.getEmail());
-        Assertions.assertEquals(user.getFirstName(), user2.getFirstName());
-        Assertions.assertEquals(user.getLastName(), user2.getLastName());
-        Assertions.assertEquals(user.getNickName(), user2.getNickName());
-        Assertions.assertEquals(user.getComments(), user2.getComments());
-        Assertions.assertEquals(user.getAvatarType(), user2.getAvatarType());
+        assertNotNull(user2);
+        assertEquals(user.getId(), user2.getId());
+        assertEquals(user.getEmail(), user2.getEmail());
+        assertEquals(user.getFirstName(), user2.getFirstName());
+        assertEquals(user.getLastName(), user2.getLastName());
+        assertEquals(user.getNickName(), user2.getNickName());
+        assertEquals(user.getComments(), user2.getComments());
+        assertEquals(user.getAvatarType(), user2.getAvatarType());
         // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
-        Assertions.assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(user.getLastLogin()),
+        assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(user.getLastLogin()),
                 DateTools.FORMATTERISO8601DATETIMEMS.format(user2.getLastLogin()));
-        Assertions.assertEquals(user.isActive(), user2.isActive());
-        Assertions.assertEquals(user.isSuspended(), user2.isSuspended());
-        Assertions.assertEquals(user.isSuperuser(), user2.isSuperuser());
-        Assertions.assertEquals(user.isAgreedToTermsOfUse(), user2.isAgreedToTermsOfUse());
+        assertEquals(user.isActive(), user2.isActive());
+        assertEquals(user.isSuspended(), user2.isSuspended());
+        assertEquals(user.isSuperuser(), user2.isSuperuser());
+        assertEquals(user.isAgreedToTermsOfUse(), user2.isAgreedToTermsOfUse());
     }
 
     @Test
@@ -250,27 +251,27 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         DataManager.getInstance().getDao().addUser(user);
 
-        Assertions.assertNotNull(DataManager.getInstance().getDao().getUser(user.getId()));
-        Assertions.assertTrue(DataManager.getInstance().getDao().deleteUser(user));
-        Assertions.assertNull(DataManager.getInstance().getDao().getUserByEmail("deleteme@b.com"));
+        assertNotNull(DataManager.getInstance().getDao().getUser(user.getId()));
+        assertTrue(DataManager.getInstance().getDao().deleteUser(user));
+        assertNull(DataManager.getInstance().getDao().getUserByEmail("deleteme@b.com"));
     }
 
     @Test
     void userLicenseTest() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(2);
-        Assertions.assertNotNull(user);
-        Assertions.assertEquals(1, user.getLicenses().size());
-        Assertions.assertEquals(1, user.getLicenses().get(0).getPrivileges().size());
+        assertNotNull(user);
+        assertEquals(1, user.getLicenses().size());
+        assertEquals(1, user.getLicenses().get(0).getPrivileges().size());
         for (String priv : user.getLicenses().get(0).getPrivileges()) {
-            Assertions.assertEquals(IPrivilegeHolder.PRIV_LIST, priv);
+            assertEquals(IPrivilegeHolder.PRIV_LIST, priv);
         }
 
         // Saving the licensee should not create any extra licenses
         {
-            Assertions.assertTrue(DataManager.getInstance().getDao().updateUser(user));
+            assertTrue(DataManager.getInstance().getDao().updateUser(user));
             User user2 = DataManager.getInstance().getDao().getUser(user.getId());
-            Assertions.assertNotNull(user2);
-            Assertions.assertEquals(1, user2.getLicenses().size());
+            assertNotNull(user2);
+            assertEquals(1, user2.getLicenses().size());
         }
 
         // Adding a new license should update the attached object with ID
@@ -278,20 +279,20 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
             License license = new License();
             license.setLicenseType(user.getLicenses().get(0).getLicenseType());
             user.addLicense(license);
-            Assertions.assertTrue(DataManager.getInstance().getDao().updateUser(user));
+            assertTrue(DataManager.getInstance().getDao().updateUser(user));
             User user2 = DataManager.getInstance().getDao().getUser(user.getId());
-            Assertions.assertNotNull(user2);
-            Assertions.assertEquals(2, user2.getLicenses().size());
-            Assertions.assertNotNull(user2.getLicenses().get(0).getId());
-            Assertions.assertNotNull(user2.getLicenses().get(1).getId());
+            assertNotNull(user2);
+            assertEquals(2, user2.getLicenses().size());
+            assertNotNull(user2.getLicenses().get(0).getId());
+            assertNotNull(user2.getLicenses().get(1).getId());
         }
 
         // Orphaned licenses should be deleted properly
         user.removeLicense(user.getLicenses().get(0));
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateUser(user));
+        assertTrue(DataManager.getInstance().getDao().updateUser(user));
         User user3 = DataManager.getInstance().getDao().getUser(user.getId());
-        Assertions.assertNotNull(user3);
-        Assertions.assertEquals(1, user3.getLicenses().size());
+        assertNotNull(user3);
+        assertEquals(1, user3.getLicenses().size());
 
     }
 
@@ -300,42 +301,42 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getAllUserGroupsTest() throws DAOException {
         List<UserGroup> userGroups = DataManager.getInstance().getDao().getAllUserGroups();
-        Assertions.assertEquals(3, userGroups.size());
+        assertEquals(3, userGroups.size());
     }
 
     @Test
     void getAllUserGroupsForOwnerTest() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(1);
-        Assertions.assertNotNull(user);
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getUserGroups(user).size());
+        assertNotNull(user);
+        assertEquals(3, DataManager.getInstance().getDao().getUserGroups(user).size());
     }
 
     @Test
     void getUserGroupByIdTest() throws DAOException {
         UserGroup ug = DataManager.getInstance().getDao().getUserGroup(1);
-        Assertions.assertNotNull(ug);
-        Assertions.assertNotNull(ug.getOwner());
-        Assertions.assertEquals(Long.valueOf(1), ug.getOwner().getId());
-        Assertions.assertEquals("user group 1 name", ug.getName());
-        Assertions.assertEquals("user group 1 desc", ug.getDescription());
-        Assertions.assertTrue(ug.isActive());
+        assertNotNull(ug);
+        assertNotNull(ug.getOwner());
+        assertEquals(Long.valueOf(1), ug.getOwner().getId());
+        assertEquals("user group 1 name", ug.getName());
+        assertEquals("user group 1 desc", ug.getDescription());
+        assertTrue(ug.isActive());
     }
 
     @Test
     void getUserGroupByNameTest() throws DAOException {
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup("user group 1 name");
-        Assertions.assertNotNull(userGroup);
-        Assertions.assertNotNull(userGroup.getOwner());
-        Assertions.assertEquals(Long.valueOf(1), userGroup.getOwner().getId());
-        Assertions.assertEquals("user group 1 name", userGroup.getName());
-        Assertions.assertEquals("user group 1 desc", userGroup.getDescription());
-        Assertions.assertTrue(userGroup.isActive());
+        assertNotNull(userGroup);
+        assertNotNull(userGroup.getOwner());
+        assertEquals(Long.valueOf(1), userGroup.getOwner().getId());
+        assertEquals("user group 1 name", userGroup.getName());
+        assertEquals("user group 1 desc", userGroup.getDescription());
+        assertTrue(userGroup.isActive());
     }
 
     @Test
     void addUserGroupTest() throws DAOException {
         User owner = DataManager.getInstance().getDao().getUser(1);
-        Assertions.assertNotNull(owner);
+        assertNotNull(owner);
 
         UserGroup userGroup = new UserGroup();
         userGroup.setOwner(owner);
@@ -343,54 +344,54 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         userGroup.setDescription("added user group desc");
         userGroup.setActive(false);
 
-        Assertions.assertTrue(DataManager.getInstance().getDao().addUserGroup(userGroup));
-        Assertions.assertNotNull(userGroup.getId());
+        assertTrue(DataManager.getInstance().getDao().addUserGroup(userGroup));
+        assertNotNull(userGroup.getId());
 
         UserGroup userGroup2 = DataManager.getInstance().getDao().getUserGroup(userGroup.getId());
-        Assertions.assertNotNull(userGroup2);
-        Assertions.assertNotNull(userGroup2.getOwner());
-        Assertions.assertEquals(userGroup.getOwner().getId(), userGroup2.getOwner().getId());
-        Assertions.assertEquals(userGroup.getName(), userGroup2.getName());
-        Assertions.assertEquals(userGroup.getDescription(), userGroup2.getDescription());
-        Assertions.assertEquals(userGroup.isActive(), userGroup2.isActive());
+        assertNotNull(userGroup2);
+        assertNotNull(userGroup2.getOwner());
+        assertEquals(userGroup.getOwner().getId(), userGroup2.getOwner().getId());
+        assertEquals(userGroup.getName(), userGroup2.getName());
+        assertEquals(userGroup.getDescription(), userGroup2.getDescription());
+        assertEquals(userGroup.isActive(), userGroup2.isActive());
     }
 
     @Test
     void updateUserGroupTest() throws DAOException {
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
+        assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
-        Assertions.assertNotNull(userGroup);
-        Assertions.assertEquals("user group 1 name", userGroup.getName());
+        assertNotNull(userGroup);
+        assertEquals("user group 1 name", userGroup.getName());
 
         userGroup.setName("user group 1 new name");
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
+        assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
+        assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
 
         UserGroup userGroup2 = DataManager.getInstance().getDao().getUserGroup(userGroup.getId());
-        Assertions.assertNotNull(userGroup2);
-        Assertions.assertEquals(userGroup.getId(), userGroup2.getId());
-        Assertions.assertEquals("user group 1 new name", userGroup2.getName());
+        assertNotNull(userGroup2);
+        assertEquals(userGroup.getId(), userGroup2.getId());
+        assertEquals("user group 1 new name", userGroup2.getName());
 
     }
 
     @Test
     void deleteUserGroupWithMembersTest() throws DAOException {
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
+        assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
-        Assertions.assertNotNull(userGroup);
-        Assertions.assertFalse(DataManager.getInstance().getDao().deleteUserGroup(userGroup));
-        Assertions.assertNotNull(DataManager.getInstance().getDao().getUserGroup(2));
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
+        assertNotNull(userGroup);
+        assertFalse(DataManager.getInstance().getDao().deleteUserGroup(userGroup));
+        assertNotNull(DataManager.getInstance().getDao().getUserGroup(2));
+        assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
     }
 
     @Test
     void deleteUserGroupWithoutMembersTest() throws DAOException {
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
+        assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(2);
-        Assertions.assertNotNull(userGroup);
-        Assertions.assertTrue(DataManager.getInstance().getDao().deleteUserGroup(userGroup));
-        Assertions.assertNull(DataManager.getInstance().getDao().getUserGroup(2));
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllUserGroups().size());
+        assertNotNull(userGroup);
+        assertTrue(DataManager.getInstance().getDao().deleteUserGroup(userGroup));
+        assertNull(DataManager.getInstance().getDao().getUserGroup(2));
+        assertEquals(2, DataManager.getInstance().getDao().getAllUserGroups().size());
     }
 
     // UserRoles (group memberships)
@@ -398,7 +399,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getAllUserRolesTest() throws DAOException {
         List<UserRole> userRoles = DataManager.getInstance().getDao().getAllUserRoles();
-        Assertions.assertEquals(3, userRoles.size());
+        assertEquals(3, userRoles.size());
     }
 
     /**
@@ -408,61 +409,61 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getUserRoleCount_shouldReturnCorrectCount() throws Exception {
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
-        Assertions.assertNotNull(userGroup);
-        Assertions.assertEquals(1, DataManager.getInstance().getDao().getUserRoleCount(userGroup, null, null));
+        assertNotNull(userGroup);
+        assertEquals(1, DataManager.getInstance().getDao().getUserRoleCount(userGroup, null, null));
 
         User user = DataManager.getInstance().getDao().getUser(2);
-        Assertions.assertNotNull(user);
-        Assertions.assertEquals(1, DataManager.getInstance().getDao().getUserRoleCount(userGroup, user, null));
+        assertNotNull(user);
+        assertEquals(1, DataManager.getInstance().getDao().getUserRoleCount(userGroup, user, null));
 
         Role role = DataManager.getInstance().getDao().getRole(1);
-        Assertions.assertNotNull(role);
-        Assertions.assertEquals(1, DataManager.getInstance().getDao().getUserRoleCount(userGroup, user, role));
+        assertNotNull(role);
+        assertEquals(1, DataManager.getInstance().getDao().getUserRoleCount(userGroup, user, role));
     }
 
     @Test
     void getUserGroupMembershipsByUserGroupTest() throws DAOException {
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
-        Assertions.assertNotNull(userGroup);
+        assertNotNull(userGroup);
         List<UserRole> memberships = DataManager.getInstance().getDao().getUserRoles(userGroup, null, null);
-        Assertions.assertNotNull(memberships);
-        Assertions.assertEquals(1, memberships.size());
+        assertNotNull(memberships);
+        assertEquals(1, memberships.size());
     }
 
     @Test
     void getUserGroupMembershipsByUserTest() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(2);
-        Assertions.assertNotNull(user);
+        assertNotNull(user);
         List<UserRole> memberships = DataManager.getInstance().getDao().getUserRoles(null, user, null);
-        Assertions.assertNotNull(memberships);
-        Assertions.assertEquals(1, memberships.size());
+        assertNotNull(memberships);
+        assertEquals(1, memberships.size());
     }
 
     @Test
     void getUserGroupMembershipsByRoleTest() throws DAOException {
         Role role = DataManager.getInstance().getDao().getRole(1);
-        Assertions.assertNotNull(role);
+        assertNotNull(role);
         List<UserRole> memberships = DataManager.getInstance().getDao().getUserRoles(null, null, role);
-        Assertions.assertNotNull(memberships);
-        Assertions.assertEquals(3, memberships.size());
+        assertNotNull(memberships);
+        assertEquals(3, memberships.size());
     }
 
     @Test
     void userGroupLicenseTest() throws DAOException {
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
-        Assertions.assertNotNull(userGroup);
-        Assertions.assertEquals(2, userGroup.getLicenses().size());
-        Assertions.assertEquals(1, userGroup.getLicenses().get(0).getPrivileges().size());
+        assertNotNull(userGroup);
+        assertEquals(2, userGroup.getLicenses().size());
+        assertEquals(1, userGroup.getLicenses().get(0).getPrivileges().size());
         for (String priv : userGroup.getLicenses().get(0).getPrivileges()) {
-            Assertions.assertEquals("license 2 priv 1", priv);
+            assertEquals("license 2 priv 1", priv);
         }
 
         // Saving the licensee should not create any extra licenses
         {
-            Assertions.assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
+            assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
             UserGroup userGroup2 = DataManager.getInstance().getDao().getUserGroup(userGroup.getId());
-            Assertions.assertNotNull(userGroup2);
-            Assertions.assertEquals(2, userGroup2.getLicenses().size());
+            assertNotNull(userGroup2);
+            assertEquals(2, userGroup2.getLicenses().size());
         }
 
         // Adding a new license should update the attached object with ID
@@ -470,80 +471,80 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
             License license = new License();
             license.setLicenseType(userGroup.getLicenses().get(0).getLicenseType());
             userGroup.addLicense(license);
-            Assertions.assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
+            assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
             UserGroup userGroup2 = DataManager.getInstance().getDao().getUserGroup(userGroup.getId());
-            Assertions.assertNotNull(userGroup2);
-            Assertions.assertEquals(3, userGroup2.getLicenses().size());
-            Assertions.assertNotNull(userGroup2.getLicenses().get(0).getId());
-            Assertions.assertNotNull(userGroup2.getLicenses().get(1).getId());
+            assertNotNull(userGroup2);
+            assertEquals(3, userGroup2.getLicenses().size());
+            assertNotNull(userGroup2.getLicenses().get(0).getId());
+            assertNotNull(userGroup2.getLicenses().get(1).getId());
         }
 
         // Orphaned licenses should be deleted properly
         {
             userGroup.removeLicense(userGroup.getLicenses().get(0));
-            Assertions.assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
+            assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
             UserGroup userGroup3 = DataManager.getInstance().getDao().getUserGroup(userGroup.getId());
-            Assertions.assertNotNull(userGroup3);
-            Assertions.assertEquals(2, userGroup3.getLicenses().size());
+            assertNotNull(userGroup3);
+            assertEquals(2, userGroup3.getLicenses().size());
         }
     }
 
     @Test
     void addUserRoleTest() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(2);
-        Assertions.assertNotNull(user);
+        assertNotNull(user);
         UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(2);
-        Assertions.assertNotNull(userGroup);
+        assertNotNull(userGroup);
         Role role = DataManager.getInstance().getDao().getRole(2);
-        Assertions.assertNotNull(role);
+        assertNotNull(role);
 
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllUserRoles().size());
-        Assertions.assertEquals(0, DataManager.getInstance().getDao().getUserRoles(userGroup, user, role).size());
-        Assertions.assertEquals(0, DataManager.getInstance().getDao().getUserRoles(userGroup, user, null).size());
-        Assertions.assertEquals(0, DataManager.getInstance().getDao().getUserRoles(userGroup, null, null).size());
+        assertEquals(3, DataManager.getInstance().getDao().getAllUserRoles().size());
+        assertEquals(0, DataManager.getInstance().getDao().getUserRoles(userGroup, user, role).size());
+        assertEquals(0, DataManager.getInstance().getDao().getUserRoles(userGroup, user, null).size());
+        assertEquals(0, DataManager.getInstance().getDao().getUserRoles(userGroup, null, null).size());
 
         UserRole userRole = new UserRole(userGroup, user, role);
-        Assertions.assertTrue(DataManager.getInstance().getDao().addUserRole(userRole));
-        Assertions.assertNotNull(userRole.getId());
+        assertTrue(DataManager.getInstance().getDao().addUserRole(userRole));
+        assertNotNull(userRole.getId());
 
-        Assertions.assertEquals(4, DataManager.getInstance().getDao().getAllUserRoles().size());
-        Assertions.assertEquals(1, DataManager.getInstance().getDao().getUserRoles(userGroup, user, role).size());
-        Assertions.assertEquals(1, DataManager.getInstance().getDao().getUserRoles(userGroup, user, null).size());
-        Assertions.assertEquals(1, DataManager.getInstance().getDao().getUserRoles(userGroup, null, null).size());
+        assertEquals(4, DataManager.getInstance().getDao().getAllUserRoles().size());
+        assertEquals(1, DataManager.getInstance().getDao().getUserRoles(userGroup, user, role).size());
+        assertEquals(1, DataManager.getInstance().getDao().getUserRoles(userGroup, user, null).size());
+        assertEquals(1, DataManager.getInstance().getDao().getUserRoles(userGroup, null, null).size());
 
         UserRole userRole2 = DataManager.getInstance().getDao().getUserRoles(userGroup, user, role).get(0);
-        Assertions.assertNotNull(userRole2);
-        Assertions.assertEquals(userRole.getUserGroup(), userRole2.getUserGroup());
-        Assertions.assertEquals(userRole.getUser(), userRole2.getUser());
-        Assertions.assertEquals(userRole.getRole(), userRole2.getRole());
+        assertNotNull(userRole2);
+        assertEquals(userRole.getUserGroup(), userRole2.getUserGroup());
+        assertEquals(userRole.getUser(), userRole2.getUser());
+        assertEquals(userRole.getRole(), userRole2.getRole());
     }
 
     @Test
     void updateUserRoleTest() throws DAOException {
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllUserRoles().size());
+        assertEquals(3, DataManager.getInstance().getDao().getAllUserRoles().size());
         UserRole userRole = DataManager.getInstance().getDao().getAllUserRoles().get(0);
-        Assertions.assertNotNull(userRole);
+        assertNotNull(userRole);
 
         Role role1 = DataManager.getInstance().getDao().getRole(1);
-        Assertions.assertNotNull(role1);
+        assertNotNull(role1);
         Role role2 = DataManager.getInstance().getDao().getRole(2);
-        Assertions.assertNotNull(role2);
-        Assertions.assertEquals(role1, userRole.getRole());
+        assertNotNull(role2);
+        assertEquals(role1, userRole.getRole());
         userRole.setRole(role2);
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateUserRole(userRole));
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllUserRoles().size());
+        assertTrue(DataManager.getInstance().getDao().updateUserRole(userRole));
+        assertEquals(3, DataManager.getInstance().getDao().getAllUserRoles().size());
 
         UserRole userRole2 = DataManager.getInstance().getDao().getAllUserRoles().get(0);
-        Assertions.assertNotNull(userRole2);
-        Assertions.assertEquals(userRole.getRole(), userRole2.getRole());
+        assertNotNull(userRole2);
+        assertEquals(userRole.getRole(), userRole2.getRole());
     }
 
     @Test
     void deleteUserRoleTest() throws DAOException {
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllUserRoles().size());
+        assertEquals(3, DataManager.getInstance().getDao().getAllUserRoles().size());
         UserRole userRole = DataManager.getInstance().getDao().getAllUserRoles().get(0);
-        Assertions.assertTrue(DataManager.getInstance().getDao().deleteUserRole(userRole));
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllUserRoles().size());
+        assertTrue(DataManager.getInstance().getDao().deleteUserRole(userRole));
+        assertEquals(2, DataManager.getInstance().getDao().getAllUserRoles().size());
     }
 
     // IP ranges
@@ -551,100 +552,100 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getAllIpRangesTest() throws DAOException {
         List<IpRange> ipRanges = DataManager.getInstance().getDao().getAllIpRanges();
-        Assertions.assertEquals(2, ipRanges.size());
+        assertEquals(2, ipRanges.size());
     }
 
     @Test
     void getIpRangeByIdTest() throws DAOException {
         IpRange ipRange = DataManager.getInstance().getDao().getIpRange(1);
-        Assertions.assertNotNull(ipRange);
-        Assertions.assertEquals(Long.valueOf(1), ipRange.getId());
-        Assertions.assertEquals("localhost", ipRange.getName());
-        Assertions.assertEquals("1.2.3.4/24", ipRange.getSubnetMask());
-        Assertions.assertEquals("ip range 1 desc", ipRange.getDescription());
+        assertNotNull(ipRange);
+        assertEquals(Long.valueOf(1), ipRange.getId());
+        assertEquals("localhost", ipRange.getName());
+        assertEquals("1.2.3.4/24", ipRange.getSubnetMask());
+        assertEquals("ip range 1 desc", ipRange.getDescription());
     }
 
     @Test
     void getIpRangeByNameTest() throws DAOException {
         IpRange ipRange = DataManager.getInstance().getDao().getIpRange("localhost");
-        Assertions.assertNotNull(ipRange);
-        Assertions.assertEquals(Long.valueOf(1), ipRange.getId());
-        Assertions.assertEquals("localhost", ipRange.getName());
-        Assertions.assertEquals("1.2.3.4/24", ipRange.getSubnetMask());
-        Assertions.assertEquals("ip range 1 desc", ipRange.getDescription());
+        assertNotNull(ipRange);
+        assertEquals(Long.valueOf(1), ipRange.getId());
+        assertEquals("localhost", ipRange.getName());
+        assertEquals("1.2.3.4/24", ipRange.getSubnetMask());
+        assertEquals("ip range 1 desc", ipRange.getDescription());
     }
 
     @Test
     void addIpRangeTest() throws DAOException {
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllIpRanges().size());
+        assertEquals(2, DataManager.getInstance().getDao().getAllIpRanges().size());
         IpRange ipRange = new IpRange();
         ipRange.setName("ip range to add name");
         ipRange.setDescription("ip range to add desc");
         ipRange.setSubnetMask("0.0.0.0./0");
-        Assertions.assertTrue(DataManager.getInstance().getDao().addIpRange(ipRange));
-        Assertions.assertNotNull(ipRange.getId());
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllIpRanges().size());
+        assertTrue(DataManager.getInstance().getDao().addIpRange(ipRange));
+        assertNotNull(ipRange.getId());
+        assertEquals(3, DataManager.getInstance().getDao().getAllIpRanges().size());
 
         IpRange ipRange2 = DataManager.getInstance().getDao().getIpRange(ipRange.getId());
-        Assertions.assertNotNull(ipRange2);
-        Assertions.assertEquals(ipRange.getName(), ipRange2.getName());
-        Assertions.assertEquals(ipRange.getDescription(), ipRange2.getDescription());
-        Assertions.assertEquals(ipRange.getSubnetMask(), ipRange2.getSubnetMask());
+        assertNotNull(ipRange2);
+        assertEquals(ipRange.getName(), ipRange2.getName());
+        assertEquals(ipRange.getDescription(), ipRange2.getDescription());
+        assertEquals(ipRange.getSubnetMask(), ipRange2.getSubnetMask());
     }
 
     @Test
     void updateIpRangeTest() throws DAOException {
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllIpRanges().size());
+        assertEquals(2, DataManager.getInstance().getDao().getAllIpRanges().size());
         IpRange ipRange = DataManager.getInstance().getDao().getIpRange(1);
-        Assertions.assertNotNull(ipRange);
+        assertNotNull(ipRange);
 
         ipRange.setName("ip range 1 new name");
         ipRange.setDescription("ip range 1 new desc");
         ipRange.setSubnetMask("0.0.0.0./0");
 
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateIpRange(ipRange));
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllIpRanges().size());
+        assertTrue(DataManager.getInstance().getDao().updateIpRange(ipRange));
+        assertEquals(2, DataManager.getInstance().getDao().getAllIpRanges().size());
 
         IpRange ipRange2 = DataManager.getInstance().getDao().getIpRange(ipRange.getId());
-        Assertions.assertNotNull(ipRange2);
-        Assertions.assertEquals(ipRange.getId(), ipRange2.getId());
-        Assertions.assertEquals(ipRange.getName(), ipRange.getName());
-        Assertions.assertEquals(ipRange.getDescription(), ipRange2.getDescription());
-        Assertions.assertEquals(ipRange.getSubnetMask(), ipRange2.getSubnetMask());
+        assertNotNull(ipRange2);
+        assertEquals(ipRange.getId(), ipRange2.getId());
+        assertEquals(ipRange.getName(), ipRange.getName());
+        assertEquals(ipRange.getDescription(), ipRange2.getDescription());
+        assertEquals(ipRange.getSubnetMask(), ipRange2.getSubnetMask());
     }
 
     @Test
     void deleteIpRangeTest() throws DAOException {
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllIpRanges().size());
+        assertEquals(2, DataManager.getInstance().getDao().getAllIpRanges().size());
         IpRange ipRange = DataManager.getInstance().getDao().getIpRange(1);
-        Assertions.assertNotNull(ipRange);
-        Assertions.assertTrue(DataManager.getInstance().getDao().deleteIpRange(ipRange));
-        Assertions.assertNull(DataManager.getInstance().getDao().getIpRange(1));
-        Assertions.assertEquals(1, DataManager.getInstance().getDao().getAllIpRanges().size());
+        assertNotNull(ipRange);
+        assertTrue(DataManager.getInstance().getDao().deleteIpRange(ipRange));
+        assertNull(DataManager.getInstance().getDao().getIpRange(1));
+        assertEquals(1, DataManager.getInstance().getDao().getAllIpRanges().size());
     }
 
     @Test
     void ipRangeLicenseTest() throws DAOException {
         IpRange ipRange = DataManager.getInstance().getDao().getIpRange(1);
-        Assertions.assertNotNull(ipRange);
-        Assertions.assertEquals(1, ipRange.getLicenses().size());
-        Assertions.assertEquals(1, ipRange.getLicenses().get(0).getPrivileges().size());
+        assertNotNull(ipRange);
+        assertEquals(1, ipRange.getLicenses().size());
+        assertEquals(1, ipRange.getLicenses().get(0).getPrivileges().size());
         for (String priv : ipRange.getLicenses().get(0).getPrivileges()) {
-            Assertions.assertEquals(IPrivilegeHolder.PRIV_LIST, priv);
+            assertEquals(IPrivilegeHolder.PRIV_LIST, priv);
         }
 
         // Saving the licensee should not create any extra licenses
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateIpRange(ipRange));
+        assertTrue(DataManager.getInstance().getDao().updateIpRange(ipRange));
         IpRange ipRange2 = DataManager.getInstance().getDao().getIpRange(ipRange.getId());
-        Assertions.assertNotNull(ipRange2);
-        Assertions.assertEquals(1, ipRange2.getLicenses().size());
+        assertNotNull(ipRange2);
+        assertEquals(1, ipRange2.getLicenses().size());
 
         // Orphaned licenses should be deleted properly
         ipRange.removeLicense(ipRange.getLicenses().get(0));
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateIpRange(ipRange));
+        assertTrue(DataManager.getInstance().getDao().updateIpRange(ipRange));
         IpRange ipRange3 = DataManager.getInstance().getDao().getIpRange(ipRange.getId());
-        Assertions.assertNotNull(ipRange3);
-        Assertions.assertEquals(0, ipRange3.getLicenses().size());
+        assertNotNull(ipRange3);
+        assertEquals(0, ipRange3.getLicenses().size());
     }
 
     // CommentGroups
@@ -655,7 +656,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getAllCommentGroups_shouldReturnAllRows() throws Exception {
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllCommentGroups().size());
+        assertEquals(2, DataManager.getInstance().getDao().getAllCommentGroups().size());
     }
 
     /**
@@ -665,8 +666,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getCommentGroupUnfiltered_shouldReturnCorrectRow() throws Exception {
         CommentGroup commentGroup = DataManager.getInstance().getDao().getCommentGroupUnfiltered();
-        Assertions.assertNotNull(commentGroup);
-        Assertions.assertEquals(Long.valueOf(1), commentGroup.getId());
+        assertNotNull(commentGroup);
+        assertEquals(Long.valueOf(1), commentGroup.getId());
     }
 
     // Comments
@@ -674,7 +675,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getAllCommentsTest() throws DAOException {
         List<Comment> comments = DataManager.getInstance().getDao().getAllComments();
-        Assertions.assertEquals(4, comments.size());
+        assertEquals(4, comments.size());
     }
 
     /**
@@ -683,7 +684,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getCommentCount_shouldReturnCorrectCount() throws Exception {
-        Assertions.assertEquals(4L, DataManager.getInstance().getDao().getCommentCount(null, null, null));
+        assertEquals(4L, DataManager.getInstance().getDao().getCommentCount(null, null, null));
     }
 
     /**
@@ -694,7 +695,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     void getCommentCount_shouldFilterCorrectly() throws Exception {
         Map<String, String> filters = new HashMap<>();
         filters.put("targetPageOrder", "1");
-        Assertions.assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(filters, null, null));
+        assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(filters, null, null));
     }
 
     /**
@@ -705,11 +706,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     void getCommentCount_shouldFilterForUsersCorrectly() throws Exception {
         {
             User owner = DataManager.getInstance().getDao().getUser(1l);
-            Assertions.assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(null, owner, null));
+            assertEquals(3L, DataManager.getInstance().getDao().getCommentCount(null, owner, null));
         }
         {
             User owner = DataManager.getInstance().getDao().getUser(2l);
-            Assertions.assertEquals(1L, DataManager.getInstance().getDao().getCommentCount(null, owner, null));
+            assertEquals(1L, DataManager.getInstance().getDao().getCommentCount(null, owner, null));
         }
     }
 
@@ -720,89 +721,89 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getCommentCount_shouldApplyTargetPiFilterCorrectly() throws Exception {
         // TODO update test dataset to include comments with different target_pi
-        Assertions.assertEquals(4L, DataManager.getInstance().getDao().getCommentCount(null, null, Collections.singleton("PI_1")));
+        assertEquals(4L, DataManager.getInstance().getDao().getCommentCount(null, null, Collections.singleton("PI_1")));
     }
 
     @Test
     void getCommentByIdTest() throws DAOException {
         Comment comment = DataManager.getInstance().getDao().getComment(1);
-        Assertions.assertNotNull(comment);
-        Assertions.assertEquals(Long.valueOf(1), comment.getId());
-        Assertions.assertEquals("PI_1", comment.getTargetPI());
-        Assertions.assertEquals(Integer.valueOf(1), comment.getTargetPageOrder());
-        Assertions.assertNotNull(comment.getCreator());
-        Assertions.assertEquals(Long.valueOf(1), comment.getCreator().getId());
-        Assertions.assertEquals("comment 1 text", comment.getText());
-        Assertions.assertNotNull(comment.getDateCreated());
-        Assertions.assertNull(comment.getDateModified());
-        //        Assertions.assertNull(comment.getParent());
-        //        Assertions.assertEquals(1, comment.getChildren().size());
+        assertNotNull(comment);
+        assertEquals(Long.valueOf(1), comment.getId());
+        assertEquals("PI_1", comment.getTargetPI());
+        assertEquals(Integer.valueOf(1), comment.getTargetPageOrder());
+        assertNotNull(comment.getCreator());
+        assertEquals(Long.valueOf(1), comment.getCreator().getId());
+        assertEquals("comment 1 text", comment.getText());
+        assertNotNull(comment.getDateCreated());
+        assertNull(comment.getDateModified());
+        //        assertNull(comment.getParent());
+        //        assertEquals(1, comment.getChildren().size());
 
-        Comment comment2 = DataManager.getInstance().getDao().getComment(2);
-        //        Assertions.assertEquals(comment, comment2.getParent());
-        //        Assertions.assertEquals(1, comment2.getChildren().size());
+        //        Comment comment2 = DataManager.getInstance().getDao().getComment(2);
+        //        assertEquals(comment, comment2.getParent());
+        //        assertEquals(1, comment2.getChildren().size());
     }
 
     @Test
     void getCommentsForPageTest() throws DAOException {
         List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage("PI_1", 1);
-        Assertions.assertEquals(3, comments.size());
+        assertEquals(3, comments.size());
     }
 
     @Test
     void addCommentTest() throws DAOException {
-        Assertions.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
+        assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         Comment comment = new Comment();
         comment.setTargetPI("PI_2");
         comment.setTargetPageOrder(1);
         comment.setText("new comment text");
         comment.setCreator(DataManager.getInstance().getDao().getUser(1));
-        Assertions.assertTrue(DataManager.getInstance().getDao().addComment(comment));
-        Assertions.assertNotNull(comment.getId());
-        Assertions.assertEquals(5, DataManager.getInstance().getDao().getAllComments().size());
+        assertTrue(DataManager.getInstance().getDao().addComment(comment));
+        assertNotNull(comment.getId());
+        assertEquals(5, DataManager.getInstance().getDao().getAllComments().size());
 
         Comment comment2 = DataManager.getInstance().getDao().getComment(comment.getId());
-        Assertions.assertNotNull(comment2);
-        Assertions.assertEquals(comment.getTargetPI(), comment2.getTargetPI());
-        Assertions.assertEquals(comment.getTargetPageOrder(), comment2.getTargetPageOrder());
-        Assertions.assertEquals(comment.getText(), comment2.getText());
-        Assertions.assertEquals(comment.getCreator(), comment2.getCreator());
-        Assertions.assertNotNull(comment2.getDateCreated());
-        Assertions.assertNull(comment2.getDateModified());
+        assertNotNull(comment2);
+        assertEquals(comment.getTargetPI(), comment2.getTargetPI());
+        assertEquals(comment.getTargetPageOrder(), comment2.getTargetPageOrder());
+        assertEquals(comment.getText(), comment2.getText());
+        assertEquals(comment.getCreator(), comment2.getCreator());
+        assertNotNull(comment2.getDateCreated());
+        assertNull(comment2.getDateModified());
     }
 
     @Test
     void updateCommentTest() throws DAOException {
-        Assertions.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
+        assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         Comment comment = DataManager.getInstance().getDao().getComment(1);
-        Assertions.assertNotNull(comment);
+        assertNotNull(comment);
 
         comment.setText("new comment 1 text");
         LocalDateTime now = LocalDateTime.now();
         comment.setDateModified(now);
 
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateComment(comment));
-        Assertions.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
+        assertTrue(DataManager.getInstance().getDao().updateComment(comment));
+        assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
 
         Comment comment2 = DataManager.getInstance().getDao().getComment(comment.getId());
-        Assertions.assertNotNull(comment2);
-        Assertions.assertEquals(comment.getTargetPI(), comment2.getTargetPI());
-        Assertions.assertEquals(comment.getTargetPageOrder(), comment2.getTargetPageOrder());
-        Assertions.assertEquals(comment.getText(), comment2.getText());
+        assertNotNull(comment2);
+        assertEquals(comment.getTargetPI(), comment2.getTargetPI());
+        assertEquals(comment.getTargetPageOrder(), comment2.getTargetPageOrder());
+        assertEquals(comment.getText(), comment2.getText());
         // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
-        Assertions.assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now),
+        assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now),
                 DateTools.FORMATTERISO8601DATETIMEMS.format(comment2.getDateModified()));
-        Assertions.assertEquals(comment.getCreator(), comment2.getCreator());
+        assertEquals(comment.getCreator(), comment2.getCreator());
     }
 
     @Test
     void deleteCommentTest() throws DAOException {
-        Assertions.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
+        assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         Comment comment = DataManager.getInstance().getDao().getComment(1);
-        Assertions.assertNotNull(comment);
-        Assertions.assertTrue(DataManager.getInstance().getDao().deleteComment(comment));
-        Assertions.assertNull(DataManager.getInstance().getDao().getComment(1));
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllComments().size());
+        assertNotNull(comment);
+        assertTrue(DataManager.getInstance().getDao().deleteComment(comment));
+        assertNull(DataManager.getInstance().getDao().getComment(1));
+        assertEquals(3, DataManager.getInstance().getDao().getAllComments().size());
     }
 
     /**
@@ -811,11 +812,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void deleteComments_shouldDeleteCommentsForPiCorrectly() throws Exception {
-        Assertions.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
+        assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         User user = DataManager.getInstance().getDao().getUser(1);
-        Assertions.assertNotNull(user);
-        Assertions.assertEquals(4, DataManager.getInstance().getDao().deleteComments("PI_1", null));
-        Assertions.assertEquals(0, DataManager.getInstance().getDao().getAllComments().size());
+        assertNotNull(user);
+        assertEquals(4, DataManager.getInstance().getDao().deleteComments("PI_1", null));
+        assertEquals(0, DataManager.getInstance().getDao().getAllComments().size());
     }
 
     /**
@@ -824,11 +825,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void deleteComments_shouldDeleteCommentsForUserCorrectly() throws Exception {
-        Assertions.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
+        assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         User user = DataManager.getInstance().getDao().getUser(1);
-        Assertions.assertNotNull(user);
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().deleteComments(null, user));
-        Assertions.assertEquals(1, DataManager.getInstance().getDao().getAllComments().size());
+        assertNotNull(user);
+        assertEquals(3, DataManager.getInstance().getDao().deleteComments(null, user));
+        assertEquals(1, DataManager.getInstance().getDao().getAllComments().size());
     }
 
     /**
@@ -837,11 +838,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void deleteComments_shouldDeleteCommentsForPiAndUserCorrectly() throws Exception {
-        Assertions.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
+        assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
         User user = DataManager.getInstance().getDao().getUser(1);
-        Assertions.assertNotNull(user);
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().deleteComments("PI_1", user));
-        Assertions.assertEquals(1, DataManager.getInstance().getDao().getAllComments().size());
+        assertNotNull(user);
+        assertEquals(3, DataManager.getInstance().getDao().deleteComments("PI_1", user));
+        assertEquals(1, DataManager.getInstance().getDao().getAllComments().size());
     }
 
     /**
@@ -850,9 +851,9 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void deleteComments_shouldNotDeleteAnythingIfBothPiAndCreatorAreNull() throws Exception {
-        Assertions.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
-        Assertions.assertEquals(0, DataManager.getInstance().getDao().deleteComments(null, null));
-        Assertions.assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
+        assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
+        assertEquals(0, DataManager.getInstance().getDao().deleteComments(null, null));
+        assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
     }
 
     /**
@@ -862,18 +863,18 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void changeCommentsOwner_shouldUpdateRowsCorrectly() throws Exception {
         User oldOwner = DataManager.getInstance().getDao().getUser(1);
-        Assertions.assertNotNull(oldOwner);
+        assertNotNull(oldOwner);
         User newOwner = DataManager.getInstance().getDao().getUser(3);
-        Assertions.assertNotNull(newOwner);
+        assertNotNull(newOwner);
 
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().changeCommentsOwner(oldOwner, newOwner));
+        assertEquals(3, DataManager.getInstance().getDao().changeCommentsOwner(oldOwner, newOwner));
 
         List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork("PI_1");
-        Assertions.assertEquals(4, comments.size());
-        Assertions.assertEquals(newOwner, comments.get(0).getCreator());
-        Assertions.assertNotEquals(newOwner, comments.get(1).getCreator());
-        Assertions.assertEquals(newOwner, comments.get(2).getCreator());
-        Assertions.assertEquals(newOwner, comments.get(3).getCreator());
+        assertEquals(4, comments.size());
+        assertEquals(newOwner, comments.get(0).getCreator());
+        assertNotEquals(newOwner, comments.get(1).getCreator());
+        assertEquals(newOwner, comments.get(2).getCreator());
+        assertEquals(newOwner, comments.get(3).getCreator());
     }
 
     // Search
@@ -881,35 +882,35 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getAllSearchesTest() throws DAOException {
         List<Search> list = DataManager.getInstance().getDao().getAllSearches();
-        Assertions.assertEquals(3, list.size());
+        assertEquals(3, list.size());
     }
 
     @Test
     void getSearchByIdTest() throws DAOException {
         Search o = DataManager.getInstance().getDao().getSearch(1);
-        Assertions.assertNotNull(o);
-        Assertions.assertEquals(Long.valueOf(1), o.getId());
-        Assertions.assertNotNull(o.getOwner());
-        Assertions.assertEquals(Long.valueOf(1), o.getOwner().getId());
-        Assertions.assertEquals("query 1", o.getQuery());
-        Assertions.assertEquals(1, o.getPage());
-        Assertions.assertEquals("sort 1", o.getSortString());
-        Assertions.assertEquals("filter 1", o.getFacetString());
-        Assertions.assertTrue(o.isNewHitsNotification());
-        Assertions.assertNotNull(o.getDateUpdated());
+        assertNotNull(o);
+        assertEquals(Long.valueOf(1), o.getId());
+        assertNotNull(o.getOwner());
+        assertEquals(Long.valueOf(1), o.getOwner().getId());
+        assertEquals("query 1", o.getQuery());
+        assertEquals(1, o.getPage());
+        assertEquals("sort 1", o.getSortString());
+        assertEquals("filter 1", o.getFacetString());
+        assertTrue(o.isNewHitsNotification());
+        assertNotNull(o.getDateUpdated());
     }
 
     @Test
     void getSearchesForUserTest() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(1);
-        Assertions.assertNotNull(user);
+        assertNotNull(user);
         List<Search> list = DataManager.getInstance().getDao().getSearches(user);
-        Assertions.assertEquals(2, list.size());
+        assertEquals(2, list.size());
     }
 
     @Test
     void addSearchTest() throws DAOException {
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllSearches().size());
+        assertEquals(3, DataManager.getInstance().getDao().getAllSearches().size());
         Search o = new Search(SearchHelper.SEARCH_TYPE_REGULAR, SearchHelper.SEARCH_FILTER_ALL,
                 Collections.singletonList(SearchResultGroup.createDefaultGroup()));
         o.setOwner(DataManager.getInstance().getDao().getUser(1));
@@ -921,59 +922,59 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         o.setNewHitsNotification(true);
         LocalDateTime now = LocalDateTime.now();
         o.setDateUpdated(now);
-        Assertions.assertTrue(DataManager.getInstance().getDao().addSearch(o));
-        Assertions.assertNotNull(o.getId());
-        Assertions.assertEquals(4, DataManager.getInstance().getDao().getAllSearches().size());
+        assertTrue(DataManager.getInstance().getDao().addSearch(o));
+        assertNotNull(o.getId());
+        assertEquals(4, DataManager.getInstance().getDao().getAllSearches().size());
 
         Search o2 = DataManager.getInstance().getDao().getSearch(o.getId());
-        Assertions.assertNotNull(o2);
-        Assertions.assertEquals(o.getOwner(), o2.getOwner());
-        Assertions.assertEquals(o.getName(), o2.getName());
-        Assertions.assertEquals(o.getQuery(), o2.getQuery());
-        Assertions.assertEquals(o.getPage(), o2.getPage());
-        Assertions.assertEquals(o.getSortString(), o2.getSortString());
-        Assertions.assertEquals(o.getFacetString(), o2.getFacetString());
-        Assertions.assertEquals(o.isNewHitsNotification(), o2.isNewHitsNotification());
+        assertNotNull(o2);
+        assertEquals(o.getOwner(), o2.getOwner());
+        assertEquals(o.getName(), o2.getName());
+        assertEquals(o.getQuery(), o2.getQuery());
+        assertEquals(o.getPage(), o2.getPage());
+        assertEquals(o.getSortString(), o2.getSortString());
+        assertEquals(o.getFacetString(), o2.getFacetString());
+        assertEquals(o.isNewHitsNotification(), o2.isNewHitsNotification());
         // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
-        Assertions.assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now), DateTools.FORMATTERISO8601DATETIMEMS.format(o2.getDateUpdated()));
+        assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now), DateTools.FORMATTERISO8601DATETIMEMS.format(o2.getDateUpdated()));
     }
 
     @Test
     void updateSearchTest() throws DAOException {
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllSearches().size());
+        assertEquals(3, DataManager.getInstance().getDao().getAllSearches().size());
         Search o = DataManager.getInstance().getDao().getSearch(1);
-        Assertions.assertNotNull(o);
+        assertNotNull(o);
 
         o.setName("new name");
         LocalDateTime now = LocalDateTime.now();
         o.setDateUpdated(now);
 
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateSearch(o));
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllSearches().size());
+        assertTrue(DataManager.getInstance().getDao().updateSearch(o));
+        assertEquals(3, DataManager.getInstance().getDao().getAllSearches().size());
 
         Search o2 = DataManager.getInstance().getDao().getSearch(o.getId());
-        Assertions.assertNotNull(o2);
-        Assertions.assertEquals(o.getName(), o2.getName());
-        Assertions.assertEquals(o.getOwner(), o2.getOwner());
+        assertNotNull(o2);
+        assertEquals(o.getName(), o2.getName());
+        assertEquals(o.getOwner(), o2.getOwner());
         // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
-        Assertions.assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now), DateTools.FORMATTERISO8601DATETIMEMS.format(o2.getDateUpdated()));
+        assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now), DateTools.FORMATTERISO8601DATETIMEMS.format(o2.getDateUpdated()));
     }
 
     @Test
     void deleteSearchTest() throws DAOException {
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllSearches().size());
+        assertEquals(3, DataManager.getInstance().getDao().getAllSearches().size());
         Search o = DataManager.getInstance().getDao().getSearch(1);
-        Assertions.assertNotNull(o);
-        Assertions.assertTrue(DataManager.getInstance().getDao().deleteSearch(o));
-        Assertions.assertNull(DataManager.getInstance().getDao().getSearch(1));
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllSearches().size());
+        assertNotNull(o);
+        assertTrue(DataManager.getInstance().getDao().deleteSearch(o));
+        assertNull(DataManager.getInstance().getDao().getSearch(1));
+        assertEquals(2, DataManager.getInstance().getDao().getAllSearches().size());
     }
 
     // License types
 
     @Test
     void getAllLicenseTypesTest() throws DAOException {
-        Assertions.assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
     }
 
     /**
@@ -983,40 +984,40 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getRecordTypes_shouldOnlyReturnNonOpenAccessLicenseTypes() throws Exception {
         List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getRecordLicenseTypes();
-        Assertions.assertEquals(5, licenseTypes.size());
-        Assertions.assertEquals(Long.valueOf(1), licenseTypes.get(0).getId());
-        Assertions.assertEquals(Long.valueOf(6), licenseTypes.get(4).getId());
+        assertEquals(5, licenseTypes.size());
+        assertEquals(Long.valueOf(1), licenseTypes.get(0).getId());
+        assertEquals(Long.valueOf(6), licenseTypes.get(4).getId());
     }
 
     @Test
     void getLicenseTypeByIdTest() throws DAOException {
         {
             LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
-            Assertions.assertNotNull(licenseType);
-            Assertions.assertEquals(Long.valueOf(1), licenseType.getId());
-            Assertions.assertEquals("license type 1 name", licenseType.getName());
-            Assertions.assertEquals("license type 1 desc", licenseType.getDescription());
-            Assertions.assertEquals(false, licenseType.isOpenAccess());
-            Assertions.assertEquals(1, licenseType.getPrivileges().size());
-            Assertions.assertEquals(1, licenseType.getOverriddenLicenseTypes().size());
+            assertNotNull(licenseType);
+            assertEquals(Long.valueOf(1), licenseType.getId());
+            assertEquals("license type 1 name", licenseType.getName());
+            assertEquals("license type 1 desc", licenseType.getDescription());
+            assertEquals(false, licenseType.isOpenAccess());
+            assertEquals(1, licenseType.getPrivileges().size());
+            assertEquals(1, licenseType.getOverriddenLicenseTypes().size());
         }
         {
             LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(4);
-            Assertions.assertNotNull(licenseType);
-            Assertions.assertEquals(Long.valueOf(4), licenseType.getId());
-            Assertions.assertEquals(1, licenseType.getOverriddenLicenseTypes().size());
+            assertNotNull(licenseType);
+            assertEquals(Long.valueOf(4), licenseType.getId());
+            assertEquals(1, licenseType.getOverriddenLicenseTypes().size());
         }
     }
 
     @Test
     void getLicenseTypeByNameTest() throws DAOException {
         LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType("license type 2 name");
-        Assertions.assertNotNull(licenseType);
-        Assertions.assertEquals(Long.valueOf(2), licenseType.getId());
-        Assertions.assertEquals("license type 2 name", licenseType.getName());
-        Assertions.assertEquals("license type 2 (unused)", licenseType.getDescription());
-        Assertions.assertEquals(true, licenseType.isOpenAccess());
-        Assertions.assertEquals(1, licenseType.getPrivileges().size());
+        assertNotNull(licenseType);
+        assertEquals(Long.valueOf(2), licenseType.getId());
+        assertEquals("license type 2 name", licenseType.getName());
+        assertEquals("license type 2 (unused)", licenseType.getDescription());
+        assertEquals(true, licenseType.isOpenAccess());
+        assertEquals(1, licenseType.getPrivileges().size());
     }
 
     /**
@@ -1027,10 +1028,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     void getLicenseTypes_shouldReturnAllMatchingRows() throws Exception {
         String[] names = new String[] { "license type 1 name", "license type 2 name" };
         List<LicenseType> result = DataManager.getInstance().getDao().getLicenseTypes(Arrays.asList(names));
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(2, result.size());
-        Assertions.assertEquals("license type 1 name", result.get(0).getName());
-        Assertions.assertEquals("license type 2 name", result.get(1).getName());
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("license type 1 name", result.get(0).getName());
+        assertEquals("license type 2 name", result.get(1).getName());
     }
 
     /**
@@ -1040,71 +1041,71 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getOverridingLicenseType_shouldReturnAllMatchingRows() throws Exception {
         LicenseType lt = DataManager.getInstance().getDao().getLicenseType(1);
-        Assertions.assertNotNull(lt);
+        assertNotNull(lt);
         List<LicenseType> overriding = DataManager.getInstance().getDao().getOverridingLicenseType(lt);
-        Assertions.assertEquals(1, overriding.size());
-        Assertions.assertEquals(Long.valueOf(4), overriding.get(0).getId());
+        assertEquals(1, overriding.size());
+        assertEquals(Long.valueOf(4), overriding.get(0).getId());
     }
 
     @Test
     void addLicenseTypeTest() throws DAOException {
-        Assertions.assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
         LicenseType licenseType = new LicenseType();
         licenseType.setName("license type to add name");
         licenseType.setDescription("license type to add desc");
         licenseType.getPrivileges().add("license type to add priv 1");
-        Assertions.assertTrue(DataManager.getInstance().getDao().addLicenseType(licenseType));
-        Assertions.assertNotNull(licenseType.getId());
-        Assertions.assertEquals(NUM_LICENSE_TYPES + 1, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        assertTrue(DataManager.getInstance().getDao().addLicenseType(licenseType));
+        assertNotNull(licenseType.getId());
+        assertEquals(NUM_LICENSE_TYPES + 1, DataManager.getInstance().getDao().getAllLicenseTypes().size());
 
         LicenseType licenseType2 = DataManager.getInstance().getDao().getLicenseType(licenseType.getId());
-        Assertions.assertNotNull(licenseType2);
-        Assertions.assertEquals(licenseType.getName(), licenseType2.getName());
-        Assertions.assertEquals(licenseType.getDescription(), licenseType2.getDescription());
-        Assertions.assertEquals(1, licenseType2.getPrivileges().size());
-        Assertions.assertTrue(licenseType2.getPrivileges().contains("license type to add priv 1"));
+        assertNotNull(licenseType2);
+        assertEquals(licenseType.getName(), licenseType2.getName());
+        assertEquals(licenseType.getDescription(), licenseType2.getDescription());
+        assertEquals(1, licenseType2.getPrivileges().size());
+        assertTrue(licenseType2.getPrivileges().contains("license type to add priv 1"));
     }
 
     @Test
     void updateLicenseTypeTest() throws DAOException {
-        Assertions.assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
         LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
-        Assertions.assertNotNull(licenseType);
-        Assertions.assertEquals(1, licenseType.getPrivileges().size());
+        assertNotNull(licenseType);
+        assertEquals(1, licenseType.getPrivileges().size());
 
         licenseType.setName("license type 1 new name");
         licenseType.setDescription("license type 1 new desc");
         licenseType.getPrivileges().add("license type 1 priv 2");
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateLicenseType(licenseType));
-        Assertions.assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        assertTrue(DataManager.getInstance().getDao().updateLicenseType(licenseType));
+        assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
 
         LicenseType licenseType2 = DataManager.getInstance().getDao().getLicenseType(licenseType.getId());
-        Assertions.assertNotNull(licenseType2);
-        Assertions.assertEquals(licenseType.getId(), licenseType2.getId());
-        Assertions.assertEquals(licenseType.getName(), licenseType2.getName());
-        Assertions.assertEquals(licenseType.getDescription(), licenseType2.getDescription());
-        Assertions.assertEquals(2, licenseType.getPrivileges().size());
+        assertNotNull(licenseType2);
+        assertEquals(licenseType.getId(), licenseType2.getId());
+        assertEquals(licenseType.getName(), licenseType2.getName());
+        assertEquals(licenseType.getDescription(), licenseType2.getDescription());
+        assertEquals(2, licenseType.getPrivileges().size());
     }
 
     @Test
     void deleteUsedLicenseTypeTest() throws DAOException {
         // Deleting license types in use should fail
-        Assertions.assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
         LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
-        Assertions.assertNotNull(licenseType);
-        Assertions.assertFalse(DataManager.getInstance().getDao().deleteLicenseType(licenseType));
-        Assertions.assertNotNull(DataManager.getInstance().getDao().getLicenseType(1));
-        Assertions.assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        assertNotNull(licenseType);
+        assertFalse(DataManager.getInstance().getDao().deleteLicenseType(licenseType));
+        assertNotNull(DataManager.getInstance().getDao().getLicenseType(1));
+        assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
     }
 
     @Test
     void deleteUnusedLicenseTypeTest() throws DAOException {
-        Assertions.assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
         LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(2);
-        Assertions.assertNotNull(licenseType);
-        Assertions.assertTrue(DataManager.getInstance().getDao().deleteLicenseType(licenseType));
-        Assertions.assertNull(DataManager.getInstance().getDao().getLicenseType(2));
-        Assertions.assertEquals(NUM_LICENSE_TYPES - 1, DataManager.getInstance().getDao().getAllLicenseTypes().size());
+        assertNotNull(licenseType);
+        assertTrue(DataManager.getInstance().getDao().deleteLicenseType(licenseType));
+        assertNull(DataManager.getInstance().getDao().getLicenseType(2));
+        assertEquals(NUM_LICENSE_TYPES - 1, DataManager.getInstance().getDao().getAllLicenseTypes().size());
     }
 
     // Roles
@@ -1112,27 +1113,27 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getAllRolesTest() throws DAOException {
         List<Role> roles = DataManager.getInstance().getDao().getAllRoles();
-        Assertions.assertEquals(2, roles.size());
+        assertEquals(2, roles.size());
     }
 
     @Test
     void getRoleByIdTest() throws DAOException {
         Role role = DataManager.getInstance().getDao().getRole(1);
-        Assertions.assertNotNull(role);
-        Assertions.assertEquals(Long.valueOf(1), role.getId());
-        Assertions.assertEquals("role 1 name", role.getName());
-        Assertions.assertEquals("role 1 desc", role.getDescription());
-        Assertions.assertEquals(1, role.getPrivileges().size());
+        assertNotNull(role);
+        assertEquals(Long.valueOf(1), role.getId());
+        assertEquals("role 1 name", role.getName());
+        assertEquals("role 1 desc", role.getDescription());
+        assertEquals(1, role.getPrivileges().size());
     }
 
     @Test
     void getRoleByNameTest() throws DAOException {
         Role role = DataManager.getInstance().getDao().getRole("role 1 name");
-        Assertions.assertNotNull(role);
-        Assertions.assertEquals(Long.valueOf(1), role.getId());
-        Assertions.assertEquals("role 1 name", role.getName());
-        Assertions.assertEquals("role 1 desc", role.getDescription());
-        Assertions.assertEquals(1, role.getPrivileges().size());
+        assertNotNull(role);
+        assertEquals(Long.valueOf(1), role.getId());
+        assertEquals("role 1 name", role.getName());
+        assertEquals("role 1 desc", role.getDescription());
+        assertEquals(1, role.getPrivileges().size());
     }
 
     @Test
@@ -1141,62 +1142,62 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         role.setName("role to add name");
         role.setDescription("role to add desc");
         role.getPrivileges().add("role to add priv 1");
-        Assertions.assertTrue(DataManager.getInstance().getDao().addRole(role));
-        Assertions.assertNotNull(role.getId());
+        assertTrue(DataManager.getInstance().getDao().addRole(role));
+        assertNotNull(role.getId());
 
         Role role2 = DataManager.getInstance().getDao().getRole(role.getId());
-        Assertions.assertNotNull(role2);
-        Assertions.assertEquals(role.getName(), role2.getName());
-        Assertions.assertEquals(role.getDescription(), role2.getDescription());
-        Assertions.assertEquals(1, role2.getPrivileges().size());
-        Assertions.assertTrue(role2.getPrivileges().contains("role to add priv 1"));
+        assertNotNull(role2);
+        assertEquals(role.getName(), role2.getName());
+        assertEquals(role.getDescription(), role2.getDescription());
+        assertEquals(1, role2.getPrivileges().size());
+        assertTrue(role2.getPrivileges().contains("role to add priv 1"));
     }
 
     @Test
     void updateRoleTest() throws DAOException {
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllRoles().size());
+        assertEquals(2, DataManager.getInstance().getDao().getAllRoles().size());
         Role role = DataManager.getInstance().getDao().getRole(1);
-        Assertions.assertNotNull(role);
-        Assertions.assertEquals("role 1 name", role.getName());
-        Assertions.assertEquals("role 1 desc", role.getDescription());
-        Assertions.assertEquals(1, role.getPrivileges().size());
+        assertNotNull(role);
+        assertEquals("role 1 name", role.getName());
+        assertEquals("role 1 desc", role.getDescription());
+        assertEquals(1, role.getPrivileges().size());
 
         role.setName("role 1 new name");
         role.setDescription("role 1 new desc");
         role.getPrivileges().add("role 1 priv 2");
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateRole(role));
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllRoles().size());
+        assertTrue(DataManager.getInstance().getDao().updateRole(role));
+        assertEquals(2, DataManager.getInstance().getDao().getAllRoles().size());
 
         Role role2 = DataManager.getInstance().getDao().getRole(role.getId());
-        Assertions.assertNotNull(role2);
-        Assertions.assertEquals(role.getId(), role2.getId());
-        Assertions.assertEquals(role.getName(), role2.getName());
-        Assertions.assertEquals(role.getDescription(), role2.getDescription());
-        Assertions.assertEquals(2, role.getPrivileges().size());
+        assertNotNull(role2);
+        assertEquals(role.getId(), role2.getId());
+        assertEquals(role.getName(), role2.getName());
+        assertEquals(role.getDescription(), role2.getDescription());
+        assertEquals(2, role.getPrivileges().size());
     }
 
     @Test
     void duplicateRolePrivilegeTest() throws DAOException {
         Role role = DataManager.getInstance().getDao().getRole(1);
-        Assertions.assertNotNull(role);
-        Assertions.assertEquals(1, role.getPrivileges().size());
+        assertNotNull(role);
+        assertEquals(1, role.getPrivileges().size());
 
         role.getPrivileges().add("role 1 priv 1");
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateRole(role));
+        assertTrue(DataManager.getInstance().getDao().updateRole(role));
 
         Role role2 = DataManager.getInstance().getDao().getRole(role.getId());
-        Assertions.assertNotNull(role2);
-        Assertions.assertEquals(1, role2.getPrivileges().size());
+        assertNotNull(role2);
+        assertEquals(1, role2.getPrivileges().size());
     }
 
     @Test
     void deleteRoleTest() throws DAOException {
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllRoles().size());
+        assertEquals(2, DataManager.getInstance().getDao().getAllRoles().size());
         Role role = DataManager.getInstance().getDao().getRole(2);
-        Assertions.assertNotNull(role);
-        Assertions.assertTrue(DataManager.getInstance().getDao().deleteRole(role));
-        Assertions.assertNull(DataManager.getInstance().getDao().getRole(2));
-        Assertions.assertEquals(1, DataManager.getInstance().getDao().getAllRoles().size());
+        assertNotNull(role);
+        assertTrue(DataManager.getInstance().getDao().deleteRole(role));
+        assertNull(DataManager.getInstance().getDao().getRole(2));
+        assertEquals(1, DataManager.getInstance().getDao().getAllRoles().size());
     }
 
     // Bookmarks
@@ -1204,45 +1205,45 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getAllBookmarkListsTest() throws DAOException {
         List<BookmarkList> result = DataManager.getInstance().getDao().getAllBookmarkLists();
-        Assertions.assertEquals(3, result.size());
+        assertEquals(3, result.size());
     }
 
     @Test
     void getPublicBookmarkListsTest() throws DAOException {
         List<BookmarkList> result = DataManager.getInstance().getDao().getPublicBookmarkLists();
-        Assertions.assertEquals(1, result.size());
-        Assertions.assertEquals(Long.valueOf(2), result.get(0).getId());
+        assertEquals(1, result.size());
+        assertEquals(Long.valueOf(2), result.get(0).getId());
     }
 
     @Test
     void getAllBookmarkListsForUserTest() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(1);
-        Assertions.assertNotNull(user);
+        assertNotNull(user);
         List<BookmarkList> boomarkLists = DataManager.getInstance().getDao().getBookmarkLists(user);
-        Assertions.assertEquals(2, boomarkLists.size());
-        Assertions.assertEquals(Long.valueOf(3), boomarkLists.get(0).getId());
-        Assertions.assertEquals(user, boomarkLists.get(0).getOwner());
+        assertEquals(2, boomarkLists.size());
+        assertEquals(Long.valueOf(3), boomarkLists.get(0).getId());
+        assertEquals(user, boomarkLists.get(0).getOwner());
     }
 
     @Test
     void countAllBookmarkListsForUserTest() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(1);
-        Assertions.assertNotNull(user);
+        assertNotNull(user);
         List<BookmarkList> boomarkLists = DataManager.getInstance().getDao().getBookmarkLists(user);
         long count = DataManager.getInstance().getDao().getBookmarkListCount(user);
-        Assertions.assertEquals(boomarkLists.size(), count);
+        assertEquals(boomarkLists.size(), count);
     }
 
     @Test
     void getBookmarkListByIdTest() throws DAOException {
         BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList(1);
-        Assertions.assertNotNull(bl);
-        Assertions.assertEquals(Long.valueOf(1), bl.getId());
-        Assertions.assertNotNull(bl.getOwner());
-        Assertions.assertEquals(Long.valueOf(1), bl.getOwner().getId());
-        Assertions.assertEquals("bookmark list 1 name", bl.getName());
-        Assertions.assertEquals("bookmark list 1 desc", bl.getDescription());
-        Assertions.assertEquals(2, bl.getItems().size());
+        assertNotNull(bl);
+        assertEquals(Long.valueOf(1), bl.getId());
+        assertNotNull(bl.getOwner());
+        assertEquals(Long.valueOf(1), bl.getOwner().getId());
+        assertEquals("bookmark list 1 name", bl.getName());
+        assertEquals("bookmark list 1 desc", bl.getDescription());
+        assertEquals(2, bl.getItems().size());
 
     }
 
@@ -1253,13 +1254,13 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getBookmarkList_shouldReturnCorrectRowForName() throws Exception {
         BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList("bookmark list 1 name", null);
-        Assertions.assertNotNull(bl);
-        Assertions.assertEquals(Long.valueOf(1), bl.getId());
-        Assertions.assertNotNull(bl.getOwner());
-        Assertions.assertEquals(Long.valueOf(1), bl.getOwner().getId());
-        Assertions.assertEquals("bookmark list 1 name", bl.getName());
-        Assertions.assertEquals("bookmark list 1 desc", bl.getDescription());
-        Assertions.assertEquals(2, bl.getItems().size());
+        assertNotNull(bl);
+        assertEquals(Long.valueOf(1), bl.getId());
+        assertNotNull(bl.getOwner());
+        assertEquals(Long.valueOf(1), bl.getOwner().getId());
+        assertEquals("bookmark list 1 name", bl.getName());
+        assertEquals("bookmark list 1 desc", bl.getDescription());
+        assertEquals(2, bl.getItems().size());
     }
 
     /**
@@ -1269,16 +1270,16 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getBookmarkList_shouldReturnCorrectRowForNameAndUser() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(1);
-        Assertions.assertNotNull(user);
+        assertNotNull(user);
 
         BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList("bookmark list 1 name", user);
-        Assertions.assertNotNull(bl);
-        Assertions.assertEquals(Long.valueOf(1), bl.getId());
-        Assertions.assertNotNull(bl.getOwner());
-        Assertions.assertEquals(Long.valueOf(1), bl.getOwner().getId());
-        Assertions.assertEquals("bookmark list 1 name", bl.getName());
-        Assertions.assertEquals("bookmark list 1 desc", bl.getDescription());
-        Assertions.assertEquals(2, bl.getItems().size());
+        assertNotNull(bl);
+        assertEquals(Long.valueOf(1), bl.getId());
+        assertNotNull(bl.getOwner());
+        assertEquals(Long.valueOf(1), bl.getOwner().getId());
+        assertEquals("bookmark list 1 name", bl.getName());
+        assertEquals("bookmark list 1 desc", bl.getDescription());
+        assertEquals(2, bl.getItems().size());
     }
 
     /**
@@ -1287,7 +1288,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getBookmarkList_shouldReturnNullIfNoResultFound() throws Exception {
-        Assertions.assertNull(DataManager.getInstance().getDao().getBookmarkList("notfound", null));
+        assertNull(DataManager.getInstance().getDao().getBookmarkList("notfound", null));
     }
 
     /**
@@ -1297,8 +1298,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getBookmarkListByShareKey_shouldReturnCorrectRow() throws Exception {
         BookmarkList bl = DataManager.getInstance().getDao().getBookmarkListByShareKey("c548e2ea6915acbfa17c3dc6f453f5b1");
-        Assertions.assertNotNull(bl);
-        Assertions.assertEquals(Long.valueOf(1), bl.getId());
+        assertNotNull(bl);
+        assertEquals(Long.valueOf(1), bl.getId());
     }
 
     /**
@@ -1307,22 +1308,24 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getBookmarkListByShareKey_shouldReturnNullIfNoResultFound() throws Exception {
-        Assertions.assertNull(DataManager.getInstance().getDao().getBookmarkListByShareKey("123"));
+        assertNull(DataManager.getInstance().getDao().getBookmarkListByShareKey("123"));
     }
 
     /**
+     * @throws DAOException
      * @see JPADAO#getBookmarkListByShareKey(String)
      * @verifies throw IllegalArgumentException if shareKey empty
      */
     @Test
-    void getBookmarkListByShareKey_shouldThrowIllegalArgumentExceptionIfShareKeyEmpty() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> DataManager.getInstance().getDao().getBookmarkListByShareKey(""));
+    void getBookmarkListByShareKey_shouldThrowIllegalArgumentExceptionIfShareKeyEmpty() throws DAOException {
+        IDAO dao = DataManager.getInstance().getDao();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> dao.getBookmarkListByShareKey(""));
     }
 
     @Test
     void addBookmarkListTest() throws DAOException {
         User user = DataManager.getInstance().getDao().getUser(1);
-        Assertions.assertNotNull(user);
+        assertNotNull(user);
 
         BookmarkList bl = new BookmarkList();
         bl.setName("add bookmark list test");
@@ -1331,28 +1334,28 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         Bookmark item = new Bookmark("PPNTEST", "add bookmark 1 main title", "add bookmark 1 name");
         item.setDescription("add bookmark 1 desc");
         bl.addItem(item);
-        Assertions.assertTrue(DataManager.getInstance().getDao().addBookmarkList(bl));
+        assertTrue(DataManager.getInstance().getDao().addBookmarkList(bl));
 
         BookmarkList bl2 = DataManager.getInstance().getDao().getBookmarkList("add bookmark list test", user);
-        Assertions.assertNotNull(bl2);
-        Assertions.assertNotNull(bl2.getId());
-        Assertions.assertEquals(user, bl2.getOwner());
-        Assertions.assertEquals(bl.getName(), bl2.getName());
-        Assertions.assertEquals(bl.getDescription(), bl2.getDescription());
-        Assertions.assertEquals(1, bl2.getItems().size());
+        assertNotNull(bl2);
+        assertNotNull(bl2.getId());
+        assertEquals(user, bl2.getOwner());
+        assertEquals(bl.getName(), bl2.getName());
+        assertEquals(bl.getDescription(), bl2.getDescription());
+        assertEquals(1, bl2.getItems().size());
         Bookmark item2 = bl2.getItems().get(0);
-        Assertions.assertEquals(bl2, item2.getBookmarkList());
-        Assertions.assertEquals("PPNTEST", item2.getPi());
-        //        Assertions.assertEquals("add bookmark 1 main title", item2.getMainTitle());
-        Assertions.assertEquals("add bookmark 1 name", item2.getName());
-        Assertions.assertEquals("add bookmark 1 desc", item2.getDescription());
+        assertEquals(bl2, item2.getBookmarkList());
+        assertEquals("PPNTEST", item2.getPi());
+        //        assertEquals("add bookmark 1 main title", item2.getMainTitle());
+        assertEquals("add bookmark 1 name", item2.getName());
+        assertEquals("add bookmark 1 desc", item2.getDescription());
     }
 
     @Test
     void updateBookmarkListTest() throws DAOException {
         BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList(1);
-        Assertions.assertNotNull(bl);
-        Assertions.assertEquals(2, bl.getItems().size());
+        assertNotNull(bl);
+        assertEquals(2, bl.getItems().size());
 
         int numBookmarkLists = DataManager.getInstance().getDao().getAllBookmarkLists().size();
 
@@ -1361,41 +1364,41 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         bl.addItem(item);
         bl.setName("bookmark list 1 new name");
         bl.setDescription("bookmark list 1 new desc");
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateBookmarkList(bl));
-        //        Assertions.assertNotNull(item.getId());
+        assertTrue(DataManager.getInstance().getDao().updateBookmarkList(bl));
+        //        assertNotNull(item.getId());
 
         int numBookmarkLists2 = DataManager.getInstance().getDao().getAllBookmarkLists().size();
-        Assertions.assertEquals(numBookmarkLists, numBookmarkLists2);
+        assertEquals(numBookmarkLists, numBookmarkLists2);
 
         BookmarkList bl2 = DataManager.getInstance().getDao().getBookmarkList(bl.getId());
-        Assertions.assertNotNull(bl2);
-        Assertions.assertEquals(bl.getId(), bl2.getId());
-        Assertions.assertEquals(bl.getName(), bl2.getName());
-        Assertions.assertEquals(bl.getDescription(), bl2.getDescription());
-        Assertions.assertEquals(3, bl2.getItems().size());
+        assertNotNull(bl2);
+        assertEquals(bl.getId(), bl2.getId());
+        assertEquals(bl.getName(), bl2.getName());
+        assertEquals(bl.getDescription(), bl2.getDescription());
+        assertEquals(3, bl2.getItems().size());
     }
 
     @Test
     void deleteBookmarkListTest() throws DAOException {
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllBookmarkLists().size());
+        assertEquals(3, DataManager.getInstance().getDao().getAllBookmarkLists().size());
         BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList(1);
-        Assertions.assertNotNull(bl);
-        Assertions.assertTrue(DataManager.getInstance().getDao().deleteBookmarkList(bl));
-        Assertions.assertNull(DataManager.getInstance().getDao().getBookmarkList(1));
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllBookmarkLists().size());
+        assertNotNull(bl);
+        assertTrue(DataManager.getInstance().getDao().deleteBookmarkList(bl));
+        assertNull(DataManager.getInstance().getDao().getBookmarkList(1));
+        assertEquals(2, DataManager.getInstance().getDao().getAllBookmarkLists().size());
     }
 
     @Test
     void removeBookMarkTest() throws DAOException {
         BookmarkList bl = DataManager.getInstance().getDao().getBookmarkList(1);
-        Assertions.assertNotNull(bl);
-        Assertions.assertEquals(2, bl.getItems().size());
+        assertNotNull(bl);
+        assertEquals(2, bl.getItems().size());
         bl.removeItem(bl.getItems().get(0));
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateBookmarkList(bl));
+        assertTrue(DataManager.getInstance().getDao().updateBookmarkList(bl));
 
         BookmarkList bl2 = DataManager.getInstance().getDao().getBookmarkList(1);
-        Assertions.assertNotNull(bl2);
-        Assertions.assertEquals(1, bl2.getItems().size());
+        assertNotNull(bl2);
+        assertEquals(1, bl2.getItems().size());
     }
 
     /**
@@ -1405,9 +1408,9 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getComments_shouldSortResultsCorrectly() throws Exception {
         List<Comment> ret = DataManager.getInstance().getDao().getComments(0, 2, "body", true, null, null);
-        Assertions.assertEquals(2, ret.size());
-        Assertions.assertEquals(Long.valueOf(4), ret.get(0).getId());
-        Assertions.assertEquals(Long.valueOf(3), ret.get(1).getId());
+        assertEquals(2, ret.size());
+        assertEquals(Long.valueOf(4), ret.get(0).getId());
+        assertEquals(Long.valueOf(3), ret.get(1).getId());
     }
 
     /**
@@ -1420,8 +1423,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         filterMap.put("targetPI", "pi_1");
         filterMap.put("body", "ment 2");
         List<Comment> ret = DataManager.getInstance().getDao().getComments(0, 2, null, true, filterMap, null);
-        Assertions.assertEquals(1, ret.size());
-        Assertions.assertEquals("comment 2 text", ret.get(0).getText());
+        assertEquals(1, ret.size());
+        assertEquals("comment 2 text", ret.get(0).getText());
     }
 
     /**
@@ -1433,7 +1436,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         Map<String, String> filterMap = new HashMap<>();
         // TODO update test dataset to include comments with different target_pi
         List<Comment> ret = DataManager.getInstance().getDao().getComments(0, 10, null, true, filterMap, Collections.singleton("PI_1"));
-        Assertions.assertEquals(4, ret.size());
+        assertEquals(4, ret.size());
     }
 
     /**
@@ -1443,9 +1446,9 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getUserGroups_shouldSortResultsCorrectly() throws Exception {
         List<UserGroup> userGroups = DataManager.getInstance().getDao().getUserGroups(0, 2, "name", true, null);
-        Assertions.assertEquals(2, userGroups.size());
-        Assertions.assertEquals(Long.valueOf(3), userGroups.get(0).getId());
-        Assertions.assertEquals(Long.valueOf(2), userGroups.get(1).getId());
+        assertEquals(2, userGroups.size());
+        assertEquals(Long.valueOf(3), userGroups.get(0).getId());
+        assertEquals(Long.valueOf(2), userGroups.get(1).getId());
     }
 
     /**
@@ -1458,8 +1461,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         filterMap.put("description", "no members");
         filterMap.put("name", "user group 2 name");
         List<UserGroup> ret = DataManager.getInstance().getDao().getUserGroups(0, 2, null, true, filterMap);
-        Assertions.assertEquals(1, ret.size());
-        Assertions.assertEquals("user group 2 name", ret.get(0).getName());
+        assertEquals(1, ret.size());
+        assertEquals("user group 2 name", ret.get(0).getName());
     }
 
     /**
@@ -1469,9 +1472,9 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getUsers_shouldSortResultsCorrectly() throws Exception {
         List<User> users = DataManager.getInstance().getDao().getUsers(0, 2, "score", true, null);
-        Assertions.assertEquals(2, users.size());
-        Assertions.assertEquals(Long.valueOf(2), users.get(0).getId());
-        Assertions.assertEquals(Long.valueOf(1), users.get(1).getId());
+        assertEquals(2, users.size());
+        assertEquals(Long.valueOf(2), users.get(0).getId());
+        assertEquals(Long.valueOf(1), users.get(1).getId());
     }
 
     /**
@@ -1483,8 +1486,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         Map<String, String> filterMap = new HashMap<>();
         filterMap.put("email", "1@users.org");
         List<User> ret = DataManager.getInstance().getDao().getUsers(0, 2, null, true, filterMap);
-        Assertions.assertEquals(1, ret.size());
-        Assertions.assertEquals("1@users.org", ret.get(0).getEmail());
+        assertEquals(1, ret.size());
+        assertEquals("1@users.org", ret.get(0).getEmail());
     }
 
     /**
@@ -1494,9 +1497,9 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getUsersByPropertyValue_shouldReturnCorrectRows() throws Exception {
         List<User> result = DataManager.getInstance().getDao().getUsersByPropertyValue("foo", "bar");
-        Assertions.assertEquals(2, result.size());
-        Assertions.assertEquals(Long.valueOf(2), result.get(0).getId());
-        Assertions.assertEquals(Long.valueOf(3), result.get(1).getId());
+        assertEquals(2, result.size());
+        assertEquals(Long.valueOf(2), result.get(0).getId());
+        assertEquals(Long.valueOf(3), result.get(1).getId());
     }
 
     /**
@@ -1506,10 +1509,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getSearches_shouldSortResultsCorrectly() throws Exception {
         List<Search> ret = DataManager.getInstance().getDao().getSearches(null, 0, 10, "name", true, null);
-        Assertions.assertEquals(3, ret.size());
-        Assertions.assertEquals(Long.valueOf(3), ret.get(0).getId());
-        Assertions.assertEquals(Long.valueOf(2), ret.get(1).getId());
-        Assertions.assertEquals(Long.valueOf(1), ret.get(2).getId());
+        assertEquals(3, ret.size());
+        assertEquals(Long.valueOf(3), ret.get(0).getId());
+        assertEquals(Long.valueOf(2), ret.get(1).getId());
+        assertEquals(Long.valueOf(1), ret.get(2).getId());
     }
 
     /**
@@ -1520,7 +1523,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     void getSearchCount_shouldFilterResultsCorrectly() throws Exception {
         Map<String, String> filterMap = new HashMap<>();
         filterMap.put("newHitsNotification", "true");
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getSearchCount(null, filterMap));
+        assertEquals(2, DataManager.getInstance().getDao().getSearchCount(null, filterMap));
     }
 
     /**
@@ -1533,8 +1536,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         filterMap.put("query", "y");
         filterMap.put("name", "search 1");
         List<Search> ret = DataManager.getInstance().getDao().getSearches(DataManager.getInstance().getDao().getUser(1), 0, 2, null, true, filterMap);
-        Assertions.assertEquals(1, ret.size());
-        Assertions.assertEquals("search 1", ret.get(0).getName());
+        assertEquals(1, ret.size());
+        assertEquals("search 1", ret.get(0).getName());
     }
 
     /**
@@ -1544,9 +1547,9 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getRoles_shouldSortResultsCorrectly() throws Exception {
         List<Role> ret = DataManager.getInstance().getDao().getRoles(0, 2, "name", true, null);
-        Assertions.assertEquals(2, ret.size());
-        Assertions.assertEquals(Long.valueOf(2), ret.get(0).getId());
-        Assertions.assertEquals(Long.valueOf(1), ret.get(1).getId());
+        assertEquals(2, ret.size());
+        assertEquals(Long.valueOf(2), ret.get(0).getId());
+        assertEquals(Long.valueOf(1), ret.get(1).getId());
     }
 
     /**
@@ -1559,8 +1562,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         filterMap.put("name", "role 2 name");
         filterMap.put("description", "unused");
         List<Role> ret = DataManager.getInstance().getDao().getRoles(0, 2, null, true, filterMap);
-        Assertions.assertEquals(1, ret.size());
-        Assertions.assertEquals("role 2 name", ret.get(0).getName());
+        assertEquals(1, ret.size());
+        assertEquals("role 2 name", ret.get(0).getName());
     }
 
     /**
@@ -1571,14 +1574,14 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     void getLicenseTypes_shouldSortResultsCorrectly() throws Exception {
         // asc
         List<LicenseType> ret = DataManager.getInstance().getDao().getLicenseTypes(0, 2, "name", true, null);
-        Assertions.assertEquals(2, ret.size());
-        Assertions.assertEquals(Long.valueOf(6), ret.get(0).getId());
-        Assertions.assertEquals(Long.valueOf(4), ret.get(1).getId());
+        assertEquals(2, ret.size());
+        assertEquals(Long.valueOf(6), ret.get(0).getId());
+        assertEquals(Long.valueOf(4), ret.get(1).getId());
         // desc
         ret = DataManager.getInstance().getDao().getLicenseTypes(0, 2, "name", false, null);
-        Assertions.assertEquals(2, ret.size());
-        Assertions.assertEquals(Long.valueOf(1), ret.get(0).getId());
-        Assertions.assertEquals(Long.valueOf(2), ret.get(1).getId());
+        assertEquals(2, ret.size());
+        assertEquals(Long.valueOf(1), ret.get(0).getId());
+        assertEquals(Long.valueOf(2), ret.get(1).getId());
     }
 
     /**
@@ -1591,8 +1594,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         filterMap.put("name", "license type 2 name");
         filterMap.put("description", "unused");
         List<LicenseType> ret = DataManager.getInstance().getDao().getLicenseTypes(0, 2, null, true, filterMap);
-        Assertions.assertEquals(1, ret.size());
-        Assertions.assertEquals("license type 2 name", ret.get(0).getName());
+        assertEquals(1, ret.size());
+        assertEquals("license type 2 name", ret.get(0).getName());
     }
 
     /**
@@ -1605,12 +1608,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         // asc
         List<LicenseType> ret = DataManager.getInstance().getDao().getCoreLicenseTypes(0, 10, "name", true, null);
-        Assertions.assertEquals(1, ret.size());
-        Assertions.assertEquals(Long.valueOf(5), ret.get(0).getId());
+        assertEquals(1, ret.size());
+        assertEquals(Long.valueOf(5), ret.get(0).getId());
         // desc
         ret = DataManager.getInstance().getDao().getCoreLicenseTypes(0, 10, "name", false, null);
-        Assertions.assertEquals(1, ret.size());
-        Assertions.assertEquals(Long.valueOf(5), ret.get(0).getId());
+        assertEquals(1, ret.size());
+        assertEquals(Long.valueOf(5), ret.get(0).getId());
     }
 
     /**
@@ -1623,11 +1626,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         filterMap.put("name", "cms");
         filterMap.put("description", "cms");
         List<LicenseType> ret = DataManager.getInstance().getDao().getCoreLicenseTypes(0, 10, null, true, filterMap);
-        Assertions.assertEquals(1, ret.size());
-        Assertions.assertEquals("CMS", ret.get(0).getName());
+        assertEquals(1, ret.size());
+        assertEquals("CMS", ret.get(0).getName());
 
         filterMap.put("description", "notfound");
-        Assertions.assertEquals(0, DataManager.getInstance().getDao().getCoreLicenseTypes(0, 10, null, true, filterMap).size());
+        assertEquals(0, DataManager.getInstance().getDao().getCoreLicenseTypes(0, 10, null, true, filterMap).size());
     }
 
     /**
@@ -1637,11 +1640,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getLicenses_shouldReturnCorrectValues() throws Exception {
         LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
-        Assertions.assertNotNull(licenseType);
+        assertNotNull(licenseType);
         List<License> result = DataManager.getInstance().getDao().getLicenses(licenseType);
-        Assertions.assertEquals(2, result.size());
-        Assertions.assertEquals(Long.valueOf(1), result.get(0).getId());
-        Assertions.assertEquals(Long.valueOf(2), result.get(1).getId());
+        assertEquals(2, result.size());
+        assertEquals(Long.valueOf(1), result.get(0).getId());
+        assertEquals(Long.valueOf(2), result.get(1).getId());
     }
 
     /**
@@ -1651,8 +1654,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getLicenseCount_shouldReturnCorrectValue() throws Exception {
         LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
-        Assertions.assertNotNull(licenseType);
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getLicenseCount(licenseType));
+        assertNotNull(licenseType);
+        assertEquals(2, DataManager.getInstance().getDao().getLicenseCount(licenseType));
     }
 
     /**
@@ -1662,9 +1665,9 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getIpRanges_shouldSortResultsCorrectly() throws Exception {
         List<IpRange> ret = DataManager.getInstance().getDao().getIpRanges(0, 2, "name", true, null);
-        Assertions.assertEquals(2, ret.size());
-        Assertions.assertEquals(Long.valueOf(2), ret.get(0).getId());
-        Assertions.assertEquals(Long.valueOf(1), ret.get(1).getId());
+        assertEquals(2, ret.size());
+        assertEquals(Long.valueOf(2), ret.get(0).getId());
+        assertEquals(Long.valueOf(1), ret.get(1).getId());
     }
 
     /**
@@ -1677,8 +1680,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         filterMap.put("name", "localhost");
         filterMap.put("description", "2 desc");
         List<IpRange> ret = DataManager.getInstance().getDao().getIpRanges(0, 2, null, true, filterMap);
-        Assertions.assertEquals(1, ret.size());
-        Assertions.assertEquals("localhost2", ret.get(0).getName());
+        assertEquals(1, ret.size());
+        assertEquals("localhost2", ret.get(0).getName());
     }
 
     /**
@@ -1687,7 +1690,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getAllCMSMediaItems_shouldReturnAllItems() throws Exception {
-        Assertions.assertEquals(4, DataManager.getInstance().getDao().getAllCMSMediaItems().size());
+        assertEquals(4, DataManager.getInstance().getDao().getAllCMSMediaItems().size());
     }
 
     /**
@@ -1697,16 +1700,16 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getCMSMediaItem_shouldReturnCorrectItem() throws Exception {
         CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(1);
-        Assertions.assertNotNull(item);
-        Assertions.assertEquals(Long.valueOf(1), item.getId());
-        Assertions.assertEquals("image1.jpg", item.getFileName());
-        Assertions.assertEquals(2, item.getMetadata().size());
-        Assertions.assertEquals("de", item.getMetadata().get(0).getLanguage());
-        Assertions.assertEquals("Bild 1", item.getMetadata().get(0).getName());
-        Assertions.assertEquals("Beschreibung 1", item.getMetadata().get(0).getDescription());
-        Assertions.assertEquals("en", item.getMetadata().get(1).getLanguage());
-        Assertions.assertEquals("Image 1", item.getMetadata().get(1).getName());
-        Assertions.assertEquals("Description 1", item.getMetadata().get(1).getDescription());
+        assertNotNull(item);
+        assertEquals(Long.valueOf(1), item.getId());
+        assertEquals("image1.jpg", item.getFileName());
+        assertEquals(2, item.getMetadata().size());
+        assertEquals("de", item.getMetadata().get(0).getLanguage());
+        assertEquals("Bild 1", item.getMetadata().get(0).getName());
+        assertEquals("Beschreibung 1", item.getMetadata().get(0).getDescription());
+        assertEquals("en", item.getMetadata().get(1).getLanguage());
+        assertEquals("Image 1", item.getMetadata().get(1).getName());
+        assertEquals("Description 1", item.getMetadata().get(1).getDescription());
     }
 
     /**
@@ -1715,7 +1718,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void addCMSMediaItem_shouldAddItemCorrectly() throws Exception {
-        Assertions.assertEquals(4, DataManager.getInstance().getDao().getAllCMSMediaItems().size());
+        assertEquals(4, DataManager.getInstance().getDao().getAllCMSMediaItems().size());
         CMSMediaItem item = new CMSMediaItem();
         item.setFileName("image5.jpg");
         CMSMediaItemMetadata md = new CMSMediaItemMetadata();
@@ -1723,20 +1726,20 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         md.setName("Ongi etorriak");
         md.setDescription("bla");
         item.getMetadata().add(md);
-        Assertions.assertTrue(DataManager.getInstance().getDao().addCMSMediaItem(item));
+        assertTrue(DataManager.getInstance().getDao().addCMSMediaItem(item));
 
-        Assertions.assertEquals(5, DataManager.getInstance().getDao().getAllCMSMediaItems().size());
-        Assertions.assertNotNull(item.getId());
+        assertEquals(5, DataManager.getInstance().getDao().getAllCMSMediaItems().size());
+        assertNotNull(item.getId());
 
         CMSMediaItem item2 = DataManager.getInstance().getDao().getCMSMediaItem(item.getId());
-        Assertions.assertNotNull(item2);
-        Assertions.assertEquals(item, item2);
-        Assertions.assertEquals(item.getFileName(), item2.getFileName());
-        Assertions.assertEquals(1, item2.getMetadata().size());
-        Assertions.assertEquals(md, item2.getMetadata().get(0));
-        Assertions.assertEquals(md.getLanguage(), item2.getMetadata().get(0).getLanguage());
-        Assertions.assertEquals(md.getName(), item2.getMetadata().get(0).getName());
-        Assertions.assertEquals(md.getDescription(), item2.getMetadata().get(0).getDescription());
+        assertNotNull(item2);
+        assertEquals(item, item2);
+        assertEquals(item.getFileName(), item2.getFileName());
+        assertEquals(1, item2.getMetadata().size());
+        assertEquals(md, item2.getMetadata().get(0));
+        assertEquals(md.getLanguage(), item2.getMetadata().get(0).getLanguage());
+        assertEquals(md.getName(), item2.getMetadata().get(0).getName());
+        assertEquals(md.getDescription(), item2.getMetadata().get(0).getDescription());
     }
 
     /**
@@ -1746,18 +1749,18 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void updateCMSMediaItem_shouldUpdateItemCorrectly() throws Exception {
         CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(1);
-        Assertions.assertNotNull(item);
-        Assertions.assertEquals(2, item.getMetadata().size());
+        assertNotNull(item);
+        assertEquals(2, item.getMetadata().size());
         item.setFileName("image_new.jpg");
         item.getMetadata().remove(item.getMetadata().get(0));
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateCMSMediaItem(item));
+        assertTrue(DataManager.getInstance().getDao().updateCMSMediaItem(item));
 
-        Assertions.assertEquals(4, DataManager.getInstance().getDao().getAllCMSMediaItems().size());
+        assertEquals(4, DataManager.getInstance().getDao().getAllCMSMediaItems().size());
         CMSMediaItem item2 = DataManager.getInstance().getDao().getCMSMediaItem(1);
-        Assertions.assertNotNull(item2);
-        Assertions.assertEquals(item, item2);
-        Assertions.assertEquals(item.getFileName(), item2.getFileName());
-        Assertions.assertEquals(1, item2.getMetadata().size());
+        assertNotNull(item2);
+        assertEquals(item, item2);
+        assertEquals(item.getFileName(), item2.getFileName());
+        assertEquals(1, item2.getMetadata().size());
     }
 
     /**
@@ -1767,10 +1770,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void deleteCMSMediaItem_shouldDeleteItemCorrectly() throws Exception {
         CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(2);
-        Assertions.assertNotNull(item);
-        Assertions.assertTrue(DataManager.getInstance().getDao().deleteCMSMediaItem(item));
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllCMSMediaItems().size());
-        Assertions.assertNull(DataManager.getInstance().getDao().getCMSMediaItem(2));
+        assertNotNull(item);
+        assertTrue(DataManager.getInstance().getDao().deleteCMSMediaItem(item));
+        assertEquals(3, DataManager.getInstance().getDao().getAllCMSMediaItems().size());
+        assertNull(DataManager.getInstance().getDao().getCMSMediaItem(2));
     }
 
     /**
@@ -1780,10 +1783,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void deleteCMSMediaItem_shouldNotDeleteReferencedItems() throws Exception {
         CMSMediaItem item = DataManager.getInstance().getDao().getCMSMediaItem(1);
-        Assertions.assertNotNull(item);
-        Assertions.assertFalse(DataManager.getInstance().getDao().deleteCMSMediaItem(item));
-        Assertions.assertEquals(4, DataManager.getInstance().getDao().getAllCMSMediaItems().size());
-        Assertions.assertNotNull(DataManager.getInstance().getDao().getCMSMediaItem(1));
+        assertNotNull(item);
+        assertFalse(DataManager.getInstance().getDao().deleteCMSMediaItem(item));
+        assertEquals(4, DataManager.getInstance().getDao().getAllCMSMediaItems().size());
+        assertNotNull(DataManager.getInstance().getDao().getCMSMediaItem(1));
     }
 
     /**
@@ -1792,7 +1795,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getAllCMSPages_shouldReturnAllPages() throws Exception {
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllCMSPages().size());
+        assertEquals(3, DataManager.getInstance().getDao().getAllCMSPages().size());
     }
 
     /**
@@ -1801,7 +1804,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getCMSPageCount_shouldReturnCorrectCount() throws Exception {
-        Assertions.assertEquals(3L, DataManager.getInstance().getDao().getCMSPageCount(null, null, null, null));
+        assertEquals(3L, DataManager.getInstance().getDao().getCMSPageCount(null, null, null, null));
     }
 
     /**
@@ -1811,7 +1814,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getCMSPagesByClassification_shouldReturnAllPagesWithGivenClassification() throws Exception {
         CMSCategory news = DataManager.getInstance().getDao().getCategoryByName("news");
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getCMSPagesByCategory(news).size());
+        assertEquals(2, DataManager.getInstance().getDao().getCMSPagesByCategory(news).size());
     }
 
     /**
@@ -1821,7 +1824,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getCMSPagesForRecord_shouldReturnAllPagesWithTheGivenRelatedPi() throws Exception {
         CMSCategory c = DataManager.getInstance().getDao().getCategoryByName(CMSPage.CLASSIFICATION_OVERVIEWPAGE);
-        Assertions.assertEquals(1, DataManager.getInstance().getDao().getCMSPagesForRecord("PI_1", c).size());
+        assertEquals(1, DataManager.getInstance().getDao().getCMSPagesForRecord("PI_1", c).size());
     }
 
     /**
@@ -1830,13 +1833,13 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getCMSPagesWithRelatedPi_shouldReturnCorrectRows() throws Exception {
-        Assertions.assertEquals(1,
+        assertEquals(1,
                 DataManager.getInstance()
                         .getDao()
                         .getCMSPagesWithRelatedPi(0, 100, LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0))
                         .size());
         // Wrong date range
-        Assertions.assertEquals(0,
+        assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
                         .getCMSPagesWithRelatedPi(0, 100, LocalDateTime.of(2016, 1, 1, 0, 0), LocalDateTime.of(2016, 12, 31, 0, 0))
@@ -1849,13 +1852,13 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void isCMSPagesForRecordHaveUpdates_shouldReturnCorrectValue() throws Exception {
-        Assertions.assertTrue(DataManager.getInstance()
+        assertTrue(DataManager.getInstance()
                 .getDao()
                 .isCMSPagesForRecordHaveUpdates("PI_1", null, LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0)));
-        Assertions.assertFalse(DataManager.getInstance()
+        assertFalse(DataManager.getInstance()
                 .getDao()
                 .isCMSPagesForRecordHaveUpdates("PI_1", null, LocalDateTime.of(2016, 1, 1, 0, 0), LocalDateTime.of(2016, 12, 31, 0, 0)));
-        Assertions.assertFalse(DataManager.getInstance().getDao().isCMSPagesForRecordHaveUpdates("PI_2", null, null, null));
+        assertFalse(DataManager.getInstance().getDao().isCMSPagesForRecordHaveUpdates("PI_2", null, null, null));
     }
 
     /**
@@ -1864,7 +1867,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getCMSPageWithRelatedPiCount_shouldReturnCorrectCount() throws Exception {
-        Assertions.assertEquals(1,
+        assertEquals(1,
                 DataManager.getInstance()
                         .getDao()
                         .getCMSPageWithRelatedPiCount(LocalDateTime.of(2015, 1, 1, 0, 0), LocalDateTime.of(2015, 12, 31, 0, 0)));
@@ -1877,8 +1880,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getCMSPageDefaultViewForRecord_shouldReturnCorrectResult() throws Exception {
         CMSPage page = DataManager.getInstance().getDao().getCMSPageDefaultViewForRecord("PI_1");
-        Assertions.assertNotNull(page);
-        Assertions.assertEquals(Long.valueOf(3), page.getId());
+        assertNotNull(page);
+        assertEquals(Long.valueOf(3), page.getId());
     }
 
     /**
@@ -1887,12 +1890,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void deleteCMSPage_shouldDeletePageCorrectly() throws Exception {
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllCMSPages().size());
+        assertEquals(3, DataManager.getInstance().getDao().getAllCMSPages().size());
         CMSPage page = DataManager.getInstance().getDao().getCMSPage(1);
-        Assertions.assertNotNull(page);
-        Assertions.assertTrue(DataManager.getInstance().getDao().deleteCMSPage(page));
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllCMSPages().size());
-        Assertions.assertNull(DataManager.getInstance().getDao().getCMSPage(1));
+        assertNotNull(page);
+        assertTrue(DataManager.getInstance().getDao().deleteCMSPage(page));
+        assertEquals(2, DataManager.getInstance().getDao().getAllCMSPages().size());
+        assertNull(DataManager.getInstance().getDao().getCMSPage(1));
     }
 
     /**
@@ -1902,10 +1905,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getAllTopCMSNavigationItems_shouldReturnAllTopItems() throws Exception {
         List<CMSNavigationItem> items = DataManager.getInstance().getDao().getAllTopCMSNavigationItems();
-        Assertions.assertEquals(2, items.size());
+        assertEquals(2, items.size());
         Collections.sort(items);
-        Assertions.assertEquals(Long.valueOf(1), items.get(0).getId());
-        Assertions.assertEquals(Long.valueOf(4), items.get(1).getId());
+        assertEquals(Long.valueOf(1), items.get(0).getId());
+        assertEquals(Long.valueOf(4), items.get(1).getId());
     }
 
     /**
@@ -1915,18 +1918,18 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getCMSNavigationItem_shouldReturnCorrectItemAndChildItems() throws Exception {
         CMSNavigationItem item = DataManager.getInstance().getDao().getCMSNavigationItem(1);
-        Assertions.assertNotNull(item);
-        Assertions.assertEquals(Long.valueOf(1), item.getId());
-        Assertions.assertEquals("item 1", item.getItemLabel());
-        Assertions.assertEquals("url 1", item.getPageUrl());
-        Assertions.assertEquals(Integer.valueOf(1), item.getOrder());
-        Assertions.assertNull(item.getParentItem());
-        Assertions.assertEquals(2, item.getChildItems().size());
+        assertNotNull(item);
+        assertEquals(Long.valueOf(1), item.getId());
+        assertEquals("item 1", item.getItemLabel());
+        assertEquals("url 1", item.getPageUrl());
+        assertEquals(Integer.valueOf(1), item.getOrder());
+        assertNull(item.getParentItem());
+        assertEquals(2, item.getChildItems().size());
         Collections.sort(item.getChildItems());
-        Assertions.assertEquals(Long.valueOf(2), item.getChildItems().get(0).getId());
-        Assertions.assertEquals(Long.valueOf(3), item.getChildItems().get(1).getId());
-        Assertions.assertEquals(Integer.valueOf(1), item.getChildItems().get(0).getOrder());
-        Assertions.assertEquals(Integer.valueOf(2), item.getChildItems().get(1).getOrder());
+        assertEquals(Long.valueOf(2), item.getChildItems().get(0).getId());
+        assertEquals(Long.valueOf(3), item.getChildItems().get(1).getId());
+        assertEquals(Integer.valueOf(1), item.getChildItems().get(0).getOrder());
+        assertEquals(Integer.valueOf(2), item.getChildItems().get(1).getOrder());
     }
 
     /**
@@ -1935,7 +1938,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void addCMSNavigationItem_shouldAddItemAndChildItemsCorrectly() throws Exception {
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllTopCMSNavigationItems().size());
+        assertEquals(2, DataManager.getInstance().getDao().getAllTopCMSNavigationItems().size());
         CMSNavigationItem item = new CMSNavigationItem();
         item.setItemLabel("new item");
         item.setPageUrl("url");
@@ -1946,16 +1949,16 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         childItem.setParentItem(item); // this also adds the child item to the parent
         childItem.setOrder(1);
 
-        Assertions.assertTrue(DataManager.getInstance().getDao().addCMSNavigationItem(item));
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllTopCMSNavigationItems().size());
-        Assertions.assertNotNull(item.getId());
-        Assertions.assertNotNull(childItem.getId());
+        assertTrue(DataManager.getInstance().getDao().addCMSNavigationItem(item));
+        assertEquals(3, DataManager.getInstance().getDao().getAllTopCMSNavigationItems().size());
+        assertNotNull(item.getId());
+        assertNotNull(childItem.getId());
 
         CMSNavigationItem item2 = DataManager.getInstance().getDao().getCMSNavigationItem(item.getId());
-        Assertions.assertNotNull(item2);
-        Assertions.assertEquals(item.getId(), item2.getId());
-        Assertions.assertEquals(item.getChildItems().size(), item2.getChildItems().size());
-        Assertions.assertEquals(childItem.getId(), item2.getChildItems().get(0).getId());
+        assertNotNull(item2);
+        assertEquals(item.getId(), item2.getId());
+        assertEquals(item.getChildItems().size(), item2.getChildItems().size());
+        assertEquals(childItem.getId(), item2.getChildItems().get(0).getId());
     }
 
     /**
@@ -1964,20 +1967,20 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void updateCMSNavigationItem_shouldUpdateItemAndChildItemsCorrectly() throws Exception {
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllTopCMSNavigationItems().size());
+        assertEquals(2, DataManager.getInstance().getDao().getAllTopCMSNavigationItems().size());
         CMSNavigationItem item = DataManager.getInstance().getDao().getCMSNavigationItem(1);
-        Assertions.assertNotNull(item);
+        assertNotNull(item);
         item.setPageUrl("new url");
         item.getChildItems().get(0).setPageUrl("new child url");
 
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateCMSNavigationItem(item));
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllTopCMSNavigationItems().size());
+        assertTrue(DataManager.getInstance().getDao().updateCMSNavigationItem(item));
+        assertEquals(2, DataManager.getInstance().getDao().getAllTopCMSNavigationItems().size());
 
         CMSNavigationItem item2 = DataManager.getInstance().getDao().getCMSNavigationItem(item.getId());
-        Assertions.assertNotNull(item2);
-        Assertions.assertEquals(item.getChildItems().size(), item2.getChildItems().size());
-        Assertions.assertEquals(item.getPageUrl(), item2.getPageUrl());
-        Assertions.assertEquals(item.getChildItems().get(0).getPageUrl(), item2.getChildItems().get(0).getPageUrl());
+        assertNotNull(item2);
+        assertEquals(item.getChildItems().size(), item2.getChildItems().size());
+        assertEquals(item.getPageUrl(), item2.getPageUrl());
+        assertEquals(item.getChildItems().get(0).getPageUrl(), item2.getChildItems().get(0).getPageUrl());
     }
 
     /**
@@ -1986,14 +1989,14 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void deleteCMSNavigationItem_shouldDeleteItemAndChildItemsCorrectly() throws Exception {
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllTopCMSNavigationItems().size());
+        assertEquals(2, DataManager.getInstance().getDao().getAllTopCMSNavigationItems().size());
         CMSNavigationItem item = DataManager.getInstance().getDao().getCMSNavigationItem(1);
-        Assertions.assertNotNull(item);
-        Assertions.assertTrue(DataManager.getInstance().getDao().deleteCMSNavigationItem(item));
-        Assertions.assertEquals(1, DataManager.getInstance().getDao().getAllTopCMSNavigationItems().size());
-        Assertions.assertNull(DataManager.getInstance().getDao().getCMSNavigationItem(1));
-        Assertions.assertNull(DataManager.getInstance().getDao().getCMSNavigationItem(2));
-        Assertions.assertNull(DataManager.getInstance().getDao().getCMSNavigationItem(3));
+        assertNotNull(item);
+        assertTrue(DataManager.getInstance().getDao().deleteCMSNavigationItem(item));
+        assertEquals(1, DataManager.getInstance().getDao().getAllTopCMSNavigationItems().size());
+        assertNull(DataManager.getInstance().getDao().getCMSNavigationItem(1));
+        assertNull(DataManager.getInstance().getDao().getCMSNavigationItem(2));
+        assertNull(DataManager.getInstance().getDao().getCMSNavigationItem(3));
     }
 
     /*
@@ -2008,22 +2011,22 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     //    @Test
     //    void updateUserGroup_shouldSetIdOnNewLicense() throws Exception {
     //        UserGroup userGroup = DataManager.getInstance().getDao().getUserGroup(1);
-    //        Assertions.assertNotNull(userGroup);
+    //        assertNotNull(userGroup);
     //        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(1);
-    //        Assertions.assertNotNull(licenseType);
+    //        assertNotNull(licenseType);
     //        License license = new License();
     //        license.setDescription("xxx");
     //        license.setLicenseType(licenseType);
     //        userGroup.addLicense(license);
-    //        Assertions.assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
+    //        assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
     //        boolean licenseFound = false;
     //        for (License l : userGroup.getLicenses()) {
     //            if ("xxx".equals(l.getDescription())) {
     //                licenseFound = true;
-    //                Assertions.assertNotNull(l.getId());
+    //                assertNotNull(l.getId());
     //            }
     //        }
-    //        Assertions.assertTrue(licenseFound);
+    //        assertTrue(licenseFound);
     //    }
 
     /**
@@ -2032,7 +2035,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getUserCount_shouldReturnCorrectCount() throws Exception {
-        Assertions.assertEquals(3L, DataManager.getInstance().getDao().getUserCount(null));
+        assertEquals(3L, DataManager.getInstance().getDao().getUserCount(null));
     }
 
     /**
@@ -2045,7 +2048,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     void getUserCount_shouldFilterCorrectly() throws Exception {
         Map<String, String> filters = new HashMap<>();
         filters.put("filter", "1");
-        Assertions.assertEquals(2L, DataManager.getInstance().getDao().getUserCount(filters));
+        assertEquals(2L, DataManager.getInstance().getDao().getUserCount(filters));
     }
 
     /**
@@ -2054,7 +2057,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getIpRangeCount_shouldReturnCorrectCount() throws Exception {
-        Assertions.assertEquals(2L, DataManager.getInstance().getDao().getIpRangeCount(null));
+        assertEquals(2L, DataManager.getInstance().getDao().getIpRangeCount(null));
     }
 
     /**
@@ -2063,7 +2066,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getLicenseTypeCount_shouldReturnCorrectCount() throws Exception {
-        Assertions.assertEquals(NUM_LICENSE_TYPES - 1, DataManager.getInstance().getDao().getLicenseTypeCount(null));
+        assertEquals(NUM_LICENSE_TYPES - 1, DataManager.getInstance().getDao().getLicenseTypeCount(null));
     }
 
     /**
@@ -2072,7 +2075,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getRoleCount_shouldReturnCorrectCount() throws Exception {
-        Assertions.assertEquals(2L, DataManager.getInstance().getDao().getRoleCount(null));
+        assertEquals(2L, DataManager.getInstance().getDao().getRoleCount(null));
     }
 
     /**
@@ -2081,7 +2084,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getUserGroupCount_shouldReturnCorrectCount() throws Exception {
-        Assertions.assertEquals(3L, DataManager.getInstance().getDao().getUserGroupCount(null));
+        assertEquals(3L, DataManager.getInstance().getDao().getUserGroupCount(null));
     }
 
     /**
@@ -2090,7 +2093,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getAllDownloadJobs_shouldReturnAllObjects() throws Exception {
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
+        assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
     }
 
     /**
@@ -2101,22 +2104,22 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     void getDownloadJob_shouldReturnCorrectObject() throws Exception {
         {
             DownloadJob job = DataManager.getInstance().getDao().getDownloadJob(1);
-            Assertions.assertNotNull(job);
-            Assertions.assertEquals(PDFDownloadJob.class, job.getClass());
-            Assertions.assertEquals(Long.valueOf(1), job.getId());
-            Assertions.assertEquals("PI_1", job.getPi());
-            Assertions.assertNull(job.getLogId());
-            Assertions.assertEquals(DownloadJob.generateDownloadJobId(job.getType(), job.getPi(), job.getLogId()), job.getIdentifier());
-            Assertions.assertEquals(3600, job.getTtl());
-            Assertions.assertEquals(JobStatus.WAITING, job.getStatus());
-            Assertions.assertEquals(1, job.getObservers().size());
-            Assertions.assertEquals("viewer@intranda.com", job.getObservers().get(0));
+            assertNotNull(job);
+            assertEquals(PDFDownloadJob.class, job.getClass());
+            assertEquals(Long.valueOf(1), job.getId());
+            assertEquals("PI_1", job.getPi());
+            assertNull(job.getLogId());
+            assertEquals(DownloadJob.generateDownloadJobId(job.getType(), job.getPi(), job.getLogId()), job.getIdentifier());
+            assertEquals(3600, job.getTtl());
+            assertEquals(JobStatus.WAITING, job.getStatus());
+            assertEquals(1, job.getObservers().size());
+            assertEquals("viewer@intranda.com", job.getObservers().get(0));
         }
         {
             DownloadJob job = DataManager.getInstance().getDao().getDownloadJob(2);
-            Assertions.assertNotNull(job);
-            Assertions.assertEquals(EPUBDownloadJob.class, job.getClass());
-            Assertions.assertEquals(DownloadJob.generateDownloadJobId(job.getType(), job.getPi(), job.getLogId()), job.getIdentifier());
+            assertNotNull(job);
+            assertEquals(EPUBDownloadJob.class, job.getClass());
+            assertEquals(DownloadJob.generateDownloadJobId(job.getType(), job.getPi(), job.getLogId()), job.getIdentifier());
         }
     }
 
@@ -2128,16 +2131,16 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     void getDownloadJobByIdentifier_shouldReturnCorrectObject() throws Exception {
         DownloadJob job =
                 DataManager.getInstance().getDao().getDownloadJobByIdentifier("187277c96410b2358a36e2eb6c8ad76f8610a022d2cd95b180b94a76a1cb118a");
-        Assertions.assertNotNull(job);
-        Assertions.assertEquals(PDFDownloadJob.class, job.getClass());
-        Assertions.assertEquals(Long.valueOf(1), job.getId());
-        Assertions.assertEquals("PI_1", job.getPi());
-        Assertions.assertNull(job.getLogId());
-        Assertions.assertEquals(PDFDownloadJob.generateDownloadJobId(job.getType(), job.getPi(), job.getLogId()), job.getIdentifier());
-        Assertions.assertEquals(3600, job.getTtl());
-        Assertions.assertEquals(JobStatus.WAITING, job.getStatus());
-        Assertions.assertEquals(1, job.getObservers().size());
-        Assertions.assertEquals("viewer@intranda.com", job.getObservers().get(0));
+        assertNotNull(job);
+        assertEquals(PDFDownloadJob.class, job.getClass());
+        assertEquals(Long.valueOf(1), job.getId());
+        assertEquals("PI_1", job.getPi());
+        assertNull(job.getLogId());
+        assertEquals(PDFDownloadJob.generateDownloadJobId(job.getType(), job.getPi(), job.getLogId()), job.getIdentifier());
+        assertEquals(3600, job.getTtl());
+        assertEquals(JobStatus.WAITING, job.getStatus());
+        assertEquals(1, job.getObservers().size());
+        assertEquals("viewer@intranda.com", job.getObservers().get(0));
     }
 
     /**
@@ -2148,15 +2151,15 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     void getDownloadJobByMetadata_shouldReturnCorrectObject() throws Exception {
         {
             DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByMetadata(PDFDownloadJob.LOCAL_TYPE, "PI_1", null);
-            Assertions.assertNotNull(job);
-            Assertions.assertEquals(PDFDownloadJob.class, job.getClass());
-            Assertions.assertEquals(Long.valueOf(1), job.getId());
+            assertNotNull(job);
+            assertEquals(PDFDownloadJob.class, job.getClass());
+            assertEquals(Long.valueOf(1), job.getId());
         }
         {
             DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByMetadata(EPUBDownloadJob.LOCAL_TYPE, "PI_1", "LOG_0001");
-            Assertions.assertNotNull(job);
-            Assertions.assertEquals(EPUBDownloadJob.class, job.getClass());
-            Assertions.assertEquals(Long.valueOf(2), job.getId());
+            assertNotNull(job);
+            assertEquals(EPUBDownloadJob.class, job.getClass());
+            assertEquals(Long.valueOf(2), job.getId());
         }
     }
 
@@ -2170,25 +2173,25 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         PDFDownloadJob job = new PDFDownloadJob("PI_2", "LOG_0002", now, 3600);
         job.generateDownloadIdentifier();
         job.setStatus(JobStatus.WAITING);
-        Assertions.assertNotNull(job.getIdentifier());
+        assertNotNull(job.getIdentifier());
         job.getObservers().add("a@b.com");
 
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
-        Assertions.assertTrue(DataManager.getInstance().getDao().addDownloadJob(job));
-        Assertions.assertNotNull(job.getId());
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllDownloadJobs().size());
+        assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
+        assertTrue(DataManager.getInstance().getDao().addDownloadJob(job));
+        assertNotNull(job.getId());
+        assertEquals(3, DataManager.getInstance().getDao().getAllDownloadJobs().size());
 
         DownloadJob job2 = DataManager.getInstance().getDao().getDownloadJob(job.getId());
-        Assertions.assertNotNull(job2);
-        Assertions.assertEquals(job.getId(), job2.getId());
-        Assertions.assertEquals(job.getPi(), job2.getPi());
-        Assertions.assertEquals(job.getLogId(), job2.getLogId());
-        Assertions.assertEquals(job.getIdentifier(), job2.getIdentifier());
+        assertNotNull(job2);
+        assertEquals(job.getId(), job2.getId());
+        assertEquals(job.getPi(), job2.getPi());
+        assertEquals(job.getLogId(), job2.getLogId());
+        assertEquals(job.getIdentifier(), job2.getIdentifier());
         // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
-        Assertions.assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now),
+        assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now),
                 DateTools.FORMATTERISO8601DATETIMEMS.format(job2.getLastRequested()));
-        Assertions.assertEquals(job.getTtl(), job2.getTtl());
-        Assertions.assertEquals(job.getStatus(), job2.getStatus());
+        assertEquals(job.getTtl(), job2.getTtl());
+        assertEquals(job.getStatus(), job2.getStatus());
     }
 
     /**
@@ -2197,30 +2200,30 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void updateDownloadJob_shouldUpdateObjectCorrectly() throws Exception {
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
+        assertEquals(2, DataManager.getInstance().getDao().getAllDownloadJobs().size());
 
         DownloadJob job = DataManager.getInstance().getDao().getDownloadJob(1);
-        Assertions.assertNotNull(job);
+        assertNotNull(job);
         LocalDateTime now = LocalDateTime.now();
         job.setLastRequested(now);
         job.setStatus(JobStatus.READY);
         job.getObservers().add("newobserver@example.com");
 
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateDownloadJob(job));
-        Assertions.assertEquals(2, job.getObservers().size(), "Too many observers after updateDownloadJob");
+        assertTrue(DataManager.getInstance().getDao().updateDownloadJob(job));
+        assertEquals(2, job.getObservers().size(), "Too many observers after updateDownloadJob");
         List<DownloadJob> allJobs = DataManager.getInstance().getDao().getAllDownloadJobs();
-        Assertions.assertEquals(2, allJobs.size());
-        Assertions.assertEquals(2, job.getObservers().size(), "Too many observers after getAllDownloadJobs");
+        assertEquals(2, allJobs.size());
+        assertEquals(2, job.getObservers().size(), "Too many observers after getAllDownloadJobs");
 
         DownloadJob job2 = DataManager.getInstance().getDao().getDownloadJob(job.getId());
-        Assertions.assertNotNull(job2);
-        Assertions.assertEquals(job.getId(), job2.getId());
+        assertNotNull(job2);
+        assertEquals(job.getId(), job2.getId());
         // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
-        Assertions.assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now),
+        assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now),
                 DateTools.FORMATTERISO8601DATETIMEMS.format(job2.getLastRequested()));
-        Assertions.assertEquals(JobStatus.READY, job2.getStatus());
-        Assertions.assertEquals(2, job2.getObservers().size());
-        Assertions.assertEquals("newobserver@example.com", job2.getObservers().get(1));
+        assertEquals(JobStatus.READY, job2.getStatus());
+        assertEquals(2, job2.getObservers().size());
+        assertEquals("newobserver@example.com", job2.getObservers().get(1));
     }
 
     /**
@@ -2230,9 +2233,9 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void deleteDownloadJob_shouldDeleteObjectCorrectly() throws Exception {
         DownloadJob job = DataManager.getInstance().getDao().getDownloadJob(1);
-        Assertions.assertNotNull(job);
-        Assertions.assertTrue(DataManager.getInstance().getDao().deleteDownloadJob(job));
-        Assertions.assertNull(DataManager.getInstance().getDao().getDownloadJob(1));
+        assertNotNull(job);
+        assertTrue(DataManager.getInstance().getDao().deleteDownloadJob(job));
+        assertNull(DataManager.getInstance().getDao().getDownloadJob(1));
     }
 
     /**
@@ -2242,9 +2245,9 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getUploadJobsForCreatorId_shouldReturnRowsInCorrectOrder() throws Exception {
         List<UploadJob> result = DataManager.getInstance().getDao().getUploadJobsForCreatorId(1L);
-        Assertions.assertEquals(2, result.size());
-        Assertions.assertEquals(Long.valueOf(2), result.get(0).getId());
-        Assertions.assertEquals(Long.valueOf(1), result.get(1).getId());
+        assertEquals(2, result.size());
+        assertEquals(Long.valueOf(2), result.get(0).getId());
+        assertEquals(Long.valueOf(1), result.get(1).getId());
     }
 
     /**
@@ -2254,8 +2257,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getUploadJobsWithStatus_shouldReturnRowsWithGivenStatus() throws Exception {
         List<UploadJob> result = DataManager.getInstance().getDao().getUploadJobsWithStatus(JobStatus.WAITING);
-        Assertions.assertEquals(1, result.size());
-        Assertions.assertEquals(Long.valueOf(1), result.get(0).getId());
+        assertEquals(1, result.size());
+        assertEquals(Long.valueOf(1), result.get(0).getId());
     }
 
     /**
@@ -2265,13 +2268,13 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getUploadJobsForCreatorId_shouldReturnEmptyListIfCreatorIdNull() throws Exception {
         List<UploadJob> result = DataManager.getInstance().getDao().getUploadJobsForCreatorId(null);
-        Assertions.assertTrue(result.isEmpty());
+        assertTrue(result.isEmpty());
     }
 
     @Test
     void getCMSPagesCount_shouldReturnCorrectCount() throws Exception {
         long numPages = DataManager.getInstance().getDao().getCMSPageCount(Collections.emptyMap(), null, null, null);
-        Assertions.assertEquals(3, numPages);
+        assertEquals(3, numPages);
     }
 
     @Test
@@ -2280,11 +2283,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         for (CMSPage page : cmsPages) {
             Optional<CMSStaticPage> staticPage = DataManager.getInstance().getDao().getStaticPageForCMSPage(page).stream().findFirst();
             if (page.getId().equals(1l)) {
-                Assertions.assertTrue(staticPage.isPresent());
-                Assertions.assertEquals("index", staticPage.get().getPageName());
-                Assertions.assertEquals(page, staticPage.get().getCmsPage());
+                assertTrue(staticPage.isPresent());
+                assertEquals("index", staticPage.get().getPageName());
+                assertEquals(page, staticPage.get().getCmsPage());
             } else {
-                Assertions.assertFalse(staticPage.isPresent());
+                assertFalse(staticPage.isPresent());
             }
         }
     }
@@ -2302,14 +2305,14 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         String shouldQuery = "(:tpl1 = p.templateId OR :tpl2 = p.templateId) AND (:thm1 = p.subThemeDiscriminatorValue) AND "
                 + "(:cat1 IN (SELECT c.id FROM p.categories c) OR :cat2 IN (SELECT c.id FROM p.categories c) OR :cat3 IN (SELECT c.id FROM p.categories c))";
-        Assertions.assertEquals(shouldQuery, query);
+        assertEquals(shouldQuery, query);
 
-        Assertions.assertEquals("c1", params.get("cat1"));
-        Assertions.assertEquals("c2", params.get("cat2"));
-        Assertions.assertEquals("c3", params.get("cat3"));
-        Assertions.assertEquals("s1", params.get("thm1"));
-        Assertions.assertEquals(1l, params.get("tpl1"));
-        Assertions.assertEquals(2l, params.get("tpl2"));
+        assertEquals("c1", params.get("cat1"));
+        assertEquals("c2", params.get("cat2"));
+        assertEquals("c3", params.get("cat3"));
+        assertEquals("s1", params.get("thm1"));
+        assertEquals(1l, params.get("tpl1"));
+        assertEquals(2l, params.get("tpl2"));
 
     }
 
@@ -2325,12 +2328,12 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         String shouldQuery = "(:thm1 = p.subThemeDiscriminatorValue) AND "
                 + "(:cat1 IN (SELECT c.id FROM p.categories c) OR :cat2 IN (SELECT c.id FROM p.categories c) OR :cat3 IN (SELECT c.id FROM p.categories c))";
-        Assertions.assertEquals(shouldQuery, query);
+        assertEquals(shouldQuery, query);
 
-        Assertions.assertEquals("c1", params.get("cat1"));
-        Assertions.assertEquals("c2", params.get("cat2"));
-        Assertions.assertEquals("c3", params.get("cat3"));
-        Assertions.assertEquals("s1", params.get("thm1"));
+        assertEquals("c1", params.get("cat1"));
+        assertEquals("c2", params.get("cat2"));
+        assertEquals("c3", params.get("cat3"));
+        assertEquals("s1", params.get("thm1"));
     }
 
     @Test
@@ -2343,10 +2346,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         String query = JPADAO.createCMSPageFilter(params, "p", templates, null, null);
 
         String shouldQuery = "(:tpl1 = p.templateId OR :tpl2 = p.templateId)";
-        Assertions.assertEquals(shouldQuery, query);
+        assertEquals(shouldQuery, query);
 
-        Assertions.assertEquals(1l, params.get("tpl1"));
-        Assertions.assertEquals(2l, params.get("tpl2"));
+        assertEquals(1l, params.get("tpl1"));
+        assertEquals(2l, params.get("tpl2"));
     }
 
     /**
@@ -2355,7 +2358,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getAllCampaigns_shouldReturnAllCampaigns() throws Exception {
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAllCampaigns().size());
+        assertEquals(3, DataManager.getInstance().getDao().getAllCampaigns().size());
     }
 
     /**
@@ -2364,8 +2367,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getCampaigns_shouldFilterCampaignsCorrectly() throws Exception {
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getCampaigns(0, 10, null, false, null).size());
-        Assertions.assertEquals(2,
+        assertEquals(3, DataManager.getInstance().getDao().getCampaigns(0, 10, null, false, null).size());
+        assertEquals(2,
                 DataManager.getInstance().getDao().getCampaigns(0, 10, null, false, Collections.singletonMap("visibility", "PUBLIC")).size());
     }
 
@@ -2375,8 +2378,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getCampaignCount_shouldCountCorrectly() throws Exception {
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getCampaignCount(null));
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getCampaignCount(Collections.singletonMap("visibility", "PUBLIC")));
+        assertEquals(3, DataManager.getInstance().getDao().getCampaignCount(null));
+        assertEquals(2, DataManager.getInstance().getDao().getCampaignCount(Collections.singletonMap("visibility", "PUBLIC")));
     }
 
     /**
@@ -2387,52 +2390,52 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     void getCampaign_shouldReturnCorrectCampaign() throws Exception {
         {
             Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
-            Assertions.assertNotNull(campaign);
+            assertNotNull(campaign);
             campaign.setSelectedLocale(Locale.ENGLISH);
-            Assertions.assertEquals(Long.valueOf(1), campaign.getId());
-            Assertions.assertEquals(CampaignVisibility.PUBLIC, campaign.getVisibility());
-            Assertions.assertEquals(StatisticMode.RECORD, campaign.getStatisticMode());
-            Assertions.assertEquals("+DC:varia", campaign.getSolrQuery());
-            Assertions.assertEquals("English title", campaign.getTitle());
+            assertEquals(Long.valueOf(1), campaign.getId());
+            assertEquals(CampaignVisibility.PUBLIC, campaign.getVisibility());
+            assertEquals(StatisticMode.RECORD, campaign.getStatisticMode());
+            assertEquals("+DC:varia", campaign.getSolrQuery());
+            assertEquals("English title", campaign.getTitle());
 
-            Assertions.assertEquals(2, campaign.getQuestions().size());
-            Assertions.assertEquals("English text", campaign.getQuestions().get(0).getText().getText(Locale.ENGLISH));
+            assertEquals(2, campaign.getQuestions().size());
+            assertEquals("English text", campaign.getQuestions().get(0).getText().getText(Locale.ENGLISH));
 
-            Assertions.assertEquals(4, campaign.getStatistics().size());
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_1"));
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_2"));
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_3"));
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_4"));
+            assertEquals(4, campaign.getStatistics().size());
+            assertNotNull(campaign.getStatistics().get("PI_1"));
+            assertNotNull(campaign.getStatistics().get("PI_2"));
+            assertNotNull(campaign.getStatistics().get("PI_3"));
+            assertNotNull(campaign.getStatistics().get("PI_4"));
         }
         {
             Campaign campaign = DataManager.getInstance().getDao().getCampaign(3L);
-            Assertions.assertNotNull(campaign);
+            assertNotNull(campaign);
             campaign.setSelectedLocale(Locale.ENGLISH);
-            Assertions.assertEquals(Long.valueOf(3), campaign.getId());
-            Assertions.assertEquals(CampaignVisibility.PUBLIC, campaign.getVisibility());
-            Assertions.assertEquals("+PI:PI_5", campaign.getSolrQuery());
+            assertEquals(Long.valueOf(3), campaign.getId());
+            assertEquals(CampaignVisibility.PUBLIC, campaign.getVisibility());
+            assertEquals("+PI:PI_5", campaign.getSolrQuery());
 
-            Assertions.assertEquals(1, campaign.getStatistics().size());
+            assertEquals(1, campaign.getStatistics().size());
             CampaignRecordStatistic recordStatistic = campaign.getStatistics().get("PI_5");
-            Assertions.assertNotNull(recordStatistic);
-            Assertions.assertEquals(StatisticMode.PAGE, campaign.getStatisticMode());
-            Assertions.assertEquals(2, recordStatistic.getPageStatistics().size());
-            Assertions.assertEquals(Integer.valueOf(1), recordStatistic.getPageStatistics().get("PI_5_1").getPage());
-            Assertions.assertEquals("PI_5", recordStatistic.getPageStatistics().get("PI_5_1").getPi());
+            assertNotNull(recordStatistic);
+            assertEquals(StatisticMode.PAGE, campaign.getStatisticMode());
+            assertEquals(2, recordStatistic.getPageStatistics().size());
+            assertEquals(Integer.valueOf(1), recordStatistic.getPageStatistics().get("PI_5_1").getPage());
+            assertEquals("PI_5", recordStatistic.getPageStatistics().get("PI_5_1").getPi());
         }
     }
 
     @Test
     void testLoadCampaignWithLogMessage() throws Exception {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
-        Assertions.assertNotNull(campaign);
-        Assertions.assertEquals(1, campaign.getLogMessages().size());
+        assertNotNull(campaign);
+        assertEquals(1, campaign.getLogMessages().size());
 
         CampaignLogMessage message = campaign.getLogMessages().get(0);
-        Assertions.assertEquals("Eine Nachricht im Log", message.getMessage());
-        Assertions.assertEquals(Long.valueOf(1), message.getCreatorId());
-        Assertions.assertEquals("PI_1", message.getPi());
-        Assertions.assertEquals(campaign, message.getCampaign());
+        assertEquals("Eine Nachricht im Log", message.getMessage());
+        assertEquals(Long.valueOf(1), message.getCreatorId());
+        assertEquals("PI_1", message.getPi());
+        assertEquals(campaign, message.getCampaign());
     }
 
     @Test
@@ -2443,25 +2446,23 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         campaign.setSolrQuery("*:*");
         campaign.setDateCreated(LocalDateTime.now());
 
-        Campaign campaign2 = DataManager.getInstance().getDao().getCampaign(2L);
-
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateCampaign(campaign));
+        assertTrue(DataManager.getInstance().getDao().updateCampaign(campaign));
         campaign = DataManager.getInstance().getDao().getCampaign(2L);
-        Assertions.assertEquals("Test titel", campaign.getTitle());
+        assertEquals("Test titel", campaign.getTitle());
     }
 
     @Test
     void testUpdateCampaignWithLogMessage() throws Exception {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(2L);
-        Assertions.assertNotNull(campaign);
+        assertNotNull(campaign);
 
         LogMessage message = new LogMessage("Test", 1l, LocalDateTime.now(), null);
         campaign.addLogMessage(message, "PI_10");
-        Assertions.assertEquals("Test", campaign.getLogMessages().get(0).getMessage());
+        assertEquals("Test", campaign.getLogMessages().get(0).getMessage());
 
         DataManager.getInstance().getDao().updateCampaign(campaign);
         campaign = DataManager.getInstance().getDao().getCampaign(2L);
-        Assertions.assertEquals("Test", campaign.getLogMessages().get(0).getMessage());
+        assertEquals("Test", campaign.getLogMessages().get(0).getMessage());
 
     }
 
@@ -2472,13 +2473,13 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getQuestion_shouldReturnCorrectRow() throws Exception {
         Question q = DataManager.getInstance().getDao().getQuestion(1L);
-        Assertions.assertNotNull(q);
-        Assertions.assertEquals(Long.valueOf(1), q.getId());
-        Assertions.assertEquals(Long.valueOf(1), q.getOwner().getId());
-        Assertions.assertEquals("English text", q.getText().getText(Locale.ENGLISH));
-        Assertions.assertEquals(QuestionType.PLAINTEXT, q.getQuestionType());
-        Assertions.assertEquals(TargetSelector.RECTANGLE, q.getTargetSelector());
-        Assertions.assertEquals(0, q.getTargetFrequency());
+        assertNotNull(q);
+        assertEquals(Long.valueOf(1), q.getId());
+        assertEquals(Long.valueOf(1), q.getOwner().getId());
+        assertEquals("English text", q.getText().getText(Locale.ENGLISH));
+        assertEquals(QuestionType.PLAINTEXT, q.getQuestionType());
+        assertEquals(TargetSelector.RECTANGLE, q.getTargetSelector());
+        assertEquals(0, q.getTargetFrequency());
     }
 
     /**
@@ -2487,7 +2488,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getCampaignStatisticsForRecord_shouldReturnCorrectRows() throws Exception {
-        Assertions.assertEquals(1, DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI_1", CrowdsourcingStatus.FINISHED).size());
+        assertEquals(1, DataManager.getInstance().getDao().getCampaignStatisticsForRecord("PI_1", CrowdsourcingStatus.FINISHED).size());
     }
 
     /**
@@ -2498,21 +2499,21 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     void getAllAnnotations_shouldSortCorrectly() throws Exception {
         {
             List<CrowdsourcingAnnotation> result = DataManager.getInstance().getDao().getAllAnnotations("id", false);
-            Assertions.assertEquals(5, result.size());
-            Assertions.assertEquals(Long.valueOf(1), result.get(0).getId());
-            Assertions.assertEquals(Long.valueOf(2), result.get(1).getId());
-            Assertions.assertEquals(Long.valueOf(3), result.get(2).getId());
-            Assertions.assertEquals(Long.valueOf(4), result.get(3).getId());
-            Assertions.assertEquals(Long.valueOf(5), result.get(4).getId());
+            assertEquals(5, result.size());
+            assertEquals(Long.valueOf(1), result.get(0).getId());
+            assertEquals(Long.valueOf(2), result.get(1).getId());
+            assertEquals(Long.valueOf(3), result.get(2).getId());
+            assertEquals(Long.valueOf(4), result.get(3).getId());
+            assertEquals(Long.valueOf(5), result.get(4).getId());
         }
         {
             List<CrowdsourcingAnnotation> result = DataManager.getInstance().getDao().getAllAnnotations("id", true);
-            Assertions.assertEquals(5, result.size());
-            Assertions.assertEquals(Long.valueOf(5), result.get(0).getId());
-            Assertions.assertEquals(Long.valueOf(4), result.get(1).getId());
-            Assertions.assertEquals(Long.valueOf(3), result.get(2).getId());
-            Assertions.assertEquals(Long.valueOf(2), result.get(3).getId());
-            Assertions.assertEquals(Long.valueOf(1), result.get(4).getId());
+            assertEquals(5, result.size());
+            assertEquals(Long.valueOf(5), result.get(0).getId());
+            assertEquals(Long.valueOf(4), result.get(1).getId());
+            assertEquals(Long.valueOf(3), result.get(2).getId());
+            assertEquals(Long.valueOf(2), result.get(3).getId());
+            assertEquals(Long.valueOf(1), result.get(4).getId());
         }
     }
 
@@ -2533,8 +2534,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getAnnotation_shouldReturnCorrectRow() throws Exception {
         CrowdsourcingAnnotation annotation = DataManager.getInstance().getDao().getAnnotation(1L);
-        Assertions.assertNotNull(annotation);
-        Assertions.assertEquals(Long.valueOf(1), annotation.getId());
+        assertNotNull(annotation);
+        assertEquals(Long.valueOf(1), annotation.getId());
     }
 
     /**
@@ -2544,13 +2545,13 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getAnnotationsForCampaign_shouldReturnCorrectRows() throws Exception {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
-        Assertions.assertNotNull(campaign);
+        assertNotNull(campaign);
 
         List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaign(campaign);
-        Assertions.assertEquals(3, annotations.size());
-        Assertions.assertEquals(Long.valueOf(1), annotations.get(0).getId());
-        Assertions.assertEquals(Long.valueOf(2), annotations.get(1).getId());
-        Assertions.assertEquals(Long.valueOf(3), annotations.get(2).getId());
+        assertEquals(3, annotations.size());
+        assertEquals(Long.valueOf(1), annotations.get(0).getId());
+        assertEquals(Long.valueOf(2), annotations.get(1).getId());
+        assertEquals(Long.valueOf(3), annotations.get(2).getId());
     }
 
     /**
@@ -2560,13 +2561,13 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getAnnotationsForWork_shouldReturnCorrectRows() throws Exception {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
-        Assertions.assertNotNull(campaign);
+        assertNotNull(campaign);
 
         List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForWork("PI_1");
-        Assertions.assertEquals(3, annotations.size());
-        Assertions.assertEquals(Long.valueOf(1), annotations.get(0).getId());
-        Assertions.assertEquals(Long.valueOf(3), annotations.get(1).getId());
-        Assertions.assertEquals(Long.valueOf(4), annotations.get(2).getId());
+        assertEquals(3, annotations.size());
+        assertEquals(Long.valueOf(1), annotations.get(0).getId());
+        assertEquals(Long.valueOf(3), annotations.get(1).getId());
+        assertEquals(Long.valueOf(4), annotations.get(2).getId());
     }
 
     /**
@@ -2575,8 +2576,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getAnnotationCountForTarget_shouldReturnCorrectCount() throws Exception {
-        Assertions.assertEquals(1, DataManager.getInstance().getDao().getAnnotationCountForTarget("PI_1", 1));
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getAnnotationCountForTarget("PI_1", null));
+        assertEquals(1, DataManager.getInstance().getDao().getAnnotationCountForTarget("PI_1", 1));
+        assertEquals(2, DataManager.getInstance().getDao().getAnnotationCountForTarget("PI_1", null));
     }
 
     /**
@@ -2587,14 +2588,14 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     void getAnnotationsForTarget_shouldReturnCorrectRows() throws Exception {
         {
             List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForTarget("PI_1", 1);
-            Assertions.assertEquals(1, annotations.size());
-            Assertions.assertEquals(Long.valueOf(1), annotations.get(0).getId());
+            assertEquals(1, annotations.size());
+            assertEquals(Long.valueOf(1), annotations.get(0).getId());
         }
         {
             List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForTarget("PI_1", null);
-            Assertions.assertEquals(2, annotations.size());
-            Assertions.assertEquals(Long.valueOf(3), annotations.get(0).getId());
-            Assertions.assertEquals(Long.valueOf(4), annotations.get(1).getId());
+            assertEquals(2, annotations.size());
+            assertEquals(Long.valueOf(3), annotations.get(0).getId());
+            assertEquals(Long.valueOf(4), annotations.get(1).getId());
         }
     }
 
@@ -2605,22 +2606,22 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getAnnotationsForCampaignAndTarget_shouldReturnCorrectRows() throws Exception {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
-        Assertions.assertNotNull(campaign);
+        assertNotNull(campaign);
 
         {
             List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI_1", 1);
-            Assertions.assertEquals(1, annotations.size());
-            Assertions.assertEquals(Long.valueOf(1), annotations.get(0).getId());
+            assertEquals(1, annotations.size());
+            assertEquals(Long.valueOf(1), annotations.get(0).getId());
         }
         {
             List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI_1", null);
-            Assertions.assertEquals(1, annotations.size());
-            Assertions.assertEquals(Long.valueOf(3), annotations.get(0).getId());
+            assertEquals(1, annotations.size());
+            assertEquals(Long.valueOf(3), annotations.get(0).getId());
         }
         {
             List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndTarget(campaign, "PI_2", 6);
-            Assertions.assertEquals(1, annotations.size());
-            Assertions.assertEquals(Long.valueOf(2), annotations.get(0).getId());
+            assertEquals(1, annotations.size());
+            assertEquals(Long.valueOf(2), annotations.get(0).getId());
         }
     }
 
@@ -2631,13 +2632,13 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getAnnotationsForCampaignAndWork_shouldReturnCorrectRows() throws Exception {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
-        Assertions.assertNotNull(campaign);
+        assertNotNull(campaign);
 
         {
             List<CrowdsourcingAnnotation> annotations = DataManager.getInstance().getDao().getAnnotationsForCampaignAndWork(campaign, "PI_1");
-            Assertions.assertEquals(2, annotations.size());
-            Assertions.assertEquals(Long.valueOf(1), annotations.get(0).getId());
-            Assertions.assertEquals(Long.valueOf(3), annotations.get(1).getId());
+            assertEquals(2, annotations.size());
+            assertEquals(Long.valueOf(1), annotations.get(0).getId());
+            assertEquals(Long.valueOf(3), annotations.get(1).getId());
         }
     }
 
@@ -2648,10 +2649,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getAnnotationsForUserId_shouldReturnCorrectRows() throws Exception {
         List<CrowdsourcingAnnotation> result = DataManager.getInstance().getDao().getAnnotationsForUserId(1L, null, "id", true);
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(2, result.size());
-        Assertions.assertEquals(Long.valueOf(2), result.get(0).getId());
-        Assertions.assertEquals(Long.valueOf(1), result.get(1).getId());
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(Long.valueOf(2), result.get(0).getId());
+        assertEquals(Long.valueOf(1), result.get(1).getId());
     }
 
     /**
@@ -2670,8 +2671,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getAnnotationCount_shouldReturnCorrectCount() throws Exception {
-        Assertions.assertEquals(5, DataManager.getInstance().getDao().getAnnotationCount(null));
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getAnnotationCount(Collections.singletonMap("targetPI", "PI_1")));
+        assertEquals(5, DataManager.getInstance().getDao().getAnnotationCount(null));
+        assertEquals(3, DataManager.getInstance().getDao().getAnnotationCount(Collections.singletonMap("targetPI", "PI_1")));
     }
 
     /**
@@ -2680,8 +2681,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getAnnotations_shouldReturnCorrectRows() throws Exception {
-        Assertions.assertEquals(5, DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, null).size());
-        Assertions.assertEquals(2,
+        assertEquals(5, DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, null).size());
+        assertEquals(2,
                 DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, Collections.singletonMap("targetPI", "PI_2")).size());
     }
 
@@ -2693,13 +2694,13 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     void getAnnotations_shouldFilterByCampaignNameCorrectly() throws Exception {
         List<CrowdsourcingAnnotation> result =
                 DataManager.getInstance().getDao().getAnnotations(0, 10, null, false, Collections.singletonMap("campaign", "english"));
-        Assertions.assertEquals(3, result.size());
+        assertEquals(3, result.size());
     }
 
     @Test
     void testGetAllGeoMaps() throws DAOException {
         List<GeoMap> maps = DataManager.getInstance().getDao().getAllGeoMaps();
-        Assertions.assertEquals(2, maps.size());
+        assertEquals(2, maps.size());
     }
 
     @Test
@@ -2711,8 +2712,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         List<CMSPage> embedMap1 = DataManager.getInstance().getDao().getPagesUsingMap(map1);
         List<CMSPage> embedMap2 = DataManager.getInstance().getDao().getPagesUsingMap(map2);
 
-        Assertions.assertEquals(2, embedMap1.size());
-        Assertions.assertEquals(0, embedMap2.size());
+        assertEquals(2, embedMap1.size());
+        assertEquals(0, embedMap2.size());
 
     }
 
@@ -2720,13 +2721,13 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     void testUpdateTranslations() throws Exception {
         String newVal = "Kartenbeschreibung 2";
         GeoMap map1 = DataManager.getInstance().getDao().getGeoMap(1l);
-        Assertions.assertEquals("Kartenbeschreibung 1", map1.getDescription("de").getTranslationValue());
+        assertEquals("Kartenbeschreibung 1", map1.getDescription("de").getTranslationValue());
         map1.getDescription("de").setTranslationValue(newVal);
-        Assertions.assertEquals(newVal, map1.getDescription("de").getTranslationValue());
+        assertEquals(newVal, map1.getDescription("de").getTranslationValue());
 
         DataManager.getInstance().getDao().updateGeoMap(map1);
         map1 = DataManager.getInstance().getDao().getAllGeoMaps().stream().filter(map -> map.getId() == 1l).findAny().orElse(null);
-        Assertions.assertEquals(newVal, map1.getDescription("de").getTranslationValue());
+        assertEquals(newVal, map1.getDescription("de").getTranslationValue());
     }
 
     /**
@@ -2736,34 +2737,34 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void deleteCampaignStatisticsForUser_shouldRemoveUserFromCreatorsAndReviewersListsCorrectly() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(1);
-        Assertions.assertNotNull(user);
+        assertNotNull(user);
         {
             Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
-            Assertions.assertNotNull(campaign);
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_1"));
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_2"));
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_3"));
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_4"));
-            Assertions.assertTrue(campaign.getStatistics().get("PI_1").getAnnotators().contains(user));
-            Assertions.assertTrue(campaign.getStatistics().get("PI_2").getAnnotators().contains(user));
-            Assertions.assertTrue(campaign.getStatistics().get("PI_3").getReviewers().contains(user));
-            Assertions.assertTrue(campaign.getStatistics().get("PI_4").getReviewers().contains(user));
+            assertNotNull(campaign);
+            assertNotNull(campaign.getStatistics().get("PI_1"));
+            assertNotNull(campaign.getStatistics().get("PI_2"));
+            assertNotNull(campaign.getStatistics().get("PI_3"));
+            assertNotNull(campaign.getStatistics().get("PI_4"));
+            assertTrue(campaign.getStatistics().get("PI_1").getAnnotators().contains(user));
+            assertTrue(campaign.getStatistics().get("PI_2").getAnnotators().contains(user));
+            assertTrue(campaign.getStatistics().get("PI_3").getReviewers().contains(user));
+            assertTrue(campaign.getStatistics().get("PI_4").getReviewers().contains(user));
         }
 
         int rows = DataManager.getInstance().getDao().deleteCampaignStatisticsForUser(user);
-        Assertions.assertEquals(6, rows);
+        assertEquals(6, rows);
         {
             Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
-            Assertions.assertNotNull(campaign);
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_1"));
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_2"));
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_3"));
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_4"));
+            assertNotNull(campaign);
+            assertNotNull(campaign.getStatistics().get("PI_1"));
+            assertNotNull(campaign.getStatistics().get("PI_2"));
+            assertNotNull(campaign.getStatistics().get("PI_3"));
+            assertNotNull(campaign.getStatistics().get("PI_4"));
             // User should no longer be among the reviewers
-            Assertions.assertFalse(campaign.getStatistics().get("PI_1").getAnnotators().contains(user));
-            Assertions.assertFalse(campaign.getStatistics().get("PI_2").getAnnotators().contains(user));
-            Assertions.assertFalse(campaign.getStatistics().get("PI_3").getReviewers().contains(user));
-            Assertions.assertFalse(campaign.getStatistics().get("PI_4").getReviewers().contains(user));
+            assertFalse(campaign.getStatistics().get("PI_1").getAnnotators().contains(user));
+            assertFalse(campaign.getStatistics().get("PI_2").getAnnotators().contains(user));
+            assertFalse(campaign.getStatistics().get("PI_3").getReviewers().contains(user));
+            assertFalse(campaign.getStatistics().get("PI_4").getReviewers().contains(user));
         }
     }
 
@@ -2774,44 +2775,44 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void changeCampaignStatisticContributors_shouldReplaceUserInCreatorsAndReviewersListsCorrectly() throws Exception {
         User fromUser = DataManager.getInstance().getDao().getUser(1);
-        Assertions.assertNotNull(fromUser);
+        assertNotNull(fromUser);
         User toUser = DataManager.getInstance().getDao().getUser(3);
-        Assertions.assertNotNull(toUser);
+        assertNotNull(toUser);
         {
             Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
-            Assertions.assertNotNull(campaign);
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_1"));
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_2"));
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_3"));
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_4"));
-            Assertions.assertTrue(campaign.getStatistics().get("PI_1").getAnnotators().contains(fromUser));
-            Assertions.assertTrue(campaign.getStatistics().get("PI_2").getAnnotators().contains(fromUser));
-            Assertions.assertTrue(campaign.getStatistics().get("PI_3").getReviewers().contains(fromUser));
-            Assertions.assertTrue(campaign.getStatistics().get("PI_4").getReviewers().contains(fromUser));
-            Assertions.assertFalse(campaign.getStatistics().get("PI_1").getAnnotators().contains(toUser));
-            Assertions.assertFalse(campaign.getStatistics().get("PI_2").getAnnotators().contains(toUser));
-            Assertions.assertFalse(campaign.getStatistics().get("PI_3").getReviewers().contains(toUser));
-            Assertions.assertFalse(campaign.getStatistics().get("PI_4").getReviewers().contains(toUser));
+            assertNotNull(campaign);
+            assertNotNull(campaign.getStatistics().get("PI_1"));
+            assertNotNull(campaign.getStatistics().get("PI_2"));
+            assertNotNull(campaign.getStatistics().get("PI_3"));
+            assertNotNull(campaign.getStatistics().get("PI_4"));
+            assertTrue(campaign.getStatistics().get("PI_1").getAnnotators().contains(fromUser));
+            assertTrue(campaign.getStatistics().get("PI_2").getAnnotators().contains(fromUser));
+            assertTrue(campaign.getStatistics().get("PI_3").getReviewers().contains(fromUser));
+            assertTrue(campaign.getStatistics().get("PI_4").getReviewers().contains(fromUser));
+            assertFalse(campaign.getStatistics().get("PI_1").getAnnotators().contains(toUser));
+            assertFalse(campaign.getStatistics().get("PI_2").getAnnotators().contains(toUser));
+            assertFalse(campaign.getStatistics().get("PI_3").getReviewers().contains(toUser));
+            assertFalse(campaign.getStatistics().get("PI_4").getReviewers().contains(toUser));
         }
 
         int rows = DataManager.getInstance().getDao().changeCampaignStatisticContributors(fromUser, toUser);
-        Assertions.assertEquals(6, rows);
+        assertEquals(6, rows);
         {
             Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
-            Assertions.assertNotNull(campaign);
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_1"));
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_2"));
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_3"));
-            Assertions.assertNotNull(campaign.getStatistics().get("PI_4"));
+            assertNotNull(campaign);
+            assertNotNull(campaign.getStatistics().get("PI_1"));
+            assertNotNull(campaign.getStatistics().get("PI_2"));
+            assertNotNull(campaign.getStatistics().get("PI_3"));
+            assertNotNull(campaign.getStatistics().get("PI_4"));
             // Only toUser should be among the reviewers
-            Assertions.assertFalse(campaign.getStatistics().get("PI_1").getAnnotators().contains(fromUser));
-            Assertions.assertFalse(campaign.getStatistics().get("PI_2").getAnnotators().contains(fromUser));
-            Assertions.assertFalse(campaign.getStatistics().get("PI_3").getReviewers().contains(fromUser));
-            Assertions.assertFalse(campaign.getStatistics().get("PI_4").getReviewers().contains(fromUser));
-            Assertions.assertTrue(campaign.getStatistics().get("PI_1").getAnnotators().contains(toUser));
-            Assertions.assertTrue(campaign.getStatistics().get("PI_2").getAnnotators().contains(toUser));
-            Assertions.assertTrue(campaign.getStatistics().get("PI_3").getReviewers().contains(toUser));
-            Assertions.assertTrue(campaign.getStatistics().get("PI_4").getReviewers().contains(toUser));
+            assertFalse(campaign.getStatistics().get("PI_1").getAnnotators().contains(fromUser));
+            assertFalse(campaign.getStatistics().get("PI_2").getAnnotators().contains(fromUser));
+            assertFalse(campaign.getStatistics().get("PI_3").getReviewers().contains(fromUser));
+            assertFalse(campaign.getStatistics().get("PI_4").getReviewers().contains(fromUser));
+            assertTrue(campaign.getStatistics().get("PI_1").getAnnotators().contains(toUser));
+            assertTrue(campaign.getStatistics().get("PI_2").getAnnotators().contains(toUser));
+            assertTrue(campaign.getStatistics().get("PI_3").getReviewers().contains(toUser));
+            assertTrue(campaign.getStatistics().get("PI_4").getReviewers().contains(toUser));
         }
     }
 
@@ -2821,7 +2822,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getUserByNickname_shouldReturnNullIfNicknameEmpty() throws Exception {
-        Assertions.assertNull(DataManager.getInstance().getDao().getUserByNickname(""));
+        assertNull(DataManager.getInstance().getDao().getUserByNickname(""));
     }
 
     /**
@@ -2831,8 +2832,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getCountPagesUsingCategory_shouldReturnCorrectValue() throws Exception {
         CMSCategory cat = DataManager.getInstance().getDao().getCategory(4L);
-        Assertions.assertNotNull(cat);
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getCountPagesUsingCategory(cat));
+        assertNotNull(cat);
+        assertEquals(2, DataManager.getInstance().getDao().getCountPagesUsingCategory(cat));
     }
 
     /**
@@ -2842,8 +2843,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getCountMediaItemsUsingCategory_shouldReturnCorrectValue() throws Exception {
         CMSCategory cat = DataManager.getInstance().getDao().getCategory(1L);
-        Assertions.assertNotNull(cat);
-        Assertions.assertEquals(3, DataManager.getInstance().getDao().getCountMediaItemsUsingCategory(cat));
+        assertNotNull(cat);
+        assertEquals(3, DataManager.getInstance().getDao().getCountMediaItemsUsingCategory(cat));
     }
 
     /**
@@ -2855,7 +2856,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         Map<String, String> filters = Collections.singletonMap("a-a_b-b_c-c_d-d", "bar");
         Map<String, String> params = new HashMap<>();
 
-        Assertions.assertEquals(
+        assertEquals(
                 "STATIC:query AND ( ( UPPER(a.a.a) LIKE :aabbccdd OR UPPER(a.b.b) LIKE :aabbccdd OR UPPER(a.c.c) LIKE :aabbccdd OR UPPER(a.d.d) LIKE :aabbccdd ) ",
                 JPADAO.createFilterQuery("STATIC:query", filters, params));
     }
@@ -2868,8 +2869,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         String expectedFilterString = " LEFT JOIN a.b b LEFT JOIN a.c c WHERE (UPPER(b.B) LIKE :bBcC OR UPPER(c.C) LIKE :bBcC)";
         String filterString = JPADAO.createFilterQuery2("", filters, params);
 
-        Assertions.assertEquals(expectedFilterString, filterString);
-        Assertions.assertEquals("%BAR%", params.get("bBcC"));
+        assertEquals(expectedFilterString, filterString);
+        assertEquals("%BAR%", params.get("bBcC"));
     }
 
     @Test
@@ -2880,14 +2881,14 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         String expectedFilterString = " LEFT JOIN a.c b WHERE (UPPER(a.B) LIKE :BcC OR UPPER(b.C) LIKE :BcC)";
         String filterString = JPADAO.createFilterQuery2("", filters, params);
 
-        Assertions.assertEquals(expectedFilterString, filterString);
-        Assertions.assertEquals("%BAR%", params.get("BcC"));
+        assertEquals(expectedFilterString, filterString);
+        assertEquals("%BAR%", params.get("BcC"));
     }
 
     @Test
     void testGetTermsOfUse() throws DAOException {
         TermsOfUse tou = DataManager.getInstance().getDao().getTermsOfUse();
-        Assertions.assertNotNull(tou);
+        assertNotNull(tou);
     }
 
     @Test
@@ -2897,7 +2898,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         DataManager.getInstance().getDao().saveTermsOfUse(tou);
 
         tou = DataManager.getInstance().getDao().getTermsOfUse();
-        Assertions.assertTrue(tou.isActive());
+        assertTrue(tou.isActive());
         tou.setTitle("en", "English Title");
         tou.setTitle("de", "German Title");
         tou.setDescription("en", "English description");
@@ -2905,10 +2906,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         DataManager.getInstance().getDao().saveTermsOfUse(tou);
         tou = DataManager.getInstance().getDao().getTermsOfUse();
-        Assertions.assertEquals("English Title", tou.getTitle("en").getTranslationValue());
-        Assertions.assertEquals("German Title", tou.getTitle("de").getTranslationValue());
-        Assertions.assertEquals("German description", tou.getDescription("de").getTranslationValue());
-        Assertions.assertEquals("English description", tou.getDescription("en").getTranslationValue());
+        assertEquals("English Title", tou.getTitle("en").getTranslationValue());
+        assertEquals("German Title", tou.getTitle("de").getTranslationValue());
+        assertEquals("German description", tou.getDescription("de").getTranslationValue());
+        assertEquals("English description", tou.getDescription("en").getTranslationValue());
 
     }
 
@@ -2917,7 +2918,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         //initially noone has agreed
         List<User> users = DataManager.getInstance().getDao().getAllUsers(true);
-        Assertions.assertTrue(users.stream().allMatch(u -> !u.isAgreedToTermsOfUse()));
+        assertTrue(users.stream().allMatch(u -> !u.isAgreedToTermsOfUse()));
 
         //now all agree
         for (User user : users) {
@@ -2927,14 +2928,14 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         //now all should have agreed
         users = DataManager.getInstance().getDao().getAllUsers(true);
-        Assertions.assertTrue(users.stream().allMatch(User::isAgreedToTermsOfUse));
+        assertTrue(users.stream().allMatch(User::isAgreedToTermsOfUse));
 
         //reset agreements
         DataManager.getInstance().getDao().resetUserAgreementsToTermsOfUse();
 
         //now noone has agreed again
         users = DataManager.getInstance().getDao().getAllUsers(true);
-        Assertions.assertTrue(users.stream().allMatch(u -> !u.isAgreedToTermsOfUse()));
+        assertTrue(users.stream().allMatch(u -> !u.isAgreedToTermsOfUse()));
     }
 
     /**
@@ -2946,11 +2947,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         Map<String, String> filters = new HashMap<>(1);
         filters.put("groupOwner", "1");
         Map<String, Object> params = new HashMap<>(1);
-        Assertions.assertEquals(
+        assertEquals(
                 " prefix WHERE a.userGroup.owner IN (SELECT g.owner FROM UserGroup g WHERE g.owner.id=:groupOwner)",
                 JPADAO.createCampaignsFilterQuery("prefix", filters, params));
-        Assertions.assertEquals(1, params.size());
-        Assertions.assertEquals(1L, params.get("groupOwner"));
+        assertEquals(1, params.size());
+        assertEquals(1L, params.get("groupOwner"));
     }
 
     /**
@@ -2965,20 +2966,20 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
             filters.put("creatorId_reviewerId", "1");
             filters.put("campaign", "geo");
             Map<String, Object> params = new HashMap<>(2);
-            Assertions.assertEquals(
+            assertEquals(
                     " prefix WHERE (a.creatorId=:creatorIdreviewerId OR a.reviewerId=:creatorIdreviewerId) AND (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN"
                             + " (SELECT t.owner FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.translationValue) LIKE :campaign)))",
                     JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
-            Assertions.assertEquals(2, params.size());
-            Assertions.assertEquals("%GEO%", params.get("campaign"));
-            Assertions.assertEquals(1L, params.get("creatorIdreviewerId"));
+            assertEquals(2, params.size());
+            assertEquals("%GEO%", params.get("campaign"));
+            assertEquals(1L, params.get("creatorIdreviewerId"));
         }
         {
             // just creator/reviewer
             Map<String, String> filters = new HashMap<>(1);
             filters.put("creatorId_reviewerId", "1");
             Map<String, Object> params = new HashMap<>(1);
-            Assertions.assertEquals(" prefix WHERE (a.creatorId=:creatorIdreviewerId OR a.reviewerId=:creatorIdreviewerId)",
+            assertEquals(" prefix WHERE (a.creatorId=:creatorIdreviewerId OR a.reviewerId=:creatorIdreviewerId)",
                     JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
         }
         {
@@ -2986,7 +2987,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
             Map<String, String> filters = new HashMap<>(1);
             filters.put("campaign", "geo");
             Map<String, Object> params = new HashMap<>(1);
-            Assertions.assertEquals(
+            assertEquals(
                     " prefix WHERE (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT t.owner FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.translationValue) LIKE :campaign)))",
                     JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
         }
@@ -2995,11 +2996,11 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
             Map<String, String> filters = new HashMap<>(2);
             filters.put("generatorId", "1");
             Map<String, Object> params = new HashMap<>(2);
-            Assertions.assertEquals(
+            assertEquals(
                     " prefix WHERE (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT c FROM Campaign c WHERE c.id=:generatorId)))",
                     JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
-            Assertions.assertEquals(1, params.size());
-            Assertions.assertEquals(1L, params.get("generatorId"));
+            assertEquals(1, params.size());
+            assertEquals(1L, params.get("generatorId"));
         }
         {
             // campaign ID and record identifier
@@ -3007,13 +3008,13 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
             filters.put("generatorId", "1");
             filters.put("targetPI_body", "ppn123");
             Map<String, Object> params = new HashMap<>(2);
-            Assertions.assertEquals(
+            assertEquals(
                     " prefix WHERE (a.generatorId IN (SELECT q.id FROM Question q WHERE q.owner IN (SELECT c FROM Campaign c WHERE c.id=:generatorId)))"
                             + " AND (UPPER(a.targetPI) LIKE :targetPIbody OR UPPER(a.body) LIKE :targetPIbody)",
                     JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
-            Assertions.assertEquals(2, params.size());
-            Assertions.assertEquals(1L, params.get("generatorId"));
-            Assertions.assertEquals("%PPN123%", params.get("targetPIbody"));
+            assertEquals(2, params.size());
+            assertEquals(1L, params.get("generatorId"));
+            assertEquals("%PPN123%", params.get("targetPIbody"));
         }
 
     }
@@ -3025,10 +3026,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
             Map<String, String> filters = new HashMap<>(2);
             filters.put("motivation", "NULL");
             Map<String, Object> params = new HashMap<>(2);
-            Assertions.assertEquals(
+            assertEquals(
                     " prefix WHERE (a.motivation IS NULL)",
                     JPADAO.createAnnotationsFilterQuery("prefix", filters, params));
-            Assertions.assertEquals(0, params.size());
+            assertEquals(0, params.size());
         }
     }
 
@@ -3098,7 +3099,6 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         DataManager.getInstance().getDao().updateRecordNote(note);
 
-        CMSRecordNote pNote = DataManager.getInstance().getDao().getRecordNote(2l);
         assertEquals(changed, note.getNoteTitle().getText(Locale.GERMAN));
         assertEquals("Notes 2", note.getNoteTitle().getText(Locale.ENGLISH));
         assertEquals(changed, note.getNoteText().getText(Locale.GERMAN));
@@ -3111,7 +3111,6 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         CMSRecordNote note = DataManager.getInstance().getDao().getRecordNote(2l);
         DataManager.getInstance().getDao().deleteRecordNote(note);
         assertEquals(4, DataManager.getInstance().getDao().getAllRecordNotes().size());
-        List<CMSRecordNote> remainingNotes = DataManager.getInstance().getDao().getAllRecordNotes();
         assertNull(DataManager.getInstance().getDao().getRecordNote(2l));
 
     }
@@ -3199,7 +3198,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getCommentsOfUser_shouldSortCorrectly() throws Exception {
         User user = DataManager.getInstance().getDao().getUser(1);
-        Assertions.assertNotNull(user);
+        assertNotNull(user);
         {
             List<Comment> comments = DataManager.getInstance().getDao().getCommentsOfUser(user, 2, "dateCreated", true);
             assertEquals(2, comments.size());
@@ -3267,10 +3266,10 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getDownloadTicketCount_shouldReturnCorrectCount() throws Exception {
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getActiveDownloadTicketCount(Collections.emptyMap()));
-        Assertions.assertEquals(2,
+        assertEquals(2, DataManager.getInstance().getDao().getActiveDownloadTicketCount(Collections.emptyMap()));
+        assertEquals(2,
                 DataManager.getInstance().getDao().getActiveDownloadTicketCount(Collections.singletonMap("pi_email", "user1@example.com")));
-        Assertions.assertEquals(1, DataManager.getInstance().getDao().getActiveDownloadTicketCount(Collections.singletonMap("pi_email", "PPN456")));
+        assertEquals(1, DataManager.getInstance().getDao().getActiveDownloadTicketCount(Collections.singletonMap("pi_email", "PPN456")));
     }
 
     /**
@@ -3279,13 +3278,13 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void getActiveDownloadTickets_shouldFilterRowsCorrectly() throws Exception {
-        Assertions.assertEquals(2, DataManager.getInstance().getDao().getActiveDownloadTickets(0, 10, null, false, null).size());
-        Assertions.assertEquals(0,
+        assertEquals(2, DataManager.getInstance().getDao().getActiveDownloadTickets(0, 10, null, false, null).size());
+        assertEquals(0,
                 DataManager.getInstance()
                         .getDao()
                         .getActiveDownloadTickets(0, 10, null, false, Collections.singletonMap("pi_email", "user2@example.com"))
                         .size());
-        Assertions.assertEquals(1,
+        assertEquals(1,
                 DataManager.getInstance()
                         .getDao()
                         .getActiveDownloadTickets(0, 10, null, false, Collections.singletonMap("pi_email", "PPN456"))
@@ -3341,8 +3340,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     @Test
     void getDownloadTicketRequests_shouldReturnTicketsThatHaveNeverBeenActivated() throws Exception {
         List<DownloadTicket> result = DataManager.getInstance().getDao().getDownloadTicketRequests();
-        Assertions.assertEquals(1, result.size());
-        Assertions.assertEquals(Long.valueOf(3), result.get(0).getId());
+        assertEquals(1, result.size());
+        assertEquals(Long.valueOf(3), result.get(0).getId());
     }
 
     @Test
@@ -3375,4 +3374,38 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     }
 
+    /**
+     * @see JPADAO#getMaintenanceMode()
+     * @verifies return correct object
+     */
+    @Test
+    void getMaintenanceMode_shouldReturnCorrectObject() throws Exception {
+        MaintenanceMode mm = DataManager.getInstance().getDao().getMaintenanceMode();
+        assertNotNull(mm);
+        assertEquals(1, mm.getId());
+        assertTrue(mm.isEnabled());
+        assertEquals(2, mm.getTranslations().size());
+        assertEquals("Maintenance mode EN", mm.getText("en"));
+        assertEquals("Maintenance mode DE", mm.getText("de"));
+    }
+    
+    /**
+     * @see JPADAO#updateMaintenanceMode(MaintenanceMode)
+     * @verifies update object correctly
+     */
+    @Test
+    void updateMaintenanceMode_shouldUpdateObjectCorrectly() throws Exception {
+        MaintenanceMode mm = DataManager.getInstance().getDao().getMaintenanceMode();
+        assertNotNull(mm);
+        mm.setEnabled(false);
+        mm.setText("Maintenance mode EN NEW", "en");
+        mm.setText("Maintenance mode JP", "jp");
+        DataManager.getInstance().getDao().updateMaintenanceMode(mm);
+        
+        MaintenanceMode mm2 = DataManager.getInstance().getDao().getMaintenanceMode();
+        assertEquals(mm, mm2);
+        assertFalse(mm2.isEnabled());
+        assertEquals(3, mm2.getTranslations().size());
+        assertEquals("Maintenance mode EN NEW", mm.getText("en"));
+    }
 }

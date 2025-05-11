@@ -55,6 +55,10 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.Metadata;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -83,7 +87,7 @@ public class VariableReplacer {
         Map<String, List<String>> structElementValues = readMappingsFromStructElement(structElement);
         Map<String, List<String>> pageValues = readMappingsFromPhysicalElement(page);
 
-        replacementsMap = new TreeMap<String, Map<String, List<String>>>();
+        replacementsMap = new TreeMap<>();
         replacementsMap.put(NAMESPACE_CONFIG, configValues);
         replacementsMap.put(NAMESPACE_ANCHOR, anchorValues);
         replacementsMap.put(NAMESPACE_RECORD, recordValues);
@@ -110,9 +114,9 @@ public class VariableReplacer {
         SortedMap<String, List<String>> replacementValues = getReplacementValues(replacementStrings);
         if (replacementValues.isEmpty()) {
             return List.of(template);
-        } else {
-            return getReplacedStrings(template, replacementValues);
         }
+
+        return getReplacedStrings(template, replacementValues);
     }
 
     public String replaceFirst(String template) {
@@ -161,17 +165,20 @@ public class VariableReplacer {
                 }
             }
             return Collections.emptyList();
-        } else {
-            Map<String, List<String>> map = this.replacementsMap.get(namespace);
-            if (map != null) {
-                return Optional.ofNullable(map.get(value)).orElse(Collections.emptyList());
-            } else {
-                return Collections.emptyList();
-            }
         }
+
+        Map<String, List<String>> map = this.replacementsMap.get(namespace);
+        if (map != null) {
+            return Optional.ofNullable(map.get(value)).orElse(Collections.emptyList());
+        }
+
+        return Collections.emptyList();
     }
 
     public List<String> getReplacementStrings(String template) {
+        if (StringUtils.isBlank(template)) {
+            return List.of("");
+        }
         Pattern pattern = Pattern.compile(REPLACEMENT_REGEX);
         Matcher matcher = pattern.matcher(template);
         List<String> replacementStrings = new ArrayList<>();
@@ -181,7 +188,7 @@ public class VariableReplacer {
         return replacementStrings;
     }
 
-    private String[] getReplacementTerm(String replacementString) {
+    private static String[] getReplacementTerm(String replacementString) {
         if (replacementString.matches(REPLACEMENT_GROUP_REGEX)) {
             return new String[] { "", replacementString.replaceAll(REPLACEMENT_GROUP_REGEX, "$1") };
         } else if (replacementString.matches(REPLACEMENT_GROUP_WITH_NAMESPACE_REGEX)) {
@@ -190,9 +197,8 @@ public class VariableReplacer {
                 String namespace = m.group(1);
                 String term = m.group(2);
                 return new String[] { namespace, term };
-            } else {
-                return new String[] { "", "" };
             }
+            return new String[] { "", "" };
         } else {
             return new String[] { "", "" };
         }
@@ -214,9 +220,9 @@ public class VariableReplacer {
     private static Map<String, List<String>> readMappingsFromStructElement(StructElementStub docStruct) {
         if (docStruct != null) {
             return new HashMap<>(docStruct.getMetadataFields());
-        } else {
-            return Collections.emptyMap();
         }
+
+        return Collections.emptyMap();
     }
 
     private static Map<String, List<String>> readMappingsFromConfig(Configuration config) {
@@ -231,9 +237,25 @@ public class VariableReplacer {
         return temp;
     }
 
-    public void addReplacement(String var, String value) {
+    public void addReplacement(String s, String value) {
         Map<String, List<String>> map = this.replacementsMap.computeIfAbsent("custom", key -> new HashMap<String, List<String>>());
-        map.put(var, List.of(value));
+        map.put(s, List.of(value));
+    }
+
+    public Metadata replace(Metadata metadata) {
+        return new Metadata(metadata.getLabel(), this.replace(metadata.getValue()));
+    }
+
+    public IMetadataValue replace(IMetadataValue value) {
+        if (value instanceof SimpleMetadataValue simple) {
+            return new SimpleMetadataValue(this.replaceFirst(simple.getValue().orElse("")));
+        } else if (value instanceof MultiLanguageMetadataValue multi) {
+            Map<String, String> valueMap =
+                    multi.getValues().stream().collect(Collectors.toMap(pair -> pair.getLanguage(), pair -> this.replaceFirst(pair.getValue())));
+            return new MultiLanguageMetadataValue(valueMap);
+        } else {
+            return value;
+        }
     }
 
 }

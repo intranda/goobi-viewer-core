@@ -1166,12 +1166,11 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             SearchHelper.exportSearchAsExcel(wb, query, query, Collections.singletonList(new StringPair("SORT_YEARPUBLISH", "asc")), null,
                     null, new HashMap<String, Set<String>>(), Locale.ENGLISH, 0);
             String[] cellValues0 =
-                    new String[] { "Persistent identifier", "13473260X", "AC08311001", "AC03343066", "PPN193910888" };
+                    new String[] { "Persistent identifier", "3550404786", "AC08311001", "AC03343066", "PPN193910888" };
             String[] cellValues1 =
                     new String[] { "Label", "Gedichte",
                             "Linz und seine Umgebungen", "Das Bücherwesen im Mittelalter",
                             "Das Stilisieren der Thier- und Menschen-Formen" };
-            Assertions.assertNotNull(wb);
             Assertions.assertEquals(1, wb.getNumberOfSheets());
             SXSSFSheet sheet = wb.getSheetAt(0);
             Assertions.assertEquals(6, sheet.getPhysicalNumberOfRows());
@@ -1502,11 +1501,11 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
         String finalQuery = SearchHelper.buildFinalQuery(query, false, SearchAggregationType.NO_AGGREGATION);
         SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
-        Assertions.assertEquals(65, docs.size());
+        Assertions.assertEquals(71, docs.size());
 
         finalQuery = SearchHelper.buildFinalQuery(query, false, SearchAggregationType.NO_AGGREGATION);
         docs = DataManager.getInstance().getSearchIndex().search(finalQuery);
-        Assertions.assertEquals(65, docs.size());
+        Assertions.assertEquals(71, docs.size());
     }
 
     /**
@@ -1566,7 +1565,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void getQueryForAccessCondition_shouldBuildEscapedQueryCorrectly() {
         Assertions.assertEquals(
-                "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"foo" + StringTools.SLASH_REPLACEMENT + "bar\"",
+                "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC DOCTYPE:METADATA) +" + SolrConstants.ACCESSCONDITION + ":\"foo" + StringTools.SLASH_REPLACEMENT + "bar\"",
                 SearchHelper.getQueryForAccessCondition("foo/bar", true));
     }
 
@@ -1576,7 +1575,7 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     void getQueryForAccessCondition_shouldBuildNotEscapedQueryCorrectly() {
-        Assertions.assertEquals("+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"foo/bar\"",
+        Assertions.assertEquals("+(ISWORK:true ISANCHOR:true DOCTYPE:UGC DOCTYPE:METADATA) +" + SolrConstants.ACCESSCONDITION + ":\"foo/bar\"",
                 SearchHelper.getQueryForAccessCondition("foo/bar", false));
     }
 

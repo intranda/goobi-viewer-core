@@ -9,7 +9,7 @@
 
 	<!-- configFolder: contains local configuration files, i.e. this file with 
 		local modifications that override the global one -->
-	<configFolder>target/configFolder_value</configFolder>
+	<configFolder>src/test/resources/</configFolder>
 	<!-- viewerHome: root path of (usually) all viewer data -->
 	<viewerHome>src/test/resources/data/viewer/</viewerHome>
 	<!-- dataRepositoriesHome: root folder for data repositories -->
@@ -78,7 +78,7 @@
 		<taskManager>taskmanager_url/</taskManager>
 
 		<!-- solr: URL to the Solr index core -->
-		<solr>https://viewer-testing-index.goobi.io/solr/collection1</solr>
+		<solr>https://viewer-testing-index.goobi.io/solr/current</solr>
 
 		<!-- contentServer: relative path to contentServer from the Goobi viewer 
 			context -->

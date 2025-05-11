@@ -52,19 +52,6 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Optional;
 
-import jakarta.inject.Inject;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.StreamingOutput;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -120,6 +107,18 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * @author florian
@@ -343,7 +342,7 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_PLAINTEXT)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "records" }, summary = "Get entire plaintext of record")
+    @Operation(tags = { "records" }, summary = "Get entire plaintext of record within a single text file")
     @CORSBinding
     @IIIFPresentationBinding
     public String getPlaintext() throws PresentationException, IndexUnreachableException, IOException {
@@ -357,7 +356,7 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_PLAINTEXT_ZIP)
     @Produces({ "application/zip" })
-    @Operation(tags = { "records" }, summary = "Get entire plaintext of record")
+    @Operation(tags = { "records" }, summary = "Get entire plaintext of record as a zip archive of text files per page")
     public StreamingOutput getPlaintextAsZip()
             throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         logger.trace("getPlaintextAsZip: {}", pi);
@@ -386,7 +385,7 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_ALTO_ZIP)
     @Produces({ "application/zip" })
-    @Operation(tags = { "records" }, summary = "Get entire plaintext of record")
+    @Operation(tags = { "records" }, summary = "Get a zip archive of alto documents per page")
     public StreamingOutput getAltoAsZip() throws PresentationException, IndexUnreachableException, IOException, ContentLibException {
         checkFulltextAccessConditions(pi);
         if (servletResponse != null) {

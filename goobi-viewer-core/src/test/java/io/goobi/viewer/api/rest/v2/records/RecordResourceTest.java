@@ -50,7 +50,7 @@ import io.goobi.viewer.api.rest.v2.ApiUrls;
  * @author florian
  *
  */
-class RecordResourceTest extends AbstractRestApiTest{
+class RecordResourceTest extends AbstractRestApiTest {
 
     private static final String PI = "74241";
     private static final String PI_ANNOTATIONS = "PI_1";
@@ -59,6 +59,7 @@ class RecordResourceTest extends AbstractRestApiTest{
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
@@ -67,16 +68,16 @@ class RecordResourceTest extends AbstractRestApiTest{
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
-
     @Test
-    void testGetManifest() throws JsonMappingException, JsonProcessingException {
+    void testGetManifest() {
         String url = urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(PI).build();
-        try(Response response = target(url)
+        try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
@@ -90,6 +91,4 @@ class RecordResourceTest extends AbstractRestApiTest{
 
         }
     }
-
-
 }

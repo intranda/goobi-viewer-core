@@ -23,6 +23,8 @@ package io.goobi.viewer.modules.interfaces;
 
 import org.apache.solr.common.SolrDocument;
 
+import io.goobi.viewer.exceptions.IndexAugmenterException;
+
 /**
  * @author florian
  *
@@ -35,9 +37,9 @@ public interface IndexAugmenter {
      * @param pi a {@link java.lang.String} object.
      * @param dataRepository a {@link java.lang.String} object.
      * @param namingScheme a {@link java.lang.String} object.
-     * @throws java.lang.Exception if any.
+     * @throws IndexAugmenterException
      */
-    public void augmentReIndexRecord(String pi, String dataRepository, String namingScheme) throws Exception;
+    public void augmentReIndexRecord(String pi, String dataRepository, String namingScheme) throws IndexAugmenterException;
 
     /**
      * Any additional tasks this module needs to perform when re-indexing a page (e.g. putting additional files into the hotfolder).
@@ -48,8 +50,8 @@ public interface IndexAugmenter {
      * @param dataRepository a {@link java.lang.String} object.
      * @param namingScheme a {@link java.lang.String} object.
      * @return true if successful; false otherwise
-     * @throws java.lang.Exception if any.
+     * @throws IndexAugmenterException
      */
-    public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String dataRepository, String namingScheme) throws Exception;
-
+    public boolean augmentReIndexPage(String pi, int page, SolrDocument doc, String dataRepository, String namingScheme)
+            throws IndexAugmenterException;
 }

@@ -105,7 +105,7 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getConfigLocalPath_shouldAddTrailingSlash() {
-        assertEquals("target/configFolder_value/", DataManager.getInstance().getConfiguration().getConfigLocalPath());
+        assertEquals("src/test/resources/", DataManager.getInstance().getConfiguration().getConfigLocalPath());
     }
 
     /**
@@ -908,7 +908,7 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getSolrUrl_shouldReturnCorrectValue() {
-        assertEquals("https://viewer-testing-index.goobi.io/solr/collection1", DataManager.getInstance().getConfiguration().getSolrUrl());
+        assertEquals("https://viewer-testing-index.goobi.io/solr/current", DataManager.getInstance().getConfiguration().getSolrUrl());
     }
 
     /**
@@ -2564,10 +2564,10 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void testBrokenConfig() {
         DataManager.getInstance()
-                .injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_broken.test.xml").getAbsolutePath()));
+                .injectConfiguration(new Configuration(new File("src/test/resources/localConfig/config_viewer_broken.test.xml").getAbsolutePath()));
         assertEquals("src/test/resources/localConfig/", DataManager.getInstance().getConfiguration().getConfigLocalPath());
-        assertEquals("src/test/resources/data/viewer/", DataManager.getInstance().getConfiguration().getViewerHome());
-        assertEquals("src/test/resources/data/viewer/data/", DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
+        assertEquals("src/test/resources/data/viewer/broken", DataManager.getInstance().getConfiguration().getViewerHome());
+        assertEquals("src/test/resources/data/viewer/data/broken", DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
 
     }
 
@@ -3169,7 +3169,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getSidebarWidgetUsageCitationLinks_shouldReturnAllConfiguredValues() {
         List<CitationLink> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks();
-        assertEquals(3, result.size());
+        assertEquals(4, result.size());
         {
             CitationLink link = result.get(0);
             assertEquals(CitationLinkType.URL, link.getType());
@@ -3599,7 +3599,7 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @throws MalformedURLException
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      * @see Configuration#isHostProxyWhitelisted(String)
      * @verifies return true if host whitelisted
      */

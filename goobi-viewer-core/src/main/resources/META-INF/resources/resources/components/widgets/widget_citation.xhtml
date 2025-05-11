@@ -49,12 +49,12 @@
                     	<h3 id="titleWork" class="widget-citation__subtitle widget__badge-container-heading">#{msg.widget__citation__complete_record}</h3>
 
                         <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
-                            <ui:repeat rendered="#{displayConditions.matchRecord('{docType:[record, anchor]}')}" visibility-class="widget-element"
+                            <ui:repeat varStatus="status" rendered="#{displayConditions.matchRecord('{docType:[record, anchor]}')}" visibility-class="widget-element"
                             var="link" value="#{activeDocumentBean.viewManager.getSidebarWidgetUsageCitationLinksForLevel('record').stream().filter(link -> !link.isEmpty()).toList()}">
                                     
                                 <ui:fragment rendered="#{link.action.name() == 'CLIPBOARD'}">
                                     <button type="button" 
-                                    	id="citeLinkUrl"
+                                    	id="citeLinkUrlObjectClipboard#{status.index + 1}"
                                         class="badge badge-dark"
                                         data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
                                         data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
@@ -63,7 +63,7 @@
                                 </ui:fragment>
                                 <ui:fragment rendered="#{link.action.name() == 'DOWNLOAD'}">
 	                                <a href="#{link.getUrl(activeDocumentBean.viewManager)}"
-		                                id="citeLinkUrl"
+		                                id="citeLinkUrlObjectDownload#{status.index + 1}"
 		                                class="badge badge-dark" 
 		                                title="#{msg[link.label]}"
 		                                data-toggle="tooltip"
@@ -78,7 +78,7 @@
                                 <ui:fragment rendered="#{link.action.name() == 'OPEN'}" >
                                     <a href="#{link.getUrl(activeDocumentBean.viewManager)}"
                                     	target="_blank"
-		                                id="citeLinkUrl"
+		                                id="citeLinkUrlObjectOpen#{status.index + 1}"
 		                                class="badge badge-dark" 
 		                                title="#{msg[link.label]}"
 		                                data-toggle="tooltip"
@@ -104,12 +104,12 @@
 
                                 <ui:repeat 
 	                                rendered="#{!activeDocumentBean.viewManager.doublePageMode and displayConditions.matchRecord('{docType:[record], numPages:1}')}"
-	                                var="link" varStatus="index" visibility-class="widget-element" 
+	                                var="link" varStatus="status" visibility-class="widget-element" 
 	                                value="#{activeDocumentBean.viewManager.getSidebarWidgetUsageCitationLinksForLevel('image').stream().filter(link -> !link.isEmpty()).toList()}">
                                         
 	                                 <ui:fragment rendered="#{link.action.name() == 'CLIPBOARD'}">
 	                                    <button type="button" 
-	                                    	id="citeLinkUrl"
+	                                    	id="citeLinkUrlPageClipboard#{status.index + 1}"
 	                                        class="badge badge-dark"
 	                                        data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
 	                                        data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
@@ -118,7 +118,7 @@
 	                                </ui:fragment>
 	                                <ui:fragment rendered="#{link.action.name() == 'DOWNLOAD'}">
 		                                <a href="#{link.getUrl(activeDocumentBean.viewManager)}"
-			                                id="citeLinkUrl"
+			                                id="citeLinkUrlPageDownload#{status.index + 1}"
 			                                class="badge badge-dark" 
 			                                title="#{msg[link.label]}"
 			                                data-toggle="tooltip"
@@ -132,7 +132,7 @@
 	                                <ui:fragment rendered="#{link.action.name() == 'OPEN'}" >
 	                                    <a href="#{link.getUrl(activeDocumentBean.viewManager)}"
 	                                    	target="_blank"
-			                                id="citeLinkUrl"
+			                                id="citeLinkUrlPageOpen#{status.index + 1}"
 			                                class="badge badge-dark" 
 			                                title="#{msg[link.label]}"
 			                                data-toggle="tooltip"
@@ -145,13 +145,15 @@
 	                                </ui:fragment>
                                 
                              </ui:repeat>
+                             
+                                                     		
+				            <!-- ACTIVATE CLIPBOARD (TOOLTIPS + COPY URL)  -->
+				            <script>
+				                viewerJS.clipboard.init();
+				            </script>
                             
                         </div>
-                        		
-		            <!-- ACTIVATE CLIPBOARD (TOOLTIPS + COPY URL)  -->
-		            <script>
-		                viewerJS.clipboard.init();
-		            </script>
+
                     
 					<viewerComponent:downloadsCitations visibility-class="widget-element" 
 					rendered="#{cc.attrs.showCiteLinksButton or (configurationBean.displaySidebarWidgetUsageCitationRecommendation and fn:length(activeDocumentBean.viewManager.citationStringHtml) > 0)}"

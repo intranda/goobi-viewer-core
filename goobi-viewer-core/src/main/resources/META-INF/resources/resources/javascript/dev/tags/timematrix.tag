@@ -34,7 +34,7 @@
 	<label if="{!loading && manifests.length == 0}">{translate("hitsZero")}</label>
 	<div each="{manifest in manifests}" class="timematrix__content">
 			<div class="timematrix__img">
-			<a href="{getViewerUrl(manifest)}"> <img ref="image" data-src="{getImageUrl(manifest)}"
+			<a href="{getViewerUrl(manifest)}"> <img ref="image" src="{getImageUrl(manifest)}"
 				class="timematrix__image" data-viewer-thumbnail="thumbnail"  alt="" aria-hidden="true"
 				onLoad="$(this).parents('.timematrix__img').css('background', 'transparent')" />
 					<div class="timematrix__text">	
@@ -44,7 +44,7 @@
 			</div>	
 		</div> 
 	</div>
-
+ 
 	<script>
 		this.manifests = [];
 		this.loading = true;

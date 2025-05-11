@@ -1,3 +1,4 @@
+<!-- THIS SLIDE TAG MIGHT BE OBSOLETE -->
 <slide_indexslider> 
 	<a class="slider-{this.opts.stylename}__link-wrapper" href="{this.opts.link}">
 		<div class="swiper-heading slider-mnha__header">{this.opts.label}</div>

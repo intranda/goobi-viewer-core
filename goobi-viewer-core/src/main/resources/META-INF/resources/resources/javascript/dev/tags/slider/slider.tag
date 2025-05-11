@@ -3,12 +3,20 @@
 <slider>
 
 <div ref="container" class="swiper slider-{this.styleName}__container slider-{this.sliderInstance}">
-	<div class="swiper-wrapper slider-{this.styleName}__wrapper">
-		<div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}">
+<!-- 	<div class="slider-wrapper-outer"> -->
+		<div class="swiper-wrapper slider-{this.styleName}__wrapper">
+			<div each="{slide, index in slides}" class="swiper-slide slider-{this.styleName}__slide" ref="slide_{index}">
+			</div>
 		</div>
+<!-- 	</div> -->
+
+	<div if="{this.showStandardNav}" ref="navigation" class="slider-navigation-wrapper slider-navigation-wrapper-{this.styleName} slider-navigation-wrapper-{this.sliderInstance}">
+		<div ref="navigationLeft" class="swiper-button-prev"></div>
+		<div ref="navigationRight" class="swiper-button-next"></div>
 	</div>
-	
+
 	<div if="{this.showStandardPaginator}" ref="paginator" class="swiper-pagination swiper-pagination-wrapper slider-paginator-wrapper-{this.styleName} slider-pagination-{this.sliderInstance}"></div>
+
 
 </div>
 
@@ -16,6 +24,7 @@
 
 	//initially show paginator so it can be referenced when amending style config (see this.amendStyle())
 	this.showStandardPaginator = true;
+	this.showStandardNav = true;
 
     this.on( 'mount', function() {
     	this.sliderInstance = this.opts.sliderinstanceid;
@@ -208,6 +217,7 @@
     		this.showStandardPaginator = false;
     		// console.log('paginator dont show: ');
     	}
+    	
 	  	swiperConfig.a11y = {
 	  		prevSlideMessage: this.opts.prevslideMessage,
 			nextSlideMessage: this.opts.nextslideMessage,
@@ -215,6 +225,15 @@
 			firstSlideMessage: this.opts.lastslidemessage,
 			paginationBulletMessage: this.opts.paginationbulletmessage + ' \{\{index\}\}',
 		}
+	  	
+    	if(swiperConfig.navigation && swiperConfig.navigation.prevEl == '.swiper-button-prev' && swiperConfig.navigation.nextEl == '.swiper-button-next')  {
+				// console.log('std navigation activated')
+        		this.showStandardNav = true;
+    	} else {
+    		this.showStandardNav = false;
+    		// console.log('std nav hidden');
+    	}
+	  	 
 	}
     
     getLayout() {

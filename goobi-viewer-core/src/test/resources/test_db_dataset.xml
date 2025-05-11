@@ -300,6 +300,11 @@
         email="user1@example.com" password_hash="$2a$10$H580saN37o2P03A5myUCm.V0ac/lO.79AfkiNjVhDzljqS3RGojzO" pi="PPN456" title="Foo Bar" />
     <download_tickets download_ticket_id="3" date_created="2022-07-19 11:55:00.000000000"
         email="user2@example.com" pi="PPN123" title="Foo Bar" request_message="Pretty please?" />
+        
+    <maintenance_mode maintenance_mode_id="1" enabled="true" />
+    
+    <maintenance_mode_translations translation_id="1" language="en" tag="text" translation_value="Maintenance mode EN" owner_id="1" />
+    <maintenance_mode_translations translation_id="2" language="de" tag="text" translation_value="Maintenance mode DE" owner_id="1" />
     
 </dataset>
 

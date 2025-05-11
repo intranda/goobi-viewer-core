@@ -77,9 +77,12 @@ import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
+import io.goobi.viewer.solr.SolrConstants;
 
 /**
- * <p>CmsPageEditBean class.</p>
+ * <p>
+ * CmsPageEditBean class.
+ * </p>
  */
 @Named
 @ViewScoped
@@ -117,7 +120,9 @@ public class CmsPageEditBean implements Serializable {
     private boolean templateLockComponents = false;
 
     /**
-     * <p>setup.</p>
+     * <p>
+     * setup.
+     * </p>
      */
     @PostConstruct
     public void setup() {
@@ -169,7 +174,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>savePageAndForwardToEdit.</p>
+     * <p>
+     * savePageAndForwardToEdit.
+     * </p>
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
@@ -243,18 +250,7 @@ public class CmsPageEditBean implements Serializable {
 
             // Delete CMS page metadata from index if page is not published
             if (!selectedPage.isPublished() || !selectedPage.isSearchable()) {
-                try {
-                    String pi = "CMS" + selectedPage.getId();
-                    if (DataManager.getInstance().getSearchIndex().getHitCount(pi) > 0) {
-                        IndexerTools.deleteRecord("CMS" + selectedPage.getId(), false,
-                                Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()));
-                        logger.debug("Page contents will be deleted from index: {}", pi);
-                    } else {
-                        logger.trace("Page not in index, no deletion necessary: {}", pi);
-                    }
-                } catch (IOException | IndexUnreachableException | PresentationException e) {
-                    logger.error(e.getMessage());
-                }
+                deletePageMetadataFromIndex(selectedPage, selectedPage.getId());
             }
 
         } else {
@@ -316,6 +312,7 @@ public class CmsPageEditBean implements Serializable {
                 page.removeComponent(component);
                 dao.deleteCMSComponent(persistentComponent);
             }
+            Long pageId = page.getId(); // This is gone after deleting
             if (this.dao.deleteCMSPage(page)) {
                 // Delete files matching content item IDs of the deleted page and re-index record
                 try {
@@ -331,6 +328,8 @@ public class CmsPageEditBean implements Serializable {
                     logger.error(e.getMessage());
                     Messages.error(e.getMessage());
                 }
+                // Delete page metadata from the index
+                deletePageMetadataFromIndex(selectedPage, pageId);
                 cmsBean.getLazyModelPages().update();
                 Messages.info("cms_deletePage_success");
             } else {
@@ -339,6 +338,33 @@ public class CmsPageEditBean implements Serializable {
         }
 
         selectedPage = null;
+    }
+
+    /**
+     * 
+     * @param page
+     * @param pageId
+     */
+    static void deletePageMetadataFromIndex(CMSPage page, Long pageId) {
+        if (page == null) {
+            throw new org.jboss.weld.exceptions.IllegalArgumentException("page may not be null");
+        }
+        if (pageId == null) {
+            throw new org.jboss.weld.exceptions.IllegalArgumentException("pageId may not be null");
+        }
+
+        try {
+            String pi = "CMS" + pageId;
+            if (DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.PI + ":\"" + pi + '"') > 0) {
+                IndexerTools.deleteRecord("CMS" + page.getId(), false,
+                        Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()));
+                logger.debug("Page contents will be deleted from index: {}", pi);
+            } else {
+                logger.trace("Page not in index, no deletion necessary: {}", pi);
+            }
+        } catch (IOException | IndexUnreachableException | PresentationException e) {
+            logger.error(e.getMessage());
+        }
     }
 
     /**
@@ -366,7 +392,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>getSelectedPageId.</p>
+     * <p>
+     * getSelectedPageId.
+     * </p>
      *
      * @return ID of selectedPage
      */
@@ -379,7 +407,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>setSelectedPageId.</p>
+     * <p>
+     * setSelectedPageId.
+     * </p>
      *
      * @param id a {@link java.lang.String} object
      * @throws io.goobi.viewer.exceptions.DAOException
@@ -391,7 +421,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>selectedPage</code>.</p>
+     * <p>
+     * Getter for the field <code>selectedPage</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
      */
@@ -427,7 +459,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>sidebarWidgets</code>.</p>
+     * <p>
+     * Getter for the field <code>sidebarWidgets</code>.
+     * </p>
      *
      * @return a {@link java.util.Map} object
      */
@@ -436,7 +470,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>sidebarWidgets</code>.</p>
+     * <p>
+     * Setter for the field <code>sidebarWidgets</code>.
+     * </p>
      *
      * @param sidebarWidgets a {@link java.util.Map} object
      */
@@ -445,7 +481,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>getSelectedWidgets.</p>
+     * <p>
+     * getSelectedWidgets.
+     * </p>
      *
      * @return a {@link java.util.List} object
      */
@@ -454,14 +492,18 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>resetSelectedWidgets.</p>
+     * <p>
+     * resetSelectedWidgets.
+     * </p>
      */
     public void resetSelectedWidgets() {
         this.sidebarWidgets.entrySet().forEach(e -> e.setValue(false));
     }
 
     /**
-     * <p>getAndResetSelectedWidgets.</p>
+     * <p>
+     * getAndResetSelectedWidgets.
+     * </p>
      *
      * @return a {@link java.util.List} object
      */
@@ -472,7 +514,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>selectedComponent</code>.</p>
+     * <p>
+     * Getter for the field <code>selectedComponent</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -481,7 +525,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>selectedComponent</code>.</p>
+     * <p>
+     * Setter for the field <code>selectedComponent</code>.
+     * </p>
      *
      * @param selectedComponent a {@link java.lang.String} object
      */
@@ -490,7 +536,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>getAvailableComponents.</p>
+     * <p>
+     * getAvailableComponents.
+     * </p>
      *
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
      * @return a {@link java.util.List} object
@@ -569,14 +617,18 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>setNewSelectedPage.</p>
+     * <p>
+     * setNewSelectedPage.
+     * </p>
      */
     public void setNewSelectedPage() {
         this.selectedPage = new CMSPage();
     }
 
     /**
-     * <p>setNewSelectedPage.</p>
+     * <p>
+     * setNewSelectedPage.
+     * </p>
      *
      * @param templateId a {@link java.lang.Long} object
      */
@@ -606,7 +658,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>pageEditState</code>.</p>
+     * <p>
+     * Getter for the field <code>pageEditState</code>.
+     * </p>
      *
      * @return a {@link io.goobi.viewer.model.cms.pages.CMSPageEditState} object
      */
@@ -615,7 +669,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>pageEditState</code>.</p>
+     * <p>
+     * Setter for the field <code>pageEditState</code>.
+     * </p>
      *
      * @param pageEditState a {@link io.goobi.viewer.model.cms.pages.CMSPageEditState} object
      */
@@ -624,7 +680,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>deleteComponent.</p>
+     * <p>
+     * deleteComponent.
+     * </p>
      *
      * @param component a {@link io.goobi.viewer.model.cms.pages.content.CMSComponent} object
      * @return a boolean
@@ -634,7 +692,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>addComponent.</p>
+     * <p>
+     * addComponent.
+     * </p>
      */
     public void addComponent() {
         if (addComponent(getSelectedPage(), getSelectedComponent())) {
@@ -691,7 +751,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>saveAsTemplate</code>.</p>
+     * <p>
+     * Setter for the field <code>saveAsTemplate</code>.
+     * </p>
      *
      * @param saveAsTemplate a boolean
      */
@@ -700,7 +762,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>isSaveAsTemplate.</p>
+     * <p>
+     * isSaveAsTemplate.
+     * </p>
      *
      * @return a boolean
      */
@@ -709,7 +773,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>templateName</code>.</p>
+     * <p>
+     * Setter for the field <code>templateName</code>.
+     * </p>
      *
      * @param templateName a {@link java.lang.String} object
      */
@@ -718,7 +784,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>templateName</code>.</p>
+     * <p>
+     * Getter for the field <code>templateName</code>.
+     * </p>
      *
      * @return a {@link java.lang.String} object
      */
@@ -730,7 +798,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>isTemplateLockComponents.</p>
+     * <p>
+     * isTemplateLockComponents.
+     * </p>
      *
      * @return a boolean
      */
@@ -739,7 +809,9 @@ public class CmsPageEditBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>templateLockComponents</code>.</p>
+     * <p>
+     * Setter for the field <code>templateLockComponents</code>.
+     * </p>
      *
      * @param templateLockComponents a boolean
      */

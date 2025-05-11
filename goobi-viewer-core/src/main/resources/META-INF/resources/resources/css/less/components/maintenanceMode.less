@@ -1,0 +1,81 @@
+/* ==============================================================
+   Maintenance Mode Info banner styles
+   style declarations for maintenanceMode.xhtml
+   ==============================================================*/
+
+/* MAINTENANCE BANNER */
+.maintenance-banner {
+	position: relative;
+	z-index: 2400; 
+	display: none;
+	&__outer {
+		padding: 10px 0;
+		width: 100%;
+		background: #fed44c;
+		position: relative;
+	}
+	&__wrapper {
+		display: flex;
+		gap: 40px; 
+		align-items: center;
+		color: black;
+		padding-right: 40px;
+	}
+	&__icon {
+		color: black;
+		font-size: 40px;
+		align-self: center;
+	}
+	&__text {
+		p, a {
+			color: black;
+			font-size: 16px;
+			line-height: 1.4;
+			&:last-child {
+				margin-bottom: 0;
+			}
+		}
+		a {
+			text-decoration: underline;
+			&:hover,
+			&:focus,
+			&:active {
+				color: #333;
+			}
+		}
+	}
+	&__close-button {
+		display: flex;
+		position: absolute;
+		right: 28px;
+		top: 30px;
+		font-size: 22px;
+		background: transparent;
+		padding: 0;
+		border: none;
+		color: black;
+		&:hover,
+		&:focus,
+		&:active {
+			color: #333;
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+	.maintenance-banner {
+		&__icon {
+			display: none;
+		}
+	}
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

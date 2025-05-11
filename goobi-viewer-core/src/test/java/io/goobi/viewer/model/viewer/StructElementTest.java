@@ -171,7 +171,8 @@ class StructElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     void getTopStruct_shouldReturnSelfIfAnchor() throws Exception {
-        String iddoc = "1593684706691";
+        String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("168714434");
+        Assertions.assertNotNull(iddoc);
         StructElement element = new StructElement(iddoc);
         Assertions.assertTrue(element.isAnchor());
         StructElement topStruct = element.getTopStruct();
@@ -185,7 +186,8 @@ class StructElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     void getTopStruct_shouldReturnSelfIfGroup() throws Exception {
-        String iddoc = "1593684709030";
+        String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("AC00906132");
+        Assertions.assertNotNull(iddoc);
         StructElement element = new StructElement(iddoc);
         Assertions.assertTrue(element.isGroup());
         StructElement topStruct = element.getTopStruct();

@@ -44,7 +44,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.StringUtils;
@@ -116,7 +115,9 @@ public final class SearchHelper {
     /** Constant <code>PARAM_NAME_FILTER_QUERY_SUFFIX="filterQuerySuffix"</code> */
     public static final String PARAM_NAME_FILTER_QUERY_SUFFIX = "filterQuerySuffix";
     /** Constant <code>SEARCH_TERM_SPLIT_REGEX</code> */
-    public static final String SEARCH_TERM_SPLIT_REGEX = "[ ,・]";
+    public static final String SEARCH_QUERY_SPLIT_REGEX = "[ ,・]";
+    /** Regex for splitting search values (including colons). */
+    public static final String SEARCH_TERM_SPLIT_REGEX = "[ ,・:]";
     /** Constant <code>PLACEHOLDER_HIGHLIGHTING_START="##HLS##"</code> */
     public static final String PLACEHOLDER_HIGHLIGHTING_START = "##ĦŁ$##";
     /** Constant <code>PLACEHOLDER_HIGHLIGHTING_END="##HLE##"</code> */
@@ -410,19 +411,21 @@ public final class SearchHelper {
                     // if this is a metadata/docStruct hit directly in the top document, don't add to hit count
                     // It will simply be added to the metadata list of the main hit
                     HitType hitType = getHitType(childDoc);
-                    switch (hitType) {
-                        case METADATA:
-                            break;
-                        case PAGE:
-                            if (fulltextAccessGranted) {
+                    if (hitType != null) {
+                        switch (hitType) {
+                            case METADATA:
+                                break;
+                            case PAGE:
+                                if (fulltextAccessGranted) {
+                                    int hitTypeCount = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
+                                    hit.getHitTypeCounts().put(hitType, hitTypeCount + 1);
+                                }
+                                break;
+                            default:
                                 int hitTypeCount = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
                                 hit.getHitTypeCounts().put(hitType, hitTypeCount + 1);
-                            }
-                            break;
-                        default:
-                            int hitTypeCount = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
-                            hit.getHitTypeCounts().put(hitType, hitTypeCount + 1);
-                            break;
+                                break;
+                        }
                     }
                 }
             }
@@ -448,10 +451,12 @@ public final class SearchHelper {
             HitType hitType = getHitType(doc);
             String ownerIDDoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_OWNER);
             String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
+            if (hitType == HitType.METADATA && !Objects.equals(mainIdDoc, ownerIDDoc)) {
+                //ignore metadata docs not in the main doc
+                continue;
+            }
             if (hitType == HitType.PAGE) {
                 filteredList.add(doc);
-            } else if (hitType == HitType.METADATA && !Objects.equals(mainIdDoc, ownerIDDoc)) {
-                //ignore metadata docs not in the main doc
             } else if (containsSearchTerms(doc, searchTerms, factory)) {
                 filteredList.add(doc);
                 if (hitType == HitType.DOCSTRCT) {
@@ -495,14 +500,15 @@ public final class SearchHelper {
      * @return {@link HitType} for doc
      */
     public static HitType getHitType(SolrDocument doc) {
+        // logger.trace("getHitType: {}", doc.getFieldValue(SolrConstants.IDDOC)); //NOSONAR Debug
         String docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
         HitType hitType = HitType.getByName(docType);
         if (DocType.UGC.name().equals(docType)) {
             // For user-generated content hits use the metadata type for the hit type
             String ugcType = (String) doc.getFieldValue(SolrConstants.UGCTYPE);
-            logger.trace("ugcType: {}", ugcType);
+            // logger.trace("ugcType: {}", ugcType); //NOSONAR Debug
             if (StringUtils.isNotEmpty(ugcType)) {
-                hitType = HitType.getByName(ugcType);
+                // hitType = HitType.getByName(ugcType); //NOSONAR Debug
                 logger.trace("hit type found: {}", hitType);
             }
         }
@@ -1018,21 +1024,23 @@ public final class SearchHelper {
 
             QueryResponse response = DataManager.getInstance()
                     .getSearchIndex()
-                    .searchFacetsAndStatistics(sbQuery.toString(), null, Collections.singletonList(SolrConstants.DEFAULT), 1, null, false);
+                    .searchFacetsAndStatistics(sbQuery.toString(), null,
+                            Collections.singletonList(SolrConstants.PREFIX_FACET + SolrConstants.DEFAULT), 1, null, false);
             FacetField facetField = response.getFacetFields().get(0);
 
+            logger.trace(facetField.getValues().size());
             ret = facetField.getValues()
                     .stream()
                     .filter(count -> count.getName().toLowerCase().startsWith(suggestLower))
                     .sorted((c1, c2) -> Long.compare(c2.getCount(), c1.getCount()))
                     .map(Count::getName)
                     .distinct()
-                    .collect(Collectors.toList());
-
+                    .toList();
         } catch (PresentationException e) {
             logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
         }
 
+        logger.trace("Autocomplete size: {}", ret.size());
         return ret;
     }
 
@@ -2300,7 +2308,7 @@ public final class SearchHelper {
         }
 
         // Split into FIELD:value pairs
-        String[] querySplit = q.split(SEARCH_TERM_SPLIT_REGEX);
+        String[] querySplit = q.split(SEARCH_QUERY_SPLIT_REGEX);
         String currentField = null;
         for (final String queryPart : querySplit) {
             String s = queryPart.replace("@", " ").trim();
@@ -3542,7 +3550,9 @@ public final class SearchHelper {
      */
     public static String getQueryForAccessCondition(final String accessCondition, boolean escapeAccessCondition) {
         String ac = escapeAccessCondition ? BeanUtils.escapeCriticalUrlChracters(accessCondition) : accessCondition;
-        return "+(ISWORK:true ISANCHOR:true DOCTYPE:UGC) +" + SolrConstants.ACCESSCONDITION + ":\"" + ac + "\"";
+        return "+(" + SolrConstants.ISWORK + ":true " + SolrConstants.ISANCHOR + ":true " + SolrConstants.DOCTYPE
+                + ":" + DocType.UGC.name() + " " + SolrConstants.DOCTYPE + ":" + DocType.METADATA.name() + ") +"
+                + SolrConstants.ACCESSCONDITION + ":\"" + ac + "\"";
     }
 
     /**

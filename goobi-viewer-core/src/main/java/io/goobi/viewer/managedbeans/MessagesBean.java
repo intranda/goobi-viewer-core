@@ -50,15 +50,36 @@ public class MessagesBean {
         return "none";
     }
 
-    private String translate(String value, Locale language) {
+    private static String translate(String value, Locale language) {
         return ViewerResourceBundle.getTranslation(value, language);
     }
 
-    private IMetadataValue getTranslations(String value) {
+    private static IMetadataValue getTranslations(String value) {
         return ViewerResourceBundle.getTranslations(value);
     }
 
     public String cleanHtml(String html) {
         return Jsoup.clean(html, Safelist.relaxed());
+    }
+
+    /**
+     * 
+     * @param msg
+     * @param params
+     * @return msg with params
+     */
+    public String addMessageParams(final String msg, String... params) {
+        if (msg == null) {
+            return null;
+        }
+
+        String ret = msg;
+        if (params != null && params.length > 0) {
+            for (int i = 0; i < params.length; ++i) {
+                ret = ret.replace("{" + i + "}", params[i]);
+            }
+        }
+
+        return ret;
     }
 }

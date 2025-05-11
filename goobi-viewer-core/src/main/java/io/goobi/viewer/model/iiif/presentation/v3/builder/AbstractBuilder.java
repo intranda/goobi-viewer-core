@@ -95,6 +95,7 @@ import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -319,7 +320,9 @@ public abstract class AbstractBuilder {
      * @return Optional<URI>
      */
     protected Optional<URI> getRightsStatement(StructElement ele) {
-        return getSolrFieldValue(ele, this.config.getIIIFRightsField())
+        VariableReplacer vr = new VariableReplacer(ele);
+        return Optional.ofNullable(vr.replaceFirst(this.config.getIIIFRightsField()))
+                .filter(StringUtils::isNotBlank)
                 .map(value -> {
                     try {
                         return new URI(value);
@@ -728,6 +731,22 @@ public abstract class AbstractBuilder {
      * @return {@link IIIFAgent}
      */
     protected IIIFAgent getProvider(ProviderConfiguration providerConfig) {
+        IIIFAgent provider = new IIIFAgent(providerConfig.getUri(), ViewerResourceBundle.getTranslations(providerConfig.getLabel(), false));
+
+        providerConfig.getHomepages().forEach(homepageConfig -> {
+            IMetadataValue label = ViewerResourceBundle.getTranslations(homepageConfig.getLabel(), false);
+            provider.addHomepage(new LabeledResource(homepageConfig.getUri(), "Text", Format.TEXT_HTML.getLabel(), label));
+        });
+
+        providerConfig.getLogos()
+                .forEach(
+                        uri -> provider
+                                .addLogo(new ImageResource(uri, ImageFileFormat.getImageFileFormatFromFileExtension(uri.toString()).getMimeType())));
+
+        return provider;
+    }
+
+    private IIIFAgent getProvider(ProviderConfiguration providerConfig, VariableReplacer variableReplacer) {
         IIIFAgent provider = new IIIFAgent(providerConfig.getUri(), ViewerResourceBundle.getTranslations(providerConfig.getLabel(), false));
 
         providerConfig.getHomepages().forEach(homepageConfig -> {

@@ -192,6 +192,8 @@ public abstract class CMSRecordNote implements Serializable {
         this.styleClass = styleClass;
     }
 
+    public abstract CMSRecordNote copy();
+
     public abstract boolean isSingleRecordNote();
 
     public abstract boolean isMultiRecordNote();

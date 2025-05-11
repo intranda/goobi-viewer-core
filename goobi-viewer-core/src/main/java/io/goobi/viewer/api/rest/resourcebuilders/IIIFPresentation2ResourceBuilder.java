@@ -35,8 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -81,6 +79,7 @@ import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @author florian
@@ -137,9 +136,7 @@ public class IIIFPresentation2ResourceBuilder {
             String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
             if (StringUtils.isNotBlank(topLogId) && BuildMode.IIIF.equals(mode) && pagesToInclude.isEmpty()) {
                 List<Range2> ranges = getStructureBuilder().generateStructure(docs, pi, false);
-                ranges.forEach(range -> {
-                    ((Manifest2) manifest).addStructure(range);
-                });
+                ranges.forEach(range -> ((Manifest2) manifest).addStructure(range));
             }
         }
 

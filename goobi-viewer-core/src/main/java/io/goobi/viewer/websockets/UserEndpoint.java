@@ -80,6 +80,7 @@ public class UserEndpoint extends Endpoint {
         }
     }
 
+    @Override
     @OnError
     public void onError(Session session, Throwable t) {
         logger.warn(t.getMessage());

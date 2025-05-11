@@ -270,7 +270,8 @@ public class CanvasBuilder extends AbstractBuilder {
             String filename = page.getFileName();
             URI mediaId = imageUrlManager.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_MEDIA).params(page.getPi(), page.getOrder()).buildURI();
             if ((ImageHandler.isExternalUrl(filename))) {
-                String imageId = ImageHandler.getIIIFBaseUrl(filename);
+                // Hotfix for URIs that contain spaces in the image file name
+                String imageId = ImageHandler.getIIIFBaseUrl(filename.replace(" ", "+"));
                 canvas.addMedia(mediaId, new ImageResource(imageId, thumbWidth, thumbHeight));
             } else {
                 String escFilename = StringTools.encodeUrl(filename);
@@ -320,9 +321,15 @@ public class CanvasBuilder extends AbstractBuilder {
             canvas.addSeeAlso(alto.getResource(uri));
         }
 
-        if (page.isFulltextAvailable() && StringUtils.isNotBlank(page.getFulltextFileName())
+        if (StringUtils.isNotBlank(page.getFulltextFileName())
                 && DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext()) {
             URI uri = urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(page.getPi(), getFilename(page.getFulltextFileName())).buildURI();
+            LinkingProperty text = new LinkingProperty(LinkingTarget.PLAINTEXT,
+                    createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPlaintext()));
+            canvas.addRendering(text.getResource(uri));
+        } else if (StringUtils.isNotBlank(page.getAltoFileName())
+                && DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext()) {
+            URI uri = urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(page.getPi(), getFilename(page.getAltoFileName())).buildURI();
             LinkingProperty text = new LinkingProperty(LinkingTarget.PLAINTEXT,
                     createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPlaintext()));
             canvas.addRendering(text.getResource(uri));

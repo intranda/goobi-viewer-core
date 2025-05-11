@@ -38,12 +38,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
@@ -121,8 +115,13 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * This bean opens the requested record and provides all data relevant to this record.
@@ -479,11 +478,6 @@ public class ActiveDocumentBean implements Serializable {
                 }
             }
 
-            //update usage statistics
-            DataManager.getInstance()
-                    .getUsageStatisticsRecorder()
-                    .recordRequest(RequestType.RECORD_VIEW, viewManager.getPi(), BeanUtils.getRequest());
-
             // If LOGID is set, update the current element
             if (StringUtils.isNotEmpty(logid) && viewManager != null && !logid.equals(viewManager.getLogId())) {
                 // TODO set new values instead of re-creating ViewManager, perhaps
@@ -639,6 +633,11 @@ public class ActiveDocumentBean implements Serializable {
                 if (navigationHelper == null || viewManager == null) {
                     return "";
                 }
+
+                //update usage statistics
+                DataManager.getInstance()
+                        .getUsageStatisticsRecorder()
+                        .recordRequest(RequestType.RECORD_VIEW, viewManager.getPi(), BeanUtils.getRequest());
 
                 IMetadataValue name = viewManager.getTopStructElement().getMultiLanguageDisplayLabel();
                 HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();

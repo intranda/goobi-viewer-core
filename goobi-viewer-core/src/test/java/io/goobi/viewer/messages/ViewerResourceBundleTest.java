@@ -24,7 +24,6 @@ package io.goobi.viewer.messages;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -63,7 +62,7 @@ class ViewerResourceBundleTest extends AbstractTest {
      * @verifies return null if msg is null
      */
     @Test
-    void replaceParameters_shouldReturnNullIfMsgIsNull() throws Exception {
+    void replaceParameters_shouldReturnNullIfMsgIsNull() {
         Assertions.assertNull(ViewerResourceBundle.replaceParameters(null, false, "one", "two", "three"));
     }
 
@@ -72,7 +71,7 @@ class ViewerResourceBundleTest extends AbstractTest {
      * @verifies replace parameters correctly
      */
     @Test
-    void replaceParameters_shouldReplaceParametersCorrectly() throws Exception {
+    void replaceParameters_shouldReplaceParametersCorrectly() {
         Assertions.assertEquals("one two three", ViewerResourceBundle.replaceParameters("{0} {1} {2}", false, "one", "two", "three"));
     }
 
@@ -81,7 +80,7 @@ class ViewerResourceBundleTest extends AbstractTest {
      * @verifies remove remaining placeholders correctly
      */
     @Test
-    void replaceParameters_shouldRemoveRemainingPlaceholdersCorrectly() throws Exception {
+    void replaceParameters_shouldRemoveRemainingPlaceholdersCorrectly() {
         Assertions.assertEquals("one two three {3}", ViewerResourceBundle.replaceParameters("{0} {1} {2} {3}", false, "one", "two", "three"));
         Assertions.assertEquals("one two three", ViewerResourceBundle.replaceParameters("{0} {1} {2} {3}", true, "one", "two", "three"));
     }
@@ -91,7 +90,7 @@ class ViewerResourceBundleTest extends AbstractTest {
      * @verifies return English if no other locales found
      */
     @Test
-    void getAllLocales_shouldReturnEnglishForUnknownLanguages() throws Exception {
+    void getAllLocales_shouldReturnEnglishForUnknownLanguages() {
 
         String germanTranslation = ViewerResourceBundle.getTranslation("MD_AUTHOR", Locale.GERMAN);
         String englishTranslation = ViewerResourceBundle.getTranslation("MD_AUTHOR", Locale.ENGLISH);
@@ -101,7 +100,7 @@ class ViewerResourceBundleTest extends AbstractTest {
     }
 
     @Test
-    void testGetLocalesFromFile() throws FileNotFoundException, IOException, JDOMException {
+    void testGetLocalesFromFile() throws IOException, JDOMException {
         Path configPath = Paths.get("src/test/resources/localConfig/faces-config.xml");
         Assertions.assertTrue(Files.isRegularFile(configPath));
         List<Locale> locales = ViewerResourceBundle.getLocalesFromFile(configPath);
@@ -133,6 +132,10 @@ class ViewerResourceBundleTest extends AbstractTest {
         List<Locale> locales = Arrays.asList(new Locale[] { Locale.ENGLISH, Locale.GERMAN });
         Assertions.assertEquals(2, locales.size());
 
+        String origConfigLocalPath = DataManager.getInstance().getConfiguration().getConfigLocalPath();
+        DataManager.getInstance().getConfiguration().overrideValue("configFolder", "target/config_temp/");
+        Assertions.assertEquals("target/config_temp/", DataManager.getInstance().getConfiguration().getConfigLocalPath());
+
         // Create config folder
         Path configFolder = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
         try {
@@ -144,8 +147,7 @@ class ViewerResourceBundleTest extends AbstractTest {
             // Verify files do not exist yet
             for (Locale locale : locales) {
                 Path path =
-                        Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath(),
-                                "messages_" + locale.getLanguage() + ".properties");
+                        Paths.get(configFolder.toAbsolutePath().toString(), "messages_" + locale.getLanguage() + ".properties");
                 Assertions.assertFalse(Files.exists(path));
             }
 
@@ -153,14 +155,14 @@ class ViewerResourceBundleTest extends AbstractTest {
             // Verify files have been created
             for (Locale locale : locales) {
                 Path path =
-                        Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath(),
-                                "messages_" + locale.getLanguage() + ".properties");
+                        Paths.get(configFolder.toAbsolutePath().toString(), "messages_" + locale.getLanguage() + ".properties");
                 Assertions.assertTrue(Files.isRegularFile(path));
             }
         } finally {
             if (Files.exists(configFolder)) {
                 FileUtils.deleteDirectory(configFolder.toFile());
             }
+            DataManager.getInstance().getConfiguration().overrideValue("configFolder", origConfigLocalPath);
         }
     }
 
@@ -169,7 +171,7 @@ class ViewerResourceBundleTest extends AbstractTest {
      * @verifies return locale for configured fallback language
      */
     @Test
-    void getFallbackLocale_shouldReturnLocaleForConfiguredFallbackLanguage() throws Exception {
+    void getFallbackLocale_shouldReturnLocaleForConfiguredFallbackLanguage() {
         Assertions.assertEquals(Locale.GERMAN, ViewerResourceBundle.getFallbackLocale());
     }
 
@@ -178,7 +180,7 @@ class ViewerResourceBundleTest extends AbstractTest {
      * @verifies return English if no fallback language configured
      */
     @Test
-    void getFallbackLocale_shouldReturnEnglishIfNoFallbackLanguageConfigured() throws Exception {
+    void getFallbackLocale_shouldReturnEnglishIfNoFallbackLanguageConfigured() {
         DataManager.getInstance().getConfiguration().overrideValue("viewer.fallbackDefaultLanguage", null);
         Assertions.assertEquals(Locale.ENGLISH, ViewerResourceBundle.getFallbackLocale());
     }

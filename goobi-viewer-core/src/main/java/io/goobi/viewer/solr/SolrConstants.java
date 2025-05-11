@@ -41,7 +41,8 @@ public final class SolrConstants {
         METADATA, // grouped metadata
         EVENT, // LIDO event
         UGC, // user-generated content
-        GROUP; // convolute/series
+        GROUP, // convolute/series
+        DOWNLOAD_RESOURCE;
 
         /**
          * 

@@ -115,7 +115,7 @@
                                                         <!-- MV IMAGE -->
                                                         <div class="toc__mv-element-  text-center">
                                                             <h:outputLink rendered="#{tocElement.thumbnailUrl != null}" value="#{tocElement.url}">
-                                                                <img data-src="#{tocElement.thumbnailUrl}" class="img-responsive" alt="#{tocElement.label}"
+                                                                <img src="#{tocElement.thumbnailUrl}" class="img-responsive" alt="#{tocElement.label}"
                                                                 data-viewer-thumbnail="thumbnail"/>
                                                             </h:outputLink>
                                                         </div>
@@ -159,7 +159,7 @@
     													<!-- MV IMAGE -->
     													<div class="toc__mv-element-img text-center">
     														<h:outputLink rendered="#{tocElement.thumbnailUrl != null}" value="#{tocElement.url}">
-    															<img data-src="#{tocElement.thumbnailUrl}" class="img-responsive" alt="#{tocElement.label}"
+    															<img src="#{tocElement.thumbnailUrl}" class="img-responsive" alt="#{tocElement.label}"
     															data-viewer-thumbnail="thumbnail" />
     														</h:outputLink>
     													</div>

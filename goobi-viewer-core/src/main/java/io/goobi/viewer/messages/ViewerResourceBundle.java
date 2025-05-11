@@ -339,7 +339,9 @@ public class ViewerResourceBundle extends ResourceBundle {
         String ret = msg;
         if (ret != null && params != null) {
             for (int i = 0; i < params.length; ++i) {
-                ret = ret.replace(new StringBuilder("{").append(i).append("}").toString(), params[i]);
+                if (params[i] != null) {
+                    ret = ret.replace(new StringBuilder("{").append(i).append("}").toString(), params[i]);
+                }
             }
             if (removeRemainingPlaceholders) {
                 ret = ret.replaceAll("\\{\\d+\\}", "").trim();

@@ -29,10 +29,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 
-import jakarta.faces.view.ViewScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.omnifaces.util.Faces;
@@ -59,6 +55,9 @@ import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.maps.SearchResultFeatureSet;
 import io.goobi.viewer.model.maps.SolrFeatureSet;
 import io.goobi.viewer.model.translations.IPolyglott;
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
  * Bean for managing {@link io.goobi.viewer.model.maps.GeoMap}s in the admin Backend.
@@ -166,7 +165,8 @@ public class GeoMapBean implements Serializable, IPolyglott {
             redirect = true;
         } else {
             this.currentMap.setDateUpdated(LocalDateTime.now());
-            saved = DataManager.getInstance().getDao().updateGeoMap(this.currentMap);
+            GeoMap mapToSave = new GeoMap(this.currentMap);
+            saved = DataManager.getInstance().getDao().updateGeoMap(mapToSave);
         }
         if (saved) {
             Messages.info("notify__save_map__success");
@@ -354,25 +354,6 @@ public class GeoMapBean implements Serializable, IPolyglott {
      */
     public boolean isHasMaps() throws DAOException {
         return !getAllMaps().isEmpty();
-    }
-
-    /**
-     * <p>
-     * getCoordinateSearchQueryTemplate.
-     * </p>
-     *
-     * @param featureSet a {@link io.goobi.viewer.model.maps.SolrFeatureSet} object
-     * @return String
-     */
-    public String getCoordinateSearchQueryTemplate(SolrFeatureSet featureSet) {
-        String locationQuery = "WKT_COORDS:\"Intersects(POINT({lng} {lat})) distErrPct=0\"";
-        String filterQuery = featureSet != null ? featureSet.getSolrQuery() : "-";
-        URL mappedUrl = PrettyContext.getCurrentInstance()
-                .getConfig()
-                .getMappingById("newSearch5")
-                .getPatternParser()
-                .getMappedURL("-", filterQuery, "1", "-", locationQuery);
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + mappedUrl.toString();
     }
 
     public static String getCoordinateSearchQuery(SolrFeatureSet featureSet, String longLat) {

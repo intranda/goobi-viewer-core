@@ -43,6 +43,7 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.DateTimeException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -115,6 +116,7 @@ import io.goobi.viewer.model.calendar.CalendarView;
 import io.goobi.viewer.model.citation.Citation;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
+import io.goobi.viewer.model.citation.CitationList;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.files.external.ExternalFilesDownloader;
@@ -212,7 +214,7 @@ public class ViewManager implements Serializable {
     private Pair<Optional<String>, Optional<String>> archiveTreeNeighbours = Pair.of(Optional.empty(), Optional.empty());
     private List<CopyrightIndicatorStatus> copyrightIndicatorStatuses = null;
     private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
-    private Map<CitationLinkLevel, List<CitationLink>> citationLinks = new HashMap<>();
+    private Map<CitationLinkLevel, CitationList> citationLinks = new HashMap<>();
     private List<String> externalResourceUrls = null;
     private List<PhysicalResource> downloadResources = null;
 
@@ -337,8 +339,17 @@ public class ViewManager implements Serializable {
      */
     public CalendarView createCalendarView() throws IndexUnreachableException, PresentationException {
         // Init calendar view
-        String anchorPi = anchorStructElement != null ? anchorStructElement.getPi() : (topStructElement.isAnchor() ? pi : null);
-        return new CalendarView(pi, anchorPi, topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants.CALENDAR_YEAR));
+        String anchorPi = null;
+        if (anchorStructElement != null) {
+            anchorPi = anchorStructElement.getPi();
+        } else if (topStructElement.isAnchor() || topStructElement.isGroup()) {
+            anchorPi = pi;
+        } else if (topStructElement.isGroupMember()) {
+            anchorPi = topStructElement.getGroupMemberships().get(topStructElement.getGroupIdField());
+        }
+        String anchorField = topStructElement.isVolume() ? SolrConstants.PI_ANCHOR : topStructElement.getGroupIdField();
+        return new CalendarView(pi, anchorPi, anchorField,
+                topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants.CALENDAR_YEAR));
 
     }
 
@@ -834,6 +845,7 @@ public class ViewManager implements Serializable {
                     }
                 } else if (dim.width * dim.height == 0 || (maxWidth > 0 && maxWidth < dim.width) || (maxHeight > 0 && maxHeight < dim.height)) {
                     // nothing
+                    continue; //NOSONAR Checkstyle tweak
                 } else if (origImageSize == null || origImageSize.height * origImageSize.width == 0) {
                     options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), option.getBoxSizeInPixel()));
                 } else {
@@ -4135,7 +4147,17 @@ public class ViewManager implements Serializable {
                 Citation citation = new Citation(pi, processor, citationProcessorWrapper.getCitationItemDataProvider(),
                         CitationTools.getCSLTypeForDocstrct(topStructElement.getDocStructType(), topStructElement.getDocStructType()),
                         val.getCitationValues());
-                return citation.getCitationString(outputFormat);
+                try {
+                    return citation.getCitationString(outputFormat);
+                } catch (DateTimeException e) {
+                    logger.error("Citeproc encountered exception parsing date: {}", e.toString());
+                    if ("html".equalsIgnoreCase(outputFormat)) {
+                        return "<span style=\"color: red;\">Citation engine encountered exception parsing date: <span style=\"font-weight: bold;\">"
+                                + e.getLocalizedMessage() + "</span></span>";
+                    } else {
+                        return "Citation engine encountered exception parsing date:" + e.getLocalizedMessage();
+                    }
+                }
             }
         }
 
@@ -4185,12 +4207,14 @@ public class ViewManager implements Serializable {
         }
 
         // Populate values
-        if (this.citationLinks.get(level) == null) {
-            this.citationLinks.put(level, CitationTools
-                    .generateCitationLinksForLevel(DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks(), level, this));
+        if (this.citationLinks.get(level) == null || !this.citationLinks.get(level).isCurrent(this)) {
+            this.citationLinks.put(level, new CitationList(CitationTools
+                    .generateCitationLinksForLevel(DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks(), level, this),
+                    level,
+                    this));
         }
 
-        return this.citationLinks.get(level);
+        return this.citationLinks.get(level).getList();
     }
 
     /**

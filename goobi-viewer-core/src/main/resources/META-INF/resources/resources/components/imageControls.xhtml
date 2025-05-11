@@ -68,7 +68,7 @@
 										tooltipPlacement: "top",
 										navigationSteps: #{configurationBean.pageBrowseEnabled ? configurationBean.pageBrowseSteps : '[1]' },
 										pageUrlTemplate : (page) => `#{request.contextPath}/#{navigationHelper.currentPageType.name}/#{activeDocumentBean.viewManager.pi}/\${page}/`,
-										update: imageOrderChanged,
+										update: typeof imageOrderChanged !== 'undefined' ? imageOrderChanged : undefined,
 										onUpdate: (pageNumber) => changeImageOrder.next(pageNumber),
 										msg: {
 											aria_label__nav_image_controls: "#{msg.aria_label__nav_image_controls}",
@@ -169,7 +169,7 @@
                             <!-- FULLSCREEN -->
                             <ui:fragment rendered="#{navigationHelper.currentPage != 'fullscreen'}">
                                 <li class="image-controls__action enter-fullscreen">
-                                    <h:outputLink value="#{activeDocumentBean.fullscreenImageUrl}" title="#{msg.fullscreen_enter}">
+                                    <h:outputLink id="fullscreenLink" value="#{activeDocumentBean.fullscreenImageUrl}" title="#{msg.fullscreen_enter}">
                                         <ui:include src="#{navigationHelper.getResource('images/icons/icon_ic-fullscreen.svg')}" />
                                         <span id="fullScreenLabel" class="labeltext">#{msg.enterFullscreen}</span>
                                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
@@ -182,7 +182,7 @@
                             <!-- TODO: rendered Anweisung, wenn pageBrowse in der config aktiv -->
                             <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image' and activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}">
                                 <li class="image-controls__action zoom-slider-wrapper">
-                                	<input type="range" min="0" max="1" value="0" step="0.01" class="slider zoom-slider" aria-label="#{msg.aria_label__zoom_slider}"/>
+                                	<input data-toggle="tooltip" title="#{msg.aria_label__zoom_slider}" type="range" min="0" max="1" value="0" step="0.01" class="slider zoom-slider" aria-label="#{msg.aria_label__zoom_slider}"/>
                                 </li>
 <!--                                 <li> -->
 <!--                                 	<input type="number" class="zoom-slider-label"/>% -->

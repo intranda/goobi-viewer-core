@@ -509,7 +509,13 @@ public class Metadata implements Serializable {
                             LocalDate date = LocalDate.parse(value + "-01");
                             value = date.format(dateTimeFormatter);
                         } catch (DateTimeParseException e1) {
-                            logger.warn("Error parsing {} as date", value);
+                            // LocalDateTime
+                            try {
+                                LocalDateTime date = LocalDateTime.parse(value);
+                                value = date.format(DateTimeFormatter.ofPattern(outputPattern));
+                            } catch (DateTimeParseException e2) {
+                                logger.warn("Error parsing '{}' as dateor datetime", value);
+                            }
                         }
                     }
                     value = value.replace(StringConstants.HTML_BR_ESCAPED, StringConstants.HTML_BR);
@@ -1055,8 +1061,11 @@ public class Metadata implements Serializable {
                 }
 
                 // Check metadata access permission; do not load if denied
+                // Moving wall query has to be record-based because DATE_PUBLICRELEASEDATE is only available in the top document
+                String movingWallQuery = SolrConstants.PI + ":\"" + se.getPi() + '"';
                 accessGranted =
-                        AccessConditionUtils.checkAccessPermissionBySolrDoc(doc, null, IPrivilegeHolder.PRIV_VIEW_METADATA, BeanUtils.getRequest())
+                        AccessConditionUtils
+                                .checkAccessPermissionBySolrDoc(doc, movingWallQuery, IPrivilegeHolder.PRIV_VIEW_METADATA, BeanUtils.getRequest())
                                 .isGranted();
                 if (!accessGranted) {
                     logger.trace("Access denied to metadata field {}", key);
