@@ -1552,6 +1552,13 @@ public interface IDAO {
     public CMSPage getCMSPageDefaultViewForRecord(String pi) throws DAOException;
 
     /**
+     * 
+     * @return List<String>
+     * @throws DAOException
+     */
+    public List<String> getCMSPageAccessConditions() throws DAOException;
+
+    /**
      * <p>
      * getCMSPage.
      * </p>

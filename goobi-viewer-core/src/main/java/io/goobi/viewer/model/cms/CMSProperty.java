@@ -43,9 +43,9 @@ public class CMSProperty implements Serializable {
 
     private static final long serialVersionUID = -2227539151219620322L;
 
+    public static final String KEY_ACCESS_CONDITION = "ACCESSCONDITION";
     /** Constant <code>KEY_EMPTY="EMPTY"</code> */
     public static final String KEY_EMPTY = "EMPTY";
-
     /**
      * Boolean specifying that a page list should separate child pages by tag and prepend each group with a header
      */
@@ -84,6 +84,17 @@ public class CMSProperty implements Serializable {
      */
     public CMSProperty(String key) {
         this.key = key;
+    }
+
+    /**
+     * Key+value constructor.
+     * 
+     * @param key
+     * @param value
+     */
+    public CMSProperty(String key, String value) {
+        this.key = key;
+        this.value = value;
     }
 
     /**

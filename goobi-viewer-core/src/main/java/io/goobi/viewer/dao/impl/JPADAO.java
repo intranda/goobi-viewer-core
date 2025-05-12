@@ -61,6 +61,7 @@ import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
+import io.goobi.viewer.model.cms.CMSProperty;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.HighlightData;
@@ -3024,6 +3025,12 @@ public class JPADAO implements IDAO {
         } finally {
             close(em);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<String> getCMSPageAccessConditions() throws DAOException {
+        return getNativeQueryResults("SELECT property_value FROM cms_properties WHERE property_key = '" + CMSProperty.KEY_ACCESS_CONDITION + "'");
     }
 
     /** {@inheritDoc} */
