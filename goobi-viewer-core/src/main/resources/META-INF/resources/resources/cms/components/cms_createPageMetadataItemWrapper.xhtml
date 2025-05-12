@@ -35,6 +35,14 @@
         				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
 		             <span class="toggle-outside"><span class="toggle-inside"></span></span>
 		         </div>
+		         
+		         
+		         <!-- Optional access condition -->
+                 <h:panelGroup id="inputAccessCondition" rendered="#{cmsPageEditBean.selectedPage.published}">
+                        <h:inputText 
+                            id="accessCondition" 
+                            value="#{cmsPageEditBean.selectedPage.accessCondition}" />
+                 </h:panelGroup>
 
         		
         		</div>

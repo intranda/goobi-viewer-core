@@ -1083,6 +1083,35 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     }
 
     /**
+     * @return the accessCondition
+     */
+    public String getAccessCondition() {
+        for (CMSProperty property : properties) {
+            if (CMSProperty.KEY_ACCESS_CONDITION.equals(property.getKey())) {
+                logger.trace("CMS access condition found: {}", property.getValue());
+                return property.getValue();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param accessCondition the accessCondition to set
+     */
+    public void setAccessCondition(String accessCondition) {
+        logger.trace("setAccessCondition: {}", accessCondition);
+        for (CMSProperty property : properties) {
+            if (CMSProperty.KEY_ACCESS_CONDITION.equals(property.getKey())) {
+                property.setValue(accessCondition);
+                return;
+            }
+        }
+
+        properties.add(new CMSProperty(CMSProperty.KEY_ACCESS_CONDITION, accessCondition));
+    }
+
+    /**
      * Deletes exported HTML/TEXT fragments from a related record's data folder. Should be called when deleting this CMS page.
      *
      * @return Number of deleted files

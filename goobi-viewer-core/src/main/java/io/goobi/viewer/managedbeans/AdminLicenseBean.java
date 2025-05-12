@@ -907,16 +907,25 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Queries Solr for a list of all values of the set ACCESSCONDITION
      *
-     * @return A list of all indexed ACCESSCONDITIONs
+     * @return Combined List of access condition values from the index and CMS pages
+     * @throws DAOException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public List<String> getPossibleAccessConditions() throws IndexUnreachableException, PresentationException {
-        List<String> accessConditions = SearchHelper.getFacetValues(
+    public List<String> getPossibleAccessConditions() throws DAOException, IndexUnreachableException, PresentationException {
+        // From Solr
+        List<String> ret = SearchHelper.getFacetValues(
                 "+" + SolrConstants.ACCESSCONDITION + ":[* TO *] -" + SolrConstants.ACCESSCONDITION + ":" + SolrConstants.OPEN_ACCESS_VALUE,
                 SolrConstants.ACCESSCONDITION, 1);
-        Collections.sort(accessConditions);
-        return accessConditions;
+
+        // From CMS pages
+        List<String> dbAccessConditions = DataManager.getInstance().getDao().getCMSPageAccessConditions();
+        if (dbAccessConditions != null) {
+            ret.addAll(dbAccessConditions);
+        }
+
+        Collections.sort(ret);
+        return ret;
     }
 
     /**
