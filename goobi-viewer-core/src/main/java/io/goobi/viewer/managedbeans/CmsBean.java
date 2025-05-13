@@ -82,6 +82,7 @@ import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.search.SearchResultGroup;
+import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
@@ -1811,5 +1812,18 @@ public class CmsBean implements Serializable {
 
     public void setTest(String test) {
         this.test = test;
+    }
+
+    public boolean isUserHasAccess(CMSPage page) {
+        if (page != null) {
+            logger.trace("isUserHasAccess: {}", page.getId());
+            try {
+                return AccessConditionUtils.checkAccessPermissionForCmsPage(BeanUtils.getRequest(), page).isGranted();
+            } catch (IndexUnreachableException | DAOException | PresentationException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        return false;
     }
 }
