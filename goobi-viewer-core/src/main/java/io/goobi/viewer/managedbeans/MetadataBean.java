@@ -187,6 +187,22 @@ public class MetadataBean {
     }
 
     /**
+     * Returns given {@link MetadataElement}s as an {@link ArrayList}. Used for supplying a custom list of elements for the metadata sidebar widget.
+     * 
+     * @param elements
+     * @return List<MetadataElement>
+     * @should return empty list given null
+     * @should return given elements as list
+     */
+    public List<MetadataElement> getMetadataElementsAsList(MetadataElement... elements) {
+        if (elements == null) {
+            return Collections.emptyList();
+        }
+
+        return Arrays.asList(elements);
+    }
+
+    /**
      * <p>
      * getTopMetadataElement.
      * </p>
