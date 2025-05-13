@@ -836,12 +836,6 @@ public final class AccessConditionUtils {
             return AccessPermission.granted();
         }
 
-        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(page.getAccessCondition());
-        if (licenseType == null) {
-            logger.trace("LicenseType '{}' not configured, access denied.", page.getAccessCondition());
-            return AccessPermission.denied();
-        }
-
         User user = BeanUtils.getUserFromRequest(request);
         if (user == null) {
             UserBean userBean = BeanUtils.getUserBean();
@@ -849,9 +843,19 @@ public final class AccessConditionUtils {
                 user = userBean.getUser();
             }
         }
+        if (user != null && user.isSuperuser()) {
+            logger.trace("Access granted to admin.");
+            return AccessPermission.granted();
+        }
+
+        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(page.getAccessCondition());
+        if (licenseType == null) {
+            logger.trace("LicenseType '{}' not configured, access denied.", page.getAccessCondition());
+            return AccessPermission.denied();
+        }
 
         return checkAccessPermission(Collections.singletonList(licenseType), Collections.singleton(page.getAccessCondition()),
-                IPrivilegeHolder.PRIV_VIEW_CMS, user, NetTools.getIpAddress(request), null, null);
+                IPrivilegeHolder.PRIV_VIEW_CMS, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), null);
     }
 
     /**
@@ -965,7 +969,7 @@ public final class AccessConditionUtils {
             }
 
             //check clientApplication
-            if (client.map(c -> c.mayLogIn(remoteAddress)).orElse(false)) {
+            if (client != null && client.map(c -> c.mayLogIn(remoteAddress)).orElse(false)) {
                 //check if specific client matches access conditions
                 if (client.isPresent()) {
                     AccessPermission access = client.get().canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
