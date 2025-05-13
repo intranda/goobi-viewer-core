@@ -839,6 +839,7 @@ public final class AccessConditionUtils {
         LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(page.getAccessCondition());
         if (licenseType == null) {
             logger.trace("LicenseType '{}' not configured, access denied.", page.getAccessCondition());
+            return AccessPermission.denied();
         }
 
         User user = BeanUtils.getUserFromRequest(request);
@@ -1003,7 +1004,7 @@ public final class AccessConditionUtils {
         }
 
         boolean containsOpenAccess =
-                requiredAccessConditions.stream().anyMatch(condition -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(condition));
+                requiredAccessConditions.stream().anyMatch(SolrConstants.OPEN_ACCESS_VALUE::equalsIgnoreCase);
         boolean openAccessIsConfiguredLicenceType =
                 allLicenseTypes == null ? DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) != null
                         : allLicenseTypes.stream().anyMatch(license -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(license.getName()));
