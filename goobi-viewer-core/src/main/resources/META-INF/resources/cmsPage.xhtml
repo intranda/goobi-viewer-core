@@ -27,7 +27,7 @@
 		<c:set scope="view" var="cmsPage" value="#{cmsBean.currentPage}" />
 		<ui:include src="/resources/cms/includes/cms_script.xhtml" />
 		<c:choose>
-			<c:when test="#{cmsPage.published or userBean.hasAdminBackendAccess}">
+			<c:when test="#{cmsPage.published and cmsBean.isUserHasAccess(cmsPage)) or userBean.hasAdminBackendAccess}">
 				<f:view contentType="text/html" encoding="utf-8">
 					<div id="cmsPage" class="cms-page #{cmsPage.wrapperElementClass}">
 						<!-- EDIT PAGE -->

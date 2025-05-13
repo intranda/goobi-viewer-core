@@ -55,6 +55,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
@@ -817,6 +818,42 @@ public final class AccessConditionUtils {
     }
 
     /**
+     * 
+     * @param request
+     * @param page {@link CMSPage} to check
+     * @return {@link AccessPermission}
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public static AccessPermission checkAccessPermissionForCmsPage(HttpServletRequest request, CMSPage page)
+            throws DAOException, IndexUnreachableException, PresentationException {
+        if (page == null) {
+            throw new IllegalArgumentException("page may not be null");
+        }
+
+        if (StringUtils.isEmpty(page.getAccessCondition())) {
+            return AccessPermission.granted();
+        }
+
+        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(page.getAccessCondition());
+        if (licenseType == null) {
+            logger.trace("LicenseType '{}' not configured, access denied.", page.getAccessCondition());
+        }
+
+        User user = BeanUtils.getUserFromRequest(request);
+        if (user == null) {
+            UserBean userBean = BeanUtils.getUserBean();
+            if (userBean != null) {
+                user = userBean.getUser();
+            }
+        }
+
+        return checkAccessPermission(Collections.singletonList(licenseType), Collections.singleton(page.getAccessCondition()),
+                IPrivilegeHolder.PRIV_VIEW_CMS, user, NetTools.getIpAddress(request), null, null);
+    }
+
+    /**
      * <p>
      * Base method for checking access permissions of various types.
      * </p>
@@ -828,7 +865,7 @@ public final class AccessConditionUtils {
      * @param remoteAddress a {@link java.lang.String} object.
      * @param client
      * @param query Solr query describing the resource in question.
-     * @return Map&lt;String, AccessPermission&gt;
+     * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
