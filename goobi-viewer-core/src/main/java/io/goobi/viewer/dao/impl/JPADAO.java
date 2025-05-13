@@ -4132,6 +4132,22 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
+    
+    @Override
+    public long getCMSPageCountByPropertyValue(String propertyName, String propertyValue) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT COUNT(DISTINCT a) FROM CMSPage a JOIN a.properties p WHERE p.key = :key AND p.value = :value";
+            return (long) em.createQuery(query)
+                    .setParameter("key", propertyName)
+                    .setParameter("value", propertyValue)
+                    .setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH)
+                    .getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
 
     /**
      * Universal method for returning the row count for the given class and filter string.

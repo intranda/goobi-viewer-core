@@ -57,6 +57,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCategory;
+import io.goobi.viewer.model.cms.CMSProperty;
 import io.goobi.viewer.model.cms.Selectable;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -976,23 +977,36 @@ public class AdminLicenseBean implements Serializable {
 
     /**
      *
-     * @param accessCondition
+     * @param licenseType
      * @return Number of records containing the given access condition value
-     * @throws PresentationException
+     * @throws DAOException
      * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    public long getNumRecordsWithAccessCondition(String accessCondition) throws IndexUnreachableException, PresentationException {
-        long records = DataManager.getInstance()
-                .getSearchIndex()
-                .getHitCount(SearchHelper.getQueryForAccessCondition(accessCondition, false));
-        if (records == 0) {
-            // Alternative query for metadata-only restrictions
-            records = DataManager.getInstance()
-                    .getSearchIndex()
-                    .getHitCount("+DOCTYPE:METADATA +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"");
+    public long getRecordCountForLicenseType(LicenseType licenseType) throws DAOException, IndexUnreachableException, PresentationException {
+        if (licenseType == null) {
+            throw new org.jboss.weld.exceptions.IllegalArgumentException("licenseType may not be null");
         }
 
-        return records;
+        if (licenseType.getRecordCount() == null) {
+            licenseType.setRecordCount(DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount(SearchHelper.getQueryForAccessCondition(licenseType.getName(), false)));
+            if (licenseType.getRecordCount() == 0) {
+                // Alternative query for metadata-only restrictions
+                licenseType.setRecordCount(DataManager.getInstance()
+                        .getSearchIndex()
+                        .getHitCount("+DOCTYPE:METADATA +" + SolrConstants.ACCESSCONDITION + ":\"" + licenseType.getName() + "\""));
+            }
+            if (licenseType.getRecordCount() == 0) {
+                // Alternative query for CMS pages with access conditions
+                licenseType.setRecordCount(
+                        DataManager.getInstance().getDao().getCMSPageCountByPropertyValue(CMSProperty.KEY_ACCESS_CONDITION, licenseType.getName()));
+                licenseType.setDisplayRecordLink(false);
+            }
+        }
+
+        return licenseType.getRecordCount();
     }
 
     /**
