@@ -96,7 +96,7 @@
 	                                            <!-- NUMBER OF RECORDS -->
 	                                            <dt class="col-sm-4">#{msg.admin__licenses_record_number}:</dt>
 	                                            <dd class="col-sm-8">
-	                                            	#{adminLicenseBean.getNumRecordsWithAccessCondition(licenseType.name)}
+	                                            	#{adminLicenseBean.getRecordCountForLicenseType(licenseType)}
 	                                            </dd>
 	                                            <!-- OVERRIDDEN LICENSE TYPES -->
 	                                            <ui:fragment rendered="#{not empty licenseType.overriddenLicenseTypes}">
@@ -161,10 +161,14 @@
 	                                        <div class="row justify-content-end admin__boxed-entry-actions">
 	                                            <div class="col-3 d-flex justify-content-end">
 	                                            	<!-- SHOW -->
-													<a href="#{navigationHelper.searchUrl}/-/#{adminLicenseBean.getUrlQueryForAccessCondition(licenseType.name)}/1/-/-/" target="_blank" class="admin__boxed-entry-actions-edit" aria-label="#{msg.show}">#{msg.show}</a>
+	                                            	<ui:fragment rendered="#{licenseType.displayRecordSearchLink}">
+													    <a href="#{navigationHelper.searchUrl}/-/#{adminLicenseBean.getUrlQueryForAccessCondition(licenseType.name)}/1/-/-/"
+													        target="_blank" class="admin__boxed-entry-actions-edit" aria-label="#{msg.show}">#{msg.show}</a>
+	                                                </ui:fragment>
 	                                                
 	                                                <!-- EDIT -->
-	                                                <a href="#{navigationHelper.applicationUrl}admin/licenses/edit/#{licenseType.id}/" class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{licenseType.name}">#{msg.edit}</a>
+	                                                <a href="#{navigationHelper.applicationUrl}admin/licenses/edit/#{licenseType.id}/"
+	                                                    class="admin__boxed-entry-actions-edit" aria-label="#{msg.edit}: #{licenseType.name}">#{msg.edit}</a>
 	                                                
 			                                        <!-- DELETE -->
 		                                            <button
