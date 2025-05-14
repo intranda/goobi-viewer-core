@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -6557,8 +6558,8 @@ public class JPADAO implements IDAO {
         try {
             Query q = em.createQuery("SELECT s FROM DailySessionUsageStatistics s WHERE s.date = :date");
             q.setParameter("date", date);
-            return (DailySessionUsageStatistics) q.getSingleResult();
-        } catch (NoResultException e) {
+            return (DailySessionUsageStatistics) q.getResultList().getFirst();
+        } catch (NoSuchElementException | NoResultException e) {
             return null;
         } finally {
             close(em);
