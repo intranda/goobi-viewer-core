@@ -37,13 +37,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.persistence.exceptions.DatabaseException;
 
 import io.goobi.viewer.controller.AlphabetIterator;
 import io.goobi.viewer.controller.mq.MessageStatus;
@@ -141,6 +141,8 @@ public class JPADAO implements IDAO {
 
     static final String MULTIKEY_SEPARATOR = "_";
     static final String KEY_FIELD_SEPARATOR = "-";
+    
+    private static final long RETRY_DELAY_MS = 5000;
 
     /**
      * EntityManagerFactory for the persistence context. Only build once at application startup
@@ -179,20 +181,47 @@ public class JPADAO implements IDAO {
             persistenceUnitName = DEFAULT_PERSISTENCE_UNIT_NAME;
         }
         logger.info("Using persistence unit: {}", persistenceUnitName);
+        // Create EntityManagerFactory in a custom class loader
+        final Thread currentThread = Thread.currentThread();
+        final ClassLoader saveClassLoader = currentThread.getContextClassLoader();
+        currentThread.setContextClassLoader(new JPAClassLoader(saveClassLoader));
+        factory = Persistence.createEntityManagerFactory(persistenceUnitName);
+        currentThread.setContextClassLoader(saveClassLoader);
+
+        int attempts = 4;
+        boolean success = init();
+        while (!success) {
+            if (attempts > 0) {
+                logger.warn("Could not connect to database, retrying {} more times...", attempts);
+                attempts--;
+                try {
+                    TimeUnit.MILLISECONDS.sleep(RETRY_DELAY_MS);
+                } catch (InterruptedException e) {
+                    logger.error(e.getMessage(), e);
+                    Thread.currentThread().interrupt();
+                }
+                success = init();
+            } else {
+                throw new DAOException("DB connection failed.");
+            }
+        }
+    }
+
+    /**
+     * @throws DAOException
+     * 
+     */
+    private boolean init() throws DAOException {
         try {
-            // Create EntityManagerFactory in a custom class loader
-            final Thread currentThread = Thread.currentThread();
-            final ClassLoader saveClassLoader = currentThread.getContextClassLoader();
-            currentThread.setContextClassLoader(new JPAClassLoader(saveClassLoader));
-            factory = Persistence.createEntityManagerFactory(persistenceUnitName);
-            currentThread.setContextClassLoader(saveClassLoader);
             //Needs to be called for unit tests
             factory.createEntityManager();
             preQuery();
-        } catch (DatabaseException | PersistenceException e) {
-            logger.error(e.getMessage(), e);
-            throw new DAOException(e.getMessage());
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
         }
+
+        return false;
     }
 
     /**
@@ -4101,7 +4130,7 @@ public class JPADAO implements IDAO {
             close(em);
         }
     }
-    
+
     @Override
     public long getCMSPageCountByPropertyValue(String propertyName, String propertyValue) throws DAOException {
         preQuery();
