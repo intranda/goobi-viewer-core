@@ -6557,7 +6557,7 @@ public class JPADAO implements IDAO {
         try {
             Query q = em.createQuery("SELECT s FROM DailySessionUsageStatistics s WHERE s.date = :date");
             q.setParameter("date", date);
-            return (DailySessionUsageStatistics) q.getSingleResult();
+            return (DailySessionUsageStatistics) q.getResultList().getFirst();
         } catch (NoResultException e) {
             return null;
         } finally {
