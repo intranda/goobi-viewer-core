@@ -3551,7 +3551,7 @@ public final class SearchHelper {
     public static String getQueryForAccessCondition(final String accessCondition, boolean escapeAccessCondition) {
         String ac = escapeAccessCondition ? BeanUtils.escapeCriticalUrlChracters(accessCondition) : accessCondition;
         return "+(" + SolrConstants.ISWORK + ":true " + SolrConstants.ISANCHOR + ":true " + SolrConstants.DOCTYPE
-                + ":" + DocType.UGC.name() + " " + SolrConstants.DOCTYPE + ":" + DocType.METADATA.name() + ") +"
+                + ":(" + DocType.UGC.name() + " " + DocType.METADATA.name() + " " + DocType.ARCHIVE.name() + ")) +"
                 + SolrConstants.ACCESSCONDITION + ":\"" + ac + "\"";
     }
 
