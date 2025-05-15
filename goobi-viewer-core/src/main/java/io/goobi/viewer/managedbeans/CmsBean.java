@@ -125,8 +125,6 @@ public class CmsBean implements Serializable {
     private transient CmsMediaBean cmsMediaBean;
     @Inject
     private transient CMSTemplateManager templateManager;
-    @Inject
-    private transient ActiveDocumentBean adb;
 
     private TableDataProvider<CMSPage> lazyModelPages;
     /** The page currently open for viewing */
@@ -1775,6 +1773,7 @@ public class CmsBean implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<CMSNavigationItem> getNavigationMenuItems() {
+        logger.info("getNavigationMenuItems");
         try {
             String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
             String currentTheme = getCurrentCmsPageIfLoaded()
@@ -1784,23 +1783,28 @@ public class CmsBean implements Serializable {
                     .getDao()
                     .getAllTopCMSNavigationItems()
                     .stream()
+                    .filter(item -> item.checkAccess(BeanUtils.getRequest()))
                     .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(currentTheme))
                             || currentTheme.equalsIgnoreCase(item.getAssociatedTheme()))
-                    .collect(Collectors.toList());
+                    .toList();
             if (items.isEmpty()) {
                 items = DataManager.getInstance()
                         .getDao()
                         .getAllTopCMSNavigationItems()
                         .stream()
-                        .filter(item -> StringUtils.isBlank(item.getAssociatedTheme()) || item.getAssociatedTheme().equalsIgnoreCase(mainTheme))
-                        .collect(Collectors.toList());
+                        .filter(item -> item.checkAccess(BeanUtils.getRequest()))
+                        .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme())
+                                || item.getAssociatedTheme().equalsIgnoreCase(mainTheme)))
+                        .toList();
             }
+            logger.info("returning {} items", items.size());
             return items;
         } catch (DAOException e) {
             return Collections.emptyList();
         }
     }
 
+    @Deprecated
     public List<CMSNavigationItem> getActiveNavigationMenuItems() {
         return getNavigationMenuItems().stream().filter(CMSNavigationItem::isEnabled).collect(Collectors.toList());
     }
