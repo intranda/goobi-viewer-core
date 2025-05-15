@@ -4313,6 +4313,19 @@ public class Configuration extends AbstractConfiguration {
     public boolean isPreventProxyCaching() {
         return getLocalBoolean(("performance.preventProxyCaching"), false);
     }
+    
+    /**
+     * <p>
+     * getDatabaseConnectionAttempts.
+     * </p>
+     *
+     * @should return correct value
+     * @return a int.
+     */
+    public int getDatabaseConnectionAttempts() {
+        return getLocalInt("performance.databaseConnectionAttempts", 5);
+    }
+
 
     /**
      * @return Configured value

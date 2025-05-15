@@ -47,6 +47,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.AlphabetIterator;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.dao.IDAO;
@@ -142,7 +143,7 @@ public class JPADAO implements IDAO {
 
     static final String MULTIKEY_SEPARATOR = "_";
     static final String KEY_FIELD_SEPARATOR = "-";
-    
+
     private static final long RETRY_DELAY_MS = 5000;
 
     /**
@@ -189,7 +190,7 @@ public class JPADAO implements IDAO {
         factory = Persistence.createEntityManagerFactory(persistenceUnitName);
         currentThread.setContextClassLoader(saveClassLoader);
 
-        int attempts = 4;
+        int attempts = DataManager.getInstance().getConfiguration().getDatabaseConnectionAttempts() - 1;
         boolean success = init();
         while (!success) {
             if (attempts > 0) {

@@ -163,6 +163,9 @@
 		<!-- If true, all HTTP responses will contain attributes preventing proxies 
 			etc. from caching contents. Default is false. -->
 		<preventProxyCaching>true</preventProxyCaching>
+        
+        <!-- databaseConnectionAttempts: Number of times JPADAO will attempt to establish a connection before failing. -->
+        <databaseConnectionAttempts>3</databaseConnectionAttempts>
 	</performance>
 
     <accessConditions>
