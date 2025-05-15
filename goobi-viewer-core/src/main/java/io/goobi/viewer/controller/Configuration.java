@@ -4316,14 +4316,14 @@ public class Configuration extends AbstractConfiguration {
     
     /**
      * <p>
-     * getDatabaseConnectoAttempts.
+     * getDatabaseConnectionAttempts.
      * </p>
      *
      * @should return correct value
      * @return a int.
      */
-    public int getDatabaseConnectoAttempts() {
-        return getLocalInt("performance.databaseConnectonAttempts", 5);
+    public int getDatabaseConnectionAttempts() {
+        return getLocalInt("performance.databaseConnectionAttempts", 5);
     }
 
 

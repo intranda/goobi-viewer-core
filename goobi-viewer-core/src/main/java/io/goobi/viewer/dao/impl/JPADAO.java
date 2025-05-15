@@ -189,7 +189,7 @@ public class JPADAO implements IDAO {
         factory = Persistence.createEntityManagerFactory(persistenceUnitName);
         currentThread.setContextClassLoader(saveClassLoader);
 
-        int attempts = DataManager.getInstance().getConfiguration().getDatabaseConnectoAttempts() - 1;
+        int attempts = DataManager.getInstance().getConfiguration().getDatabaseConnectionAttempts() - 1;
         boolean success = init();
         while (!success) {
             if (attempts > 0) {

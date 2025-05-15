@@ -164,8 +164,8 @@
 			etc. from caching contents. Default is false. -->
 		<preventProxyCaching>true</preventProxyCaching>
         
-        <!-- databaseConnectonAttempts: Number of times JPADAO will attempt to establish a connection before failing. -->
-        <databaseConnectonAttempts>3</databaseConnectonAttempts>
+        <!-- databaseConnectionAttempts: Number of times JPADAO will attempt to establish a connection before failing. -->
+        <databaseConnectionAttempts>3</databaseConnectionAttempts>
 	</performance>
 
     <accessConditions>
