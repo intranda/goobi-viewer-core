@@ -34,13 +34,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
-import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.pages.CMSPage;
-import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.security.AccessConditionUtils;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -54,6 +56,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * <p>
@@ -125,6 +128,9 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
      */
     @Transient
     private Integer sortingListId = null;
+
+    @Transient
+    private Boolean accessGranted = null;
 
     /**
      * Empty constructor.
@@ -340,8 +346,9 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
     }
 
     public List<CMSNavigationItem> getActiveChildItems() {
-        return getChildItems().stream().filter(CMSNavigationItem::isEnabled).collect(Collectors.toList());
-
+        return getChildItems().stream()
+                .filter(item -> item.checkAccess(BeanUtils.getRequest()))
+                .toList();
     }
 
     /**
@@ -801,6 +808,44 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
         } else {
             return page.equals(getPageUrl()) || page.equals(getItemLabel());
         }
+    }
+
+    /**
+     * @return the accessGranted
+     */
+    public boolean isAccessGranted() {
+        return accessGranted;
+    }
+
+    /**
+     * @param accessGranted the accessGranted to set
+     */
+    public void setAccessGranted(boolean accessGranted) {
+        this.accessGranted = accessGranted;
+    }
+
+    /**
+     * 
+     * @param request
+     * @return true if access granted; false otherwise
+     */
+    public boolean checkAccess(HttpServletRequest request) {
+        if (accessGranted == null) {
+            logger.trace("checkAccess: {}", getItemLabel());
+            if (cmsPage != null && StringUtils.isNotBlank(cmsPage.getAccessCondition())) {
+                try {
+                    accessGranted = AccessConditionUtils.checkAccessPermissionForCmsPage(request, cmsPage).isGranted();
+                } catch (DAOException | IndexUnreachableException | PresentationException e) {
+                    logger.error(e.getMessage());
+                    accessGranted = false;
+                }
+            } else {
+                accessGranted = true;
+            }
+            logger.trace("access granted? {}", accessGranted);
+        }
+
+        return accessGranted;
     }
 
     @Deprecated(since = "24.10")
