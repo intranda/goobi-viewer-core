@@ -611,6 +611,16 @@ class ConfigurationTest extends AbstractTest {
         assertEquals(1000, DataManager.getInstance().getConfiguration().getPageLoaderThreshold());
     }
 
+    
+    /**
+     * @see Configuration#getPageLoaderThreshold()
+     * @verifies return correct value
+     */
+    @Test
+    void getDatabaseConnectionAttempts_shouldReturnCorrectValue() {
+        assertEquals(3, DataManager.getInstance().getConfiguration().getDatabaseConnectoAttempts());
+    }
+    
     /**
      * @see Configuration#getPageType(PageType)
      * @verifies return the correct value for the given type
