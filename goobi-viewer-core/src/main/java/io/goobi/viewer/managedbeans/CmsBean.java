@@ -141,6 +141,11 @@ public class CmsBean implements Serializable {
 
     private List<String> luceneFields = null;
 
+    private List<CMSNavigationItem> navigationMenuItems = null;
+
+    /** Persists checked menu item access permission for the duration of the user session. */
+    //    private final Map<Long, Boolean> menuItemAccessPermissionMap = new HashMap<>();
+
     public CmsBean() {
 
     }
@@ -1774,39 +1779,44 @@ public class CmsBean implements Serializable {
      */
     public List<CMSNavigationItem> getNavigationMenuItems() {
         logger.info("getNavigationMenuItems");
-        try {
-            String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
-            String currentTheme = getCurrentCmsPageIfLoaded()
-                    .map(CMSPage::getSubThemeDiscriminatorValue)
-                    .orElse(BeanUtils.getNavigationHelper().getThemeOrSubtheme());
-            List<CMSNavigationItem> items = DataManager.getInstance()
-                    .getDao()
-                    .getAllTopCMSNavigationItems()
-                    .stream()
-                    .filter(item -> item.checkAccess(BeanUtils.getRequest()))
-                    .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(currentTheme))
-                            || currentTheme.equalsIgnoreCase(item.getAssociatedTheme()))
-                    .toList();
-            if (items.isEmpty()) {
-                items = DataManager.getInstance()
+        if (navigationMenuItems == null) {
+            try {
+                String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
+                String currentTheme = getCurrentCmsPageIfLoaded()
+                        .map(CMSPage::getSubThemeDiscriminatorValue)
+                        .orElse(BeanUtils.getNavigationHelper().getThemeOrSubtheme());
+                navigationMenuItems = DataManager.getInstance()
                         .getDao()
                         .getAllTopCMSNavigationItems()
                         .stream()
                         .filter(item -> item.checkAccess(BeanUtils.getRequest()))
-                        .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme())
-                                || item.getAssociatedTheme().equalsIgnoreCase(mainTheme)))
+                        .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(currentTheme))
+                                || currentTheme.equalsIgnoreCase(item.getAssociatedTheme()))
                         .toList();
+                if (navigationMenuItems.isEmpty()) {
+                    navigationMenuItems = DataManager.getInstance()
+                            .getDao()
+                            .getAllTopCMSNavigationItems()
+                            .stream()
+                            .filter(item -> item.checkAccess(BeanUtils.getRequest()))
+                            .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme())
+                                    || item.getAssociatedTheme().equalsIgnoreCase(mainTheme)))
+                            .toList();
+                }
+                logger.info("returning {} items", navigationMenuItems.size());
+            } catch (DAOException e) {
+                navigationMenuItems = Collections.emptyList();
             }
-            logger.info("returning {} items", items.size());
-            return items;
-        } catch (DAOException e) {
-            return Collections.emptyList();
         }
+
+        return navigationMenuItems;
     }
 
-    @Deprecated
-    public List<CMSNavigationItem> getActiveNavigationMenuItems() {
-        return getNavigationMenuItems().stream().filter(CMSNavigationItem::isEnabled).collect(Collectors.toList());
+    /**
+     * Resets visible navigation menu items (e.g. when logging in/out).
+     */
+    public void resetNavigationMenuItems() {
+        this.navigationMenuItems = null;
     }
 
     public Collection<Sorting> getSortingModes() {

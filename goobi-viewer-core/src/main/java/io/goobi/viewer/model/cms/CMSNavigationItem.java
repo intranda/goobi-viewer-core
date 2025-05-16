@@ -26,6 +26,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -179,9 +180,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
         setCmsPage(cmsPage);
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -192,9 +191,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof CMSNavigationItem item && ((getParentItem() == null && item.getParentItem() == null)
@@ -210,11 +207,6 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
         return false;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public int compareTo(CMSNavigationItem o) {
@@ -345,9 +337,23 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
         this.childItems = childItems;
     }
 
+    /**
+     * 
+     * @return Visible child items
+     */
     public List<CMSNavigationItem> getActiveChildItems() {
+        return getActiveChildItems(BeanUtils.getRequest());
+    }
+
+    /**
+     * 
+     * @param permissionMap
+     * @param request
+     * @return Visible child items
+     */
+    public List<CMSNavigationItem> getActiveChildItems(HttpServletRequest request) {
         return getChildItems().stream()
-                .filter(item -> item.checkAccess(BeanUtils.getRequest()))
+                .filter(item -> item.checkAccess(request))
                 .toList();
     }
 
@@ -815,13 +821,6 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
      */
     public boolean isAccessGranted() {
         return accessGranted;
-    }
-
-    /**
-     * @param accessGranted the accessGranted to set
-     */
-    public void setAccessGranted(boolean accessGranted) {
-        this.accessGranted = accessGranted;
     }
 
     /**
