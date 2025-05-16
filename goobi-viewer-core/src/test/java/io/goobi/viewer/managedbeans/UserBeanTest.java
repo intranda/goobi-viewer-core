@@ -133,11 +133,13 @@ class UserBeanTest extends AbstractDatabaseEnabledTest {
                 //
             }
         });
+        
+        bean.setSessionBean(new SessionBean());
     }
 
     @Test
     void testLogin_valid() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
-
+        
         bean.setEmail(userActive_email);
         bean.setPassword(userActive_pwHash);
         Assertions.assertNull(bean.getUser());
@@ -149,7 +151,7 @@ class UserBeanTest extends AbstractDatabaseEnabledTest {
 
     @Test
     void testLogin_invalid() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
-
+        
         bean.setEmail(userActive_email);
         bean.setPassword(userSuspended_pwHash);
         Assertions.assertNull(bean.getUser());
@@ -159,7 +161,7 @@ class UserBeanTest extends AbstractDatabaseEnabledTest {
 
     @Test
     void testLogin_unknown() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
-
+        bean.setSessionBean(new SessionBean());
         bean.setEmail(userActive_email + "test");
         bean.setPassword(userActive_pwHash);
         Assertions.assertNull(bean.getUser());
@@ -169,7 +171,7 @@ class UserBeanTest extends AbstractDatabaseEnabledTest {
 
     @Test
     void testLogin_suspended() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
-
+        
         bean.setEmail(userSuspended_email);
         bean.setPassword(userSuspended_pwHash);
         Assertions.assertNull(bean.getUser());

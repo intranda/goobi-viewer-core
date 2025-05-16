@@ -139,6 +139,15 @@ public class UserBean implements Serializable {
     }
 
     /**
+     * Setter for unit tests.
+     * 
+     * @param sessionBean
+     */
+    void setSessionBean(SessionBean sessionBean) {
+        this.sessionBean = sessionBean;
+    }
+
+    /**
      * <p>
      * updateSessionTimeoutCounter.
      * </p>
@@ -385,7 +394,9 @@ public class UserBean implements Serializable {
                         // Exception if different user logged in
                         throw new AuthenticationProviderException("errLoginError");
                     }
-                    sessionBean.wipeSessionAttributes();
+                    if (sessionBean != null) {
+                        sessionBean.wipeSessionAttributes();
+                    }
                     DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(u, request);
                     // Update last login
                     u.setLastLogin(LocalDateTime.now());
@@ -499,8 +510,9 @@ public class UserBean implements Serializable {
             if (sessionTimeoutMonitorTimer != null) {
                 sessionTimeoutMonitorTimer.cancel();
             }
-
-            sessionBean.wipeSessionAttributes();
+            if (sessionBean != null) {
+                sessionBean.wipeSessionAttributes();
+            }
             SearchHelper.updateFilterQuerySuffix(request, IPrivilegeHolder.PRIV_LIST);
         } catch (IndexUnreachableException | PresentationException | DAOException e) {
             throw new AuthenticationProviderException(e);
