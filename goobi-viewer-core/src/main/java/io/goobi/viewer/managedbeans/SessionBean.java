@@ -103,30 +103,25 @@ public class SessionBean implements Serializable {
             // Remove priv maps
             AccessConditionUtils.clearSessionPermissions(session);
 
-            try {
-                BeanUtils.getBeanFromRequest(request, "collectionViewBean", CollectionViewBean.class)
-                        .ifPresentOrElse(CollectionViewBean::invalidate,
-                                () -> logger.trace("Cannot invalidate CollectionViewBean. Not instantiated yet?"));
-                BeanUtils.getBeanFromRequest(request, "activeDocumentBean", ActiveDocumentBean.class)
-                        .ifPresentOrElse(ActiveDocumentBean::resetAccess,
-                                () -> logger.trace("Cannot reset access permissions in ActiveDocumentBean. Not instantiated yet?"));
-                BeanUtils.getBeanFromRequest(request, "sessionBean", SessionBean.class)
-                        .ifPresentOrElse(SessionBean::cleanSessionObjects,
-                                () -> logger.trace("Cannot clear session storage in SessionBean. Not instantiated yet?"));
-                BeanUtils.getBeanFromRequest(request, "displayConditions", DisplayConditions.class)
-                        .ifPresentOrElse(DisplayConditions::clearCache,
-                                () -> logger.trace("Cannot clear DosplayConditions cache. Not instantiated yet?"));
-                // Reset loaded user-generated content lists
-                BeanUtils.getBeanFromRequest(request, "contentBean", ContentBean.class)
-                        .ifPresentOrElse(ContentBean::resetContentList,
-                                () -> logger.trace("Cannot reset content list. Not instantiated yet?"));
-                // Reset visible navigation menu
-                BeanUtils.getBeanFromRequest(request, "cmsBean", CmsBean.class)
-                        .ifPresentOrElse(CmsBean::resetNavigationMenuItems,
-                                () -> logger.trace("Cannot navigation menu items. Not instantiated yet?"));
-            } catch (Exception e) {
-                logger.error(e.getMessage());
-            }
+            cleanSessionObjects();
+            
+            BeanUtils.getBeanFromRequest(request, "collectionViewBean", CollectionViewBean.class)
+                    .ifPresentOrElse(CollectionViewBean::invalidate,
+                            () -> logger.trace("Cannot invalidate CollectionViewBean. Not instantiated yet?"));
+            BeanUtils.getBeanFromRequest(request, "activeDocumentBean", ActiveDocumentBean.class)
+                    .ifPresentOrElse(ActiveDocumentBean::resetAccess,
+                            () -> logger.trace("Cannot reset access permissions in ActiveDocumentBean. Not instantiated yet?"));
+            BeanUtils.getBeanFromRequest(request, "displayConditions", DisplayConditions.class)
+                    .ifPresentOrElse(DisplayConditions::clearCache,
+                            () -> logger.trace("Cannot clear DosplayConditions cache. Not instantiated yet?"));
+            // Reset loaded user-generated content lists
+            BeanUtils.getBeanFromRequest(request, "contentBean", ContentBean.class)
+                    .ifPresentOrElse(ContentBean::resetContentList,
+                            () -> logger.trace("Cannot reset content list. Not instantiated yet?"));
+            // Reset visible navigation menu
+            BeanUtils.getBeanFromRequest(request, "cmsBean", CmsBean.class)
+                    .ifPresentOrElse(CmsBean::resetNavigationMenuItems,
+                            () -> logger.trace("Cannot reset navigation menu items. Not instantiated yet?"));
         }
     }
 }
