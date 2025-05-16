@@ -92,7 +92,7 @@ public class SessionBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void wipeSessionAttributes() throws IndexUnreachableException, PresentationException, DAOException {
-        logger.trace("wipeSession");
+        logger.error("wipeSession");
         if (request != null) {
             HttpSession session = request.getSession(false);
             if (session == null) {
@@ -125,7 +125,7 @@ public class SessionBean implements Serializable {
                         .ifPresentOrElse(CmsBean::resetNavigationMenuItems,
                                 () -> logger.trace("Cannot navigation menu items. Not instantiated yet?"));
             } catch (Exception e) {
-                logger.warn(e.getMessage());
+                logger.error(e.getMessage());
             }
         }
     }

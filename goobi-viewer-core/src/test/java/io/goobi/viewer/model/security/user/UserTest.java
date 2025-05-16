@@ -41,18 +41,18 @@ import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
 import io.goobi.viewer.solr.SolrConstants;
 
 class UserTest extends AbstractDatabaseEnabledTest {
-    
+
     /**
      * @see User#User(User)
      * @verifies clone blueprint correctly
      */
     @Test
-    void User_shouldCloneBlueprintCorrectly() throws Exception {
+    void User_shouldCloneBlueprintCorrectly() {
         LocalDateTime now = LocalDateTime.now();
         License license = new License();
-        
+
         User blueprint = new User();
-        
+
         blueprint.setId(123L);
         blueprint.setEmail("foo@example.com");
         blueprint.setPasswordHash("!§$%");
@@ -72,7 +72,7 @@ class UserTest extends AbstractDatabaseEnabledTest {
         blueprint.getLicenses().add(license);
         blueprint.getOpenIdAccounts().add("google:foo@example.com");
         blueprint.getUserProperties().put("foo", "bar");
-        
+
         User clone = new User(blueprint);
         Assertions.assertEquals(blueprint.getId(), clone.getId());
         Assertions.assertEquals(blueprint.getEmail(), clone.getEmail());
@@ -90,13 +90,13 @@ class UserTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(blueprint.isAgreedToTermsOfUse(), clone.isAgreedToTermsOfUse());
         Assertions.assertEquals(blueprint.getAvatarType(), clone.getAvatarType());
         Assertions.assertEquals(blueprint.getLocalAvatarUpdated(), clone.getLocalAvatarUpdated());
-        
+
         Assertions.assertEquals(1, clone.getLicenses().size());
         Assertions.assertEquals(license, clone.getLicenses().get(0));
-        
+
         Assertions.assertEquals(1, clone.getOpenIdAccounts().size());
         Assertions.assertEquals(blueprint.getOpenIdAccounts().get(0), clone.getOpenIdAccounts().get(0));
-        
+
         Assertions.assertEquals(1, clone.getUserProperties().size());
         Assertions.assertEquals(blueprint.getUserProperties().get("foo"), clone.getUserProperties().get("foo"));
     }
