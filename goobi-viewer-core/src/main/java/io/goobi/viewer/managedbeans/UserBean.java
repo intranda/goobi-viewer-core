@@ -60,7 +60,6 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.crowdsourcing.CrowdsourcingTools;
 import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
@@ -98,6 +97,8 @@ public class UserBean implements Serializable {
     private CaptchaBean captchaBean;
     @Inject
     private NavigationHelper navigationHelper;
+    @Inject
+    private SessionBean sessionBean;
 
     @Inject
     @Push
@@ -384,7 +385,7 @@ public class UserBean implements Serializable {
                         // Exception if different user logged in
                         throw new AuthenticationProviderException("errLoginError");
                     }
-                    wipeSession(result.getRequest());
+                    sessionBean.wipeSessionAttributes();
                     DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(u, request);
                     // Update last login
                     u.setLastLogin(LocalDateTime.now());
@@ -420,9 +421,6 @@ public class UserBean implements Serializable {
 
                     // Update personal filter query suffix
                     SearchHelper.updateFilterQuerySuffix(request, IPrivilegeHolder.PRIV_LIST);
-
-                    // Reset loaded user-generated content lists
-                    BeanUtils.getBeanFromRequest(request, "contentBean", ContentBean.class).ifPresent(ContentBean::resetContentList);
 
                     // Add this user to configured groups
                     if (provider.getAddUserToGroups() != null && !provider.getAddUserToGroups().isEmpty()) {
@@ -502,11 +500,8 @@ public class UserBean implements Serializable {
                 sessionTimeoutMonitorTimer.cancel();
             }
 
-            wipeSession(request);
+            sessionBean.wipeSessionAttributes();
             SearchHelper.updateFilterQuerySuffix(request, IPrivilegeHolder.PRIV_LIST);
-
-            // Reset loaded user-generated content lists
-            BeanUtils.getBeanFromRequest(request, "contentBean", ContentBean.class).ifPresent(ContentBean::resetContentList);
         } catch (IndexUnreachableException | PresentationException | DAOException e) {
             throw new AuthenticationProviderException(e);
         }
@@ -557,54 +552,6 @@ public class UserBean implements Serializable {
         }
 
         return "";
-    }
-
-    /**
-     * Removes the user and permission attributes from the session.
-     *
-     * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
-     */
-    public void wipeSession(HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
-        logger.trace("wipeSession");
-        if (request != null) {
-            HttpSession session = request.getSession(false);
-            if (session == null) {
-                return;
-            }
-            session.removeAttribute("user");
-
-            this.reset();
-
-            // Remove priv maps
-            AccessConditionUtils.clearSessionPermissions(session);
-
-            try {
-                BeanUtils.getBeanFromRequest(request, "collectionViewBean", CollectionViewBean.class)
-                        .ifPresentOrElse(CollectionViewBean::invalidate,
-                                () -> logger.trace("Cannot invalidate CollectionViewBean. Not instantiated yet"));
-                BeanUtils.getBeanFromRequest(request, "activeDocumentBean", ActiveDocumentBean.class)
-                        .ifPresentOrElse(ActiveDocumentBean::resetAccess,
-                                () -> logger.trace("Cannot reset access permissions in ActiveDocumentBean. Not instantiated yet"));
-                BeanUtils.getBeanFromRequest(request, "sessionBean", SessionBean.class)
-                        .ifPresentOrElse(SessionBean::cleanObjects,
-                                () -> logger.trace("Cannot clear session storage in SessionBean. Not instantiated yet"));
-                BeanUtils.getBeanFromRequest(request, "displayConditions", DisplayConditions.class)
-                        .ifPresentOrElse(DisplayConditions::clearCache,
-                                () -> logger.trace("Cannot clear DosplayConditions cache. Not instantiated yet"));
-            } catch (Exception e) {
-                logger.warn(e.getMessage());
-            }
-        }
-    }
-
-    /**
-     * Reset session dependent properties after a login or logout
-     */
-    private void reset() {
-        this.hasAdminBackendAccess = null;
     }
 
     /**
