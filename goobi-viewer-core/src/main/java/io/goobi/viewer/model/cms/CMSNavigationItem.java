@@ -347,7 +347,6 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
 
     /**
      * 
-     * @param permissionMap
      * @param request
      * @return Visible child items
      */
