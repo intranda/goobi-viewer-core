@@ -92,7 +92,7 @@ public class SessionBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void wipeSessionAttributes() throws IndexUnreachableException, PresentationException, DAOException {
-        logger.error("wipeSession");
+        logger.trace("wipeSession");
         if (request != null) {
             HttpSession session = request.getSession(false);
             if (session == null) {
