@@ -147,6 +147,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.event.ValueChangeEvent;
 import jakarta.faces.model.SelectItem;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * Holds information about the currently open record (structure, pages, etc.). Used to reduced the size of ActiveDocumentBean.
@@ -493,7 +494,7 @@ public class ViewManager implements Serializable {
         try {
             ImageInformation info = imageDeliveryBean.getImages().getImageInformation(page, pageType);
             if (info.getWidth() * info.getHeight() == 0) {
-                return info.getId().toString();
+                return UriBuilder.fromUri(info.getId()).path("info.json").build().toString();
             }
             return JsonTools.getAsJson(info);
         } catch (ContentLibException | ViewerConfigurationException | URISyntaxException | JsonProcessingException e) {
