@@ -34,14 +34,12 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.JDOMException;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.annotation.wa.Motivation;
 import de.intranda.api.iiif.search.AutoSuggestResult;
@@ -65,6 +63,7 @@ import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Creates a IIIF Search API v1.0 response as {@link de.intranda.api.iiif.search.SearchResult}
@@ -381,9 +380,6 @@ public class IIIFSearchBuilder {
 
         SearchTermList terms = new SearchTermList();
         if (StringUtils.isNotBlank(query)) {
-            if (motivation.isEmpty() || motivation.contains("painting")) {
-                //add terms from fulltext?
-            }
             if (motivation.isEmpty() || motivation.contains(MOTIVATION_NON_PAINTING) || motivation.contains("describing")) {
                 terms.addAll(autoSuggestAnnotations(query, getPi(), request));
             }
