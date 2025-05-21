@@ -6,9 +6,19 @@
 /* BLOCK */
 .navigation {
     position: relative;
-    ul {
-
-    }
+	&__list {
+		display: flex;
+		flex-direction: column;
+		&.-level-0 {
+			flex-direction: row;
+		}
+		&.-level-1 {}
+		&.-level-2 {}
+		&.-level-3 {}
+		&.-level-4 {}
+		&.-level-5 {}
+	}
+    ul {}
     li {
         display: block;
         position: relative;
