@@ -1722,7 +1722,7 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getTitleBarLabel(String language)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
-        if (navigationHelper == null) {
+        if (navigationHelper == null || viewManager == null) {
             return null;
         }
 
