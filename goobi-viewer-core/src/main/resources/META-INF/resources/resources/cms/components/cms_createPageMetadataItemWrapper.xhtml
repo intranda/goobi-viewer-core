@@ -16,8 +16,6 @@
         <div id="cmsCreatePageMetadataItemWrapper" class="admin__default-block">
             <!-- METADATA ITEM TYPE -->
 
-            
-            
              <h2>#{msg.cms_pageMetadata_privacyStatus}</h2>
              
 				<div class="admin__form-help-text in mb-4">#{msg.cms_pageMetadata_privacyStatus_help}</div>
@@ -26,26 +24,31 @@
 		            <!-- Use this manual toggle-switch setup instead of grouped <h:selectOneRadio> to avoid conflicts with sidebar widget selection
 		            	Taken from https://balusc.omnifaces.org/2015/10/custom-layout-with-hselectoneradio-in.html -->
 		            <input type="radio" jsf:id="cmsPageStatusVisibility_no" pt:name="#{cmsPageStatusVisibility.clientId}"
-		                value="#{false}" pt:checked="#{cmsPageEditBean.selectedPage.published ? null : 'false'}"/>
+		                value="#{false}" pt:checked="#{cmsPageEditBean.selectedPage.published ? null : 'false'}" pt:data-toggle-action="toggleAccessCondition"/>
 					<h:outputLabel for="cmsPageStatusVisibility_no" value="#{msg.no}" />
 		         	<input type="radio" jsf:id="cmsPageStatusVisibility_yes" pt:name="#{cmsPageStatusVisibility.clientId}"
-		         	    value="#{true}" pt:checked="#{cmsPageEditBean.selectedPage.published ? 'false' : null}"/>
+		         	    value="#{true}" pt:checked="#{cmsPageEditBean.selectedPage.published ? 'false' : null}" pt:data-toggle-action="toggleAccessCondition"/>
 		         	<h:outputLabel for="cmsPageStatusVisibility_yes" value="#{msg.yes}" />
 					<h:inputHidden id="cmsPageStatusVisibility_input" binding="#{cmsPageStatusVisibility}" value="#{cmsPageEditBean.selectedPage.published}"
         				rendered="#{facesContext.currentPhaseId.ordinal ne 6}" />
 		             <span class="toggle-outside"><span class="toggle-inside"></span></span>
 		         </div>
-		         
-		         
-		         <!-- Optional access condition -->
-                 <h:panelGroup id="inputAccessCondition" rendered="#{cmsPageEditBean.selectedPage.published}">
-                        <h:inputText 
-                            id="accessCondition" 
-                            value="#{cmsPageEditBean.selectedPage.accessCondition}" />
-                 </h:panelGroup>
 
-        		
-        		</div>
+
+				<!-- Optional access condition -->
+					<div id="optionalAccessCondition"
+						class="#{cmsPageEditBean.selectedPage.published ? '-show' : '-hide'}">
+						<h:panelGroup id="inputAccessCondition" layout="block"
+							styleClass="mt-3 admin__sidebar-divider-top">
+							<h3 class="mb-2">#{msg.cms__create_page_access_condition_input_title}</h3>
+							<h:inputText id="accessCondition"
+								value="#{cmsPageEditBean.selectedPage.accessCondition}"
+								styleClass="form-control" />
+		
+						</h:panelGroup>
+					</div>
+		
+				</div>
 
 				<!-- PRETTY/ALTERNATIVE/SPEAKING URL -->
 				<div class="admin__default-block">
@@ -469,7 +472,19 @@
 				
 				</script>
                                                        
-
+				<!-- SCRIPT FOR OPTIONAL ACCESS CONDITION CMS PAGE -->
+				<script>
+				
+				isPublishedToggle = $('#cmsCreatePageMetadataItemWrapper input[data-toggle-action="toggleAccessCondition"]');
+				
+                $(isPublishedToggle).on("change", (event) => {
+						$('#optionalAccessCondition').animate({
+                            height: "toggle",
+                            opacity: "toggle"
+                        }, 250);
+                })
+				
+				</script>
         		
     </composite:implementation>
 </ui:composition>
