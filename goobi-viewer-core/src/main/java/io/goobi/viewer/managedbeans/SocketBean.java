@@ -71,7 +71,6 @@ public class SocketBean {
     private Runnable createRunnable() {
         return () -> {
             if (shouldSend.getAndSet(false)) {
-                System.out.println("SENDING UPDATE");
                 sendMessage("update");
             }
         };
