@@ -132,7 +132,7 @@
 		<junit.version>5.12.2</junit.version>
 		<log4j.version>2.24.3</log4j.version>
 		<mariadb-java-client.version>3.5.3</mariadb-java-client.version>
-		<mockito.version>5.17.0</mockito.version>
+		<mockito.version>5.18.0</mockito.version>
 		<mockserver.version>5.15.0</mockserver.version>
 		<omnifaces.version>4.6.2</omnifaces.version>
 		<openpdf.version>2.0.4</openpdf.version>
