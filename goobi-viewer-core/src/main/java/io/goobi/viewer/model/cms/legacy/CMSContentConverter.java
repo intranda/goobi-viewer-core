@@ -35,9 +35,8 @@ import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSBrowseContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent;
-import io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent;
-import io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent;
+import io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent;
@@ -193,13 +192,6 @@ public class CMSContentConverter {
 
         CMSPageListContent content = new CMSPageListContent();
         categories.forEach(content::addCategory);
-        return content;
-    }
-
-    public CMSContent createGlossaryContent(Map<String, Object> legacyItem) {
-        String glossaryName = (String) legacyItem.get("glossary");
-        CMSGlossaryContent content = new CMSGlossaryContent();
-        content.setGlossaryName(glossaryName);
         return content;
     }
 

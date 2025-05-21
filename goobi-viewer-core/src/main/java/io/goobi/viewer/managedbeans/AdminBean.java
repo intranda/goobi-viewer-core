@@ -42,8 +42,6 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
-import org.omnifaces.cdi.Push;
-import org.omnifaces.cdi.PushContext;
 
 import de.unigoettingen.sub.commons.cache.CacheUtils;
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
@@ -99,11 +97,10 @@ public class AdminBean implements Serializable {
     private static String translationGroupsEditorSession = null;
 
     @Inject
-    private UserBean userBean;
+    private SocketBean socketBean;
 
     @Inject
-    @Push
-    private PushContext hotfolderFileCount;
+    private UserBean userBean;
 
     private TableDataProvider<User> lazyModelUsers;
 
@@ -1626,7 +1623,7 @@ public class AdminBean implements Serializable {
      * </p>
      */
     public void updateHotfolderFileCount() {
-        hotfolderFileCount.send("update");
+        this.socketBean.send("{'action':'update', 'subject':'hotfolderFileCount'}");
     }
 
     /**

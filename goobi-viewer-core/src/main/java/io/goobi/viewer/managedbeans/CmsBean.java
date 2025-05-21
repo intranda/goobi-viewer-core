@@ -77,8 +77,6 @@ import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent;
-import io.goobi.viewer.model.glossary.Glossary;
-import io.goobi.viewer.model.glossary.GlossaryManager;
 import io.goobi.viewer.model.search.HitListView;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -1365,22 +1363,6 @@ public class CmsBean implements Serializable {
                 //                .filter(page -> page.getClassifications().contains(classification))
                 .filter(CMSPage::isPublished)
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * <p>
-     * getGlossaries.
-     * </p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<Glossary> getGlossaries() {
-        try {
-            return new GlossaryManager().getGlossaries();
-        } catch (IOException e) {
-            logger.error("Error loading glossary files", e);
-            return Collections.emptyList();
-        }
     }
 
     /**
