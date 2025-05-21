@@ -38,7 +38,7 @@ class MetadataBeanTest extends AbstractTest {
     @Test
     void getMetadataElementsAsList_shouldReturnEmptyListGivenNull() {
         MetadataBean bean = new MetadataBean();
-        List<MetadataElement> list = bean.getMetadataElementsAsList(null);
+        List<MetadataElement> list = bean.getMetadataElementsAsList((MetadataElement[]) null);
         Assertions.assertNotNull(list);
         Assertions.assertTrue(list.isEmpty());
     }
