@@ -345,7 +345,7 @@ public class DownloadTaskEndpoint extends Endpoint {
     @OnError
     public void onError(Session session, Throwable t) {
         if (!(t instanceof EOFException)) {
-            logger.warn(t.getMessage());
+            logger.warn("DownloadTaskEndpoint:" + t.getMessage());
         }
     }
 

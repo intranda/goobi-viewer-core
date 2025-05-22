@@ -85,7 +85,7 @@ public class UserEndpoint extends Endpoint {
     @OnError
     public void onError(Session session, Throwable t) {
         if (!(t instanceof EOFException)) {
-            logger.warn(t.getMessage());
+            logger.warn("UserEndpoint:" + t.getMessage());
         }
     }
 

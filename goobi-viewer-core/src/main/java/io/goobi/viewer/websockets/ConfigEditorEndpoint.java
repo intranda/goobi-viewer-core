@@ -98,7 +98,7 @@ public class ConfigEditorEndpoint extends Endpoint {
     @OnError
     public void onError(Session session, Throwable t) {
         if (!(t instanceof EOFException)) {
-            logger.warn(t.getMessage());
+            logger.warn("ConfigEditorEndpoint:" + t.getMessage());
         }
     }
 
