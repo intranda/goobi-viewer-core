@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.websockets;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -343,7 +344,9 @@ public class DownloadTaskEndpoint extends Endpoint {
     @Override
     @OnError
     public void onError(Session session, Throwable t) {
-        logger.error(t, t);
+        if (!(t instanceof EOFException)) {
+            logger.warn("DownloadTaskEndpoint:" + t.getMessage());
+        }
     }
 
     public enum Action {

@@ -544,6 +544,7 @@ public class SearchFacets implements Serializable {
      * @should use label from labelMap if available
      * @should parse wildcard facets correctly
      * @should create multiple items from multiple instances of same field
+     * @should skip value pairs if field or value missing
      */
     static void parseFacetString(final String facetString, final List<IFacetItem> facetItems, final Map<String, String> labelMap) {
         if (facetItems == null) {
@@ -565,16 +566,14 @@ public class SearchFacets implements Serializable {
 
         String[] facetStringSplit = useFacetString.split(";;");
         for (final String fl : facetStringSplit) {
-            if (StringUtils.isEmpty(fl)) {
+            String facetLink = fl != null ? fl.trim() : "";
+            if ("".equals(facetLink) || "undefined".equals(facetLink) || facetLink.startsWith(":") || facetLink.endsWith(":")) {
+                logger.warn("Invalid facet, skipping: {}", facetLink);
                 continue;
             }
-            String facetLink = fl;
+
             if (!facetLink.contains(":")) {
-                if ("undefined".equals(facetLink)) {
-                    logger.warn("Facet value '{}' received, skipping.", facetLink);
-                } else {
-                    facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
-                }
+                facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
             }
             String facetField = facetLink.substring(0, facetLink.indexOf(":"));
             if (DataManager.getInstance().getConfiguration().getGeoFacetFields().contains(facetField)) {
