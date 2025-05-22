@@ -29,12 +29,14 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.COLLECTIONS_COLLECTION;
 import java.net.URI;
 import java.util.List;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.annotation.wa.ImageResource;
+import de.intranda.api.iiif.presentation.CollectionExtent;
 import de.intranda.api.iiif.presentation.v3.Collection3;
 import de.intranda.api.iiif.presentation.v3.Manifest3;
+import de.intranda.metadata.multilanguage.Metadata;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.controller.DataManager;
@@ -45,6 +47,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.search.CollectionResult;
+import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 
@@ -87,7 +90,7 @@ public class CollectionBuilder extends AbstractBuilder {
         URI baseId = urls.path(COLLECTIONS).params(collectionField).buildURI();
         Collection3 baseCollection = new Collection3(baseId, null);
         baseCollection.setLabel(ViewerResourceBundle.getTranslations("browse", false));
-        baseCollection.setRequiredStatement(getRequiredStatement());
+        addRequiredStatement(baseCollection);
 
         List<CollectionResult> collections = dataRetriever.getTopLevelCollections(collectionField);
         for (CollectionResult collectionResult : collections) {
@@ -110,13 +113,17 @@ public class CollectionBuilder extends AbstractBuilder {
     public Collection3 build(String collectionField, String collectionName) throws IndexUnreachableException, PresentationException {
 
         Collection3 baseCollection = createCollection(collectionField, collectionName);
-        baseCollection.setRequiredStatement(getRequiredStatement());
+        addRequiredStatement(baseCollection);
 
         List<CollectionResult> collections = dataRetriever.getChildCollections(collectionField, collectionName);
         for (CollectionResult collectionResult : collections) {
             Collection3 collection = createCollection(collectionField, collectionResult.getName());
+            CollectionExtent extent = new CollectionExtent(collectionResult.getChildCount().intValue(), (int) collectionResult.getCount().intValue());
+            collection.addService(extent);
             baseCollection.addItem(collection);
         }
+        //        CollectionExtent extent = new CollectionExtent(collectionResult.getChildCount().intValue(), (int) collectionResult.getCount().intValue());
+        //        baseCollection.addService(extent);
 
         List<StructElement> records = dataRetriever.getContainedRecords(collectionField, collectionName);
         for (StructElement rec : records) {
@@ -131,6 +138,14 @@ public class CollectionBuilder extends AbstractBuilder {
 
         return baseCollection;
 
+    }
+
+    protected void addRequiredStatement(Collection3 baseCollection) {
+        VariableReplacer variableReplacer = new VariableReplacer(DataManager.getInstance().getConfiguration());
+        Metadata requiredStatement = variableReplacer.replace(getRequiredStatement());
+        if (!requiredStatement.getValue().isEmpty()) {
+            baseCollection.setRequiredStatement(variableReplacer.replace(getRequiredStatement()));
+        }
     }
 
     /**
