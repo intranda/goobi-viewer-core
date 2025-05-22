@@ -52,9 +52,6 @@ public class RestApiExceptionMapper implements ExceptionMapper<RestApiException>
     @Context
     private HttpServletRequest request;
 
-    /* (non-Javadoc)
-     * @see jakarta.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Throwable)
-     */
     /** {@inheritDoc} */
     @Override
     public Response toResponse(RestApiException exception) {

@@ -178,6 +178,19 @@ class SearchFacetsTest extends AbstractSolrEnabledTest {
         Assertions.assertEquals("c", facetItems.get(1).getValue());
         Assertions.assertEquals("d", facetItems.get(1).getValue2());
     }
+    
+    /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies skip value pairs if field or value missing
+     */
+    @Test
+    void parseFacetString_shouldSkipValuePairsIfFieldOrValueMissing() {
+        List<IFacetItem> facetItems = new ArrayList<>();
+        SearchFacets.parseFacetString("undefined;;:nofield;;NOVALUE:;;FOO:bar;;", facetItems, null);
+        Assertions.assertEquals(1, facetItems.size());
+        Assertions.assertEquals("FOO", facetItems.get(0).getField());
+        Assertions.assertEquals("bar", facetItems.get(0).getValue());
+    }
 
     /**
      * @see SearchFacets#getActiveFacetString()

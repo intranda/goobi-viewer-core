@@ -332,7 +332,7 @@ public class MessageQueueManager {
             try {
                 MessageHandler<MessageStatus> handler = clazz.getDeclaredConstructor().newInstance();
                 handlers.put(handler.getMessageHandlerName(), handler);
-
+                logger.trace("Loaded ticket handler: {}", handler.getMessageHandlerName());
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | IllegalArgumentException | InvocationTargetException
                     | SecurityException e) {
                 logger.error(e);
