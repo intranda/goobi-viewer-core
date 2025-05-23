@@ -57,6 +57,7 @@ public class SocketBean {
      */
     public SocketBean() {
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(createRunnable(), 0, MIN_IDLE_TIME, TimeUnit.SECONDS);
+
     }
 
     /**

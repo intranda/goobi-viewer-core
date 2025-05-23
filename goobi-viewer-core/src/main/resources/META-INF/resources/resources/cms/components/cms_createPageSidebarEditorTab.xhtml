@@ -101,8 +101,10 @@
 	                                        		<i class="#{widget.contentType.iconClass}" aria-hidden="true"></i>
 	                                        	</ui:fragment>
 
-											  <label for="scales#{status.index}">#{widget.title.textOrDefault}</label>
-
+											  	<label for="scales#{status.index}">
+											  		<span>#{widget.title.textOrDefault}</span>
+													<h:outputLabel rendered="#{!widget.description.isEmpty()}" class="description_label" value="#{'('.concat(widget.description).concat(')')}"/>
+												</label>
 											</div>
 										</ui:fragment>
 									</ui:repeat>

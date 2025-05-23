@@ -25,6 +25,16 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
+import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.dao.converter.TranslatedTextConverter;
+import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
+import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.model.translations.TranslatedText;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.DiscriminatorColumn;
@@ -37,14 +47,6 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import io.goobi.viewer.dao.converter.TranslatedTextConverter;
-import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
-import io.goobi.viewer.model.translations.IPolyglott;
-import io.goobi.viewer.model.translations.TranslatedText;
 
 /**
  * Class to persist user generated CMS-Sidebar widgets in the database. Different types of widgets containing different data are encoded in
@@ -233,6 +235,18 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
                 | SecurityException e) {
             logger.error("Cannot instatiate CustomSidebarWidget of class {}. Reason: {}", o.getClass(), e.toString());
             return null;
+        }
+    }
+
+    public boolean isHasShortDescription() {
+        return !this.getDescription().isEmpty();
+    }
+
+    public IMetadataValue getShortDescription(int maxLength) {
+        if (!this.getDescription().isEmpty()) {
+            return getDescription().copy().transformValues(s -> StringTools.truncateText(s, maxLength));
+        } else {
+            return new SimpleMetadataValue("");
         }
     }
 

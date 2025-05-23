@@ -24,8 +24,6 @@ package io.goobi.viewer.model.cms.widgets;
 import java.util.List;
 import java.util.Locale;
 
-import jakarta.persistence.GenerationType;
-
 import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
@@ -34,6 +32,7 @@ import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
+import jakarta.persistence.GenerationType;
 
 /**
  * Class for displaying information about available sidebar widgets in /admin/cms/widgets and the sidebar edit tab of /admin/cms/pages/edit. Widgets
