@@ -122,8 +122,6 @@ public class CollectionBuilder extends AbstractBuilder {
             collection.addService(extent);
             baseCollection.addItem(collection);
         }
-        //        CollectionExtent extent = new CollectionExtent(collectionResult.getChildCount().intValue(), (int) collectionResult.getCount().intValue());
-        //        baseCollection.addService(extent);
 
         List<StructElement> records = dataRetriever.getContainedRecords(collectionField, collectionName);
         for (StructElement rec : records) {

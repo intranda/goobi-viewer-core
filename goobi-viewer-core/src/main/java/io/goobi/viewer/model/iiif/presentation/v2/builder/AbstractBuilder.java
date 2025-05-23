@@ -88,6 +88,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingType;
+import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -581,10 +582,14 @@ public abstract class AbstractBuilder {
      * @return the configured attribution
      */
     protected List<IMetadataValue> getAttributions() {
+        VariableReplacer variableReplacer = new VariableReplacer(DataManager.getInstance().getConfiguration());
         return DataManager.getInstance()
                 .getConfiguration()
                 .getIIIFAttribution()
                 .stream()
+                .map(variableReplacer::replace)
+                .flatMap(List::stream)
+                .filter(StringUtils::isNotBlank)
                 .map(this::getLabel)
                 .collect(Collectors.toList());
     }
