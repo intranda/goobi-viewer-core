@@ -40,8 +40,7 @@ public class LicenseTypeUpdate implements IModelUpdate {
     /** {@inheritDoc} */
     @Override
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
-        performUpdates(dao);
-        return true;
+        return performUpdates(dao);
     }
 
     /**
@@ -53,16 +52,19 @@ public class LicenseTypeUpdate implements IModelUpdate {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws SQLException if in case of errors
      */
-    private static void performUpdates(IDAO dao) throws DAOException, SQLException {
+    private static boolean performUpdates(IDAO dao) throws DAOException, SQLException {
+        boolean ret = false;
         // Remove obsolete core license type for crowdsourcing campaigns
         LicenseType ltCampaigns = dao.getLicenseType(LICENSE_TYPE_CAMPAIGNS);
         if (ltCampaigns != null) {
             int count = dao.executeUpdate("DELETE FROM licenses WHERE license_type_id=" + ltCampaigns.getId());
             if (count > 0) {
+                ret = true;
                 logger.info("{} licenses using license type '{}' deleted.", count, LICENSE_TYPE_CAMPAIGNS);
             }
             count = dao.executeUpdate("DELETE FROM license_types WHERE name='" + LICENSE_TYPE_CAMPAIGNS + "'");
             if (count > 0) {
+                ret = true;
                 logger.info("License type '{}' deleted.", LICENSE_TYPE_CAMPAIGNS);
             }
         }
@@ -70,6 +72,9 @@ public class LicenseTypeUpdate implements IModelUpdate {
         // Remove LicenseType.conditions
         if (dao.columnsExists("license_types", "conditions")) {
             dao.executeUpdate("ALTER TABLE license_types DROP COLUMN conditions;");
+            ret = true;
         }
+
+        return ret;
     }
 }
