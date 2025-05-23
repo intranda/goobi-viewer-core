@@ -26,10 +26,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.CronTrigger;
@@ -49,6 +45,8 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.quartz.QuartzJobDetails;
 import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.quartz.TaskTriggerStatus;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 
 @Named
 @ApplicationScoped
@@ -165,7 +163,7 @@ public class QuartzBean implements Serializable {
     private static void persistTriggerStatus(String jobName, TaskTriggerStatus status) {
         try {
             IDAO dao = DataManager.getInstance().getDao();
-            RecurringTaskTrigger trigger = dao.getRecurringTaskTriggerForTask(TaskType.valueOf(jobName));
+            RecurringTaskTrigger trigger = dao.getRecurringTaskTriggerForTask(TaskType.getByName(jobName));
             trigger.setStatus(status);
             dao.updateRecurringTaskTrigger(trigger);
         } catch (DAOException e) {

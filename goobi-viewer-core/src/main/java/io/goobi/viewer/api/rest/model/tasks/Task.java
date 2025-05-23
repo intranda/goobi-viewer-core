@@ -26,8 +26,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,7 +37,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import io.goobi.viewer.api.rest.v1.tasks.TasksResource;
+import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * A process triggered by a REST call using POST and may be monitored via the {@link TasksResource}. Each task has a unique id of type long given
@@ -144,17 +144,17 @@ public class Task {
      * @param type
      * @return {@link Accessibility}
      */
-    public static Accessibility getAccessibility(TaskType type) {
+    public static Accessibility getAccessibility(ITaskType type) {
         switch (type) {
-            case NOTIFY_SEARCH_UPDATE:
-            case PURGE_EXPIRED_DOWNLOAD_TICKETS:
-            case UPDATE_SITEMAP:
-            case UPDATE_DATA_REPOSITORY_NAMES:
-            case UPDATE_UPLOAD_JOBS:
-            case INDEX_USAGE_STATISTICS:
-            case PRERENDER_PDF:
+            case TaskType.NOTIFY_SEARCH_UPDATE:
+            case TaskType.PURGE_EXPIRED_DOWNLOAD_TICKETS:
+            case TaskType.UPDATE_SITEMAP:
+            case TaskType.UPDATE_DATA_REPOSITORY_NAMES:
+            case TaskType.UPDATE_UPLOAD_JOBS:
+            case TaskType.INDEX_USAGE_STATISTICS:
+            case TaskType.PRERENDER_PDF:
                 return Accessibility.TOKEN;
-            case SEARCH_EXCEL_EXPORT:
+            case TaskType.SEARCH_EXCEL_EXPORT:
                 return Accessibility.SESSION;
             default:
                 return Accessibility.ADMIN;

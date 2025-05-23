@@ -91,10 +91,10 @@ public class AdminDeveloperBean implements Serializable {
     private final String viewerThemeName;
 
     public AdminDeveloperBean() {
-        this(DataManager.getInstance().getConfiguration(), "viewer");
+        this(DataManager.getInstance().getConfiguration());
     }
 
-    public AdminDeveloperBean(Configuration config, String persistenceUnitName) {
+    public AdminDeveloperBean(Configuration config) {
         viewerThemeName = config.getTheme();
         try {
             this.scheduler = new StdSchedulerFactory().getScheduler();
@@ -155,9 +155,8 @@ public class AdminDeveloperBean implements Serializable {
         String error = command.getErrorOutput().trim();
         if (ret > 0) {
             throw new IOException(error);
-        } else {
-            return Path.of(out);
         }
+        return Path.of(out);
     }
 
     public void activateAutopull() throws DAOException {
@@ -215,11 +214,11 @@ public class AdminDeveloperBean implements Serializable {
                 .orElse(this.getThemeVersion());
     }
 
-    private DateTimeFormatter getDateTimeFormatter() {
+    private static DateTimeFormatter getDateTimeFormatter() {
         return DateTimeFormatter.ofPattern(BeanUtils.getNavigationHelper().getDateTimePattern());
     }
 
-    private Optional<ViewerMessage> getLastSuccessfullTask() throws DAOException {
+    private static Optional<ViewerMessage> getLastSuccessfullTask() throws DAOException {
         return DataManager.getInstance()
                 .getDao()
                 .getViewerMessages(0, 1, "lastUpdateTime", true,
@@ -244,7 +243,7 @@ public class AdminDeveloperBean implements Serializable {
     private static void persistTriggerStatus(String jobName, TaskTriggerStatus status) {
         try {
             IDAO dao = DataManager.getInstance().getDao();
-            RecurringTaskTrigger trigger = dao.getRecurringTaskTriggerForTask(TaskType.valueOf(jobName));
+            RecurringTaskTrigger trigger = dao.getRecurringTaskTriggerForTask(TaskType.getByName(jobName));
             trigger.setStatus(status);
             dao.updateRecurringTaskTrigger(trigger);
         } catch (DAOException e) {
