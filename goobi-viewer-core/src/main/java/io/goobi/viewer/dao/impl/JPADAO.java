@@ -85,8 +85,8 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
 import io.goobi.viewer.model.crowdsourcing.questions.Question;
+import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.JobStatus;
-import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.upload.UploadJob;
@@ -7016,7 +7016,7 @@ public class JPADAO implements IDAO {
     }
 
     @Override
-    public RecurringTaskTrigger getRecurringTaskTriggerForTask(TaskType task) throws DAOException {
+    public RecurringTaskTrigger getRecurringTaskTriggerForTask(ITaskType task) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
