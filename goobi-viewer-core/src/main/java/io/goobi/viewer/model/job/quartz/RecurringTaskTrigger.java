@@ -24,7 +24,7 @@ package io.goobi.viewer.model.job.quartz;
 
 import java.time.LocalDateTime;
 
-import io.goobi.viewer.model.job.TaskType;
+import io.goobi.viewer.model.job.ITaskType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -42,7 +42,7 @@ public class RecurringTaskTrigger {
         //empty
     }
 
-    public RecurringTaskTrigger(TaskType type, String scheduleExpression) {
+    public RecurringTaskTrigger(ITaskType type, String scheduleExpression) {
         this.taskType = type.name();
         this.scheduleExpression = scheduleExpression;
         status = TaskTriggerStatus.RUNNING;

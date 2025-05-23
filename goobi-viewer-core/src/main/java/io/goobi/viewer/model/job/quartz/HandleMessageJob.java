@@ -32,6 +32,7 @@ import org.quartz.Job;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.MessageQueueException;
+import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
 
 /**
@@ -44,10 +45,10 @@ public class HandleMessageJob extends AbstractViewerJob implements IViewerJob, J
 
     private static final Logger logger = LogManager.getLogger(HandleMessageJob.class);
 
-    private final TaskType taskType;
+    private final ITaskType taskType;
     private final String cronSchedulerExpression;
 
-    public HandleMessageJob(TaskType taskType, String cronSchedulerExpression, MessageQueueManager messageBroker) {
+    public HandleMessageJob(ITaskType taskType, String cronSchedulerExpression, MessageQueueManager messageBroker) {
         this.taskType = taskType;
         this.cronSchedulerExpression = cronSchedulerExpression;
     }
@@ -59,7 +60,7 @@ public class HandleMessageJob extends AbstractViewerJob implements IViewerJob, J
 
     @Override
     public String getJobName() {
-        return Optional.ofNullable(taskType).map(TaskType::name).orElse("");
+        return Optional.ofNullable(taskType).map(ITaskType::name).orElse("");
     }
 
     @Override
@@ -67,7 +68,7 @@ public class HandleMessageJob extends AbstractViewerJob implements IViewerJob, J
         return cronSchedulerExpression;
     }
 
-    public TaskType getTaskType() {
+    public ITaskType getTaskType() {
         return taskType;
     }
 
