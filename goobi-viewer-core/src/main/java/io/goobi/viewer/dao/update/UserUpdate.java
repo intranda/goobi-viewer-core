@@ -41,34 +41,34 @@ public class UserUpdate implements IModelUpdate {
     @Override
     @SuppressWarnings("unchecked")
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
-        boolean ret = false;
+        int count = 0;
 
         // Update table name
         if (dao.tableExists("users")) {
-
-            // Delete new table with anonymous use, if already created by EclipseLink
+            // Delete new table with anonymous user, if already created by EclipseLink
             if (dao.tableExists(TABLE_NAME_CURRENT)) {
                 boolean newTableEmpty = dao.getNativeQueryResults("SELECT * FROM " + TABLE_NAME_CURRENT).size() <= 1;
                 if (newTableEmpty) {
-                    dao.executeUpdate("DROP TABLE " + TABLE_NAME_CURRENT);
+                    count += dao.executeUpdate("DROP TABLE " + TABLE_NAME_CURRENT);
+                    count += dao.executeUpdate("RENAME TABLE users TO " + TABLE_NAME_CURRENT);
+                } else {
+                    count += dao.executeUpdate("DROP TABLE users"); // TODO fails due to foreign key constraints
                 }
-
+            } else {
+                count += dao.executeUpdate("RENAME TABLE users TO " + TABLE_NAME_CURRENT);
             }
-
-            dao.executeUpdate("RENAME TABLE users TO " + TABLE_NAME_CURRENT);
-            ret = true;
         }
 
         if (dao.columnsExists(TABLE_NAME_CURRENT, "use_gravatar")) {
             List<Long> userIds = dao.getNativeQueryResults("SELECT user_id FROM " + TABLE_NAME_CURRENT + " WHERE use_gravatar=1");
             for (Long userId : userIds) {
-                dao.executeUpdate("UPDATE " + TABLE_NAME_CURRENT + " SET avatar_type='GRAVATAR' WHERE " + TABLE_NAME_CURRENT + ".user_id=" + userId);
+                count += dao.executeUpdate(
+                        "UPDATE " + TABLE_NAME_CURRENT + " SET avatar_type='GRAVATAR' WHERE " + TABLE_NAME_CURRENT + ".user_id=" + userId);
             }
-            dao.executeUpdate(StringConstants.SQL_ALTER_TABLE + TABLE_NAME_CURRENT + " DROP COLUMN use_gravatar");
-            ret = true;
+            count += dao.executeUpdate(StringConstants.SQL_ALTER_TABLE + TABLE_NAME_CURRENT + " DROP COLUMN use_gravatar");
         }
 
-        return ret;
+        return count > 0;
     }
 
 }
