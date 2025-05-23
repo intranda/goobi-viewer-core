@@ -39,8 +39,7 @@ public class CommentGroupUpdate implements IModelUpdate {
     /** {@inheritDoc} */
     @Override
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
-        performUpdates(dao);
-        return true;
+        return performUpdates(dao);
     }
 
     /**
@@ -51,15 +50,17 @@ public class CommentGroupUpdate implements IModelUpdate {
      * @param dao a {@link io.goobi.viewer.dao.IDAO} object.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    private static void performUpdates(IDAO dao) throws DAOException {
+    private static boolean performUpdates(IDAO dao) throws DAOException {
         // Add "all" comment group, if not yet exists
         CommentGroup commentGroup = dao.getCommentGroupUnfiltered();
         if (commentGroup == null) {
             commentGroup = CommentGroup.createCommentGroupAll();
             if (DataManager.getInstance().getDao().addCommentGroup(commentGroup)) {
                 logger.info("Added static \"all comments\" comment group to DB.");
+                return true;
             }
         }
 
+        return false;
     }
 }
