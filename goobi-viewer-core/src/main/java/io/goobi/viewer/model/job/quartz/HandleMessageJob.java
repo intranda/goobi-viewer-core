@@ -74,12 +74,15 @@ public class HandleMessageJob extends AbstractViewerJob implements IViewerJob, J
 
     @Override
     public void execute(Map<String, Object> params, MessageQueueManager messageBroker) {
-        TaskType type = TaskType.valueOf(params.get("taskType").toString());
+        ITaskType type = TaskType.getByName(params.get("taskType").toString());
+        if (type == null) {
+            logger.error("Task type not found: {}", params.get("tastType"));
+            return;
+        }
+        
         boolean runInQueue = (boolean) params.get("runInQueue");
         ViewerMessage message = new ViewerMessage(type.name());
-        params.forEach((key, value) -> {
-            message.getProperties().put(key, value.toString());
-        });
+        params.forEach((key, value) -> message.getProperties().put(key, value.toString()));
         if (runInQueue) {
             try {
                 messageBroker.addToQueue(message);
