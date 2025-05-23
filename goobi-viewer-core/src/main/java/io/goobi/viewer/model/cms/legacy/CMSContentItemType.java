@@ -32,7 +32,6 @@ public enum CMSContentItemType {
     TOC,
     RSS,
     SEARCH,
-    GLOSSARY,
     COMPONENT,
     TAGS,
     METADATA,

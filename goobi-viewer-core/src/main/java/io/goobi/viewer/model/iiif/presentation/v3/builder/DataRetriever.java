@@ -193,6 +193,11 @@ public class DataRetriever {
         return docs.stream().map(doc -> createStructElement(doc)).filter(Objects::nonNull).toList();
     }
 
+    public long countContainedRecords(String solrField, String collectionName) throws IndexUnreachableException, PresentationException {
+        String query = "+{field}:{collection} +(ISWORK:* ISANCHOR:*)".replace("{field}", solrField).replace("{collection}", collectionName);
+        return DataManager.getInstance().getSearchIndex().getHitCount(query, List.of(SearchHelper.getAllSuffixes()));
+    }
+
     /**
      * 
      * @param doc
