@@ -1501,6 +1501,17 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(Long.valueOf(2), result.get(0).getId());
         assertEquals(Long.valueOf(3), result.get(1).getId());
     }
+    
+    /**
+     * @see JPADAO#getAdminUsers()
+     * @verifies return correct rows
+     */
+    @Test
+    void getAdminUsers_shouldReturnCorrectRows() throws Exception {
+        List<User> result = DataManager.getInstance().getDao().getAdminUsers();
+        assertEquals(1, result.size());
+        assertEquals(Long.valueOf(1), result.get(0).getId());
+    }
 
     /**
      * @see JPADAO#getSearches(User,int,int,String,boolean,Map)

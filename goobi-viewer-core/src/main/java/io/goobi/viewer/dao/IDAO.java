@@ -165,6 +165,13 @@ public interface IDAO {
     public List<User> getUsersByPropertyValue(String propertyName, String propertyValue) throws DAOException;
 
     /**
+     * 
+     * @return List<User> where User.superuser == true
+     * @throws DAOException
+     */
+    public List<User> getAdminUsers() throws DAOException;
+
+    /**
      * <p>
      * getUser.
      * </p>

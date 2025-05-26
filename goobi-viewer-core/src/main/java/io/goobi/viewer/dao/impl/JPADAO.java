@@ -412,6 +412,26 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * {@inheritDoc}
+     * 
+     * @should return correct rows
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<User> getAdminUsers() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT a FROM User a WHERE a.superuser = true";
+            return em.createQuery(query)
+                    .setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH)
+                    .getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
      * @param param
      * @return Generated query
      */
@@ -3059,6 +3079,7 @@ public class JPADAO implements IDAO {
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     @Override
     public List<String> getCMSPageAccessConditions() throws DAOException {
         return getNativeQueryResults("SELECT property_value FROM cms_properties WHERE property_key = '" + CMSProperty.KEY_ACCESS_CONDITION + "'");
