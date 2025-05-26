@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.cms.widgets.embed;
 
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
@@ -107,5 +108,17 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
     @Override
     public TranslatedText getTitle() {
         return widget.getTitle();
+    }
+
+    public boolean canEdit() {
+        return this.getId() != null;
+    }
+
+    public String getAdminBackendUrl() {
+        if (this.widget != null) {
+            return this.getWidget().getAdminBackendUrl();
+        } else {
+            return PrettyUrlTools.getAbsolutePageUrl("adminCmsWidgetsAdd");
+        }
     }
 }

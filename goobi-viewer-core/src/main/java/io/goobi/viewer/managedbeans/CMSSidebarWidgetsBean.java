@@ -32,7 +32,6 @@ import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -114,7 +113,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
         for (DefaultWidgetType widgetType : DefaultWidgetType.values()) {
             WidgetDisplayElement widget = new WidgetDisplayElement(
                     ViewerResourceBundle.getTranslations(widgetType.getLabel(), true),
-                    new SimpleMetadataValue(""),
+                    ViewerResourceBundle.getTranslations(widgetType.getDescription(), true),
                     Collections.emptyList(),
                     WidgetGenerationType.DEFAULT,
                     widgetType);
@@ -143,7 +142,8 @@ public class CMSSidebarWidgetsBean implements Serializable {
         for (CustomSidebarWidget widget : customWidgets) {
             WidgetDisplayElement element = new WidgetDisplayElement(
                     widget.getTitle(),
-                    widget.getShortDescription(MAX_DESCRIPTION_LENGTH),
+                    widget.isHasShortDescription() ? widget.getShortDescription(MAX_DESCRIPTION_LENGTH)
+                            : ViewerResourceBundle.getTranslations(widget.getType().getDescription(), true),
                     queryAdditionalInformation ? getEmbeddingPages(widget) : Collections.emptyList(),
                     WidgetGenerationType.CUSTOM,
                     widget.getType(), widget.getId(), CustomWidgetType.WIDGET_FIELDFACETS.equals(widget.getType()) ? null : widget);
@@ -163,7 +163,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
         }
     }
 
-    private static List<CMSPage> getEmbeddingPages(CustomSidebarWidget widget) {
+    public static List<CMSPage> getEmbeddingPages(CustomSidebarWidget widget) {
         try {
             return DataManager.getInstance().getDao().getPagesUsingWidget(widget);
         } catch (DAOException e) {

@@ -36,7 +36,7 @@ import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.managedbeans.PersistentStorageBean;
+import io.goobi.viewer.managedbeans.storage.ApplicationBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.maps.FeatureSet;
@@ -54,7 +54,7 @@ public class GeoMapUpdateHandler implements MessageHandler<MessageStatus> {
     @Override
     public MessageStatus call(ViewerMessage ticket, MessageQueueManager queueManager) {
         try {
-            PersistentStorageBean applicationBean = BeanUtils.getPersistentStorageBean();
+            ApplicationBean applicationBean = BeanUtils.getPersistentStorageBean();
             IDAO dao = DataManager.getInstance().getDao();
             if (applicationBean == null) {
                 throw new PresentationException("PersistentStorageBean not loaded. Cannot store geomaps");
@@ -73,7 +73,7 @@ public class GeoMapUpdateHandler implements MessageHandler<MessageStatus> {
     }
 
     public static void updateMapInCache(GeoMap geomap) throws PresentationException {
-        PersistentStorageBean applicationBean = BeanUtils.getPersistentStorageBean();
+        ApplicationBean applicationBean = BeanUtils.getPersistentStorageBean();
         if (applicationBean == null) {
             throw new PresentationException("PersistentStorageBean not loaded. Cannot store geomaps");
         } else {
@@ -81,7 +81,7 @@ public class GeoMapUpdateHandler implements MessageHandler<MessageStatus> {
         }
     }
 
-    private static void updateMapInCache(PersistentStorageBean applicationBean, GeoMap geomap) throws PresentationException {
+    private static void updateMapInCache(ApplicationBean applicationBean, GeoMap geomap) throws PresentationException {
         List<FeatureSet> featureSets = new ArrayList<>(geomap.getFeatureSets());
         for (FeatureSet featureSet : featureSets) {
             try {

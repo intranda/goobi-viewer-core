@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.managedbeans;
+package io.goobi.viewer.managedbeans.storage;
 
 import java.io.Serializable;
 import java.util.List;
@@ -27,22 +27,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import jakarta.faces.view.ViewScoped;
+import io.goobi.viewer.controller.DataStorage;
 import jakarta.inject.Inject;
-import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * @author florian
- *
+ * Bean to store variables within a certain scope. Should be extended with beans appplying to a certain jsf scope
  */
-@Named
-@ViewScoped
-public class ViewBean implements Serializable {
+public abstract class StorageBean implements DataStorage, Serializable {
 
-    private static final long serialVersionUID = 1408443482641406496L;
-
-    private Map<String, Object> viewObjects = new ConcurrentHashMap<String, Object>();
+    private Map<String, Object> objects = new ConcurrentHashMap<String, Object>();
 
     private static final boolean ALLOW_CACHING = true;
 
@@ -50,28 +44,28 @@ public class ViewBean implements Serializable {
     private HttpServletRequest httpRequest;
 
     public Object get(String key) {
-        return viewObjects.get(key);
+        return objects.get(key);
     }
 
-    public Object put(String key, Object object) {
-        return this.viewObjects.put(key, object);
+    public void put(String key, Object object) {
+        this.objects.put(key, object);
     }
 
     public boolean containsKey(String key) {
-        return ALLOW_CACHING && this.viewObjects.containsKey(key);
+        return ALLOW_CACHING && this.objects.containsKey(key);
     }
 
     public HttpServletRequest getRequest() {
         return this.httpRequest;
     }
 
-    public void cleanViewObjects() {
-        this.viewObjects = new ConcurrentHashMap<String, Object>();
+    public void cleanObjects() {
+        this.objects = new ConcurrentHashMap<String, Object>();
     }
 
     public void removeObjects(String keyRegex) {
-        List<String> keys = this.viewObjects.keySet().stream().filter(key -> key.matches(keyRegex)).collect(Collectors.toList());
-        keys.forEach(this.viewObjects::remove);
+        List<String> keys = this.objects.keySet().stream().filter(key -> key.matches(keyRegex)).collect(Collectors.toList());
+        keys.forEach(this.objects::remove);
     }
 
 }

@@ -30,6 +30,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
@@ -248,6 +249,10 @@ public class CustomSidebarWidget implements IPolyglott, Serializable {
         } else {
             return new SimpleMetadataValue("");
         }
+    }
+
+    public String getAdminBackendUrl() {
+        return PrettyUrlTools.getAbsolutePageUrl("adminCmsWidgetsEdit", this.getId());
     }
 
 }

@@ -27,7 +27,9 @@ import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.widgets.type.AutomaticWidgetType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
 import io.goobi.viewer.model.translations.IPolyglott;
@@ -216,6 +218,18 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
             return StringUtils.compare(this.getTitle().getText(), other.getTitle().getText());
         }
         return typeCompare;
+    }
+
+    public String getAdminBackendUrl() {
+        if (this.getId() != null) {
+            if (this.contentType.equals(AutomaticWidgetType.WIDGET_CMSGEOMAP)) {
+                return PrettyUrlTools.getAbsolutePageUrl("adminCmsGeoMapEdit", this.getId());
+            } else {
+                return PrettyUrlTools.getAbsolutePageUrl("adminCmsWidgetsEdit", this.getId());
+            }
+        } else {
+            return PrettyUrlTools.getAbsolutePageUrl("adminCmsWidgetsAdd");
+        }
     }
 
 }

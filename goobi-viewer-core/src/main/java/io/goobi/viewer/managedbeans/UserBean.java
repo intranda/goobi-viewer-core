@@ -37,14 +37,6 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,6 +53,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.filters.LoginFilter;
+import io.goobi.viewer.managedbeans.storage.SessionBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -80,8 +73,15 @@ import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Primarily for user authentication.
@@ -459,6 +459,7 @@ public class UserBean implements Serializable {
 
     /**
      * Redirects to the given URL. The type of response
+     * 
      * @param response {@link HttpServletResponse} from {@link LoginResult}
      * @param url Redirect URL
      * @throws IOException
@@ -588,7 +589,7 @@ public class UserBean implements Serializable {
                         .ifPresentOrElse(ActiveDocumentBean::resetAccess,
                                 () -> logger.trace("Cannot reset access permissions in ActiveDocumentBean. Not instantiated yet"));
                 BeanUtils.getBeanFromRequest(request, "sessionBean", SessionBean.class)
-                        .ifPresentOrElse(SessionBean::cleanSessionObjects,
+                        .ifPresentOrElse(SessionBean::cleanObjects,
                                 () -> logger.trace("Cannot clear session storage in SessionBean. Not instantiated yet"));
                 BeanUtils.getBeanFromRequest(request, "displayConditions", DisplayConditions.class)
                         .ifPresentOrElse(DisplayConditions::clearCache,

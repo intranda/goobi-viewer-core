@@ -64,10 +64,10 @@ import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.MetadataBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
-import io.goobi.viewer.managedbeans.PersistentStorageBean;
 import io.goobi.viewer.managedbeans.SearchBean;
-import io.goobi.viewer.managedbeans.SessionBean;
 import io.goobi.viewer.managedbeans.UserBean;
+import io.goobi.viewer.managedbeans.storage.ApplicationBean;
+import io.goobi.viewer.managedbeans.storage.SessionBean;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.utils.ServletUtils;
@@ -388,10 +388,10 @@ public final class BeanUtils {
      * getPersistentStorageBean.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.PersistentStorageBean} object
+     * @return a {@link io.goobi.viewer.managedbeans.storage.ApplicationBean} object
      */
-    public static PersistentStorageBean getPersistentStorageBean() {
-        return (PersistentStorageBean) getBeanByName("applicationBean", PersistentStorageBean.class);
+    public static ApplicationBean getPersistentStorageBean() {
+        return (ApplicationBean) getBeanByName("applicationBean", ApplicationBean.class);
     }
 
     /**
@@ -509,7 +509,7 @@ public final class BeanUtils {
      * getSessionBean.
      * </p>
      *
-     * @return a {@link io.goobi.viewer.managedbeans.SessionBean} object
+     * @return a {@link io.goobi.viewer.managedbeans.storage.SessionBean} object
      */
     public static SessionBean getSessionBean() {
         Object bean = getBeanByName("sessionBean", SessionBean.class);

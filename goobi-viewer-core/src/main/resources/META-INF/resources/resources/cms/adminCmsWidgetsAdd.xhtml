@@ -129,6 +129,10 @@
 												label="#{msg.label__cms_page_title}"
 												required="#{widget.isDefaultLocaleSelected()}"
 												helpText="#{msg.help__cms__edit_widget__title}" />
+												<viewerForms:textInputField value="#{widget.description.text}"
+													label="#{msg.label__cms_page_description}"
+													required="false"
+													helpText="#{msg.help__cms__edit_widget__description}" />
 										</viewerForms:inputFormBlock>
 
 										<viewerForms:inputFormBlock
@@ -184,6 +188,11 @@
 												selectValues="#{cmsBean.getLuceneFields(true)}"
 												itemValue="#{var}" itemLabel="#{msg[var]}"
 												helpText="#{msg.help__cms__edit_widget__solrfield}" />
+												
+											<viewerForms:textInputField value="#{widget.description.text}"
+												label="#{msg.label__cms_page_description}"
+												required="false"
+												helpText="#{msg.help__cms__edit_widget__description}" />
 
 											<viewerForms:textInputField
 												label="#{msg.cms__edit_widget__filter_query_label}"
@@ -209,6 +218,10 @@
 												label="#{msg.label__cms_page_title}"
 												required="#{widget.isDefaultLocaleSelected()}"
 												helpText="#{msg.help__cms__edit_widget__title}" />
+												<viewerForms:textInputField value="#{widget.description.text}"
+													label="#{msg.label__cms_page_description}"
+													required="false"
+													helpText="#{msg.help__cms__edit_widget__description}" />
 										</viewerForms:inputFormBlock>
 
 										<viewerForms:inputFormBlock
@@ -320,6 +333,23 @@
 										<h2>#{msg.title__did_you_know}</h2>
 										<p class="admin__did-you-know-text">#{msg.cms__edit_widget__sidebar_information}</p>
 									</div>
+									
+									<!-- WHERE IS THIS WIDGET DISPLAYED -->
+										<ui:fragment rendered="#{not empty cmsSidebarWidgetsBean.getEmbeddingPages(widget)}">
+											
+											<div class="admin__default-block">
+												<div class="cms-widgets-overview__single-widget-info-label">#{msg.cms_widgets__usage}:</div>
+												<div class="cms-widgets-overview__single-widget-info-data-wrapper">
+													<ui:repeat var="page" value="#{cmsSidebarWidgetsBean.getEmbeddingPages(widget)}">
+														<div class="cms-widgets-overview__single-widget-info-data">
+															<a href="#{page.adminBackendUrl}">#{page.getTitle()}</a>
+														</div>
+													</ui:repeat>
+												</div>
+											</div>
+										
+									</ui:fragment>
+									
 								</div>
 							</ui:fragment>
 

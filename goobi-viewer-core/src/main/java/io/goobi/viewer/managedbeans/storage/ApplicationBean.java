@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.managedbeans;
+package io.goobi.viewer.managedbeans.storage;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -55,7 +55,7 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 @Named("applicationBean")
 @Eager
 @ApplicationScoped
-public class PersistentStorageBean implements DataStorage, Serializable {
+public class ApplicationBean implements DataStorage, Serializable {
 
     private static final long serialVersionUID = -5127431137772735598L;
 
