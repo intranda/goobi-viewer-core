@@ -31,4 +31,6 @@ import jakarta.inject.Named;
 @RequestScoped
 public class RequestBean extends StorageBean {
 
+    private static final long serialVersionUID = -4589836778504093591L;
+
 }

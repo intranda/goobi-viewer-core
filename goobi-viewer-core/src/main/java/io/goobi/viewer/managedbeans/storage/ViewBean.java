@@ -31,4 +31,6 @@ import jakarta.inject.Named;
 @ViewScoped
 public class ViewBean extends StorageBean {
 
+    private static final long serialVersionUID = -4945671206580194569L;
+
 }

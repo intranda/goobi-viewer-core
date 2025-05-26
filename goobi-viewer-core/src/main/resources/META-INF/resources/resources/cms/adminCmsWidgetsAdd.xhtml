@@ -335,12 +335,13 @@
 									</div>
 									
 									<!-- WHERE IS THIS WIDGET DISPLAYED -->
-										<ui:fragment rendered="#{not empty cmsSidebarWidgetsBean.getEmbeddingPages(widget)}">
+										<f:event type="preRenderView" listener="#{viewBean.put('embeddingPages', cmsSidebarWidgetsBean.getEmbeddingPages(widget))}" />
+										<ui:fragment rendered="#{not empty viewBean.get('embeddingPages')}">
 											
 											<div class="admin__default-block">
 												<div class="cms-widgets-overview__single-widget-info-label">#{msg.cms_widgets__usage}:</div>
 												<div class="cms-widgets-overview__single-widget-info-data-wrapper">
-													<ui:repeat var="page" value="#{cmsSidebarWidgetsBean.getEmbeddingPages(widget)}">
+													<ui:repeat var="page" value="#{viewBean.get('embeddingPages')}">
 														<div class="cms-widgets-overview__single-widget-info-data">
 															<a href="#{page.adminBackendUrl}">#{page.getTitle()}</a>
 														</div>

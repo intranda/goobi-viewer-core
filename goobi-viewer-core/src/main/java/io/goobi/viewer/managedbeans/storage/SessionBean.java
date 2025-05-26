@@ -31,4 +31,6 @@ import jakarta.inject.Named;
 @SessionScoped
 public class SessionBean extends StorageBean {
 
+    private static final long serialVersionUID = -4828711470203824408L;
+
 }

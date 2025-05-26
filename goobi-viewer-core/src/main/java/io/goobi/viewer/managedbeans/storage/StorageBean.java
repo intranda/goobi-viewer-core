@@ -36,6 +36,8 @@ import jakarta.servlet.http.HttpServletRequest;
  */
 public abstract class StorageBean implements DataStorage, Serializable {
 
+    private static final long serialVersionUID = -5738074975696037653L;
+
     private Map<String, Object> objects = new ConcurrentHashMap<String, Object>();
 
     private static final boolean ALLOW_CACHING = true;
