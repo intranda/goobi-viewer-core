@@ -7131,7 +7131,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<HighlightData> getPastHighlightsForDate(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters, LocalDateTime date) throws DAOException {
-        return getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date > a.dateEnd", Map.of("date", date));
+        return getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date >= a.dateEnd", Map.of("date", date));
     }
 
     @Override
