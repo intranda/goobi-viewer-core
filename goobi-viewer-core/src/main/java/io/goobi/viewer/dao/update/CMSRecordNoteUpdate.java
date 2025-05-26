@@ -38,18 +38,18 @@ import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
  */
 public class CMSRecordNoteUpdate implements IModelUpdate {
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.update.IModelUpdate#update(io.goobi.viewer.dao.IDAO)
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
-        dao.executeUpdate("UPDATE cms_record_notes SET note_type='SINGLE' WHERE note_type IS NULL");
-        dao.executeUpdate("ALTER TABLE cms_record_notes MODIFY record_title varchar(4096)");
-        dao.executeUpdate("ALTER TABLE cms_record_notes ALTER record_title SET DEFAULT ''");
-        dao.executeUpdate("ALTER TABLE cms_record_notes MODIFY query varchar(4096)");
-        dao.executeUpdate("ALTER TABLE cms_record_notes ALTER query SET DEFAULT ''");
-        dao.executeUpdate("ALTER TABLE cms_record_notes ALTER record_pi SET DEFAULT ''");
-        return true;
+        int count = 0;
+        count += dao.executeUpdate("UPDATE cms_record_notes SET note_type='SINGLE' WHERE note_type IS NULL");
+        count += dao.executeUpdate("ALTER TABLE cms_record_notes MODIFY record_title varchar(4096)");
+        count += dao.executeUpdate("ALTER TABLE cms_record_notes ALTER record_title SET DEFAULT ''");
+        count += dao.executeUpdate("ALTER TABLE cms_record_notes MODIFY query varchar(4096)");
+        count += dao.executeUpdate("ALTER TABLE cms_record_notes ALTER query SET DEFAULT ''");
+        count += dao.executeUpdate("ALTER TABLE cms_record_notes ALTER record_pi SET DEFAULT ''");
+
+        return count > 0;
     }
 
 }
