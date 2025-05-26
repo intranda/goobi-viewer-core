@@ -19,38 +19,18 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.cms.legacy;
+package io.goobi.viewer.managedbeans.storage;
 
-public enum CMSContentItemType {
-    TEXT,
-    HTML,
-    MEDIA,
-    SOLRQUERY,
-    PAGELIST,
-    COLLECTION,
-    TILEGRID,
-    TOC,
-    RSS,
-    SEARCH,
-    COMPONENT,
-    TAGS,
-    METADATA,
-    CAMPAIGNOVERVIEW,
-    BOOKMARKLISTS,
-    BROWSETERMS,
-    GEOMAP,
-    SLIDER;
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 
-    /**
-     * This method evaluates the text from cms-template xml files to select the correct item type
-     *
-     * @param name
-     * @return CMSContentItemType
-     */
-    public static CMSContentItemType getByName(String name) {
-        if (name != null) {
-            return CMSContentItemType.valueOf(name.toUpperCase());
-        }
-        return null;
-    }
+/**
+ * @author florian store variables in view scope
+ */
+@Named
+@ViewScoped
+public class ViewBean extends StorageBean {
+
+    private static final long serialVersionUID = -4945671206580194569L;
+
 }

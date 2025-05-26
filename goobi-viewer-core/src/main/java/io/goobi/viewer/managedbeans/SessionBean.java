@@ -21,68 +21,29 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.storage.StorageBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 /**
- * @author florian
- *
+ * @author florian Store variables in session scope
  */
 @Named
 @SessionScoped
-public class SessionBean implements Serializable {
+public class SessionBean extends StorageBean {
 
-    private static final long serialVersionUID = 1408443482641406496L;
-
+    private static final long serialVersionUID = -4828711470203824408L;
+    
     private static final Logger logger = LogManager.getLogger(SessionBean.class);
-
-    private Map<String, Object> sessionObjects = new ConcurrentHashMap<>();
-
-    private static final boolean ALLOW_CACHING = true;
-
-    @Inject
-    private HttpServletRequest request;
-
-    public Object get(String key) {
-        return sessionObjects.get(key);
-    }
-
-    public Object put(String key, Object object) {
-        return this.sessionObjects.put(key, object);
-    }
-
-    public boolean containsKey(String key) {
-        return ALLOW_CACHING && this.sessionObjects.containsKey(key);
-    }
-
-    public HttpServletRequest getRequest() {
-        return this.request;
-    }
-
-    public void cleanSessionObjects() {
-        this.sessionObjects = new ConcurrentHashMap<>();
-    }
-
-    public void removeObjects(String keyRegex) {
-        List<String> keys = this.sessionObjects.keySet().stream().filter(key -> key.matches(keyRegex)).toList();
-        keys.forEach(this.sessionObjects::remove);
-    }
 
     /**
      * Removes the user and permission attributes from the session.
@@ -103,8 +64,8 @@ public class SessionBean implements Serializable {
             // Remove priv maps
             AccessConditionUtils.clearSessionPermissions(session);
 
-            cleanSessionObjects();
-            
+            cleanObjects();
+
             BeanUtils.getBeanFromRequest(request, "collectionViewBean", CollectionViewBean.class)
                     .ifPresentOrElse(CollectionViewBean::invalidate,
                             () -> logger.trace("Cannot invalidate CollectionViewBean. Not instantiated yet?"));

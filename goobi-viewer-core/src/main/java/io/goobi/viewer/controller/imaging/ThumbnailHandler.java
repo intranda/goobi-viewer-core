@@ -383,12 +383,12 @@ public class ThumbnailHandler {
     }
 
     public static ImageFileFormat getImageFileFormat(PhysicalElement page, String format) {
-        if ("MASTER".equalsIgnoreCase(format)) {
+        if ("MASTER".equalsIgnoreCase(format) && page != null) {
             logger.trace("Fetching master image format via mime type: {}", page.getMimeType());
             return ImageFileFormat.getImageFileFormatFromMimeType(page.getMimeType());
         }
         ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(format);
-        if (iff == null) {
+        if (iff == null && page != null) {
             logger.trace("Fetching image format via file extension: {}", page.getFileNameExtension());
             return ImageFileFormat.getImageFileFormatFromFileExtension(page.getFileNameExtension());
         }

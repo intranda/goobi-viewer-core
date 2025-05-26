@@ -44,7 +44,7 @@ public class SocketBean {
 
     private static final Logger logger = LogManager.getLogger(SocketBean.class);
 
-    private static final Long MIN_IDLE_TIME = 2l;
+    private static final Long MIN_IDLE_TIME = 2L;
 
     private final AtomicBoolean shouldSend = new AtomicBoolean(false);
 
@@ -57,6 +57,7 @@ public class SocketBean {
      */
     public SocketBean() {
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(createRunnable(), 0, MIN_IDLE_TIME, TimeUnit.SECONDS);
+
     }
 
     /**

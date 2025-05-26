@@ -346,9 +346,10 @@ class StringToolsTest {
      */
     @Test
     void findBestMatch_shouldReturnBestMatch() throws Exception {
-        assertEquals("amet, sit, ipsum!", StringTools.findBestMatch("Lorem ipsum dolor sit amet", Arrays.asList("foo", "foo lorem", "amet, sit, ipsum!"), "en"));
+        assertEquals("amet, sit, ipsum!",
+                StringTools.findBestMatch("Lorem ipsum dolor sit amet", Arrays.asList("foo", "foo lorem", "amet, sit, ipsum!"), "en"));
     }
-    
+
     /**
      * @see StringTools#findBestMatch(String,List<String>,Locale)
      * @verifies return null if no matches found
@@ -356,5 +357,13 @@ class StringToolsTest {
     @Test
     void findBestMatch_shouldReturnNullIfNoMatchesFound() throws Exception {
         Assertions.assertNull(StringTools.findBestMatch("Lorem ipsum dolor sit amet", Arrays.asList(";)", "", "zyx"), "en"));
+    }
+
+    @Test
+    void test_truncateText() {
+        Assertions.assertEquals("abcde", StringTools.truncateText("abcde", 5));
+        Assertions.assertEquals("a...", StringTools.truncateText("abcde", 4));
+        Assertions.assertEquals("abc...", StringTools.truncateText("abc def gh", 6));
+        Assertions.assertEquals("abc def...", StringTools.truncateText("abc def ghij", 10));
     }
 }
