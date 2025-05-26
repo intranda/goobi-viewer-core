@@ -333,7 +333,7 @@
 										<h2>#{msg.title__did_you_know}</h2>
 										<p class="admin__did-you-know-text">#{msg.cms__edit_widget__sidebar_information}</p>
 									</div>
-									
+																		
 									<!-- WHERE IS THIS WIDGET DISPLAYED -->
 										<f:event type="preRenderView" listener="#{viewBean.put('embeddingPages', cmsSidebarWidgetsBean.getEmbeddingPages(widget))}" />
 										<ui:fragment rendered="#{not empty viewBean.get('embeddingPages')}">
@@ -348,7 +348,6 @@
 													</ui:repeat>
 												</div>
 											</div>
-										
 									</ui:fragment>
 									
 								</div>

@@ -29,8 +29,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 
 import io.goobi.viewer.exceptions.DAOException;
@@ -46,6 +44,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * A class containing all conditions to possibly check for when deciding whether to display a page element for a record page
@@ -134,6 +133,10 @@ public class VisibilityCondition {
             return false;
         }
 
+        if (pageType == null) {
+            pageType = PageType.other;
+        }
+
         List<String> docTypes = new ArrayList<>();
 
         if (viewManager.getTopStructElement() != null && StringUtils.isNotBlank(viewManager.getTopStructElement().getDocStructType())) {
@@ -207,6 +210,10 @@ public class VisibilityCondition {
 
         if (page == null) {
             return false;
+        }
+
+        if (pageType == null) {
+            pageType = PageType.other;
         }
 
         Collection<FileType> existingFileTypes = properties.getFileTypesForPage(page, true);

@@ -501,10 +501,10 @@ public class TOC implements Serializable {
      */
     public List<TOCElement> getTocElements() {
         if (tocElementMap != null) {
-            return tocElementMap.get(StringConstants.DEFAULT_NAME);
+            return tocElementMap.getOrDefault(StringConstants.DEFAULT_NAME, Collections.emptyList());
         }
 
-        return null;
+        return Collections.emptyList();
     }
 
     /**
