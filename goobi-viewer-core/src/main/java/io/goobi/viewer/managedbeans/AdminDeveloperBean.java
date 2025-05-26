@@ -195,13 +195,11 @@ public class AdminDeveloperBean implements Serializable {
     }
 
     public LocalDateTime getLastAutopull() throws DAOException {
-
-        return getLastSuccessfullTask().map(ViewerMessage::getLastUpdateTime).orElse(null);
-
+        return ViewerMessage.getLastSuccessfulTask(TaskType.PULL_THEME.name()).map(ViewerMessage::getLastUpdateTime).orElse(null);
     }
 
     public VersionInfo getLastVersionInfo() throws DAOException, IOException {
-        return getLastSuccessfullTask()
+        return ViewerMessage.getLastSuccessfulTask(TaskType.PULL_THEME.name())
                 .map(m -> {
                     try {
                         return PullThemeHandler.getVersionInfo(m.getProperties().get(ViewerMessage.MESSAGE_PROPERTY_INFO),
@@ -216,15 +214,6 @@ public class AdminDeveloperBean implements Serializable {
 
     private static DateTimeFormatter getDateTimeFormatter() {
         return DateTimeFormatter.ofPattern(BeanUtils.getNavigationHelper().getDateTimePattern());
-    }
-
-    private static Optional<ViewerMessage> getLastSuccessfullTask() throws DAOException {
-        return DataManager.getInstance()
-                .getDao()
-                .getViewerMessages(0, 1, "lastUpdateTime", true,
-                        Map.of("taskName", TaskType.PULL_THEME.name(), "messageStatus", MessageStatus.FINISH.name()))
-                .stream()
-                .findAny();
     }
 
     public String getThemeName() {
