@@ -170,7 +170,7 @@ public class VisibilityCondition {
                         .map(List::of)
                         .orElse(Collections.emptyList()))
                 && this.mimeType.matches(List.of(baseMimeType))
-                && this.views.matches(List.of(pageType))
+                && this.views.matches(List.of(Optional.ofNullable(pageType).orElse(PageType.other)))
                 && this.docTypes.matches(docTypes)
                 && this.numPages.matches(viewManager.getPageLoader().getNumPages())
                 && this.tocSize.matches(getToc(viewManager).getTocElements().size());
@@ -212,16 +212,12 @@ public class VisibilityCondition {
             return false;
         }
 
-        if (pageType == null) {
-            pageType = PageType.other;
-        }
-
         Collection<FileType> existingFileTypes = properties.getFileTypesForPage(page, true);
         BaseMimeType baseMimeType = page.getBaseMimeType();
         return checkAccess(page, request, properties)
                 && this.fileTypes.matches(existingFileTypes)
                 && this.mimeType.matches(List.of(baseMimeType))
-                && this.views.matches(List.of(pageType));
+                && this.views.matches(List.of(Optional.ofNullable(pageType).orElse(PageType.other)));
     }
 
     public boolean checkAccess(PhysicalElement page, HttpServletRequest request, RecordPropertyCache properties)
