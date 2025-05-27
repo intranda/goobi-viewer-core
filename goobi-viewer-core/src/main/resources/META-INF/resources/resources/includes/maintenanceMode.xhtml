@@ -14,11 +14,13 @@
 	<ui:fragment rendered="#{adminBean.maintenanceMode.enabled}">
 		<div id="maintenanceModeBanner" class="maintenance-banner">
 			<div id="maintenanceModeBanner" class="maintenance-banner__outer">
-				<div class="container">
+				<div class="container"> 
 					<div class="maintenance-banner__wrapper">
 						<i class="fa fa-coffee maintenance-banner__icon"></i>
-						<h:outputText styleClass="maintenance-banner__text" escape="false"
+						<h:panelGroup styleClass="maintenance-banner__text"  layout="block">
+						<h:outputText escape="false" 
 							value="#{adminBean.maintenanceMode.getText(navigationHelper.localeString)}"></h:outputText>
+						</h:panelGroup>
 
 						<button type="button"
 							class="fancy-close maintenance-banner__close-button"
