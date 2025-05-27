@@ -27,37 +27,6 @@
         <h:panelGroup rendered="#{configurationBean.advancedSearchEnabled}">
             
             <h:form id="searchAdvancedForm" prependId="false" styleClass="search-advanced__form">
-            
-            
-<!--             <ui:fragment rendered="#{configurationBean.searchResultGroupsEnabled}"> -->
-<!--                 ENTITY SELECTION -->
-                
-<!--                 <h2 class="search-advanced__entry-area-title">#{msg.search__search_type}</h2> -->
-                
-                
-<!--                 <div class="search-advanced__entity-tabs"> -->
-<!--                     <div class="search-advanced__entity-tabs-links-wrapper"> -->
-                    
-<!--                     LINK TO STANDARD -->
-<!--                     <h:outputLink styleClass="search-advanced__entity-tab-link -standard #{searchBean.activeResultGroupName == '-' ? '-active' : ''}" -->
-<!--                                 value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/">#{msg.search__search_default_all_group}</h:outputLink> -->
-                    
-<!--                     LINK TO DEFINED ENTITY GROUP(S) -->
-<!--                         <ui:repeat value="#{configurationBean.searchResultGroupNames}" var="groupName" varStatus="status"> -->
-<!--                             <h:outputLink styleClass="search-advanced__entity-tab-link -group#{status.index} #{groupName == searchBean.activeResultGroupName ? '-active' : ''}" -->
-<!--                                 value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{groupName}/-/"> -->
-<!--                                 <ui:fragment rendered="#{groupName == searchBean.activeResultGroupName}"> -->
-<!--                                     #{msg[groupName]}  -->
-<!--                                 </ui:fragment> -->
-<!--                                 <ui:fragment rendered="#{groupName != searchBean.activeResultGroupName}"> -->
-<!--                                     #{msg[groupName]} -->
-<!--                                 </ui:fragment> -->
-<!--                                 <f:passThroughAttribute name="aria-label" value="#{msg[groupName]}" /> -->
-<!--                             </h:outputLink> -->
-<!--                         </ui:repeat> -->
-<!--                     </div> -->
-<!--                 </div> -->
-<!--              </ui:fragment> -->
 
           			<h2 class="search-advanced__entry-area-title">#{msg.search__search_query}</h2>
 

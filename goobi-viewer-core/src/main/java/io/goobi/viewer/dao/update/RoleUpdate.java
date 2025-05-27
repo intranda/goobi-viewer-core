@@ -39,11 +39,14 @@ public class RoleUpdate implements IModelUpdate {
                 boolean newTableEmpty = dao.getNativeQueryResults("SELECT * FROM user_roles").size() <= 1;
                 if (newTableEmpty) {
                     dao.executeUpdate("DROP TABLE user_roles");
+                    dao.executeUpdate("RENAME TABLE roles TO user_roles");
+                } else {
+                    dao.executeUpdate("DROP TABLE roles");
                 }
 
+            } else {
+                dao.executeUpdate("RENAME TABLE roles TO user_roles");
             }
-
-            dao.executeUpdate("RENAME TABLE roles TO user_roles");
             return true;
         }
 

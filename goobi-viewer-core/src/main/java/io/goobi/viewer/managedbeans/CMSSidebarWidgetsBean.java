@@ -29,14 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.faces.component.UIComponent;
-import jakarta.faces.component.html.HtmlPanelGroup;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
@@ -55,9 +49,16 @@ import io.goobi.viewer.model.jsf.DynamicContent;
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.DynamicContentType;
 import io.goobi.viewer.model.maps.GeoMap;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.component.html.HtmlPanelGroup;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
- * <p>CMSSidebarWidgetsBean class.</p>
+ * <p>
+ * CMSSidebarWidgetsBean class.
+ * </p>
  */
 @Named("cmsSidebarWidgetsBean")
 @RequestScoped
@@ -79,12 +80,15 @@ public class CMSSidebarWidgetsBean implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(CMSSidebarWidgetsBean.class);
 
+    private static final int MAX_DESCRIPTION_LENGTH = 40;
 
     @Inject
     private CmsBean cmsBean;
 
     /**
-     * <p>getAllWidgets.</p>
+     * <p>
+     * getAllWidgets.
+     * </p>
      *
      * @return a {@link java.util.List} object
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -94,7 +98,9 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>getAllWidgets.</p>
+     * <p>
+     * getAllWidgets.
+     * </p>
      *
      * @param queryAdditionalInformation a boolean
      * @return a {@link java.util.List} object
@@ -136,7 +142,8 @@ public class CMSSidebarWidgetsBean implements Serializable {
         for (CustomSidebarWidget widget : customWidgets) {
             WidgetDisplayElement element = new WidgetDisplayElement(
                     widget.getTitle(),
-                    ViewerResourceBundle.getTranslations(widget.getType().getDescription(), true),
+                    widget.isHasShortDescription() ? widget.getShortDescription(MAX_DESCRIPTION_LENGTH)
+                            : ViewerResourceBundle.getTranslations(widget.getType().getDescription(), true),
                     queryAdditionalInformation ? getEmbeddingPages(widget) : Collections.emptyList(),
                     WidgetGenerationType.CUSTOM,
                     widget.getType(), widget.getId(), CustomWidgetType.WIDGET_FIELDFACETS.equals(widget.getType()) ? null : widget);
@@ -156,7 +163,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
         }
     }
 
-    private static List<CMSPage> getEmbeddingPages(CustomSidebarWidget widget) {
+    public static List<CMSPage> getEmbeddingPages(CustomSidebarWidget widget) {
         try {
             return DataManager.getInstance().getDao().getPagesUsingWidget(widget);
         } catch (DAOException e) {
@@ -166,7 +173,9 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>deleteWidget.</p>
+     * <p>
+     * deleteWidget.
+     * </p>
      *
      * @param id a {@link java.lang.Long} object
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -176,7 +185,9 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>sidebarGroup</code>.</p>
+     * <p>
+     * Getter for the field <code>sidebarGroup</code>.
+     * </p>
      *
      * @param elements a {@link java.util.List} object
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
@@ -194,7 +205,9 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>sidebarGroup</code>.</p>
+     * <p>
+     * Getter for the field <code>sidebarGroup</code>.
+     * </p>
      *
      * @return a {@link jakarta.faces.component.html.HtmlPanelGroup} object
      */
@@ -206,7 +219,9 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>sidebarGroup</code>.</p>
+     * <p>
+     * Setter for the field <code>sidebarGroup</code>.
+     * </p>
      *
      * @param sidebarGroup a {@link jakarta.faces.component.html.HtmlPanelGroup} object
      */

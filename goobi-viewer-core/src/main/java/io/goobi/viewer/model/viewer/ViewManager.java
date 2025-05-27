@@ -116,6 +116,7 @@ import io.goobi.viewer.model.calendar.CalendarView;
 import io.goobi.viewer.model.citation.Citation;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
+import io.goobi.viewer.model.citation.CitationList;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.files.external.ExternalFilesDownloader;
@@ -146,6 +147,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.event.ValueChangeEvent;
 import jakarta.faces.model.SelectItem;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * Holds information about the currently open record (structure, pages, etc.). Used to reduced the size of ActiveDocumentBean.
@@ -213,7 +215,7 @@ public class ViewManager implements Serializable {
     private Pair<Optional<String>, Optional<String>> archiveTreeNeighbours = Pair.of(Optional.empty(), Optional.empty());
     private List<CopyrightIndicatorStatus> copyrightIndicatorStatuses = null;
     private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
-    private Map<CitationLinkLevel, List<CitationLink>> citationLinks = new HashMap<>();
+    private Map<CitationLinkLevel, CitationList> citationLinks = new HashMap<>();
     private List<String> externalResourceUrls = null;
     private List<PhysicalResource> downloadResources = null;
 
@@ -338,8 +340,17 @@ public class ViewManager implements Serializable {
      */
     public CalendarView createCalendarView() throws IndexUnreachableException, PresentationException {
         // Init calendar view
-        String anchorPi = anchorStructElement != null ? anchorStructElement.getPi() : (topStructElement.isAnchor() ? pi : null);
-        return new CalendarView(pi, anchorPi, topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants.CALENDAR_YEAR));
+        String anchorPi = null;
+        if (anchorStructElement != null) {
+            anchorPi = anchorStructElement.getPi();
+        } else if (topStructElement.isAnchor() || topStructElement.isGroup()) {
+            anchorPi = pi;
+        } else if (topStructElement.isGroupMember()) {
+            anchorPi = topStructElement.getGroupMemberships().get(topStructElement.getGroupIdField());
+        }
+        String anchorField = topStructElement.isVolume() ? SolrConstants.PI_ANCHOR : topStructElement.getGroupIdField();
+        return new CalendarView(pi, anchorPi, anchorField,
+                topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants.CALENDAR_YEAR));
 
     }
 
@@ -483,7 +494,7 @@ public class ViewManager implements Serializable {
         try {
             ImageInformation info = imageDeliveryBean.getImages().getImageInformation(page, pageType);
             if (info.getWidth() * info.getHeight() == 0) {
-                return info.getId().toString();
+                return UriBuilder.fromUri(info.getId()).path("info.json").build().toString();
             }
             return JsonTools.getAsJson(info);
         } catch (ContentLibException | ViewerConfigurationException | URISyntaxException | JsonProcessingException e) {
@@ -835,6 +846,7 @@ public class ViewManager implements Serializable {
                     }
                 } else if (dim.width * dim.height == 0 || (maxWidth > 0 && maxWidth < dim.width) || (maxHeight > 0 && maxHeight < dim.height)) {
                     // nothing
+                    continue; //NOSONAR Checkstyle tweak
                 } else if (origImageSize == null || origImageSize.height * origImageSize.width == 0) {
                     options.add(new DownloadOption(option.getLabel(), getImageFormat(option.getFormat(), imageFilename), option.getBoxSizeInPixel()));
                 } else {
@@ -4196,12 +4208,14 @@ public class ViewManager implements Serializable {
         }
 
         // Populate values
-        if (this.citationLinks.get(level) == null) {
-            this.citationLinks.put(level, CitationTools
-                    .generateCitationLinksForLevel(DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks(), level, this));
+        if (this.citationLinks.get(level) == null || !this.citationLinks.get(level).isCurrent(this)) {
+            this.citationLinks.put(level, new CitationList(CitationTools
+                    .generateCitationLinksForLevel(DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks(), level, this),
+                    level,
+                    this));
         }
 
-        return this.citationLinks.get(level);
+        return this.citationLinks.get(level).getList();
     }
 
     /**

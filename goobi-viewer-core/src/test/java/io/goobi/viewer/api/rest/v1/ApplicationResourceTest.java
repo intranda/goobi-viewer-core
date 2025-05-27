@@ -24,14 +24,11 @@ package io.goobi.viewer.api.rest.v1;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @author florian
@@ -40,27 +37,11 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiInfo;
 class ApplicationResourceTest extends AbstractRestApiTest {
 
     /**
-     * @throws java.lang.Exception
-     */
-    @BeforeEach
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @AfterEach
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.ApplicationResource#getApiInfo()}.
      */
     @Test
     void testGetApiInfo() {
-        try(Response response = target(urls.path().build())
+        try (Response response = target(urls.path().build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {

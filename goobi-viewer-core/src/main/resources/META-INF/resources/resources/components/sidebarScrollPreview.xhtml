@@ -13,7 +13,7 @@
 		<div id="sidebarScrollPreview" class="sidebar-scroll-preview"> 
 			<div class="sidebar-scroll-preview__inner">
 				<div class="sidebar-scroll-preview__grid" data-target="sidebarScrollPreviewContainer">
-					<ui:repeat varStatus="status" var="page" value="#{activeDocumentBean.viewManager.allPages}">
+					<ui:repeat var="page" value="#{activeDocumentBean.viewManager.allPages}">
 						<div class="sidebar-scroll-preview__item">
 							<ui:fragment rendered="#{page != null}">
 								
@@ -24,7 +24,7 @@
 											<img data-script="fadeIn" loading="lazy" class="sidebar-scroll-preview__image" src="#{imageDelivery.thumbs.getThumbnailUrl(page, 400, 400)}" />
 											<span class="sidebar-scroll-preview__button-text">#{page.order}:#{page.orderLabel}</span>
 										</span>
-										<f:passThroughAttribute name="data-target" value="pageNumber-#{status.index + 1}" />
+										<f:passThroughAttribute name="data-target" value="pageNumber-#{page.order}" /> 
 									</h:outputLink>								
 								</ui:fragment>	
 				
@@ -63,27 +63,32 @@
 	  		// FUNCTION TO SCROLL SIDEBAR THUMBNAIL PREVIEW
 		    function scrollSidebarPreviewFunction(imageActiveIndexSidebar, jumpStraight) {
 				// console.log("scrollSidebarPreviewFunction", imageActiveIndexSidebar, jumpStraight);
-	  			// JUMP STRAIGHT WITHOUT SCROLL ANIMATION
-	  			if (jumpStraight == 1) {
-		            $(sidebarScrollPreviewSimplebarContainer).animate({scrollTop: $(sidebarScrollPreviewSimplebarContainer).scrollTop() 
-		            	+ ($(imageActiveIndexSidebar).offset().top 
-		            	- $(sidebarScrollPreviewSimplebarContainer).offset().top
-		        	)}, 0); 
-	  				}
-	  			// SCROLL ANIMATION WHILE SCROLLING DOWN IN CANVAS
-	  			else {
-		            $(sidebarScrollPreviewSimplebarContainer).animate({scrollTop: $(sidebarScrollPreviewSimplebarContainer).scrollTop() 
-		            	+ ($(imageActiveIndexSidebar).offset().top 
-		            	- $(sidebarScrollPreviewSimplebarContainer).offset().top
-		        	)}, 180);
-	  			}
 
+				// CHECK IF CONTAINER IS SCROLLABLE FOR JUMP TO IMAGE THUMB
+				if (typeof sidebarScrollPreviewSimplebarContainer !== "undefined") { 
+		  			// JUMP STRAIGHT WITHOUT SCROLL ANIMATION
+		  			if (jumpStraight == 1) {
+			            $(sidebarScrollPreviewSimplebarContainer).animate({scrollTop: $(sidebarScrollPreviewSimplebarContainer).scrollTop() 
+			            	+ ($(imageActiveIndexSidebar).offset().top 
+			            	- $(sidebarScrollPreviewSimplebarContainer).offset().top
+			        	)}, 0); 
+		  				}
+		  			// SCROLL ANIMATION WHILE SCROLLING DOWN IN CANVAS
+		  			else {
+			            $(sidebarScrollPreviewSimplebarContainer).animate({scrollTop: $(sidebarScrollPreviewSimplebarContainer).scrollTop() 
+			            	+ ($(imageActiveIndexSidebar).offset().top 
+			            	- $(sidebarScrollPreviewSimplebarContainer).offset().top
+			        	)}, 180);
+		  			}
+				}
 				// HIGHLIGHT THE ACTUAL THUMBNAIL WHILE SCROLLING DOWN IN CANVAS
 	            $('[data-target^=pageNumber-]').removeClass('-highlighted');
 	            $(imageActiveIndexSidebar).addClass('-highlighted');
 	         	
+	            // A11Y: ADD ARIA LABEL FOR ACTIVE PAGE
 	            $('[data-target^=pageNumber-]').removeAttr("aria-label");
 	            $(imageActiveIndexSidebar).attr('aria-label', '#{msg.a11y__active_page}');
+				
 		    }
  
 	  		// JUMP TO PAGE IN PREVIEW SIDEBAR AT PAGE LOAD

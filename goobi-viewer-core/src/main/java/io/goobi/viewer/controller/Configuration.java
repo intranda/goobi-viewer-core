@@ -54,10 +54,9 @@ import org.apache.commons.configuration2.builder.ConfigurationBuilderEvent;
 import org.apache.commons.configuration2.builder.ReloadingFileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
-import org.apache.commons.configuration2.event.Event;
-import org.apache.commons.configuration2.event.EventListener;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.ImmutableNode;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -109,6 +108,7 @@ import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.translations.admin.TranslationGroup;
 import io.goobi.viewer.model.translations.admin.TranslationGroup.TranslationGroupType;
 import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
+import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.collections.DcSortingList;
@@ -154,7 +154,6 @@ public class Configuration extends AbstractConfiguration {
      *
      * @param configFilePath a {@link java.lang.String} object.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Configuration(String configFilePath) {
         // Load default config file
         builder =
@@ -172,20 +171,15 @@ public class Configuration extends AbstractConfiguration {
                 logger.error(e.getMessage(), e);
             }
             builder.addEventListener(ConfigurationBuilderEvent.CONFIGURATION_REQUEST,
-                    new EventListener() {
-
-                        @Override
-                        public void onEvent(Event event) {
-                            builder.getReloadingController().checkForReloading(null);
-                        }
-                    });
+                    event -> builder.getReloadingController().checkForReloading(null));
         } else {
             logger.error("Default configuration file not found: {}; Base path is {}", builder.getFileHandler().getFile().getAbsoluteFile(),
                     builder.getFileHandler().getBasePath());
         }
 
         // Load local config file
-        File fileLocal = new File(getConfigLocalPath() + CONFIG_FILE_NAME);
+        String fileName = FilenameUtils.getName(configFilePath);
+        File fileLocal = new File(getConfigLocalPath() + fileName);
         builderLocal =
                 new ReloadingFileBasedConfigurationBuilder<>(XMLConfiguration.class)
                         .configure(new Parameters().properties()
@@ -199,12 +193,15 @@ public class Configuration extends AbstractConfiguration {
             } catch (ConfigurationException e) {
                 logger.error(e.getMessage(), e);
             }
+            logger.trace("adding event listener");
             builderLocal.addEventListener(ConfigurationBuilderEvent.CONFIGURATION_REQUEST,
-                    new EventListener() {
-
-                        @Override
-                        public void onEvent(Event event) {
-                            builderLocal.getReloadingController().checkForReloading(null);
+                    event -> {
+                        // logger.trace("request event");
+                        if (builderLocal.getReloadingController().checkForReloading(null)) {
+                            if (System.currentTimeMillis() - localConfigDisabledTimestamp > 1000) {
+                                localConfigDisabled = false;
+                                logger.info("Local configuration file '{}' reloaded.", fileLocal.getAbsolutePath());
+                            }
                         }
                     });
         }
@@ -212,14 +209,12 @@ public class Configuration extends AbstractConfiguration {
         // Load stopwords
         try {
             stopwords = loadStopwords(getStopwordsFilePath());
-        } catch (
-
-        FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             logger.error(e.getMessage());
-            stopwords = new HashSet<>(0);
+            stopwords = HashSet.newHashSet(0);
         } catch (IOException | IllegalArgumentException e) {
             logger.error(e.getMessage(), e);
-            stopwords = new HashSet<>(0);
+            stopwords = HashSet.newHashSet(0);
         }
     }
 
@@ -237,18 +232,14 @@ public class Configuration extends AbstractConfiguration {
      * @should throw IllegalArgumentException if stopwordsFilePath empty
      * @should throw FileNotFoundException if file does not exist
      */
-    protected static Set<String> loadStopwords(String stopwordsFilePath) throws IOException {
+    protected static Set<String> loadStopwords(final String stopwordsFilePath) throws IOException {
         if (StringUtils.isEmpty(stopwordsFilePath)) {
             throw new IllegalArgumentException("stopwordsFilePath may not be null or empty");
         }
 
-        if (StringUtils.isEmpty(stopwordsFilePath)) {
-            logger.warn("'stopwordsFile' not configured. Stop words cannot be filtered from search queries.");
-            return new HashSet<>();
-        }
-
+        String useStopwordsFilePath = FileTools.adaptPathForWindows(stopwordsFilePath);
         Set<String> ret = new HashSet<>();
-        try (FileReader fr = new FileReader(stopwordsFilePath); BufferedReader br = new BufferedReader(fr)) {
+        try (FileReader fr = new FileReader(useStopwordsFilePath); BufferedReader br = new BufferedReader(fr)) {
             String line;
             while ((line = br.readLine()) != null) {
                 line = line.trim();
@@ -756,7 +747,6 @@ public class Configuration extends AbstractConfiguration {
                 .setSeparator(separator)
                 .setIndentation(indentation)
                 .setFilterQuery(filterQuery);
-        ;
 
         // Recursively add nested metadata configurations
         List<HierarchicalConfiguration<ImmutableNode>> children = sub.configurationsAt("metadata");
@@ -2493,7 +2483,7 @@ public class Configuration extends AbstractConfiguration {
                 logger.warn("Security question '{}' has no configured answers, skipping...", questionKey);
                 continue;
             }
-            Set<String> allowedAnswers = new HashSet<>(answerNodes.size());
+            Set<String> allowedAnswers = HashSet.newHashSet(answerNodes.size());
             for (Object answer : answerNodes) {
                 allowedAnswers.add(((String) answer).toLowerCase());
             }
@@ -4323,6 +4313,19 @@ public class Configuration extends AbstractConfiguration {
     public boolean isPreventProxyCaching() {
         return getLocalBoolean(("performance.preventProxyCaching"), false);
     }
+    
+    /**
+     * <p>
+     * getDatabaseConnectionAttempts.
+     * </p>
+     *
+     * @should return correct value
+     * @return a int.
+     */
+    public int getDatabaseConnectionAttempts() {
+        return getLocalInt("performance.databaseConnectionAttempts", 5);
+    }
+
 
     /**
      * @return Configured value
@@ -5342,6 +5345,22 @@ public class Configuration extends AbstractConfiguration {
         for (HierarchicalConfiguration<ImmutableNode> config : configs) {
             provider.add(new ProviderConfiguration(config));
         }
+        
+        return provider;
+    }
+
+    /**
+     * @param vr {@link VariableReplacer}
+     * @return The list of configurations for IIIF3 providers
+     * @throws PresentationException if a provider or a homepage configuration misses the url or label element
+     */
+    public List<ProviderConfiguration> getIIIFProvider(VariableReplacer vr) throws PresentationException {
+        List<ProviderConfiguration> provider = new ArrayList<>();
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("webapi.iiif.provider");
+        for (HierarchicalConfiguration<ImmutableNode> config : configs) {
+            provider.add(new ProviderConfiguration(config, vr));
+        }
+        
         return provider;
     }
 

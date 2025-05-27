@@ -67,10 +67,10 @@ public class CMSMediaUpdate implements IModelUpdate {
                     dao.getNativeQueryResults("SELECT cms_media_item_id, link_url FROM cms_media_items WHERE link_url IS NOT NULL");
             Map<Long, String> linkUrlMap = new HashMap<>();
             for (Object[] res : results) {
-                if (res[0] instanceof Long && res[1] instanceof byte[]) {
-                    String value = parseUrl((byte[]) res[1]);
+                if (res[0] instanceof Long l && res[1] instanceof byte[] b) {
+                    String value = parseUrl(b);
                     if (value != null) {
-                        linkUrlMap.put((Long) res[0], value);
+                        linkUrlMap.put(l, value);
                     } else {
                         logger.warn("Encountered link url in cms_media_items which could not be parsed at cms_media_item_id = {}", res[0]);
                     }
@@ -91,9 +91,10 @@ public class CMSMediaUpdate implements IModelUpdate {
             }
 
             logger.debug("Done converting  cms_media_items.link_url datatype");
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     protected String parseUrl(byte[] bytes) {

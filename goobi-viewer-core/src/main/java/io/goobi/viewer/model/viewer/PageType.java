@@ -90,6 +90,7 @@ public enum PageType {
     adminUserTerms("admin/userterms", "admin__terms_of_use__title", adminDashboard),
     adminCreateRecord("admin/record/new", "admin__create_record__title", adminDashboard),
     adminThemes("admin/themes", "admin__themes__title", adminDashboard),
+    adminThemesEdit("admin/themes/edit", "admin__themes__edit__title", adminThemes),
     adminClients("admin/clients", "admin__clients", adminDashboard),
     adminClientsEdit("admin/clients/edit", "admin__clients__edit__title", adminClients),
     adminConfigEditor("admin/config", "admin__config_editor__title", adminDashboard),
@@ -132,6 +133,7 @@ public enum PageType {
     adminCmsSlidersEdit("admin/cms/slider/edit", "cms__edit_slider__title", adminCmsSliders),
     adminCookieBanner("admin/legal/cookies", "label__cookie_banner", adminDashboard),
     adminDisclaimer("admin/legal/disclaimer", "label__disclaimer", adminDashboard),
+    adminMaintenanceMode("admin/maintenance", "admin__maintenance_mode__title", adminDashboard),
     cmsPageOfWork("page"),
     cmsPage("cms"),
     //admin/crowdsourcing

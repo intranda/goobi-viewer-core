@@ -61,6 +61,7 @@ import org.apache.solr.common.SolrDocument;
 
 import de.intranda.api.annotation.wa.ImageResource;
 import de.intranda.api.iiif.IIIFUrlResolver;
+import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.image.v3.ImageInformation3;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.api.iiif.presentation.enums.Format;
@@ -95,6 +96,7 @@ import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.variables.VariableReplacer;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
@@ -319,7 +321,9 @@ public abstract class AbstractBuilder {
      * @return Optional<URI>
      */
     protected Optional<URI> getRightsStatement(StructElement ele) {
-        return getSolrFieldValue(ele, this.config.getIIIFRightsField())
+        VariableReplacer vr = new VariableReplacer(ele);
+        return Optional.ofNullable(vr.replaceFirst(this.config.getIIIFRightsField()))
+                .filter(StringUtils::isNotBlank)
                 .map(value -> {
                     try {
                         return new URI(value);
@@ -743,6 +747,22 @@ public abstract class AbstractBuilder {
         return provider;
     }
 
+    private IIIFAgent getProvider(ProviderConfiguration providerConfig, VariableReplacer variableReplacer) {
+        IIIFAgent provider = new IIIFAgent(providerConfig.getUri(), ViewerResourceBundle.getTranslations(providerConfig.getLabel(), false));
+
+        providerConfig.getHomepages().forEach(homepageConfig -> {
+            IMetadataValue label = ViewerResourceBundle.getTranslations(homepageConfig.getLabel(), false);
+            provider.addHomepage(new LabeledResource(homepageConfig.getUri(), "Text", Format.TEXT_HTML.getLabel(), label));
+        });
+
+        providerConfig.getLogos()
+                .forEach(
+                        uri -> provider
+                                .addLogo(new ImageResource(uri, ImageFileFormat.getImageFileFormatFromFileExtension(uri.toString()).getMimeType())));
+
+        return provider;
+    }
+
     /**
      * 
      * @param pi
@@ -771,11 +791,7 @@ public abstract class AbstractBuilder {
         try {
             String thumbUrl = this.thumbs.getThumbnailUrl(ele);
             if (StringUtils.isNotBlank(thumbUrl)) {
-                ImageResource thumb = new ImageResource(new URI(thumbUrl));
-                if (IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {
-                    String imageInfoURI = IIIFUrlResolver.getIIIFImageBaseUrl(thumbUrl);
-                    thumb.setService(new ImageInformation3(imageInfoURI));
-                }
+                ImageResource thumb = new ImageResource(new URI(thumbUrl), getFormat(thumbUrl), getImageInfoIfIIIF(thumbUrl));
                 return thumb;
             }
         } catch (URISyntaxException e) {
@@ -784,18 +800,40 @@ public abstract class AbstractBuilder {
         return null;
     }
 
+    private String getFormat(String thumbUrl) {
+        return ImageFileFormat.getImageFileFormatFromFileExtension(thumbUrl).getMimeType();
+    }
+
+    private Optional<ImageInformation> getImageInfoIfIIIF(String thumbUrl) {
+        if (IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {
+            String imageInfoURI = IIIFUrlResolver.getIIIFImageBaseUrl(thumbUrl);
+            return Optional.of(new ImageInformation3(imageInfoURI));
+        } else {
+            return Optional.empty();
+        }
+    }
+
     protected ImageResource getThumbnail(StructElement ele, int pageNo) {
         try {
             String thumbUrl = this.thumbs.getThumbnailUrl(pageNo, ele.getPi());
             if (StringUtils.isNotBlank(thumbUrl)) {
-                ImageResource thumb = new ImageResource(new URI(thumbUrl));
-                if (IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {
-                    String imageInfoURI = IIIFUrlResolver.getIIIFImageBaseUrl(thumbUrl);
-                    thumb.setService(new ImageInformation3(imageInfoURI));
-                }
+                ImageResource thumb = new ImageResource(new URI(thumbUrl), getFormat(thumbUrl), getImageInfoIfIIIF(thumbUrl));
                 return thumb;
             }
         } catch (URISyntaxException | IndexUnreachableException | PresentationException | DAOException | ViewerConfigurationException e) {
+            logger.warn("Unable to retrieve thumbnail url", e);
+        }
+        return null;
+    }
+
+    protected ImageResource getThumbnail(PhysicalElement page) {
+        try {
+            String thumbUrl = this.thumbs.getThumbnailUrl(page);
+            if (StringUtils.isNotBlank(thumbUrl)) {
+                ImageResource thumb = new ImageResource(new URI(thumbUrl), getFormat(thumbUrl), getImageInfoIfIIIF(thumbUrl));
+                return thumb;
+            }
+        } catch (URISyntaxException e) {
             logger.warn("Unable to retrieve thumbnail url", e);
         }
         return null;

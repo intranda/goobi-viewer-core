@@ -1345,7 +1345,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 term = SearchHelper.cleanUpSearchTerm(term);
                 String unescapedTerm = term;
                 term = term.replace("\\*", "*"); // unescape falsely escaped truncation
-                if (term.length() > 0 && !DataManager.getInstance().getConfiguration().getStopwords().contains(term)) {
+                if (!term.isEmpty() && !DataManager.getInstance().getConfiguration().getStopwords().contains(term)) {
                     if (fuzzySearchEnabled) {
                         // Fuzzy search term augmentation
                         String[] wildcards = SearchHelper.getWildcardsTokens(term);
@@ -1378,7 +1378,7 @@ public class SearchBean implements SearchInterface, Serializable {
             }
             // Construct inner query part
             String innerQuery = SearchHelper.buildTermQuery(preparedTerms);
-            if (innerQuery.length() > 0) {
+            if (!innerQuery.isEmpty()) {
                 StringBuilder sbOuter = new StringBuilder();
                 if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
                     // No filters defined or ALL
@@ -1632,7 +1632,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * <p>
-     * getActiveResultGroupName.
+     * getActiveContext.
      * </p>
      *
      * @return activeResultGroup name; "-" if none set
@@ -1675,7 +1675,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * <p>
-     * getActiveResultGroupName.
+     * getActiveResultGroupName. For URL building, use getActiveContext() instead.
      * </p>
      *
      * @return activeResultGroup name; "-" if none set
@@ -1841,7 +1841,7 @@ public class SearchBean implements SearchInterface, Serializable {
         if (oPath.isPresent() && oPath.get().isCmsPage()) {
             facets.removeFacetAction(facetQuery, "");
             String url = PrettyUrlTools.getAbsolutePageUrl(StringConstants.PREFIX_PRETTY + "cmsOpenPage6", oPath.get().getCmsPage().getId(),
-                    getActiveResultGroupName(), this.getExactSearchString(), oPath.get().getCmsPage().getListPage(), this.getSortString(),
+                    getActiveContext(), this.getExactSearchString(), oPath.get().getCmsPage().getListPage(), this.getSortString(),
                     this.getFacets().getActiveFacetString());
             logger.trace("redirecting to url: {}", url);
             PrettyUrlTools.redirectToUrl(url);
@@ -3028,7 +3028,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return {@link URI}
      */
     private URI getParameterPath(final URI basePath) {
-        URI ret = ViewerPathBuilder.resolve(basePath, getActiveResultGroupName());
+        URI ret = ViewerPathBuilder.resolve(basePath, getActiveContext());
         // URL-encode query if not yet encoded
         String exactSearchString = getExactSearchString();
         ret = ViewerPathBuilder.resolve(ret, exactSearchString);
@@ -3482,7 +3482,7 @@ public class SearchBean implements SearchInterface, Serializable {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
                 return PrettyUrlTools.getAbsolutePageUrl(
                         StringConstants.PRETTY_SEARCHADVANCED5,
-                        getActiveResultGroupName(),
+                        getActiveContext(),
                         getExactSearchString(),
                         getCurrentPage(),
                         getSortString(),
@@ -3490,7 +3490,7 @@ public class SearchBean implements SearchInterface, Serializable {
             case SearchHelper.SEARCH_TYPE_TERMS:
                 return PrettyUrlTools.getAbsolutePageUrl(
                         StringConstants.PRETTY_SEARCHTERM5,
-                        getActiveResultGroupName(),
+                        getActiveContext(),
                         getExactSearchString(),
                         getCurrentPage(),
                         getSortString(),
@@ -3498,7 +3498,7 @@ public class SearchBean implements SearchInterface, Serializable {
             default:
                 return PrettyUrlTools.getAbsolutePageUrl(
                         StringConstants.PRETTY_NEWSEARCH5,
-                        getActiveResultGroupName(),
+                        getActiveContext(),
                         getExactSearchString(),
                         getCurrentPage(),
                         getSortString(),

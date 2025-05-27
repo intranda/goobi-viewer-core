@@ -46,22 +46,26 @@ public class CalendarView implements Serializable {
 
     private final String pi;
     private final String anchorPi;
+    private final String anchorField;
     private String year;
     /** Calendar representation of this record's child elements. */
     private List<CalendarItemMonth> calendarItems = new ArrayList<>();
+    private List<String> volumeYears = null;
 
     /**
      * Constructor.
      *
      * @param pi Record identifier
      * @param anchorPi Anchor record identifier (must be same as pi if this is an anchor)
+     * @param anchorField
      * @param year Year of a volume; null, if this is an anchor!
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public CalendarView(String pi, String anchorPi, String year) throws IndexUnreachableException, PresentationException {
+    public CalendarView(String pi, String anchorPi, String anchorField, String year) throws IndexUnreachableException, PresentationException {
         this.pi = pi;
         this.anchorPi = anchorPi;
+        this.anchorField = anchorField != null ? anchorField : SolrConstants.PI_ANCHOR;
         this.year = year;
 
         if (year != null) {
@@ -95,9 +99,9 @@ public class CalendarView implements Serializable {
      */
     public void populateCalendar() throws PresentationException, IndexUnreachableException {
         if (anchorPi != null && anchorPi.equals(pi)) {
-            calendarItems = CalendarBean.populateMonthsWithDays(year, null, " AND " + SolrConstants.PI_ANCHOR + ":" + anchorPi);
+            calendarItems = CalendarBean.populateMonthsWithDays(year, null, " +" + anchorField + ":\"" + anchorPi + "\"");
         } else {
-            calendarItems = CalendarBean.populateMonthsWithDays(year, null, " AND " + SolrConstants.PI_TOPSTRUCT + ":" + pi);
+            calendarItems = CalendarBean.populateMonthsWithDays(year, null, " +" + SolrConstants.PI_TOPSTRUCT + ":\"" + pi + "\"");
         }
         logger.trace("Calendar items: {}", calendarItems.size());
     }
@@ -113,12 +117,17 @@ public class CalendarView implements Serializable {
      * @should only return volume years that have YEARMONTHDAY field
      */
     public List<String> getVolumeYears() throws PresentationException, IndexUnreachableException {
-        if (anchorPi == null) {
-            return Collections.emptyList();
+        if (volumeYears == null) {
+            if (anchorPi == null) {
+                volumeYears = Collections.emptyList();
+            } else {
+                String query = "+" + anchorField + ":\"" + anchorPi + "\" +" + SolrConstants.CALENDAR_DAY + ":*";
+                logger.trace("Volume years query: {}", query);
+                volumeYears = SearchHelper.getFacetValues(query, SolrConstants.CALENDAR_YEAR, 1);
+            }
         }
 
-        return SearchHelper.getFacetValues("+" + SolrConstants.PI_ANCHOR + ":" + anchorPi + " +" + SolrConstants.CALENDAR_DAY + ":*",
-                SolrConstants.CALENDAR_YEAR, 1);
+        return volumeYears;
     }
 
     /**

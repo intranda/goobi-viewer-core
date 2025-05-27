@@ -508,8 +508,13 @@ public class NavigationHelper implements Serializable {
 
     }
 
+    /**
+     * 
+     * @param pageType
+     * @param labels
+     * @return List<LabeledLink>
+     */
     protected List<LabeledLink> createAdminBreadcrumbs(PageType pageType, List<List<String>> labels) {
-
         PageType breadcrumbType = pageType;
         List<LabeledLink> links = new ArrayList<>();
         Iterator<List<String>> labelIterator = labels.iterator();
@@ -1985,7 +1990,7 @@ public class NavigationHelper implements Serializable {
                 SearchBean sb = BeanUtils.getSearchBean();
                 if (sb != null) {
                     String pageUrl = PrettyUrlTools.getRelativePageUrl("newSearch5",
-                            sb.getActiveResultGroupName(),
+                            sb.getActiveContext(),
                             sb.getExactSearchString(),
                             sb.getCurrentPage(),
                             sb.getSortString(),

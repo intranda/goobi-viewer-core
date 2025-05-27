@@ -265,6 +265,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      * @throws RestApiException If no user session exists or if the user has no access to the requested list
      * @throws ContentNotFoundException If no list with the given key was found
      */
+    @Override
     public BookmarkList getSharedBookmarkList(String shareKey) throws DAOException, RestApiException, ContentNotFoundException {
         BookmarkList bookmarkList = DataManager.getInstance().getDao().getBookmarkListByShareKey(shareKey);
 
@@ -302,8 +303,7 @@ public class SessionBookmarkResourceBuilder extends AbstractBookmarkResourceBuil
      */
     @Override
     public BookmarkList getBookmarkListById(Long id) throws DAOException, IOException, RestApiException {
-        BookmarkList bookmarkList = DataManager.getInstance().getBookmarkManager().getOrCreateBookmarkList(session);
-        return bookmarkList;
+        return DataManager.getInstance().getBookmarkManager().getOrCreateBookmarkList(session);
     }
 
     /* (non-Javadoc)

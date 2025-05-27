@@ -106,7 +106,7 @@ var viewerJS = (function () {
         viewerJS.initDisallowDownload();
                
         // init bookmarks if enabled
-        if ( bookmarksEnabled ) { 
+        if ( window.bookmarksEnabled ) { 
             viewerJS.bookmarks.init( {
                 root: rootURL,
                 rest: this.getRestApiUrl(),

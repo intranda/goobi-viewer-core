@@ -24,10 +24,6 @@ package io.goobi.viewer.model.cms.pages.content;
 import java.util.Collections;
 import java.util.Optional;
 
-import jakarta.faces.component.UIComponent;
-import jakarta.faces.component.html.HtmlPanelGroup;
-import jakarta.faces.context.FacesContext;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -40,6 +36,9 @@ import io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent;
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.JsfComponent;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.component.html.HtmlPanelGroup;
+import jakarta.faces.context.FacesContext;
 
 /**
  * Wraps a {@link CMSContent} within a {@link CMSPage}
@@ -75,14 +74,14 @@ public class CMSContentItem {
 
     private UIComponent uiComponent;
 
-    public CMSContentItem(CMSContentItem orig) {
+    public CMSContentItem(CMSContentItem orig, CMSComponent owningComponent) {
         this.itemId = orig.itemId;
         this.content = orig.content.copy();
         this.label = orig.label;
         this.description = orig.description;
         this.jsfComponent = orig.jsfComponent;
         this.required = orig.required;
-        this.owningComponent = orig.owningComponent;
+        this.owningComponent = owningComponent;
         this.htmlGroup = orig.htmlGroup;
     }
 

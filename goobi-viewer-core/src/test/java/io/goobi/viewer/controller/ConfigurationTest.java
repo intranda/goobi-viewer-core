@@ -105,7 +105,7 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getConfigLocalPath_shouldAddTrailingSlash() {
-        assertEquals("target/configFolder_value/", DataManager.getInstance().getConfiguration().getConfigLocalPath());
+        assertEquals("src/test/resources/", DataManager.getInstance().getConfiguration().getConfigLocalPath());
     }
 
     /**
@@ -609,6 +609,15 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getPageLoaderThreshold_shouldReturnCorrectValue() {
         assertEquals(1000, DataManager.getInstance().getConfiguration().getPageLoaderThreshold());
+    }
+
+    /**
+     * @see Configuration#getDatabaseConnectionAttempts()
+     * @verifies return correct value
+     */
+    @Test
+    void getDatabaseConnectionAttempts_shouldReturnCorrectValue() {
+        assertEquals(3, DataManager.getInstance().getConfiguration().getDatabaseConnectionAttempts());
     }
 
     /**
@@ -2564,10 +2573,10 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void testBrokenConfig() {
         DataManager.getInstance()
-                .injectConfiguration(new Configuration(new File("src/test/resources/config_viewer_broken.test.xml").getAbsolutePath()));
+                .injectConfiguration(new Configuration(new File("src/test/resources/localConfig/config_viewer_broken.test.xml").getAbsolutePath()));
         assertEquals("src/test/resources/localConfig/", DataManager.getInstance().getConfiguration().getConfigLocalPath());
-        assertEquals("src/test/resources/data/viewer/", DataManager.getInstance().getConfiguration().getViewerHome());
-        assertEquals("src/test/resources/data/viewer/data/", DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
+        assertEquals("src/test/resources/data/viewer/broken", DataManager.getInstance().getConfiguration().getViewerHome());
+        assertEquals("src/test/resources/data/viewer/data/broken", DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
 
     }
 
@@ -3169,7 +3178,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getSidebarWidgetUsageCitationLinks_shouldReturnAllConfiguredValues() {
         List<CitationLink> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks();
-        assertEquals(3, result.size());
+        assertEquals(4, result.size());
         {
             CitationLink link = result.get(0);
             assertEquals(CitationLinkType.URL, link.getType());
@@ -3599,7 +3608,7 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @throws MalformedURLException
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      * @see Configuration#isHostProxyWhitelisted(String)
      * @verifies return true if host whitelisted
      */

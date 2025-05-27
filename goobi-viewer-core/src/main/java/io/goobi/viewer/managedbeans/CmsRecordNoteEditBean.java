@@ -77,6 +77,9 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     private static final String RECORD_NOTE_TYPE_SINGLE = "SINGLE";
     private static final String RECORD_NOTE_TYPE_MULTI = "MULTI";
 
+    /** Disables Faces/forwarding in tests. */
+    private boolean testMode = false;
+
     @Inject
     private transient FacesContext facesContext;
 
@@ -159,12 +162,15 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
 
     /**
      * Save the selected note to the database
-     *
+     * 
+     * @should do nothing if node null
+     * @should save new note correctly
+     * @should update note correctly
      */
     public void save() {
         try {
-            CMSRecordNote persistentNote = this.note.copy();
             if (this.note != null && this.note.getId() != null) {
+                CMSRecordNote persistentNote = this.note.copy();
                 boolean success = DataManager.getInstance().getDao().updateRecordNote(persistentNote);
                 if (success) {
                     Messages.info(null, "button__save__success", persistentNote.getNoteTitle().getText());
@@ -172,6 +178,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
                     Messages.error("button__save__error");
                 }
             } else if (this.note != null) {
+                CMSRecordNote persistentNote = this.note.copy();
                 boolean success = DataManager.getInstance().getDao().addRecordNote(persistentNote);
                 if (success) {
                     Messages.info(null, "button__save__success", persistentNote.getNoteTitle().getText());
@@ -180,12 +187,16 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
                 }
             } else {
                 logger.warn("Attempting to save note, but no note is selected");
+                return;
             }
-            String url = PrettyUrlTools.getAbsolutePageUrl("adminCmsRecordNoteEdit", persistentNote.getId());
-            try {
-                facesContext.getExternalContext().redirect(url);
-            } catch (IOException | NullPointerException e) {
-                logger.error("Error redirecting to database url {}: {}", url, e.toString());
+            CMSRecordNote persistentNote = this.note.copy();
+            if (!testMode) {
+                String url = PrettyUrlTools.getAbsolutePageUrl("adminCmsRecordNoteEdit", persistentNote.getId());
+                try {
+                    facesContext.getExternalContext().redirect(url);
+                } catch (IOException | NullPointerException e) {
+                    logger.error("Error redirecting to database url {}: {}", url, e.toString());
+                }
             }
         } catch (DAOException e) {
             logger.error("Error saving RecordNote", e);
@@ -202,8 +213,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     }
 
     public MetadataElement getMetadataElement() {
-        if (this.metadataElement == null && this.note != null && this.note instanceof CMSSingleRecordNote) {
-            CMSSingleRecordNote n = (CMSSingleRecordNote) this.note;
+        if (this.metadataElement == null && this.note != null && this.note instanceof CMSSingleRecordNote n) {
             try {
                 this.metadataElement = loadMetadataElement(n.getRecordPi(), 0);
             } catch (PresentationException | IndexUnreachableException e) {
@@ -253,8 +263,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
      * @return {@link TranslatedText}
      */
     public TranslatedText createRecordTitle(IMetadataValue label) {
-        if (label instanceof MultiLanguageMetadataValue) {
-            MultiLanguageMetadataValue mLabel = (MultiLanguageMetadataValue) label;
+        if (label instanceof MultiLanguageMetadataValue mLabel) {
             return new TranslatedText(mLabel);
         }
 
@@ -359,4 +368,14 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
     public boolean isSingleRecordNote() {
         return this.note instanceof CMSSingleRecordNote;
     }
+
+    /**
+     * For unit tests.
+     * 
+     * @param testMode the testMode to set
+     */
+    void setTestMode(boolean testMode) {
+        this.testMode = testMode;
+    }
+
 }

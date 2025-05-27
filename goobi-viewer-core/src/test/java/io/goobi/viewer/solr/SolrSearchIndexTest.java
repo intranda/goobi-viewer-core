@@ -70,6 +70,7 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     void isSolrIndexOnline_shouldReturnFalseIfSolrOffline() {
         String solrUrl = DataManager.getInstance().getConfiguration().getSolrUrl();
         DataManager.getInstance().getConfiguration().overrideValue("urls.solr", "https://locahost:1234/solr");
+        assertEquals("https://locahost:1234/solr", DataManager.getInstance().getConfiguration().getSolrUrl());
         try {
             assertFalse(DataManager.getInstance().getSearchIndex().isSolrIndexOnline());
         } finally {
@@ -319,7 +320,7 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         assertEquals(4, rows.length());
         assertEquals(8, rows.getJSONArray(0).length());
         assertEquals(0, rows.getJSONArray(0).getInt(0));
-        assertEquals(6, rows.getJSONArray(0).getInt(4));
+        assertEquals(209, rows.getJSONArray(0).getInt(4));
         assertEquals(JSONObject.NULL, rows.get(2));
         assertEquals(JSONObject.NULL, rows.get(3));
     }

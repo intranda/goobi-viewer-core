@@ -52,18 +52,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.omnifaces.cdi.Push;
-import org.omnifaces.cdi.PushContext;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.DefaultQueueListener;
@@ -73,6 +65,11 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.jms.JMSException;
 import jakarta.jms.QueueSession;
 import jakarta.jms.Session;
@@ -100,14 +97,10 @@ public class MessageQueueBean implements Serializable {
     private boolean paused;
 
     @Inject
-    private transient MessageQueueManager messageBroker;
+    private transient SocketBean socketBean;
 
     @Inject
-    @Push
-    private PushContext messageQueueState;
-    @Inject
-    @Push
-    private PushContext messageQueueStateForHeader;
+    private transient MessageQueueManager messageBroker;
 
     private TableDataProvider<ViewerMessage> lazyModelViewerHistory;
 
@@ -408,8 +401,8 @@ public class MessageQueueBean implements Serializable {
      * </p>
      */
     public void updateMessageQueueState() {
-        messageQueueState.send("update");
-        messageQueueStateForHeader.send("update");
+        this.socketBean.send("{'action':'update', 'subject':'messageQueueState'}");
+
         cleanOldMessages();
     }
 

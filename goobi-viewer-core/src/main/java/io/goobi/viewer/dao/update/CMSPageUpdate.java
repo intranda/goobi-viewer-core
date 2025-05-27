@@ -355,8 +355,6 @@ public class CMSPageUpdate implements IModelUpdate {
                 return contentConverter.createRSSContent(legacyItem);
             case "SEARCH":
                 return contentConverter.createSearchContent(legacyItem);
-            case "GLOSSARY":
-                return contentConverter.createGlossaryContent(legacyItem);
             case "MEDIA":
                 return contentConverter.createMediaContent(legacyItem);
             case "GEOMAP":

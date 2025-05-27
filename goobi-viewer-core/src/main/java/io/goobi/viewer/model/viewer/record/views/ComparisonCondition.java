@@ -12,6 +12,7 @@ public class ComparisonCondition<T extends Number> extends Condition<T> {
         return super.isMatchIfEqual();
     }
 
+    @Override
     public boolean matches(T testValue) {
         if (this.getValue() == null) {
             return true;
@@ -24,21 +25,20 @@ public class ComparisonCondition<T extends Number> extends Condition<T> {
 
     public static ComparisonCondition<Integer> ofInteger(String number) {
         if (StringUtils.isBlank(number) || !number.matches("!?[\\d.]+")) {
-            return new ComparisonCondition<Integer>(null, true);
+            return new ComparisonCondition<>(null, true);
         }
         boolean matchIfLarger = !number.startsWith("!");
         if (number.contains(".")) {
             throw new IllegalArgumentException("Given number '" + number + "' is not an integer");
-        } else {
-            Integer value = Integer.valueOf(number.replace("!", ""));
-            return new ComparisonCondition<Integer>(value, matchIfLarger);
         }
+        Integer value = Integer.valueOf(number.replace("!", ""));
+        return new ComparisonCondition<>(value, matchIfLarger);
     }
 
     public static ComparisonCondition<Double> ofDouble(String number) {
         boolean matchIfLarger = !number.startsWith("!");
         Double value = Double.valueOf(number.replace("!", ""));
-        return new ComparisonCondition<Double>(value, matchIfLarger);
+        return new ComparisonCondition<>(value, matchIfLarger);
 
     }
 

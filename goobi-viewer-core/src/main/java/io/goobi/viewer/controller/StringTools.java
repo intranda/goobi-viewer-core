@@ -847,8 +847,7 @@ public final class StringTools {
     }
 
     /**
-     * Clean a String from any malicious content like script tags, line breaks and backtracking filepaths.
-     * TODO InvalidPathException in Windows
+     * Clean a String from any malicious content like script tags, line breaks and backtracking filepaths. TODO InvalidPathException in Windows
      *
      * @param data
      * @return a cleaned up string which can be savely used
@@ -899,5 +898,29 @@ public final class StringTools {
             buffer.replace(result.start(), result.end(), replacement);
         });
         return buffer.toString();
+    }
+
+    /**
+     * Returns a truncated version of the given text which is no longer that maxLength. If possible the truncated text ends between words. If it is
+     * shorter than the original text, '...' is appended at the end (these count towards the maxLength, i.e. the actual text has at most maxLength-3
+     * characters)
+     * 
+     * @param text the text to truncate
+     * @param maxLength maximal length of the returned text
+     * @return the truncated text or null if the input was null
+     */
+    public static String truncateText(String text, int maxLength) {
+        if (text == null || text.length() <= maxLength) {
+            return text;
+        }
+
+        // Try to find the last whitespace before maxLength
+        int end = text.lastIndexOf(' ', maxLength - 3);
+        if (end == -1) {
+            // No whitespace found before maxLength; just cut at maxLength
+            end = maxLength - 3;
+        }
+
+        return text.substring(0, end) + "...";
     }
 }

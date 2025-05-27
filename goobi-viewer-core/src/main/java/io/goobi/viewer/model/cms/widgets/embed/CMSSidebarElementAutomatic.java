@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.cms.widgets.embed;
 
+import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.widgets.type.AutomaticWidgetType;
@@ -102,5 +103,18 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
     @Override
     public TranslatedText getTitle() {
         return new TranslatedText(map.getTitles(), IPolyglott.getCurrentLocale());
+    }
+
+    @Override
+    public boolean canEdit() {
+        return this.map != null;
+    }
+
+    public String getAdminBackendUrl() {
+        if (this.map != null) {
+            return PrettyUrlTools.getAbsolutePageUrl("adminCmsGeoMapEdit", this.map.getId());
+        } else {
+            return PrettyUrlTools.getAbsolutePageUrl("adminCmsWidgetsAdd");
+        }
     }
 }

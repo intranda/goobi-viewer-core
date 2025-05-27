@@ -32,6 +32,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -40,11 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.exception.DimensionMismatchException;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jdom2.JDOMException;
@@ -91,6 +89,7 @@ import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * <p>
@@ -402,9 +401,18 @@ public class SequenceBuilder extends AbstractBuilder {
                         .buildURI();
                 break;
             case PLAINTEXT:
-                uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT)
-                        .params(page.getPi(), URLEncoder.encode(page.getFileName("txt"), StandardCharsets.UTF_8))
-                        .buildURI();
+                if (StringUtils.isBlank(page.getFulltextFileName())) {
+                    //create for alto file
+                    uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT)
+                            .params(page.getPi(), URLEncoder.encode(Path.of(page.getAltoFileName()).getFileName().toString(), StandardCharsets.UTF_8))
+                            .buildURI();
+                } else {
+                    //create for txt file
+                    uri = this.urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT)
+                            .params(page.getPi(),
+                                    URLEncoder.encode(Path.of(page.getFulltextFileName()).getFileName().toString(), StandardCharsets.UTF_8))
+                            .buildURI();
+                }
                 break;
             case PDF:
                 uri = URI.create(imageDelivery.getPdf().getPdfUrl(null, page));

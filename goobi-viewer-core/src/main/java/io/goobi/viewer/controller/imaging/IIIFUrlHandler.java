@@ -133,10 +133,10 @@ public class IIIFUrlHandler {
                 sb.append("image/-/").append(StringTools.escapeCriticalUrlChracters(fileUrl, false));
                 return IIIFUrlResolver.getIIIFImageUrl(sb.toString(), region, size, rotation, quality, format);
             } else if (ImageHandler.isExternalUrl(fileUrl)) {
+                fileUrl = fileUrl.replace(" ", "+"); // Hotfix for URIs that contain spaces in the image file name
                 if (IIIFUrlResolver.isIIIFImageUrl(fileUrl)) {
                     return IIIFUrlResolver.getModifiedIIIFFUrl(fileUrl, region, size, rotation, quality, format);
                 } else if (ImageHandler.isImageUrl(fileUrl, false)) {
-
                     if (urls != null) {
                         fileUrl = StringTools.escapeCriticalUrlChracters(fileUrl, false);
                         return urls.path(EXTERNAL_IMAGES, EXTERNAL_IMAGES_IIIF).params(fileUrl, region, size, rotation, quality, format).toString();

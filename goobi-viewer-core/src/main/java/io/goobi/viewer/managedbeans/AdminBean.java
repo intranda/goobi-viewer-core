@@ -42,8 +42,6 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
-import org.omnifaces.cdi.Push;
-import org.omnifaces.cdi.PushContext;
 
 import de.unigoettingen.sub.commons.cache.CacheUtils;
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
@@ -59,6 +57,7 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.administration.MaintenanceMode;
 import io.goobi.viewer.model.job.download.DownloadJobTools;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
@@ -74,6 +73,7 @@ import io.goobi.viewer.model.translations.admin.TranslationGroupItem;
 import io.goobi.viewer.solr.SolrConstants;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.event.AjaxBehaviorEvent;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.servlet.http.Part;
@@ -97,11 +97,10 @@ public class AdminBean implements Serializable {
     private static String translationGroupsEditorSession = null;
 
     @Inject
-    private UserBean userBean;
+    private SocketBean socketBean;
 
     @Inject
-    @Push
-    private PushContext hotfolderFileCount;
+    private UserBean userBean;
 
     private TableDataProvider<User> lazyModelUsers;
 
@@ -113,6 +112,7 @@ public class AdminBean implements Serializable {
     private UserRole currentUserRole = null;
     private IpRange currentIpRange = null;
     private TranslationGroup currentTranslationGroup = null;
+    private MaintenanceMode maintenanceMode;
 
     /** Current password for password change */
     private String currentPassword = null;
@@ -773,6 +773,37 @@ public class AdminBean implements Serializable {
         currentIpRange = new IpRange();
     }
 
+    /**
+     * <p>
+     * saveMaintenanceModeAction.
+     * </p>
+     *
+     * @return Navigation outcome
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public String saveMaintenanceModeAction() throws DAOException {
+        if (DataManager.getInstance().getDao().updateMaintenanceMode(getMaintenanceMode())) {
+            Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
+        } else {
+            Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
+            return "pretty:adminIpRangeEdit";
+        }
+
+        return "pretty:adminMaintenanceMode";
+    }
+
+    /**
+     * Ajax event listener for saving the maintenance mode after the enabled/disabled status has been toggled. Using a valueChangeListener instead
+     * (via viewerComponent:toggleSwitch) resulted in the listener firing before the setter.
+     * 
+     * @param event {@link AjaxBehaviorEvent}
+     * @throws DAOException
+     */
+    public void maintenanceModeToggleChangedListener(AjaxBehaviorEvent event) throws DAOException {
+        // logger.trace("maintenanceModeToggleChangedListener"); //NOSONAR Debug
+        saveMaintenanceModeAction();
+    }
+
     /*********************************** Getter and Setter ***************************************/
 
     /**
@@ -1395,6 +1426,16 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * Safe reset method that prevents NPE in EL.
+     */
+    public void resetCurrentTranslationGroupStatusCount() {
+        TranslationGroup group = getCurrentTranslationGroup();
+        if (group != null) {
+            group.resetStatusCount();
+        }
+    }
+
+    /**
      * <p>
      * Setter for the field <code>currentTranslationGroup</code>.
      * </p>
@@ -1582,7 +1623,7 @@ public class AdminBean implements Serializable {
      * </p>
      */
     public void updateHotfolderFileCount() {
-        hotfolderFileCount.send("update");
+        this.socketBean.send("{'action':'update', 'subject':'hotfolderFileCount'}");
     }
 
     /**
@@ -1627,5 +1668,26 @@ public class AdminBean implements Serializable {
      */
     public Part getUploadedAvatarFile() {
         return uploadedAvatarFile;
+    }
+
+    /**
+     * @return the maintenanceMode
+     */
+    public MaintenanceMode getMaintenanceMode() {
+        if (this.maintenanceMode == null) {
+            try {
+                this.maintenanceMode = DataManager.getInstance().getDao().getMaintenanceMode();
+            } catch (DAOException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+        return maintenanceMode;
+    }
+
+    /**
+     * @param maintenanceMode the maintenanceMode to set
+     */
+    public void setMaintenanceMode(MaintenanceMode maintenanceMode) {
+        this.maintenanceMode = maintenanceMode;
     }
 }

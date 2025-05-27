@@ -1070,13 +1070,14 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * getIso639_1.
+     * getIso6391.
      * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getIso639_1(String language) {
+    @Deprecated(since = "25.04")
+    public String getIso6391(String language) {
         Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
         if (lang != null) {
             return lang.getIsoCodeOld();
@@ -1087,13 +1088,14 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * getIso639_2B.
+     * getIso6392B.
      * </p>
      *
      * @param language a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    public String getIso639_2B(String language) {
+    @Deprecated(since = "25.04")
+    public String getIso6392B(String language) {
         Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
         if (lang != null) {
             return lang.getIsoCode();

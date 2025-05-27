@@ -55,7 +55,7 @@ class RecordPagesResourceTest extends AbstractRestApiTest {
     private static final String PI = "PPN743674162";
     private static final String PAGENO = "10";
     private static final String PI_ANNOTATIONS = "PI_1";
-    private static final String PI_SPACE_IN_FILENAME = "ARVIErdm5";
+    private static final String PI_SPACE_IN_FILENAME = "4fda256e-70b3-11ea-b891-08606e6a464a";
     private static final String PAGENO_ANNOTATIONS = "1";
 
     @Test
@@ -130,7 +130,7 @@ class RecordPagesResourceTest extends AbstractRestApiTest {
         try (Response response = target(url)
                 .request()
                 .get()) {
-            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertEquals(200, response.getStatus(), response.getStatusInfo().getReasonPhrase());
             String entity = response.readEntity(String.class);
             assertNotNull(entity);
             JSONObject canvas = new JSONObject(entity);
@@ -145,7 +145,7 @@ class RecordPagesResourceTest extends AbstractRestApiTest {
                     .orElse(null);
             assertNotNull(pdfLink, "No PDF link in canvas");
             String id = (String) pdfLink.get("id");
-            Assertions.assertTrue(id.contains("erdmagnetisches+observatorium+vi_blatt_5.tif"), "Wrong filename in " + id);
+            Assertions.assertTrue(id.contains("IMG+20200322+144253.jpg"), "Wrong filename in " + id);
         }
     }
 }

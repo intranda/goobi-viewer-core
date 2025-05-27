@@ -69,6 +69,12 @@
 											<div class="sidebar-editor__widget-item-label">#{element.title.textOrDefault}</div>
 
 											<!-- ITEM DELETE -->
+											
+																							
+											<div jsf:id="widgetEditLink" rendered="#{element.canEdit()}" class="admin__table-action-link sidebar-editor__widget-item-delete-button -bluelink">
+												<a href="#{element.adminBackendUrl}">#{msg.edit}</a>
+											</div>
+											
 											<button
 													class="admin__table-action-link sidebar-editor__widget-item-delete-button -redlink"
 													jsf:action="#{cc.attrs.page.removeSidebarElement(element)}"
@@ -90,7 +96,6 @@
 
 									<ui:repeat var="widget" value="#{cmsPageEditBean.sidebarWidgets.keySet().stream().sorted().toList()}" varStatus="status">
 										<ui:fragment rendered="#{!cc.attrs.page.containsSidebarElement(widget)}">
-
 											<div class="sidebar-editor__choose-widget-item #{widget.contentType.isAllowedForPage(page) ? '' : '-disabled'}"
 											data-toggle="tooltip" title="#{widget.contentType.isAllowedForPage(page) ? '' : msg.info__disabled__search_page_only}">
 											  <input type="checkbox" id="scales#{status.index}" name="scales#{status.index}" jsf:value="#{cmsPageEditBean.sidebarWidgets[widget]}">
@@ -101,7 +106,10 @@
 	                                        		<i class="#{widget.contentType.iconClass}" aria-hidden="true"></i>
 	                                        	</ui:fragment>
 
-											  <label for="scales#{status.index}">#{widget.title.textOrDefault}</label>
+											  	<label for="scales#{status.index}">
+											  		<span>#{widget.title.textOrDefault}</span>
+													<h:outputLabel rendered="#{!widget.description.isEmpty()}" class="description_label" value="#{'('.concat(widget.description).concat(')')}"/>
+												</label>
 
 											</div>
 										</ui:fragment>

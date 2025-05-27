@@ -35,22 +35,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.persistence.exceptions.DatabaseException;
 
 import io.goobi.viewer.controller.AlphabetIterator;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.administration.MaintenanceMode;
 import io.goobi.viewer.model.administration.legal.CookieBanner;
 import io.goobi.viewer.model.administration.legal.Disclaimer;
 import io.goobi.viewer.model.administration.legal.TermsOfUse;
@@ -140,6 +143,8 @@ public class JPADAO implements IDAO {
     static final String MULTIKEY_SEPARATOR = "_";
     static final String KEY_FIELD_SEPARATOR = "-";
 
+    private static final long RETRY_DELAY_MS = 5000;
+
     /**
      * EntityManagerFactory for the persistence context. Only build once at application startup
      */
@@ -177,20 +182,47 @@ public class JPADAO implements IDAO {
             persistenceUnitName = DEFAULT_PERSISTENCE_UNIT_NAME;
         }
         logger.info("Using persistence unit: {}", persistenceUnitName);
+        // Create EntityManagerFactory in a custom class loader
+        final Thread currentThread = Thread.currentThread();
+        final ClassLoader saveClassLoader = currentThread.getContextClassLoader();
+        currentThread.setContextClassLoader(new JPAClassLoader(saveClassLoader));
+        factory = Persistence.createEntityManagerFactory(persistenceUnitName);
+        currentThread.setContextClassLoader(saveClassLoader);
+
+        int attempts = DataManager.getInstance().getConfiguration().getDatabaseConnectionAttempts() - 1;
+        boolean success = init();
+        while (!success) {
+            if (attempts > 0) {
+                logger.warn("Could not connect to database, retrying {} more times...", attempts);
+                attempts--;
+                try {
+                    TimeUnit.MILLISECONDS.sleep(RETRY_DELAY_MS);
+                } catch (InterruptedException e) {
+                    logger.error(e.getMessage(), e);
+                    Thread.currentThread().interrupt();
+                }
+                success = init();
+            } else {
+                throw new DAOException("DB connection failed.");
+            }
+        }
+    }
+
+    /**
+     * @throws DAOException
+     * 
+     */
+    private boolean init() throws DAOException {
         try {
-            // Create EntityManagerFactory in a custom class loader
-            final Thread currentThread = Thread.currentThread();
-            final ClassLoader saveClassLoader = currentThread.getContextClassLoader();
-            currentThread.setContextClassLoader(new JPAClassLoader(saveClassLoader));
-            factory = Persistence.createEntityManagerFactory(persistenceUnitName);
-            currentThread.setContextClassLoader(saveClassLoader);
             //Needs to be called for unit tests
             factory.createEntityManager();
             preQuery();
-        } catch (DatabaseException | PersistenceException e) {
-            logger.error(e.getMessage(), e);
-            throw new DAOException(e.getMessage());
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
         }
+
+        return false;
     }
 
     /**
@@ -6556,8 +6588,8 @@ public class JPADAO implements IDAO {
         try {
             Query q = em.createQuery("SELECT s FROM DailySessionUsageStatistics s WHERE s.date = :date");
             q.setParameter("date", date);
-            return (DailySessionUsageStatistics) q.getSingleResult();
-        } catch (NoResultException e) {
+            return (DailySessionUsageStatistics) q.getResultList().getFirst();
+        } catch (NoSuchElementException | NoResultException e) {
             return null;
         } finally {
             close(em);
@@ -6929,8 +6961,7 @@ public class JPADAO implements IDAO {
         if (filters != null) {
             filterQuery = addViewerMessageFilterQuery(filters, params);
         }
-        long count = getFilteredRowCount("ViewerMessage", filterQuery, params);
-        return count;
+        return getFilteredRowCount("ViewerMessage", filterQuery, params);
     }
 
     @SuppressWarnings("unchecked")
@@ -7077,17 +7108,13 @@ public class JPADAO implements IDAO {
     @Override
     public List<HighlightData> getPastHighlightsForDate(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters, LocalDateTime date) throws DAOException {
-        List<HighlightData> data =
-                getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date > a.dateEnd", Map.of("date", date));
-        return data;
+        return getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date >= a.dateEnd", Map.of("date", date));
     }
 
     @Override
     public List<HighlightData> getFutureHighlightsForDate(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters, LocalDateTime date) throws DAOException {
-        List<HighlightData> data =
-                getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date < a.dateStart", Map.of("date", date));
-        return data;
+        return getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date < a.dateStart", Map.of("date", date));
     }
 
     @Override
@@ -7106,6 +7133,41 @@ public class JPADAO implements IDAO {
             return true;
         } catch (PersistenceException e) {
             logger.error("Error adding object to database", e);
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @should return correct object
+     */
+    @Override
+    public MaintenanceMode getMaintenanceMode() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT a FROM MaintenanceMode a WHERE a.id = 1");
+            return (MaintenanceMode) getSingleResult(q).orElse(null);
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean updateMaintenanceMode(MaintenanceMode maintenanceMode) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(maintenanceMode);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
             handleException(em);
             return false;
         } finally {
@@ -7243,7 +7305,7 @@ public class JPADAO implements IDAO {
         }
     }
 
-    private String addFilterQueries(Map<String, String> filters, Map<String, Object> params, Character entityVariable) {
+    private static String addFilterQueries(Map<String, String> filters, Map<String, Object> params, Character entityVariable) {
         Stream<String> queries = filters.entrySet().stream().map(entry -> getFilterQuery(entry.getKey(), entry.getValue(), params, entityVariable));
         return "(" + queries.collect(Collectors.joining(") OR (")) + ")";
     }
@@ -7257,7 +7319,7 @@ public class JPADAO implements IDAO {
      * @param entityVariable
      * @return Generated query
      */
-    private String getFilterQuery(String filterField, Object filterValue, Map<String, Object> params, Character entityVariable) {
+    private static String getFilterQuery(String filterField, Object filterValue, Map<String, Object> params, Character entityVariable) {
         if (filterValue instanceof String) {
             String query = String.format("%c.%s LIKE :%s", entityVariable, filterField, filterField);
             params.put(filterField, "%" + filterValue + "%");

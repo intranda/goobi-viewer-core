@@ -187,6 +187,22 @@ public class MetadataBean {
     }
 
     /**
+     * Returns given {@link MetadataElement}s as an {@link ArrayList}. Used for supplying a custom list of elements for the metadata sidebar widget.
+     * 
+     * @param elements
+     * @return List<MetadataElement>
+     * @should return empty list given null
+     * @should return given elements as list
+     */
+    public List<MetadataElement> getMetadataElementsAsList(MetadataElement... elements) {
+        if (elements == null) {
+            return Collections.emptyList();
+        }
+
+        return Arrays.asList(elements);
+    }
+
+    /**
      * <p>
      * getTopMetadataElement.
      * </p>
@@ -208,11 +224,11 @@ public class MetadataBean {
      * metadata, the next higher element is checked until an element with sidebar metadata is found. TODO for some reason this method is called 6-15
      * times per page
      *
-     * @param index Metadata view index
+     * @param metadataViewIndex Metadata view index
      * @return a {@link io.goobi.viewer.model.metadata.MetadataElement} object.
      */
-    public MetadataElement getBottomMetadataElement(int index) {
-        List<MetadataElement> metadataElementList = getMetadataElementList(index);
+    public MetadataElement getBottomMetadataElement(int metadataViewIndex) {
+        List<MetadataElement> metadataElementList = getMetadataElementList(metadataViewIndex);
         if (metadataElementList == null || metadataElementList.isEmpty()) {
             return null;
         }
@@ -223,6 +239,22 @@ public class MetadataBean {
         }
 
         return metadataElementList.get(i);
+    }
+
+    /**
+     * 
+     * 
+     * @param metadataViewIndex
+     * @return List<MetadataElement>
+     */
+    public List<MetadataElement> getBottomMetadataElementAsList(int metadataViewIndex) {
+        // logger.trace("getBottomMetadataElementAsList: {}", metadataViewIndex); //NOSONAR Debug
+        MetadataElement bottomElement = getBottomMetadataElement(metadataViewIndex);
+        if (bottomElement != null) {
+            return Collections.singletonList(bottomElement);
+        }
+
+        return Collections.emptyList();
     }
 
     /**

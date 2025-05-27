@@ -41,7 +41,7 @@ class SearchFunctionalityTest extends AbstractSolrEnabledTest {
     void getParameterPath_shouldIncludeFiveParameters() {
         SearchFunctionality sf = new SearchFunctionality(null, "https://example.com/search/");
         sf.setSearchBean(new SearchBean());
-        sf.setActiveResultGroupName("monographs"); // Must be a configured result group
+        sf.setActiveContext("monographs"); // Must be a configured result group
         sf.setQueryString("FOO:bar");
         sf.setPageNo(2);
         sf.setSortString("RELEVANCE");
@@ -49,7 +49,7 @@ class SearchFunctionalityTest extends AbstractSolrEnabledTest {
 
         URI uri = sf.getParameterPath();
         Assertions.assertNotNull(uri);
-        Assertions.assertEquals("monographs/FOO:bar/2/RELEVANCE/DC:varia;;", uri.getPath().toString());
+        Assertions.assertEquals("monographs/FOO:bar/2/RELEVANCE/DC:varia;;", uri.getPath());
     }
     
     /**
@@ -60,7 +60,7 @@ class SearchFunctionalityTest extends AbstractSolrEnabledTest {
     void getUrlPrefix_shouldConstructUrlPrefixCorrectly() {
         SearchFunctionality sf = new SearchFunctionality(null, "https://example.com/search/");
         sf.setSearchBean(new SearchBean());
-        sf.setActiveResultGroupName("monographs"); // Must be a configured result group
+        sf.setActiveContext("monographs"); // Must be a configured result group
         sf.setQueryString("FOO:bar");
         sf.setPageNo(2);
 

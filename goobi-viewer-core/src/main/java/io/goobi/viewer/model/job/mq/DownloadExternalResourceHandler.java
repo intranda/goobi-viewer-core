@@ -35,8 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import jakarta.inject.Inject;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,12 +48,13 @@ import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.managedbeans.PersistentStorageBean;
+import io.goobi.viewer.managedbeans.storage.ApplicationBean;
 import io.goobi.viewer.model.files.external.ExternalFilesDownloader;
 import io.goobi.viewer.model.files.external.Progress;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.ExternalFilesDownloadJob;
+import jakarta.inject.Inject;
 
 public class DownloadExternalResourceHandler implements MessageHandler<MessageStatus> {
 
@@ -68,7 +67,7 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
     private static final Logger logger = LogManager.getLogger(DownloadExternalResourceHandler.class);
 
     @Inject
-    private PersistentStorageBean storageBean;
+    private ApplicationBean storageBean;
 
     @Override
     public MessageStatus call(ViewerMessage message, MessageQueueManager queueManager) {
@@ -193,11 +192,11 @@ public class DownloadExternalResourceHandler implements MessageHandler<MessageSt
         return message;
     }
 
-    public PersistentStorageBean getStorageBean() {
+    public ApplicationBean getStorageBean() {
         return storageBean;
     }
 
-    public void setStorageBean(PersistentStorageBean storageBean) {
+    public void setStorageBean(ApplicationBean storageBean) {
         this.storageBean = storageBean;
     }
 

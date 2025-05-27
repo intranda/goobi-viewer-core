@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.websockets;
 
+import java.io.EOFException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -93,9 +94,12 @@ public class ConfigEditorEndpoint extends Endpoint {
         lockedFilePath.ifPresent(path -> httpSessionId.ifPresent(sessionId -> AdminConfigEditorBean.unlockFile(path, sessionId)));
     }
 
+    @Override
     @OnError
     public void onError(Session session, Throwable t) {
-        logger.warn(t.getMessage());
+        if (!(t instanceof EOFException)) {
+            logger.warn("ConfigEditorEndpoint:" + t.getMessage());
+        }
     }
 
 }

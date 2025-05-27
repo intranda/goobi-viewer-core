@@ -49,9 +49,7 @@ public class CMSContentItemUpdate implements IModelUpdate {
     private static final String DATATYPE_OLD = "varchar";
     private static final String DATATYPE_NEW = "varchar(4096)";
 
-    /* (non-Javadoc)
-     * @see io.goobi.viewer.dao.update.IModelUpdate#update(io.goobi.viewer.dao.IDAO)
-     */
+    /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
@@ -61,6 +59,7 @@ public class CMSContentItemUpdate implements IModelUpdate {
             return false;
         }
 
+        int count = 0;
         List<String> types = dao.getNativeQueryResults(
                 "SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_NAME = 'cms_content_items' AND COLUMN_NAME = 'ignore_collections' ");
         if (types.contains(DATATYPE_OLD)) {
@@ -72,17 +71,18 @@ public class CMSContentItemUpdate implements IModelUpdate {
                             "SELECT cms_content_item_id, ignore_collections FROM cms_content_items WHERE ignore_collections IS NOT NULL");
             Map<Long, String> valueMap = new HashMap<>();
             for (Object[] res : results) {
-                if (res[0] instanceof Long && res[1] instanceof String) {
-                    valueMap.put((Long) res[0], (String) res[1]);
-                    dao.executeUpdate("UPDATE cms_content_items SET ignore_collections = NULL WHERE cms_content_item_id = " + res[0]);
+                if (res[0] instanceof Long l && res[1] instanceof String s) {
+                    valueMap.put(l, s);
+                    count += dao.executeUpdate("UPDATE cms_content_items SET ignore_collections = NULL WHERE cms_content_item_id = " + res[0]);
                 }
             }
-            dao.executeUpdate("ALTER TABLE cms_content_items MODIFY COLUMN ignore_collections " + DATATYPE_NEW);
+            count += dao.executeUpdate("ALTER TABLE cms_content_items MODIFY COLUMN ignore_collections " + DATATYPE_NEW);
 
             for (Entry<Long, String> entry : valueMap.entrySet()) {
                 try {
-                    dao.executeUpdate("UPDATE cms_content_items SET ignore_collections = '" + entry.getValue() + "' WHERE cms_content_item_id = "
-                            + entry.getKey());
+                    count += dao
+                            .executeUpdate("UPDATE cms_content_items SET ignore_collections = '" + entry.getValue() + "' WHERE cms_content_item_id = "
+                                    + entry.getKey());
                     logger.trace("Updated ignore_collections value at cms_content_item_id = '{}' to '{}'", entry.getKey(), entry.getValue());
                 } catch (DAOException | NullPointerException e) {
                     logger.error("Error attempting to update cms_content_items value at cms_content_item_id = '{}' to '{}'", entry.getKey(),
@@ -93,7 +93,7 @@ public class CMSContentItemUpdate implements IModelUpdate {
             logger.debug("Done converting  cms_content_items.ignore_collections datatype");
         }
 
-        return true;
+        return count > 0;
     }
 
 }

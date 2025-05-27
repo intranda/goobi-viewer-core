@@ -27,9 +27,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import de.intranda.metadata.multilanguage.Metadata;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.model.viewer.StructElement;
 
@@ -89,6 +92,27 @@ class VariableReplacerTest {
         List<String> phrases = replacer.replace(phraseTemplate);
         assertEquals(1, phrases.size());
         assertTrue(phrases.contains(phraseTemplate));
+    }
+
+    @Test
+    void test_simpleMetadataValue() {
+        VariableReplacer replacer = new VariableReplacer(Map.of("test", Map.of("value", List.of("replaced value"))));
+        Metadata md = new Metadata("label", "{value}");
+        Metadata replaced = replacer.replace(md);
+        Assertions.assertEquals(md.getLabel(), replaced.getLabel());
+        Assertions.assertEquals("replaced value", replaced.getValue().getValue().orElse(""));
+    }
+
+    @Test
+    void test_multiLangMetadataValue() {
+        VariableReplacer replacer = new VariableReplacer(Map.of("test", Map.of("value", List.of("replaced value"))));
+        MultiLanguageMetadataValue value = new MultiLanguageMetadataValue(Map.of("de", "Der Wert ist {value}", "en", "The value is {value}"));
+        Metadata md = new Metadata("label", value);
+        Metadata replaced = replacer.replace(md);
+        Assertions.assertEquals(md.getLabel(), replaced.getLabel());
+        Assertions.assertEquals("Der Wert ist replaced value", replaced.getValue().getValue("de").orElse(""));
+        Assertions.assertEquals("The value is replaced value", replaced.getValue().getValue("en").orElse(""));
+
     }
 
 }

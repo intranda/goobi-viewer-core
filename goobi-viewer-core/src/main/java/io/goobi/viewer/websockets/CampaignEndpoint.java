@@ -21,13 +21,13 @@
  */
 package io.goobi.viewer.websockets;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -157,9 +157,12 @@ public class CampaignEndpoint extends Endpoint {
         }
     }
 
+    @Override
     @OnError
     public void onError(Session session, Throwable t) {
-        logger.warn(t.getMessage());
+        if (!(t instanceof EOFException)) {
+            logger.warn("CampaignEndpoint:" + t.getMessage());
+        }
     }
 
     private void sendPageLocks(Long campaignId, String recordIdentifier) throws IOException, DAOException {
@@ -218,10 +221,7 @@ public class CampaignEndpoint extends Endpoint {
 
         //first add finished and inReview pages
         Map<Integer, String> statusMap = getPageStatus(campaignId, recordIdentifier);
-        statusMap.entrySet().forEach(entry -> {
-            json.put(Integer.toString(entry.getKey()), entry.getValue());
-        });
-
+        statusMap.entrySet().forEach(entry -> json.put(Integer.toString(entry.getKey()), entry.getValue()));
         pageLocks.entrySet()
                 .stream()
                 .filter(entry -> !entry.getKey().equals(httpSessionId))
@@ -260,7 +260,7 @@ public class CampaignEndpoint extends Endpoint {
                 .filter(entry -> !entry.getKey().equals(httpSessionId))
                 .map(Entry::getValue)
                 .map(lock -> lock.pageNumber)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

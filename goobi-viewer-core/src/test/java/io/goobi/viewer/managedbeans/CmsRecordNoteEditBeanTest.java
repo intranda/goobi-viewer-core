@@ -23,8 +23,11 @@ package io.goobi.viewer.managedbeans;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.Locale;
 
 import org.junit.jupiter.api.AfterEach;
@@ -35,11 +38,14 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote;
 import io.goobi.viewer.model.translations.TranslatedText;
+import jakarta.faces.context.FacesContext;
 
 /**
  * @author florian
@@ -49,12 +55,15 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
 
     CmsRecordNoteEditBean bean;
 
+    FacesContext facesContext = ContextMocker.mockFacesContext();
+
     String englishText = "ENGLISH";
     String germanText = "GERMAN";
 
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
@@ -65,6 +74,7 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
@@ -229,5 +239,61 @@ class CmsRecordNoteEditBeanTest extends AbstractDatabaseEnabledTest {
 
         assertTrue(bean.isComplete(Locale.GERMAN));
         assertFalse(bean.isEmpty(Locale.GERMAN));
+    }
+
+    /**
+     * @throws DAOException
+     * @see CmsRecordNoteEditBean#save()
+     * @verifies do nothing if node null
+     */
+    @Test
+    void resetSimpleSearchParameters_shouldDoNothingIfNodeNull() {
+        assertNull(bean.getNote());
+        bean.save();
+        assertNull(bean.getNote());
+    }
+
+    /**
+     * @throws DAOException
+     * @see CmsRecordNoteEditBean#save()
+     * @verifies save new note correctly
+     */
+    @Test
+    void resetSimpleSearchParameters_shouldSaveNewNoteCorrectly() throws DAOException {
+        bean.setTestMode(true);
+        
+        CMSSingleRecordNote note = new CMSSingleRecordNote("PI3");
+        bean.setNote(note);
+        assertNull(bean.getNote().getId());
+
+        assertTrue(DataManager.getInstance().getDao().getRecordNotesForPi("PI3", false).isEmpty());
+        bean.save();
+
+        List<CMSSingleRecordNote> notes = DataManager.getInstance().getDao().getRecordNotesForPi("PI3", false);
+        assertEquals(1, notes.size());
+        CMSRecordNote note2 = notes.get(0);
+        assertNotNull(note2);
+    }
+
+    /**
+     * @throws DAOException
+     * @see CmsRecordNoteEditBean#save()
+     * @verifies update note correctly
+     */
+    @Test
+    void resetSimpleSearchParameters_shouldUpdateNoteCorrectly() throws DAOException {
+        bean.setTestMode(true);
+        
+        CMSSingleRecordNote note = (CMSSingleRecordNote) DataManager.getInstance().getDao().getRecordNote(1L);
+        assertNotNull(note);
+        assertEquals(1L, note.getId());
+        
+        note.setRecordPi("PI3");
+        bean.setNote(note);
+        bean.save();
+
+        CMSSingleRecordNote note2 = (CMSSingleRecordNote) DataManager.getInstance().getDao().getRecordNote(1L);
+        assertNotNull(note2);
+        assertEquals("PI3", note2.getRecordPi());
     }
 }

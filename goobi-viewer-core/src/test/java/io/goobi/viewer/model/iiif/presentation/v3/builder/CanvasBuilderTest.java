@@ -29,6 +29,7 @@ import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 
 /**
@@ -39,10 +40,11 @@ class CanvasBuilderTest extends AbstractSolrEnabledTest {
 
     ApiUrls urls = new ApiUrls("http://localhost:8080/viewer/api/v2");
     CanvasBuilder builder = new CanvasBuilder(urls);
-    
+
     @Test
-    void test_build_shouldIncludeImage() throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
-               
+    void test_build_shouldIncludeImage()
+            throws IllegalPathSyntaxException, ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
+
         PhysicalElement element = Mockito.mock(PhysicalElement.class);
         Mockito.when(element.getPi()).thenReturn("PI_01");
         Mockito.when(element.getOrder()).thenReturn(1);
@@ -51,28 +53,27 @@ class CanvasBuilderTest extends AbstractSolrEnabledTest {
         Mockito.when(element.isHasImage()).thenReturn(true);
         Mockito.when(element.getFileName()).thenReturn("00000001.tif");
         Mockito.when(element.getFilepath()).thenReturn("00000001.tif");
+        Mockito.when(element.getBaseMimeType()).thenReturn(BaseMimeType.IMAGE);
 
         {
-        Mockito.when(element.getMimeType()).thenReturn("image/tiff");
-        Canvas3 canvas = builder.build(element);
-        String imageId = canvas.getItems().get(0).getItems().get(0).getBody().getId().toString();
-        assertEquals("https://viewer.goobi.io/api/v1/records/PI_01/files/images/00000001.tif/full/!10,11/0/default.jpg", imageId);
+            Mockito.when(element.getMimeType()).thenReturn("image/tiff");
+            Canvas3 canvas = builder.build(element);
+            String imageId = canvas.getItems().get(0).getItems().get(0).getBody().getId().toString();
+            assertEquals("https://viewer.goobi.io/api/v1/records/PI_01/files/images/00000001.tif/full/!10,11/0/default.jpg", imageId);
         }
         {
-        Mockito.when(element.getMimeType()).thenReturn("image");
-        Canvas3 canvas = builder.build(element);
-        String imageId = canvas.getItems().get(0).getItems().get(0).getBody().getId().toString();
-        assertEquals("https://viewer.goobi.io/api/v1/records/PI_01/files/images/00000001.tif/full/!10,11/0/default.jpg", imageId);
+            Mockito.when(element.getMimeType()).thenReturn("image");
+            Canvas3 canvas = builder.build(element);
+            String imageId = canvas.getItems().get(0).getItems().get(0).getBody().getId().toString();
+            assertEquals("https://viewer.goobi.io/api/v1/records/PI_01/files/images/00000001.tif/full/!10,11/0/default.jpg", imageId);
         }
         {
-        Mockito.when(element.getMimeType()).thenReturn("image/png");
-        Canvas3 canvas = builder.build(element);
-        String imageId = canvas.getItems().get(0).getItems().get(0).getBody().getId().toString();
-        assertEquals("https://viewer.goobi.io/api/v1/records/PI_01/files/images/00000001.tif/full/!10,11/0/default.jpg", imageId);
+            Mockito.when(element.getMimeType()).thenReturn("image/png");
+            Canvas3 canvas = builder.build(element);
+            String imageId = canvas.getItems().get(0).getItems().get(0).getBody().getId().toString();
+            assertEquals("https://viewer.goobi.io/api/v1/records/PI_01/files/images/00000001.tif/full/!10,11/0/default.jpg", imageId);
         }
-        
-        
-    
+
     }
 
 }

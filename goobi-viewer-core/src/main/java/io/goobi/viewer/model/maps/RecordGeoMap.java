@@ -183,7 +183,7 @@ public class RecordGeoMap {
     }
 
     private static void createMetadataFeatureSet(GeoMap geoMap, StructElement mainStruct, FeatureSetConfiguration config) {
-        SolrFeatureSet featureSet = new SolrFeatureSet();
+        SolrFeatureSet featureSet = new SolrFeatureSet(false);
         featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), true)));
         featureSet.setSolrQuery(String.format("+DOCTYPE:METADATA +LABEL:(%s) +PI_TOPSTRUCT:%s", config.getQuery(), mainStruct.getPi()));
         featureSet.setMarkerTitleField(config.getLabelConfig());
@@ -217,7 +217,7 @@ public class RecordGeoMap {
 
     private static void createAllDocStructFeatureSet(GeoMap geoMap, StructElement docStruct, FeatureSetConfiguration config) {
         if (matchesQuery(MetadataContainer.createMetadataEntity(docStruct), config.getQuery())) {
-            SolrFeatureSet featureSet = new SolrFeatureSet();
+            SolrFeatureSet featureSet = new SolrFeatureSet(false);
             featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), true)));
             featureSet.setMarker(config.getMarker());
             featureSet.setMarkerTitleField(config.getLabelConfig());

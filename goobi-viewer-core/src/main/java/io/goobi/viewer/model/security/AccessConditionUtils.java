@@ -1019,9 +1019,9 @@ public final class AccessConditionUtils {
                     // licenseType.getName(), StringTools.stripPatternBreakingChars(query)); //NOSONAR Debug
                     if (licenseType.isMovingWall()) {
                         // Moving wall license type allow everything if the condition query doesn't match
-                        logger.trace(
-                                "License type '{}' is moving wall and its condition query doesn't match record query '{}'. All restrictions lifted.",
-                                licenseType.getName(), StringTools.stripPatternBreakingChars(query)); //NOSONAR Debug
+                        // logger.trace(
+                        // "License type '{}' is moving wall and its condition query doesn't match record query '{}'. All restrictions lifted.",
+                        // licenseType.getName(), StringTools.stripPatternBreakingChars(query)); //NOSONAR Debug
                         licenseType.getRestrictionsExpired().put(query, true);
                     } else {
                         continue;

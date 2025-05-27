@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.websockets;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -52,7 +53,7 @@ import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.managedbeans.PersistentStorageBean;
+import io.goobi.viewer.managedbeans.storage.ApplicationBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
@@ -78,7 +79,7 @@ public class DownloadTaskEndpoint extends Endpoint {
     private static final Logger logger = LogManager.getLogger(DownloadTaskEndpoint.class);
 
     private MessageQueueManager queueManager;
-    private PersistentStorageBean storageBean;
+    private ApplicationBean storageBean;
 
     private HttpSession httpSession;
     private Session session;
@@ -340,9 +341,12 @@ public class DownloadTaskEndpoint extends Endpoint {
         logger.debug("Closing socket for session {}", this.httpSession);
     }
 
+    @Override
     @OnError
     public void onError(Session session, Throwable t) {
-        logger.error(t, t);
+        if (!(t instanceof EOFException)) {
+            logger.warn("DownloadTaskEndpoint:" + t.getMessage());
+        }
     }
 
     public enum Action {

@@ -70,8 +70,16 @@ public class SolrFeatureSet extends FeatureSet {
     @Transient
     protected String featuresAsString = null;
 
+    @Transient
+    private final boolean useHeatmap;
+
     public SolrFeatureSet() {
+        this(DataManager.getInstance().getConfiguration().useHeatmapForCMSMaps());
+    }
+
+    public SolrFeatureSet(boolean useHeatmap) {
         super();
+        this.useHeatmap = useHeatmap;
     }
 
     public SolrFeatureSet(SolrFeatureSet blueprint) {
@@ -79,6 +87,7 @@ public class SolrFeatureSet extends FeatureSet {
         this.solrQuery = blueprint.solrQuery;
         this.markerTitleField = blueprint.markerTitleField;
         this.aggregateResults = blueprint.aggregateResults;
+        this.useHeatmap = blueprint.useHeatmap;
     }
 
     @Override
@@ -113,7 +122,7 @@ public class SolrFeatureSet extends FeatureSet {
     }
 
     protected String createFeaturesAsString(boolean escapeJson) throws PresentationException, IndexUnreachableException {
-        if (DataManager.getInstance().getConfiguration().useHeatmapForCMSMaps()) {
+        if (this.useHeatmap) {
             //No features required since they will be loaded dynamically with the heatmap
             return "[]";
         }

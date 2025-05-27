@@ -17,6 +17,8 @@
         <class>io.goobi.viewer.dao.converter.ThemeLinkConverter</class>
         <class>io.goobi.viewer.dao.converter.TranslatedTextConverter</class>
         <class>io.goobi.viewer.dao.converter.WidgetContentTypeConverter</class>
+        <class>io.goobi.viewer.model.administration.MaintenanceMode</class>
+        <class>io.goobi.viewer.model.administration.MaintenanceModeTranslation</class>
         <class>io.goobi.viewer.model.administration.legal.CookieBanner</class>
         <class>io.goobi.viewer.model.administration.legal.Disclaimer</class>
         <class>io.goobi.viewer.model.administration.legal.TermsOfUse</class>
@@ -46,7 +48,6 @@
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSDocumentContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent</class>
-        <class>io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</class>
@@ -140,6 +141,8 @@
         <class>io.goobi.viewer.dao.converter.ThemeLinkConverter</class>
         <class>io.goobi.viewer.dao.converter.TranslatedTextConverter</class>
         <class>io.goobi.viewer.dao.converter.WidgetContentTypeConverter</class>
+        <class>io.goobi.viewer.model.administration.MaintenanceMode</class>
+        <class>io.goobi.viewer.model.administration.MaintenanceModeTranslation</class>
         <class>io.goobi.viewer.model.administration.legal.CookieBanner</class>
         <class>io.goobi.viewer.model.administration.legal.Disclaimer</class>
         <class>io.goobi.viewer.model.administration.legal.TermsOfUse</class>
@@ -170,7 +173,6 @@
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSDocumentContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent</class>
-        <class>io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent</class>
