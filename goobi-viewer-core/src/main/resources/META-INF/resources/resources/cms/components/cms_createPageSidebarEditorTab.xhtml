@@ -98,19 +98,19 @@
 										<ui:fragment rendered="#{!cc.attrs.page.containsSidebarElement(widget)}">
 											<div class="sidebar-editor__choose-widget-item #{widget.contentType.isAllowedForPage(page) ? '' : '-disabled'}"
 											data-toggle="tooltip" title="#{widget.contentType.isAllowedForPage(page) ? '' : msg.info__disabled__search_page_only}">
-											  <input type="checkbox" id="scales#{status.index}" name="scales#{status.index}" jsf:value="#{cmsPageEditBean.sidebarWidgets[widget]}">
+											  <input styleClass="sidebar-editor__choose-widget-item-checkbox" type="checkbox" id="scales#{status.index}" name="scales#{status.index}" jsf:value="#{cmsPageEditBean.sidebarWidgets[widget]}">
 											  	<f:ajax event="change"></f:ajax>
 											  </input>
 
 	                                        	<ui:fragment rendered="#{not empty widget.contentType.iconClass}">
-	                                        		<i class="#{widget.contentType.iconClass}" aria-hidden="true"></i>
+	                                        		<i class="#{widget.contentType.iconClass} sidebar-editor__choose-widget-item-icon" aria-hidden="true"></i>
 	                                        	</ui:fragment>
 
-											  	<label for="scales#{status.index}">
-											  		<span>#{widget.title.textOrDefault}</span>
-													<h:outputLabel rendered="#{!widget.description.isEmpty()}" class="description_label" value="#{'('.concat(widget.description).concat(')')}"/>
+											  	<label class="sidebar-editor__choose-widget-item-label" for="scales#{status.index}">
+											  		<span class="sidebar-editor__choose-widget-item-text">#{widget.title.textOrDefault}</span>
+													<h:outputText rendered="#{!widget.description.isEmpty()}" class="sidebar-editor__choose-widget-item-desc" value="#{'('.concat(widget.description).concat(')')}"/>
 												</label>
-
+ 
 											</div>
 										</ui:fragment>
 									</ui:repeat>

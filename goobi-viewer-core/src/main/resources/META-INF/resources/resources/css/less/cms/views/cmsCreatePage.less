@@ -322,14 +322,6 @@
 				margin-right: 0.5rem;
 				cursor: pointer;
 			}
-			label {
-				align-self: stretch;
-				display: flex;
-				align-items: center;
-				flex-grow: 1;
-				margin-bottom: 0;
-				cursor: pointer;
-			}
 			.description_label {
 			 	margin-left: 1rem;
 			 	font-size: 1.2rem
@@ -366,7 +358,20 @@
 				margin-right: 0.5rem;
 			}
         }
-
+		&__choose-widget-item-label {
+			display: flex;
+			gap: 4px;
+			align-self: stretch;
+			align-items: center;
+			flex-grow: 1;
+			margin-bottom: 0;
+			cursor: pointer;
+		}
+		&__choose-widget-item-desc {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
 	}
 
 

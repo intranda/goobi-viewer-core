@@ -37,7 +37,7 @@
 				
 				<viewerComponent:adminBreadcrumbs />
 
-				<h:form prependId="false" class="-h100">
+				<h:form prependId="false">
 
 					<div class="admin__content-inner-content -h100">
 
@@ -108,7 +108,7 @@
 												helpText="#{msg.help__cms__edit_widget__title}" />
 											<!-- DESCRIPTION -->
 											<viewerForms:textInputField value="#{widget.description.text}"
-												label="#{msg.label__cms_page_description}"
+												label="#{msg.label__cms_widget_description}"
 												required="false"
 												helpText="#{msg.help__cms__edit_widget__description}" />
 											<!-- HTML -->
@@ -130,7 +130,7 @@
 												required="#{widget.isDefaultLocaleSelected()}"
 												helpText="#{msg.help__cms__edit_widget__title}" />
 												<viewerForms:textInputField value="#{widget.description.text}"
-													label="#{msg.label__cms_page_description}"
+													label="#{msg.label__cms_widget_description}"
 													required="false"
 													helpText="#{msg.help__cms__edit_widget__description}" />
 										</viewerForms:inputFormBlock>
@@ -190,7 +190,7 @@
 												helpText="#{msg.help__cms__edit_widget__solrfield}" />
 												
 											<viewerForms:textInputField value="#{widget.description.text}"
-												label="#{msg.label__cms_page_description}"
+												label="#{msg.label__cms_widget_description}"
 												required="false"
 												helpText="#{msg.help__cms__edit_widget__description}" />
 
@@ -219,7 +219,7 @@
 												required="#{widget.isDefaultLocaleSelected()}"
 												helpText="#{msg.help__cms__edit_widget__title}" />
 												<viewerForms:textInputField value="#{widget.description.text}"
-													label="#{msg.label__cms_page_description}"
+													label="#{msg.label__cms_widget_description}"
 													required="false"
 													helpText="#{msg.help__cms__edit_widget__description}" />
 										</viewerForms:inputFormBlock>
@@ -339,7 +339,7 @@
 										<ui:fragment rendered="#{not empty viewBean.get('embeddingPages')}">
 											
 											<div class="admin__default-block">
-												<div class="cms-widgets-overview__single-widget-info-label">#{msg.cms_widgets__usage}:</div>
+												<h2 class="cms-widgets-overview__single-widget-info-label">#{msg.cms_widgets__usage}</h2>
 												<div class="cms-widgets-overview__single-widget-info-data-wrapper">
 													<ui:repeat var="page" value="#{viewBean.get('embeddingPages')}">
 														<div class="cms-widgets-overview__single-widget-info-data">
