@@ -173,6 +173,10 @@ public class SolrSearchIndex {
         return getNewHttp2SolrClient();
     }
 
+    public static SolrClient getNewSolrClient(String solrUrl) {
+        return getNewHttp2SolrClient(solrUrl);
+    }
+
     /**
      * <p>
      * getNewHttp2SolrClient.
@@ -181,7 +185,11 @@ public class SolrSearchIndex {
      * @return a {@link org.apache.solr.client.solrj.impl.HttpSolrServer} object.
      */
     static Http2SolrClient getNewHttp2SolrClient() {
-        return new Http2SolrClient.Builder(DataManager.getInstance().getConfiguration().getSolrUrl())
+        return getNewHttp2SolrClient(DataManager.getInstance().getConfiguration().getSolrUrl());
+    }
+
+    static Http2SolrClient getNewHttp2SolrClient(String solrUrl) {
+        return new Http2SolrClient.Builder(solrUrl)
                 .withIdleTimeout(TIMEOUT_SO, TimeUnit.MILLISECONDS)
                 .withConnectionTimeout(TIMEOUT_CONNECTION, TimeUnit.MILLISECONDS)
                 .withFollowRedirects(false)

@@ -48,11 +48,11 @@ public class ComplexMetadataContainer {
         this.metadataMap = metadataMap;
     }
 
-    public ComplexMetadataContainer(List<SolrDocument> metadataDocs) {
+    public ComplexMetadataContainer(Collection<SolrDocument> metadataDocs) {
         this(metadataDocs, s -> true);
     }
 
-    public ComplexMetadataContainer(List<SolrDocument> metadataDocs, Predicate<String> fieldNameFilter) {
+    public ComplexMetadataContainer(Collection<SolrDocument> metadataDocs, Predicate<String> fieldNameFilter) {
         this.metadataMap = ComplexMetadata.getMetadataFromDocuments(metadataDocs)
                 .stream()
                 .filter(doc -> fieldNameFilter.test(doc.getField()))

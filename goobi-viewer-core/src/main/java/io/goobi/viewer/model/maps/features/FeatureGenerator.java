@@ -45,8 +45,11 @@ public class FeatureGenerator {
         this.entityTitleCreator = entityTitleCreator;
     }
 
-    public List<GeoMapFeature> getFeaturesFromSolrDocs(Map<SolrDocument, List<SolrDocument>> docs) {
+    public List<GeoMapFeature> getFeaturesFromMetadataDocument(MetadataDocument document) {
         List<GeoMapFeature> features = new ArrayList<>();
+
+        List<GeoMapFeature> mainDocFeatures = getFeatures(document.getMainDocMetadata());
+
         for (Entry<SolrDocument, List<SolrDocument>> entry : docs.entrySet()) {
             SolrDocument doc = entry.getKey();
             List<SolrDocument> children = entry.getValue();
@@ -77,6 +80,33 @@ public class FeatureGenerator {
                 .collect(Collectors.toList());
 
         return features;
+    }
+
+    private Collection<GeoMapFeature> getFeatures(String documentId, Map<String, List<IMetadataValue>> metadataMap) {
+        List<String> coordinates =
+                coordinateFields.stream()
+                        .map(field -> metadataMap.getOrDefault(field, Collections.emptyList()))
+                        .flatMap(List::stream)
+                        .map(IMetadataValue::getValue)
+                        .filter(v -> !v.isEmpty())
+                        .map(o -> o.orElse(""))
+                        .toList();
+        coordinates.stream().map(c -> getFeature(c)).forEach(f -> f.addEntity(new MetadataContainer(documentId, featureTitleCreator., metadataMap)));
+    }
+
+    private MetadataContainer getMetadataContainer(Map<String, List<IMetadataValue>> metadataMap, LabelCreator labelCreator) {
+        String id = metadataMap.getOrDefault(SolrConstants.IDDOC, Collections.emptyList()).stream().findFirst().map(v -> v.getValue().orElse(null)).orElse(null);
+        
+        IMetadataValue label = labelCreator.getValue(metadataMap, id)
+        MetadataContainer container = new MetadataContainer(documentId, null, metadataMap)
+    }
+
+    private String getAppropriateTemplate(Map<String, List<IMetadataValue>> metadataMap) {
+        String docType = metadataMap.getOrDefault(SolrConstants.DOCTYPE, Collections.emptyList()).
+    }
+
+    private String getFirstValue(String field, Map<String, List<IMetadataValue>> metadataMap) {
+
     }
 
     private List<GeoMapFeature> getFeaturesFromDoc(SolrDocument doc, String coordinateField) {
@@ -166,6 +196,11 @@ public class FeatureGenerator {
             }
         }
         return docFeatures;
+    }
+
+    protected static GeoMapFeature getFeature(String point) {
+        Geometry geometry = CoordinateReaderProvider.getReader(point).read(point);
+        return new GeoMapFeature(geometry);
     }
 
     private static void addEntityToFeatures(SolrDocument doc, List<SolrDocument> children, List<GeoMapFeature> docFeatures) {
