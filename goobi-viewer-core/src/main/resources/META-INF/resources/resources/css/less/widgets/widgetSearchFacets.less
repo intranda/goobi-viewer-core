@@ -14,10 +14,10 @@
 	}
 	
 	&__body {
-		padding: 0;
+		// padding: 0;
 		
 		ul {
-			padding: 1rem 1.5rem;
+			// padding: 1rem 1.5rem;
 		}
 		
 		li {
@@ -44,8 +44,8 @@
 			}
 		}
 		a {
-			display: block;
-			padding: 3px 5px;
+//			display: block;
+//			padding: 3px 5px;
 		}
 	}
 	
@@ -74,7 +74,7 @@
 			border: 0;
 			border-bottom: 1px solid @white;
 			background-color: @blue;
-			opacity: 0;
+			display: none;
 			&::-webkit-input-placeholder {
 			    color: @white;
 			    opacity: 0.5;
@@ -93,7 +93,7 @@
 			}
 			&.in {
 				width: calc(~"100% - 36px");
-				opacity: 1;
+				display: block;
 			}
 		}
 		[data-toggle="filter-input"],
