@@ -17,22 +17,25 @@
     <composite:implementation>
             <div jsf:id="widgetFormatLinks" class="widget widget-format-links" rendered="#{displayConditions.getTag('widgetFormatLinks').getChildCount('widget-element') > 0}">
 
-	            <div class="widget-format-links__topbar widget__topbar">
-	                <!-- WIDGET TITLE -->
-					<h2
-						tabindex="0"
-						role="button"
-						class="widget__title widget-format-links__title #{cc.attrs.collapsible ? 'collapseable' : '' }">
-	                    <span>#{msg.widget_formatsLinks}</span>
-	                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+	            <div 
+	            	class="widget__topbar widget-format-links__topbar #{cc.attrs.collapsible ? 'collapseable' : '' }"
+	            	tabindex="0"
+					role="button"
+	            >
+					<h2 class="widget__title widget-format-links__title">
+	                    #{msg.widget_formatsLinks}
+	                </h2>
+					
+	                <div class="widget__topbar__icons-container">
+		              	<i class="fa fa-angle-down" aria-hidden="true"></i>
 	                    <div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
 							<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
 						</div>
-	                </h2>
+	                </div>
 				</div>
 
                 <!-- WIDGET BODY -->
-				<div jsf:id="widgetFormatsLinksBody" class="widget__body #{cc.attrs.collapsible ? 'collapseable' : '' }" >
+				<div jsf:id="widgetFormatsLinksBody" class="widget__body widget-format-links__body #{cc.attrs.collapsible ? 'collapseable' : '' }" >
                     <!-- INTRODUCTION TEXT -->
                     <ui:fragment rendered="#{fn:length(msg['widget__formatlinks_intro_text']) > 0}">
                         <p id="introductionText" class="widget-format-links__license-text">

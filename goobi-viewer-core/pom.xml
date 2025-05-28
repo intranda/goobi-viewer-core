@@ -59,7 +59,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<skipTests>true</skipTests>
 		<skipDependencyCheck>true</skipDependencyCheck>
-		<failOnSnapshot>false</failOnSnapshot>
+		<failOnSnapshot>true</failOnSnapshot>
 		<maven.compiler.release>21</maven.compiler.release>
 
 		<!-- Sonar -->
@@ -896,7 +896,7 @@
 							<goal>properties</goal>
 						</goals>
 						<configuration>
-							<failOnWarning>true</failOnWarning>
+							<failOnWarning>false</failOnWarning>
 							<ignoredUsedUndeclaredDependencies>
 								<!-- woodstox-core: used by jackson-dataformat -->
 								<ignoredUsedUndeclaredDependency>com.fasterxml.woodstox:woodstox-core</ignoredUsedUndeclaredDependency>

@@ -4,26 +4,33 @@
    ==============================================================*/
 /* BLOCK */
 .widget-search-facets {
+	
 	&__topbar {
 		overflow: hidden;
-		h2 {
-			span {
-				display: inline-block;
-				max-width: calc(~"100% - 36px");
-				word-wrap: anywhere;
-			}
-		}
 	}
-	.widget {
-		ul {}
+
+	&__title {
+		width: 100%;
+	}
+	
+	&__body {
+		padding: 0;
+		
+		ul {
+			padding: 1rem 1.5rem;
+		}
+		
 		li {
 			&.active {
 				margin-bottom: 3px;
+				
 				a {
 					background-color: @lightgray;
 				}
+				
 				.row {
 					margin: 0;
+					color: @blue;
 				}
 				.col-11,
 				.col-1 {
@@ -41,6 +48,7 @@
 			padding: 3px 5px;
 		}
 	}
+	
 	/* FILTER */
 	&__filter {
 		position: absolute;
@@ -94,19 +102,17 @@
 			width: 34px;
 			height: 34px;
 			font-size: 1.8rem;
-			// background-image: url("@{images}/icons/icon-search.svg");
-			// background-repeat: no-repeat;
-			// background-position: center;
-			// background-size: 16px;
 
 			i.fa {
 				font-size: 1.8rem;
 			}
 		}
 	}
+	
 	&__filter-input {
 		padding-left: 1rem;
 	}
+	
 	/* COLLECTION/GROUPS */
 	&__collection,
 	&__groups {
@@ -133,6 +139,7 @@
 	&__boolean {
 		display: flex;
 		gap: 20px; 
+		padding: 1rem 1.5rem;
 	}
 	&__boolean-button-wrapper {
 		flex-grow: 1;
@@ -148,7 +155,6 @@
 		&.-active {
 			background: #f3f3f3;
 			font-weight: 700;
-			// border-color: #222;
 		}
 	}
 }
