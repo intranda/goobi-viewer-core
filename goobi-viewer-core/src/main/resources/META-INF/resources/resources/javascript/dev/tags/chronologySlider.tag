@@ -1,22 +1,26 @@
 <chronologySlider>
-
-	<!-- START/END YEAR -->
-	<div class="widget-chronology-slider__item chronology-slider-start">
-		<input ref="inputStart" data-input='number'
-			class="widget-chronology-slider__item-input -no-outline -active-border"
-			value="{startYear}" title="{msg.enterYear}" data-toggle="tooltip"
-			data-placement="top" aria-label="{msg.enterYear}"></input>
-	</div>
-	<div class="widget-chronology-slider__item chronology-slider-end">
-		<input ref="inputEnd" data-input='number'
-			class="widget-chronology-slider__item-input -no-outline -active-border"
-			value="{endYear}" title="{msg.enterYear}" data-toggle="tooltip"
-			data-placement="top" aria-label="{msg.enterYear}"></input>
-	</div>
-
-	<!-- RANGE SLIDER -->
-	<div class="widget-chronology-slider__item chronology-slider">
-		<div class="widget-chronology-slider__slider" ref="slider"></div>
+	<!-- DESCRIPTIONAL INFORMATION/TEXT ABOVE FACET (CONFIG + MSG KEY) -->
+	
+	<p class="widget__description-text widget-chronology-slider__description-text">{msg.description}</p>
+	<div class="widget-chronology-slider__inner-wrapper">
+		<!-- START/END YEAR -->
+		<div class="widget-chronology-slider__item chronology-slider-start">
+			<input ref="inputStart" data-input='number'
+				class="widget-chronology-slider__item-input -no-outline -active-border"
+				value="{startYear}" title="{msg.enterYear}" data-toggle="tooltip"
+				data-placement="top" aria-label="{msg.enterYear}"></input>
+		</div>
+		<div class="widget-chronology-slider__item chronology-slider-end">
+			<input ref="inputEnd" data-input='number'
+				class="widget-chronology-slider__item-input -no-outline -active-border"
+				value="{endYear}" title="{msg.enterYear}" data-toggle="tooltip"
+				data-placement="top" aria-label="{msg.enterYear}"></input>
+		</div>
+	
+		<!-- RANGE SLIDER -->
+		<div class="widget-chronology-slider__item chronology-slider">
+			<div class="widget-chronology-slider__slider" ref="slider"></div>
+		</div>
 	</div>
 
 <script>
@@ -34,7 +38,10 @@ this.on("mount", () => {
 	this.msg = opts.msg;
 	this.rtl = $( this.refs.slider ).closest('[dir="rtl"]').length > 0;
 	this.update();
+
 });
+
+
 
 this.on("updated", () => {
 	this.initSlider();

@@ -139,9 +139,9 @@
 
                                 <ul>
                                 
-                                    <!-- TODO: styling -->
+                                    <!-- DESCRIPTIONAL INFORMATION/TEXT ABOVE FACET (CONFIG + MSG KEY) -->
                                     <ui:fragment rendered="#{configurationBean.getFacetFieldDescriptionKey(field.key) != null}">
-                                        <h:outputText value="#{msg[configurationBean.getFacetFieldDescriptionKey(field.key)]}" />
+                                        <p class="widget__description-text widget-search-facets__description-text"><h:outputFormat value="#{msg[configurationBean.getFacetFieldDescriptionKey(field.key)]}" /></p>
                                     </ui:fragment>
 
                                     <!-- ACTIVE FACETS -->
