@@ -138,6 +138,11 @@
                                 </ui:fragment>
 
                                 <ul>
+                                
+                                    <!-- TODO: styling -->
+                                    <ui:fragment rendered="#{configurationBean.getFacetFieldDescriptionKey(field.key) != null}">
+                                        <h:outputText value="#{msg[configurationBean.getFacetFieldDescriptionKey(field.key)]}" />
+                                    </ui:fragment>
 
                                     <!-- ACTIVE FACETS -->
                                     <c:forEach items="#{searchBean.facets.getActiveFacetsForField(field.key)}" var="facet">
