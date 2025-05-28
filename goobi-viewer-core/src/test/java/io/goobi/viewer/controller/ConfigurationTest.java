@@ -23,6 +23,7 @@ package io.goobi.viewer.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -1565,7 +1566,7 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getPageType_shouldReturnNullForNonConfiguredType() {
-        Assertions.assertNull(DataManager.getInstance().getConfiguration().getPageType(PageType.term));
+        assertNull(DataManager.getInstance().getConfiguration().getPageType(PageType.term));
     }
 
     /**
@@ -1917,7 +1918,7 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getInitialFacetElementNumber()
+     * @see Configuration#getInitialFacetElementNumber(String)
      * @verifies return correct value
      */
     @Test
@@ -1934,6 +1935,17 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getInitialFacetElementNumber_shouldReturnDefaultValueIfFieldNotFound() {
         assertEquals(-1, DataManager.getInstance().getConfiguration().getInitialFacetElementNumber("YEAR"));
+    }
+
+    /**
+     * @see Configuration#getFacetFieldDescriptionKey(String)
+     * @verifies return correct value
+     */
+    @Test
+    void getFacetFieldDescriptionKey_shouldReturnCorrectValue() {
+        assertEquals("facet_description_dc", DataManager.getInstance().getConfiguration().getFacetFieldDescriptionKey(SolrConstants.DC));
+        assertNull(DataManager.getInstance().getConfiguration().getFacetFieldDescriptionKey("MD_PLACEPUBLISH"));
+        assertNull(DataManager.getInstance().getConfiguration().getFacetFieldDescriptionKey(null));
     }
 
     /**
@@ -1988,7 +2000,7 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getLabelFieldForFacetField_shouldReturnNullIfNoValueFound() {
-        Assertions.assertNull(DataManager.getInstance().getConfiguration().getLabelFieldForFacetField("MD_PLACEPUBLISH"));
+        assertNull(DataManager.getInstance().getConfiguration().getLabelFieldForFacetField("MD_PLACEPUBLISH"));
     }
 
     /**
@@ -2631,7 +2643,7 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getRecordTargetPageType_shouldReturnNullIfDocstructNotFound() {
-        Assertions.assertNull(DataManager.getInstance().getConfiguration().getRecordTargetPageType("notfound"));
+        assertNull(DataManager.getInstance().getConfiguration().getRecordTargetPageType("notfound"));
     }
 
     /**

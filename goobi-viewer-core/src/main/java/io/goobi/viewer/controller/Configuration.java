@@ -3256,6 +3256,19 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
+     * getFacetFieldDescriptionKey.
+     * </p>
+     *
+     * @param facetField a {@link java.lang.String} object.
+     * @return Optional description message key
+     * @should return correct value
+     */
+    public String getFacetFieldDescriptionKey(String facetField) {
+        return getPropertyForFacetField(facetField, "[@descriptionKey]", null);
+    }
+
+    /**
+     * <p>
      * getSortOrder.
      * </p>
      *
@@ -4313,7 +4326,7 @@ public class Configuration extends AbstractConfiguration {
     public boolean isPreventProxyCaching() {
         return getLocalBoolean(("performance.preventProxyCaching"), false);
     }
-    
+
     /**
      * <p>
      * getDatabaseConnectionAttempts.
@@ -4325,7 +4338,6 @@ public class Configuration extends AbstractConfiguration {
     public int getDatabaseConnectionAttempts() {
         return getLocalInt("performance.databaseConnectionAttempts", 5);
     }
-
 
     /**
      * @return Configured value
@@ -5345,7 +5357,7 @@ public class Configuration extends AbstractConfiguration {
         for (HierarchicalConfiguration<ImmutableNode> config : configs) {
             provider.add(new ProviderConfiguration(config));
         }
-        
+
         return provider;
     }
 
@@ -5360,7 +5372,7 @@ public class Configuration extends AbstractConfiguration {
         for (HierarchicalConfiguration<ImmutableNode> config : configs) {
             provider.add(new ProviderConfiguration(config, vr));
         }
-        
+
         return provider;
     }
 
