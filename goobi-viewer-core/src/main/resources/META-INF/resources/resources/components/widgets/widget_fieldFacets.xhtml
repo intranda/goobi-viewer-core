@@ -16,63 +16,81 @@
 			type="io.goobi.viewer.model.cms.widget.CustomSidebarWidget"
 			required="true" />
 	</composite:interface>
-    <composite:implementation>
-    	<ui:fragment rendered="#{not empty cc.attrs.widget.facetField}">
-                <div id="searchListFacetsWrapper" class="widget-search-facets #{cc.attrs.widget.styleClass}">
-                    <h:form id="searchListFacetsForm" prependId="false">
-                        <!-- DRILL DOWN -->
-                        <ui:param name="field" value="#{cc.attrs.widget.facetField}"></ui:param>
-                                 <div class="widget widget-search-facets__collection">
-                                    <h2 ><span>#{msg[field.concat('_DD')]}</span></h2>
-                                    
-                                    <!-- FILTER FACETS -->
-                                    <ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(field)}">
-                                    <div class="widget-search-facets__filter">
-                                        <input type="text" id="collectionFacetsFilter" tabindex="-1" class="widget-search-facets__filter-input -no-outline" placeholder="#{msg.placeholder__filter_search_results}" aria-label="#{msg.placeholder__filter_search_results}"/>
-                                        <button type="button" class="btn btn--clean" data-toggle="filter-input" aria-label="#{msg.placeholder__filter_search_results}">
-                                        	<i class="fa fa-search" aria-hidden="true"></i>
-                                        </button>
-                                    </div>
-                                    </ui:fragment>
-                                       <ul>
-                                    	<!-- ACTIVE FACETS -->
-                                        <ui:repeat value="#{searchBean.facets.getActiveFacetsForField(field)}" var="facet">
-                                            <li class="active">
-                                                <h:commandLink action="#{searchBean.removeFacetAction(facet.link)}" title="#{msg.removeFacet}">
-                                                    <div class="row">
-                                                        <div class="col-11">#{facet.translatedLabel}</div>
-                                                        <div class="col-1">
-                                                            <i class="fa fa-times" aria-hidden="true"></i>
-                                                        </div>
-                                                    </div>
-                                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                                    <f:passThroughAttribute name="data-placement" value="top" />
-                                                    <f:passThroughAttribute name="aria-label" value="#{msg[field.concat('_DD')]}: #{facet.translatedLabel}" />
-                                                </h:commandLink>
-                                            </li>
-                                        </ui:repeat>
-                                    
-                                    
-                                        <!-- AVAILABLE FACETS -->
-                                        <ui:repeat value="#{searchBean.getFieldFacetValues(field, cc.attrs.widget.numEntries, cc.attrs.widget.getCombinedFilterQuery(cmsBean.currentPage))}" var="facet">
-                                                <li>
-                                                    <h:outputLink value="#{navigationHelper.getSearchUrl(0,cmsBean.currentPage)}/-/#{empty cc.attrs.widget.filterQuery ? '-' : cc.attrs.widget.filterQuery}/1/-/#{facet.urlEscapedLink}/">
-                                                        #{msg[facet.label]} (#{facet.count})
-                                                        <f:passThroughAttribute name="aria-label" value="#{msg[field.concat('_DD')]}: #{facet.translatedLabel}" />
-                                                    </h:outputLink>
-                                                </li>
-                                        </ui:repeat>
-                                    </ul>
-                                </div>
-                    </h:form>
-                </div>
+	<composite:implementation>
+		<ui:fragment rendered="#{not empty cc.attrs.widget.facetField}">
+			<div id="searchListFacetsWrapper"
+				class="widget-search-facets #{cc.attrs.widget.styleClass}">
+				<h:form id="searchListFacetsForm" prependId="false">
+					<!-- DRILL DOWN -->
+					<ui:param name="field" value="#{cc.attrs.widget.facetField}"></ui:param>
+					<div class="widget widget-search-facets__collection">
+						<div class="widget__topbar widget-search-facets__topbar">
+							<h2 class="widget__title widget-search-facets__title">#{msg[field.concat('_DD')]}</h2>
+						</div>
 
-				<h:panelGroup
-					rendered="#{searchBean.facets.allAvailableFacets.entrySet().toArray() == null}">
-					<div id="widgetSearchHelp" class="widget-searchhelp">
-						<viewerComponent:searchHelpText />
+
+						<div class="widget__body widget-search-facets__body">
+							<!-- FILTER FACETS -->
+							<ui:fragment
+								rendered="#{configurationBean.isFacetFieldDisplayValueFilter(field)}">
+								<div class="widget-search-facets__filter">
+									<input type="text" id="collectionFacetsFilter" tabindex="-1"
+										class="widget-search-facets__filter-input -no-outline"
+										placeholder="#{msg.placeholder__filter_search_results}"
+										aria-label="#{msg.placeholder__filter_search_results}" />
+									<button type="button" class="btn btn--clean"
+										data-toggle="filter-input"
+										aria-label="#{msg.placeholder__filter_search_results}">
+										<i class="fa fa-search" aria-hidden="true"></i>
+									</button>
+								</div>
+							</ui:fragment>
+							<ul>
+								<!-- ACTIVE FACETS -->
+								<ui:repeat
+									value="#{searchBean.facets.getActiveFacetsForField(field)}"
+									var="facet">
+									<li class="active"><h:commandLink
+											action="#{searchBean.removeFacetAction(facet.link)}"
+											title="#{msg.removeFacet}">
+											<div class="row">
+												<div class="col-11">#{facet.translatedLabel}</div>
+												<div class="col-1">
+													<i class="fa fa-times" aria-hidden="true"></i>
+												</div>
+											</div>
+											<f:passThroughAttribute name="data-toggle" value="tooltip" />
+											<f:passThroughAttribute name="data-placement" value="top" />
+											<f:passThroughAttribute name="aria-label"
+												value="#{msg[field.concat('_DD')]}: #{facet.translatedLabel}" />
+										</h:commandLink></li>
+								</ui:repeat>
+
+
+								<!-- AVAILABLE FACETS -->
+								<ui:repeat
+									value="#{searchBean.getFieldFacetValues(field, cc.attrs.widget.numEntries, cc.attrs.widget.getCombinedFilterQuery(cmsBean.currentPage))}"
+									var="facet">
+									<li><h:outputLink
+											value="#{navigationHelper.getSearchUrl(0,cmsBean.currentPage)}/-/#{empty cc.attrs.widget.filterQuery ? '-' : cc.attrs.widget.filterQuery}/1/-/#{facet.urlEscapedLink}/">
+                                                        #{msg[facet.label]} (#{facet.count})
+                                                        <f:passThroughAttribute
+												name="aria-label"
+												value="#{msg[field.concat('_DD')]}: #{facet.translatedLabel}" />
+										</h:outputLink></li>
+								</ui:repeat>
+							</ul>
+						</div>
 					</div>
-				</h:panelGroup>
-			</ui:fragment>
+				</h:form>
+			</div>
+
+			<h:panelGroup
+				rendered="#{searchBean.facets.allAvailableFacets.entrySet().toArray() == null}">
+				<div id="widgetSearchHelp" class="widget-searchhelp">
+					<viewerComponent:searchHelpText />
+				</div>
+			</h:panelGroup>
+		</ui:fragment>
 	</composite:implementation>
 </ui:composition>

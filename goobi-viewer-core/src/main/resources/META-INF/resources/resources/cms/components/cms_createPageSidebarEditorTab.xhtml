@@ -60,28 +60,31 @@
 											</div>
 											
 											<div class="sidebar-editor__icon">
-	                                        	<ui:fragment rendered="#{not empty widget.contentType.iconClass}">
-	                                        		<i class="#{widget.contentType.iconClass}" aria-hidden="true"></i>
+	                                        	<ui:fragment rendered="#{not empty element.contentType.iconClass}">
+	                                        		<i class="#{element.contentType.iconClass}" aria-hidden="true"></i>
 	                                        	</ui:fragment>
 	                                      	</div>  	
 
 											<!-- ITEM LABEL -->
-											<div class="sidebar-editor__widget-item-label">#{element.title.textOrDefault}</div>
+											<span class="sidebar-editor__widget-item-label">#{element.title.textOrDefault}</span>
 
-											<!-- ITEM DELETE -->
+											<!-- ITEM EDIT AND DELETE -->						
+<!-- 											<div jsf:id="widgetEditLink" rendered="#{element.canEdit()}" > -->
+												<div class="sidebar-editor__widget-item-actions-wrapper">
+													<ui:fragment rendered="#{element.canEdit()}">
+														<a href="#{element.adminBackendUrl}" class="admin__table-action-link sidebar-editor__widget-item-delete-button -bluelink">#{msg.edit}</a>
+													</ui:fragment>
+													<button
+															class="admin__table-action-link sidebar-editor__widget-item-delete-button -redlink"
+															jsf:action="#{cc.attrs.page.removeSidebarElement(element)}"
+															aria-label="#{msg.delete}">
+															<f:ajax render="@form"/>
+															#{msg.delete}
+													</button>
+												</div>
+
 											
-																							
-											<div jsf:id="widgetEditLink" rendered="#{element.canEdit()}" class="admin__table-action-link sidebar-editor__widget-item-delete-button -bluelink">
-												<a href="#{element.adminBackendUrl}">#{msg.edit}</a>
-											</div>
 											
-											<button
-													class="admin__table-action-link sidebar-editor__widget-item-delete-button -redlink"
-													jsf:action="#{cc.attrs.page.removeSidebarElement(element)}"
-													aria-label="#{msg.delete}">
-													<f:ajax render="@form"/>
-													#{msg.delete}
-											</button>
 
 										</div>
 									</ui:repeat>
@@ -107,7 +110,7 @@
 	                                        	</ui:fragment>
 
 											  	<label class="sidebar-editor__choose-widget-item-label" for="scales#{status.index}">
-											  		<span class="sidebar-editor__choose-widget-item-text">#{widget.title.textOrDefault}</span>
+											  		<span class="sidebar-editor__choose-widget-item-title">#{widget.title.textOrDefault}</span>
 													<h:outputText rendered="#{!widget.description.isEmpty()}" class="sidebar-editor__choose-widget-item-desc" value="#{'('.concat(widget.description).concat(')')}"/>
 												</label>
  

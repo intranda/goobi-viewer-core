@@ -1,6 +1,8 @@
 <chronologySlider>
 	<!-- DESCRIPTIONAL INFORMATION/TEXT ABOVE FACET (CONFIG + MSG KEY) -->
 
+		<p class="widget__description-text widget-chronology-slider__description-text" ref="descriptionText"></p>
+
 		<!-- START/END YEAR -->
 		<div class="widget-chronology-slider__item chronology-slider-start">
 			<input ref="inputStart" data-input='number'
@@ -19,7 +21,6 @@
 		<div class="widget-chronology-slider__item chronology-slider">
 			<div class="widget-chronology-slider__slider" ref="slider"></div>
 		</div>
-		<p class="widget__description-text widget-chronology-slider__description-text" ref="descriptionText"></p>
 
 <script>
 
