@@ -36,7 +36,7 @@ class NetToolsTest extends AbstractTest {
      */
     @Test
     void parseMultipleIpAddresses_shouldFilterMultipleAddressesCorrectly() throws Exception {
-        Assertions.assertEquals("3.3.3.3", NetTools.parseMultipleIpAddresses("1.1.1.1, 2.2.2.2, 3.3.3.3"));
+        Assertions.assertEquals("1.1.1.1", NetTools.parseMultipleIpAddresses("1.1.1.1, 2.2.2.2, 3.3.3.3"));
     }
 
     /**
