@@ -56,6 +56,13 @@
 				<h:form id="deleteUser" styleClass="form-horizontal form-group" role="form" prependId="false">
 					<facelet:deleteUser user="#{userBean.user.copy}" />
 				</h:form>
+				
+                <c:forEach var="module" items="#{configurationBean.modules}">
+                    <c:forEach var="contribution" items="#{module.getWidgets('userSettings')}">
+                        <ui:include src="/#{contribution}" />
+                    </c:forEach>
+                </c:forEach>
+				
 			</ui:fragment>
 		</div>
 	</ui:define>
