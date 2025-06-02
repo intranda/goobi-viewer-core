@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.managedbeans.storage.SessionBean;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LoginResult;
@@ -133,11 +134,13 @@ class UserBeanTest extends AbstractDatabaseEnabledTest {
                 //
             }
         });
+        
+        bean.setSessionBean(new SessionBean());
     }
 
     @Test
     void testLogin_valid() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
-
+        
         bean.setEmail(userActive_email);
         bean.setPassword(userActive_pwHash);
         Assertions.assertNull(bean.getUser());
@@ -149,7 +152,7 @@ class UserBeanTest extends AbstractDatabaseEnabledTest {
 
     @Test
     void testLogin_invalid() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
-
+        
         bean.setEmail(userActive_email);
         bean.setPassword(userSuspended_pwHash);
         Assertions.assertNull(bean.getUser());
@@ -159,7 +162,7 @@ class UserBeanTest extends AbstractDatabaseEnabledTest {
 
     @Test
     void testLogin_unknown() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
-
+        bean.setSessionBean(new SessionBean());
         bean.setEmail(userActive_email + "test");
         bean.setPassword(userActive_pwHash);
         Assertions.assertNull(bean.getUser());
@@ -169,7 +172,7 @@ class UserBeanTest extends AbstractDatabaseEnabledTest {
 
     @Test
     void testLogin_suspended() throws IllegalStateException, AuthenticationProviderException, InterruptedException, ExecutionException {
-
+        
         bean.setEmail(userSuspended_email);
         bean.setPassword(userSuspended_pwHash);
         Assertions.assertNull(bean.getUser());

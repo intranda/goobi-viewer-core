@@ -38,12 +38,12 @@ public abstract class StorageBean implements DataStorage, Serializable {
 
     private static final long serialVersionUID = -5738074975696037653L;
 
-    private Map<String, Object> objects = new ConcurrentHashMap<String, Object>();
+    private Map<String, Object> objects = new ConcurrentHashMap<>();
 
     private static final boolean ALLOW_CACHING = true;
 
     @Inject
-    private HttpServletRequest httpRequest;
+    protected HttpServletRequest request;
 
     public Object get(String key) {
         return objects.get(key);
@@ -58,16 +58,15 @@ public abstract class StorageBean implements DataStorage, Serializable {
     }
 
     public HttpServletRequest getRequest() {
-        return this.httpRequest;
+        return this.request;
     }
 
     public void cleanObjects() {
-        this.objects = new ConcurrentHashMap<String, Object>();
+        this.objects = new ConcurrentHashMap<>();
     }
 
     public void removeObjects(String keyRegex) {
-        List<String> keys = this.objects.keySet().stream().filter(key -> key.matches(keyRegex)).collect(Collectors.toList());
+        List<String> keys = this.objects.keySet().stream().filter(key -> key.matches(keyRegex)).toList();
         keys.forEach(this.objects::remove);
     }
-
 }

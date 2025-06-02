@@ -82,6 +82,7 @@ import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.search.SearchResultGroup;
+import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
@@ -122,8 +123,6 @@ public class CmsBean implements Serializable {
     private transient CmsMediaBean cmsMediaBean;
     @Inject
     private transient CMSTemplateManager templateManager;
-    @Inject
-    private transient ActiveDocumentBean adb;
 
     private TableDataProvider<CMSPage> lazyModelPages;
     /** The page currently open for viewing */
@@ -139,6 +138,11 @@ public class CmsBean implements Serializable {
     private String test = "";
 
     private List<String> luceneFields = null;
+
+    private List<CMSNavigationItem> navigationMenuItems = null;
+
+    /** Persists checked menu item access permission for the duration of the user session. */
+    //    private final Map<Long, Boolean> menuItemAccessPermissionMap = new HashMap<>();
 
     public CmsBean() {
 
@@ -1756,34 +1760,45 @@ public class CmsBean implements Serializable {
      * @return a {@link java.util.List} object.
      */
     public List<CMSNavigationItem> getNavigationMenuItems() {
-        try {
-            String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
-            String currentTheme = getCurrentCmsPageIfLoaded()
-                    .map(CMSPage::getSubThemeDiscriminatorValue)
-                    .orElse(BeanUtils.getNavigationHelper().getThemeOrSubtheme());
-            List<CMSNavigationItem> items = DataManager.getInstance()
-                    .getDao()
-                    .getAllTopCMSNavigationItems()
-                    .stream()
-                    .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(currentTheme))
-                            || currentTheme.equalsIgnoreCase(item.getAssociatedTheme()))
-                    .collect(Collectors.toList());
-            if (items.isEmpty()) {
-                items = DataManager.getInstance()
+        logger.info("getNavigationMenuItems");
+        if (navigationMenuItems == null) {
+            try {
+                String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
+                String currentTheme = getCurrentCmsPageIfLoaded()
+                        .map(CMSPage::getSubThemeDiscriminatorValue)
+                        .orElse(BeanUtils.getNavigationHelper().getThemeOrSubtheme());
+                navigationMenuItems = DataManager.getInstance()
                         .getDao()
                         .getAllTopCMSNavigationItems()
                         .stream()
-                        .filter(item -> StringUtils.isBlank(item.getAssociatedTheme()) || item.getAssociatedTheme().equalsIgnoreCase(mainTheme))
-                        .collect(Collectors.toList());
+                        .filter(item -> item.checkAccess(BeanUtils.getRequest()))
+                        .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(currentTheme))
+                                || currentTheme.equalsIgnoreCase(item.getAssociatedTheme()))
+                        .toList();
+                if (navigationMenuItems.isEmpty()) {
+                    navigationMenuItems = DataManager.getInstance()
+                            .getDao()
+                            .getAllTopCMSNavigationItems()
+                            .stream()
+                            .filter(item -> item.checkAccess(BeanUtils.getRequest()))
+                            .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme())
+                                    || item.getAssociatedTheme().equalsIgnoreCase(mainTheme)))
+                            .toList();
+                }
+                logger.info("returning {} items", navigationMenuItems.size());
+            } catch (DAOException e) {
+                navigationMenuItems = Collections.emptyList();
             }
-            return items;
-        } catch (DAOException e) {
-            return Collections.emptyList();
         }
+
+        return navigationMenuItems;
     }
 
-    public List<CMSNavigationItem> getActiveNavigationMenuItems() {
-        return getNavigationMenuItems().stream().filter(CMSNavigationItem::isEnabled).collect(Collectors.toList());
+    /**
+     * Resets visible navigation menu items (e.g. when logging in/out).
+     */
+    public void resetNavigationMenuItems() {
+        this.navigationMenuItems = null;
     }
 
     public Collection<Sorting> getSortingModes() {
@@ -1811,5 +1826,18 @@ public class CmsBean implements Serializable {
 
     public void setTest(String test) {
         this.test = test;
+    }
+
+    public boolean isUserHasAccess(CMSPage page) {
+        if (page != null) {
+            logger.trace("isUserHasAccess: {}", page.getId());
+            try {
+                return AccessConditionUtils.checkAccessPermissionForCmsPage(BeanUtils.getRequest(), page).isGranted();
+            } catch (IndexUnreachableException | DAOException | PresentationException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        return false;
     }
 }
