@@ -4,15 +4,17 @@
    ==============================================================*/
 /* BLOCK */
 .widget-search-facets {
-	
 	&__topbar {
 		overflow: hidden;
 	}
 
 	&__title {
 		width: 100%;
+		display: inline-block;
+		max-width: calc(~"100% - 36px");
+		word-wrap: anywhere;
 	}
-	
+
 	&__body {
 		// padding: 0;
 		
@@ -52,15 +54,15 @@
 	/* FILTER */
 	&__filter {
 		position: absolute;
-		top: 3px;
+		top: 0px;
 		right: 5px;
 		left: 5px;
-		background-color: @blue;
+		height: 100%;
 		z-index: 10;
+		pointer-events: none;
 		input, button, button:hover {
 			position: absolute;
 			color: @white;
-
 			i.fa {
 				font-size: 1.6rem;
 			}
@@ -68,11 +70,10 @@
 		input {
 			right: 32px;
 			width: 0;
-			height: 32px;
+			height: 100%;
 			font-size: @fontMedium;
 			color: @white;
-			border: 0;
-			border-bottom: 1px solid @white;
+			border: none;
 			background-color: @blue;
 			display: none;
 			&::-webkit-input-placeholder {
@@ -96,8 +97,9 @@
 				display: block;
 			}
 		}
-		[data-toggle="filter-input"],
-		[data-toggle="filter-input"]:hover {
+		
+		[data-toggle="searchFacetFilter"],
+		[data-toggle="searchFacetFilter"]:hover {
 			right: 0;
 			width: 34px;
 			height: 34px;
@@ -109,8 +111,13 @@
 		}
 	}
 	
+	&__filter-button {
+		pointer-events: all;
+	}
+	
 	&__filter-input {
 		padding-left: 1rem;
+		pointer-events: all;
 	}
 	
 	/* COLLECTION/GROUPS */
@@ -161,7 +168,7 @@
 
 @{RTL} .widget-search-facets {
 	&__filter {
-		[data-toggle="filter-input"] {
+		[data-toggle="searchFacetFilter"] {
 			right: unset;
 			left: 0;
 		}

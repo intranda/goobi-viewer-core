@@ -23,28 +23,33 @@
 				<h:form id="searchListFacetsForm" prependId="false">
 					<!-- DRILL DOWN -->
 					<ui:param name="field" value="#{cc.attrs.widget.facetField}"></ui:param>
-					<div class="widget widget-search-facets__collection">
+					<div class="widget widget-search-facets__collection" data-facet="searchFacetFilter">
 						<div class="widget__topbar widget-search-facets__topbar">
-							<h2 class="widget__title widget-search-facets__title">#{msg[field.concat('_DD')]}</h2>
-						</div>
-
-
-						<div class="widget__body widget-search-facets__body">
+							<h2 class="widget__title widget-search-facets__title" data-heading="searchFacetFilter">#{msg[field.concat('_DD')]}</h2>
 							<!-- FILTER FACETS -->
 							<ui:fragment
 								rendered="#{configurationBean.isFacetFieldDisplayValueFilter(field)}">
-								<div class="widget-search-facets__filter">
-									<input type="text" id="collectionFacetsFilter" tabindex="-1"
-										class="widget-search-facets__filter-input -no-outline"
-										placeholder="#{msg.placeholder__filter_search_results}"
-										aria-label="#{msg.placeholder__filter_search_results}" />
-									<button type="button" class="btn btn--clean"
-										data-toggle="filter-input"
-										aria-label="#{msg.placeholder__filter_search_results}">
-										<i class="fa fa-search" aria-hidden="true"></i>
-									</button>
+								<div class="widget-search-facets__filter" data-wrapper="searchFacetFilter">
+	                                <input
+	                                  type="text"
+	                                  id="collectionFieldFacetsFilter_#{status.index}"
+                                       class="widget-search-facets__filter-input -no-outline"
+                                       placeholder="#{msg.placeholder__filter_search_results}"
+                                       aria-label="#{msg.placeholder__filter_search_results}"
+                                       data-input="searchFacetFilter" />
+                                      <button
+                                        type="button"
+                                        class="btn btn--clean widget-search-facets__filter-button"
+                                        data-toggle="searchFacetFilter"
+                                        aria-label="#{msg.placeholder__filter_search_results}">
+                                      	<i class="fa fa-search" aria-hidden="true"></i>
+                                      </button>
 								</div>
 							</ui:fragment>
+						</div>
+
+						<div class="widget__body widget-search-facets__body">
+
 							<ul>
 								<!-- ACTIVE FACETS -->
 								<ui:repeat

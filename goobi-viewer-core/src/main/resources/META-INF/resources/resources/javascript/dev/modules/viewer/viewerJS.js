@@ -430,14 +430,14 @@ var viewerJS = (function () {
     }
 
     viewer.initFacetsFilters = function () {
-        var $facets = $('.widget-search-facets__collection');
+        var $facets = $('[data-facet="searchFacetFilter"]');
 
         $facets.each(function () {
             var filterConfig = {
-				inputToggle: $(this).find('[data-toggle="filter-input"]'),
-                wrapper: $(this).find('.widget-search-facets__filter'),
-                header: $(this).find('h2'),
-                input: $(this).find('.widget-search-facets__filter-input'),
+				inputToggle: $(this).find('[data-toggle="searchFacetFilter"]'),
+                wrapper: $(this).find('[data-wrapper="searchFacetFilter"]'),
+                header: $(this).find('[data-heading="searchFacetFilter"]'),
+                input: $(this).find('[data-input="searchFacetFilter"]'),
                 elements: $(this).find('li')
             }
 
