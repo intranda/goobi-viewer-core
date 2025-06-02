@@ -4,15 +4,22 @@
    ==============================================================*/
    
 .widget-custom {
-	h2 {
+	&__title {
+		width: 100%;
+		
 		button {
-				color: @white;
-				font-weight: 700;
+			color: @white;
+			font-weight: 700;
 			&:hover {
 				color: @white;
 			}
 		}
 	}
+	
+	a {
+		display: inline;
+	}
+
 	img {
 		height: auto;
 		max-width: 100%;

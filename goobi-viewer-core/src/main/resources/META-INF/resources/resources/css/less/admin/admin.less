@@ -776,9 +776,16 @@
 	}
 	// PREVIEW BOX (ADD WIDGET)
 	&__default-preview {
-		h2 {
-			background: @blue;
+
+		.widget__topbar {
 			padding: 0.7rem 1.5rem;
+			background: @blue;
+		}
+		.widget__body {
+			padding: 1rem 1.5rem;
+		}
+		
+		h2 {
 			color: @white;
 			margin-bottom: 0 !important;
 			font-size: 1.6rem !important;
@@ -795,8 +802,6 @@
 			margin-bottom: 0;
 		}
 		.widget-rss__list, ul {
-			
-			padding: 1rem 1.5rem;
 		}
 		img {
 			max-width: 100%;

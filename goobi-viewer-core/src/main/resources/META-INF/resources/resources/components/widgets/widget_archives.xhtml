@@ -22,35 +22,46 @@
 	    	<!-- neighbours is a pair of optionals holding the ids of the previous and succeeding archives entry. This format is used to avoid querying solr more than once -->
 	    	<c:set scope="view" var="neighbours" value="#{activeDocumentBean.viewManager.getArchiveTreeNeighbours()}"/>
             <div id="widgetArchives" class="widget widget-archives">
-                <h2 class="widget-archives__heading">
-	                <span>#{msg.archives}</span>
-		                <a class="widget-archives__prev #{neighbours.left != null ? '':'-disabled'}" 
-                           disabled="disabled"
-                           title="#{msg.previousHit}"
-                           data-toggle="tooltip"
-                           data-placement="top"
-                           aria-label="#{msg.previousHit}"
-		                   href="#{neighbours.left != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.left).concat('/')) : '#'}">
-                            <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
-                        </a>
-	                	<a class="widget-archives__next #{neighbours.right != null ? '':'-disabled'}"
-                           title="#{msg.nextHit}"
-                           data-toggle="tooltip"
-                           data-placement="top"
-                           aria-label="#{msg.nextHit}"                           
-	                	   href="#{neighbours.right != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.right).concat('/')) : '#'}">
-                            <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
-                        </a>
-                </h2>
-                <ul>
-	                <ui:repeat var="entry" value="#{activeDocumentBean.viewManager.getArchiveHierarchyForIdentifier(activeDocumentBean.viewManager.archiveEntryIdentifier)}">
-					    <li class="widget-archives__entry">#{entry.label}</li>
-					</ui:repeat>
-					<li class="widget-archives__archives-link">
-					    <h:outputLink
-					        value="#{navigationHelper.applicationUrl}#{activeDocumentBean.viewManager.getArchiveUrlForIdentifier(activeDocumentBean.viewManager.archiveEntryIdentifier)}">#{msg.openArchiveView}</h:outputLink>
-					</li>
-				</ul>
+            	<div class="widget__topbar widget-archives__topbar">
+            		<h2 class="widget__title widget-archives__title">
+            			#{msg.archives}
+            		</h2>
+            		<div class="widget-archives__header-controls">
+	            		 <a 
+	            			class="widget-archives__prev #{neighbours.left != null ? '':'-disabled'}" 
+	                        disabled="disabled"
+	                        title="#{msg.previousHit}"
+	                        data-toggle="tooltip"
+	                        data-placement="top"
+	                        aria-label="#{msg.previousHit}"
+			                href="#{neighbours.left != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.left).concat('/')) : '#'}"
+			             >
+	                     	<i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+	                     </a>
+		                <a 
+		                	class="widget-archives__next #{neighbours.right != null ? '':'-disabled'}"
+	                        title="#{msg.nextHit}"
+	                        data-toggle="tooltip"
+	                        data-placement="top"
+	                        aria-label="#{msg.nextHit}"                           
+		                	href="#{neighbours.right != null ? (navigationHelper.currentPageTypeUrl.concat('/').concat(neighbours.right).concat('/')) : '#'}"
+		                >
+	                    	<i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+	                    </a>
+            		</div>
+            	</div>
+            	<div class="widget__body widget-archives__body">
+            		<ul>
+		                <ui:repeat var="entry" value="#{activeDocumentBean.viewManager.getArchiveHierarchyForIdentifier(activeDocumentBean.viewManager.archiveEntryIdentifier)}">
+						    <li class="widget-archives__entry">#{entry.label}</li>
+						</ui:repeat>
+						<li class="widget-archives__archives-link">
+						    <h:outputLink value="#{navigationHelper.applicationUrl}#{activeDocumentBean.viewManager.getArchiveUrlForIdentifier(activeDocumentBean.viewManager.archiveEntryIdentifier)}">
+						    	#{msg.openArchiveView}
+						    </h:outputLink>
+						</li>
+					</ul>
+            	</div>
             </div>
 		</c:if>
 	</composite:implementation>
