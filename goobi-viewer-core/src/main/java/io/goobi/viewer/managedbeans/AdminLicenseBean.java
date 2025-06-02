@@ -31,12 +31,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.model.SelectItem;
-import jakarta.faces.model.SelectItemGroup;
-import jakarta.inject.Named;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -67,6 +61,11 @@ import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.model.SelectItem;
+import jakarta.faces.model.SelectItemGroup;
+import jakarta.inject.Named;
 import jakarta.mail.MessagingException;
 
 /**
@@ -976,7 +975,36 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     *
+     * Record count for non-configured access conditions.
+     * 
+     * @param accessCondition
+     * @return Number of records containing the given access condition value
+     * @throws DAOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public long getNumRecordsWithAccessCondition(String accessCondition) throws DAOException, IndexUnreachableException, PresentationException {
+        long records = DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount(SearchHelper.getQueryForAccessCondition(accessCondition, false));
+        if (records == 0) {
+            // Alternative query for metadata-only restrictions
+            records = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount("+DOCTYPE:METADATA +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"");
+        }
+        if (records == 0) {
+            // Alternative query for CMS pages with access conditions
+            records =
+                    DataManager.getInstance().getDao().getCMSPageCountByPropertyValue(CMSProperty.KEY_ACCESS_CONDITION, accessCondition);
+        }
+
+        return records;
+    }
+
+    /**
+     * Record count for configured access conditions.
+     * 
      * @param licenseType
      * @return Number of records containing the given access condition value
      * @throws DAOException
@@ -985,7 +1013,7 @@ public class AdminLicenseBean implements Serializable {
      */
     public long getRecordCountForLicenseType(LicenseType licenseType) throws DAOException, IndexUnreachableException, PresentationException {
         if (licenseType == null) {
-            throw new org.jboss.weld.exceptions.IllegalArgumentException("licenseType may not be null");
+            throw new IllegalArgumentException("licenseType may not be null");
         }
 
         if (licenseType.getRecordCount() == null) {

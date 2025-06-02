@@ -21,197 +21,214 @@
 	</composite:interface>
 
 	<composite:implementation>
-		<div class="widget widget__views" jsf:id="widgetViewsContent" rendered="#{displayConditions.getTag('widgetViewsContent').getChildCount('widget-element') > 1}">
-					<ui:fragment rendered="#{cc.attrs.collapsible == false}">
-						<h2 class="widget__title #{cc.attrs.collapsible ? 'collapseable' : ''}">
-							<span>#{cc.attrs.widgetTitle}</span>
-							<div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
-								<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
-							</div>
-						</h2>
-					</ui:fragment>
+		<div class="widget widget-views" jsf:id="widgetViewsContent" rendered="#{displayConditions.getTag('widgetViewsContent').getChildCount('widget-element') > 1}">
+			<ui:fragment rendered="#{cc.attrs.collapsible == false}">
+				<div 
+					tabindex="0"
+					role="button"
+					class="widget__topbar widget-views__topbar #{cc.attrs.collapsible ? 'collapseable' : ''}"
+				>
+					<h2 class="widget__title widget-views__title">
+						#{cc.attrs.widgetTitle}
+					</h2>
 					
-					<ui:fragment rendered="#{cc.attrs.collapsible == true}">
-						<div class="widget__topbar">
-							<h2 role="button"
-								class="widget__title #{cc.attrs.collapsible ? 'collapseable' : ''}">
-								<span>#{cc.attrs.widgetTitle}</span> <i class="fa fa-angle-down"
-									aria-hidden="true"></i>
-							</h2>
+					<div class="widget__topbar__icons-container">
+						<div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
+							<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
 						</div>
-					</ui:fragment>
-
-					<ul  class="widget__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
-						<h:form prependId="false" id="widgetViewsForm">
-						<!-- Object -->
-						<h:panelGroup  visibility-class="widget-element"
-							rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, mimeType: [image, video, audio, model]}')}">
+					</div>
+				</div>
+			</ui:fragment>
+			
+			<ui:fragment rendered="#{cc.attrs.collapsible == true}">
+				<div 
+					tabindex="0"
+					role="button"
+					class="widget__topbar widget-views__topbar #{cc.attrs.collapsible ? 'collapseable' : ''}"
+				>
+					<h2 class="widget__title">
+						#{cc.attrs.widgetTitle}
+					</h2>
+					
+					<div class="widget__topbar__icons-container">
+						<i class="fa fa-angle-down" aria-hidden="true"></i>
+					</div>
+				</div>
+			</ui:fragment>
+			
+			<div class="widget__body widget-view__body">
+				<ul class="#{cc.attrs.collapsible ? 'collapseable' : ''}">
+					<h:form prependId="false" id="widgetViewsForm">
+					<!-- Object -->
+					<h:panelGroup  visibility-class="widget-element"
+						rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, mimeType: [image, video, audio, model]}')}">
+						<li
+							class="#{navigationHelper.currentPage == 'object' ? 'active' : ''}">
+							<h:outputLink
+								value="#{navigationHelper.imageActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
+								<h:outputText
+									value="#{msg[activeDocumentBean.viewManager.currentPage.pageLinkLabel]}" />
+								<f:passThroughAttribute name="aria-label"
+									value="#{msg.view}: #{msg[activeDocumentBean.viewManager.currentPage.pageLinkLabel]}" />
+							</h:outputLink>
+						</li>
+					</h:panelGroup>
+		
+					<!-- Calendar -->
+					<h:panelGroup visibility-class="widget-element"
+						rendered="#{configurationBean.sidebarCalendarLinkVisible and activeDocumentBean.viewManager.calendarView.display}">
+						<li
+							class="#{navigationHelper.currentPage == 'calendar' ? 'active' : ''}">
+							<h:outputLink 
+								value="#{navigationHelper.calendarActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
+								<h:outputText value="#{msg.calendar}" />
+								<f:passThroughAttribute name="aria-label"
+									value="#{msg.view}: #{msg.calendar}" />
+							</h:outputLink>
+						</li>
+					</h:panelGroup>
+					<!-- TOC -->
+					<h:panelGroup visibility-class="widget-element"
+						rendered="#{configurationBean.sidebarTocViewLinkVisible and displayConditions.matchRecord('{tocSize: 2}')}">
+						<li
+							class="#{navigationHelper.currentPage == 'toc' ? 'active' : ''}">
+							<h:outputLink 
+								value="#{navigationHelper.tocActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
+								<h:outputText value="#{msg.tocAnchor}"
+									rendered="#{activeDocumentBean.anchor}" escape="false" />
+								<h:outputText value="#{msg.toc}"
+									rendered="#{!activeDocumentBean.anchor}" escape="false" />
+								<f:passThroughAttribute name="aria-label"
+									value="#{msg.view}: #{activeDocumentBean.anchor ? msg.tocAnchor : msg.toc}" />
+							</h:outputLink>
+						</li>
+					</h:panelGroup>
+		
+					<!-- Thumbnails -->
+					<h:panelGroup visibility-class="widget-element"
+						rendered="#{configurationBean.sidebarThumbsLinkVisible and displayConditions.matchRecord('{numPages:2, contentType:[IMAGE, AUDIO, VIDEO, MODEL]}')}">
+						<li
+							class="#{navigationHelper.currentPage == 'thumbs' ? 'active' : ''}">
+							<h:outputLink 
+								value="#{navigationHelper.thumbsActiveUrl}/#{activeDocumentBean.persistentIdentifier}/1/">
+								<h:outputText value="#{msg.thumbGal}" />
+								<f:passThroughAttribute name="aria-label"
+									value="#{msg.view}: #{msg.thumbGal}" />
+							</h:outputLink>
+						</li>
+					</h:panelGroup>
+		
+					<!-- Metadata -->
+					<ui:repeat visibility-class="widget-element"
+						rendered="#{configurationBean.sidebarMetadataLinkVisible and displayConditions.matchRecord('{docType: ![group, anchor]}')}"
+						var="metadataView" varStatus="status" 
+						value="#{metadataBean.metadataViews.stream().filter(mdView -> mdView.displayInSidebar).filter(mdView -> mdView.isVisible(activeDocumentBean.viewManager.topStructElement)).toList()}">
+						<li jsf:id="metadata_view_link_#{status.index}"
+							class="#{navigationHelper.currentPage == 'metadata'.concat(metadataView.url) ? 'active' : ''}">
+							<h:outputLink 
+								value="#{navigationHelper.metadataActiveUrl}#{metadataView.url}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
+								<h:outputText rendered="#{metadataView.label != null}"
+									value="#{msg[metadataView.label]}" />
+								<h:outputText rendered="#{metadataView.label == null}"
+									value="#{msg[metadataBean.defaultMetadataLabel]}" />
+								<f:passThroughAttribute name="aria-label"
+									value="#{msg.view}: #{metadataView.label != null ? msg[metadataView.label] : msg[metadataBean.defaultMetadataLabel]}" />
+							</h:outputLink>
+						</li>
+					</ui:repeat>
+		
+					<!-- Full-text -->
+					<h:panelGroup visibility-class="widget-element"
+						rendered="#{configurationBean.sidebarFulltextLinkVisible and displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
+						<li
+							class="#{navigationHelper.currentPage == 'fulltext' ? 'active' : ''}">
+							<h:outputLink 
+								value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/">
+								<h:outputText value="#{msg.fulltext}" />
+								<f:passThroughAttribute name="aria-label"
+									value="#{msg.view}: #{msg.fulltext}" />
+							</h:outputLink>
+						</li>
+					</h:panelGroup>
+		
+					<!-- TEI full-text -->
+		
+						<ui:repeat rendered="#{configurationBean.sidebarFulltextLinkVisible and displayConditions.matchRecord('{contentType:[TEI], accessCondition: VIEW_FULLTEXT}')}"
+						 	var="lang" visibility-class="widget-element"
+							value="#{textBean.getRecordLanguages(activeDocumentBean.viewManager.topStructElement)}">
 							<li
-								class="#{navigationHelper.currentPage == 'object' ? 'active' : ''}">
-								<h:outputLink
-									value="#{navigationHelper.imageActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
-									<h:outputText
-										value="#{msg[activeDocumentBean.viewManager.currentPage.pageLinkLabel]}" />
-									<f:passThroughAttribute name="aria-label"
-										value="#{msg.view}: #{msg[activeDocumentBean.viewManager.currentPage.pageLinkLabel]}" />
-								</h:outputLink>
-							</li>
-						</h:panelGroup>
-
-						<!-- Calendar -->
-						<h:panelGroup visibility-class="widget-element"
-							rendered="#{configurationBean.sidebarCalendarLinkVisible and activeDocumentBean.viewManager.calendarView.display}">
-							<li
-								class="#{navigationHelper.currentPage == 'calendar' ? 'active' : ''}">
+								class="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.selectedRecordLanguage3 == lang ? 'active' : ''}">
 								<h:outputLink 
-									value="#{navigationHelper.calendarActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
-									<h:outputText value="#{msg.calendar}" />
+									value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{lang}/">
+									<h:outputText value="#{msg.fulltext}: #{msg[lang]}" />
 									<f:passThroughAttribute name="aria-label"
-										value="#{msg.view}: #{msg.calendar}" />
-								</h:outputLink>
-							</li>
-						</h:panelGroup>
-						<!-- TOC -->
-						<h:panelGroup visibility-class="widget-element"
-							rendered="#{configurationBean.sidebarTocViewLinkVisible and displayConditions.matchRecord('{tocSize: 2}')}">
-							<li
-								class="#{navigationHelper.currentPage == 'toc' ? 'active' : ''}">
-								<h:outputLink 
-									value="#{navigationHelper.tocActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
-									<h:outputText value="#{msg.tocAnchor}"
-										rendered="#{activeDocumentBean.anchor}" escape="false" />
-									<h:outputText value="#{msg.toc}"
-										rendered="#{!activeDocumentBean.anchor}" escape="false" />
-									<f:passThroughAttribute name="aria-label"
-										value="#{msg.view}: #{activeDocumentBean.anchor ? msg.tocAnchor : msg.toc}" />
-								</h:outputLink>
-							</li>
-						</h:panelGroup>
-
-						<!-- Thumbnails -->
-						<h:panelGroup visibility-class="widget-element"
-							rendered="#{configurationBean.sidebarThumbsLinkVisible and displayConditions.matchRecord('{numPages:2, contentType:[IMAGE, AUDIO, VIDEO, MODEL]}')}">
-							<li
-								class="#{navigationHelper.currentPage == 'thumbs' ? 'active' : ''}">
-								<h:outputLink 
-									value="#{navigationHelper.thumbsActiveUrl}/#{activeDocumentBean.persistentIdentifier}/1/">
-									<h:outputText value="#{msg.thumbGal}" />
-									<f:passThroughAttribute name="aria-label"
-										value="#{msg.view}: #{msg.thumbGal}" />
-								</h:outputLink>
-							</li>
-						</h:panelGroup>
-
-						<!-- Metadata -->
-						<ui:repeat visibility-class="widget-element"
-							rendered="#{configurationBean.sidebarMetadataLinkVisible and displayConditions.matchRecord('{docType: ![group, anchor]}')}"
-							var="metadataView" varStatus="status" 
-							value="#{metadataBean.metadataViews.stream().filter(mdView -> mdView.displayInSidebar).filter(mdView -> mdView.isVisible(activeDocumentBean.viewManager.topStructElement)).toList()}">
-							<li jsf:id="metadata_view_link_#{status.index}"
-								class="#{navigationHelper.currentPage == 'metadata'.concat(metadataView.url) ? 'active' : ''}">
-								<h:outputLink 
-									value="#{navigationHelper.metadataActiveUrl}#{metadataView.url}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{activeDocumentBean.logid}/">
-									<h:outputText rendered="#{metadataView.label != null}"
-										value="#{msg[metadataView.label]}" />
-									<h:outputText rendered="#{metadataView.label == null}"
-										value="#{msg[metadataBean.defaultMetadataLabel]}" />
-									<f:passThroughAttribute name="aria-label"
-										value="#{msg.view}: #{metadataView.label != null ? msg[metadataView.label] : msg[metadataBean.defaultMetadataLabel]}" />
+										value="#{msg.view}: #{msg[lang.concat('_WCL')]}" />
 								</h:outputLink>
 							</li>
 						</ui:repeat>
-
-						<!-- Full-text -->
-						<h:panelGroup visibility-class="widget-element"
-							rendered="#{configurationBean.sidebarFulltextLinkVisible and displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
-							<li
-								class="#{navigationHelper.currentPage == 'fulltext' ? 'active' : ''}">
+		
+					<!-- External full-text URL -->
+					<h:panelGroup visibility-class="widget-element"
+						rendered="#{activeDocumentBean.viewManager.displayExternalFulltextLink}">
+						<li><h:outputLink 
+								value="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue('MD_LOCATION_URL_EXTERNALFULLTEXT')}"
+								target="_blank">
+								<h:outputText value="#{msg.fulltextExternal}" />
+								<f:passThroughAttribute name="aria-label"
+									value="#{msg.view}: #{msg.fulltextExternal}" />
+							</h:outputLink></li>
+					</h:panelGroup>
+		
+					<!-- NER -->
+					<h:panelGroup visibility-class="widget-element"
+						rendered="#{activeDocumentBean.viewManager.displayNerViewLink}">
+						<li
+							class="#{navigationHelper.currentPage == 'nerfacetting' ? 'active' : ''}">
+							<h:outputLink 
+								value="#{request.contextPath}/ner/#{activeDocumentBean.persistentIdentifier}/">
+								<h:outputText value="#{msg.widgetNerFacetting}" />
+								<f:passThroughAttribute name="aria-label"
+									value="#{msg.view}: #{msg.widgetNerFacetting}" />
+							</h:outputLink>
+						</li>
+					</h:panelGroup>
+		
+					<!-- EXTERNAL URL -->
+					<h:panelGroup visibility-class="widget-element"
+						rendered="#{activeDocumentBean.viewManager.displayExternalResolverLink}">
+						<li><a 
+							href="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER')}"
+							target="_blank" rel="noopener"
+							aria-label="#{msg.view}: #{msg.externalRepository}">
+								#{msg.externalRepository} </a></li>
+					</h:panelGroup>
+		
+					<!-- OPAC URL -->
+					<h:panelGroup visibility-class="widget-element"
+						rendered="#{configurationBean.sidebarOpacLinkVisible and activeDocumentBean.viewManager.opacUrl != null}">
+		                         <li>
+		                             <a href="#{activeDocumentBean.viewManager.opacUrl}" target="_blank" rel="noopener"
+		                                 aria-label="#{msg.view}: #{msg.opacLink}">
+		                                 #{msg.opacLink}</a>
+		                         </li>
+					</h:panelGroup>
+		
+					<!-- RELATED CMS PAGES -->
+					<ui:repeat var="relatedPage" varStatus="status" visibility-class="widget-element"
+						value="#{cmsBean.getRelatedPages(activeDocumentBean.viewManager.pi).stream().filter(p -> p.published or cmsBean.mayEdit(p)).toList()}">
+							<li id="cms_page_link_#{status.index}"
+								class="#{cc.attrs.pageName != '' and cc.attrs.pageName == relatedPage.title ? 'active' : ''} #{relatedPage.published ? '' : 'unpublished'}">
 								<h:outputLink 
-									value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/">
-									<h:outputText value="#{msg.fulltext}" />
+									value="#{relatedPage.pageUrl}">
+									<h:outputText value="#{msg[relatedPage.menuTitleOrTitle]}" />
 									<f:passThroughAttribute name="aria-label"
-										value="#{msg.view}: #{msg.fulltext}" />
+										value="#{msg.view}: #{msg[relatedPage.menuTitleOrTitle]}" />
 								</h:outputLink>
 							</li>
-						</h:panelGroup>
-
-						<!-- TEI full-text -->
-
-							<ui:repeat rendered="#{configurationBean.sidebarFulltextLinkVisible and displayConditions.matchRecord('{contentType:[TEI], accessCondition: VIEW_FULLTEXT}')}"
-							 	var="lang" visibility-class="widget-element"
-								value="#{textBean.getRecordLanguages(activeDocumentBean.viewManager.topStructElement)}">
-								<li
-									class="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.selectedRecordLanguage3 == lang ? 'active' : ''}">
-									<h:outputLink 
-										value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{lang}/">
-										<h:outputText value="#{msg.fulltext}: #{msg[lang]}" />
-										<f:passThroughAttribute name="aria-label"
-											value="#{msg.view}: #{msg[lang.concat('_WCL')]}" />
-									</h:outputLink>
-								</li>
-							</ui:repeat>
-
-						<!-- External full-text URL -->
-						<h:panelGroup visibility-class="widget-element"
-							rendered="#{activeDocumentBean.viewManager.displayExternalFulltextLink}">
-							<li><h:outputLink 
-									value="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue('MD_LOCATION_URL_EXTERNALFULLTEXT')}"
-									target="_blank">
-									<h:outputText value="#{msg.fulltextExternal}" />
-									<f:passThroughAttribute name="aria-label"
-										value="#{msg.view}: #{msg.fulltextExternal}" />
-								</h:outputLink></li>
-						</h:panelGroup>
-
-						<!-- NER -->
-						<h:panelGroup visibility-class="widget-element"
-							rendered="#{activeDocumentBean.viewManager.displayNerViewLink}">
-							<li
-								class="#{navigationHelper.currentPage == 'nerfacetting' ? 'active' : ''}">
-								<h:outputLink 
-									value="#{request.contextPath}/ner/#{activeDocumentBean.persistentIdentifier}/">
-									<h:outputText value="#{msg.widgetNerFacetting}" />
-									<f:passThroughAttribute name="aria-label"
-										value="#{msg.view}: #{msg.widgetNerFacetting}" />
-								</h:outputLink>
-							</li>
-						</h:panelGroup>
-
-						<!-- EXTERNAL URL -->
-						<h:panelGroup visibility-class="widget-element"
-							rendered="#{activeDocumentBean.viewManager.displayExternalResolverLink}">
-							<li><a 
-								href="#{activeDocumentBean.viewManager.topStructElement.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER')}"
-								target="_blank" rel="noopener"
-								aria-label="#{msg.view}: #{msg.externalRepository}">
-									#{msg.externalRepository} </a></li>
-						</h:panelGroup>
-
-						<!-- OPAC URL -->
-						<h:panelGroup visibility-class="widget-element"
-							rendered="#{configurationBean.sidebarOpacLinkVisible and activeDocumentBean.viewManager.opacUrl != null}">
-                            <li>
-                                <a href="#{activeDocumentBean.viewManager.opacUrl}" target="_blank" rel="noopener"
-                                    aria-label="#{msg.view}: #{msg.opacLink}">
-                                    #{msg.opacLink}</a>
-                            </li>
-						</h:panelGroup>
-
-						<!-- RELATED CMS PAGES -->
-						<ui:repeat var="relatedPage" varStatus="status" visibility-class="widget-element"
-							value="#{cmsBean.getRelatedPages(activeDocumentBean.viewManager.pi).stream().filter(p -> p.published or cmsBean.mayEdit(p)).toList()}">
-								<li id="cms_page_link_#{status.index}"
-									class="#{cc.attrs.pageName != '' and cc.attrs.pageName == relatedPage.title ? 'active' : ''} #{relatedPage.published ? '' : 'unpublished'}">
-									<h:outputLink 
-										value="#{relatedPage.pageUrl}">
-										<h:outputText value="#{msg[relatedPage.menuTitleOrTitle]}" />
-										<f:passThroughAttribute name="aria-label"
-											value="#{msg.view}: #{msg[relatedPage.menuTitleOrTitle]}" />
-									</h:outputLink>
-								</li>
-						</ui:repeat>
-						</h:form>
-					</ul>
+					</ui:repeat>
+					</h:form>
+				</ul>
+			</div>
 		</div>
 	</composite:implementation>
 </ui:composition>

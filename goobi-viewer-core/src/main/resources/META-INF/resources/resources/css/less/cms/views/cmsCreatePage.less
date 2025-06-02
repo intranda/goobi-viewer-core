@@ -272,7 +272,6 @@
 		}
 		&__widget-label {}
 		&__widget-item-delete-button {
-			margin-left: auto;
 			transition: 0.2s ease all;
 		}
 		&__widget-order-wrapper {}
@@ -301,6 +300,15 @@
 			width: 20px;
 			margin-inline-end: 0.3rem;
 		}
+		&__widget-item-actions-wrapper {
+			display: flex;
+			gap: 15px;
+			align-items: center;
+			margin-left: auto;
+			a, button {
+				margin-right: 0;
+			}
+		}
 		&__widget-item-label {
 			display: flex;
 			align-items: center;
@@ -320,14 +328,6 @@
 			cursor: pointer;
 			input {
 				margin-right: 0.5rem;
-				cursor: pointer;
-			}
-			label {
-				align-self: stretch;
-				display: flex;
-				align-items: center;
-				flex-grow: 1;
-				margin-bottom: 0;
 				cursor: pointer;
 			}
 			.description_label {
@@ -366,7 +366,24 @@
 				margin-right: 0.5rem;
 			}
         }
-
+		&__choose-widget-item-label {
+			display: flex;
+			gap: 4px;
+			align-self: stretch;
+			align-items: center;
+			flex-grow: 1;
+			margin-bottom: 0;
+			cursor: pointer;
+			overflow: hidden;
+		}
+		&__choose-widget-item-title {
+			text-wrap: nowrap;
+		}
+		&__choose-widget-item-desc {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		} 
 	}
 
 

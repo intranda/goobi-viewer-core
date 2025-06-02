@@ -69,5 +69,4 @@ public abstract class StorageBean implements DataStorage, Serializable {
         List<String> keys = this.objects.keySet().stream().filter(key -> key.matches(keyRegex)).toList();
         keys.forEach(this.objects::remove);
     }
-
 }

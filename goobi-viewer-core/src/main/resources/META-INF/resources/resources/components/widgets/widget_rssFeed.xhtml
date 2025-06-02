@@ -18,8 +18,6 @@
 			
 		<composite:attribute name="title" required="false"
 			default="#{cc.attrs.widget != null ? cc.attrs.widget.title.textOrDefault : msg.lastImports}" />
-				
-
 	</composite:interface>
 	
 	<!-- USED IN FRONTEND -->
@@ -28,36 +26,41 @@
 			rendered="#{(configurationBean.displaySidebarRssFeed and cc.attrs.widget == null) or cc.attrs.widget.type == 'WIDGET_RSSFEED'}">
 
 			<div class="widget widget-rss">
-				<!-- TITLE -->
-				<h2 class="widget__title">
-					<span>#{cc.attrs.title}</span> 
-					<a class="widget-rss__rss-link"
+				<div class="widget__topbar widget-rss__topbar">
+					<h2 class="widget__title widget-rss__title">
+						#{cc.attrs.title}
+					</h2>
+					<a 
+						class="widget-rss__rss-link"
 						href="#{navigationHelper.applicationUrl}api/v1/records/rss?query=#{cc.attrs.filterQuery}&amp;sortField=#{cc.attrs.widget.sortField}&amp;sortDescending=#{cc.attrs.widget.descendingSorting}"
-						title="#{msg.rssSubscribe}" aria-label="#{msg.rssSubscribe}"
-						target="_blank" data-toggle="tooltip"> <i class="fa fa-rss"
-						aria-hidden="true"></i>
+						title="#{msg.rssSubscribe}" 
+						aria-label="#{msg.rssSubscribe}"
+						target="_blank" 
+						data-toggle="tooltip"
+					> 
+						<i class="fa fa-rss" aria-hidden="true"></i>
 					</a>
-				</h2>
-				<dl class="widget-rss__list">
-
-					<ui:repeat var="entry"
-						value="#{rssBean.getRssFeed(5, cc.attrs.filterQuery, cc.attrs.sortField, cc.attrs.descendingSorting)}">
-						<dt class="widget-rss__entry-title">
-							<a class="widget-rss__entry-link" href="#{entry.link}"
-								title="#{entry.title}" data-ajax="false">
-								#{fn:substring(entry.title, 0, 50)}#{fn:length(entry.title) > 50 ? '...' : ''}
+				</div>
+				
+				<div class="widget__body widget-rss__body">
+					<dl class="widget-rss__list">
+						<ui:repeat var="entry" value="#{rssBean.getRssFeed(5, cc.attrs.filterQuery, cc.attrs.sortField, cc.attrs.descendingSorting)}">
+							<dt class="widget-rss__entry-title">
+								<a class="widget-rss__entry-link" href="#{entry.link}" title="#{entry.title}" data-ajax="false">
+									#{fn:substring(entry.title, 0, 50)}#{fn:length(entry.title) > 50 ? '...' : ''}
 								</a>
-						</dt>
-						<dd class="widget-rss__entry-info">
-							<small>#{msg.DATECREATED}:</small> <small> <h:outputText
-									value="#{entry.publishedDate}">
-									<f:convertDateTime name="pattern"
-										value="#{navigationHelper.datePattern}" />
-								</h:outputText>
-							</small>
-						</dd>
-					</ui:repeat>
-				</dl>
+							</dt>
+							<dd class="widget-rss__entry-info">
+								<small>#{msg.DATECREATED}:</small> 
+								<small> 
+									<h:outputText value="#{entry.publishedDate}">
+										<f:convertDateTime name="pattern" value="#{navigationHelper.datePattern}" />
+									</h:outputText>
+								</small>
+							</dd>
+						</ui:repeat>
+					</dl>
+				</div>
 			</div>
 		</h:panelGroup>
 	</composite:implementation>

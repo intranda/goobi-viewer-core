@@ -58,6 +58,7 @@ var viewerJS = (function (viewer) {
 		})
 		
 		this.config.header.on("click", event => {
+			console.log('clicked on heading');
         	event.stopImmediatePropagation();
         	
         	var $input = this.config.input;

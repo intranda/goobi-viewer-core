@@ -9,46 +9,50 @@
 
     <composite:implementation>
 	    <h:panelGroup rendered="#{configurationBean.displaySearchResultNavigation and searchBean.hitsCount > 1 and activeDocumentBean.prevHit != null}">
-			<div id="widgetSearchResultNavigation" class="widget">
-				<h2 >#{msg.searchHitNavigation}</h2>
-
-				<div class="search-result-navigation-wrapp clearfix">
-					<div class="search-result-navigation-left">
-						<h:outputLink rendered="#{activeDocumentBean.prevHit != null}" disabled="#{searchBean.currentHitIndex == 0}"
-							value="#{activeDocumentBean.prevHit.sidebarPrevUrl}">
-							<div class="searchResultNavigationBackImg" style="#{searchBean.currentHitIndex == 0 ? 'opacity: 0.4;' : ''}" >
-							<ui:include src="#{navigationHelper.getResource('images/icons/icon_resultback.svg')}">
-								<ui:param name="prevTitleLabel" value="#{activeDocumentBean.prevHit.label}" />
-							</ui:include>
-							</div>
-						</h:outputLink>
-					</div>
-
-					<div class="search-result-navigation-center">
-						<h:outputFormat value="#{msg.searchResultNavigation_hitIndex}"
-							rendered="#{activeDocumentBean.nextHit != null or activeDocumentBean.prevHit != null}" class="searchResultNavigationText">
-							<f:param value="#{searchBean.currentHitIndexDisplay}" />
-							<f:param value="#{searchBean.hitsCount}" />
-						</h:outputFormat>
-					</div>
-
-					<div class="search-result-navigation-right">
-						<h:outputLink rendered="#{activeDocumentBean.nextHit != null}" disabled="#{searchBean.currentHitIndex == (searchBean.hitsCount - 1)}"
-							value="#{activeDocumentBean.nextHit.sidebarNextUrl}">
-							<div class="searchResultNavigationForwardImg" style="#{searchBean.currentHitIndex == (searchBean.hitsCount - 1) ? 'opacity: 0.4;' : ''}">
-								<ui:include src="#{navigationHelper.getResource('images/icons/icon_resultforward.svg')}">
-									<ui:param name="nextTitleLabel" value="#{activeDocumentBean.nextHit.label}" />
-								</ui:include>
-							</div>
-						</h:outputLink>
-					</div>
+			<div id="widgetSearchResultNavigation" class="widget widget-search-result-navigation">
+				<div class="widget__topbar widget-search-result-navigation__topbar">
+					<h2 class="widget__title widget-search-result-navigation__title">#{msg.searchHitNavigation}</h2>
 				</div>
-
-				<div class="search-result-navigation-back-to-collection">
-					<h:outputLink rendered="#{activeDocumentBean.nextHit != null}"
-					    value="#{searchBean.lastUsedSearchUrl}">
-						<ui:include src="#{navigationHelper.getResource('images/icons/icon_backtohitlist.svg')}" />#{msg.returnToHitlist}
-		            </h:outputLink>
+				
+				<div class="widget__body widget-search-result-navigation__body">
+					<div class="search-result-navigation-wrapp clearfix">
+						<div class="search-result-navigation-left">
+							<h:outputLink rendered="#{activeDocumentBean.prevHit != null}" disabled="#{searchBean.currentHitIndex == 0}"
+								value="#{activeDocumentBean.prevHit.sidebarPrevUrl}">
+								<div class="searchResultNavigationBackImg" style="#{searchBean.currentHitIndex == 0 ? 'opacity: 0.4;' : ''}" >
+								<ui:include src="#{navigationHelper.getResource('images/icons/icon_resultback.svg')}">
+									<ui:param name="prevTitleLabel" value="#{activeDocumentBean.prevHit.label}" />
+								</ui:include>
+								</div>
+							</h:outputLink>
+						</div>
+	
+						<div class="search-result-navigation-center">
+							<h:outputFormat value="#{msg.searchResultNavigation_hitIndex}"
+								rendered="#{activeDocumentBean.nextHit != null or activeDocumentBean.prevHit != null}" class="searchResultNavigationText">
+								<f:param value="#{searchBean.currentHitIndexDisplay}" />
+								<f:param value="#{searchBean.hitsCount}" />
+							</h:outputFormat>
+						</div>
+	
+						<div class="search-result-navigation-right">
+							<h:outputLink rendered="#{activeDocumentBean.nextHit != null}" disabled="#{searchBean.currentHitIndex == (searchBean.hitsCount - 1)}"
+								value="#{activeDocumentBean.nextHit.sidebarNextUrl}">
+								<div class="searchResultNavigationForwardImg" style="#{searchBean.currentHitIndex == (searchBean.hitsCount - 1) ? 'opacity: 0.4;' : ''}">
+									<ui:include src="#{navigationHelper.getResource('images/icons/icon_resultforward.svg')}">
+										<ui:param name="nextTitleLabel" value="#{activeDocumentBean.nextHit.label}" />
+									</ui:include>
+								</div>
+							</h:outputLink>
+						</div>
+					</div>
+	
+					<div class="search-result-navigation-back-to-collection">
+						<h:outputLink rendered="#{activeDocumentBean.nextHit != null}"
+						    value="#{searchBean.lastUsedSearchUrl}">
+							<ui:include src="#{navigationHelper.getResource('images/icons/icon_backtohitlist.svg')}" />#{msg.returnToHitlist}
+			            </h:outputLink>
+					</div>
 				</div>
 			</div>
 		</h:panelGroup>

@@ -6,24 +6,33 @@
 .widget-search-facets {
 	&__topbar {
 		overflow: hidden;
-		h2 {
-			span {
-				display: inline-block;
-				max-width: calc(~"100% - 36px");
-				word-wrap: anywhere;
-			}
-		}
 	}
-	.widget {
-		ul {}
+
+	&__title {
+		width: 100%;
+		display: inline-block;
+		max-width: calc(~"100% - 36px");
+		word-wrap: anywhere;
+	}
+
+	&__body {
+		// padding: 0;
+		
+		ul {
+			// padding: 1rem 1.5rem;
+		}
+		
 		li {
 			&.active {
 				margin-bottom: 3px;
+				
 				a {
 					background-color: @lightgray;
 				}
+				
 				.row {
 					margin: 0;
+					color: @blue;
 				}
 				.col-11,
 				.col-1 {
@@ -37,22 +46,23 @@
 			}
 		}
 		a {
-			display: block;
-			padding: 3px 5px;
+//			display: block;
+//			padding: 3px 5px;
 		}
 	}
+	
 	/* FILTER */
 	&__filter {
 		position: absolute;
-		top: 3px;
+		top: 0px;
 		right: 5px;
 		left: 5px;
-		background-color: @blue;
+		height: 100%;
 		z-index: 10;
+		pointer-events: none;
 		input, button, button:hover {
 			position: absolute;
 			color: @white;
-
 			i.fa {
 				font-size: 1.6rem;
 			}
@@ -60,13 +70,12 @@
 		input {
 			right: 32px;
 			width: 0;
-			height: 32px;
+			height: 100%;
 			font-size: @fontMedium;
 			color: @white;
-			border: 0;
-			border-bottom: 1px solid @white;
+			border: none;
 			background-color: @blue;
-			opacity: 0;
+			display: none;
 			&::-webkit-input-placeholder {
 			    color: @white;
 			    opacity: 0.5;
@@ -85,28 +94,32 @@
 			}
 			&.in {
 				width: calc(~"100% - 36px");
-				opacity: 1;
+				display: block;
 			}
 		}
-		[data-toggle="filter-input"],
-		[data-toggle="filter-input"]:hover {
+		
+		[data-toggle="searchFacetFilter"],
+		[data-toggle="searchFacetFilter"]:hover {
 			right: 0;
 			width: 34px;
 			height: 34px;
 			font-size: 1.8rem;
-			// background-image: url("@{images}/icons/icon-search.svg");
-			// background-repeat: no-repeat;
-			// background-position: center;
-			// background-size: 16px;
 
 			i.fa {
 				font-size: 1.8rem;
 			}
 		}
 	}
+	
+	&__filter-button {
+		pointer-events: all;
+	}
+	
 	&__filter-input {
 		padding-left: 1rem;
+		pointer-events: all;
 	}
+	
 	/* COLLECTION/GROUPS */
 	&__collection,
 	&__groups {
@@ -133,6 +146,7 @@
 	&__boolean {
 		display: flex;
 		gap: 20px; 
+		padding: 1rem 1.5rem;
 	}
 	&__boolean-button-wrapper {
 		flex-grow: 1;
@@ -148,14 +162,13 @@
 		&.-active {
 			background: #f3f3f3;
 			font-weight: 700;
-			// border-color: #222;
 		}
 	}
 }
 
 @{RTL} .widget-search-facets {
 	&__filter {
-		[data-toggle="filter-input"] {
+		[data-toggle="searchFacetFilter"] {
 			right: unset;
 			left: 0;
 		}
