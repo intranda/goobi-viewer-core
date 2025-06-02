@@ -35,10 +35,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.core.UriBuilder;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.util.SubnetUtils;
@@ -82,6 +78,9 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * Utility methods for HTTP operations, mail, etc.
@@ -595,7 +594,7 @@ public final class NetTools {
         if (ret.contains(",")) {
             String[] addressSplit = ret.split(",");
             if (addressSplit.length > 0) {
-                ret = addressSplit[addressSplit.length - 1].trim();
+                ret = addressSplit[0].trim();
             }
         }
 

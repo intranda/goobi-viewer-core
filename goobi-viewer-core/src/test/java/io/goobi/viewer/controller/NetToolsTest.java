@@ -23,8 +23,10 @@ package io.goobi.viewer.controller;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractTest;
+import jakarta.servlet.http.HttpServletRequest;
 
 class NetToolsTest extends AbstractTest {
 
@@ -70,5 +72,44 @@ class NetToolsTest extends AbstractTest {
                 NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_THUMBS, "PPN123", "https://example.com/", "test"));
         Assertions.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&pdf=true",
                 NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_PDF, "PPN123", "https://example.com/", "test"));
+    }
+
+    @Test
+    void test_parseIpAddress() {
+        {
+            HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+            Mockito.when(request.getHeader("X-Forwarded-For")).thenReturn("143.34.255.931, 127.0.0.1");
+            Assertions.assertEquals("143.34.255.931", NetTools.getIpAddress(request));
+        }
+
+        {
+            HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+            Mockito.when(request.getHeader("X-Forwarded-For")).thenReturn("2001:db8:85a3:8d3:1319:8a2e:370:7348");
+            Assertions.assertEquals("2001:db8:85a3:8d3:1319:8a2e:370:7348", NetTools.getIpAddress(request));
+        }
+
+        {
+            HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+            Mockito.when(request.getHeader("X-Forwarded-For")).thenReturn("203.0.113.195, 2001:db8:85a3:8d3:1319:8a2e:370:7348");
+            Assertions.assertEquals("203.0.113.195", NetTools.getIpAddress(request));
+        }
+
+        {
+            HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+            Mockito.when(request.getHeader("X-Forwarded-For")).thenReturn("2001:db8:85a3:8d3:1319:8a2e:370:7348, 203.0.113.195");
+            Assertions.assertEquals("2001:db8:85a3:8d3:1319:8a2e:370:7348", NetTools.getIpAddress(request));
+        }
+
+        {
+            HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+            Mockito.when(request.getHeader("X-Forwarded-For")).thenReturn("143.34.255.931");
+            Assertions.assertEquals("143.34.255.931", NetTools.getIpAddress(request));
+        }
+
+        {
+            HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+            Mockito.when(request.getHeader("X-Forwarded-For")).thenReturn(null);
+            Assertions.assertEquals("127.0.0.1", NetTools.getIpAddress(request));
+        }
     }
 }
