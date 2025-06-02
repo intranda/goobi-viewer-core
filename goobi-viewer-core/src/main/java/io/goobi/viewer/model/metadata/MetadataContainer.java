@@ -40,6 +40,7 @@ import org.apache.solr.common.SolrDocument;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.GeoCoordinateConverter;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
@@ -58,6 +59,10 @@ public class MetadataContainer {
     private IMetadataValue label;
 
     private final Map<String, List<IMetadataValue>> metadata;
+
+    public MetadataContainer(Map<String, List<IMetadataValue>> metadata) {
+        this("", new SimpleMetadataValue(""), metadata);
+    }
 
     /**
      * 
@@ -160,6 +165,25 @@ public class MetadataContainer {
      */
     public String getFirstValue(String key) {
         return this.get(key).stream().findFirst().flatMap(IMetadataValue::getValue).orElse("");
+    }
+
+    public Integer getFirstIntValue(String key) {
+        return this.get(key)
+                .stream()
+                .findFirst()
+                .flatMap(IMetadataValue::getValue)
+                .filter(StringTools::isInteger)
+                .map(Integer::getInteger)
+                .orElse(null);
+    }
+
+    public Boolean getFirstBooleanValue(String key) {
+        return this.get(key)
+                .stream()
+                .findFirst()
+                .flatMap(IMetadataValue::getValue)
+                .map(v -> SolrTools.getAsBoolean(v))
+                .orElse(null);
     }
 
     /**

@@ -3,27 +3,26 @@ package io.goobi.viewer.model.maps.features;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.ListUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.solr.common.SolrDocument;
+
+import com.ocpsoft.pretty.faces.util.StringUtils;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.maps.coordinates.CoordinateReaderProvider;
+import io.goobi.viewer.model.metadata.ComplexMetadataContainer;
 import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.servlets.IdentifierResolver;
 import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrTools;
 import jakarta.ws.rs.core.UriBuilder;
 import mil.nga.sf.geojson.Geometry;
 
@@ -48,22 +47,8 @@ public class FeatureGenerator {
     public List<GeoMapFeature> getFeaturesFromMetadataDocument(MetadataDocument document) {
         List<GeoMapFeature> features = new ArrayList<>();
 
-        List<GeoMapFeature> mainDocFeatures = getFeatures(document.getMainDocMetadata());
-
-        for (Entry<SolrDocument, List<SolrDocument>> entry : docs.entrySet()) {
-            SolrDocument doc = entry.getKey();
-            List<SolrDocument> children = entry.getValue();
-
-            for (String field : this.coordinateFields) {
-                features.addAll(getFeaturesFromDoc(doc, field));
-                Map<String, List<SolrDocument>> metadataDocs =
-                        children.stream().collect(Collectors.toMap(SolrTools::getReferenceId, List::of, ListUtils::union));
-                for (List<SolrDocument> childDocs : metadataDocs.values()) {
-                    Collection<GeoMapFeature> tempFeatures = getFeaturesFromDocs(doc, childDocs, field);
-                    features.addAll(tempFeatures);
-                }
-            }
-        }
+        Collection<GeoMapFeature> mainDocFeatures = getFeatures(document.getMainDocMetadata());
+        Collection<GeoMapFeature> metadataDocFeatures = getFeatures(document.getMetadataGroups());
 
         Map<GeoMapFeature, List<GeoMapFeature>> featureMap = features
                 .stream()
@@ -82,68 +67,40 @@ public class FeatureGenerator {
         return features;
     }
 
-    private Collection<GeoMapFeature> getFeatures(String documentId, Map<String, List<IMetadataValue>> metadataMap) {
+    private Collection<GeoMapFeature> getFeatures(ComplexMetadataContainer metadataGroups) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private Collection<GeoMapFeature> getFeatures(MetadataContainer metadata) {
         List<String> coordinates =
                 coordinateFields.stream()
-                        .map(field -> metadataMap.getOrDefault(field, Collections.emptyList()))
+                        .map(metadata::getValues)
                         .flatMap(List::stream)
-                        .map(IMetadataValue::getValue)
                         .filter(v -> !v.isEmpty())
-                        .map(o -> o.orElse(""))
                         .toList();
-        coordinates.stream().map(c -> getFeature(c)).forEach(f -> f.addEntity(new MetadataContainer(documentId, featureTitleCreator., metadataMap)));
+        IMetadataValue featureTitle = this.featureTitleCreator.getValue(metadata, getAppropriateTemplate(metadata));
+        IMetadataValue entityTitle = this.entityTitleCreator.getValue(metadata, getAppropriateTemplate(metadata));
+
+        return coordinates.stream().map(coords -> {
+            GeoMapFeature feature = getFeature(coords);
+            feature.setTitle(featureTitle);
+            feature.addEntity(new MetadataContainer(metadata.getFirstValue(SolrConstants.IDDOC), entityTitle, metadata.getMetadata()));
+            return feature;
+        }).toList();
     }
 
-    private MetadataContainer getMetadataContainer(Map<String, List<IMetadataValue>> metadataMap, LabelCreator labelCreator) {
-        String id = metadataMap.getOrDefault(SolrConstants.IDDOC, Collections.emptyList()).stream().findFirst().map(v -> v.getValue().orElse(null)).orElse(null);
-        
-        IMetadataValue label = labelCreator.getValue(metadataMap, id)
-        MetadataContainer container = new MetadataContainer(documentId, null, metadataMap)
-    }
-
-    private String getAppropriateTemplate(Map<String, List<IMetadataValue>> metadataMap) {
-        String docType = metadataMap.getOrDefault(SolrConstants.DOCTYPE, Collections.emptyList()).
-    }
-
-    private String getFirstValue(String field, Map<String, List<IMetadataValue>> metadataMap) {
-
-    }
-
-    private List<GeoMapFeature> getFeaturesFromDoc(SolrDocument doc, String coordinateField) {
-        return getGeojsonPoints(doc, Collections.emptyList(), coordinateField).stream().toList();
-    }
-
-    private List<GeoMapFeature> getFeaturesFromDocs(SolrDocument doc, List<SolrDocument> metadataDocs, String coordinateField) {
-        return getGeojsonPoints(doc, metadataDocs, coordinateField).stream().toList();
-    }
-
-    public Collection<GeoMapFeature> getGeojsonPoints(SolrDocument mainDocument, List<SolrDocument> metadataDocs, String metadataField) {
-        List<String> points = new ArrayList<>();
-        for (SolrDocument metadataDoc : metadataDocs) {
-            List<String> mdPoints = new ArrayList<>();
-            mdPoints.addAll(SolrTools.getMetadataValues(metadataDoc, metadataField));
-            List<GeoMapFeature> docFeatures = getFeatures(points);
-
+    private String getAppropriateTemplate(MetadataContainer metadata) {
+        String docType = metadata.getFirstValue(SolrConstants.DOCTYPE);
+        String docStrct = metadata.getFirstValue(SolrConstants.DOCSTRCT);
+        String label = metadata.getFirstValue(SolrConstants.LABEL);
+        if (SolrConstants.DocType.DOCSTRCT.name().equals(docType) && StringUtils.isNotBlank(docStrct)) {
+            return docStrct;
+        } else if (SolrConstants.DocType.METADATA.name().equals(docType) && StringUtils.isNotBlank(label)) {
+            return label;
+        } else {
+            return StringConstants.DEFAULT_NAME;
         }
-    }
-
-    /**
-     * Collect all point coordinate in the given metadata field within the given solr document
-     * 
-     * @param doc the document containing the coordinates
-     * @param metadataField The name of the solr field to search in
-     * @return Collection<GeoMapFeature>
-     */
-    public Collection<GeoMapFeature> getGeojsonPoints(SolrDocument doc, String metadataField) {
-        List<String> points = new ArrayList<>();
-        points.addAll(SolrTools.getMetadataValues(doc, metadataField));
-        List<GeoMapFeature> docFeatures = getFeatures(points);
-        addEntityToFeatures(doc, Collections.emptyList(), docFeatures);
-        docFeatures.forEach(feature -> setLink(feature, doc));
-        docFeatures.forEach(f -> f.setDocumentId((String) doc.getFieldValue(SolrConstants.LOGID)));
-        docFeatures.forEach(this::setLabels);
-
-        return docFeatures;
     }
 
     private void setLabels(GeoMapFeature feature) {
@@ -203,16 +160,11 @@ public class FeatureGenerator {
         return new GeoMapFeature(geometry);
     }
 
-    private static void addEntityToFeatures(SolrDocument doc, List<SolrDocument> children, List<GeoMapFeature> docFeatures) {
-        MetadataContainer entity = MetadataContainer.createMetadataEntity(doc, children, f -> true, f -> true);
-        docFeatures.forEach(f -> f.addEntity(entity));
-    }
-
-    private static void setLink(GeoMapFeature feature, SolrDocument doc) {
+    private static URI getLinkURI(MetadataContainer doc) {
         URI link = UriBuilder.fromUri(DataManager.getInstance().getConfiguration().getViewerBaseUrl())
                 .path(IdentifierResolver.constructUrl(doc, false))
                 .build();
-        feature.setLink(link.toString());
+        return link;
     }
 
 }
