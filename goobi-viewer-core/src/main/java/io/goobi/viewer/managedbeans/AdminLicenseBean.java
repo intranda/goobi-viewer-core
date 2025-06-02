@@ -31,12 +31,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.model.SelectItem;
-import jakarta.faces.model.SelectItemGroup;
-import jakarta.inject.Named;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -67,6 +61,11 @@ import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.model.SelectItem;
+import jakarta.faces.model.SelectItemGroup;
+import jakarta.inject.Named;
 import jakarta.mail.MessagingException;
 
 /**
@@ -1014,7 +1013,7 @@ public class AdminLicenseBean implements Serializable {
      */
     public long getRecordCountForLicenseType(LicenseType licenseType) throws DAOException, IndexUnreachableException, PresentationException {
         if (licenseType == null) {
-            throw new org.jboss.weld.exceptions.IllegalArgumentException("licenseType may not be null");
+            throw new IllegalArgumentException("licenseType may not be null");
         }
 
         if (licenseType.getRecordCount() == null) {
