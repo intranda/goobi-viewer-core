@@ -113,13 +113,6 @@ public interface IModule extends IndexAugmenter {
      * @return a {@link java.util.List} object.
      */
     public List<String> getAdminContributions();
-    
-    /**
-     * URLs to widgets containing user settings.
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<String> getUserSettingsContributions();
 
     /**
      * URLs to widgets containing navigation menu links.
