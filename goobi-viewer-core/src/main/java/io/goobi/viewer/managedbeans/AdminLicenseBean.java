@@ -976,13 +976,15 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     *
+     * Record count for non-configured access conditions.
+     * 
      * @param accessCondition
      * @return Number of records containing the given access condition value
+     * @throws DAOException
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public long getNumRecordsWithAccessCondition(String accessCondition) throws IndexUnreachableException, PresentationException {
+    public long getNumRecordsWithAccessCondition(String accessCondition) throws DAOException, IndexUnreachableException, PresentationException {
         long records = DataManager.getInstance()
                 .getSearchIndex()
                 .getHitCount(SearchHelper.getQueryForAccessCondition(accessCondition, false));
@@ -992,12 +994,18 @@ public class AdminLicenseBean implements Serializable {
                     .getSearchIndex()
                     .getHitCount("+DOCTYPE:METADATA +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"");
         }
+        if (records == 0) {
+            // Alternative query for CMS pages with access conditions
+            records =
+                    DataManager.getInstance().getDao().getCMSPageCountByPropertyValue(CMSProperty.KEY_ACCESS_CONDITION, accessCondition);
+        }
 
         return records;
     }
 
     /**
-     *
+     * Record count for configured access conditions.
+     * 
      * @param licenseType
      * @return Number of records containing the given access condition value
      * @throws DAOException
