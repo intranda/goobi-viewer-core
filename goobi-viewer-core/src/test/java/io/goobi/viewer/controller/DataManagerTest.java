@@ -136,7 +136,7 @@ class DataManagerTest {
             public List<String> getWidgets(String type) {
                 return null;
             }
-
+            
             @Override
             public List<ITaskType> getTaskTypes() {
                 return Collections.emptyList();
@@ -189,11 +189,6 @@ class DataManagerTest {
             @Override
             public int moveUserContributions(User user, User toUser) {
                 return 0;
-            }
-
-            @Override
-            public List<String> getUserSettingsContributions() {
-                return Collections.emptyList();
             }
         }
         Assertions.assertTrue(DataManager.getInstance().registerModule(new TestModule()));
