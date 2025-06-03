@@ -101,7 +101,7 @@
                                                 <!-- CMS PAGES -->
                                                 <ui:fragment rendered="#{!licenseType.displayRecordSearchLink}">
                                                     <dt class="col-sm-4">#{msg.admin__licenses_cms_pages}:</dt>
-                                                    <dd class="col-sm-8">
+                                                    <dd class="col-sm-8 d-flex flex-column">
                                                         <ui:repeat var="cmsPage"
                                                             value="#{adminLicenseBean.getCMSPagesUsingLicenseType(licenseType)}">
                                                             <a href="#{cmsPage.pageUrl}" target="_blank">#{cmsPage.title}</a> 
