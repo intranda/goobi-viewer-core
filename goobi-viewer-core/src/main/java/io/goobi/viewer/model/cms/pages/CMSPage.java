@@ -379,7 +379,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         return true;
     }
 
-
     /** {@inheritDoc} */
     @Override
     public int compareTo(CMSPage o) {
@@ -1024,11 +1023,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         });
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {
@@ -1082,7 +1076,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public String getAccessCondition() {
         for (CMSProperty property : properties) {
             if (CMSProperty.KEY_ACCESS_CONDITION.equals(property.getKey())) {
-                logger.trace("CMS access condition found: {}", property.getValue());
+                // logger.trace("CMS access condition found: {}", property.getValue()); //NOSONAR Debug
                 return property.getValue();
             }
         }

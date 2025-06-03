@@ -98,6 +98,16 @@
 	                                            <dd class="col-sm-8">
 	                                            	#{adminLicenseBean.getRecordCountForLicenseType(licenseType)}
 	                                            </dd>
+                                                <!-- CMS PAGES -->
+                                                <ui:fragment rendered="#{!licenseType.displayRecordSearchLink}">
+                                                    <dt class="col-sm-4">#{msg.admin__licenses_cms_pages}:</dt>
+                                                    <dd class="col-sm-8">
+                                                        <ui:repeat var="cmsPage"
+                                                            value="#{adminLicenseBean.getCMSPagesUsingLicenseType(licenseType)}">
+                                                            <a href="#{cmsPage.pageUrl}" target="_blank">#{cmsPage.title}</a> 
+                                                        </ui:repeat>
+                                                    </dd>
+                                                </ui:fragment>
 	                                            <!-- OVERRIDDEN LICENSE TYPES -->
 	                                            <ui:fragment rendered="#{not empty licenseType.overriddenLicenseTypes}">
                                                     <dt class="col-sm-4">#{msg.admin__license_overriding__overridden_licenses}:</dt>
