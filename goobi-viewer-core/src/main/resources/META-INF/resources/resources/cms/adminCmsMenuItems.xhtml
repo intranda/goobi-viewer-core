@@ -90,6 +90,9 @@
                                                 <ui:fragment rendered="#{visibleItem.associatedWithSubtheme}">
                                                     <small>(#{visibleItem.associatedSubtheme})</small>
                                                 </ui:fragment>
+                                                <ui:fragment rendered="#{visibleItem.cmsPage.accessCondition != null}">
+                                                    <i class="fa fa-key" aria-hidden="true"></i>
+                                                </ui:fragment>
                                             </div>
 
                                             <!-- ITEM EDIT -->

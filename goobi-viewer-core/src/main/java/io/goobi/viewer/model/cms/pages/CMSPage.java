@@ -379,7 +379,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         return true;
     }
 
-
     /** {@inheritDoc} */
     @Override
     public int compareTo(CMSPage o) {
@@ -1024,11 +1023,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         });
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {
