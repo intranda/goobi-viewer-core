@@ -1076,7 +1076,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public String getAccessCondition() {
         for (CMSProperty property : properties) {
             if (CMSProperty.KEY_ACCESS_CONDITION.equals(property.getKey())) {
-                logger.trace("CMS access condition found: {}", property.getValue());
+                // logger.trace("CMS access condition found: {}", property.getValue()); //NOSONAR Debug
                 return property.getValue();
             }
         }
