@@ -201,6 +201,9 @@
                                                             <ui:fragment rendered="#{availableItem.associatedWithSubtheme}">
 			                                                    <small>(#{availableItem.associatedSubtheme})</small>
 			                                                </ui:fragment>
+			                                                <ui:fragment rendered="#{availableItem.cmsPage.accessCondition != null}">
+			                                                    <i class="fa fa-key" aria-hidden="true"></i>
+			                                                </ui:fragment>
                                                             </div>
                                                         </label>
                                                     </ui:repeat>
