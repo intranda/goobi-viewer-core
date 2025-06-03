@@ -24,8 +24,8 @@
 
 		&.collapseable {
 			cursor: pointer;
-
-			.fa {
+			pointer-events: all;
+			.fa { 
 				font-size: @fontNormal;
 				display: inline-block;
 			}
@@ -121,6 +121,19 @@
 		max-width: 100%;
 	}
 }
+
+// HIDE ARROW FOR COLLAPSEABLE WIDGETS
+.widget-citation__topbar, 
+.widget-downloads__topbar,
+.widget-format-links__topbar {
+	pointer-events: none;
+	.fa {
+		display: none;
+	}
+}
+
+
+
 
 @{RTL} .widget {
 	&__title {

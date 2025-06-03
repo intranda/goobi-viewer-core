@@ -1476,6 +1476,14 @@ public interface IDAO {
     public long getCMSPageCountByPropertyValue(String propertyName, String propertyValue) throws DAOException;
 
     /**
+     * 
+     * @param propertyName
+     * @param propertyValue
+     * @return List<CMSPage>
+     */
+    public List<CMSPage> getCMSPagesByPropertyValue(String propertyName, String propertyValue) throws DAOException;
+
+    /**
      * <p>
      * getCMSPages.
      * </p>

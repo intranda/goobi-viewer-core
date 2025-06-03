@@ -53,6 +53,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSProperty;
 import io.goobi.viewer.model.cms.Selectable;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.DownloadTicket;
@@ -1053,6 +1054,20 @@ public class AdminLicenseBean implements Serializable {
         } catch (UnsupportedEncodingException e) {
             return query;
         }
+    }
+
+    /**
+     * 
+     * @param licenseType
+     * @return List of CMSPages that have the access condition of the given LicenseType assigned
+     * @throws DAOException
+     */
+    public List<CMSPage> getCMSPagesUsingLicenseType(LicenseType licenseType) throws DAOException {
+        if (licenseType == null) {
+            return Collections.emptyList();
+        }
+
+        return DataManager.getInstance().getDao().getCMSPagesByPropertyValue(CMSProperty.KEY_ACCESS_CONDITION, licenseType.getName());
     }
 
     /**

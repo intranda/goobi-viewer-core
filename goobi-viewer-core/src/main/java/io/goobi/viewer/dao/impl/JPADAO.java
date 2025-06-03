@@ -4154,6 +4154,7 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public long getCMSPageCountByPropertyValue(String propertyName, String propertyValue) throws DAOException {
         preQuery();
@@ -4165,6 +4166,24 @@ public class JPADAO implements IDAO {
                     .setParameter("value", propertyValue)
                     .setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH)
                     .getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<CMSPage> getCMSPagesByPropertyValue(String propertyName, String propertyValue) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT a FROM CMSPage a JOIN a.properties p WHERE p.key = :key AND p.value = :value";
+            return em.createQuery(query)
+                    .setParameter("key", propertyName)
+                    .setParameter("value", propertyValue)
+                    .setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH)
+                    .getResultList();
         } finally {
             close(em);
         }
