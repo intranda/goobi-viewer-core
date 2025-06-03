@@ -258,6 +258,18 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * Ajax event listener for saving the given User.
+     * 
+     * @param event {@link AjaxBehaviorEvent}
+     * @throws DAOException
+     */
+    public void saveUserListener(AjaxBehaviorEvent event) throws DAOException {
+        logger.trace("saveUserListener"); //NOSONAR Debug
+        User user = (User) event.getSource();
+        saveUser(user, false);
+    }
+
+    /**
      * <p>
      * resetUserAction.
      * </p>
