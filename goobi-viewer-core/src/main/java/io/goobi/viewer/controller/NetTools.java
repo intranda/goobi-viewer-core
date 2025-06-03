@@ -540,7 +540,7 @@ public final class NetTools {
     }
 
     /**
-     * Returns the remote IP address of the given HttpServletRequest. If multiple addresses are found in x-forwarded-for, the last in the list is
+     * Returns the remote IP address of the given HttpServletRequest. If multiple addresses are found in x-forwarded-for, the first in the list is
      * returned.
      *
      * @param request a {@link jakarta.servlet.http.HttpServletRequest} object.
@@ -549,13 +549,6 @@ public final class NetTools {
     public static String getIpAddress(HttpServletRequest request) {
         String address = ADDRESS_LOCALHOST_IPV4;
         if (request != null) {
-            //            if (logger.isTraceEnabled()) {
-            //                Enumeration<String> headerNames = request.getHeaderNames();
-            //                while (headerNames.hasMoreElements()) {
-            //                    String headerName = headerNames.nextElement();
-            //                    logger.trace("request header '{}':'{}'", headerName, request.getHeader(headerName)); //NOSONAR Debug
-            //                }
-            //            }
 
             // Prefer address from x-forwarded-for
             address = request.getHeader("x-forwarded-for");
@@ -578,7 +571,7 @@ public final class NetTools {
 
     /**
      * <p>
-     * parseMultipleIpAddresses.
+     * parseMultipleIpAddresses. If the given string contains more than one address, return the first one, otherwise the entire string
      * </p>
      *
      * @param address IP address
@@ -594,6 +587,7 @@ public final class NetTools {
         if (ret.contains(",")) {
             String[] addressSplit = ret.split(",");
             if (addressSplit.length > 0) {
+                //Use the first address. According to specification, this should be the client ip
                 ret = addressSplit[0].trim();
             }
         }
