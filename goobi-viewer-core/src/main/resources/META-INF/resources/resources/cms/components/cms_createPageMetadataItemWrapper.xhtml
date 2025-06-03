@@ -41,7 +41,11 @@
 						<h:panelGroup id="inputAccessCondition" layout="block"
 							styleClass="mt-3 admin__sidebar-divider-top">
 							<h3 class="mb-2">#{msg.cms__create_page_access_condition_input_title}</h3>
-							<div class="admin__form-help-text in mb-4">#{msg.cms__create_page_access_condition_input_desc}</div>
+							<div class="admin__form-help-text in mb-4">
+							<h:outputFormat value="#{msg.cms__create_page_access_condition_input_desc}" escape="false">
+								<f:param value="#{request.contextPath}/admin/licenses/" />
+							</h:outputFormat>
+							</div>
 							<h:inputText id="accessCondition"
 								value="#{cmsPageEditBean.selectedPage.accessCondition}"
 								styleClass="form-control" />
