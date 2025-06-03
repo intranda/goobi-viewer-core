@@ -44,7 +44,7 @@ public class SocketBean {
 
     private static final Logger logger = LogManager.getLogger(SocketBean.class);
 
-    private static final Long MIN_IDLE_TIME = 2L;
+    static final Long MIN_IDLE_TIME = 2L;
 
     private final AtomicBoolean shouldSend = new AtomicBoolean(false);
 
@@ -56,8 +56,25 @@ public class SocketBean {
      * Default constructor. Instantiates a fixed schedule thread
      */
     public SocketBean() {
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(createRunnable(), 0, MIN_IDLE_TIME, TimeUnit.SECONDS);
+        this(MIN_IDLE_TIME);
+    }
 
+    public SocketBean(long minIdleSeconds) {
+        if (minIdleSeconds < 1) {
+            Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(createRunnable(), 0, 1, TimeUnit.MILLISECONDS);
+        } else {
+            Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(createRunnable(), 0, minIdleSeconds, TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * Constructor for tests with custom PushContext
+     * 
+     * @param backgroundTasksState
+     */
+    public SocketBean(long minIdleSeconds, PushContext backgroundTasksState) {
+        this(minIdleSeconds);
+        this.backgroundTasksState = backgroundTasksState;
     }
 
     /**

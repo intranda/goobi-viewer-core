@@ -1772,7 +1772,8 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         Set<SearchQueryItem> populatedQueryItems = new HashSet<>();
-        for (IFacetItem facetItem : facets.getActiveFacets()) {
+        List<IFacetItem> facetsItems = new ArrayList<>(facets.getActiveFacets());
+        for (IFacetItem facetItem : facetsItems) {
             if (!facetItem.isHierarchial()) {
                 continue;
             }
