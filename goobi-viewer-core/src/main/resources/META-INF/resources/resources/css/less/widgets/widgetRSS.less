@@ -3,28 +3,15 @@
    style declarations for widget rss
    ==============================================================*/
 .widget-rss {
-	.widget__title {
-		display: flex;
-		justify-content: space-between;
-		gap: 10px;
-		.fa {
-			display: block;
-		}
-	}
-	&__rss-link {
-		.fa {
-			width: 16px;
-			height: 16px;
-			line-height: 16px;
-			font-size: @fontMedium;
-			text-align: center;
-			color: @white;
-			background-color: @orange;
-		}
-	}
 	&__entry-info {
-		margin-bottom: 12px;
+		margin-bottom: .5rem;
+		padding-bottom: 1rem;
+		
+		&:last-child {
+			padding-bottom: 0;
+		}
 	}
+	
 	&__entry-link {
 		font-weight: 400;
 	}

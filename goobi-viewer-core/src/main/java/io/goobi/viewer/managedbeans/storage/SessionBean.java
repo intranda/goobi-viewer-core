@@ -21,8 +21,22 @@
  */
 package io.goobi.viewer.managedbeans.storage;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.ActiveDocumentBean;
+import io.goobi.viewer.managedbeans.CmsBean;
+import io.goobi.viewer.managedbeans.CollectionViewBean;
+import io.goobi.viewer.managedbeans.ContentBean;
+import io.goobi.viewer.managedbeans.DisplayConditions;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.security.AccessConditionUtils;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * @author florian Store variables in session scope
@@ -33,4 +47,46 @@ public class SessionBean extends StorageBean {
 
     private static final long serialVersionUID = -4828711470203824408L;
 
+    private static final Logger logger = LogManager.getLogger(SessionBean.class);
+
+    /**
+     * Removes the user and permission attributes from the session.
+     *
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public void wipeSessionAttributes() throws IndexUnreachableException, PresentationException, DAOException {
+        logger.trace("wipeSession");
+        if (request != null) {
+            HttpSession session = request.getSession(false);
+            if (session == null) {
+                return;
+            }
+            session.removeAttribute("user");
+
+            // Remove priv maps
+            AccessConditionUtils.clearSessionPermissions(session);
+
+            cleanObjects();
+
+            BeanUtils.getBeanFromRequest(request, "collectionViewBean", CollectionViewBean.class)
+                    .ifPresentOrElse(CollectionViewBean::invalidate,
+                            () -> logger.trace("Cannot invalidate CollectionViewBean. Not instantiated yet?"));
+            BeanUtils.getBeanFromRequest(request, "activeDocumentBean", ActiveDocumentBean.class)
+                    .ifPresentOrElse(ActiveDocumentBean::resetAccess,
+                            () -> logger.trace("Cannot reset access permissions in ActiveDocumentBean. Not instantiated yet?"));
+            BeanUtils.getBeanFromRequest(request, "displayConditions", DisplayConditions.class)
+                    .ifPresentOrElse(DisplayConditions::clearCache,
+                            () -> logger.trace("Cannot clear DosplayConditions cache. Not instantiated yet?"));
+            // Reset loaded user-generated content lists
+            BeanUtils.getBeanFromRequest(request, "contentBean", ContentBean.class)
+                    .ifPresentOrElse(ContentBean::resetContentList,
+                            () -> logger.trace("Cannot reset content list. Not instantiated yet?"));
+            // Reset visible navigation menu
+            BeanUtils.getBeanFromRequest(request, "cmsBean", CmsBean.class)
+                    .ifPresentOrElse(CmsBean::resetNavigationMenuItems,
+                            () -> logger.trace("Cannot reset navigation menu items. Not instantiated yet?"));
+        }
+    }
 }

@@ -749,15 +749,40 @@ this.on( 'mount', function() {
 
 this.setPosition = function() {
     var $button = $(this.opts.button);
+    var $popup = $(this.root);
+    var popupOffset = 10;
+
     var anchor = {
-            x : $button.offset().left + $button.outerWidth()/2,
-            y : $button.offset().top + $button.outerHeight(),
-    }
+        x: $button.offset().left + $button.outerWidth() / 2,
+        y: $button.offset().top + $button.outerHeight(),
+    };
+
+    var popupWidth = $popup.outerWidth();
+    var popupHeight = $popup.outerHeight();
+
     var position = {
-            left: anchor.x - this.root.getBoundingClientRect().width/2,
-            top: anchor.y + popupOffset
+        left: anchor.x - popupWidth / 2,
+        top: anchor.y + popupOffset
+    };
+
+    var viewportWidth = $(window).width();
+    var viewportHeight = $(window).height();
+    var scrollTop = $(window).scrollTop();
+
+    if (position.left < 0) {
+        position.left = 0;
+    } else if (position.left + popupWidth > viewportWidth) {
+        position.left = viewportWidth - popupWidth;
     }
-    $(this.root).offset(position);
+
+    if (position.top + popupHeight > scrollTop + viewportHeight) {
+        position.top = $button.offset().top - popupHeight - popupOffset;
+        if (position.top < scrollTop) {
+            position.top = scrollTop + 10;
+        }
+    }
+
+    $popup.offset(position);
 }.bind(this)
 
 this.addCloseHandler = function() {
@@ -1094,7 +1119,7 @@ riot.tag2('chronologygraph', '<div class="widget-chronology-slider__item chronol
 	  })
 
 });
-riot.tag2('chronologyslider', '<div class="widget-chronology-slider__item chronology-slider-start"><input ref="inputStart" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{startYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider-end"><input ref="inputEnd" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{endYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider"><div class="widget-chronology-slider__slider" ref="slider"></div></div>', '', '', function(opts) {
+riot.tag2('chronologyslider', '<p class="widget__description-text widget-chronology-slider__description-text" ref="descriptionText"></p><div class="widget-chronology-slider__item chronology-slider-start"><input ref="inputStart" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{startYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider-end"><input ref="inputEnd" data-input="number" class="widget-chronology-slider__item-input -no-outline -active-border" riot-value="{endYear}" title="{msg.enterYear}" data-toggle="tooltip" data-placement="top" aria-label="{msg.enterYear}"></input></div><div class="widget-chronology-slider__item chronology-slider"><div class="widget-chronology-slider__slider" ref="slider"></div></div>', '', '', function(opts) {
 
 this.msg={}
 this.on("mount", () => {
@@ -1108,7 +1133,12 @@ this.on("mount", () => {
 	this.loader = document.getElementById(opts.loader);
 	this.msg = opts.msg;
 	this.rtl = $( this.refs.slider ).closest('[dir="rtl"]').length > 0;
+
+	if (this.msg.description && this.refs.descriptionText) {
+	    this.refs.descriptionText.innerHTML = this.msg.description;
+	}
 	this.update();
+
 });
 
 this.on("updated", () => {

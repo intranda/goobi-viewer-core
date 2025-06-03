@@ -1461,6 +1461,14 @@ public interface IDAO {
             List<String> allowedCategories) throws DAOException;
 
     /**
+     * 
+     * @param propertyName
+     * @param propertyValue
+     * @return long
+     */
+    public long getCMSPageCountByPropertyValue(String propertyName, String propertyValue) throws DAOException;
+
+    /**
      * <p>
      * getCMSPages.
      * </p>
@@ -1550,6 +1558,13 @@ public interface IDAO {
      * @throws DAOException
      */
     public CMSPage getCMSPageDefaultViewForRecord(String pi) throws DAOException;
+
+    /**
+     * 
+     * @return List<String>
+     * @throws DAOException
+     */
+    public List<String> getCMSPageAccessConditions() throws DAOException;
 
     /**
      * <p>

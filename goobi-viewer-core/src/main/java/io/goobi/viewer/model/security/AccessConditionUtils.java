@@ -55,6 +55,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
@@ -817,6 +818,47 @@ public final class AccessConditionUtils {
     }
 
     /**
+     * 
+     * @param request
+     * @param page {@link CMSPage} to check
+     * @return {@link AccessPermission}
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public static AccessPermission checkAccessPermissionForCmsPage(HttpServletRequest request, CMSPage page)
+            throws DAOException, IndexUnreachableException, PresentationException {
+        if (page == null) {
+            throw new IllegalArgumentException("page may not be null");
+        }
+
+        if (StringUtils.isEmpty(page.getAccessCondition())) {
+            return AccessPermission.granted();
+        }
+
+        User user = BeanUtils.getUserFromRequest(request);
+        if (user == null) {
+            UserBean userBean = BeanUtils.getUserBean();
+            if (userBean != null) {
+                user = userBean.getUser();
+            }
+        }
+        if (user != null && user.isSuperuser()) {
+            logger.trace("Access granted to admin.");
+            return AccessPermission.granted();
+        }
+
+        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(page.getAccessCondition());
+        if (licenseType == null) {
+            logger.trace("LicenseType '{}' not configured, access denied.", page.getAccessCondition());
+            return AccessPermission.denied();
+        }
+
+        return checkAccessPermission(Collections.singletonList(licenseType), Collections.singleton(page.getAccessCondition()),
+                IPrivilegeHolder.PRIV_VIEW_CMS, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), null);
+    }
+
+    /**
      * <p>
      * Base method for checking access permissions of various types.
      * </p>
@@ -828,7 +870,7 @@ public final class AccessConditionUtils {
      * @param remoteAddress a {@link java.lang.String} object.
      * @param client
      * @param query Solr query describing the resource in question.
-     * @return Map&lt;String, AccessPermission&gt;
+     * @return {@link AccessPermission}
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -966,7 +1008,7 @@ public final class AccessConditionUtils {
         }
 
         boolean containsOpenAccess =
-                requiredAccessConditions.stream().anyMatch(condition -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(condition));
+                requiredAccessConditions.stream().anyMatch(SolrConstants.OPEN_ACCESS_VALUE::equalsIgnoreCase);
         boolean openAccessIsConfiguredLicenceType =
                 allLicenseTypes == null ? DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) != null
                         : allLicenseTypes.stream().anyMatch(license -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(license.getName()));

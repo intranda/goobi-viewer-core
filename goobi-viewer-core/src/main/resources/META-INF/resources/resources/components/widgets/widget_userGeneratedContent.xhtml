@@ -14,77 +14,84 @@
 		</script>
 	
 		<h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.userGeneratedContentsForDisplay != null}">
-			<div id="userGeneratedContentWidget" class="widget">
-				<h2 >#{msg.crowdsourcing_userGeneratedContent}</h2>
-				<ul>
-					<ui:repeat var="content" value="#{activeDocumentBean.viewManager.currentPage.userGeneratedContentsForDisplay}">
-						<h:panelGroup rendered="#{content.title == ''?'false':'true'}">
-							<h:panelGroup rendered="#{content.type == 'COMMENT'}">
-								<li id="words-#{content.id}">
-									<dl class="dl-horizontal">
-										<dt>
-											<i class="fa fa-comment" aria-hidden="true"></i>
-										</dt>
-										<dd>#{content.title}</dd>
-									</dl>
-								</li>
+			<div id="userGeneratedContentWidget" class="widget widget-user-generated-content">
+				<div class="widget__topbar widget-user-generated-content__topbar">
+					<h2 class="widget__title widget-user-generated-content__title">
+						#{msg.crowdsourcing_userGeneratedContent}
+					</h2>
+				</div>
+				
+				<div class="widget__body widget-user-generated-content__body">
+					<ul>
+						<ui:repeat var="content" value="#{activeDocumentBean.viewManager.currentPage.userGeneratedContentsForDisplay}">
+							<h:panelGroup rendered="#{content.title == ''?'false':'true'}">
+								<h:panelGroup rendered="#{content.type == 'COMMENT'}">
+									<li id="words-#{content.id}">
+										<dl class="dl-horizontal">
+											<dt>
+												<i class="fa fa-comment" aria-hidden="true"></i>
+											</dt>
+											<dd>#{content.title}</dd>
+										</dl>
+									</li>
+								</h:panelGroup>
+	
+								<h:panelGroup rendered="#{content.type == 'ADDRESS'}">
+									<li id="words-#{content.id}">
+										<dl class="dl-horizontal">
+											<dt>
+												<i class="fa fa-envelope" aria-hidden="true"></i>
+											</dt>
+											<dd>#{content.title}</dd>
+										</dl>
+									</li>
+								</h:panelGroup>
+	
+								<h:panelGroup rendered="#{content.type == 'PERSON'}">
+									<li id="words-#{content.id}">
+										<dl class="dl-horizontal">
+											<dt>
+												<i class="fa fa-user" aria-hidden="true"></i>
+											</dt>
+											<dd>#{content.title}</dd>
+										</dl>
+									</li>
+								</h:panelGroup>
+	
+								<h:panelGroup rendered="#{content.type == 'CORPORATION'}">
+									<li id="words-#{content.id}">
+										<dl class="dl-horizontal">
+											<dt>
+												<i class="fa fa-home" aria-hidden="true"></i>
+											</dt>
+											<dd>#{content.title}</dd>
+										</dl>
+									</li>
+								</h:panelGroup>
+								
 							</h:panelGroup>
-
-							<h:panelGroup rendered="#{content.type == 'ADDRESS'}">
-								<li id="words-#{content.id}">
-									<dl class="dl-horizontal">
-										<dt>
-											<i class="fa fa-envelope" aria-hidden="true"></i>
-										</dt>
-										<dd>#{content.title}</dd>
-									</dl>
-								</li>
-							</h:panelGroup>
-
-							<h:panelGroup rendered="#{content.type == 'PERSON'}">
-								<li id="words-#{content.id}">
-									<dl class="dl-horizontal">
-										<dt>
-											<i class="fa fa-user" aria-hidden="true"></i>
-										</dt>
-										<dd>#{content.title}</dd>
-									</dl>
-								</li>
-							</h:panelGroup>
-
-							<h:panelGroup rendered="#{content.type == 'CORPORATION'}">
-								<li id="words-#{content.id}">
-									<dl class="dl-horizontal">
-										<dt>
-											<i class="fa fa-home" aria-hidden="true"></i>
-										</dt>
-										<dd>#{content.title}</dd>
-									</dl>
-								</li>
-							</h:panelGroup>
-							
-						</h:panelGroup>
+							<script type="text/javascript">
+	                            userGeneratedContentJSArray.push(["#{content.id}", "#{content.displayCoordinates}", "#{content.title}"]);
+	                            $("#words-#{content.id}").on( "click", function(e) {
+	                               	e.preventDefault();
+	                               	highlightContentBox( "${content.id}" );
+	                               	highlightCurrentSelection( $( this ) );
+	                            });
+	                        </script>
+						</ui:repeat>
 						<script type="text/javascript">
-                            userGeneratedContentJSArray.push(["#{content.id}", "#{content.displayCoordinates}", "#{content.title}"]);
-                            $("#words-#{content.id}").on( "click", function(e) {
-                               	e.preventDefault();
-                               	highlightContentBox( "${content.id}" );
-                               	highlightCurrentSelection( $( this ) );
-                            });
-                        </script>
-					</ui:repeat>
-					<script type="text/javascript">
-						drawContentBoxes( true );
-                            
-                        var highlightCurrentSelection = function( $Obj ) {
-                         	// reset styles for all li elements
-                         	$( "#user_generated_content_nav li" ).removeClass( "ugc-highlight" );
-                            	
-                           	// highlight clicked li element
-                           	$Obj.addClass( "ugc-highlight" );
-                        };
-                    </script>
-				</ul>
+							drawContentBoxes( true );
+	                            
+	                        var highlightCurrentSelection = function( $Obj ) {
+	                         	// reset styles for all li elements
+	                         	$( "#user_generated_content_nav li" ).removeClass( "ugc-highlight" );
+	                            	
+	                           	// highlight clicked li element
+	                           	$Obj.addClass( "ugc-highlight" );
+	                        };
+	                    </script>
+					</ul>
+				</div>
 			</div>
 		</h:panelGroup>
 	</composite:implementation>
