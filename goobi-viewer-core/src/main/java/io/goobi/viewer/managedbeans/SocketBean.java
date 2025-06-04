@@ -22,6 +22,7 @@
 package io.goobi.viewer.managedbeans;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -61,9 +62,13 @@ public class SocketBean {
 
     public SocketBean(long minIdleSeconds) {
         if (minIdleSeconds < 1) {
-            Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(createRunnable(), 0, 1, TimeUnit.MILLISECONDS);
+            try (ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor()) {
+                service.scheduleAtFixedRate(createRunnable(), 0, 1, TimeUnit.MILLISECONDS);
+            }
         } else {
-            Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(createRunnable(), 0, minIdleSeconds, TimeUnit.SECONDS);
+            try (ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor()) {
+                service.scheduleAtFixedRate(createRunnable(), 0, minIdleSeconds, TimeUnit.SECONDS);
+            }
         }
     }
 
