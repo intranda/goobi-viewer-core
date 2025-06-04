@@ -36,16 +36,18 @@ public enum AutomaticWidgetType implements WidgetContentType {
     /**
      * Widget displaying a geomap created in CMS
      */
-    WIDGET_CMSGEOMAP("widgetGeoMap", "fa fa-map-o", "widget_geoMap.xhtml");
+    WIDGET_CMSGEOMAP("widgetGeoMap", "description__widget__geomap", "fa fa-map-o", "widget_geoMap.xhtml");
 
     private final String label;
     private final String filename;
     private final String iconClass;
+    private final String description;
 
-    private AutomaticWidgetType(String label, String iconClass, String filename) {
+    private AutomaticWidgetType(String label, String description, String iconClass, String filename) {
         this.label = label;
         this.filename = filename;
         this.iconClass = iconClass;
+        this.description = description;
     }
 
     @Override
@@ -65,6 +67,10 @@ public enum AutomaticWidgetType implements WidgetContentType {
     @Override
     public String getName() {
         return name();
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     @Override

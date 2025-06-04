@@ -94,5 +94,7 @@ public interface WidgetContentType {
 
     public boolean isAllowedForPage(CMSPage page);
 
+    public String getDescription();
+
     boolean isAllowedForPage(CMSPageTemplate template);
 }

@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.PrettyUrlTools;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.widgets.type.AutomaticWidgetType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
@@ -112,6 +113,14 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
      */
     public TranslatedText getDescription() {
         return description;
+    }
+
+    public TranslatedText getDescriptionOrTypeDescription() {
+        if (getDescription().isEmpty()) {
+            return new TranslatedText(ViewerResourceBundle.getTranslations(getContentType().getDescription()));
+        } else {
+            return getDescription();
+        }
     }
 
     /**

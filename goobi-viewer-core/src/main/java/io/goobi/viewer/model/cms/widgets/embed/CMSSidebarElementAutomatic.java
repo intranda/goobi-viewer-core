@@ -95,6 +95,11 @@ public class CMSSidebarElementAutomatic extends CMSSidebarElement {
         return map;
     }
 
+    @Override
+    public TranslatedText getDescription() {
+        return new TranslatedText(this.map.getDescriptions());
+    }
+
     /**
      * The title of the underlying geomap
      * 
