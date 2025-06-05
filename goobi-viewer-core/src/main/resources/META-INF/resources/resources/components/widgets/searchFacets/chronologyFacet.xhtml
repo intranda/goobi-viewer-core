@@ -19,9 +19,9 @@
             <c:forEach var="field" items="#{searchBean.facets.allRangeFacetFields}" varStatus="status">
                 <ui:fragment rendered="#{!searchBean.facets.getValueRange(field).isEmpty()}">
                 <div class="widget widget-chronology-slider">
-                    <div class="widget-chronology-slider__topbar">
+                    <div class="widget__topbar widget-chronology-slider__topbar">
 				        <div class="widget-chronology-slider__item chronology-slider-label">
-                            <h2>#{msg.widgetChronology_label}: #{msg[field]}</h2>
+                            <h2 class="widget__title widget-chronology-slider__title">#{msg.widgetChronology_label}: #{msg[field]}</h2>
                         </div>
                         <div class="widget-chronology-slider__item chronology-slider-actions">
                             <div id="chronologyLoader-#{status.count}" class="widget-chronology-slider__item chronology-slider-action-loader">
@@ -40,8 +40,10 @@
                             </div>
                         </div>
                     </div>
+                    
                     <p class="sr-only">#{msg.a11y__widget_chronology_reloaded}</p>
-					<div id="chronoSlider_#{status.count}" class="widget-chronology-slider__body widget__body"
+                    
+					<div id="chronoSlider_#{status.count}" class="widget__body widget-chronology-slider__body"
 	                    	year-list="#{searchBean.facets.getValueRange(field)}" 
 	                    	start-year="#{searchBean.facets.getCurrentMinRangeValue(field)}"
 	                    	end-year="#{searchBean.facets.getCurrentMaxRangeValue(field)}"
@@ -57,9 +59,9 @@
                         <h:inputHidden id="chronologySliderInput" value="#{searchBean.facets.tempValue}" />
                         <h:commandButton id="chronologySliderSet" action="#{searchBean.updateFacetItem(field, false)}" />
                     </h:form>
-
                 </div>
 	            <script>
+
 	            (() => {
 				let values = #{searchBean.facets.getValueRangeAsJsonMap(field)};
 					let valueMap = new Map(Object.entries(values));
@@ -72,10 +74,12 @@
 			        	msg: {
 			        		enterYear: "#{msg.enterYear}",
 			        		ok: "#{msg.ok}",
-			        		hits: "#{msg.hits}"
+			        		hits: "#{msg.hits}",
+			        		description: '#{msg[configurationBean.getFacetFieldDescriptionKey(field)]}',
 			        	}
 			        })
 	            })();
+
 	            </script>
 	            </ui:fragment>
             </c:forEach>

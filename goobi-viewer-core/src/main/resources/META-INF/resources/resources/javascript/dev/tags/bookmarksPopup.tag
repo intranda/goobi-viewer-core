@@ -52,15 +52,43 @@ this.on( 'mount', function() {
 
 setPosition() {
     var $button = $(this.opts.button);
+    var $popup = $(this.root);
+    var popupOffset = 10; // small offset distance from button
+
     var anchor = {
-            x : $button.offset().left + $button.outerWidth()/2,
-            y : $button.offset().top + $button.outerHeight(),
-    }
+        x: $button.offset().left + $button.outerWidth() / 2,
+        y: $button.offset().top + $button.outerHeight(),
+    };
+
+    var popupWidth = $popup.outerWidth();
+    var popupHeight = $popup.outerHeight();
+
     var position = {
-            left: anchor.x - this.root.getBoundingClientRect().width/2,
-            top: anchor.y + popupOffset
+        left: anchor.x - popupWidth / 2,
+        top: anchor.y + popupOffset
+    };
+ 
+    // get viewport dimensions
+    var viewportWidth = $(window).width();
+    var viewportHeight = $(window).height();
+    var scrollTop = $(window).scrollTop();
+
+    // horizontal correction
+    if (position.left < 0) {
+        position.left = 0;
+    } else if (position.left + popupWidth > viewportWidth) {
+        position.left = viewportWidth - popupWidth;
     }
-    $(this.root).offset(position);
+
+    // vertical correction
+    if (position.top + popupHeight > scrollTop + viewportHeight) {
+        position.top = $button.offset().top - popupHeight - popupOffset;
+        if (position.top < scrollTop) {
+            position.top = scrollTop + 10;
+        }
+    }
+
+    $popup.offset(position);
 }
 
 addCloseHandler() {

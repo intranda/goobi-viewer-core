@@ -31,12 +31,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.model.SelectItem;
-import jakarta.faces.model.SelectItemGroup;
-import jakarta.inject.Named;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -57,7 +51,9 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CMSCategory;
+import io.goobi.viewer.model.cms.CMSProperty;
 import io.goobi.viewer.model.cms.Selectable;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.DownloadTicket;
@@ -66,6 +62,11 @@ import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.model.SelectItem;
+import jakarta.faces.model.SelectItemGroup;
+import jakarta.inject.Named;
 import jakarta.mail.MessagingException;
 
 /**
@@ -907,16 +908,25 @@ public class AdminLicenseBean implements Serializable {
     /**
      * Queries Solr for a list of all values of the set ACCESSCONDITION
      *
-     * @return A list of all indexed ACCESSCONDITIONs
+     * @return Combined List of access condition values from the index and CMS pages
+     * @throws DAOException
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
-    public List<String> getPossibleAccessConditions() throws IndexUnreachableException, PresentationException {
-        List<String> accessConditions = SearchHelper.getFacetValues(
+    public List<String> getPossibleAccessConditions() throws DAOException, IndexUnreachableException, PresentationException {
+        // From Solr
+        List<String> ret = SearchHelper.getFacetValues(
                 "+" + SolrConstants.ACCESSCONDITION + ":[* TO *] -" + SolrConstants.ACCESSCONDITION + ":" + SolrConstants.OPEN_ACCESS_VALUE,
                 SolrConstants.ACCESSCONDITION, 1);
-        Collections.sort(accessConditions);
-        return accessConditions;
+
+        // From CMS pages
+        List<String> dbAccessConditions = DataManager.getInstance().getDao().getCMSPageAccessConditions();
+        if (dbAccessConditions != null) {
+            ret.addAll(dbAccessConditions);
+        }
+
+        Collections.sort(ret);
+        return ret;
     }
 
     /**
@@ -966,13 +976,15 @@ public class AdminLicenseBean implements Serializable {
     }
 
     /**
-     *
+     * Record count for non-configured access conditions.
+     * 
      * @param accessCondition
      * @return Number of records containing the given access condition value
+     * @throws DAOException
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public long getNumRecordsWithAccessCondition(String accessCondition) throws IndexUnreachableException, PresentationException {
+    public long getNumRecordsWithAccessCondition(String accessCondition) throws DAOException, IndexUnreachableException, PresentationException {
         long records = DataManager.getInstance()
                 .getSearchIndex()
                 .getHitCount(SearchHelper.getQueryForAccessCondition(accessCondition, false));
@@ -982,8 +994,48 @@ public class AdminLicenseBean implements Serializable {
                     .getSearchIndex()
                     .getHitCount("+DOCTYPE:METADATA +" + SolrConstants.ACCESSCONDITION + ":\"" + accessCondition + "\"");
         }
+        if (records == 0) {
+            // Alternative query for CMS pages with access conditions
+            records =
+                    DataManager.getInstance().getDao().getCMSPageCountByPropertyValue(CMSProperty.KEY_ACCESS_CONDITION, accessCondition);
+        }
 
         return records;
+    }
+
+    /**
+     * Record count for configured access conditions.
+     * 
+     * @param licenseType
+     * @return Number of records containing the given access condition value
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public long getRecordCountForLicenseType(LicenseType licenseType) throws DAOException, IndexUnreachableException, PresentationException {
+        if (licenseType == null) {
+            throw new IllegalArgumentException("licenseType may not be null");
+        }
+
+        if (licenseType.getRecordCount() == null) {
+            licenseType.setRecordCount(DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount(SearchHelper.getQueryForAccessCondition(licenseType.getName(), false)));
+            if (licenseType.getRecordCount() == 0) {
+                // Alternative query for metadata-only restrictions
+                licenseType.setRecordCount(DataManager.getInstance()
+                        .getSearchIndex()
+                        .getHitCount("+DOCTYPE:METADATA +" + SolrConstants.ACCESSCONDITION + ":\"" + licenseType.getName() + "\""));
+            }
+            if (licenseType.getRecordCount() == 0) {
+                // Alternative query for CMS pages with access conditions
+                licenseType.setRecordCount(
+                        DataManager.getInstance().getDao().getCMSPageCountByPropertyValue(CMSProperty.KEY_ACCESS_CONDITION, licenseType.getName()));
+                licenseType.setDisplayRecordLink(false);
+            }
+        }
+
+        return licenseType.getRecordCount();
     }
 
     /**
@@ -1002,6 +1054,20 @@ public class AdminLicenseBean implements Serializable {
         } catch (UnsupportedEncodingException e) {
             return query;
         }
+    }
+
+    /**
+     * 
+     * @param licenseType
+     * @return List of CMSPages that have the access condition of the given LicenseType assigned
+     * @throws DAOException
+     */
+    public List<CMSPage> getCMSPagesUsingLicenseType(LicenseType licenseType) throws DAOException {
+        if (licenseType == null) {
+            return Collections.emptyList();
+        }
+
+        return DataManager.getInstance().getDao().getCMSPagesByPropertyValue(CMSProperty.KEY_ACCESS_CONDITION, licenseType.getName());
     }
 
     /**

@@ -12,42 +12,17 @@
 		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled and configurationBean.displaySidebarBrowsingTerms}">
 			<div id="widgetBrowsing" class="widget widget-browse">
 				<h:form id="widgetBrowsingForm">
-					<h:panelGroup rendered="#{cc.attrs.collapse == false}">				
-						<h2>#{msg.browseTitle}</h2>
-						<ul>
-							<ui:repeat value="#{browseBean.getBrowsingMenuItems(navigationHelper.localeString)}" var="item">
-								<h:panelGroup rendered="#{browseBean.browsingMenuField == item}">
-									<li class="#{navigationHelper.currentPage == 'searchTermList' ? 'active' : ''}">
-										<h:outputLink value="#{navigationHelper.termUrl}/#{item}/1/">
-											<h:outputText value="#{msg[item]}" />
-											<h:outputText rendered="#{browseBean.browsingMenuField != item}" value="#{msg[item]}" />
-										</h:outputLink>
-									</li>
-								</h:panelGroup>
-								<h:panelGroup rendered="#{browseBean.browsingMenuField != item}">
-									<li>
-										<h:outputLink value="#{navigationHelper.termUrl}/#{item}/1/">
-											<h:outputText value="#{msg[item]}" />
-										</h:outputLink>
-									</li>
-								</h:panelGroup>
-							</ui:repeat>
-						</ul>
-					</h:panelGroup>
-					
-					<h:panelGroup rendered="#{cc.attrs.collapse == true}">
-						<h2>
-							<a href="#browseCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="browseCollapse">
+					<h:panelGroup rendered="#{cc.attrs.collapse == false}">
+						<div class="widget__topbar widget-browsing__topbar">
+							<h2 class="widget__title widget-browsing__title">
 								#{msg.browseTitle}
-								<i class="fa fa-arrow-down" aria-hidden="true"></i>
-							</a>
-						</h2>
-						
-						<div id="browseCollapse" class="collapse">
+							</h2> 		
+						</div>
+						<div class="widget__body widget-browsing__body">
 							<ul>
 								<ui:repeat value="#{browseBean.getBrowsingMenuItems(navigationHelper.localeString)}" var="item">
 									<h:panelGroup rendered="#{browseBean.browsingMenuField == item}">
-										<li class="active">
+										<li class="#{navigationHelper.currentPage == 'searchTermList' ? 'active' : ''}">
 											<h:outputLink value="#{navigationHelper.termUrl}/#{item}/1/">
 												<h:outputText value="#{msg[item]}" />
 												<h:outputText rendered="#{browseBean.browsingMenuField != item}" value="#{msg[item]}" />
@@ -63,6 +38,43 @@
 									</h:panelGroup>
 								</ui:repeat>
 							</ul>
+						</div>
+					</h:panelGroup>
+					
+					<h:panelGroup rendered="#{cc.attrs.collapse == true}">
+						<div class="widget__topbar widget-browsing__topbar">
+							<div class="widget__title widget-browsing__title">
+								<h2>
+									<a href="#browseCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="browseCollapse">
+										#{msg.browseTitle}
+										<i class="fa fa-arrow-down" aria-hidden="true"></i>
+									</a>
+								</h2>
+							</div>
+						</div>
+						
+						<div class="widget__body widget-browsing__body">
+							<div id="browseCollapse" class="collapse">
+								<ul>
+									<ui:repeat value="#{browseBean.getBrowsingMenuItems(navigationHelper.localeString)}" var="item">
+										<h:panelGroup rendered="#{browseBean.browsingMenuField == item}">
+											<li class="active">
+												<h:outputLink value="#{navigationHelper.termUrl}/#{item}/1/">
+													<h:outputText value="#{msg[item]}" />
+													<h:outputText rendered="#{browseBean.browsingMenuField != item}" value="#{msg[item]}" />
+												</h:outputLink>
+											</li>
+										</h:panelGroup>
+										<h:panelGroup rendered="#{browseBean.browsingMenuField != item}">
+											<li>
+												<h:outputLink value="#{navigationHelper.termUrl}/#{item}/1/">
+													<h:outputText value="#{msg[item]}" />
+												</h:outputLink>
+											</li>
+										</h:panelGroup>
+									</ui:repeat>
+								</ul>
+							</div>
 						</div>
 					</h:panelGroup>
 				</h:form>

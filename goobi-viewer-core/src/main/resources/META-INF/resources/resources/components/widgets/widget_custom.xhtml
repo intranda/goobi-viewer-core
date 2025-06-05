@@ -12,27 +12,30 @@
 	
 		<h:panelGroup rendered="#{cc.attrs.widget.type == 'WIDGET_HTML'}">
 			<div id="widgetCustom-#{cc.attrs.widget.id}" class="widget widget-custom #{cc.attrs.widget.styleClass}">
-			
 				<h:panelGroup rendered="#{!cc.attrs.widget.collapsed}">
-					<ui:fragment rendered="#{!cc.attrs.widget.title.isEmpty()}">
-						<h2>#{cc.attrs.widget.title.textOrDefault}</h2>
-					</ui:fragment>
-						<div class="widget__body">
-							<h:outputText escape="false" value="#{cc.attrs.widget.htmlText.textOrDefault}"></h:outputText>
-						</div>
+					<div class="widget__topbar widget-custom__topbar">
+						<ui:fragment rendered="#{!cc.attrs.widget.title.isEmpty()}">
+							<h2 class="widget__title widget-custom__title">#{cc.attrs.widget.title.textOrDefault}</h2>
+						</ui:fragment>
+					</div>
+					<div class="widget__body widget-custom__body">
+						<h:outputText escape="false" value="#{cc.attrs.widget.htmlText.textOrDefault}"></h:outputText>
+					</div>
 				</h:panelGroup>
 				
 				<h:panelGroup rendered="#{cc.attrs.widget.collapsed}">
-					<h2>
-                        <button type="button" class="btn btn--clean" href="#customCollapse-#{cc.attrs.widget.id}" data-toggle="collapse" aria-expanded="false" aria-controls="customCollapse">
-                            #{cc.attrs.widget.title.textOrDefault}
-
-                            <i class="fa fa-arrow-down" aria-hidden="true"></i>
-                        </button>
-                    </h2>
+					<div class="widget__topbar widget-custom__topbar">
+						<h2 class="widget__title widget-custom__title">
+	                        <button type="button" class="btn btn--clean" href="#customCollapse-#{cc.attrs.widget.id}" data-toggle="collapse" aria-expanded="false" aria-controls="customCollapse">
+	                            #{cc.attrs.widget.title.textOrDefault}
+	
+	                            <i class="fa fa-arrow-down" aria-hidden="true"></i>
+	                        </button>
+	                    </h2>
+                    </div>
 					<div id="customCollapse-#{cc.attrs.widget.id}" class="collapse">
 
-						<div class="widget__body">
+						<div class="widget__body widget-custom__body">
 							<h:outputText escape="false" value="#{cc.attrs.widget.htmlText.textOrDefault}"></h:outputText>
 						</div>
 					</div>

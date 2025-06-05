@@ -63,6 +63,7 @@ import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
+import io.goobi.viewer.model.cms.CMSProperty;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.HighlightData;
@@ -3059,6 +3060,13 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
+    @SuppressWarnings("unchecked")
+    public List<String> getCMSPageAccessConditions() throws DAOException {
+        return getNativeQueryResults("SELECT property_value FROM cms_properties WHERE property_key = '" + CMSProperty.KEY_ACCESS_CONDITION + "'");
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public CMSPage getCMSPage(long id) throws DAOException {
         synchronized (cmsRequestLock) {
             logger.trace("getCMSPage: {}", id);
@@ -4121,6 +4129,41 @@ public class JPADAO implements IDAO {
             params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
 
             return (long) q.getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getCMSPageCountByPropertyValue(String propertyName, String propertyValue) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT COUNT(DISTINCT a) FROM CMSPage a JOIN a.properties p WHERE p.key = :key AND p.value = :value";
+            return (long) em.createQuery(query)
+                    .setParameter("key", propertyName)
+                    .setParameter("value", propertyValue)
+                    .setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH)
+                    .getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<CMSPage> getCMSPagesByPropertyValue(String propertyName, String propertyValue) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT a FROM CMSPage a JOIN a.properties p WHERE p.key = :key AND p.value = :value";
+            return em.createQuery(query)
+                    .setParameter("key", propertyName)
+                    .setParameter("value", propertyValue)
+                    .setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH)
+                    .getResultList();
         } finally {
             close(em);
         }

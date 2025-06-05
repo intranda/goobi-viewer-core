@@ -63,7 +63,7 @@ public enum DefaultWidgetType implements WidgetContentType {
     private DefaultWidgetType(String label, String description, String iconClass, String filename) {
         this(label, description, iconClass, filename, p -> true);
     }
-    
+
     private DefaultWidgetType(String label, String description, String iconClass, String filename, Predicate<CMSPage> allowedForPage) {
         this.label = label;
         this.description = description;
@@ -103,7 +103,7 @@ public enum DefaultWidgetType implements WidgetContentType {
     public boolean isAllowedForPage(CMSPage page) {
         return this.allowedForPage.test(page);
     }
-    
+
     @Override
     public boolean isAllowedForPage(CMSPageTemplate template) {
         CMSPage page = new CMSPage(template);

@@ -347,9 +347,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         }
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -358,9 +356,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -383,9 +379,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     /** {@inheritDoc} */
     @Override
     public int compareTo(CMSPage o) {
@@ -1030,11 +1023,6 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
         });
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
     /** {@inheritDoc} */
     @Override
     public String toString() {
@@ -1080,6 +1068,37 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      */
     public void setSearchable(boolean searchable) {
         this.searchable = searchable;
+    }
+
+    /**
+     * @return the accessCondition
+     */
+    public String getAccessCondition() {
+        for (CMSProperty property : properties) {
+            if (CMSProperty.KEY_ACCESS_CONDITION.equals(property.getKey())) {
+                // logger.trace("CMS access condition found: {}", property.getValue()); //NOSONAR Debug
+                return property.getValue();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param accessCondition the accessCondition to set
+     */
+    public void setAccessCondition(String accessCondition) {
+        logger.trace("setAccessCondition: {}", accessCondition);
+        for (CMSProperty property : properties) {
+            if (CMSProperty.KEY_ACCESS_CONDITION.equals(property.getKey())) {
+                property.setValue(accessCondition);
+                return;
+            }
+        }
+
+        if (StringUtils.isNotBlank(accessCondition)) {
+            properties.add(new CMSProperty(CMSProperty.KEY_ACCESS_CONDITION, accessCondition));
+        }
     }
 
     /**
@@ -1558,5 +1577,4 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
     public void setTemplateId(Long templateId) {
         this.templateId = templateId;
     }
-
 }

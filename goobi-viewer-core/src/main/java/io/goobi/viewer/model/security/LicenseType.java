@@ -134,6 +134,12 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
     @Transient
     private Boolean ugcType = null;
 
+    @Transient
+    private Long recordCount = null;
+
+    @Transient
+    private boolean displayRecordSearchLink = true;
+
     /**
      * Empty constructor.
      */
@@ -841,6 +847,34 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
      */
     void setUgcType(Boolean ugcType) {
         this.ugcType = ugcType;
+    }
+
+    /**
+     * @return the recordCount
+     */
+    public Long getRecordCount() {
+        return recordCount;
+    }
+
+    /**
+     * @param recordCount the recordCount to set
+     */
+    public void setRecordCount(Long recordCount) {
+        this.recordCount = recordCount;
+    }
+
+    /**
+     * @return the displayRecordSearchLink
+     */
+    public boolean isDisplayRecordSearchLink() {
+        return displayRecordSearchLink;
+    }
+
+    /**
+     * @param displayRecordSearchLink the displayRecordSearchLink to set
+     */
+    public void setDisplayRecordLink(boolean displayRecordSearchLink) {
+        this.displayRecordSearchLink = displayRecordSearchLink;
     }
 
     /**

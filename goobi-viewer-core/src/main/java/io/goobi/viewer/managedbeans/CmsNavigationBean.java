@@ -170,6 +170,8 @@ public class CmsNavigationBean implements Serializable {
             if (deserializeMenuItems(getMenuItemList())) {
                 getItemManager().saveVisibleItems(getSelectedTheme());
                 getItemManager().reload();
+                // Reset loaded navigation menu for the current user so the changes are visible immediately
+                cmsBean.resetNavigationMenuItems();
             }
         } catch (ConcurrentModificationException e) {
             logger.error(e.getMessage(), e);

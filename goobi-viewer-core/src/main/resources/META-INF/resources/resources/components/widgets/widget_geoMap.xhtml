@@ -23,37 +23,48 @@
         <!-- WIDGET GEO LOCATIONS -->
         <h:panelGroup rendered="#{cc.attrs.geoMap != null}">
             <!-- STANDARD -->
-                <div id="widgetGeoMap_#{cc.attrs.geoMap.id}" class="widget widget-geomap">
-                    <ui:fragment rendered="#{not empty cc.attrs.title}">
-                    <h2>
-                        #{cc.attrs.title}
-                        <ui:fragment rendered="#{cc.attrs.allowFullscreen}">
-	                        <button id="expandMap_#{cc.attrs.geoMap.id}" data-toggle="tooltip" title="#{msg.fullscreen_enter}" class="widget-geomap__expand" aria-label="#{msg.fullscreen_enter}">
-	                        	<i class="fa fa-expand"/>
-	                        </button>
-                        </ui:fragment>
-                    </h2>
+            <div id="widgetGeoMap_#{cc.attrs.geoMap.id}" class="widget widget-geomap">
+               	<div class="widget__topbar widget-geomap__topbar">
+               	    <ui:fragment rendered="#{not empty cc.attrs.title}">
+	                    <h2 class="widget__title widget-geomap__title">
+	                        #{cc.attrs.title}
+	                    </h2>
 					</ui:fragment>
-					
-                    <!-- MAP -->
-                    <viewerComponent:geoMap highlightDocumentId="#{cc.attrs.highlightDocumentId}" currentPageNo="#{cc.attrs.currentPageNo}"
-                    showPopover="true" popoverOnHover="#{cc.attrs.popoverOnHover}" popoverClass="#{cc.attrs.popoverClass}"
-                    showAnnotations="#{cc.attrs.showAnnotations}" geoMap="#{cc.attrs.geoMap}" featureClickHandling="#{cc.attrs.linkToSearch ? 'openSearch':'none'}" 
-                    mapId="widget_geoMap_#{cc.attrs.geoMap.id}"></viewerComponent:geoMap>
-                </div>
+	               	<ui:fragment rendered="#{cc.attrs.allowFullscreen}">
+	               		<button id="expandMap_#{cc.attrs.geoMap.id}" data-toggle="tooltip" title="#{msg.fullscreen_enter}" class="widget-geomap__expand" aria-label="#{msg.fullscreen_enter}">
+	                      	<i class="fa fa-expand"/>
+	                     </button>
+                    </ui:fragment>
+	            </div>
+	            
+                 <!-- MAP -->
+                 <div class="widget__body widget-geomap__body">
+                 	<viewerComponent:geoMap 
+                 		highlightDocumentId="#{cc.attrs.highlightDocumentId}" 
+                 		currentPageNo="#{cc.attrs.currentPageNo}"
+                 		showPopover="true" 
+                 		popoverOnHover="#{cc.attrs.popoverOnHover}" 
+                 		popoverClass="#{cc.attrs.popoverClass}"
+                 		showAnnotations="#{cc.attrs.showAnnotations}" 
+                 		geoMap="#{cc.attrs.geoMap}" 
+                 		featureClickHandling="#{cc.attrs.linkToSearch ? 'openSearch':'none'}" 
+                 		mapId="widget_geoMap_#{cc.attrs.geoMap.id}"
+                 	></viewerComponent:geoMap>
+                 </div>
+             </div>
             <script type="text/javascript">	  
-          //<![CDATA[
-            $("#widgetGeoMap_#{cc.attrs.geoMap.id}").show();
-            $(document).ready( () => {	
-                $("#expandMap_#{cc.attrs.geoMap.id}").on("click", e => {
-                    let oembedUrl = "#{cc.attrs.geoMap.getOEmbedURI('_parent')}";
-                    viewerJS.oembed(oembedUrl)
-                    .then( $node => {
-                        viewerJS.overlay.open($node, true, true, () => $node.remove());
-                    })
-                })
-            })
-            //]]>
+	          //<![CDATA[
+	            $("#widgetGeoMap_#{cc.attrs.geoMap.id}").show();
+	            $(document).ready( () => {	
+	                $("#expandMap_#{cc.attrs.geoMap.id}").on("click", e => {
+	                    let oembedUrl = "#{cc.attrs.geoMap.getOEmbedURI('_parent')}";
+	                    viewerJS.oembed(oembedUrl)
+	                    .then( $node => {
+	                        viewerJS.overlay.open($node, true, true, () => $node.remove());
+	                    })
+	                })
+	            })
+	            //]]>
 	        </script>
         </h:panelGroup>
     </composite:implementation>

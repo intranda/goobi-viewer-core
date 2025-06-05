@@ -22,14 +22,14 @@
 package io.goobi.viewer.managedbeans;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.omnifaces.cdi.Push;
 import org.omnifaces.cdi.PushContext;
 
+import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -42,9 +42,7 @@ import jakarta.inject.Named;
 @ApplicationScoped
 public class SocketBean {
 
-    private static final Logger logger = LogManager.getLogger(SocketBean.class);
-
-    private static final Long MIN_IDLE_TIME = 2L;
+    static final Long MIN_IDLE_TIME = 2L;
 
     private final AtomicBoolean shouldSend = new AtomicBoolean(false);
 
@@ -52,12 +50,31 @@ public class SocketBean {
     @Push
     private PushContext backgroundTasksState;
 
+    private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+
     /**
      * Default constructor. Instantiates a fixed schedule thread
      */
     public SocketBean() {
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(createRunnable(), 0, MIN_IDLE_TIME, TimeUnit.SECONDS);
+        this(MIN_IDLE_TIME);
+    }
 
+    public SocketBean(long minIdleSeconds) {
+        if (minIdleSeconds < 1) {
+            service.scheduleAtFixedRate(createRunnable(), 0, 1, TimeUnit.MILLISECONDS);
+        } else {
+            service.scheduleAtFixedRate(createRunnable(), 0, minIdleSeconds, TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * Constructor for tests with custom PushContext
+     * 
+     * @param backgroundTasksState
+     */
+    public SocketBean(long minIdleSeconds, PushContext backgroundTasksState) {
+        this(minIdleSeconds);
+        this.backgroundTasksState = backgroundTasksState;
     }
 
     /**
@@ -80,6 +97,11 @@ public class SocketBean {
     private void sendMessage(String message) {
         this.backgroundTasksState.send(message);
 
+    }
+
+    @PreDestroy
+    public void close() {
+        service.close();
     }
 
 }
