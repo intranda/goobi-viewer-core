@@ -14,7 +14,7 @@ class SocketBeanTest {
         PushContext push = Mockito.spy(PushContext.class);
         SocketBean bean = new SocketBean(0, push);
         bean.send(TEST_MESSAGE);
-        Thread.sleep(1);//sleep to avoid race condition, because message is sent asynchronously
+        Thread.sleep(2);//sleep to avoid race condition, because message is sent asynchronously
         Mockito.verify(push, Mockito.times(1)).send(UPDATE);
 
     }

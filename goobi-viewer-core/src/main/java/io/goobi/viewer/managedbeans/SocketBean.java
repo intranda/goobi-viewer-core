@@ -26,11 +26,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.omnifaces.cdi.Push;
 import org.omnifaces.cdi.PushContext;
 
+import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -43,8 +42,6 @@ import jakarta.inject.Named;
 @ApplicationScoped
 public class SocketBean {
 
-    private static final Logger logger = LogManager.getLogger(SocketBean.class);
-
     static final Long MIN_IDLE_TIME = 2L;
 
     private final AtomicBoolean shouldSend = new AtomicBoolean(false);
@@ -52,6 +49,8 @@ public class SocketBean {
     @Inject
     @Push
     private PushContext backgroundTasksState;
+
+    private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
 
     /**
      * Default constructor. Instantiates a fixed schedule thread
@@ -62,13 +61,9 @@ public class SocketBean {
 
     public SocketBean(long minIdleSeconds) {
         if (minIdleSeconds < 1) {
-            try (ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor()) {
-                service.scheduleAtFixedRate(createRunnable(), 0, 1, TimeUnit.MILLISECONDS);
-            }
+            service.scheduleAtFixedRate(createRunnable(), 0, 1, TimeUnit.MILLISECONDS);
         } else {
-            try (ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor()) {
-                service.scheduleAtFixedRate(createRunnable(), 0, minIdleSeconds, TimeUnit.SECONDS);
-            }
+            service.scheduleAtFixedRate(createRunnable(), 0, minIdleSeconds, TimeUnit.SECONDS);
         }
     }
 
@@ -102,6 +97,11 @@ public class SocketBean {
     private void sendMessage(String message) {
         this.backgroundTasksState.send(message);
 
+    }
+
+    @PreDestroy
+    public void close() {
+        service.close();
     }
 
 }
