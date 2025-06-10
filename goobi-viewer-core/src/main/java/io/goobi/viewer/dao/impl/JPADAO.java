@@ -3079,7 +3079,6 @@ public class JPADAO implements IDAO {
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     @Override
     @SuppressWarnings("unchecked")
     public List<String> getCMSPageAccessConditions() throws DAOException {
