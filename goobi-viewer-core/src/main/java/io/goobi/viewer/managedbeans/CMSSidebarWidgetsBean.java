@@ -32,6 +32,7 @@ import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -74,13 +75,13 @@ public class CMSSidebarWidgetsBean implements Serializable {
 
     private static final String SIDEBAR_COMPONENT_ATTRIBUTE_SIDEBAR_ELEMENT = "sidebarElement";
 
-    private transient HtmlPanelGroup sidebarGroup = null;
+    private transient HtmlPanelGroup sidebarGroup = new HtmlPanelGroup();;
 
     private static final long serialVersionUID = -6039330925483238481L;
 
     private static final Logger logger = LogManager.getLogger(CMSSidebarWidgetsBean.class);
 
-    private static final int MAX_DESCRIPTION_LENGTH = 40;
+    public static final int MAX_DESCRIPTION_LENGTH = 40;
 
     @Inject
     private CmsBean cmsBean;
@@ -113,7 +114,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
         for (DefaultWidgetType widgetType : DefaultWidgetType.values()) {
             WidgetDisplayElement widget = new WidgetDisplayElement(
                     ViewerResourceBundle.getTranslations(widgetType.getLabel(), true),
-                    ViewerResourceBundle.getTranslations(widgetType.getDescription(), true),
+                    new SimpleMetadataValue(),
                     Collections.emptyList(),
                     WidgetGenerationType.DEFAULT,
                     widgetType);
@@ -142,8 +143,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
         for (CustomSidebarWidget widget : customWidgets) {
             WidgetDisplayElement element = new WidgetDisplayElement(
                     widget.getTitle(),
-                    widget.isHasShortDescription() ? widget.getShortDescription(MAX_DESCRIPTION_LENGTH)
-                            : ViewerResourceBundle.getTranslations(widget.getType().getDescription(), true),
+                    widget.getShortDescription(MAX_DESCRIPTION_LENGTH),
                     queryAdditionalInformation ? getEmbeddingPages(widget) : Collections.emptyList(),
                     WidgetGenerationType.CUSTOM,
                     widget.getType(), widget.getId(), CustomWidgetType.WIDGET_FIELDFACETS.equals(widget.getType()) ? null : widget);
@@ -237,10 +237,10 @@ public class CMSSidebarWidgetsBean implements Serializable {
         Map<String, Object> attributes = new HashMap<>();
         attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_CMS_PAGE, page);
         attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_SIDEBAR_ELEMENT, component);
-        if (component instanceof CMSSidebarElementCustom) {
-            attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_WIDGET, ((CMSSidebarElementCustom) component).getWidget());
-        } else if (component instanceof CMSSidebarElementAutomatic) {
-            attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_GEOMAP, ((CMSSidebarElementAutomatic) component).getMap());
+        if (component instanceof CMSSidebarElementCustom c) {
+            attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_WIDGET, c.getWidget());
+        } else if (component instanceof CMSSidebarElementAutomatic c) {
+            attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_GEOMAP, c.getMap());
         }
         content.setAttributes(attributes);
         UIComponent widgetComponent = builder.build(content, parent);

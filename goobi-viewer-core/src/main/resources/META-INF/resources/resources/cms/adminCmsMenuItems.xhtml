@@ -1,311 +1,386 @@
-<ui:composition
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
-    <ui:define name="metadata">
-        <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsMenuItems')}" />
-        </f:metadata>
-    </ui:define>
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView"
+				listener="#{navigationHelper.setCurrentPageAdmin('adminCmsMenuItems')}" />
+		</f:metadata>
+	</ui:define>
 
-    <ui:define name="content">
-        <h:panelGroup id="cmsMenuItemsAccessControl" rendered="#{userBean.user.isHasCmsPrivilege('CMS_MENU') and navigationHelper.solrIndexOnline}">
-            <div id="cmsMenuItems" class="cms-menu">
-                <h:form id="editMenuForm" prependId="false">
-                    <div class="admin__title-bar">
-                        <!-- TITLE -->
-                        <h1 class="admin__title">#{msg.cms_menu_heading}</h1>
-                    </div>
-                    
-                    <viewerComponent:adminBreadcrumbs />
+	<ui:define name="content">
+		<h:panelGroup id="cmsMenuItemsAccessControl"
+			rendered="#{userBean.user.isHasCmsPrivilege('CMS_MENU') and navigationHelper.solrIndexOnline}">
+			<div id="cmsMenuItems" class="cms-menu">
+				<h:form id="editMenuForm" prependId="false">
+					<div class="admin__title-bar">
+						<!-- TITLE -->
+						<h1 class="admin__title">#{msg.cms_menu_heading}</h1>
+					</div>
+
+					<viewerComponent:adminBreadcrumbs />
 
 					<div class="admin__content-inner-content">
 						<!-- SAVE MENU -->
-                        <div class="row no-gutters justify-content-end admin__final-actions">
-                            <h:inputHidden id="itemOrderInput" name="itemOrderInput" value="#{cmsNavigationBean.menuItemList}" />
-                            <h:commandButton value="#{msg.save}" action="#{cmsNavigationBean.saveMenuItems}" styleClass="btn btn--success" />
-                        </div>
+						<div
+							class="row no-gutters justify-content-end admin__final-actions">
+							<h:inputHidden id="itemOrderInput" name="itemOrderInput"
+								value="#{cmsNavigationBean.menuItemList}" />
+							<h:commandButton value="#{msg.save}"
+								action="#{cmsNavigationBean.saveMenuItems}"
+								styleClass="btn btn--success" />
+						</div>
 
-                        <!-- SELECT THEME -->
-                        <ui:fragment rendered="#{cmsNavigationBean.selectableThemes.size() > 1}">
-                            <div class="cms-menu__select-theme">
-                                <!-- OPTION GROUP -->
-                                <div class="form-group form-row cms-module__option-group">
-                                    <div class="col-2 cms-module__option-label pt-0">
-                                        <label for="cmsMenuAddItemSelectSubtheme">#{msg.cms_menu_select_theme}:</label>
-                                    </div>
-                                    <div class="col-9 cms-module__option-control">
-                                        <div class="custom-control custom-control--select">
-                                            <h:selectOneMenu value="#{cmsNavigationBean.selectedTheme}" name="cmsMenuAddItemSelectSubtheme" id="cmsMenuAddItemSelectSubtheme">
-                                                <f:selectItems value="#{cmsNavigationBean.selectableThemes}" var="theme" itemValue="#{theme}" itemLabel="#{msg[theme]}" />
-                                                <f:ajax event="change" render="@all" />
-                                            </h:selectOneMenu>
-                                        </div>
-                                        <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_select_theme}</span>
-                                    </div>
-                                    <div class="cms-module__option-help">
-                                        <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </ui:fragment>
+						<!-- SELECT THEME -->
+						<ui:fragment
+							rendered="#{cmsNavigationBean.selectableThemes.size() > 1}">
+							<div class="cms-menu__select-theme">
+								<!-- OPTION GROUP -->
+								<div class="form-group form-row cms-module__option-group">
+									<div class="col-2 cms-module__option-label pt-0">
+										<label for="cmsMenuAddItemSelectSubtheme">#{msg.cms_menu_select_theme}:</label>
+									</div>
+									<div class="col-9 cms-module__option-control">
+										<div class="custom-control custom-control--select">
+											<h:selectOneMenu value="#{cmsNavigationBean.selectedTheme}"
+												name="cmsMenuAddItemSelectSubtheme"
+												id="cmsMenuAddItemSelectSubtheme">
+												<f:selectItems value="#{cmsNavigationBean.selectableThemes}"
+													var="theme" itemValue="#{theme}" itemLabel="#{msg[theme]}" />
+												<f:ajax event="change" render="@all" />
+											</h:selectOneMenu>
+										</div>
+										<span class="cms-module__option-control-helptext">#{msg.cms_menu_help_select_theme}</span>
+									</div>
+									<div class="cms-module__option-help">
+										<button type="button" class="btn btn--clean"
+											data-toggle="helptext" aria-label="#{msg.aria_label__help}">
+											<i class="fa fa-question-circle" aria-hidden="true"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</ui:fragment>
 
-                        <!-- MENU EDITOR -->
-                        <div class="cms-menu__editor">
-                            <!-- VISIBLE ITEMS -->
-                            <div class="cms-menu__visible-items">
-                                <h2 class="admin__h3">#{msg.cms_menu_main_menu}</h2>
+						<!-- MENU EDITOR -->
+						<div class="cms-menu__editor">
+							<!-- VISIBLE ITEMS -->
+							<div class="cms-menu__visible-items">
+								<h2 class="admin__h3">#{msg.cms_menu_main_menu}</h2>
 
-                                <ul id="visibleItemList" class="cms-menu__visible-items-list">
-                                    <ui:repeat varStatus="status" var="visibleItem" value="#{cmsNavigationBean.visibleMenuItems}">
-                                        <li sortPosition="item_#{visibleItem.sortingListId}?#{visibleItem.level}"
-                                            class="cms-menu__visible-item #{visibleItem.hasUnpublishedCmsPage() ? 'unpublished':''} #{visibleItem.hasDeletedCmsPage() ? 'deleted':''}">
-                                            <!-- ITEM LEVEL -->
-                                            <div class="cms-menu__visible-item-level">
-                                                <button type="button" class="btn btn--clean left" title="#{msg.cms_menu_decrease_menu_item_level}"
-                                                    onclick="cmsJS.sortableList.decreaseLevel(this, true);">
-                                                    <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
-                                                </button>
-                                                <button type="button" class="btn btn--clean right" title="#{msg.cms_menu_increase_menu_item_level}"
-                                                    onclick="cmsJS.sortableList.increaseLevel(this, true);">
-                                                    <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
-                                                </button>
-                                            </div>
+								<ul id="visibleItemList" class="cms-menu__visible-items-list">
+									<ui:repeat varStatus="status" var="visibleItem"
+										value="#{cmsNavigationBean.visibleMenuItems}">
+										<li
+											sortPosition="item_#{visibleItem.sortingListId}?#{visibleItem.level}"
+											class="cms-menu__visible-item #{visibleItem.hasUnpublishedCmsPage() ? 'unpublished':''} #{visibleItem.hasDeletedCmsPage() ? 'deleted':''}">
+											<!-- ITEM LEVEL -->
+											<div class="cms-menu__visible-item-level">
+												<button type="button" class="btn btn--clean left"
+													title="#{msg.cms_menu_decrease_menu_item_level}"
+													onclick="cmsJS.sortableList.decreaseLevel(this, true);">
+													<i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
+												</button>
+												<button type="button" class="btn btn--clean right"
+													title="#{msg.cms_menu_increase_menu_item_level}"
+													onclick="cmsJS.sortableList.increaseLevel(this, true);">
+													<i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+												</button>
+											</div> <!-- ITEM LABEL -->
+											<div class="cms-menu__visible-item-label">
+												<span>#{msg[visibleItem.itemLabel]}</span>
+												<ui:fragment rendered="#{visibleItem.absoluteLink}">
+													<small>(#{msg.cms_menu_custom_menu_item})</small>
+												</ui:fragment>
+												<ui:fragment
+													rendered="#{visibleItem.associatedWithSubtheme}">
+													<small>(#{visibleItem.associatedSubtheme})</small>
+												</ui:fragment>
+												<ui:fragment
+													rendered="#{visibleItem.cmsPage.accessCondition != null}">
+													<i class="fa fa-key" aria-hidden="true"
+														data-toggle="tooltip"
+														title="#{visibleItem.cmsPage.accessCondition}"></i>
+												</ui:fragment>
+											</div> <!-- ITEM EDIT -->
+											<div class="cms-menu__visible-item-edit">
+												<button type="button" class="btn btn--clean"
+													data-toggle="edit-visible-item"
+													aria-label="#{msg.aria_label__menu_edit_item}">
+													<i class="fa fa-caret-down" aria-hidden="true"></i>
+												</button>
+											</div> <!-- OPTION -->
+											<div
+												class="cms-menu__visible-item-edit-wrapper cms-module__option">
+												<ui:fragment rendered="#{visibleItem.absoluteLink}">
+													<!-- OPTION GROUP -->
+													<div class="cms-module__option-group">
+														<div class="cms-module__option-label pt-0">
+															<label for="cmsMenuAddItemLabel">#{msg.cms_menu_create_item_name}:</label>
+														</div>
+														<div class="cms-module__option-control">
+															<h:inputText id="cmsMenuAddItemLabel"
+																value="#{visibleItem.itemLabel}"
+																styleClass="form-control">
+																<f:passThroughAttribute name="aria-label"
+																	value="#{msg.cms_menu_create_item_name}" />
+															</h:inputText>
+															<span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_name}</span>
+														</div>
+														<div class="cms-module__option-help">
+															<button type="button" class="btn btn--clean"
+																data-toggle="helptext"
+																aria-label="#{msg.aria_label__help}">
+																<i class="fa fa-question-circle" aria-hidden="true"></i>
+															</button>
+														</div>
+													</div>
 
-                                            <!-- ITEM LABEL -->
-                                            <div class="cms-menu__visible-item-label">
-                                                #{msg[visibleItem.itemLabel]}
-                                                <ui:fragment rendered="#{visibleItem.absoluteLink}">
-                                                    <small>(#{msg.cms_menu_custom_menu_item})</small>
-                                                </ui:fragment>
-                                                <ui:fragment rendered="#{visibleItem.associatedWithSubtheme}">
-                                                    <small>(#{visibleItem.associatedSubtheme})</small>
-                                                </ui:fragment>
-                                                <ui:fragment rendered="#{visibleItem.cmsPage.accessCondition != null}">
-                                                    <i class="fa fa-key" aria-hidden="true"></i>
-                                                </ui:fragment>
-                                            </div>
+													<!-- OPTION GROUP -->
+													<div class="cms-module__option-group">
+														<div class="cms-module__option-label pt-0">
+															<label for="cmsMenuAddItemUrl">#{msg.cms_menu_create_item_url}:</label>
+														</div>
+														<div class="cms-module__option-control">
+															<h:inputText id="cmsMenuAddItemUrl"
+																value="#{visibleItem.pageUrl}"
+																styleClass="form-control cms-module__option-url">
+																<f:passThroughAttribute name="aria-label"
+																	value="#{msg.cms_menu_create_item_url}" />
+															</h:inputText>
+															<span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_url}</span>
+														</div>
+														<div class="cms-module__option-help">
+															<button type="button" class="btn btn--clean"
+																data-toggle="helptext"
+																aria-label="#{msg.aria_label__help}">
+																<i class="fa fa-question-circle" aria-hidden="true"></i>
+															</button>
+														</div>
+													</div>
 
-                                            <!-- ITEM EDIT -->
-                                            <div class="cms-menu__visible-item-edit">
-                                                <button type="button" class="btn btn--clean" data-toggle="edit-visible-item" aria-label="#{msg.aria_label__menu_edit_item}">
-                                                    <i class="fa fa-caret-down" aria-hidden="true"></i>
-                                                </button>
-                                            </div>
+													<!-- OPTION GROUP -->
+													<div
+														class="form-group form-row no-gutters cms-module__option-group cms-module__option-group">
+														<div class="cms-module__option-label pt-0">
+															<label for="cmsMenuAddItemNewTab">#{msg.cms_menu_create_item_new_tab}:</label>
+														</div>
+														<div class="cms-module__option-control admin__form-input">
+															<div class="admin__radio-switch">
+																<h:selectOneRadio
+																	group="cmsMenuAddItemNewTab-#{status.index}"
+																	value="#{visibleItem.openInNewWindow}" immediate="true"
+																	checked="#{visibleItem.openInNewWindow ? null : 'false'}">
+																	<f:selectItem itemValue="#{false}"
+																		itemLabel="#{msg.no}" />
+																</h:selectOneRadio>
+																<h:selectOneRadio
+																	group="cmsMenuAddItemNewTab-#{status.index}"
+																	value="#{visibleItem.openInNewWindow}" immediate="true"
+																	checked="#{visibleItem.openInNewWindow ? 'true' : null}">
+																	<f:selectItem itemValue="#{true}"
+																		itemLabel="#{msg.yes}" />
+																</h:selectOneRadio>
+																<span class="toggle-outside"><span
+																	class="toggle-inside"></span></span>
+															</div>
+															<span class="admin__form-help-text">#{msg.cms_menu_help_create_item_new_tab}</span>
+														</div>
+														<div class="cms-module__option-help">
+															<button type="button" class="btn btn--clean"
+																data-toggle="helptext"
+																aria-label="#{msg.aria_label__help}">
+																<i class="fa fa-question-circle" aria-hidden="true"></i>
+															</button>
+														</div>
+													</div>
+												</ui:fragment>
 
-                                            <!-- OPTION -->
-                                            <div class="cms-menu__visible-item-edit-wrapper cms-module__option">
-                                                <ui:fragment rendered="#{visibleItem.absoluteLink}">
-                                                    <!-- OPTION GROUP -->
-                                                    <div class="cms-module__option-group">
-                                                        <div class="cms-module__option-label pt-0">
-                                                            <label for="cmsMenuAddItemLabel">#{msg.cms_menu_create_item_name}:</label>
-                                                        </div>
-                                                        <div class="cms-module__option-control">
-                                                            <h:inputText id="cmsMenuAddItemLabel" value="#{visibleItem.itemLabel}" styleClass="form-control">
-                                                            	<f:passThroughAttribute name="aria-label" value="#{msg.cms_menu_create_item_name}"/>
-                                                            </h:inputText>
-                                                            <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_name}</span>
-                                                        </div>
-                                                        <div class="cms-module__option-help">
-                                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
+												<!-- ITEM ACTIONS -->
+												<div class="cms-module__option-action">
+													<button type="button" class="btn btn--clean btn--link"
+														onclick="cmsJS.sortableList.remove(this)">#{msg.cms_menu_remove_item}</button>
+												</div>
+											</div>
+										</li>
+									</ui:repeat>
+								</ul>
+							</div>
 
-                                                    <!-- OPTION GROUP -->
-                                                    <div class="cms-module__option-group">
-                                                        <div class="cms-module__option-label pt-0">
-                                                            <label for="cmsMenuAddItemUrl">#{msg.cms_menu_create_item_url}:</label>
-                                                        </div>
-                                                        <div class="cms-module__option-control">
-                                                            <h:inputText id="cmsMenuAddItemUrl" value="#{visibleItem.pageUrl}" styleClass="form-control cms-module__option-url">
-                                                            	<f:passThroughAttribute name="aria-label" value="#{msg.cms_menu_create_item_url}"/>
-                                                            </h:inputText>
-                                                            <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_url}</span>
-                                                        </div>
-                                                        <div class="cms-module__option-help">
-                                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
+							<!-- AVAILABLE ITEMS -->
+							<div class="cms-menu__available-items">
+								<h2 class="admin__h3">#{msg.cms_menu_available_items}</h2>
 
-                                                    <!-- OPTION GROUP -->
-                                                    <div class="form-group form-row no-gutters cms-module__option-group cms-module__option-group">
-                                                        <div class="cms-module__option-label pt-0">
-                                                            <label for="cmsMenuAddItemNewTab">#{msg.cms_menu_create_item_new_tab}:</label>
-                                                        </div>
-                                                        <div class="cms-module__option-control admin__form-input">
-	                                                        <div class="admin__radio-switch">
-	                                                            <h:selectOneRadio group="cmsMenuAddItemNewTab-#{status.index}" value="#{visibleItem.openInNewWindow}" immediate="true" checked="#{visibleItem.openInNewWindow ? null : 'false'}">
-	                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-	                                                            </h:selectOneRadio>
-	                                                            <h:selectOneRadio group="cmsMenuAddItemNewTab-#{status.index}" value="#{visibleItem.openInNewWindow}" immediate="true" checked="#{visibleItem.openInNewWindow ? 'true' : null}">
-	                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-	                                                            </h:selectOneRadio>
-	                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
-	                                                        </div>
-	                                                        <span class="admin__form-help-text">#{msg.cms_menu_help_create_item_new_tab}</span>
-                                                        </div>
-                                                        <div class="cms-module__option-help">
-                                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </ui:fragment>
+								<div
+									class="cms-menu__available-items-list-wrapper cms-menu__available-items-list">
 
-                                                <!-- ITEM ACTIONS -->
-                                                <div class="cms-module__option-action">
-                                                    <button type="button" class="btn btn--clean btn--link" onclick="cmsJS.sortableList.remove(this)">#{msg.cms_menu_remove_item}</button>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ui:repeat>
-                                </ul>
-                            </div>
+									<div class="cms-menu__available-items-list-inner">
+										<h3 data-toggle="available-items"
+											class="in available-item__heading">
+											#{msg.cms_menu_pages}
+											(#{fn:length(cmsNavigationBean.availableMenuItems)}) <i
+												class="fa fa-caret-down" aria-hidden="true"></i>
+										</h3>
 
-                            <!-- AVAILABLE ITEMS -->
-                            <div class="cms-menu__available-items">
-                                <h2 class="admin__h3">#{msg.cms_menu_available_items}</h2>
+										<div class="cms-menu__available-items-toggle in">
+											<ul class="cms-menu__available-items-list-pages">
+												<ui:repeat var="availableItem"
+													value="#{cmsNavigationBean.availableMenuItems}">
+													<li><label class="cms-menu__available-item-page">
+															<div class="cms-menu__available-item-page-checkbox">
+																<h:selectBooleanCheckbox
+																	value="#{availableItem.selected}" />
+															</div>
+															<div class="cms-menu__available-item-page-label">
+																<span class="cms-menu__available-item-page-title">#{msg[availableItem.itemLabel]}</span>
+																<ui:fragment
+																	rendered="#{availableItem.associatedWithSubtheme}">
+																	<small>(#{availableItem.associatedSubtheme})</small>
+																</ui:fragment>
+																<ui:fragment
+																	rendered="#{availableItem.cmsPage.accessCondition != null}">
+																	<i class="fa fa-key" aria-hidden="true"
+																		data-toggle="tooltip"
+																		title="#{availableItem.cmsPage.accessCondition}"></i>
+																</ui:fragment>
+															</div>
+													</label></li>
+												</ui:repeat>
+											</ul>
 
-                                <div class="cms-menu__available-items-list">
-                                    <ul>
-                                        <!-- PAGES -->
-                                        <li>
-                                            <h3 data-toggle="available-items" class="in available-item__heading">
-                                                #{msg.cms_menu_pages} (#{fn:length(cmsNavigationBean.availableMenuItems)})
-                                                <i class="fa fa-caret-down" aria-hidden="true"></i>
-                                            </h3>
+											<div class="cms-menu__available-item-page-add">
+												<button class="btn btn--default"
+													jsf:action="#{cmsNavigationBean.addSelectedItemsToMenu()}">
+													#{msg.cms_menu_add_to_menu}</button>
+											</div>
+										</div>
+										
+										</div>
+										
+										<!-- SECOND BLOCK -->
 
-                                            <div class="cms-menu__available-items-toggle in">
-                                                <div class="cms-menu__available-items-list-pages">
-                                                    <ui:repeat var="availableItem" value="#{cmsNavigationBean.availableMenuItems}">
-                                                        <label class="cms-menu__available-item-page">
-                                                            <div class="cms-menu__available-item-page-checkbox">
-                                                                <h:selectBooleanCheckbox value="#{availableItem.selected}" />
-                                                            </div>
-                                                            <div class="cms-menu__available-item-page-label">
-                                                            <span>#{msg[availableItem.itemLabel]}</span>
-                                                            <ui:fragment rendered="#{availableItem.associatedWithSubtheme}">
-			                                                    <small>(#{availableItem.associatedSubtheme})</small>
-			                                                </ui:fragment>
-			                                                <ui:fragment rendered="#{availableItem.cmsPage.accessCondition != null}">
-			                                                    <i class="fa fa-key" aria-hidden="true"></i>
-			                                                </ui:fragment>
-                                                            </div>
-                                                        </label>
-                                                    </ui:repeat>
-                                                </div>
+										<div class="cms-menu__available-items-list-inner">
+											<!-- ADD INDIVIDUAL MENU ITEM/LINK -->
+											<h3 class="available-item__heading"
+												data-toggle="available-items">
+												#{msg.cms_menu_create_item} <i class="fa fa-caret-down"
+													aria-hidden="true"></i>
+											</h3>
 
-                                                <div class="cms-menu__available-item-page-add">
-                                                    <button
-														class="btn btn--default"
-														jsf:action="#{cmsNavigationBean.addSelectedItemsToMenu()}">
-                                                        #{msg.cms_menu_add_to_menu}
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </li>
+											<div
+												class="cms-menu__available-items-toggle cms-menu__available-items-list-add-item">
+												<!-- OPTION -->
+												<div class="cms-module__option">
+													<!-- OPTION GROUP -->
+													<div
+														class="form-group form-row no-gutters cms-module__option-group">
+														<div
+															class="col-2 cms-module__option-label cms-module__option-label--fullwidth  pt-0">
+															<label for="cmsMenuAddItemLabel">#{msg.cms_menu_create_item_name}:</label>
+														</div>
+														<div class="col-9 cms-module__option-control">
+															<h:inputText id="cmsMenuAddItemLabel"
+																value="#{cmsNavigationBean.navigationItem.itemLabel}"
+																styleClass="form-control">
+																<f:passThroughAttribute name="aria-label"
+																	value="#{msg.cms_menu_create_item_name}" />
+															</h:inputText>
+															<span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_name}</span>
+														</div>
+														<div class="col-1 cms-module__option-help">
+															<button type="button" class="btn btn--clean"
+																data-toggle="helptext"
+																aria-label="#{msg.aria_label__help}">
+																<i class="fa fa-question-circle" aria-hidden="true"></i>
+															</button>
+														</div>
+													</div>
 
-                                        <!-- ADD MENU ITEM -->
-                                        <li>
-                                            <h3 class="available-item__heading" data-toggle="available-items">
-                                                #{msg.cms_menu_create_item}
-                                                <i class="fa fa-caret-down" aria-hidden="true"></i>
-                                            </h3>
+													<!-- OPTION GROUP -->
+													<div
+														class="form-group form-row no-gutters cms-module__option-group">
+														<div
+															class="col-2 cms-module__option-label cms-module__option-label--fullwidth pt-0">
+															<label for="cmsMenuAddItemUrl">#{msg.cms_menu_create_item_url}:</label>
+														</div>
+														<div class="col-9 cms-module__option-control">
+															<h:inputText id="cmsMenuAddItemUrl"
+																value="#{cmsNavigationBean.navigationItem.pageUrl}"
+																styleClass="form-control  cms-module__option-url">
+																<f:passThroughAttribute name="aria-label"
+																	value="#{msg.cms_menu_create_item_url}" />
+															</h:inputText>
+															<span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_url}</span>
+														</div>
+														<div class="col-1 cms-module__option-help">
+															<button type="button" class="btn btn--clean"
+																data-toggle="helptext"
+																aria-label="#{msg.aria_label__help}">
+																<i class="fa fa-question-circle" aria-hidden="true"></i>
+															</button>
+														</div>
+													</div>
 
-                                            <div class="cms-menu__available-items-toggle cms-menu__available-items-list-add-item">
-                                                <!-- OPTION -->
-                                                <div class="cms-module__option">
-                                                    <!-- OPTION GROUP -->
-                                                    <div class="form-group form-row no-gutters cms-module__option-group">
-                                                        <div class="col-2 cms-module__option-label cms-module__option-label--fullwidth  pt-0">
-                                                            <label for="cmsMenuAddItemLabel">#{msg.cms_menu_create_item_name}:</label>
-                                                        </div>
-                                                        <div class="col-9 cms-module__option-control">
-                                                            <h:inputText id="cmsMenuAddItemLabel" value="#{cmsNavigationBean.navigationItem.itemLabel}" styleClass="form-control">
-                                                           		<f:passThroughAttribute name="aria-label" value="#{msg.cms_menu_create_item_name}"/>
-                                                            </h:inputText>
-                                                            <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_name}</span>
-                                                        </div>
-                                                        <div class="col-1 cms-module__option-help">
-                                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
+													<!-- OPTION GROUP -->
+													<div
+														class="form-group form-row no-gutters cms-module__option-group">
+														<div
+															class="col-2 cms-module__option-label cms-module__option-label--fullwidth pt-0">
+															<label for="cmsMenuAddItemNewTab">#{msg.cms_menu_create_item_new_tab}:</label>
+														</div>
+														<div
+															class="col-9 cms-module__option-control admin__form-input">
+															<div class="admin__radio-switch">
+																<h:selectOneRadio group="privCmsMenu"
+																	value="#{cmsNavigationBean.navigationItem.openInNewWindow}"
+																	immediate="true">
+																	<f:selectItem itemValue="#{false}"
+																		itemLabel="#{msg.no}" />
+																</h:selectOneRadio>
+																<h:selectOneRadio group="privCmsMenu"
+																	value="#{cmsNavigationBean.navigationItem.openInNewWindow}"
+																	immediate="true">
+																	<f:selectItem itemValue="#{true}"
+																		itemLabel="#{msg.yes}" />
+																</h:selectOneRadio>
+																<span class="toggle-outside"><span
+																	class="toggle-inside"></span></span>
+															</div>
+															<span class="admin__form-help-text">#{msg.cms_menu_help_create_item_new_tab}</span>
+														</div>
+														<div class="col-1 cms-module__option-help">
+															<button type="button" class="btn btn--clean"
+																data-toggle="helptext"
+																aria-label="#{msg.aria_label__help}">
+																<i class="fa fa-question-circle" aria-hidden="true"></i>
+															</button>
+														</div>
+													</div>
 
-                                                    <!-- OPTION GROUP -->
-                                                    <div class="form-group form-row no-gutters cms-module__option-group">
-                                                        <div class="col-2 cms-module__option-label cms-module__option-label--fullwidth pt-0">
-                                                            <label for="cmsMenuAddItemUrl">#{msg.cms_menu_create_item_url}:</label>
-                                                        </div>
-                                                        <div class="col-9 cms-module__option-control">
-                                                            <h:inputText id="cmsMenuAddItemUrl" value="#{cmsNavigationBean.navigationItem.pageUrl}" styleClass="form-control  cms-module__option-url">
-                                                            	<f:passThroughAttribute name="aria-label" value="#{msg.cms_menu_create_item_url}"/>
-                                                            </h:inputText>
-                                                            <span class="cms-module__option-control-helptext">#{msg.cms_menu_help_create_item_url}</span>
-                                                        </div>
-                                                        <div class="col-1 cms-module__option-help">
-                                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
+													<!-- ACTION -->
+													<div class="cms-module__option-action">
+														<h:commandButton value="#{msg.cms_menu_add_to_menu}"
+															action="#{cmsNavigationBean.saveNavigationItem()}"
+															styleClass="btn btn--default" />
+													</div>
+												</div>
+											</div>
+										</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</h:form>
+			</div>
 
-                                                    <!-- OPTION GROUP -->
-                                                    <div class="form-group form-row no-gutters cms-module__option-group">
-                                                        <div class="col-2 cms-module__option-label cms-module__option-label--fullwidth pt-0">
-                                                            <label for="cmsMenuAddItemNewTab">#{msg.cms_menu_create_item_new_tab}:</label>
-                                                        </div>
-                                                        <div class="col-9 cms-module__option-control admin__form-input">
-	                                                        <div class="admin__radio-switch">
-	                                                            <h:selectOneRadio group="privCmsMenu" value="#{cmsNavigationBean.navigationItem.openInNewWindow}" immediate="true">
-	                                                                <f:selectItem itemValue="#{false}" itemLabel="#{msg.no}" />
-	                                                            </h:selectOneRadio>
-	                                                            <h:selectOneRadio group="privCmsMenu" value="#{cmsNavigationBean.navigationItem.openInNewWindow}" immediate="true">
-	                                                                <f:selectItem itemValue="#{true}" itemLabel="#{msg.yes}" />
-	                                                            </h:selectOneRadio>
-	                                                            <span class="toggle-outside"><span class="toggle-inside"></span></span>
-	                                                        </div>
-	                                                        <span class="admin__form-help-text">#{msg.cms_menu_help_create_item_new_tab}</span>
-                                                        </div>
-                                                        <div class="col-1 cms-module__option-help">
-                                                            <button type="button" class="btn btn--clean" data-toggle="helptext" aria-label="#{msg.aria_label__help}">
-                                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- ACTION -->
-                                                    <div class="cms-module__option-action">
-                                                        <h:commandButton value="#{msg.cms_menu_add_to_menu}" action="#{cmsNavigationBean.saveNavigationItem()}"
-                                                            styleClass="btn btn--default" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </h:form>
-            </div>
-
-            <script type="text/javascript">
+			<script type="text/javascript">
                 $( document ).ready( function() {
                     var createMenuConfig = {
                         sortablesConfig: {
@@ -318,14 +393,15 @@
                     cmsJS.sortableList.init( 20, true, createMenuConfig );
                 } );
             </script>
-        </h:panelGroup>
+		</h:panelGroup>
 
-       <ui:fragment rendered="#{!navigationHelper.solrIndexOnline}">
-           <div class="alert alert-danger" role="alert">
-               <h:outputText rendered="#{errMsg == null}" value="#{msg.errIndexUnreachableMsg}" />
-           </div>
-       </ui:fragment>
+		<ui:fragment rendered="#{!navigationHelper.solrIndexOnline}">
+			<div class="alert alert-danger" role="alert">
+				<h:outputText rendered="#{errMsg == null}"
+					value="#{msg.errIndexUnreachableMsg}" />
+			</div>
+		</ui:fragment>
 
-    </ui:define>
+	</ui:define>
 
 </ui:composition>

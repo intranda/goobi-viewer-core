@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.cms.widgets.embed;
 
 import io.goobi.viewer.controller.PrettyUrlTools;
+import io.goobi.viewer.managedbeans.CMSSidebarWidgetsBean;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.widgets.CustomSidebarWidget;
@@ -108,6 +109,11 @@ public class CMSSidebarElementCustom extends CMSSidebarElement {
     @Override
     public TranslatedText getTitle() {
         return widget.getTitle();
+    }
+
+    @Override
+    public TranslatedText getDescription() {
+        return new TranslatedText(widget.getShortDescription(CMSSidebarWidgetsBean.MAX_DESCRIPTION_LENGTH));
     }
 
     public boolean canEdit() {

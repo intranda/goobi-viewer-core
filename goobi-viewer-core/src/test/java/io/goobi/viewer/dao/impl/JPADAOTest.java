@@ -228,9 +228,9 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(user.getNickName(), user2.getNickName());
         assertEquals(user.getComments(), user2.getComments());
         assertEquals(user.getAvatarType(), user2.getAvatarType());
-        // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
-        assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(user.getLastLogin()),
-                DateTools.FORMATTERISO8601DATETIMEMS.format(user2.getLastLogin()));
+        // Compare date strings instead of LocalDateTime due to differences in millisecond precision between JVMs
+        assertEquals(DateTools.FORMATTERISO8601DATETIME.format(user.getLastLogin()),
+                DateTools.FORMATTERISO8601DATETIME.format(user2.getLastLogin()));
         assertEquals(user.isActive(), user2.isActive());
         assertEquals(user.isSuspended(), user2.isSuspended());
         assertEquals(user.isSuperuser(), user2.isSuperuser());

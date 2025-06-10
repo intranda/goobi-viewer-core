@@ -83,7 +83,6 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.security.AccessConditionUtils;
-import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.urlresolution.ViewHistory;

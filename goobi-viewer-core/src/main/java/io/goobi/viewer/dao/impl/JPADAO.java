@@ -3081,6 +3081,7 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
+    @SuppressWarnings("unchecked")
     public List<String> getCMSPageAccessConditions() throws DAOException {
         return getNativeQueryResults("SELECT property_value FROM cms_properties WHERE property_key = '" + CMSProperty.KEY_ACCESS_CONDITION + "'");
     }

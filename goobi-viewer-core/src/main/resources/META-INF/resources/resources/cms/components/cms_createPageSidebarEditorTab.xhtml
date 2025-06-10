@@ -67,6 +67,8 @@
 
 											<!-- ITEM LABEL -->
 											<span class="sidebar-editor__widget-item-label">#{element.title.textOrDefault}</span>
+											
+											<h:outputText rendered="#{!element.description.isEmpty()}" class="sidebar-editor__widget-item-description" value="#{'('.concat(element.description.textOrDefault).concat(')')}"/>
 
 											<!-- ITEM EDIT AND DELETE -->						
 <!-- 											<div jsf:id="widgetEditLink" rendered="#{element.canEdit()}" > -->
