@@ -30,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -790,9 +789,9 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(comment.getTargetPI(), comment2.getTargetPI());
         assertEquals(comment.getTargetPageOrder(), comment2.getTargetPageOrder());
         assertEquals(comment.getText(), comment2.getText());
-        // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
-        assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now),
-                DateTools.FORMATTERISO8601DATETIMEMS.format(comment2.getDateModified()));
+        // Compare date strings instead of LocalDateTime due to differences in millisecond precision between JVMs
+        assertEquals(DateTools.FORMATTERISO8601DATETIME.format(now),
+                DateTools.FORMATTERISO8601DATETIME.format(comment2.getDateModified()));
         assertEquals(comment.getCreator(), comment2.getCreator());
     }
 
@@ -935,8 +934,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(o.getSortString(), o2.getSortString());
         assertEquals(o.getFacetString(), o2.getFacetString());
         assertEquals(o.isNewHitsNotification(), o2.isNewHitsNotification());
-        // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
-        assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now), DateTools.FORMATTERISO8601DATETIMEMS.format(o2.getDateUpdated()));
+        // Compare date strings instead of LocalDateTime due to differences in millisecond precision between JVMs
+        assertEquals(DateTools.FORMATTERISO8601DATETIME.format(now), DateTools.FORMATTERISO8601DATETIME.format(o2.getDateUpdated()));
     }
 
     @Test
@@ -956,8 +955,8 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNotNull(o2);
         assertEquals(o.getName(), o2.getName());
         assertEquals(o.getOwner(), o2.getOwner());
-        // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
-        assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now), DateTools.FORMATTERISO8601DATETIMEMS.format(o2.getDateUpdated()));
+        // Compare date strings instead of LocalDateTime due to differences in millisecond precision between JVMs
+        assertEquals(DateTools.FORMATTERISO8601DATETIME.format(now), DateTools.FORMATTERISO8601DATETIME.format(o2.getDateUpdated()));
     }
 
     @Test
@@ -2187,9 +2186,9 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(job.getPi(), job2.getPi());
         assertEquals(job.getLogId(), job2.getLogId());
         assertEquals(job.getIdentifier(), job2.getIdentifier());
-        // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
-        assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now),
-                DateTools.FORMATTERISO8601DATETIMEMS.format(job2.getLastRequested()));
+        // Compare date strings instead of LocalDateTime due to differences in millisecond precision between JVMs
+        assertEquals(DateTools.FORMATTERISO8601DATETIME.format(now),
+                DateTools.FORMATTERISO8601DATETIME.format(job2.getLastRequested()));
         assertEquals(job.getTtl(), job2.getTtl());
         assertEquals(job.getStatus(), job2.getStatus());
     }
@@ -2218,9 +2217,9 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         DownloadJob job2 = DataManager.getInstance().getDao().getDownloadJob(job.getId());
         assertNotNull(job2);
         assertEquals(job.getId(), job2.getId());
-        // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
-        assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(now),
-                DateTools.FORMATTERISO8601DATETIMEMS.format(job2.getLastRequested()));
+        // Compare date strings instead of LocalDateTime due to differences in millisecond precision between JVMs
+        assertEquals(DateTools.FORMATTERISO8601DATETIME.format(now),
+                DateTools.FORMATTERISO8601DATETIME.format(job2.getLastRequested()));
         assertEquals(JobStatus.READY, job2.getStatus());
         assertEquals(2, job2.getObservers().size());
         assertEquals("newobserver@example.com", job2.getObservers().get(1));
@@ -3365,9 +3364,9 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNotNull(updated);
         assertEquals(TaskType.DOWNLOAD_PDF.name(), updated.getTaskType());
         assertEquals("0 0 0 * * ?", updated.getScheduleExpression());
-        // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
-        assertEquals(DateTools.FORMATTERISO8601DATETIMEMS.format(triggered),
-                DateTools.FORMATTERISO8601DATETIMEMS.format(updated.getLastTimeTriggered()));
+        // Compare date strings instead of LocalDateTime due to differences in millisecond precision between JVMs
+        assertEquals(DateTools.FORMATTERISO8601DATETIME.format(triggered),
+                DateTools.FORMATTERISO8601DATETIME.format(updated.getLastTimeTriggered()));
 
         dao.deleteRecurringTaskTrigger(trigger.getId());
         assertTrue(dao.getRecurringTaskTriggers().isEmpty());
