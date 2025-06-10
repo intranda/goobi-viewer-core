@@ -75,7 +75,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
 
     private static final String SIDEBAR_COMPONENT_ATTRIBUTE_SIDEBAR_ELEMENT = "sidebarElement";
 
-    private transient HtmlPanelGroup sidebarGroup = null;
+    private transient HtmlPanelGroup sidebarGroup = new HtmlPanelGroup();;
 
     private static final long serialVersionUID = -6039330925483238481L;
 
@@ -237,10 +237,10 @@ public class CMSSidebarWidgetsBean implements Serializable {
         Map<String, Object> attributes = new HashMap<>();
         attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_CMS_PAGE, page);
         attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_SIDEBAR_ELEMENT, component);
-        if (component instanceof CMSSidebarElementCustom) {
-            attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_WIDGET, ((CMSSidebarElementCustom) component).getWidget());
-        } else if (component instanceof CMSSidebarElementAutomatic) {
-            attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_GEOMAP, ((CMSSidebarElementAutomatic) component).getMap());
+        if (component instanceof CMSSidebarElementCustom c) {
+            attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_WIDGET, c.getWidget());
+        } else if (component instanceof CMSSidebarElementAutomatic c) {
+            attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_GEOMAP, c.getMap());
         }
         content.setAttributes(attributes);
         UIComponent widgetComponent = builder.build(content, parent);
