@@ -16,15 +16,15 @@
 
 	<composite:implementation>
 
-		<c:if test="#{cmsPage.published or userBean.hasAdminBackendAccess}">
+		<c:if test="#{cmsBean.currentPage.published or userBean.hasAdminBackendAccess}">
 
 			<!-- CUSTOM SIDEBAR -->
-			<c:if test="#{!cmsPage.useDefaultSidebar}">
+			<c:if test="#{!cmsBean.currentPage.useDefaultSidebar}">
 				<h:panelGroup binding="#{cmsSidebarWidgetsBean.sidebarGroup}"></h:panelGroup>
 			</c:if>
 
 			<!-- DEFAULT SIDEBAR -->
-			<c:if test="#{cmsPage.useDefaultSidebar}">
+			<c:if test="#{cmsBean.currentPage.useDefaultSidebar}">
 
 				<!-- GLOBAL -->
 				<c:if test="#{!cmsBean.relatedWorkLoaded}">
