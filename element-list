@@ -60,6 +60,7 @@ io.goobi.viewer.faces.utils
 io.goobi.viewer.faces.validators
 io.goobi.viewer.filters
 io.goobi.viewer.managedbeans
+io.goobi.viewer.managedbeans.storage
 io.goobi.viewer.managedbeans.tabledata
 io.goobi.viewer.managedbeans.utils
 io.goobi.viewer.messages
@@ -94,7 +95,6 @@ io.goobi.viewer.model.email
 io.goobi.viewer.model.export
 io.goobi.viewer.model.files.external
 io.goobi.viewer.model.files.upload
-io.goobi.viewer.model.glossary
 io.goobi.viewer.model.iiif.discovery
 io.goobi.viewer.model.iiif.presentation.v2.builder
 io.goobi.viewer.model.iiif.presentation.v3.builder
