@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.cms.widgets;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,9 +29,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.PrettyUrlTools;
+import io.goobi.viewer.managedbeans.CMSSidebarWidgetsBean;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.widgets.type.AutomaticWidgetType;
+import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetContentType;
 import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
 import io.goobi.viewer.model.translations.IPolyglott;
@@ -95,6 +98,19 @@ public class WidgetDisplayElement implements IPolyglott, Comparable<WidgetDispla
         this.contentType = contentType;
         this.id = id;
         this.translations = translations;
+    }
+
+    public WidgetDisplayElement(CustomSidebarWidget widget) {
+        this(widget, Collections.emptyList());
+    }
+
+    public WidgetDisplayElement(CustomSidebarWidget widget, List<CMSPage> embeddedPages) {
+        this(
+                widget.getTitle(),
+                widget.getShortDescription(CMSSidebarWidgetsBean.MAX_DESCRIPTION_LENGTH),
+                embeddedPages,
+                WidgetGenerationType.CUSTOM,
+                widget.getType(), widget.getId(), CustomWidgetType.WIDGET_FIELDFACETS.equals(widget.getType()) ? null : widget);
     }
 
     /**

@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Locale;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
@@ -35,7 +36,11 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.widgets.type.CustomWidgetType;
 
-class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest{
+class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest {
+
+    private static final String LOREM_IPSUM =
+            "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
+    private static final String LOREM_IPSUM_SHORT = "Lorem ipsum dolor sit amet,";
 
     @Test
     void testPersist() throws DAOException {
@@ -85,6 +90,29 @@ class HtmlSidebarWidgetTest extends AbstractDatabaseEnabledTest{
     @Test
     void testType() {
         assertEquals(CustomWidgetType.WIDGET_HTML, new HtmlSidebarWidget().getType());
+    }
+
+    @Test
+    void test_shortDescriptionFromDescription() {
+        HtmlSidebarWidget widget = new HtmlSidebarWidget();
+        Assertions.assertFalse(widget.isHasShortDescription());
+        widget.getDescription().setText(LOREM_IPSUM, Locale.GERMAN);
+        Assertions.assertTrue(widget.isHasShortDescription());
+        Assertions.assertEquals(LOREM_IPSUM_SHORT + "...", widget.getShortDescription(35).getValueOrFallback(Locale.GERMAN));
+
+        widget.getHtmlText().setText("Some other text", Locale.GERMAN);
+
+        Assertions.assertTrue(widget.isHasShortDescription());
+        Assertions.assertEquals(LOREM_IPSUM_SHORT + "...", widget.getShortDescription(35).getValueOrFallback(Locale.GERMAN));
+    }
+
+    @Test
+    void test_shortDescriptionFromText() {
+        HtmlSidebarWidget widget = new HtmlSidebarWidget();
+        Assertions.assertFalse(widget.isHasShortDescription());
+        widget.getHtmlText().setText(LOREM_IPSUM, Locale.GERMAN);
+        Assertions.assertTrue(widget.isHasShortDescription());
+        Assertions.assertEquals(LOREM_IPSUM_SHORT + "...", widget.getShortDescription(35).getValueOrFallback(Locale.GERMAN));
     }
 
 }
