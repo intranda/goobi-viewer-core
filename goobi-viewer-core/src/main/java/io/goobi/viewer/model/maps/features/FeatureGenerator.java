@@ -19,6 +19,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.maps.coordinates.CoordinateReaderProvider;
+import io.goobi.viewer.model.metadata.ComplexMetadata;
 import io.goobi.viewer.model.metadata.ComplexMetadataContainer;
 import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.servlets.IdentifierResolver;
@@ -68,8 +69,13 @@ public class FeatureGenerator {
     }
 
     private Collection<GeoMapFeature> getFeatures(ComplexMetadataContainer metadataGroups) {
-        // TODO Auto-generated method stub
-        return null;
+        List<ComplexMetadata> groups = metadataGroups.getAllGroups();
+        List<String> coordinates =
+                coordinateFields.stream()
+                        .map(field -> groups.stream().map(g -> g.getFirstValue(field)))
+                        .flatMap(List::stream)
+                        .filter(v -> !v.isEmpty())
+                        .toList();
     }
 
     private Collection<GeoMapFeature> getFeatures(MetadataContainer metadata) {

@@ -149,4 +149,8 @@ public class ComplexMetadataContainer {
         return new ComplexMetadataContainer(metadataDocs);
     }
 
+    public List<ComplexMetadata> getAllGroups() {
+        return this.metadataMap.values().stream().flatMap(mdList -> mdList.getMetadata().stream()).toList();
+    }
+
 }

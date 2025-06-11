@@ -30,7 +30,7 @@ class FeatureGeneratorTest {
         SolrDocument mainDoc = new SolrDocument(
                 Map.of("PI", "1234", "MD_TITLE", "Document title", "MD_LOCATION", "Göttingen", "MD_COORDINATES", "51.533172 9.935790"));
 
-        List<GeoMapFeature> features = generator.getFeaturesFromSolrDocs(Map.of(mainDoc, Collections.emptyList()));
+        List<GeoMapFeature> features = generator.getFeatures(Map.of(mainDoc, Collections.emptyList()));
         Assertions.assertEquals(features.size(), 1);
         Assertions.assertEquals("Document title in Göttingen", features.get(0).getTitle().getValue().orElse(""));
         Assertions.assertEquals(features.get(0).getEntities().size(), 1);
