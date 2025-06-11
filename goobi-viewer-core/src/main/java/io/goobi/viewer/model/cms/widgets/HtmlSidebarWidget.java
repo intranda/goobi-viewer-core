@@ -99,7 +99,7 @@ public class HtmlSidebarWidget extends CustomSidebarWidget {
     }
 
     public boolean isHasShortDescription() {
-        return !this.getDescription().isEmpty() && !this.getHtmlText().isEmpty();
+        return !(this.getDescription().isEmpty() && this.getHtmlText().isEmpty());
     }
 
     public IMetadataValue getShortDescription(int maxLength) {
