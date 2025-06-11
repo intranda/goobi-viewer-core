@@ -1720,12 +1720,11 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public String getTitleBarLabel(String language)
+    public synchronized String getTitleBarLabel(String language)
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         if (navigationHelper == null) {
             return null;
         }
-
         if (navigationHelper.getCurrentPage() != null && PageType.getByName(navigationHelper.getCurrentPage()) != null
                 && PageType.getByName(navigationHelper.getCurrentPage()).isDocumentPage() && getViewManager() != null) {
             // Prefer the label of the current TOC element
@@ -2257,7 +2256,7 @@ public class ActiveDocumentBean implements Serializable {
      * @should return empty string if navigationHelper null
      * @should generate tags correctly
      */
-    public String getRelativeUrlTags() throws IndexUnreachableException, DAOException, PresentationException {
+    public synchronized String getRelativeUrlTags() throws IndexUnreachableException, DAOException, PresentationException {
         if (!isRecordLoaded() || navigationHelper == null) {
             return "";
         }
@@ -2363,28 +2362,6 @@ public class ActiveDocumentBean implements Serializable {
                 default:
                     break;
             }
-
-            //            String regularUrl;
-            //            String explicitUrl;
-            //            String currentUrl = navigationHelper.getCurrentUrl();
-            //
-            //            if (currentUrl.contains(SolrTools.unescapeSpecialCharacters(getLogid()))) {
-            //                currentUrl = currentUrl.replace(SolrTools.unescapeSpecialCharacters(getLogid()), getLogid());
-            //            }
-
-            //            if (currentUrl.contains("!" + currentPageType.getName())) {
-            //                regularUrl = currentUrl.replace("!" + currentPageType.getName(), currentPageType.getName());
-            //                explicitUrl = currentUrl;
-            //            } else {
-            //                regularUrl = currentUrl;
-            //                explicitUrl = currentUrl.replace(currentPageType.getName(), "!" + currentPageType.getName());
-            //            }
-            //
-            //            // Regular URL (canonical)
-            //            sb.append(linkCanonical).append(regularUrl).append("\" />");
-            //            // Explicitly selected view (alternate)
-            //            sb.append(linkAlternate).append(explicitUrl).append("\" />");
-
         }
 
         // Skip prev/next links for non-paginated views

@@ -2,33 +2,20 @@
    Widget geofacetting
    style declarations for widget_geoFacetting.xhtml
    ==============================================================*/
-// No padding for geomap widget
-.widget.widget-geofacetting {
-	padding: 0;
-	z-index: 2;
-}
 
 .widget-geofacetting {
+	padding: 0;
+	z-index: 2;
 	position: relative;
-	&__topbar {
-		display: flex;
-	}
-	&__item {}
-	&__label {}
+
 	&__actions {
 		display: flex;
 		margin-left: auto;
-		padding: 0 0.9rem;
 		align-items: center;
-		.btn {
-		}
+		
+		.btn {}
 	}
-	h2 {
-		display: flex;
-		justify-content: space-between;
-		padding: 2rem 2rem 0 2rem;
-		background-color: transparent;
-	}
+	
 	&__action-overlay {
 		position: absolute;
 		width: 100%;
@@ -40,16 +27,17 @@
 		z-index: 1001;
 		cursor: pointer;
 		.widget-geofacetting__action-expand {
-      // Do not apply button styles in webkit browsers
-      // (this element has a type="button" attribute, 
-      // which makes webkit style it as a button, if not unset)
-      -webkit-appearance: unset;
+	    // Do not apply button styles in webkit browsers
+	    // (this element has a type="button" attribute, 
+	    // which makes webkit style it as a button, if not unset)
+      	-webkit-appearance: unset;
 			color: @white;
 			&:hover {
 				color: @white;
 			}
 		}
 	}
+	
 	&__action-expand {
 		opacity: 0;
 		transition: all 0.2s ease;
@@ -71,12 +59,14 @@
 			background: none;
 			}	
 	}
+	
 	&__action-expand-hint {
 		font-size: 1.5rem;
 	}
+	
 	&__action-toggle-markers {
 		margin-left: 0.8rem;
-		font-size: 1.7rem;
+		padding: 0;
 		border: none;
 		background: none;
 		color: @white;
@@ -87,6 +77,7 @@
 			color: @white;
 		}
 	}
+	
 	&__action-reset {
 		display: none;
 		color: inherit;
@@ -107,6 +98,7 @@
 			color: @white;
 		}
 	}
+	
 	&__body {
 		padding: 1.5rem;
 		position: relative;
@@ -120,6 +112,7 @@
 			
 		}
 	}
+	
 	&__overlay {
 		display: none;
 		&__geo-map {
@@ -133,6 +126,7 @@
 			}
 		}
 	}
+	
 	&__loader-wrapper {
 		display: block;
 		position: relative;
@@ -140,11 +134,13 @@
 		left: 50%;
 		top: 50%;
 	}
+	
 	&__loader-animated-image {
 		z-index: 5001;
 		position: absolute;
 		transform: translate(-50%, -50%);
 	}
+	
 	.geo-map {
 		min-height: 350px;
 		.mapboxgl-popup-content {
@@ -171,6 +167,7 @@
 			}
 		}
 	}
+	
 	&__overlay-buttons-wrapper {
 		position: absolute;
 		right: 15px;
@@ -179,14 +176,18 @@
 		padding: 2rem;
 		background: rgba(0, 0, 0, 0.75);
 	}
+	
 	&__overlay-reset-search {
 		margin-right: 0.5rem;
 	}
+	
 	&__overlay-submit-search {}
+	
     /* CMS BACKEND WIDGET */
 	h4 {
     	margin-bottom: 5px;
     }
+	
     &__input {
     	.mx-clearfloats;
     	margin-bottom: 20px;
@@ -204,12 +205,14 @@
     		resize: vertical;
     	}
     }
+	
     &__input-spacer {
     	margin: 10px 0;
     	width: 100%;
     	height: 1px;
     	background-color: @middlegray;
     }
+	
     &__action {
     	position: relative;
     	z-index: 10;
@@ -227,6 +230,7 @@
     		}
     	}
     }
+	
     &__overlay-check {
     	.mx-clearfloats;
     	float: left;

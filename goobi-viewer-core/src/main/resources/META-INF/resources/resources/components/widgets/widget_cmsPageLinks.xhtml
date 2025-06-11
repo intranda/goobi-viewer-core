@@ -11,21 +11,25 @@
     <composite:implementation>
         <h:panelGroup class="cms-page-links" rendered="#{cc.attrs.widget.type == 'WIDGET_CMSPAGES'}">
     	   <h:form id="customDrillDownForm" prependId="false">
-				<div id="widgetCmsPageLinks-#{cc.attrs.widget.id}" class="widget #{cc.attrs.widget.styleClass}">
+				<div id="widgetCmsPageLinks-#{cc.attrs.widget.id}" class="widget widget-cms-page-links #{cc.attrs.widget.styleClass}">
 					<h:panelGroup rendered="#{!cc.attrs.widget.collapsed}">
-						<ui:fragment rendered="#{!cc.attrs.widget.title.isEmpty()}">
-							<h2>#{cc.attrs.widget.title.textOrDefault}</h2>
-						</ui:fragment>
+						<div class="widget__topbar widget-cms-page-links__topbar">
+							<ui:fragment rendered="#{!cc.attrs.widget.title.isEmpty()}">
+								<h2 class="widget__title widget-cms-page-links__title">#{cc.attrs.widget.title.textOrDefault}</h2>
+							</ui:fragment>
+						</div>
 
-						<ul>
-							<ui:repeat value="#{cc.attrs.widget.pageList.pages}" var="pageId">
-								<li class="#{cmsBean.currentPage.id != null and cmsBean.currentPage.id.toString().equals(pageId) ? 'active': ''}">
-									<a href="#{cmsBean.getPageUrl(pageId)}">
-										#{cmsBean.getPage(pageId).menuTitle}
-									</a>
-								</li>
-							</ui:repeat>
-						</ul>
+						<div class="widget__body widget-cms-page-links__body">
+							<ul>
+								<ui:repeat value="#{cc.attrs.widget.pageList.pages}" var="pageId">
+									<li class="#{cmsBean.currentPage.id != null and cmsBean.currentPage.id.toString().equals(pageId) ? 'active': ''}">
+										<a href="#{cmsBean.getPageUrl(pageId)}">
+											#{cmsBean.getPage(pageId).menuTitle}
+										</a>
+									</li>
+								</ui:repeat>
+							</ul>
+						</div>
 					</h:panelGroup>
 					<h:panelGroup rendered="#{cc.attrs.widget.collapsed}">
 						<h2>

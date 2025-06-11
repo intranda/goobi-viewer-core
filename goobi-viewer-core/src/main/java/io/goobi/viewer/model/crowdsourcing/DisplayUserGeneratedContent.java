@@ -838,7 +838,7 @@ public class DisplayUserGeneratedContent {
     }
 
     public boolean isOnThisPage(PhysicalElement page) {
-        return this.page != null && this.page.equals(page.getOrder());
+        return this.page != null && page != null && this.page.equals(page.getOrder());
     }
 
     public boolean isOnOtherPage(PhysicalElement page) {

@@ -23,15 +23,32 @@
                     <c:forEach var="field" items="#{searchBean.facets.allAvailableFacets.entrySet().toArray()}" varStatus="status">
                         <h:panelGroup id="collectionFacetsPanelGroup_#{status.index}"
                             rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and (searchBean.facets.isFacetListSizeSufficient(field.key) or fn:length(searchBean.facets.getActiveFacetsForField(field.key)) > 0)}">
-                            
-                            <div class="widget widget-search-facets__collection">
-
-                                <div class="widget-search-facets__topbar">
-                                    <h2><span>#{msg[field.key.concat('_DD')]}</span></h2>
+                            <div class="widget widget-search-facets__collection" data-facet="searchFacetFilter">
+                                <div class="widget__topbar widget-search-facets__topbar">
+                                	<h2 class="widget__title widget-search-facets__title" data-heading="searchFacetFilter">#{msg[field.key.concat('_DD')]}</h2>
+	                                <!-- FILTER FACETS -->
+	                                <ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(field.key)}">
+	                                    <div class="widget-search-facets__filter" data-wrapper="searchFacetFilter">
+	                                        <input
+	                                          type="text"
+	                                          id="collectionFacetsFilter_#{status.index}"
+	                                          class="widget-search-facets__filter-input -no-outline"
+	                                          placeholder="#{msg.placeholder__filter_search_results}"
+	                                          aria-label="#{msg.placeholder__filter_search_results}"
+	                                          data-input="searchFacetFilter" />
+	                                        <button
+	                                          type="button"
+	                                          class="btn btn--clean widget-search-facets__filter-button"
+	                                          data-toggle="searchFacetFilter"
+	                                          aria-label="#{msg.placeholder__filter_search_results}">
+	                                        	<i class="fa fa-search" aria-hidden="true"></i>
+	                                        </button>
+	                                    </div>
+	                                </ui:fragment>
                                 </div>
                                 
                                 <ui:fragment rendered="#{configurationBean.isFacetFieldTypeBoolean(field.key)}">
-                                    <div class="widget__body">
+                                    <div class="widget__body widget-search-facets__body">
 										<div class="widget-search-facets__boolean">
 											<ui:fragment
 												rendered="#{searchBean.facets.isFacetStringCurrentlyUsed(field.key.concat(':true'))}">
@@ -117,58 +134,44 @@
                                  
                                 <ui:fragment rendered="#{!configurationBean.isFacetFieldTypeBoolean(field.key)}">
 
-                                <!-- FILTER FACETS -->
-                                <ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(field.key)}">
-                                    <div class="widget-search-facets__filter">
-                                        <input
-                                          type="text"
-                                          id="collectionFacetsFilter_#{status.index}"
-                                          tabindex="-1"
-                                          class="widget-search-facets__filter-input -no-outline"
-                                          placeholder="#{msg.placeholder__filter_search_results}"
-                                          aria-label="#{msg.placeholder__filter_search_results}"/>
-                                        <button
-                                          type="button"
-                                          class="btn btn--clean"
-                                          data-toggle="filter-input"
-                                          aria-label="#{msg.placeholder__filter_search_results}">
-                                        	<i class="fa fa-search" aria-hidden="true"></i>
-                                        </button>
-                                    </div>
-                                </ui:fragment>
+                                <div class="widget__body widget-search-facets__body">
 
-                                <ul>
+                                    <!-- DESCRIPTIONAL INFORMATION/TEXT ABOVE FACET (CONFIG + MSG KEY) -->
+                                    <ui:fragment rendered="#{configurationBean.getFacetFieldDescriptionKey(field.key) != null}">
+                                        <p class="widget__description-text widget-search-facets__description-text"><h:outputFormat escape="false" value="#{msg[configurationBean.getFacetFieldDescriptionKey(field.key)]}" /></p>
+                                    </ui:fragment>
+                                                         
+                                	<ul class="widget-search-facets__list">
+	                                    <!-- ACTIVE FACETS -->
+	                                    <c:forEach items="#{searchBean.facets.getActiveFacetsForField(field.key)}" var="facet">
+	                                        <li class="widget-search-facets__list-item active">
+	                                            <h:commandLink styleClass="widget-search-facets__list-item-link" action="#{searchBean.removeFacetAction(facet.link)}" title="#{msg.removeFacet}">
+	                                                <div class="row">
+	                                                    <div class="col-11">#{facet.translatedLabel}</div>
+	                                                    <div class="col-1">
+	                                                        <i class="fa fa-times" aria-hidden="true"></i>
+	                                                    </div>
+	                                                </div>
+	                                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
+	                                                <f:passThroughAttribute name="data-placement" value="top" />
+	                                                <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
+	                                            </h:commandLink>
+	                                        </li>                        
+	                                    </c:forEach>
+	                                    
+	                                    <!-- AVAILABLE FACETS -->
+	                                    <ui:repeat value="#{searchBean.facets.getLimitedFacetListForField(field.key)}" var="facet">
+	                                        <li class="widget-search-facets__list-item">
+	                                            <h:outputLink styleClass="widget-search-facets__list-item-link"
+	                                                value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
+	                                                <span class="widget-search-facets__list-item-label">#{facet.translatedLabel}</span>  <span class="widget-search-facets__list-item-count">(#{facet.count})</span>
+	                                                <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
+	                                            </h:outputLink>
+	                                        </li>
+	                                    </ui:repeat>                         			
+                                	</ul>
+                                </div>
 
-                                    <!-- ACTIVE FACETS -->
-                                    <c:forEach items="#{searchBean.facets.getActiveFacetsForField(field.key)}" var="facet">
-                                        <li class="widget-search-facets__list-item active">
-                                            <h:commandLink styleClass="widget-search-facets__list-item-link" action="#{searchBean.removeFacetAction(facet.link)}" title="#{msg.removeFacet}">
-                                                <div class="row">
-                                                    <div class="col-11">#{facet.translatedLabel}</div>
-                                                    <div class="col-1">
-                                                        <i class="fa fa-times" aria-hidden="true"></i>
-                                                    </div>
-                                                </div>
-                                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                                <f:passThroughAttribute name="data-placement" value="top" />
-                                                <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
-                                            </h:commandLink>
-                                        </li>                        
-                                    </c:forEach>
-                                    
-                                    <!-- AVAILABLE FACETS -->
-                                    <ui:repeat value="#{searchBean.facets.getLimitedFacetListForField(field.key)}" var="facet">
-                                        <li class="widget-search-facets__list-item">
-                                            <h:outputLink styleClass="widget-search-facets__list-item-link"
-                                                value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
-                                                <span class="widget-search-facets__list-item-label">#{facet.translatedLabel}</span>  <span class="widget-search-facets__list-item-count">(#{facet.count})</span>
-                                                <f:passThroughAttribute name="aria-label" value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
-                                            </h:outputLink>
-                                        </li>
-                                    </ui:repeat>                         			
-                                    
-                                </ul>
-                                
                                 </ui:fragment>
 
                                 <!-- EXPAND/COLLAPSE FACET -->

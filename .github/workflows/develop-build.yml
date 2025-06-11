@@ -25,6 +25,6 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Compile Goobi viewer Indexer
+      - name: Compile Goobi viewer Core
         run: mvn -f goobi-viewer-core/pom.xml clean package -U -B
 

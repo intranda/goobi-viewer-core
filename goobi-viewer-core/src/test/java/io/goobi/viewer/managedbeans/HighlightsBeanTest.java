@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,50 +41,63 @@ class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
     HighlightsBean bean;
     NavigationHelper navigationHelper = Mockito.mock(NavigationHelper.class);
     ImageDeliveryBean imaging = Mockito.mock(ImageDeliveryBean.class);
-    
+
+    @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         bean = new HighlightsBean(DataManager.getInstance().getDao(), navigationHelper, imaging);
         bean.init();
     }
-    
+
     @Test
-    void test_listObjecs() throws DAOException {
-        
+    void test_listObjecs() {
+
         LocalDateTime now = LocalDate.of(2023, 3, 15).atStartOfDay();
         bean.initProviders(now);
         assertEquals(3, bean.getAllObjectsProvider().getPaginatorList().size());
         assertEquals(1, bean.getCurrentObjects().size());
     }
-    
+
     @Test
     void test_filterList() {
-        
+
         LocalDateTime now = LocalDate.of(2023, 4, 15).atStartOfDay();
         bean.initProviders(now);
-        
+
         bean.getAllObjectsProvider().getFilter("name").setValue("Monat");
         assertEquals(2, bean.getAllObjectsProvider().getSizeOfDataList());
-        
+
         bean.getAllObjectsProvider().getFilter("name").setValue("Januar");
         assertEquals(1, bean.getAllObjectsProvider().getSizeOfDataList());
 
         bean.getAllObjectsProvider().getFilter("name").setValue("");
         assertEquals(3, bean.getAllObjectsProvider().getSizeOfDataList());
     }
-    
+
     @Test
     void test_HighlightUrl() throws DAOException {
-        
+
         Mockito.when(navigationHelper.getImageUrl()).thenReturn("localhost:8080/viewer/image");
-        
+
         Highlight recordHighlight = new Highlight(DataManager.getInstance().getDao().getHighlight(1l));
         Highlight urlHighlight = new Highlight(DataManager.getInstance().getDao().getHighlight(3l));
-        
+
         assertEquals("localhost:8080/viewer/image/PPN12345/", bean.getUrl(recordHighlight));
         assertEquals("https:/viewer/cms/99/", bean.getUrl(urlHighlight));
 
     }
 
+    /**
+     * @throws DAOException
+     * @see HighlightsBean#getHighlightsBefore(LocalDate)
+     * @verifies return return all enabled previous highlights
+     */
+    @Test
+    void getHighlightsBefore_shouldReturnAllEnabledPreviousHighlights() throws DAOException {
+        List<Highlight> result = bean.getHighlightsBefore(LocalDate.of(2023, 4, 1));
+        assertEquals(2, result.size());
+        assertEquals(3L, result.get(0).getData().getId());
+        assertEquals(1L, result.get(1).getData().getId());
+    }
 }

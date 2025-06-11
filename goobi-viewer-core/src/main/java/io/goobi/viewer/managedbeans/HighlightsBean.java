@@ -97,11 +97,11 @@ public class HighlightsBean implements Serializable {
          */
         SELECT_TARGET,
         /**
-         * A new hightlight is being created after {@link #SELECT_TARGET} is completed
+         * A new highlight is being created after {@link #SELECT_TARGET} is completed
          */
         CREATE,
         /**
-         * An existing hightlight is being edited
+         * An existing highlight is being edited
          */
         EDIT;
     }
@@ -337,7 +337,7 @@ public class HighlightsBean implements Serializable {
                 .stream()
                 .filter(HighlightData::isEnabled)
                 .map(Highlight::new)
-                .collect(Collectors.toList());
+                .toList();
         if (!currentObjects.isEmpty()) {
             int randomIndex = random.nextInt(currentObjects.size());
             return currentObjects.get(randomIndex);
@@ -408,19 +408,20 @@ public class HighlightsBean implements Serializable {
     }
 
     /**
-     * Get all {@link Highlight}s which are not valid for the given date but were before. Only hightlights with {@link Highlight#isEnabled()} true are
+     * Get all {@link Highlight}s which are not valid for the given date but were before. Only highlights with {@link Highlight#isEnabled()} true are
      * included
      * 
      * @param date the date up to which to return the highlights (exclusively)
      * @return A list of {@link Highlight}s
      * @throws DAOException
+     * @should return return all enabled previous highlights
      */
     public List<Highlight> getHighlightsBefore(LocalDate date) throws DAOException {
         return dao.getPastHighlightsForDate(0, Integer.MAX_VALUE, DAO_FIELD_DATE_START, true, Map.of(), date.atStartOfDay())
                 .stream()
                 .filter(HighlightData::isEnabled)
                 .map(Highlight::new)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 }

@@ -24,16 +24,15 @@ package io.goobi.viewer.model.statistics.usage;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Class to be called on requests to be recorded in usage statistics. Stores and updates usage statistics in database on each request
@@ -165,10 +164,18 @@ public class UsageStatisticsRecorder {
      * @return the created statistics object
      * @throws DAOException If an error occured regarding the database
      */
-    private DailySessionUsageStatistics initStatistics(LocalDate date) throws DAOException {
-        DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, viewerName);
-        this.dao.addUsageStatistics(stats);
-        return stats;
+    private synchronized DailySessionUsageStatistics initStatistics(LocalDate date) throws DAOException {
+
+        DailySessionUsageStatistics existing = this.dao.getUsageStatistics(date);
+        if (existing != null) {
+            //statistics already exists, return this
+            return existing;
+        } else {
+            DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, viewerName);
+            this.dao.addUsageStatistics(stats);
+            return stats;
+        }
+
     }
 
 }

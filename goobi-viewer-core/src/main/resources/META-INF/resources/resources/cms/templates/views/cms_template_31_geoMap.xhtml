@@ -23,7 +23,7 @@
 				</div>
 			</ui:fragment>
 			<ui:fragment rendered="#{cc.attrs.component.hasContent('geomap')}">
-				<viewerComponent:geoMap
+				<viewerComponent:geoMap popoverOnHover="false"
 					geoMap="#{cc.attrs.component.getContentItem('geomap').content.map}">
 				</viewerComponent:geoMap>
 			</ui:fragment>

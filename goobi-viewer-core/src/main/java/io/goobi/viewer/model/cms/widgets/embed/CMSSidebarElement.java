@@ -301,5 +301,17 @@ public class CMSSidebarElement implements Serializable {
     public TranslatedText getTitle() {
         return new TranslatedText(ViewerResourceBundle.getTranslations(getContentType().getLabel()));
     }
-    
+
+    public TranslatedText getDescription() {
+        return new TranslatedText();
+    }
+
+    public boolean canEdit() {
+        return false;
+    }
+
+    public String getAdminBackendUrl() {
+        return "";
+    }
+
 }

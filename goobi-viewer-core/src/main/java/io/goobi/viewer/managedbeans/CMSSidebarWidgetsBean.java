@@ -29,15 +29,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.faces.component.UIComponent;
-import jakarta.faces.component.html.HtmlPanelGroup;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -55,9 +50,16 @@ import io.goobi.viewer.model.jsf.DynamicContent;
 import io.goobi.viewer.model.jsf.DynamicContentBuilder;
 import io.goobi.viewer.model.jsf.DynamicContentType;
 import io.goobi.viewer.model.maps.GeoMap;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.component.html.HtmlPanelGroup;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
- * <p>CMSSidebarWidgetsBean class.</p>
+ * <p>
+ * CMSSidebarWidgetsBean class.
+ * </p>
  */
 @Named("cmsSidebarWidgetsBean")
 @RequestScoped
@@ -73,18 +75,21 @@ public class CMSSidebarWidgetsBean implements Serializable {
 
     private static final String SIDEBAR_COMPONENT_ATTRIBUTE_SIDEBAR_ELEMENT = "sidebarElement";
 
-    private transient HtmlPanelGroup sidebarGroup = null;
+    private transient HtmlPanelGroup sidebarGroup = new HtmlPanelGroup();;
 
     private static final long serialVersionUID = -6039330925483238481L;
 
     private static final Logger logger = LogManager.getLogger(CMSSidebarWidgetsBean.class);
 
+    public static final int MAX_DESCRIPTION_LENGTH = 40;
 
     @Inject
     private CmsBean cmsBean;
 
     /**
-     * <p>getAllWidgets.</p>
+     * <p>
+     * getAllWidgets.
+     * </p>
      *
      * @return a {@link java.util.List} object
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -94,7 +99,9 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>getAllWidgets.</p>
+     * <p>
+     * getAllWidgets.
+     * </p>
      *
      * @param queryAdditionalInformation a boolean
      * @return a {@link java.util.List} object
@@ -107,7 +114,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
         for (DefaultWidgetType widgetType : DefaultWidgetType.values()) {
             WidgetDisplayElement widget = new WidgetDisplayElement(
                     ViewerResourceBundle.getTranslations(widgetType.getLabel(), true),
-                    ViewerResourceBundle.getTranslations(widgetType.getDescription(), true),
+                    new SimpleMetadataValue(),
                     Collections.emptyList(),
                     WidgetGenerationType.DEFAULT,
                     widgetType);
@@ -136,7 +143,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
         for (CustomSidebarWidget widget : customWidgets) {
             WidgetDisplayElement element = new WidgetDisplayElement(
                     widget.getTitle(),
-                    ViewerResourceBundle.getTranslations(widget.getType().getDescription(), true),
+                    widget.getShortDescription(MAX_DESCRIPTION_LENGTH),
                     queryAdditionalInformation ? getEmbeddingPages(widget) : Collections.emptyList(),
                     WidgetGenerationType.CUSTOM,
                     widget.getType(), widget.getId(), CustomWidgetType.WIDGET_FIELDFACETS.equals(widget.getType()) ? null : widget);
@@ -156,7 +163,7 @@ public class CMSSidebarWidgetsBean implements Serializable {
         }
     }
 
-    private static List<CMSPage> getEmbeddingPages(CustomSidebarWidget widget) {
+    public static List<CMSPage> getEmbeddingPages(CustomSidebarWidget widget) {
         try {
             return DataManager.getInstance().getDao().getPagesUsingWidget(widget);
         } catch (DAOException e) {
@@ -166,7 +173,9 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>deleteWidget.</p>
+     * <p>
+     * deleteWidget.
+     * </p>
      *
      * @param id a {@link java.lang.Long} object
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -176,7 +185,9 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>sidebarGroup</code>.</p>
+     * <p>
+     * Getter for the field <code>sidebarGroup</code>.
+     * </p>
      *
      * @param elements a {@link java.util.List} object
      * @param page a {@link io.goobi.viewer.model.cms.pages.CMSPage} object
@@ -194,7 +205,9 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>Getter for the field <code>sidebarGroup</code>.</p>
+     * <p>
+     * Getter for the field <code>sidebarGroup</code>.
+     * </p>
      *
      * @return a {@link jakarta.faces.component.html.HtmlPanelGroup} object
      */
@@ -206,7 +219,9 @@ public class CMSSidebarWidgetsBean implements Serializable {
     }
 
     /**
-     * <p>Setter for the field <code>sidebarGroup</code>.</p>
+     * <p>
+     * Setter for the field <code>sidebarGroup</code>.
+     * </p>
      *
      * @param sidebarGroup a {@link jakarta.faces.component.html.HtmlPanelGroup} object
      */
@@ -222,10 +237,10 @@ public class CMSSidebarWidgetsBean implements Serializable {
         Map<String, Object> attributes = new HashMap<>();
         attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_CMS_PAGE, page);
         attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_SIDEBAR_ELEMENT, component);
-        if (component instanceof CMSSidebarElementCustom) {
-            attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_WIDGET, ((CMSSidebarElementCustom) component).getWidget());
-        } else if (component instanceof CMSSidebarElementAutomatic) {
-            attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_GEOMAP, ((CMSSidebarElementAutomatic) component).getMap());
+        if (component instanceof CMSSidebarElementCustom c) {
+            attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_WIDGET, c.getWidget());
+        } else if (component instanceof CMSSidebarElementAutomatic c) {
+            attributes.put(SIDEBAR_COMPONENT_ATTRIBUTE_GEOMAP, c.getMap());
         }
         content.setAttributes(attributes);
         UIComponent widgetComponent = builder.build(content, parent);

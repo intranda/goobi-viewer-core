@@ -16,8 +16,10 @@
 
     <composite:implementation>
         <div id="widgetSearchAdvancedHelp" class="widget widget-search-advanced-help">
-            <h2 class="widget-search-advanced-help__title">#{msg.searchAdvanced_widget_help_title}</h2>
-            
+        	<div class="widget__topbar widget-search-advanced-help__topbar">
+        		<h2 class="widget__title widget-search-advanced-help__title">#{msg.searchAdvanced_widget_help_title}</h2>
+        	</div>
+
             <div class="widget__body widget-search-advanced-help__body">
             	<h:outputText value="#{msg.searchAdvanced_widget_help_text}" escape="false" />
             </div>

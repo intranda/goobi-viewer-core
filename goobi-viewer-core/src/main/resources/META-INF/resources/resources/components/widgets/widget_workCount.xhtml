@@ -13,26 +13,30 @@
     <composite:implementation>
 	        <!-- WIDGET WORK COUNT STANDARD -->
 	        <h:panelGroup rendered="#{cc.attrs.collapse == false}">
-		        <div id="widgetWorkCount" class="widget">
-		        	<h2>#{msg.totalNumberOfVolumes}</h2>
-		        	<div class="widget__body">
+		        <div id="widgetWorkCount" class="widget widget-workcount">
+		        	<div class="widget__topbar widget-workcount__topbar">
+    			        <h2 class="widget__title widget-workcount__title">#{msg.totalNumberOfVolumes}</h2>
+		        	</div>
+		        	
+		        	<div class="widget__body widget-workcount__body">
 		        		<span><strong>#{searchBean.totalNumberOfVolumes}</strong></span>
 		        	</div>
-
 		        </div>
 	        </h:panelGroup>
 	        
 	        <!-- WIDGET WORK COUNT FOLDOUT -->
 	        <h:panelGroup rendered="#{cc.attrs.collapse == true}">
 	        	<div id="widgetWorkCount" class="widget widget-workcount">
-					<h2 >
-						<a href="#workCountCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="workCountCollapse">
-							#{msg.totalNumberOfVolumes}
-							<i class="fa fa-arrow-down" aria-hidden="true"></i>
-						</a>
-					</h2>
+	        		<div class="widget__topbar widget-workcount__topbar">
+						<h2 class="widget__title widget-workcount__title">
+							<a href="#workCountCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="workCountCollapse">
+								#{msg.totalNumberOfVolumes}
+								<i class="fa fa-arrow-down" aria-hidden="true"></i>
+							</a>
+						</h2>
+					</div>
 					
-					<div id="workCountCollapse" class="collapse">
+					<div id="workCountCollapse" class="widget__body widget-workcount__body collapse">
 						<p><strong>#{searchBean.totalNumberOfVolumes}</strong></p> 
 					</div>
 		        </div>

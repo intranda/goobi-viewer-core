@@ -210,13 +210,13 @@
                     <ui:fragment rendered="#{configurationBean.displayCrowdsourcingModuleLinks}">
                         <ui:fragment rendered="#{navigationHelper.currentPage == 'object'}">
                             <li class="image-controls__option -ltr">
-                                <a href="#{navigationHelper.applicationUrl}crowd/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageOrder}">#{msg.action__crowdsourcing_participate}!</a>
-                            </li>
+                                <a class="image-controls__crowd-link" href="#{navigationHelper.applicationUrl}crowd/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageOrder}">#{msg.action__crowdsourcing_participate}!</a>
+                            </li> 
                         </ui:fragment>
                         <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext'}">
                             <li class="image-controls__option">
-                                <a href="#{navigationHelper.applicationUrl}crowd/editOcr/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageOrder}">#{msg.action__edit_text}</a>
-                            </li>
+                                <a class="image-controls__crowd-link" href="#{navigationHelper.applicationUrl}crowd/editOcr/#{activeDocumentBean.viewManager.pi}/#{activeDocumentBean.viewManager.currentImageOrder}">#{msg.action__edit_text}</a>
+                            </li> 
                         </ui:fragment>
                     </ui:fragment>
 
@@ -227,7 +227,7 @@
                             	<li class="image-controls__option">
                                  <h:commandLink
                              		target="_blank" action="#{crowdsourcingBean.forwardToCrowdsourcingAnnotation(campaign, activeDocumentBean.viewManager.pi)}"
-                                     styleClass="btn btn--icon">
+                                     styleClass="btn btn--icon image-controls__campaign-link">
                                      <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                  	<f:passThroughAttribute name="data-placement" value="#{cc.attrs.tooltipPlacement}" />
                                      <f:passThroughAttribute name="data-original-title" value="#{msg.label__crowdsourcing_campaign_record_discriminator}: #{campaign.getTitle(navigationHelper.locale, true)}" />
@@ -244,7 +244,7 @@
                         <!-- FULLTEXT -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and activeDocumentBean.viewManager.currentPage.fulltextAvailable}">
                             <li class="image-controls__option fulltext">
-                                <h:outputLink styleClass="btn btn--icon" value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/"
+                                <h:outputLink styleClass="btn btn--icon image-controls__fulltext-link" value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/"
                                     title="#{msg.fulltext}" target="_blank">
                                         <i class="fa fa-file-text-o" aria-hidden="true"></i>
                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
@@ -257,7 +257,7 @@
                         <!-- SHARE IMAGE REGION -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image' and !activeDocumentBean.viewManager.doublePageMode and !activeDocumentBean.viewManager.sequenceMode}">
                             <li class="image-controls__option share-image-region">
-                                <a role="button" title="#{msg.action__share_image_region}" data-toggle="tooltip" data-placement="top"
+                                <a class="image-controls__share-image-link" role="button" title="#{msg.action__share_image_region}" data-toggle="tooltip" data-placement="top"
                                 data-popover-element="#share-image-area-popup" aria-label="#{msg.action__share_image_region}">
                                  <i class="fa fa-crop" aria-hidden="true"></i>
                                 </a>
@@ -267,7 +267,7 @@
                         <!-- IMAGE FILTER -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.baseMimeType.name == 'image'}">
                             <li id="imageFiltering" class="image-controls__option image-filter">
-                                <button type="button" class="btn btn--icon" disabled="disabled"
+                                <button type="button" class="btn btn--icon image-controls__image-filter-button" disabled="disabled"
                             	   data-popover-element="#imageFilterPopover"
                                    data-popover-dismiss="click-outside"
                                    data-container="#imageFiltering"
@@ -284,7 +284,7 @@
                     <!-- ADD TO BOOKMARK -->
                     <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
                         <li id="bookmarkButtonObject" class="image-controls__option add-to-bookmark">
-                            <button type="button" class="btn btn--icon"
+                            <button type="button" class="btn btn--icon image-controls__add-to-bookmark-button"
                                 data-bookmark-list-type="add"
                                 data-pi="#{activeDocumentBean.viewManager.pi}"
                                 data-page="#{activeDocumentBean.viewManager.currentImageOrder}"

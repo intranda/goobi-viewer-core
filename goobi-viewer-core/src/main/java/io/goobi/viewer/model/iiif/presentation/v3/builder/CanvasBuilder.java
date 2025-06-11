@@ -145,6 +145,8 @@ public class CanvasBuilder extends AbstractBuilder {
             addImageResource(canvas, page);
         }
 
+        canvas.addThumbnail(getThumbnail(page));
+
         canvas.addAnnotations(getFulltextAnnotationsReference(page));
         canvas.addAnnotations(getCommentAnnotationsReference(page));
         canvas.addAnnotations(getCrowdsourcingAnnotationsReference(page));

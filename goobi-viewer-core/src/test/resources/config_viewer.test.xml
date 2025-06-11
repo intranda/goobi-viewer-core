@@ -163,6 +163,9 @@
 		<!-- If true, all HTTP responses will contain attributes preventing proxies 
 			etc. from caching contents. Default is false. -->
 		<preventProxyCaching>true</preventProxyCaching>
+        
+        <!-- databaseConnectionAttempts: Number of times JPADAO will attempt to establish a connection before failing. -->
+        <databaseConnectionAttempts>3</databaseConnectionAttempts>
 	</performance>
 
     <accessConditions>
@@ -432,7 +435,7 @@
             </static>
 		</sorting>
 		<facets>
-			<field type="hierarchical" initialElementNumber=" 4" priorityValues="collection2;collection1">DC</field>
+			<field type="hierarchical" initialElementNumber=" 4" priorityValues="collection2;collection1" descriptionKey="facet_description_dc">DC</field>
 			<field type="range" minValue="-1000" maxValue="2050" labelField="MD_FIELDLABEL" sortOrder="numerical"
                 translateLabels="false" style="graph">YEAR</field>
 			<field type="hierarchical" labelField="MD_FIRSTNAME" sortOrder="alphabetical" translateLabels="false">MD_CREATOR</field>

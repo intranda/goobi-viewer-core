@@ -39,7 +39,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.managedbeans.PersistentStorageBean;
+import io.goobi.viewer.managedbeans.storage.ApplicationBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 
@@ -61,7 +61,7 @@ public class Application extends ResourceConfig {
      */
     public Application(@Context ServletConfig servletConfig) {
         super();
-        PersistentStorageBean applicationBean = (PersistentStorageBean) BeanUtils.getBeanByName("applicationBean", PersistentStorageBean.class);
+        ApplicationBean applicationBean = (ApplicationBean) BeanUtils.getBeanByName("applicationBean", ApplicationBean.class);
 
         AbstractBinder binder = new AbstractBinder() {
 

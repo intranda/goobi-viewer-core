@@ -16,21 +16,26 @@
 
     <composite:implementation>
         
-            <div rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks and displayConditions.getTag('widgetCitation').getChildCount('widget-element') > 0}"
-            jsf:id="widgetCitation" class="widget widget-citation">
-
-	            <div class="widget-citation__topbar widget__topbar">
-	                <!-- WIDGET TITLE -->
-					<h2
-						tabindex="0"
-						role="button"
-						class="widget__title widget-citation__title #{cc.attrs.collapsible ? 'collapseable' : ''}">
-	                    <span>#{msg.widget_citation}</span>
-	                    <div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
+            <div 
+            	rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks and displayConditions.getTag('widgetCitation').getChildCount('widget-element') > 0}"
+            	jsf:id="widgetCitation" 
+            	class="widget widget-citation"
+            >
+	            <div 
+	            	tabindex="0"
+					role="button"
+	            	class="widget__topbar widget-citation__topbar #{cc.attrs.collapsible ? 'collapseable' : ''}"
+	            >
+					<h2 class="widget__title widget-citation__title">
+	                    #{msg.widget_citation}
+	                </h2>
+					
+	                <div class="widget__topbar__icons-container">
+	                	<div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
 							<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
 						</div>
 	                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-	                </h2>
+	                </div>
 				</div>
 
                 <!-- WIDGET BODY -->

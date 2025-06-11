@@ -31,7 +31,6 @@ import io.goobi.viewer.model.cms.pages.content.types.CMSBrowseContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSDocumentContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSGeomapContent;
-import io.goobi.viewer.model.cms.pages.content.types.CMSGlossaryContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSImageListContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSMediaContent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSMediumTextContent;
@@ -289,8 +288,6 @@ public class CMSContentItemTemplate implements Comparable<CMSContentItemTemplate
                 return new CMSRSSContent();
             case "SEARCH":
                 return new CMSSearchContent();
-            case "GLOSSARY":
-                return new CMSGlossaryContent();
             case "MEDIA":
                 if (StringUtils.isNotBlank(mediaFilter) && mediaFilter.toLowerCase().contains(".pdf")) {
                     return new CMSDocumentContent();

@@ -117,10 +117,14 @@ var viewerJS = ( function( viewer ) {
 			}
             
             if(miradorConfigPromise) {  
-                miradorConfigPromise       
+                miradorConfigPromise     
+                .then(elements => {
+                    return elements;
+                })
                 .then( elements => {            
 						      
                         this.miradorConfig = elements;
+                        console.log("init Mirador with ", this.miradorConfig);
                         this.mirador = Mirador.viewer(this.miradorConfig);
                 })
                 .then(() => translator.init(messageKeys))
@@ -227,6 +231,7 @@ var viewerJS = ( function( viewer ) {
     function _getMiradorConfigForManifestUrls(manifests, config) {
         var columns = Math.ceil(Math.sqrt(manifests.length));
         var rows = Math.ceil(manifests.length/columns);
+        console.log("create manifests ", manifests);
         var miradorConfig = { 
                 id: "miradorViewer",
                 manifests: manifests.map(man => {

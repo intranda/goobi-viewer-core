@@ -649,7 +649,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
                 // Find existing facet items that can be re-purposed for the existing facets
                 boolean skipQueryItem = false;
-                for (IFacetItem facetItem : facets.getActiveFacets()) {
+                for (IFacetItem facetItem : facets.getActiveFacetsCopy()) {
                     // logger.trace("checking facet item: {}", facetItem.getLink()); //NOSONAR Debug
                     if (!facetItem.getField().equals(queryItem.getField())) {
                         continue;
@@ -1772,7 +1772,8 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         Set<SearchQueryItem> populatedQueryItems = new HashSet<>();
-        for (IFacetItem facetItem : facets.getActiveFacets()) {
+        List<IFacetItem> facetsItems = new ArrayList<>(facets.getActiveFacets());
+        for (IFacetItem facetItem : facetsItems) {
             if (!facetItem.isHierarchial()) {
                 continue;
             }

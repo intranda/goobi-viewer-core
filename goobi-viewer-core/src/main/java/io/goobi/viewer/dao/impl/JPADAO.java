@@ -35,17 +35,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.persistence.exceptions.DatabaseException;
 
 import io.goobi.viewer.controller.AlphabetIterator;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.dao.IDAO;
@@ -61,6 +63,7 @@ import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.cms.CMSCategory;
 import io.goobi.viewer.model.cms.CMSNavigationItem;
+import io.goobi.viewer.model.cms.CMSProperty;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.HighlightData;
@@ -141,6 +144,8 @@ public class JPADAO implements IDAO {
     static final String MULTIKEY_SEPARATOR = "_";
     static final String KEY_FIELD_SEPARATOR = "-";
 
+    private static final long RETRY_DELAY_MS = 5000;
+
     /**
      * EntityManagerFactory for the persistence context. Only build once at application startup
      */
@@ -178,20 +183,47 @@ public class JPADAO implements IDAO {
             persistenceUnitName = DEFAULT_PERSISTENCE_UNIT_NAME;
         }
         logger.info("Using persistence unit: {}", persistenceUnitName);
+        // Create EntityManagerFactory in a custom class loader
+        final Thread currentThread = Thread.currentThread();
+        final ClassLoader saveClassLoader = currentThread.getContextClassLoader();
+        currentThread.setContextClassLoader(new JPAClassLoader(saveClassLoader));
+        factory = Persistence.createEntityManagerFactory(persistenceUnitName);
+        currentThread.setContextClassLoader(saveClassLoader);
+
+        int attempts = DataManager.getInstance().getConfiguration().getDatabaseConnectionAttempts() - 1;
+        boolean success = init();
+        while (!success) {
+            if (attempts > 0) {
+                logger.warn("Could not connect to database, retrying {} more times...", attempts);
+                attempts--;
+                try {
+                    TimeUnit.MILLISECONDS.sleep(RETRY_DELAY_MS);
+                } catch (InterruptedException e) {
+                    logger.error(e.getMessage(), e);
+                    Thread.currentThread().interrupt();
+                }
+                success = init();
+            } else {
+                throw new DAOException("DB connection failed.");
+            }
+        }
+    }
+
+    /**
+     * @throws DAOException
+     * 
+     */
+    private boolean init() throws DAOException {
         try {
-            // Create EntityManagerFactory in a custom class loader
-            final Thread currentThread = Thread.currentThread();
-            final ClassLoader saveClassLoader = currentThread.getContextClassLoader();
-            currentThread.setContextClassLoader(new JPAClassLoader(saveClassLoader));
-            factory = Persistence.createEntityManagerFactory(persistenceUnitName);
-            currentThread.setContextClassLoader(saveClassLoader);
             //Needs to be called for unit tests
             factory.createEntityManager();
             preQuery();
-        } catch (DatabaseException | PersistenceException e) {
-            logger.error(e.getMessage(), e);
-            throw new DAOException(e.getMessage());
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
         }
+
+        return false;
     }
 
     /**
@@ -3028,6 +3060,13 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
+    @SuppressWarnings("unchecked")
+    public List<String> getCMSPageAccessConditions() throws DAOException {
+        return getNativeQueryResults("SELECT property_value FROM cms_properties WHERE property_key = '" + CMSProperty.KEY_ACCESS_CONDITION + "'");
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public CMSPage getCMSPage(long id) throws DAOException {
         synchronized (cmsRequestLock) {
             logger.trace("getCMSPage: {}", id);
@@ -4090,6 +4129,41 @@ public class JPADAO implements IDAO {
             params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
 
             return (long) q.getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getCMSPageCountByPropertyValue(String propertyName, String propertyValue) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT COUNT(DISTINCT a) FROM CMSPage a JOIN a.properties p WHERE p.key = :key AND p.value = :value";
+            return (long) em.createQuery(query)
+                    .setParameter("key", propertyName)
+                    .setParameter("value", propertyValue)
+                    .setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH)
+                    .getSingleResult();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<CMSPage> getCMSPagesByPropertyValue(String propertyName, String propertyValue) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            String query = "SELECT a FROM CMSPage a JOIN a.properties p WHERE p.key = :key AND p.value = :value";
+            return em.createQuery(query)
+                    .setParameter("key", propertyName)
+                    .setParameter("value", propertyValue)
+                    .setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH)
+                    .getResultList();
         } finally {
             close(em);
         }
@@ -6557,8 +6631,8 @@ public class JPADAO implements IDAO {
         try {
             Query q = em.createQuery("SELECT s FROM DailySessionUsageStatistics s WHERE s.date = :date");
             q.setParameter("date", date);
-            return (DailySessionUsageStatistics) q.getSingleResult();
-        } catch (NoResultException e) {
+            return (DailySessionUsageStatistics) q.getResultList().getFirst();
+        } catch (NoSuchElementException | NoResultException e) {
             return null;
         } finally {
             close(em);
@@ -7077,7 +7151,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<HighlightData> getPastHighlightsForDate(int first, int pageSize, String sortField, boolean descending,
             Map<String, String> filters, LocalDateTime date) throws DAOException {
-        return getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date > a.dateEnd", Map.of("date", date));
+        return getEntities(HighlightData.class, first, pageSize, sortField, descending, filters, ":date >= a.dateEnd", Map.of("date", date));
     }
 
     @Override

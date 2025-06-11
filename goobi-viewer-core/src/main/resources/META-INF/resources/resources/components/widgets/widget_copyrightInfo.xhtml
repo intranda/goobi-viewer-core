@@ -17,7 +17,7 @@
 
 		<h:panelGroup rendered="#{configurationBean.copyrightIndicatorEnabled}"
 			layout="block" id="copyrightIndicator"
-			styleClass="widget-copyright-info widget"
+			styleClass="widget widget-copyright-info"
 			pt:data-target="triggerCopyrightInfo"
 			pt:aria-label="#{msg.copyright__information}" pt:tabindex="0"
 			pt:role="button"
@@ -25,14 +25,13 @@
 			pt:data-placement="top"
 			pt:title="#{msg.copyright__toggle_tooltip}">
 
-			<div class="widget-copyright-info__inner widget__body">
-
-				<div class="widget-copyright-info__container
-									#{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'OPEN' ? '-green' : ''}
-									#{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'PARTIAL' ? '-yellow' : ''}
-									#{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'LOCKED' ? '-red' : ''}">
-	
-	
+			<div class="widget__body widget-copyright-info__body">
+				<div 
+					class="widget-copyright-info__container
+					#{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'OPEN' ? '-green' : ''}
+					#{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'PARTIAL' ? '-yellow' : ''}
+					#{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'LOCKED' ? '-red' : ''}"
+				>
 					<div class="widget-copyright-info__lock">
 						<div class="widget-copyright-info__dot">
 							<!-- PSEUDO FA ELEMENT GETS REPLACED DEPENDING ON GREEN/YELLOW/RED STATE -->
@@ -79,7 +78,6 @@
 										value="#{msg.copyright__information_unclear}" />
 								</div>
 								
-	
 							</div>
 						</div>
 					</ui:fragment>

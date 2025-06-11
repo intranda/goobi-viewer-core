@@ -127,7 +127,7 @@ var cmsJS = ( function( cms ) {
             		$( this ).toggleClass( 'in' );
                 	$( this ).parent().find( '.cms-menu__available-items-toggle' ).slideToggle( 'fast', function() {
                 		// focus first input if available
-                		$( '.cms-menu__available-items-toggle .cms-module__option-group' ).first().find( '.form-control' ).focus();
+//                		$( '.cms-menu__available-items-toggle .cms-module__option-group' ).first().find( '.form-control' ).focus();
                 	} );
             	}
             	else {

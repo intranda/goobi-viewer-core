@@ -10,13 +10,17 @@
     <composite:implementation>
         <h:panelGroup rendered="#{activeDocumentBean.viewManager.hasVersionHistory and fn:length(activeDocumentBean.viewManager.versionHistory) > 1}">
             <div id="widgetVersionHistory" class="widget widget-version-history">
-                <h2 >#{msg.versionHistory}:</h2>
-
-                <ul>
-                    <ui:repeat var="version" value="#{activeDocumentBean.viewManager.versionHistory}">
-                        <input type="hidden" value="#{version}" />
-                    </ui:repeat>
-                </ul>
+            	<div class="widget__topbar widget-version-history__topbar">
+            		<h2 class="widget__title widget-version-history__title">#{msg.versionHistory}:</h2>
+            	</div>
+                
+                <div class="widget__body widget-version-history__body">
+	                <ul>
+	                    <ui:repeat var="version" value="#{activeDocumentBean.viewManager.versionHistory}">
+	                        <input type="hidden" value="#{version}" />
+	                    </ui:repeat>
+	                </ul>
+                </div>   
             </div>
 
             <script type="text/javascript">

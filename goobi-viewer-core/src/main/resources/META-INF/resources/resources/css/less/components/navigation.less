@@ -6,27 +6,22 @@
 /* BLOCK */
 .navigation {
     position: relative;
-    &:before, &:after {
-        display: table;
-        content: " ";
-    }
-    &:after {
-        clear: both;
-    }
-    ul {
-        float: left;
-        &:before, &:after {
-            display: table;
-            content: " ";
-        }
-        &:after {
-            clear: both;
-        }
-    }
+	&__list {
+		display: flex;
+		flex-direction: column;
+		&.-level-0 {
+			flex-direction: row;
+		}
+		&.-level-1 {}
+		&.-level-2 {}
+		&.-level-3 {}
+		&.-level-4 {}
+		&.-level-5 {}
+	}
+    ul {}
     li {
         display: block;
         position: relative;
-        float: left;
         &.active > a,
         &.active > button {
             background-color: @lightgray;
@@ -55,7 +50,6 @@
     &__submenu {
         display: none;
         position: absolute;
-        float: left;
         top: calc(~"100% + 1px");
         left: 0;
         min-width: 250px;
@@ -63,7 +57,6 @@
         background-color: @white;
         z-index: 999;
         ul {
-            float: none;
         }
         li {
             display: block;
@@ -121,15 +114,8 @@
     }
     &__megamenu-element {
         position: relative;
-        &:before, &:after {
-            display: table;
-            content: " ";
-        }
-        &:after {
-            clear: both;
-        }
         ul {
-            float: none;
+
         }
         &.level-1 {}
         &.level-2 {
@@ -137,7 +123,6 @@
         }
     }
     &__megamenu-heading {
-        float: left;
         width: 25%;
         padding: 0 15px;
         font-weight: bold;
@@ -182,6 +167,18 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
+	.navigation {
+		&__list {
+			&.-level-0 { 
+				flex-direction: column;
+			}
+			&.-level-1 {}
+			&.-level-2 {}
+			&.-level-3 {}
+			&.-level-4 {}
+			&.-level-5 {}
+		}
+	}
 	@{RTL} .navigation {
 		.caret {
 			margin-left: unset;

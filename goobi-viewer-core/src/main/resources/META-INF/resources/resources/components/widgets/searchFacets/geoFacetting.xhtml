@@ -17,10 +17,8 @@
         <ui:fragment rendered="#{searchBean.showGeoFacetMap}">
         <h:form>
 	        <div class="widget widget-geofacetting">
-				<div class="widget-geofacetting__topbar">
-					<div class="widget-geofacetting__item widget-geofacetting__label">
-						<h2>#{msg.widget_geofacetting__label}</h2>
-					</div>
+				<div class="widget__topbar widget-geofacetting__topbar">
+					<h2 class="widget__title widget-geofacetting__title">#{msg.widget_geofacetting__label}</h2> 
 					<div class="widget-geofacetting__item widget-geofacetting__actions">
 			            <button type="button" id="toggleMarkers" data-toggle="tooltip" data-geofacet="toggleMarkers" title="#{msg.action__toggle_map_markers}" class="widget-geofacetting__action-toggle-markers" aria-label="#{msg.action__toggle_map_markers}">
 			            	<i class="fa fa-map-marker"/>
@@ -32,39 +30,35 @@
 				</div>
 				<div class="widget__body widget-geofacetting__body">
 					<div id="geoFacettingMap" class="geo-map">
-            <!-- OVERLAY ON HOVER -->
-            <div id="expandFacetMap" class="widget-geofacetting__action-overlay">
-              <button type="button" class="widget-geofacetting__action-expand" aria-label="#{msg.widget_geofacetting__area_facetting}">
-                <div class="widget-geofacetting__action-expand-hint">#{msg.widget_geofacetting__area_facetting}</div>
-              </button>
-            </div>
+			            <!-- OVERLAY ON HOVER -->
+			            <div id="expandFacetMap" class="widget-geofacetting__action-overlay">
+			              <button type="button" class="widget-geofacetting__action-expand" aria-label="#{msg.widget_geofacetting__area_facetting}">
+			                <div class="widget-geofacetting__action-expand-hint">#{msg.widget_geofacetting__area_facetting}</div>
+			              </button>
+			            </div>
 					</div>
-
 				</div>
-					<h:commandButton id="submitGeoFacet" type="submit" styleClass="d-none" action="#{search.searchSimple}" value="#{msg.search}">
-                    	<f:setPropertyActionListener target="#{search.activeSearchType}" value="0" />
-                    	<f:passThroughAttribute name="data-geofacet" value="execute"/>
-                	</h:commandButton>
-					<h:inputHidden id="searchInput" value="#{searchBean.facets.geoFacetFeature}">
-		        		<f:passThroughAttribute name="data-geofacet" value="feature"/>
-		        	</h:inputHidden>
-		        	
+				<h:commandButton id="submitGeoFacet" type="submit" styleClass="d-none" action="#{search.searchSimple}" value="#{msg.search}">
+                   	<f:setPropertyActionListener target="#{search.activeSearchType}" value="0" />
+                   	<f:passThroughAttribute name="data-geofacet" value="execute"/>
+               	</h:commandButton>
+				<h:inputHidden id="searchInput" value="#{searchBean.facets.geoFacetFeature}">
+	        		<f:passThroughAttribute name="data-geofacet" value="feature"/>
+	        	</h:inputHidden>
 				<div id="widgetGeoFacettingOverlay" class="widget-geofacetting__overlay">
-				<div data-loader="geoFacet" class="ajax_loader widget-geofacetting__loader-wrapper">
-					<img src="#{request.contextPath}/resources/images/infinity_loader.svg" class="img-responsive widget-geofacetting__loader-animated-image" alt="Waiting..." />
-					<div class="modal-backdrop show"></div>
+					<div data-loader="geoFacet" class="ajax_loader widget-geofacetting__loader-wrapper">
+						<img src="#{request.contextPath}/resources/images/infinity_loader.svg" class="img-responsive widget-geofacetting__loader-animated-image" alt="Waiting..." />
+						<div class="modal-backdrop show"></div>
+					</div>
+					<div class="widget-geofacetting__overlay-buttons-wrapper">
+						<button  type="button" data-geofacet="toggleMarkersFullscreen" data-placement="right" data-toggle="tooltip" title="#{msg.action__toggle_map_markers}" class="btn btn--icon geo-map__toggle-markers" aria-label="#{msg.action__toggle_map_markers}">
+	           				<i class="fa fa-map-marker"/>
+	        			</button>
+						<button class="btn btn--default widget-geofacetting__overlay-reset-search" data-geofacet="cancel">#{msg.cancel}</button>
+						<button class="btn btn--full widget-geofacetting__overlay-submit-search" data-geofacet="trigger-execute">#{msg.widget_geofacetting__area_facetting}</button>
+					</div>	
+			        <div id="geoFacettingOverlayMap" class="overlay__geomap"></div>
 				</div>
-				<div class="widget-geofacetting__overlay-buttons-wrapper">
-					<button  type="button" data-geofacet="toggleMarkersFullscreen" data-placement="right" data-toggle="tooltip" title="#{msg.action__toggle_map_markers}" class="btn btn--icon geo-map__toggle-markers" aria-label="#{msg.action__toggle_map_markers}">
-           				<i class="fa fa-map-marker"/>
-        			</button>
-					<button class="btn btn--default widget-geofacetting__overlay-reset-search" data-geofacet="cancel">#{msg.cancel}</button>
-					<button class="btn btn--full widget-geofacetting__overlay-submit-search" data-geofacet="trigger-execute">#{msg.widget_geofacetting__area_facetting}</button>
-				</div>	
-		        	<div id="geoFacettingOverlayMap" class="overlay__geomap">
-		        	</div>
-				</div>
-	
 			</div>
 	          <script type="text/javascript">	
 					$(document).ready(e => {	
