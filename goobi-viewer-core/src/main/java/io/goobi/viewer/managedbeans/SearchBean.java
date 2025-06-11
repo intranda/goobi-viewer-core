@@ -853,6 +853,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
+    @Deprecated(since = "25.05")
     public void hitsPerPageListener()
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("hitsPerPageListener");
@@ -981,6 +982,11 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         currentSearch.execute(facets, searchTerms, hitsPerPage, navigationHelper.getLocale());
+        
+        // Make sure the current page isn't higher than the number of pages (e.g. when changing the number of hits per page)
+        if (currentPage > getLastPage()) {
+            setCurrentPage(getLastPage());
+        }
     }
 
     /**
@@ -1884,11 +1890,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public void setCurrentPage(int currentPage) {
         logger.trace("setCurrentPage: {}", currentPage);
-        this.currentPage = currentPage;
-        if (currentPage <= 0) {
-            this.currentPage = 1;
-            logger.debug("currentPage set to 1");
-        }
+        this.currentPage = currentPage > 1 ? currentPage : 1;
     }
 
     /** {@inheritDoc} */
