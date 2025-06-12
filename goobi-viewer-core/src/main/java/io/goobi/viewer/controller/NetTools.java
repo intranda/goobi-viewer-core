@@ -566,7 +566,7 @@ public final class NetTools {
         }
 
         // logger.trace("Pre-parsed IP address(es): {}", address); //NOSONAR Debug
-        return parseMultipleIpAddresses(address);
+        return parseMultipleIpAddresses(address); //NOSONAR address cannot be null here
     }
 
     /**

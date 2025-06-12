@@ -14,14 +14,7 @@
 		max-width: calc(~"100% - 36px");
 		word-wrap: anywhere;
 	}
-
 	&__body {
-		// padding: 0;
-		
-		ul {
-			// padding: 1rem 1.5rem;
-		}
-		
 		li {
 			&.active {
 				margin-bottom: 3px;
@@ -46,11 +39,20 @@
 			}
 		}
 		a {
-//			display: block;
-//			padding: 3px 5px;
 		}
 	}
-	
+	&__list {
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+	}
+	&__list-item {
+		padding: 0;
+		padding-inline-end: 5px;
+	}
+	&__list-item-link {
+		
+	}
 	/* FILTER */
 	&__filter {
 		position: absolute;
