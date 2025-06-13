@@ -50,6 +50,7 @@
 					<dl jsf:id="sidebarMetadataList-#{status.index}">
 						<c:forEach items="#{metadataElement.sidebarMetadataList}"
 							var="metadata">
+							<div class="widget-metadata__key-value-group">
 							<dt title="#{metadata.label}">
 								<h:outputText value="#{msg[metadata.label]}:" escape="false" />
 							</dt>
@@ -124,16 +125,16 @@
 
 							<!-- Non-grouped metadata -->
 							<h:panelGroup rendered="#{!metadata.group}">
-								<dd>
 									<ui:repeat value="#{metadata.values}" var="val">
-										<h:outputFormat
-											value="#{val.getDisplayValue(navigationHelper.locale)}"
-											escape="false">
-										</h:outputFormat>
-										<br />
+										<dd class="widget-metadata__non-grouped-metadata-dd">
+											<h:outputFormat
+												value="#{val.getDisplayValue(navigationHelper.locale)}"
+												escape="false">
+											</h:outputFormat>
+										</dd>
 									</ui:repeat>
-								</dd>
 							</h:panelGroup>
+							</div>
 						</c:forEach>
 					</dl>
 				</c:forEach>
