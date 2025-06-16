@@ -182,6 +182,7 @@ public final class AccessConditionUtils {
             case "ogg":
             case "ogv":
             case "flv":
+            case "wav":
                 sbQuery.append(" +").append(useFileField).append(':');
                 // Escape whitespaces etc. for wildcard searches
                 sbQuery.append(ClientUtils.escapeQueryChars(baseFileName)).append(".*");
