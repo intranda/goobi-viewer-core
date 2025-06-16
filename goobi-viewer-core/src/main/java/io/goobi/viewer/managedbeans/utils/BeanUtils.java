@@ -718,6 +718,8 @@ public final class BeanUtils {
 
     /**
      * Removes the user and permission attributes from the session.
+     * 
+     * @param request {@link HttpServletRequest}
      */
     public static void wipeSessionAttributes(HttpServletRequest request) {
         logger.trace("wipeSession");
