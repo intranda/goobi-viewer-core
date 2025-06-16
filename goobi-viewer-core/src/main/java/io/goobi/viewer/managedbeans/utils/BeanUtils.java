@@ -26,21 +26,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import jakarta.el.ELException;
-import jakarta.el.ValueExpression;
-import jakarta.enterprise.context.ContextNotActiveException;
-import jakarta.enterprise.context.spi.CreationalContext;
-import jakarta.enterprise.inject.spi.Bean;
-import jakarta.enterprise.inject.spi.BeanManager;
-import jakarta.enterprise.inject.spi.CDI;
-import jakarta.faces.application.Application;
-import jakarta.faces.context.FacesContext;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -61,6 +48,7 @@ import io.goobi.viewer.managedbeans.CmsMediaBean;
 import io.goobi.viewer.managedbeans.CollectionViewBean;
 import io.goobi.viewer.managedbeans.ContentBean;
 import io.goobi.viewer.managedbeans.CreateRecordBean;
+import io.goobi.viewer.managedbeans.DisplayConditions;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.MetadataBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
@@ -69,8 +57,22 @@ import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.storage.ApplicationBean;
 import io.goobi.viewer.managedbeans.storage.SessionBean;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import jakarta.el.ELException;
+import jakarta.el.ValueExpression;
+import jakarta.enterprise.context.ContextNotActiveException;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.Bean;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.faces.application.Application;
+import jakarta.faces.context.FacesContext;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Utility class for methods that use the FacesContext.
@@ -714,4 +716,44 @@ public final class BeanUtils {
         return value;
     }
 
+    /**
+     * Removes the user and permission attributes from the session.
+     * 
+     * @param request {@link HttpServletRequest}
+     */
+    public static void wipeSessionAttributes(HttpServletRequest request) {
+        logger.trace("wipeSession");
+        if (request == null) {
+            return;
+        }
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return;
+        }
+        session.removeAttribute("user");
+
+        // Remove priv maps
+        AccessConditionUtils.clearSessionPermissions(session);
+
+        getBeanFromRequest(request, "sessionBean", SessionBean.class)
+                .ifPresentOrElse(SessionBean::cleanObjects,
+                        () -> logger.trace("Cannot invalidate SessionBean. Not instantiated yet?"));
+        getBeanFromRequest(request, "collectionViewBean", CollectionViewBean.class)
+                .ifPresentOrElse(CollectionViewBean::invalidate,
+                        () -> logger.trace("Cannot invalidate CollectionViewBean. Not instantiated yet?"));
+        getBeanFromRequest(request, "activeDocumentBean", ActiveDocumentBean.class)
+                .ifPresentOrElse(ActiveDocumentBean::resetAccess,
+                        () -> logger.trace("Cannot reset access permissions in ActiveDocumentBean. Not instantiated yet?"));
+        getBeanFromRequest(request, "displayConditions", DisplayConditions.class)
+                .ifPresentOrElse(DisplayConditions::clearCache,
+                        () -> logger.trace("Cannot clear DosplayConditions cache. Not instantiated yet?"));
+        // Reset loaded user-generated content lists
+        getBeanFromRequest(request, "contentBean", ContentBean.class)
+                .ifPresentOrElse(ContentBean::resetContentList,
+                        () -> logger.trace("Cannot reset content list. Not instantiated yet?"));
+        // Reset visible navigation menu
+        getBeanFromRequest(request, "cmsBean", CmsBean.class)
+                .ifPresentOrElse(CmsBean::resetNavigationMenuItems,
+                        () -> logger.trace("Cannot reset navigation menu items. Not instantiated yet?"));
+    }
 }
