@@ -1007,35 +1007,89 @@
                 <thumbs enabled="false" />
                 <toc enabled="false" />
             </widget>
-            <widget name="search-in-current-item" enabled="false" onlyIfFullTextAvailable="true" />
-            <!-- bisher <copyrightIndicator... -->
-            <widget name="copyright-info">
-                <status field="ACCESSCONDITION">
-                    <value content="OPENACCESS" status="OPEN" description="COPYRIGHT_DESCRIPTION_STATUS_OPEN" />
+            <!-- additional-files: Download widget within a records view for additional files from the source directory. -->
+            <widget name="additional-files" enabled="true">
+                <!-- hideFileRegex: If a regular expression is defined, files matching it are hidden from the widget display. The download is still possible. -->
+                <filter action="hide" regex="(wug_.*|AK_.*)"/>
+                <filter action="show" regex="{struct.MD_SHELFMARK}">
+                    <conditions>
+                        <filter action="show" regex="archive\.100uaghgw\.020volksliedarchiv.*" value="{record.DC}"/>
+                    </conditions>
+                </filter>
+            </widget>
+            <!-- browsing-terms: Term browsing widget. -->
+            <widget name="browsing-terms" enabled="false" />
+            <widget name="citation" enabled="false">
+                <citationRecommendation enabled="false">
+                <!-- Available citation styles (supported by citeproc) -->
+                <styles>
+                    <style>modern-language-association</style>
+                    <style>apa</style>
+                    <style>harvard</style>
+                </styles>
+                <!-- Metadata source mapping for citations. Please refer to the citeproc documentation for available "dest" values. -->
+                    <source>
+                        <metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
+                            <param type="field" key="LABEL" />
+                            <param type="translatedfield" key="ACCESSCONDITION" />
+                        </metadata>
+                        <csltypes>
+                            <csltype docstrct="other_monograph">book</csltype>
+                            <csltype docstrct="other_manuscript">manuscript</csltype>
+                        </csltypes>
+                    </source>
+                </citationRecommendation>
+                <citationLinks enabled="false" docstructIntroText="docstruct intro text" imageIntroText="image intro text">
+                    <!-- links: Citation link configurations. -->
+                    <links>
+                        <link type="URL" for="record" label="LABEL_URN" field="URN" pattern="https://nbn-resolving.org/{value}/" topstructValueFallback="true"  />
+                        <link type="INTERNAL" for="docstruct" label="LABEL_VIEWER_PURL" />
+                        <link type="INTERNAL" for="image" label="LABEL_VIEWER_PURL" />
+                        <link type="URL" for="image"  label="LINK" field="MD_LINK" pattern="https://nbn-resolving.org/{value}/fragment/page={page}" topstructValueFallback="true" />
+                    </links>
+                </citationLinks>
+            </widget>
+            <!-- copyright-info: copyright status of the current record will be visualized with colors and icons. -->
+            <widget name="copyright-info" enabled="true" style="trafficlight">
+                <status field="MD_ACCESSCONDITION">
+                    <value content="Freier Zugang" status="OPEN" description="COPYRIGHT_STATUS_OPEN" />
+                    <value content="Eingeschränker Zugang" status="PARTIAL" description="COPYRIGHT_STATUS_PARTIAL" />
+                    <value content="Gesperrter Zugang" status="LOCKED" description="COPYRIGHT_STATUS_LOCKED" />
                 </status>
+                <license field="MD_ACCESSCONDITIONCOPYRIGHT">
+                    <value content="https://creativecommons..." description="COPYRIGHT_DESCRIPTION_CC0">
+                        <!-- icon: one or more icons are allowed per value -->
+                        <icon>cc0.svg</icon>
+                    </value>
+                    <value content="VGWORT" description="COPYRIGHT_DESCRIPTION_VGWORT">
+                        <icon>paragraph50.svg</icon>
+                    </value>
+                </license>
             </widget>
             <widget name="metadata" enabled="false" />
+            <widget name="opac" enabled="true" />
             <widget name="rss" enabled="false" />
-            <widget name="toc" enabled="false" />
+            <widget name="search-in-current-item" enabled="false" onlyIfFullTextAvailable="true" />
+            <widget name="toc" enabled="false">
+                <!-- visibleInFullscreen: If false, the sidebar TOC element won't be visible in the full-screen sidebar accordion -->
+                <visibleInFullscreen>false</visibleInFullscreen>
+
+                <!-- pageNumbersVisible: if false, page numbers in the sidebar TOC are hidden (default is false) -->
+                <pageNumbersVisible>true</pageNumbersVisible>
+
+                <!-- lengthBeforeCut: defines the number of characters until the string is cut and a "more" link is shown -->
+                <lengthBeforeCut>21</lengthBeforeCut>
+
+                <!-- display as interactive tree view -->
+                <useTreeView>false</useTreeView>
+
+                <!-- level for initial collapse -->
+                <initialCollapseLevel>22</initialCollapseLevel>
+
+                <!-- max length of level before it gets collapsed -->
+                <collapseLengthThreshold lowestLevelToTest="333">141</collapseLengthThreshold>
+            </widget>
         </widgets>
-    
-	
-		<!-- sidebarWidgetAdditionalFiles/@enabled: If true, the download widget within a records 
-			view for additional files from the source directory is displayed. Default 
-			is true. -->
-		<sidebarWidgetAdditionalFiles enabled="true">
-			<!-- hideFileRegex: If a regular expression is defined, files matching 
-				it are hidden from the widget display. The download is still possible. -->
-	    	<filter action="hide" regex="(wug_.*|AK_.*)"/>
-	    	<filter action="show" regex="{struct.MD_SHELFMARK}">
-	    		<conditions>
-	    			<filter action="show" regex="archive\.100uaghgw\.020volksliedarchiv.*" value="{record.DC}"/>
-	    		</conditions>
-	    	</filter>
-		</sidebarWidgetAdditionalFiles>
-	
-	    <!-- @enabled: If true, the sidebar term browsing widget it displayed. Default is true. -->
-        <sidebarBrowsingTerms enabled="false" />
         
         <!-- @enabled: Show or hide the widget including download links for record and page while viewing the object -->
         <sidebarWidgetUsage enabled="false">
@@ -1056,83 +1110,7 @@
                     <option label="label__download_option_large_4096" format="jpg" boxSizeInPixel="4096" />
                 </downloadOptions>
             </page>
-            <citationRecommendation enabled="false">
-                <!-- Available citation styles (supported by citeproc) -->
-                <styles>
-                    <style>modern-language-association</style>
-                    <style>apa</style>
-                    <style>harvard</style>
-                </styles>
-                <!-- Metadata source mapping for citations. Please refer to the citeproc documentation for available "dest" values. -->
-                <source>
-                    <metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
-                        <param type="field" key="LABEL" />
-                        <param type="translatedfield" key="ACCESSCONDITION" />
-                    </metadata>
-                    <csltypes>
-                        <csltype docstrct="other_monograph">book</csltype>
-                        <csltype docstrct="other_manuscript">manuscript</csltype>
-                    </csltypes>
-                </source>
-            </citationRecommendation>
-            <citationLinks enabled="false" docstructIntroText="docstruct intro text" imageIntroText="image intro text">
-                <!-- links: Citation link configurations. -->
-                <links>
-                    <link type="URL" for="record" label="LABEL_URN" field="URN" pattern="https://nbn-resolving.org/{value}/" topstructValueFallback="true"  />
-                    <link type="INTERNAL" for="docstruct" label="LABEL_VIEWER_PURL" />
-                    <link type="INTERNAL" for="image" label="LABEL_VIEWER_PURL" />
-                    <link type="URL" for="image"  label="LINK" field="MD_LINK" pattern="https://nbn-resolving.org/{value}/fragment/page={page}" topstructValueFallback="true" />
-                    
-                </links>
-            </citationLinks>
         </sidebarWidgetUsage>
-
-		<!-- sidebarToc: configuration of the sidebar TOC component -->
-        <!-- @enabled: if false, the sidebar toc is hidden -->
-		<sidebarToc enabled="false">
-			<!-- visibleInFullscreen: If false, the sidebar TOC element won't be visible in the full-screen sidebar accordion -->
-            <visibleInFullscreen>false</visibleInFullscreen>
-
-			<!-- pageNumbersVisible: if false, page numbers in the sidebar toc are 
-				hidden (default is false) -->
-			<pageNumbersVisible>true</pageNumbersVisible>
-
-			<!-- lengthBeforeCut: defines the number of characters until the string 
-				is cut and a "more" link is shown -->
-			<lengthBeforeCut>21</lengthBeforeCut>
-
-			<!-- display as interactive tree view -->
-			<useTreeView>false</useTreeView>
-
-			<!-- level for initial collapse -->
-			<initialCollapseLevel>22</initialCollapseLevel>
-
-			<!-- max length of level before it gets collapsed -->
-			<collapseLengthThreshold lowestLevelToTest="333">141
-			</collapseLengthThreshold>
-		</sidebarToc>
-		
-        <!-- @enabled: If true, the OPAC link from the current record will be displayed. Default is false. -->
-        <opac enabled="true" />
-        
-        <!-- copyrightIndicator/@enabled: If true, copyright status of the current record will be visualized with colors and icons. Default is false. -->
-        <copyrightIndicator enabled="true" style="trafficlight">
-            <status field="MD_ACCESSCONDITION">
-                <value content="Freier Zugang" status="OPEN" description="COPYRIGHT_STATUS_OPEN" />
-                <value content="Eingeschränker Zugang" status="PARTIAL" description="COPYRIGHT_STATUS_PARTIAL" />
-                <value content="Gesperrter Zugang" status="LOCKED" description="COPYRIGHT_STATUS_LOCKED" />
-            </status>
-
-            <license field="MD_ACCESSCONDITIONCOPYRIGHT">
-                <value content="https://creativecommons..." description="COPYRIGHT_DESCRIPTION_CC0">
-                    <!-- icon: one or more icons are allowed per value -->
-                    <icon>cc0.svg</icon>
-                </value>
-                <value content="VGWORT" description="COPYRIGHT_DESCRIPTION_VGWORT">
-                    <icon>paragraph50.svg</icon>
-                </value>
-            </license>
-        </copyrightIndicator>
         
 	</sidebar>
 

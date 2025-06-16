@@ -938,19 +938,24 @@ public class Configuration extends AbstractConfiguration {
      * @return a regex or an empty string if no downloads should be hidden
      */
     public List<IFilterConfiguration> getAdditionalFilesDisplayFilters() {
-        return this.getLocalConfigurationsAt("sidebar.sidebarWidgetAdditionalFiles.filter")
-                .stream()
-                .map(conf -> {
-                    try {
-                        return IFilterConfiguration.fromConfiguration(conf);
-                    } catch (ConfigurationException e) {
-                        logger.error("Error reading configuration for additionalFilesDisplayFilters ", e);
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-        //        return getLocalString("sidebar.sidebarWidgetAdditionalFiles.hideFileRegex", "");
+        HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("additional-files");
+        if (widgetConfig != null) {
+            return widgetConfig.configurationsAt("filter")
+                    .stream()
+                    .map(conf -> {
+                        try {
+                            return IFilterConfiguration.fromConfiguration(conf);
+                        } catch (ConfigurationException e) {
+                            logger.error("Error reading configuration for additionalFilesDisplayFilters ", e);
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .toList();
+        }
+
+        return Collections.emptyList();
+
     }
 
     /**
@@ -971,7 +976,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isDisplaySidebarWidgetUsageCitationRecommendation() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage.citationRecommendation[@enabled]", true);
+        return getSidebarWidgetBooleanValue("citation", "citationRecommendation[@enabled]", true);
     }
 
     /**
@@ -980,7 +985,15 @@ public class Configuration extends AbstractConfiguration {
      * @should return all configured values
      */
     public List<String> getSidebarWidgetUsageCitationRecommendationStyles() {
-        return getLocalList("sidebar.sidebarWidgetUsage.citationRecommendation.styles.style", new ArrayList<>());
+        List<String> ret = new ArrayList<>();
+        HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("citation");
+        if (widgetConfig != null) {
+            for (Object o : widgetConfig.getList("citationRecommendation.styles.style", new ArrayList<>())) {
+                ret.add((String) o);
+            }
+        }
+
+        return ret;
     }
 
     /**
@@ -1007,10 +1020,15 @@ public class Configuration extends AbstractConfiguration {
      * @should return all configured values
      */
     public Map<String, String> getSidebarWidgetUsageCitationRecommendationDocstructMapping() {
-        Map<String, String> ret = new HashMap<>();
-        this.getLocalConfigurationsAt("sidebar.sidebarWidgetUsage.citationRecommendation.source.csltypes.csltype")
-                .forEach(conf -> ret.put(conf.getString("[@docstrct]"), conf.getString(".")));
-        return ret;
+        HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("citation");
+        if (widgetConfig != null) {
+            Map<String, String> ret = new HashMap<>();
+            widgetConfig.configurationsAt("citationRecommendation.source.csltypes.csltype")
+                    .forEach(conf -> ret.put(conf.getString("[@docstrct]"), conf.getString(".")));
+            return ret;
+        }
+
+        return Collections.emptyMap();
     }
 
     /**
@@ -1019,7 +1037,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isDisplaySidebarWidgetUsageCitationLinks() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage.citationLinks[@enabled]", true);
+        return getSidebarWidgetBooleanValue("citation", "citationLinks[@enabled]", true);
     }
 
     /**
@@ -1028,26 +1046,29 @@ public class Configuration extends AbstractConfiguration {
      * @should return all configured values
      */
     public List<CitationLink> getSidebarWidgetUsageCitationLinks() {
-        List<HierarchicalConfiguration<ImmutableNode>> links = getLocalConfigurationsAt("sidebar.sidebarWidgetUsage.citationLinks.links.link");
-        if (links == null || links.isEmpty()) {
-            return new ArrayList<>();
-        }
-
         List<CitationLink> ret = new ArrayList<>();
-        for (HierarchicalConfiguration<ImmutableNode> sub : links) {
-            String type = sub.getString(XML_PATH_ATTRIBUTE_TYPE);
-            String level = sub.getString("[@for]");
-            String label = sub.getString(XML_PATH_ATTRIBUTE_LABEL);
-            String field = sub.getString("[@field]");
-            String pattern = sub.getString("[@pattern]");
-            String action = sub.getString("[@action]", "clipboard");
-            boolean topstructValueFallback = sub.getBoolean("[@topstructValueFallback]", false);
-            try {
-                ret.add(new CitationLink(type, level, action, label).setField(field)
-                        .setPattern(pattern)
-                        .setTopstructValueFallback(topstructValueFallback));
-            } catch (IllegalArgumentException e) {
-                logger.error(e.getMessage());
+        HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("citation");
+        if (widgetConfig != null) {
+            List<HierarchicalConfiguration<ImmutableNode>> links = widgetConfig.configurationsAt("citationLinks.links.link");
+            if (links == null || links.isEmpty()) {
+                return new ArrayList<>();
+            }
+
+            for (HierarchicalConfiguration<ImmutableNode> sub : links) {
+                String type = sub.getString(XML_PATH_ATTRIBUTE_TYPE);
+                String level = sub.getString("[@for]");
+                String label = sub.getString(XML_PATH_ATTRIBUTE_LABEL);
+                String field = sub.getString("[@field]");
+                String pattern = sub.getString("[@pattern]");
+                String action = sub.getString("[@action]", "clipboard");
+                boolean topstructValueFallback = sub.getBoolean("[@topstructValueFallback]", false);
+                try {
+                    ret.add(new CitationLink(type, level, action, label).setField(field)
+                            .setPattern(pattern)
+                            .setTopstructValueFallback(topstructValueFallback));
+                } catch (IllegalArgumentException e) {
+                    logger.error(e.getMessage());
+                }
             }
         }
 
@@ -2825,12 +2846,44 @@ public class Configuration extends AbstractConfiguration {
      * @param widgetName Widget name
      * @param valuePath Path to the wanted value
      * @param defaultValue
-     * @return false if @enabled=false; true otherwise
+     * @return a boolean
      */
     private boolean getSidebarWidgetBooleanValue(String widgetName, String valuePath, boolean defaultValue) {
         HierarchicalConfiguration<ImmutableNode> widget = getSidebarWidgetConfiguration(widgetName);
         if (widget != null) {
             return widget.getBoolean(valuePath, defaultValue);
+        }
+
+        return defaultValue;
+    }
+
+    /**
+     * 
+     * @param widgetName Widget name
+     * @param valuePath Path to the wanted value
+     * @param defaultValue
+     * @return an int
+     */
+    private int getSidebarWidgetIntValue(String widgetName, String valuePath, int defaultValue) {
+        HierarchicalConfiguration<ImmutableNode> widget = getSidebarWidgetConfiguration(widgetName);
+        if (widget != null) {
+            return widget.getInteger(valuePath, defaultValue);
+        }
+
+        return defaultValue;
+    }
+
+    /**
+     * 
+     * @param widgetName Widget name
+     * @param valuePath Path to the wanted value
+     * @param defaultValue
+     * @return a {@link String}
+     */
+    private String getSidebarWidgetStringValue(String widgetName, String valuePath, String defaultValue) {
+        HierarchicalConfiguration<ImmutableNode> widget = getSidebarWidgetConfiguration(widgetName);
+        if (widget != null) {
+            return widget.getString(valuePath, defaultValue);
         }
 
         return defaultValue;
@@ -2958,7 +3011,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isDisplaySidebarBrowsingTerms() {
-        return getLocalBoolean("sidebar.sidebarBrowsingTerms[@enabled]", true);
+        return getSidebarWidgetBooleanValue("browsing-terms", "[@enabled]", true);
     }
 
     /**
@@ -2982,7 +3035,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isDisplaySidebarWidgetAdditionalFiles() {
-        return getLocalBoolean("sidebar.sidebarWidgetAdditionalFiles[@enabled]", false);
+        return getSidebarWidgetBooleanValue("additional-files", "[@enabled]", false);
     }
 
     /**
@@ -3008,8 +3061,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSidebarTocWidgetVisibleInFullscreen() {
-        // TODO
-        return this.getLocalBoolean("sidebar.sidebarToc.visibleInFullscreen", true);
+        return getSidebarWidgetBooleanValue("toc", "visibleInFullscreen", true);
     }
 
     /**
@@ -3021,8 +3073,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSidebarOpacLinkVisible() {
-        // TODO
-        return this.getLocalBoolean("sidebar.opac[@enabled]", false);
+        return getSidebarWidgetBooleanValue("opac", "[@enabled]", false);
     }
 
     /**
@@ -3034,8 +3085,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean getSidebarTocPageNumbersVisible() {
-        // TODO
-        return this.getLocalBoolean("sidebar.sidebarToc.pageNumbersVisible", false);
+        return getSidebarWidgetBooleanValue("toc", "pageNumbersVisible", false);
     }
 
     /**
@@ -3047,8 +3097,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a int.
      */
     public int getSidebarTocLengthBeforeCut() {
-        // TODO
-        return this.getLocalInt("sidebar.sidebarToc.lengthBeforeCut", 10);
+        return getSidebarWidgetIntValue("toc", "lengthBeforeCut", 10);
     }
 
     /**
@@ -3060,8 +3109,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a int.
      */
     public int getSidebarTocInitialCollapseLevel() {
-        // TODO
-        return this.getLocalInt("sidebar.sidebarToc.initialCollapseLevel", 2);
+        return getSidebarWidgetIntValue("toc", "initialCollapseLevel", 2);
     }
 
     /**
@@ -3073,8 +3121,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a int.
      */
     public int getSidebarTocCollapseLengthThreshold() {
-        // TODO
-        return this.getLocalInt("sidebar.sidebarToc.collapseLengthThreshold", 10);
+        return getSidebarWidgetIntValue("toc", "collapseLengthThreshold", 10);
     }
 
     /**
@@ -3086,8 +3133,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a int.
      */
     public int getSidebarTocLowestLevelToCollapseForLength() {
-        // TODO
-        return this.getLocalInt("sidebar.sidebarToc.collapseLengthThreshold[@lowestLevelToTest]", 2);
+        return getSidebarWidgetIntValue("toc", "collapseLengthThreshold[@lowestLevelToTest]", 2);
     }
 
     /**
@@ -3099,7 +3145,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSidebarTocTreeView() {
-        return getLocalBoolean("sidebar.sidebarToc.useTreeView", true);
+        return getSidebarWidgetBooleanValue("toc", "useTreeView", true);
     }
 
     /**
@@ -5661,7 +5707,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isCopyrightIndicatorEnabled() {
-        return getLocalBoolean("sidebar.copyrightIndicator[@enabled]", false);
+        return getSidebarWidgetBooleanValue("copyright-info", "[@enabled]", false);
     }
 
     /**
@@ -5670,7 +5716,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getCopyrightIndicatorStyle() {
-        return getLocalString("sidebar.copyrightIndicator[@style]", "widget");
+        return getSidebarWidgetStringValue("copyright-info", "[@style]", "widget");
     }
 
     /**
@@ -5679,7 +5725,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getCopyrightIndicatorStatusField() {
-        return getLocalString("sidebar.copyrightIndicator.status[@field]");
+        return getSidebarWidgetStringValue("copyright-info", "status[@field]", null);
     }
 
     /**
@@ -5693,18 +5739,21 @@ public class Configuration extends AbstractConfiguration {
             throw new IllegalArgumentException("value may not be null");
         }
 
-        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("sidebar.copyrightIndicator.status.value");
-        for (HierarchicalConfiguration<ImmutableNode> config : configs) {
-            String content = config.getString("[@content]");
-            if (value.equals(content)) {
-                String statusName = config.getString("[@status]");
-                Status status = CopyrightIndicatorStatus.Status.getByName(statusName);
-                if (status == null) {
-                    logger.warn("No copyright indicator status found for configured name: {}", statusName);
-                    status = Status.OPEN;
+        HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("copyright-info");
+        if (widgetConfig != null) {
+            List<HierarchicalConfiguration<ImmutableNode>> configs = widgetConfig.configurationsAt("status.value");
+            for (HierarchicalConfiguration<ImmutableNode> config : configs) {
+                String content = config.getString("[@content]");
+                if (value.equals(content)) {
+                    String statusName = config.getString("[@status]");
+                    Status status = CopyrightIndicatorStatus.Status.getByName(statusName);
+                    if (status == null) {
+                        logger.warn("No copyright indicator status found for configured name: {}", statusName);
+                        status = Status.OPEN;
+                    }
+                    String description = config.getString(XML_PATH_ATTRIBUTE_DESCRIPTION);
+                    return new CopyrightIndicatorStatus(status, description);
                 }
-                String description = config.getString(XML_PATH_ATTRIBUTE_DESCRIPTION);
-                return new CopyrightIndicatorStatus(status, description);
             }
         }
 
@@ -5722,13 +5771,16 @@ public class Configuration extends AbstractConfiguration {
             throw new IllegalArgumentException("value may not be null");
         }
 
-        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("sidebar.copyrightIndicator.license.value");
-        for (HierarchicalConfiguration<ImmutableNode> config : configs) {
-            String content = config.getString("[@content]");
-            if (value.equals(content)) {
-                String description = config.getString(XML_PATH_ATTRIBUTE_DESCRIPTION);
-                String[] icons = config.getStringArray("icon");
-                return new CopyrightIndicatorLicense(description, icons != null ? Arrays.asList(icons) : new ArrayList<>());
+        HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("copyright-info");
+        if (widgetConfig != null) {
+            List<HierarchicalConfiguration<ImmutableNode>> configs = widgetConfig.configurationsAt("license.value");
+            for (HierarchicalConfiguration<ImmutableNode> config : configs) {
+                String content = config.getString("[@content]");
+                if (value.equals(content)) {
+                    String description = config.getString(XML_PATH_ATTRIBUTE_DESCRIPTION);
+                    String[] icons = config.getStringArray("icon");
+                    return new CopyrightIndicatorLicense(description, icons != null ? Arrays.asList(icons) : new ArrayList<>());
+                }
             }
         }
 
@@ -5741,7 +5793,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getCopyrightIndicatorLicenseField() {
-        return getLocalString("sidebar.copyrightIndicator.license[@field]");
+        return getSidebarWidgetStringValue("copyright-info", "license[@field]", null);
     }
 
     public boolean isDisplaySocialMediaShareLinks() {
