@@ -997,6 +997,28 @@
 
 	<!-- ##### SHOW OR HIDE SECTIONS IN THE SIDEBAR GLOBALLY ##### -->
 	<sidebar>
+    
+        <widgets>
+            <widget name="views">
+                <fulltext enabled="false" />
+                <calendar enabled="falsE" />
+                <metadata enabled="false" />
+                <page enabled="false" />
+                <thumbs enabled="false" />
+                <toc enabled="false" />
+            </widget>
+            <widget name="search-in-current-item" enabled="false" onlyIfFullTextAvailable="true" />
+            <!-- bisher <copyrightIndicator... -->
+            <widget name="copyright-info">
+                <status field="ACCESSCONDITION">
+                    <value content="OPENACCESS" status="OPEN" description="COPYRIGHT_DESCRIPTION_STATUS_OPEN" />
+                </status>
+            </widget>
+            <widget name="metadata" enabled="false" />
+            <widget name="rss" enabled="false" />
+            <widget name="toc" enabled="false" />
+        </widgets>
+    
 	
 		<!-- sidebarWidgetAdditionalFiles/@enabled: If true, the download widget within a records 
 			view for additional files from the source directory is displayed. Default 
@@ -1015,9 +1037,6 @@
 	    <!-- @enabled: If true, the sidebar term browsing widget it displayed. Default is true. -->
         <sidebarBrowsingTerms enabled="false" />
         
-        <!-- @enabled: If true, the sidebar RSS widget it displayed. Default is true. -->
-        <sidebarRssFeed enabled="false" />
-
         <!-- @enabled: Show or hide the widget including download links for record and page while viewing the object -->
         <sidebarWidgetUsage enabled="false">
             <work>
@@ -1067,30 +1086,6 @@
                 </links>
             </citationLinks>
         </sidebarWidgetUsage>
-
-		<!-- @enabled: if false, the image view is hidden -->
-		<page enabled="false" />
-
-		<!-- @enabled: if false, the calendar view link is hidden -->
-		<calendar enabled="false" />
-
-		<!-- @enabled: if false, the TOC link is hidden (This is the link to the TOC 
-			page in the work menu, not the sidebar TOC component!) -->
-		<toc enabled="false" />
-
-		<!-- @enabled: if false, the thumbnail view is hidden -->
-		<thumbs enabled="false" />
-
-        <!-- @enabled: if false, no widget for searching in the currently show record will be displayed. Default is true. -->
-        <!-- @onlyIfFullTextAvailable: if true, the widget will only be displayed if current record has full-text. Default is false. -->
-		<searchInItem enabled="false" onlyIfFullTextAvailable="true" />
-
-        <!-- metadata/@enabled: if false, the bibliographic data view is hidden -->
-		<metadata enabled="false">
-		</metadata>
-
-		<!-- @enabled: if false, the fulltext view is hidden -->
-		<fulltext enabled="false" />
 
 		<!-- sidebarToc: configuration of the sidebar TOC component -->
         <!-- @enabled: if false, the sidebar toc is hidden -->

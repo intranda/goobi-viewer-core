@@ -931,42 +931,6 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isDisplaySidebarBrowsingTerms.
-     * </p>
-     *
-     * @return a boolean.
-     * @should return correct value
-     */
-    public boolean isDisplaySidebarBrowsingTerms() {
-        return getLocalBoolean("sidebar.sidebarBrowsingTerms[@enabled]", true);
-    }
-
-    /**
-     * <p>
-     * isDisplaySidebarRssFeed.
-     * </p>
-     *
-     * @return a boolean.
-     * @should return correct value
-     */
-    public boolean isDisplaySidebarRssFeed() {
-        return getLocalBoolean("sidebar.sidebarRssFeed[@enabled]", true);
-    }
-
-    /**
-     * <p>
-     * isOriginalContentDownload.
-     * </p>
-     *
-     * @return true if enabled; false otherwise
-     * @should return correct value
-     */
-    public boolean isDisplaySidebarWidgetAdditionalFiles() {
-        return getLocalBoolean("sidebar.sidebarWidgetAdditionalFiles[@enabled]", false);
-    }
-
-    /**
-     * <p>
      * Returns a regex such that all download files which filenames fit this regex should not be visible in the downloads widget. If an empty string
      * is returned, all downloads should remain visible
      * </p>
@@ -2835,6 +2799,44 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Returns the config block for the given field.
+     *
+     * @param field
+     * @return Configured values
+     */
+    private HierarchicalConfiguration<ImmutableNode> getSidebarWidgetConfiguration(String name) {
+        List<HierarchicalConfiguration<ImmutableNode>> widgetList = getLocalConfigurationsAt("sidebar.widgets.widget");
+        if (widgetList == null) {
+            return null;
+        }
+
+        for (HierarchicalConfiguration<ImmutableNode> subElement : widgetList) {
+            if (subElement.getString("[@name]").equals(name)) {
+                return subElement;
+
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @param widgetName Widget name
+     * @param valuePath Path to the wanted value
+     * @param defaultValue
+     * @return false if @enabled=false; true otherwise
+     */
+    private boolean getSidebarWidgetBooleanValue(String widgetName, String valuePath, boolean defaultValue) {
+        HierarchicalConfiguration<ImmutableNode> widget = getSidebarWidgetConfiguration(widgetName);
+        if (widget != null) {
+            return widget.getBoolean(valuePath, defaultValue);
+        }
+
+        return defaultValue;
+    }
+
+    /**
      * <p>
      * isFoldout.
      * </p>
@@ -2848,26 +2850,26 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isSidebarPageLinkVisible.
+     * isSidebarViewsWidgetPageLinkVisible.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isSidebarPageViewLinkVisible() {
-        return getLocalBoolean("sidebar.page[@enabled]", true);
+    public boolean isSidebarViewsWidgetPageViewLinkVisible() {
+        return getSidebarWidgetBooleanValue("views", "page[@enabled]", true);
     }
 
     /**
      * <p>
-     * isSidebarCalendarViewLinkVisible.
+     * isSidebarViewsWidgetCalendarViewLinkVisible.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isSidebarCalendarViewLinkVisible() {
-        return getLocalBoolean("sidebar.calendar[@enabled]", true);
+    public boolean isSidebarViewsWidgetCalendarViewLinkVisible() {
+        return getSidebarWidgetBooleanValue("views", "calendar[@enabled]", true);
     }
 
     /**
@@ -2879,44 +2881,108 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isSidebarTocViewLinkVisible() {
-        return getLocalBoolean("sidebar.toc[@enabled]", true);
+    public boolean isSidebarViewsWidgetTocViewLinkVisible() {
+        return getSidebarWidgetBooleanValue("views", "toc[@enabled]", true);
     }
 
     /**
      * <p>
-     * isSidebarThumbsViewLinkVisible.
+     * isSidebarViewsWidgetThumbsViewLinkVisible.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isSidebarThumbsViewLinkVisible() {
-        return getLocalBoolean("sidebar.thumbs[@enabled]", true);
+    public boolean isSidebarViewsWidgetThumbsViewLinkVisible() {
+        return getSidebarWidgetBooleanValue("views", "thumbs[@enabled]", true);
     }
 
     /**
      * <p>
-     * isSidebarMetadataViewLinkVisible.
+     * isSidebarViewsWidgetMetadataViewLinkVisible.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isSidebarMetadataViewLinkVisible() {
-        return getLocalBoolean("sidebar.metadata[@enabled]", true);
+    public boolean isSidebarViewsWidgetMetadataViewLinkVisible() {
+        return getSidebarWidgetBooleanValue("views", "metadata[@enabled]", true);
     }
 
     /**
      * <p>
-     * isSidebarFulltextLinkVisible.
+     * isSidebarViewsWidgetFulltextLinkVisible.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isSidebarFulltextLinkVisible() {
-        return getLocalBoolean("sidebar.fulltext[@enabled]", true);
+    public boolean isSidebarViewsWidgetFulltextLinkVisible() {
+        return getSidebarWidgetBooleanValue("views", "fulltext[@enabled]", true);
+    }
+
+    // Side bar widget: search-in-current-item
+
+    /**
+     * <p>
+     * isSidebarSearchInItemWidgetEnabled.
+     * </p>
+     *
+     * @should return true if the search field to search the current item/work is configured to be visible
+     * @return a boolean.
+     */
+    public boolean isSidebarSearchInItemWidgetEnabled() {
+        return getSidebarWidgetBooleanValue("search-in-current-item", "[@enabled]", true);
+    }
+
+    /**
+     * <p>
+     * isSearchInItemOnlyIfFullTextAvailable.
+     * </p>
+     *
+     * @should return correct value
+     * @return a boolean.
+     */
+    public boolean isSearchInItemOnlyIfFullTextAvailable() {
+        return getSidebarWidgetBooleanValue("search-in-current-item", "[@onlyIfFullTextAvailable]", false);
+    }
+
+    //
+
+    /**
+     * <p>
+     * isDisplaySidebarBrowsingTerms.
+     * </p>
+     *
+     * @return a boolean.
+     * @should return correct value
+     */
+    public boolean isDisplaySidebarBrowsingTerms() {
+        return getLocalBoolean("sidebar.sidebarBrowsingTerms[@enabled]", true);
+    }
+
+    /**
+     * <p>
+     * isSidebarRssFeedWidgetEnabled.
+     * </p>
+     *
+     * @return a boolean.
+     * @should return correct value
+     */
+    public boolean isSidebarRssFeedWidgetEnabled() {
+        return getSidebarWidgetBooleanValue("rss", "[@enabled]", true);
+    }
+
+    /**
+     * <p>
+     * isOriginalContentDownload.
+     * </p>
+     *
+     * @return true if enabled; false otherwise
+     * @should return correct value
+     */
+    public boolean isDisplaySidebarWidgetAdditionalFiles() {
+        return getLocalBoolean("sidebar.sidebarWidgetAdditionalFiles[@enabled]", false);
     }
 
     /**
@@ -2929,7 +2995,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSidebarTocWidgetVisible() {
-        return this.getLocalBoolean("sidebar.sidebarToc[@enabled]", true);
+        return getSidebarWidgetBooleanValue("toc", "[@enabled]", true);
     }
 
     /**
@@ -2942,6 +3008,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSidebarTocWidgetVisibleInFullscreen() {
+        // TODO
         return this.getLocalBoolean("sidebar.sidebarToc.visibleInFullscreen", true);
     }
 
@@ -2954,6 +3021,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean isSidebarOpacLinkVisible() {
+        // TODO
         return this.getLocalBoolean("sidebar.opac[@enabled]", false);
     }
 
@@ -2966,6 +3034,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a boolean.
      */
     public boolean getSidebarTocPageNumbersVisible() {
+        // TODO
         return this.getLocalBoolean("sidebar.sidebarToc.pageNumbersVisible", false);
     }
 
@@ -2978,6 +3047,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a int.
      */
     public int getSidebarTocLengthBeforeCut() {
+        // TODO
         return this.getLocalInt("sidebar.sidebarToc.lengthBeforeCut", 10);
     }
 
@@ -2990,6 +3060,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a int.
      */
     public int getSidebarTocInitialCollapseLevel() {
+        // TODO
         return this.getLocalInt("sidebar.sidebarToc.initialCollapseLevel", 2);
     }
 
@@ -3002,6 +3073,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a int.
      */
     public int getSidebarTocCollapseLengthThreshold() {
+        // TODO
         return this.getLocalInt("sidebar.sidebarToc.collapseLengthThreshold", 10);
     }
 
@@ -3014,6 +3086,7 @@ public class Configuration extends AbstractConfiguration {
      * @return a int.
      */
     public int getSidebarTocLowestLevelToCollapseForLength() {
+        // TODO
         return this.getLocalInt("sidebar.sidebarToc.collapseLengthThreshold[@lowestLevelToTest]", 2);
     }
 
@@ -5044,30 +5117,6 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isSearchInItemEnabled.
-     * </p>
-     *
-     * @should return true if the search field to search the current item/work is configured to be visible
-     * @return a boolean.
-     */
-    public boolean isSearchInItemEnabled() {
-        return getLocalBoolean("sidebar.searchInItem[@enabled]", true);
-    }
-
-    /**
-     * <p>
-     * isSearchInItemOnlyIfFullTextAvailable.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isSearchInItemOnlyIfFullTextAvailable() {
-        return getLocalBoolean("sidebar.searchInItem[@onlyIfFullTextAvailable]", false);
-    }
-
-    /**
-     * <p>
      * isSearchRisExportEnabled.
      * </p>
      *
@@ -5922,9 +5971,9 @@ public class Configuration extends AbstractConfiguration {
     public Pair<String, String> getDefaultArchiveNodeType() {
         List<HierarchicalConfiguration<ImmutableNode>> nodeTypes = getLocalConfigurationsAt("archives.nodeTypes.node");
         return nodeTypes.stream()
-                .filter(node -> node.getBoolean("[@default]", false))
+                .filter(node -> node.getBoolean(XML_PATH_ATTRIBUTE_DEFAULT, false))
                 .findFirst()
-                .map(node -> Pair.of(node.getString("[@name]", ""), node.getString("[@icon]", "")))
+                .map(node -> Pair.of(node.getString("[@name]", ""), node.getString(XML_PATH_ATTRIBUTE_ICON, "")))
                 .orElse(Pair.of("", ""));
     }
 

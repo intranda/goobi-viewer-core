@@ -2571,7 +2571,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public boolean isDisplayObjectViewLink() throws IndexUnreachableException, DAOException {
-        return DataManager.getInstance().getConfiguration().isSidebarPageViewLinkVisible() && isHasPages() && !isFilesOnly();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetPageViewLinkVisible() && isHasPages() && !isFilesOnly();
     }
 
     /**
@@ -2581,7 +2581,8 @@ public class ViewManager implements Serializable {
      * @throws PresentationException
      */
     public boolean isDisplayCalendarViewLink() throws IndexUnreachableException, PresentationException {
-        return DataManager.getInstance().getConfiguration().isSidebarCalendarViewLinkVisible() && calendarView != null && calendarView.isDisplay();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetCalendarViewLinkVisible() && calendarView != null
+                && calendarView.isDisplay();
     }
 
     /**
@@ -2591,7 +2592,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public boolean isDisplayTocViewLink() throws IndexUnreachableException, DAOException {
-        return DataManager.getInstance().getConfiguration().isSidebarTocViewLinkVisible() && !isFilesOnly() && topStructElement != null
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetTocViewLinkVisible() && !isFilesOnly() && topStructElement != null
                 && !topStructElement.isLidoRecord() && toc != null
                 && toc.isHasChildren();
     }
@@ -2603,7 +2604,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public boolean isDisplayThumbnailViewLink() throws IndexUnreachableException, DAOException {
-        return DataManager.getInstance().getConfiguration().isSidebarThumbsViewLinkVisible()
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetThumbsViewLinkVisible()
                 && pageLoader != null && pageLoader.getNumPages() > 1 && !isFilesOnly();
     }
 
@@ -2612,7 +2613,7 @@ public class ViewManager implements Serializable {
      * @return true if metadata view link may be displayed; false otherwise
      */
     public boolean isDisplayMetadataViewLink() {
-        return DataManager.getInstance().getConfiguration().isSidebarMetadataViewLinkVisible() && topStructElement != null
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetMetadataViewLinkVisible() && topStructElement != null
                 && !topStructElement.isGroup();
     }
 
@@ -2624,7 +2625,7 @@ public class ViewManager implements Serializable {
      * @throws PresentationException
      */
     public boolean isDisplayFulltextViewLink() throws IndexUnreachableException, DAOException, PresentationException {
-        return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible() && topStructElement != null
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetFulltextLinkVisible() && topStructElement != null
                 && ((topStructElement.isFulltextAvailable()
                         && !isFilesOnly()
                         && getCurrentPage() != null

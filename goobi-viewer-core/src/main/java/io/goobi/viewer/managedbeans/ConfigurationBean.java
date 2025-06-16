@@ -519,7 +519,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarPageLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarPageViewLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetPageViewLinkVisible();
     }
 
     /**
@@ -531,7 +531,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarCalendarLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarCalendarViewLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetCalendarViewLinkVisible();
     }
 
     /**
@@ -543,7 +543,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarMetadataLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarMetadataViewLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetMetadataViewLinkVisible();
     }
 
     /**
@@ -555,7 +555,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarThumbsLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarThumbsViewLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetThumbsViewLinkVisible();
     }
 
     /**
@@ -567,7 +567,18 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarFulltextLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetFulltextLinkVisible();
+    }
+
+    /**
+     * <p>
+     * isSidebarTocViewLinkVisible.
+     * </p>
+     *
+     * @should return correct value
+     * @return a boolean.
+    public boolean isSidebarTocViewLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetTocViewLinkVisible();
     }
 
     /**
@@ -960,7 +971,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isShowSearchInItem() {
-        return DataManager.getInstance().getConfiguration().isSearchInItemEnabled();
+        return DataManager.getInstance().getConfiguration().isSidebarSearchInItemWidgetEnabled();
     }
 
     /**
@@ -1158,7 +1169,7 @@ public class ConfigurationBean implements Serializable {
      * @should return correct value
      */
     public boolean isDisplaySidebarRssFeed() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarRssFeed();
+        return DataManager.getInstance().getConfiguration().isSidebarRssFeedWidgetEnabled();
     }
 
     /**
@@ -1610,9 +1621,5 @@ public class ConfigurationBean implements Serializable {
 
     public boolean isPdfPageRangeEnabled() {
         return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsagePdfPageRange();
-    }
-
-    public boolean isSidebarTocViewLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarTocViewLinkVisible();
     }
 }

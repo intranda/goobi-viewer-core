@@ -1370,56 +1370,56 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSidebarFulltextLinkVisible()
+     * @see Configuration#isSidebarViewsWidgetFulltextLinkVisible()
      * @verifies return correct value
      */
     @Test
-    void isSidebarFulltextLinkVisible_shouldReturnCorrectValue() {
-        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible());
+    void isSidebarViewsWidgetFulltextLinkVisible_shouldReturnCorrectValue() {
+        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetFulltextLinkVisible());
     }
 
     /**
-     * @see Configuration#isSidebarMetadataViewLinkVisible()
+     * @see Configuration#isSidebarViewsWidgetMetadataViewLinkVisible()
      * @verifies return correct value
      */
     @Test
-    void isSidebarMetadataLinkVisible_shouldReturnCorrectValue() {
-        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarMetadataViewLinkVisible());
+    void isSidebarViewsWidgetMetadataLinkVisible_shouldReturnCorrectValue() {
+        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetMetadataViewLinkVisible());
     }
 
     /**
-     * @see Configuration#isSidebarPageViewLinkVisible()
+     * @see Configuration#isSidebarViewsWidgetPageViewLinkVisible()
      * @verifies return correct value
      */
     @Test
-    void isSidebarPageLinkVisible_shouldReturnCorrectValue() {
-        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarPageViewLinkVisible());
+    void isSidebarViewsWidgetPageLinkVisible_shouldReturnCorrectValue() {
+        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetPageViewLinkVisible());
     }
 
     /**
-     * @see Configuration#isSidebarCalendarViewLinkVisible()
+     * @see Configuration#isSidebarViewsWidgetCalendarViewLinkVisible()
      * @verifies return correct value
      */
     @Test
-    void isSidebarCalendarLinkVisible_shouldReturnCorrectValue() {
-        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarCalendarViewLinkVisible());
+    void isSidebarViewsWidgetCalendarLinkVisible_shouldReturnCorrectValue() {
+        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetCalendarViewLinkVisible());
     }
 
     /**
-     * @see Configuration#isSidebarThumbsViewLinkVisible()
+     * @see Configuration#isSidebarViewsWidgetThumbsViewLinkVisible()
      * @verifies return correct value
      */
     @Test
-    void isSidebarThumbsLinkVisible_shouldReturnCorrectValue() {
-        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarThumbsViewLinkVisible());
+    void isSidebarViewsWidgetThumbsLinkVisible_shouldReturnCorrectValue() {
+        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetThumbsViewLinkVisible());
     }
 
     /**
-     * @see Configuration#isSidebarOpacLinkVisible()
+     * @see Configuration#isSidebarViewsWidgetOpacLinkVisible()
      * @verifies return correct value
      */
     @Test
-    void isSidebarOpacLinkVisible_shouldReturnCorrectValue() {
+    void isSidebarViewsWidgetOpacLinkVisible_shouldReturnCorrectValue() {
         assertTrue(DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible());
     }
 
@@ -1428,8 +1428,8 @@ class ConfigurationTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    void isSidebarTocLinkVisible_shouldReturnCorrectValue() {
-        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarTocViewLinkVisible());
+    void isSidebarViewsWidgetTocLinkVisible_shouldReturnCorrectValue() {
+        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetTocViewLinkVisible());
     }
 
     /**
@@ -2988,12 +2988,12 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSearchInItemEnabled()
+     * @see Configuration#isSidebarSearchInItemWidgetEnabled()
      * @verifies return true if the search field to search the current item/work is configured to be visible
      */
     @Test
-    void isSearchInItemEnabled_shouldReturnTrueIfTheSearchFieldToSearchTheCurrentItemworkIsConfiguredToBeVisible() {
-        assertFalse(DataManager.getInstance().getConfiguration().isSearchInItemEnabled());
+    void isSidebarSearchInItemWidgetEnabled_shouldReturnTrueIfTheSearchFieldToSearchTheCurrentItemworkIsConfiguredToBeVisible() {
+        assertFalse(DataManager.getInstance().getConfiguration().isSidebarSearchInItemWidgetEnabled());
     }
 
     /**
@@ -3117,12 +3117,12 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isDisplaySidebarRssFeed()
+     * @see Configuration#isSidebarRssFeedWidgetEnabled()
      * @verifies return correct value
      */
     @Test
-    void isDisplaySidebarRssFeed_shouldReturnCorrectValue() {
-        assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarRssFeed());
+    void isSidebarRssFeedWidgetEnabled_shouldReturnCorrectValue() {
+        assertFalse(DataManager.getInstance().getConfiguration().isSidebarRssFeedWidgetEnabled());
     }
 
     /**
