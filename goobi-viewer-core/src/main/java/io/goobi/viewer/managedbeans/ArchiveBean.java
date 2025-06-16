@@ -23,6 +23,8 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -466,7 +468,8 @@ public class ArchiveBean implements Serializable {
     public void redirectToOnlyDatabase() {
         if (!this.databaseLoaded) {
             this.archiveManager.getOnlyDatabaseResource().ifPresent(resource -> {
-                String url = PrettyUrlTools.getAbsolutePageUrl("archives1", resource.getResourceId());
+                String url =
+                        PrettyUrlTools.getAbsolutePageUrl("archives1", URLEncoder.encode(resource.getResourceId(), StandardCharsets.UTF_8));
                 logger.trace(url);
                 try {
                     FacesContext.getCurrentInstance().getExternalContext().redirect(url);

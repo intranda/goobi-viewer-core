@@ -70,6 +70,7 @@ public class SocketBean {
     /**
      * Constructor for tests with custom PushContext
      * 
+     * @param minIdleSeconds
      * @param backgroundTasksState
      */
     public SocketBean(long minIdleSeconds, PushContext backgroundTasksState) {
