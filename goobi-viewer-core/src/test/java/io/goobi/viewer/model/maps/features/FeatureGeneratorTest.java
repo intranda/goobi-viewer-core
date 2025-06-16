@@ -1,5 +1,6 @@
 package io.goobi.viewer.model.maps.features;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,9 @@ class FeatureGeneratorTest {
         SolrDocument mainDoc = new SolrDocument(
                 Map.of("PI", "1234", "MD_TITLE", "Document title", "MD_LOCATION", "Göttingen", "MD_COORDINATES", "51.533172 9.935790"));
 
-        List<GeoMapFeature> features = generator.getFeatures(Map.of(mainDoc, Collections.emptyList()));
+        MetadataDocument mdDoc = MetadataDocument.fromSolrDocs(mainDoc, Collections.emptyList(), Collections.emptyList());
+
+        List<GeoMapFeature> features = new ArrayList<>(generator.getFeatures(mdDoc));
         Assertions.assertEquals(features.size(), 1);
         Assertions.assertEquals("Document title in Göttingen", features.get(0).getTitle().getValue().orElse(""));
         Assertions.assertEquals(features.get(0).getEntities().size(), 1);
@@ -51,8 +54,13 @@ class FeatureGeneratorTest {
         LabelCreator entityTitleGenerator = new LabelCreator(Map.of("_DEFAULT", Metadata.forField("MD_VALUE")));
         FeatureGenerator generator = new FeatureGenerator(List.of(COORDINATE_FIELD), titleGenerator, entityTitleGenerator);
 
-        List<GeoMapFeature> features = generator.getFeaturesFromSolrDocs(Map.of(mainDoc, List.of(locationDoc1, locationDoc2)));
+        MetadataDocument mdDoc = MetadataDocument.fromSolrDocs(mainDoc, Collections.emptyList(), List.of(locationDoc1, locationDoc2));
+
+        List<GeoMapFeature> features = new ArrayList<>(generator.getFeatures(mdDoc));
         Assertions.assertEquals(2, features.size());
+        Assertions.assertEquals("Document title", features.get(0).getTitle().getValue().orElse(""));
+        Assertions.assertEquals("Document title", features.get(1).getTitle().getValue().orElse(""));
+
     }
 
 }

@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,11 +45,13 @@ public class FeatureGenerator {
         this.entityTitleCreator = entityTitleCreator;
     }
 
-    public List<GeoMapFeature> getFeaturesFromMetadataDocument(MetadataDocument document) {
-        List<GeoMapFeature> features = new ArrayList<>();
+    public Collection<GeoMapFeature> getFeatures(MetadataDocument document) {
 
         Collection<GeoMapFeature> mainDocFeatures = getFeatures(document.getMainDocMetadata());
-        Collection<GeoMapFeature> metadataDocFeatures = getFeatures(document.getMetadataGroups());
+        Collection<GeoMapFeature> metadataDocFeatures = getFeatures(document.getMetadataGroups(), document.getMainDocMetadata());
+
+        @SuppressWarnings("unchecked")
+        Collection<GeoMapFeature> features = CollectionUtils.union(mainDocFeatures, metadataDocFeatures);
 
         Map<GeoMapFeature, List<GeoMapFeature>> featureMap = features
                 .stream()
@@ -68,14 +70,20 @@ public class FeatureGenerator {
         return features;
     }
 
-    private Collection<GeoMapFeature> getFeatures(ComplexMetadataContainer metadataGroups) {
+    private Collection<GeoMapFeature> getFeatures(ComplexMetadataContainer metadataGroups, MetadataContainer topDocument) {
         List<ComplexMetadata> groups = metadataGroups.getAllGroups();
         List<String> coordinates =
                 coordinateFields.stream()
-                        .map(field -> groups.stream().map(g -> g.getFirstValue(field)))
-                        .flatMap(List::stream)
+                        .flatMap(field -> groups.stream().map(g -> g.getFirstValue(field)))
                         .filter(v -> !v.isEmpty())
+                        .map(v -> v.getValue().orElse(""))
                         .toList();
+
+        return metadataGroups.getAllGroups()
+                .stream()
+                .map(group -> getFeatures(new MetadataContainer(group.getMetadata()), topDocument, coordinates))
+                .flatMap(Collection::stream)
+                .toList();
     }
 
     private Collection<GeoMapFeature> getFeatures(MetadataContainer metadata) {
@@ -85,15 +93,31 @@ public class FeatureGenerator {
                         .flatMap(List::stream)
                         .filter(v -> !v.isEmpty())
                         .toList();
-        IMetadataValue featureTitle = this.featureTitleCreator.getValue(metadata, getAppropriateTemplate(metadata));
-        IMetadataValue entityTitle = this.entityTitleCreator.getValue(metadata, getAppropriateTemplate(metadata));
+        return getFeatures(metadata, null, coordinates);
+    }
+
+    protected Collection<GeoMapFeature> getFeatures(MetadataContainer metadata, MetadataContainer topDocument, List<String> coordinates) {
+        IMetadataValue featureTitle = getTitle(metadata, topDocument, this.featureTitleCreator);
+        IMetadataValue entityTitle = getTitle(metadata, topDocument, this.entityTitleCreator);
+        URI link = createLink(metadata, topDocument);
 
         return coordinates.stream().map(coords -> {
             GeoMapFeature feature = getFeature(coords);
             feature.setTitle(featureTitle);
             feature.addEntity(new MetadataContainer(metadata.getFirstValue(SolrConstants.IDDOC), entityTitle, metadata.getMetadata()));
+            if (link != null) {
+                feature.setLink(link.toString());
+            }
             return feature;
         }).toList();
+    }
+
+    protected IMetadataValue getTitle(MetadataContainer metadata, MetadataContainer topDocument, LabelCreator labelCreator) {
+        IMetadataValue title = labelCreator.getValue(metadata, getAppropriateTemplate(metadata));
+        if (title.isEmpty() && topDocument != null) {
+            title = labelCreator.getValue(topDocument, getAppropriateTemplate(topDocument));
+        }
+        return title;
     }
 
     private String getAppropriateTemplate(MetadataContainer metadata) {
@@ -107,33 +131,6 @@ public class FeatureGenerator {
         } else {
             return StringConstants.DEFAULT_NAME;
         }
-    }
-
-    private void setLabels(GeoMapFeature feature) {
-        Optional.ofNullable(feature.getEntities())
-                .filter(l -> !l.isEmpty())
-                .map(l -> l.get(0))
-                .map(container -> this.featureTitleCreator.getValue(container, getType(container)))
-                .ifPresent(feature::setTitle);
-
-        for (MetadataContainer entity : feature.getEntities()) {
-            IMetadataValue value = this.entityTitleCreator.getValue(entity.getMetadata(), getType(entity));
-            if (!value.isEmpty()) {
-                entity.setLabel(value);
-            }
-        }
-
-    }
-
-    private String getType(MetadataContainer container) {
-        if (container.containsField(SolrConstants.DOCSTRCT)) {
-            return container.getFirstValue(SolrConstants.DOCSTRCT);
-        } else if (container.containsField(SolrConstants.LABEL)) {
-            return container.getFirstValue(SolrConstants.LABEL);
-        } else {
-            return "_DEFAULT";
-        }
-
     }
 
     /**
@@ -164,6 +161,15 @@ public class FeatureGenerator {
     protected static GeoMapFeature getFeature(String point) {
         Geometry geometry = CoordinateReaderProvider.getReader(point).read(point);
         return new GeoMapFeature(geometry);
+    }
+
+    private static URI createLink(MetadataContainer doc, MetadataContainer topDoc) {
+        if (doc.containsField(SolrConstants.PI) || doc.containsField(SolrConstants.LOGID)) {
+            return getLinkURI(doc);
+        } else {
+            //metadata document
+            return getLinkURI(topDoc);
+        }
     }
 
     private static URI getLinkURI(MetadataContainer doc) {
