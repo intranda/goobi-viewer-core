@@ -733,12 +733,9 @@ public final class BeanUtils {
         // Remove priv maps
         AccessConditionUtils.clearSessionPermissions(session);
 
-        try {
-            getSessionBean().cleanObjects();
-        } catch (ContextNotActiveException e) {
-            logger.trace("Cannot access bean method from different thread: SessionBean.cleanObjects()");
-        }
-
+        getBeanFromRequest(request, "sessionBean", SessionBean.class)
+                .ifPresentOrElse(SessionBean::cleanObjects,
+                        () -> logger.trace("Cannot invalidate SessionBean. Not instantiated yet?"));
         getBeanFromRequest(request, "collectionViewBean", CollectionViewBean.class)
                 .ifPresentOrElse(CollectionViewBean::invalidate,
                         () -> logger.trace("Cannot invalidate CollectionViewBean. Not instantiated yet?"));
