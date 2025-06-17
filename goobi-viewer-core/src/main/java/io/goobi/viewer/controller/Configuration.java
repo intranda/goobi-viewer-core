@@ -959,23 +959,11 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <p>
-     * isDisplayWidgetUsage.
-     * </p>
-     *
-     * @return a boolean.
-     * @should return correct value
-     */
-    public boolean isDisplaySidebarWidgetUsage() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage[@enabled]", true);
-    }
-
-    /**
      *
      * @return Boolean value
      * @should return correct value
      */
-    public boolean isDisplaySidebarWidgetUsageCitationRecommendation() {
+    public boolean isDisplaySidebarWidgetCitationCitationRecommendation() {
         return getSidebarWidgetBooleanValue("citation", "citationRecommendation[@enabled]", true);
     }
 
@@ -984,7 +972,7 @@ public class Configuration extends AbstractConfiguration {
      * @return List of available citation style names
      * @should return all configured values
      */
-    public List<String> getSidebarWidgetUsageCitationRecommendationStyles() {
+    public List<String> getSidebarWidgetCitationCitationRecommendationStyles() {
         List<String> ret = new ArrayList<>();
         HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("citation");
         if (widgetConfig != null) {
@@ -1000,7 +988,8 @@ public class Configuration extends AbstractConfiguration {
      *
      * @return Configured values
      */
-    public Metadata getSidebarWidgetUsageCitationRecommendationSource() {
+    public Metadata getSidebarWidgetCitationCitationRecommendationSource() {
+        // TODO
         HierarchicalConfiguration<ImmutableNode> sub = null;
         try {
             sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.citationRecommendation.source.metadata");
@@ -1019,7 +1008,7 @@ public class Configuration extends AbstractConfiguration {
      * @return Map containing mappings DOCSTRCT -> citeproc type
      * @should return all configured values
      */
-    public Map<String, String> getSidebarWidgetUsageCitationRecommendationDocstructMapping() {
+    public Map<String, String> getSidebarWidgetCitationCitationRecommendationDocstructMapping() {
         HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("citation");
         if (widgetConfig != null) {
             Map<String, String> ret = new HashMap<>();
@@ -1036,7 +1025,7 @@ public class Configuration extends AbstractConfiguration {
      * @return Boolean value
      * @should return correct value
      */
-    public boolean isDisplaySidebarWidgetUsageCitationLinks() {
+    public boolean isDisplaySidebarWidgetCitationCitationLinks() {
         return getSidebarWidgetBooleanValue("citation", "citationLinks[@enabled]", true);
     }
 
@@ -1045,7 +1034,7 @@ public class Configuration extends AbstractConfiguration {
      * @return Configured values
      * @should return all configured values
      */
-    public List<CitationLink> getSidebarWidgetUsageCitationLinks() {
+    public List<CitationLink> getSidebarWidgetCitationCitationLinks() {
         List<CitationLink> ret = new ArrayList<>();
         HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("citation");
         if (widgetConfig != null) {
@@ -1081,17 +1070,19 @@ public class Configuration extends AbstractConfiguration {
      * @return List of configured <code>DownloadOption</code> items
      * @should return all configured elements
      */
-    public List<DownloadOption> getSidebarWidgetUsagePageDownloadOptions() {
-        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("sidebar.sidebarWidgetUsage.page.downloadOptions.option");
-        if (configs == null || configs.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        List<DownloadOption> ret = new ArrayList<>(configs.size());
-        for (HierarchicalConfiguration<ImmutableNode> config : configs) {
-            ret.add(new DownloadOption().setLabel(config.getString(XML_PATH_ATTRIBUTE_LABEL))
-                    .setFormat(config.getString("[@format]"))
-                    .setBoxSizeInPixel(config.getString("[@boxSizeInPixel]")));
+    public List<DownloadOption> getSidebarWidgetDownloadsPageDownloadOptions() {
+        List<DownloadOption> ret = new ArrayList<>();
+        HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("downloads");
+        if (widgetConfig != null) {
+            List<HierarchicalConfiguration<ImmutableNode>> configs = widgetConfig.configurationsAt("page.downloadOptions.option");
+            if (configs != null && !configs.isEmpty()) {
+                ret = new ArrayList<>(configs.size());
+                for (HierarchicalConfiguration<ImmutableNode> config : configs) {
+                    ret.add(new DownloadOption().setLabel(config.getString(XML_PATH_ATTRIBUTE_LABEL))
+                            .setFormat(config.getString("[@format]"))
+                            .setBoxSizeInPixel(config.getString("[@boxSizeInPixel]")));
+                }
+            }
         }
 
         return ret;
@@ -1102,13 +1093,16 @@ public class Configuration extends AbstractConfiguration {
      * @return Configured value
      * @should return correct value
      */
-    public boolean isDisplayWidgetUsageDownloadOptions() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage.page.downloadOptions[@enabled]", true);
+    public boolean isDisplayWidgetDownloadsDownloadOptions() {
+        return getSidebarWidgetBooleanValue("downloads", "page.downloadOptions[@enabled]", true);
     }
 
+    /**
+     * 
+     * @return Configured value; otherwise false
+     */
     public boolean isDisplaySidebarWidgetUsagePdfPageRange() {
-        return getLocalBoolean("sidebar.sidebarWidgetUsage.pdfPageRange[@enabled]", false);
-
+        return getSidebarWidgetBooleanValue("downloads", "pdfPageRange[@enabled]", false);
     }
 
     /**

@@ -1066,6 +1066,22 @@
                     </value>
                 </license>
             </widget>
+            <widget name="downloads" enabled="false">
+                <page>
+                    <downloadOptions enabled="false">
+                    <!-- Each option contains a label and a format. The label is translated via the messages. 
+                        The format can take the values supported by the ContentServer, for example "pdf", "tif", 
+                        "jpg" or "png". If the static string "MASTER" is used, the format is dynamically set to 
+                        the format of the master image. The attribute boxSizeInPixel specifies the size of a box 
+                        in pixels into which the image is scaled while maintaining the aspect ratio. -->
+                        <option label="Master" format="MASTER" boxSizeInPixel="max"/>
+                        <option label="label__download_option_preview_150" format="jpg" boxSizeInPixel="150" />
+                        <option label="label__download_option_small_1024" format="jpg" boxSizeInPixel="1024" />
+                        <option label="label__download_option_medium_2048" format="jpg" boxSizeInPixel="2048" />
+                        <option label="label__download_option_large_4096" format="jpg" boxSizeInPixel="4096" />
+                    </downloadOptions>
+                </page>
+            </widget>
             <widget name="metadata" enabled="false" />
             <widget name="opac" enabled="true" />
             <widget name="rss" enabled="false" />
@@ -1096,20 +1112,6 @@
             <work>
                 <dfgViewerUrlField>MD2_DFGVIEWERURL</dfgViewerUrlField>
             </work>
-            <page>
-                <downloadOptions enabled="false">
-                <!-- Each option contains a label and a format. The label is translated via the messages. 
-                    The format can take the values supported by the ContentServer, for example "pdf", "tif", 
-                    "jpg" or "png". If the static string "MASTER" is used, the format is dynamically set to 
-                    the format of the master image. The attribute boxSizeInPixel specifies the size of a box 
-                    in pixels into which the image is scaled while maintaining the aspect ratio. -->
-                    <option label="Master" format="MASTER" boxSizeInPixel="max"/>
-                    <option label="label__download_option_preview_150" format="jpg" boxSizeInPixel="150" />
-                    <option label="label__download_option_small_1024" format="jpg" boxSizeInPixel="1024" />
-                    <option label="label__download_option_medium_2048" format="jpg" boxSizeInPixel="2048" />
-                    <option label="label__download_option_large_4096" format="jpg" boxSizeInPixel="4096" />
-                </downloadOptions>
-            </page>
         </sidebarWidgetUsage>
         
 	</sidebar>

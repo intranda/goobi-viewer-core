@@ -3126,70 +3126,61 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isDisplaySidebarWidgetUsage()
+     * @see Configuration#isDisplayWidgetDownloadsDownloadOptions()
      * @verifies return correct value
      */
     @Test
-    void isDisplaySidebarWidgetUsage_shouldReturnCorrectValue() {
-        assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsage());
+    void isDisplayWidgetDownloadsDownloadOptions_shouldReturnCorrectValue() {
+        assertFalse(DataManager.getInstance().getConfiguration().isDisplayWidgetDownloadsDownloadOptions());
     }
 
     /**
-     * @see Configuration#isDisplayWidgetUsageDownloadOptions()
+     * @see Configuration#isDisplaySidebarWidgetCitationCitationRecommendation()
      * @verifies return correct value
      */
     @Test
-    void isDisplayWidgetUsageDownloadOptions_shouldReturnCorrectValue() {
-        assertFalse(DataManager.getInstance().getConfiguration().isDisplayWidgetUsageDownloadOptions());
+    void isDisplaySidebarWidgetCitationCitationRecommendation_shouldReturnCorrectValue() {
+        assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetCitationCitationRecommendation());
     }
 
     /**
-     * @see Configuration#isDisplaySidebarWidgetUsageCitationRecommendation()
+     * @see Configuration#isDisplaySidebarWidgetCitationCitationLinks()
      * @verifies return correct value
      */
     @Test
-    void isDisplaySidebarWidgetUsageCitationRecommendation_shouldReturnCorrectValue() {
-        assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationRecommendation());
+    void isDisplaySidebarWidgetCitationCitationLinks_shouldReturnCorrectValue() {
+        assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetCitationCitationLinks());
     }
 
     /**
-     * @see Configuration#isDisplaySidebarWidgetUsageCitationLinks()
-     * @verifies return correct value
-     */
-    @Test
-    void isDisplaySidebarWidgetUsageCitationLinks_shouldReturnCorrectValue() {
-        assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks());
-    }
-
-    /**
-     * @see Configuration#getSidebarWidgetUsageCitationStyles()
+     * @see Configuration#getSidebarWidgetCitationCitationStyles()
      * @verifies return all configured values
      */
     @Test
-    void getSidebarWidgetUsageCitationRecommendationStyles_shouldReturnAllConfiguredValues() {
-        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationStyles();
+    void getSidebarWidgetCitationCitationRecommendationStyles_shouldReturnAllConfiguredValues() {
+        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetCitationCitationRecommendationStyles();
         assertEquals(3, result.size());
     }
 
     /**
-     * @see Configuration#getSidebarWidgetUsageCitationRecommendationDocstructMapping()
+     * @see Configuration#getSidebarWidgetCitationCitationRecommendationDocstructMapping()
      * @verifies return all configured values
      */
     @Test
-    void getSidebarWidgetUsageCitationRecommendationDocstructMapping_shouldReturnAllConfiguredValues() {
-        Map<String, String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationDocstructMapping();
+    void getSidebarWidgetCitationCitationRecommendationDocstructMapping_shouldReturnAllConfiguredValues() {
+        Map<String, String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetCitationCitationRecommendationDocstructMapping();
         assertEquals(2, result.size());
         assertEquals("book", result.get("other_monograph"));
         assertEquals("manuscript", result.get("other_manuscript"));
     }
 
     /**
-     * @see Configuration#getSidebarWidgetUsageCitationLinks()
+     * @see Configuration#getSidebarWidgetCitationCitationLinks()
      * @verifies return all configured values
      */
     @Test
-    void getSidebarWidgetUsageCitationLinks_shouldReturnAllConfiguredValues() {
-        List<CitationLink> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks();
+    void getSidebarWidgetCitationCitationLinks_shouldReturnAllConfiguredValues() {
+        List<CitationLink> result = DataManager.getInstance().getConfiguration().getSidebarWidgetCitationCitationLinks();
         assertEquals(4, result.size());
         {
             CitationLink link = result.get(0);
@@ -3212,12 +3203,12 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getSidebarWidgetUsagePageDownloadOptions()
+     * @see Configuration#getSidebarWidgetDownloadsPageDownloadOptions()
      * @verifies return all configured elements
      */
     @Test
-    void getSidebarWidgetUsagePageDownloadOptions_shouldReturnAllConfiguredElements() {
-        List<DownloadOption> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
+    void getSidebarWidgetDownloadsPageDownloadOptions_shouldReturnAllConfiguredElements() {
+        List<DownloadOption> result = DataManager.getInstance().getConfiguration().getSidebarWidgetDownloadsPageDownloadOptions();
         assertEquals(5, result.size());
         DownloadOption option = result.get(4);
         assertEquals("label__download_option_large_4096", option.getLabel());

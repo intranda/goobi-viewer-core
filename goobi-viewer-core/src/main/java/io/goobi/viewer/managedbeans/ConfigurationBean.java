@@ -1174,24 +1174,13 @@ public class ConfigurationBean implements Serializable {
 
     /**
      * <p>
-     * isDisplayWidgetUsage.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isDisplaySidebarWidgetUsage() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsage();
-    }
-
-    /**
-     * <p>
      * isDisplaySidebarWidgetUsageCitationLinks.
      * </p>
      *
      * @return a boolean.
      */
     public boolean isDisplaySidebarWidgetUsageCitationLinks() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks();
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetCitationCitationLinks();
     }
 
     /**
@@ -1202,7 +1191,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isDisplaySidebarWidgetUsageCitationRecommendation() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationRecommendation();
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetCitationCitationRecommendation();
     }
 
     /**
@@ -1210,11 +1199,11 @@ public class ConfigurationBean implements Serializable {
      * @return List of configured <code>DownloadOption</code> items
      */
     public List<DownloadOption> getSidebarWidgetUsagePageDownloadOptions() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetDownloadsPageDownloadOptions();
     }
 
     public boolean isDisplaySidebarWidgetUsagePageDownloadOptions() {
-        return DataManager.getInstance().getConfiguration().isDisplayWidgetUsageDownloadOptions();
+        return DataManager.getInstance().getConfiguration().isDisplayWidgetDownloadsDownloadOptions();
     }
 
     /**
@@ -1222,7 +1211,7 @@ public class ConfigurationBean implements Serializable {
      * @return List of available citation style names
      */
     public List<String> getSidebarWidgetUsageCitationRecommendationStyles() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationStyles();
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetCitationCitationRecommendationStyles();
     }
 
     /**

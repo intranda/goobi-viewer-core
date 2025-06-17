@@ -872,7 +872,7 @@ public class ViewManager implements Serializable {
     public List<DownloadOption> getDownloadOptionsForPage(PhysicalElement page)
             throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (page != null && page.isHasImage()) {
-            List<DownloadOption> configuredOptions = DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
+            List<DownloadOption> configuredOptions = DataManager.getInstance().getConfiguration().getSidebarWidgetDownloadsPageDownloadOptions();
             String imageFilename = page.getFileName();
             Dimension maxSize = new Dimension(
                     page.isAccessPermissionImageZoom() ? DataManager.getInstance().getConfiguration().getViewerMaxImageWidth()
@@ -3993,7 +3993,7 @@ public class ViewManager implements Serializable {
      * @return a boolean.
      */
     public boolean isDisplayCiteLinkWork() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks() && topStructElement != null;
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetCitationCitationLinks() && topStructElement != null;
     }
 
     /**
@@ -4048,7 +4048,7 @@ public class ViewManager implements Serializable {
      * @return a boolean.
      */
     public boolean isDisplayCiteLinkDocstruct() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks() && currentStructElement != null
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetCitationCitationLinks() && currentStructElement != null
                 && !Objects.equals(currentStructElement.getLuceneId(), topStructElement.getLuceneId());
     }
 
@@ -4094,7 +4094,7 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public boolean isDisplayCiteLinkPage() throws IndexUnreachableException, DAOException {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks() && getCurrentPage() != null;
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetCitationCitationLinks() && getCurrentPage() != null;
     }
 
     /**
@@ -4131,7 +4131,7 @@ public class ViewManager implements Serializable {
      */
     String getCitationString(String outputFormat) throws IOException, IndexUnreachableException, PresentationException {
         if (StringUtils.isEmpty(citationStyle)) {
-            List<String> availableStyles = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationStyles();
+            List<String> availableStyles = DataManager.getInstance().getConfiguration().getSidebarWidgetCitationCitationRecommendationStyles();
             if (availableStyles.isEmpty()) {
                 return "";
             }
@@ -4142,7 +4142,7 @@ public class ViewManager implements Serializable {
             citationProcessorWrapper = new CitationProcessorWrapper();
         }
         CSL processor = citationProcessorWrapper.getCitationProcessor(citationStyle);
-        Metadata md = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationSource();
+        Metadata md = DataManager.getInstance().getConfiguration().getSidebarWidgetCitationCitationRecommendationSource();
         md.populate(topStructElement, String.valueOf(topStructElement.getLuceneId()), null, BeanUtils.getLocale());
         for (MetadataValue val : md.getValues()) {
             if (!val.getCitationValues().isEmpty()) {
@@ -4156,9 +4156,8 @@ public class ViewManager implements Serializable {
                     if ("html".equalsIgnoreCase(outputFormat)) {
                         return "<span style=\"color: red;\">Citation engine encountered exception parsing date: <span style=\"font-weight: bold;\">"
                                 + e.getLocalizedMessage() + "</span></span>";
-                    } else {
-                        return "Citation engine encountered exception parsing date:" + e.getLocalizedMessage();
                     }
+                    return "Citation engine encountered exception parsing date:" + e.getLocalizedMessage();
                 }
             }
         }
@@ -4211,7 +4210,7 @@ public class ViewManager implements Serializable {
         // Populate values
         if (this.citationLinks.get(level) == null || !this.citationLinks.get(level).isCurrent(this)) {
             this.citationLinks.put(level, new CitationList(CitationTools
-                    .generateCitationLinksForLevel(DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks(), level, this),
+                    .generateCitationLinksForLevel(DataManager.getInstance().getConfiguration().getSidebarWidgetCitationCitationLinks(), level, this),
                     level,
                     this));
         }
