@@ -69,7 +69,7 @@ public class VisibilityCondition {
 
     public VisibilityCondition(VisibilityConditionInfo info) {
         this(
-                new AnyMatchCondition<FileType>(
+                new AnyMatchCondition<>(
                         info.getContentType()
                                 .stream()
                                 .filter(s -> !s.equals("!"))
@@ -77,10 +77,10 @@ public class VisibilityCondition {
                                 .map(FileType::valueOf)
                                 .collect(Collectors.toList()),
                         !info.getContentType().contains("!")),
-                new AnyMatchCondition<String>(
+                new AnyMatchCondition<>(
                         info.getSourceFormat().stream().filter(s -> !s.equals("!")).collect(Collectors.toList()),
                         !info.getSourceFormat().contains("!")),
-                new AnyMatchCondition<BaseMimeType>(
+                new AnyMatchCondition<>(
                         info.getMimeType()
                                 .stream()
                                 .filter(s -> !s.equals("!"))
@@ -88,11 +88,11 @@ public class VisibilityCondition {
                                 .filter(type -> type != BaseMimeType.NONE)
                                 .toList(),
                         !info.getMimeType().contains("!")),
-                new Condition<String>(getValue(info.getAccessCondition()), !isNegated(info.getAccessCondition())),
-                new AnyMatchCondition<PageType>(
+                new Condition<>(getValue(info.getAccessCondition()), !isNegated(info.getAccessCondition())),
+                new AnyMatchCondition<>(
                         info.getPageType().stream().filter(s -> !s.equals("!")).map(PageType::getByName).toList(),
                         !info.getPageType().contains("!")),
-                new AnyMatchCondition<String>(
+                new AnyMatchCondition<>(
                         info.getDocType().stream().filter(s -> !s.equals("!")).toList(),
                         !info.getDocType().contains("!")),
                 ComparisonCondition.ofInteger(info.getNumPages()),
@@ -117,50 +117,46 @@ public class VisibilityCondition {
     private static String getValue(String string) {
         if (StringUtils.isNotBlank(string)) {
             return string.replaceFirst("^!", "");
-        } else {
-            return "";
         }
+        return "";
     }
 
     private static boolean isNegated(String string) {
         return StringUtils.isNotBlank(string) && string.startsWith("!");
     }
 
-    public boolean matchesRecord(PageType pageType, ViewManager viewManager, HttpServletRequest request, RecordPropertyCache properties)
+    public boolean matchesRecord(final PageType pageType, ViewManager viewManager, HttpServletRequest request, RecordPropertyCache properties)
             throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException, ViewerConfigurationException {
 
         if (viewManager == null || viewManager.getTopStructElement() == null) {
             return false;
         }
 
-        if (pageType == null) {
-            pageType = PageType.other;
-        }
-
-        List<String> docTypes = new ArrayList<>();
+        List<String> docTypesLocal = new ArrayList<>();
 
         if (viewManager.getTopStructElement() != null && StringUtils.isNotBlank(viewManager.getTopStructElement().getDocStructType())) {
-            docTypes.add(viewManager.getTopStructElement().getDocStructType());
+            docTypesLocal.add(viewManager.getTopStructElement().getDocStructType());
         }
         if (viewManager.getTopStructElement().isGroup()) {
-            docTypes.add("group");
+            docTypesLocal.add("group");
         } else if (viewManager.getTopStructElement().isGroupMember()) {
-            docTypes.add("groupMember");
+            docTypesLocal.add("groupMember");
         }
         if (viewManager.getTopStructElement().isAnchor()) {
-            docTypes.add("anchor");
+            docTypesLocal.add("anchor");
         } else if (viewManager.getTopStructElement().isAnchorChild()) {
-            docTypes.add("volume");
+            docTypesLocal.add("volume");
         }
         if (viewManager.getTopStructElement().isWork()) {
-            docTypes.add("record");
+            docTypesLocal.add("record");
         }
         if (!Objects.equals(viewManager.getTopStructElementIddoc(), viewManager.getCurrentStructElementIddoc())) {
-            docTypes.add("subStruct");
+            docTypesLocal.add("subStruct");
         }
 
         Collection<FileType> existingFileTypes = properties.getFileTypesForRecord(viewManager, true);
 
+        PageType usePageType = pageType != null ? pageType : PageType.other;
         BaseMimeType baseMimeType = BaseMimeType.getByName(viewManager.getTopStructElement().getMetadataValue(SolrConstants.MIMETYPE));
         return checkAccess(viewManager, request, properties)
                 && this.fileTypes.matches(existingFileTypes)
@@ -170,8 +166,8 @@ public class VisibilityCondition {
                         .map(List::of)
                         .orElse(Collections.emptyList()))
                 && this.mimeType.matches(List.of(baseMimeType))
-                && this.views.matches(List.of(Optional.ofNullable(pageType).orElse(PageType.other)))
-                && this.docTypes.matches(docTypes)
+                && this.views.matches(List.of(Optional.ofNullable(usePageType).orElse(PageType.other)))
+                && this.docTypes.matches(docTypesLocal)
                 && this.numPages.matches(viewManager.getPageLoader().getNumPages())
                 && this.tocSize.matches(getToc(viewManager).getTocElements().size());
     }
@@ -184,7 +180,7 @@ public class VisibilityCondition {
         return viewManager.getToc();
     }
 
-    private TOC createTOC(ViewManager viewManager)
+    private static TOC createTOC(ViewManager viewManager)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         TOC toc = new TOC();
         synchronized (toc) {
@@ -199,7 +195,7 @@ public class VisibilityCondition {
     public boolean checkAccess(ViewManager viewManager, HttpServletRequest request, RecordPropertyCache properties)
             throws IndexUnreachableException, DAOException, RecordNotFoundException, PresentationException {
         if (!this.accessCondition.isEmpty()) {
-            AccessPermission accessPermission = properties.getPermissionForRecord(viewManager, this.accessCondition.getValue().toString(), request);
+            AccessPermission accessPermission = properties.getPermissionForRecord(viewManager, this.accessCondition.getValue(), request);
             return this.accessCondition.isMatchIfEqual() ? accessPermission.isGranted() : !accessPermission.isGranted();
         }
         return true;
@@ -223,11 +219,10 @@ public class VisibilityCondition {
     public boolean checkAccess(PhysicalElement page, HttpServletRequest request, RecordPropertyCache properties)
             throws IndexUnreachableException, DAOException, PresentationException, RecordNotFoundException {
         if (!this.accessCondition.isEmpty()) {
-            AccessPermission access = properties.getPermissionForPage(page, this.accessCondition.getValue().toString(), request);
+            AccessPermission access = properties.getPermissionForPage(page, this.accessCondition.getValue(), request);
             return this.accessCondition.isMatchIfEqual() ? access.isGranted() : !access.isGranted();
-        } else {
-            return true;
         }
+        return true;
     }
 
     public Condition<String> getAccessCondition() {

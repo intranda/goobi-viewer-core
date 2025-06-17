@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>25.05-SNAPSHOT</version>
+	<version>25.06-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Goobi viewer - Core</name>
 	<description>The Goobi viewer is an open source solution for the presentation of digitized cultural assets.</description>
@@ -70,7 +70,7 @@
 		<sonar.java.target>21</sonar.java.target>
 
 		<!-- Checkstyle -->
-		<checkstyle.max.violations>16</checkstyle.max.violations>
+		<checkstyle.max.violations>14</checkstyle.max.violations>
 		<skipCheckstyle>true</skipCheckstyle>
 
 		<!-- Manifest information -->
@@ -129,12 +129,12 @@
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20250517</json.version>
 		<jsoup.version>1.20.1</jsoup.version>
-		<junit.version>5.13.0</junit.version>
+		<junit.version>5.13.1</junit.version>
 		<log4j.version>2.24.3</log4j.version>
 		<mariadb-java-client.version>3.5.3</mariadb-java-client.version>
 		<mockito.version>5.18.0</mockito.version>
 		<mockserver.version>5.15.0</mockserver.version>
-		<omnifaces.version>4.6.3</omnifaces.version>
+		<omnifaces.version>4.6.5</omnifaces.version>
 		<openpdf.version>2.0.5</openpdf.version>
 		<poi.version>5.4.1</poi.version>
 		<prettyfaces.version>10.0.2.Final</prettyfaces.version>

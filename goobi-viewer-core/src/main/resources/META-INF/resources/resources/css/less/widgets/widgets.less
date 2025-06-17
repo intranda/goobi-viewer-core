@@ -7,21 +7,12 @@
 .widget {
 	margin-bottom: 20px;
 	width: 100%;
-
 	&__topbar {
-		padding: 0.7rem 1.5rem;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		position: relative;
 		min-height: 35px;
-		&__icons-container {
-			display: flex;
-			justify-content: flex-start;
-			align-items: center;
-			gap: 5px;
-		}
-
 		&.collapseable {
 			cursor: pointer;
 			pointer-events: all;
@@ -38,24 +29,28 @@
 		}
 
 	}
+	&__topbar-icons-container {
+		display: flex;
+		justify-content: flex-start;
+		align-items: center;
+		gap: 5px;
+	}
 
 	&__title {
 		margin-top: 0;
 		margin-bottom: 0;
 		display: flex;
-	}
+	} 
 
 	&__body {
-		padding: 1rem 1.5rem;
 		word-break: break-word;
-
 		&.collapseable {
 			display: none;
 		}
 
 		a {
 			display: block;
-			padding: 0.5rem 0;
+			// padding: 0.5rem 0;
 			overflow: hidden;
 			text-overflow: ellipsis;
 		}
@@ -100,18 +95,25 @@
 		flex-wrap: wrap;
 		gap: 6px;
 		align-items: flex-start;
-
 		&:last-child,
 		&:nth-last-child(2)+.widget__badge-container {
 			margin-bottom: 5px;
 		}
-
 		.badge {
 			padding: 0.5rem 0.7rem;
-			display: inline-flex;
+			display: inline-flex; 
 			border: none;
 			align-items: center;
-			gap: 4px;
+			gap: 4px; 
+		}
+		.badge-dark {
+			color: white;
+			&:hover,
+			&:active,
+			&:focus {
+				background: #5e5e5e;
+				color: white;
+			}
 		}
 	}
 
@@ -119,6 +121,7 @@
 		margin-bottom: 0px;
 		flex: 0 0 100%;
 		max-width: 100%;
+		font-size: 1.8rem;
 	}
 }
 

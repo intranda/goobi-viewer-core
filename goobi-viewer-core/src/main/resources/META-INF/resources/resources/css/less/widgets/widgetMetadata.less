@@ -6,24 +6,33 @@
     dl {
         dt {}
         dd {
-            margin-bottom: 0.4375rem;
-            text-overflow: ellipsis;
-            overflow: hidden;
         	a, button {
         		display: inline;
         	}
         }
-    }
+    } 
 }
 
 .widget-metadata {
 	&__topbar {
 		margin-top: 20px;
 	}
-
 	&__topbar:first-child {
 		margin-top: none;
 	}
+	&__key-value-group {
+		dd {
+			margin-bottom: 0;
+		}
+		margin-bottom: 1rem;
+		&:last-child {
+			margin-bottom: 0;
+//			dd:last-child {
+//				margin-bottom: 0;
+//			}
+		}
+	}
+
 }
 
 

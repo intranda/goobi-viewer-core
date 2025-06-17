@@ -97,8 +97,6 @@ public class UserBean implements Serializable {
     private CaptchaBean captchaBean;
     @Inject
     private NavigationHelper navigationHelper;
-    @Inject
-    private SessionBean sessionBean;
 
     @Inject
     @Push
@@ -136,15 +134,6 @@ public class UserBean implements Serializable {
     public UserBean() {
         // the emptiness inside
         this.authenticationProvider = getLocalAuthenticationProvider();
-    }
-
-    /**
-     * Setter for unit tests.
-     * 
-     * @param sessionBean
-     */
-    void setSessionBean(SessionBean sessionBean) {
-        this.sessionBean = sessionBean;
     }
 
     /**
@@ -332,7 +321,7 @@ public class UserBean implements Serializable {
         if ("#".equals(this.redirectUrl)) {
             this.redirectUrl = buildRedirectUrl();
         }
-        logger.trace("login");
+        logger.trace("login: {}", Thread.currentThread().threadId());
         if (provider != null) {
             try {
                 // Set provider so it can be accessed from outsde
@@ -365,7 +354,7 @@ public class UserBean implements Serializable {
      * @throws IllegalStateException
      */
     private void completeLogin(IAuthenticationProvider provider, LoginResult result) {
-        logger.debug("completeLogin");
+        logger.debug("completeLogin: {}", Thread.currentThread().threadId());
         HttpServletResponse response = result.getResponse();
         HttpServletRequest request = result.getRequest();
         try {
@@ -394,9 +383,9 @@ public class UserBean implements Serializable {
                         // Exception if different user logged in
                         throw new AuthenticationProviderException("errLoginError");
                     }
-                    if (sessionBean != null) {
-                        sessionBean.wipeSessionAttributes();
-                    }
+
+                    BeanUtils.wipeSessionAttributes(request);
+
                     DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(u, request);
                     // Update last login
                     u.setLastLogin(LocalDateTime.now());
@@ -510,9 +499,7 @@ public class UserBean implements Serializable {
             if (sessionTimeoutMonitorTimer != null) {
                 sessionTimeoutMonitorTimer.cancel();
             }
-            if (sessionBean != null) {
-                sessionBean.wipeSessionAttributes();
-            }
+            BeanUtils.wipeSessionAttributes(request);
             SearchHelper.updateFilterQuerySuffix(request, IPrivilegeHolder.PRIV_LIST);
         } catch (IndexUnreachableException | PresentationException | DAOException e) {
             throw new AuthenticationProviderException(e);
