@@ -99,7 +99,7 @@ public class GeoCoordinateConverter {
 
     public GeoCoordinateConverter(String markerTitleConfig) {
         this.featureTitleConfigs = DataManager.getInstance().getConfiguration().getGeomapFeatureConfigurations(markerTitleConfig);
-        this.entityTitleConfigs = DataManager.getInstance().getConfiguration().getGeomapEntityConfigurations(markerTitleConfig);
+        this.entityTitleConfigs = DataManager.getInstance().getConfiguration().getGeomapItemConfigurations(markerTitleConfig);
         this.servletRequest = null;
     }
 
@@ -113,7 +113,7 @@ public class GeoCoordinateConverter {
     public GeoCoordinateConverter(HttpServletRequest servletRequest) {
         this.servletRequest = servletRequest;
         this.featureTitleConfigs = DataManager.getInstance().getConfiguration().getGeomapFeatureConfigurations("");
-        this.entityTitleConfigs = DataManager.getInstance().getConfiguration().getGeomapEntityConfigurations("");
+        this.entityTitleConfigs = DataManager.getInstance().getConfiguration().getGeomapItemConfigurations("");
     }
 
     /**

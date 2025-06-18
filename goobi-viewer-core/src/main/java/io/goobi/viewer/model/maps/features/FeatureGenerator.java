@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -145,7 +145,7 @@ public class FeatureGenerator {
      * @param points A list of strings that represent two-dimensional coordinates or an array of such.
      * @return The coordinates in form of {@link GeoMapFeature geoMapFeatures}
      */
-    public static List<GeoMapFeature> getFeatures(List<String> points) {
+    private static List<GeoMapFeature> getFeatures(List<String> points) {
         List<GeoMapFeature> docFeatures = new ArrayList<>();
         for (String point : points) {
             try {

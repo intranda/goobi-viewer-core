@@ -24,7 +24,6 @@ package io.goobi.viewer.model.maps;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,11 +37,14 @@ import org.apache.logging.log4j.Logger;
 import com.ocpsoft.pretty.PrettyContext;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.maps.features.FeatureGenerator;
+import io.goobi.viewer.model.maps.features.FeatureQueryGenerator;
+import io.goobi.viewer.model.maps.features.LabelCreator;
+import io.goobi.viewer.model.maps.features.MetadataDocument;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -138,10 +140,18 @@ public class SolrFeatureSet extends FeatureSet {
     }
 
     protected Collection<GeoMapFeature> createFeatures() throws PresentationException, IndexUnreachableException {
-        GeoCoordinateConverter converter = new GeoCoordinateConverter(this.markerTitleField);
+
+        FeatureQueryGenerator queryGenerator = new FeatureQueryGenerator(DataManager.getInstance().getSearchIndex());
+        List<MetadataDocument> hits = queryGenerator.getResults(getSolrQuery(), 10_000);
+
         List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
-        Collection<GeoMapFeature> featuresFromSolr = converter.getFeaturesFromSolrQuery(getSolrQuery(isAggregateResults()), Collections.emptyList(),
-                coordinateFields, getMarkerTitleField(), isAggregateResults());
+        LabelCreator markerLabels =
+                new LabelCreator(DataManager.getInstance().getConfiguration().getGeomapFeatureConfigurations(getMarkerTitleField()));
+        LabelCreator itemLabels = new LabelCreator(DataManager.getInstance().getConfiguration().getGeomapItemConfigurations(getMarkerTitleField()));
+
+        FeatureGenerator featureGenerator = new FeatureGenerator(coordinateFields, markerLabels, itemLabels);
+
+        Collection<GeoMapFeature> featuresFromSolr = hits.stream().map(featureGenerator::getFeatures).flatMap(Collection::stream).toList();
         return featuresFromSolr;
     }
 

@@ -1,17 +1,29 @@
-<div class="overlay" role="region">
-	<div id="overlayModal">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <h3 class="modal-title" data-overlay-area="header"></h3>
-	        <button type="button" class="close" aria-label="Close" data-overlay-action="dismiss">
-	          <i data-overlay-action="dismiss" class="fa fa-times" role="button" aria-label="#{msg.overlay__close}"></i>
-	        </button>
-	      </div>
-	      <div class="modal-body" data-overlay-area="body">
-	      </div>
-	      <div class="modal-footer" data-overlay-area="footer">
-	      </div>
-	    </div>
-	  </div>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+	<div class="overlay" role="region">
+		<div id="overlayModal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3 class="modal-title" data-overlay-area="header"></h3>
+					<button type="button" class="close" aria-label="Close"
+						data-overlay-action="dismiss">
+						<i data-overlay-action="dismiss" class="fa fa-times" role="button"
+							aria-label="#{msg.overlay__close}"></i>
+					</button>
+				</div>
+				<div class="modal-body" data-overlay-area="body"></div>
+				<div class="modal-footer" data-overlay-area="footer"></div>
+			</div>
+		</div>
 	</div>
-</div>
+
+</ui:composition>
