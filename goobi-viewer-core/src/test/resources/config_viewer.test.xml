@@ -998,15 +998,30 @@
 	<!-- ##### SHOW OR HIDE SECTIONS IN THE SIDEBAR GLOBALLY ##### -->
 	<sidebar>
     
+        <!-- views: Widget display configurations for individual record views. -->
+        <views>
+            <view name="object">
+                <displayWidget name="views" />
+                <displayWidget name="copyright-info" />
+                <displayWidget name="search-in-current-item" />
+            </view>
+            <view name="toc">
+                <displayWidget name="views" />
+                <displayWidget name="copyright-info" />
+            </view>
+        </views>
+    
         <widgets>
+        
             <widget name="views">
                 <fulltext enabled="false" />
                 <calendar enabled="falsE" />
                 <metadata enabled="false" />
-                <page enabled="false" />
+                <object enabled="false" />
                 <thumbs enabled="false" />
                 <toc enabled="false" />
             </widget>
+            
             <!-- additional-files: Download widget within a records view for additional files from the source directory. -->
             <widget name="additional-files" enabled="true">
                 <!-- hideFileRegex: If a regular expression is defined, files matching it are hidden from the widget display. The download is still possible. -->
@@ -1017,8 +1032,10 @@
                     </conditions>
                 </filter>
             </widget>
+            
             <!-- browsing-terms: Term browsing widget. -->
             <widget name="browsing-terms" enabled="false" />
+            
             <widget name="citation" enabled="false">
                 <citationRecommendation enabled="false">
                 <!-- Available citation styles (supported by citeproc) -->
@@ -1049,6 +1066,7 @@
                     </links>
                 </citationLinks>
             </widget>
+            
             <!-- copyright-info: copyright status of the current record will be visualized with colors and icons. -->
             <widget name="copyright-info" enabled="true" style="trafficlight">
                 <status field="MD_ACCESSCONDITION">
@@ -1066,6 +1084,7 @@
                     </value>
                 </license>
             </widget>
+            
             <widget name="downloads" enabled="false">
                 <page>
                     <downloadOptions enabled="false">
@@ -1082,10 +1101,15 @@
                     </downloadOptions>
                 </page>
             </widget>
+            
             <widget name="metadata" enabled="false" />
+            
             <widget name="opac" enabled="true" />
+            
             <widget name="rss" enabled="false" />
+            
             <widget name="search-in-current-item" enabled="false" onlyIfFullTextAvailable="true" />
+            
             <widget name="toc" enabled="false">
                 <!-- visibleInFullscreen: If false, the sidebar TOC element won't be visible in the full-screen sidebar accordion -->
                 <visibleInFullscreen>false</visibleInFullscreen>
@@ -1105,14 +1129,8 @@
                 <!-- max length of level before it gets collapsed -->
                 <collapseLengthThreshold lowestLevelToTest="333">141</collapseLengthThreshold>
             </widget>
+            
         </widgets>
-        
-        <!-- @enabled: Show or hide the widget including download links for record and page while viewing the object -->
-        <sidebarWidgetUsage enabled="false">
-            <work>
-                <dfgViewerUrlField>MD2_DFGVIEWERURL</dfgViewerUrlField>
-            </work>
-        </sidebarWidgetUsage>
         
 	</sidebar>
 

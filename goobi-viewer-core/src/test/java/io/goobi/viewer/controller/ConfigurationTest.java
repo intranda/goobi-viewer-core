@@ -1388,12 +1388,12 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSidebarViewsWidgetPageViewLinkVisible()
+     * @see Configuration#isSidebarViewsWidgetObjectViewLinkVisible()
      * @verifies return correct value
      */
     @Test
-    void isSidebarViewsWidgetPageLinkVisible_shouldReturnCorrectValue() {
-        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetPageViewLinkVisible());
+    void isSidebarViewsWidgetObjectLinkVisible_shouldReturnCorrectValue() {
+        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetObjectViewLinkVisible());
     }
 
     /**
@@ -1826,6 +1826,19 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void isDisplaySearchRssLinks_shouldReturnCorrectValue() {
         assertFalse(DataManager.getInstance().getConfiguration().isDisplaySearchRssLinks());
+    }
+    
+    /**
+     * @see Configuration#getSidebarWidgetsForView(String)
+     * @verifies return correct values
+     */
+    @Test
+    void getSidebarWidgetsForView_shouldReturnCorrectValues() {
+        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetsForView("object");
+        assertEquals(3, result.size());
+        assertEquals("views", result.get(0));
+        assertEquals("copyright-info", result.get(1));
+        assertEquals("search-in-current-item", result.get(2));
     }
 
     /**

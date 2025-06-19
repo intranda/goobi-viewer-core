@@ -1101,8 +1101,30 @@ public class Configuration extends AbstractConfiguration {
      * 
      * @return Configured value; otherwise false
      */
-    public boolean isDisplaySidebarWidgetUsagePdfPageRange() {
+    public boolean isDisplaySidebarWidgetDownloadsPdfPageRange() {
         return getSidebarWidgetBooleanValue("downloads", "pdfPageRange[@enabled]", false);
+    }
+
+    /**
+     * 
+     * @param view Record view name
+     * @return List of sidebar widget names to display in the given view (in the intended order)
+     * @should return correct values
+     */
+    public List<String> getSidebarWidgetsForView(String view) {
+        List<String> ret = new ArrayList<>();
+        if (StringUtils.isEmpty(view)) {
+            return ret;
+        }
+
+        HierarchicalConfiguration<ImmutableNode> viewConfig = getSidebarViewConfiguration(view.toLowerCase());
+        if (viewConfig != null) {
+            for (HierarchicalConfiguration<ImmutableNode> widget : viewConfig.configurationsAt("displayWidget")) {
+                ret.add(widget.getString(XML_PATH_ATTRIBUTE_NAME));
+            }
+        }
+
+        return ret;
     }
 
     /**
@@ -2814,25 +2836,44 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns the config block for the given field.
-     *
-     * @param field
-     * @return Configured values
+     * Returns the config block for the given path and name attribute value.
+     * 
+     * @param path
+     * @param name
+     * @return HierarchicalConfiguration<ImmutableNode>; null if none found
      */
-    private HierarchicalConfiguration<ImmutableNode> getSidebarWidgetConfiguration(String name) {
-        List<HierarchicalConfiguration<ImmutableNode>> widgetList = getLocalConfigurationsAt("sidebar.widgets.widget");
-        if (widgetList == null) {
+    private HierarchicalConfiguration<ImmutableNode> getSubConfigurationByNameAttribute(String path, String name) {
+        List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt(path);
+        if (configs == null) {
             return null;
         }
 
-        for (HierarchicalConfiguration<ImmutableNode> subElement : widgetList) {
-            if (subElement.getString("[@name]").equals(name)) {
+        for (HierarchicalConfiguration<ImmutableNode> subElement : configs) {
+            if (subElement.getString(XML_PATH_ATTRIBUTE_NAME, "").equals(name)) {
                 return subElement;
 
             }
         }
 
         return null;
+    }
+
+    /**
+     *
+     * @param field
+     * @return Configured values
+     */
+    private HierarchicalConfiguration<ImmutableNode> getSidebarViewConfiguration(String name) {
+        return getSubConfigurationByNameAttribute("sidebar.views.view", name);
+    }
+
+    /**
+     *
+     * @param field
+     * @return Configured values
+     */
+    private HierarchicalConfiguration<ImmutableNode> getSidebarWidgetConfiguration(String name) {
+        return getSubConfigurationByNameAttribute("sidebar.widgets.widget", name);
     }
 
     /**
@@ -2897,14 +2938,14 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isSidebarViewsWidgetPageLinkVisible.
+     * isSidebarViewsWidgetObjectViewLinkVisible.
      * </p>
      *
      * @should return correct value
      * @return a boolean.
      */
-    public boolean isSidebarViewsWidgetPageViewLinkVisible() {
-        return getSidebarWidgetBooleanValue("views", "page[@enabled]", true);
+    public boolean isSidebarViewsWidgetObjectViewLinkVisible() {
+        return getSidebarWidgetBooleanValue("views", "object[@enabled]", true);
     }
 
     /**

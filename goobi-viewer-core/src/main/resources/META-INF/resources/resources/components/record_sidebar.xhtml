@@ -13,76 +13,88 @@
 	<composite:interface></composite:interface>
 	
 	<composite:implementation>
-		
-			<widgetComponent:widget_views id="widgetViews" collapsible="false"
-				widgetTitle="#{msg.view}"  />
-					
-			<widgetComponent:widget_copyrightInfo rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}"/>
-			
-			<widgetComponent:widget_searchResultNavigation />
-				
-			<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: ![viewThumbs], docType: ![group]}')}">
+	
+	    DEBUG: #{navigationHelper.currentView}
+        <ui:repeat var="widgetName" value="#{configurationBean.getSidebarWidgetsForView(navigationHelper.currentView)}">
+            <ui:fragment rendered="#{widgetName == 'views'}">
+                <widgetComponent:widget_views id="widgetViews" collapsible="false" widgetTitle="#{msg.view}"  />
+            </ui:fragment>
+            <ui:fragment rendered="#{widgetName == 'copyright-info'}">
+                <widgetComponent:widget_copyrightInfo
+                    rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}"/>
+            </ui:fragment>
+            <ui:fragment rendered="#{widgetName == 'search-result-navigation'}">
+                <widgetComponent:widget_searchResultNavigation />
+            </ui:fragment>
+            <ui:fragment rendered="#{widgetName == 'version-history'}">
+                <widgetComponent:widget_versionHistory />
+            </ui:fragment>
+            
+            <ui:fragment rendered="#{displayConditions.matchRecord('{docType: ![group]}')}">
+                <ui:fragment rendered="#{widgetName == 'annotations'}">
+                    <widgetComponent:widget_annotations id="widgetAnnotations" />
+                </ui:fragment>
+                <ui:fragment rendered="#{widgetName == 'archives'}">
+                    <widgetComponent:widget_archives />
+                </ui:fragment>
+                <ui:fragment rendered="#{widgetName == 'citation'}">
+                    <widgetComponent:widget_citation id="widgetCitations"
+                        rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc, viewFulltext]}') or displayConditions.matchRecord('{pageType: [viewMetadata, viewToc], docType:[anchor]}')}"/>
+                </ui:fragment>
+                <ui:fragment rendered="#{widgetName == 'downloads'}">
+                    <widgetComponent:widget_downloads id="widgetDownloads" />
+                </ui:fragment>
+                <ui:fragment rendered="#{widgetName == 'formats-links'}">
+                    <widgetComponent:widget_formatsLinks id="widgetFormatLinks" rendered="#{
+                        displayConditions.matchRecord('{pageType: [viewMetadata]}') or 
+                        displayConditions.matchRecord('{pageType: [viewToc], docType:[anchor]}')}"/>
+                </ui:fragment>
+                <ui:fragment rendered="#{widgetName == 'geomap'}">
+                    <widgetComponent:widget_geoMap
+                        rendered="#{activeDocumentBean.geoMap.hasFeatures()}"
+                        geoMap="#{activeDocumentBean.geoMap}" title="#{msg.NORM_LOCATION}"
+                        allowFullscreen="false" linkToSearch="false"
+                        showAnnotations="true" popoverOnHover="true"
+                        popoverClass="record_geomap_popover"
+                        highlightDocumentId="#{activeDocumentBean.logid}"
+                        currentPageNo="#{activeDocumentBean.viewManager.currentImageOrder}"
+                        featureClickHandling="openSearch" />
+                </ui:fragment>
+                <ui:fragment rendered="#{widgetName == 'metadata'}">
+                    <widgetComponent:widget_metadata id="widgetMetadata" />
+                    <widgetComponent:widget_metadataTech id="widgetTechnical" /> <!-- TODO own config? -->
+                </ui:fragment>
+                <ui:fragment rendered="#{widgetName == 'named-entities'}">
+                    <widgetComponent:widget_nerFacetting rendered="#{displayConditions.matchRecord('{pageType: [viewObject]}')}"/>
+                </ui:fragment>
+                <ui:fragment rendered="#{widgetName == 'record-notes'}">
+                    <widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
+                </ui:fragment>
+                <ui:fragment rendered="#{widgetName == 'related-groups'}">
+                    <widgetComponent:widget_relatedGroups />
+                </ui:fragment>
+                <ui:fragment rendered="#{widgetName == 'search-in-current-item'}">
+                    <widgetComponent:widget_searchInCurrentItem />
+                </ui:fragment>
+                <ui:fragment rendered="#{widgetName == 'statistics-usage'}">
+                    <widgetComponent:widget_statistics_usage />
+                </ui:fragment>
+                <ui:fragment rendered="#{widgetName == 'toc'}">
+                    <widgetComponent:widget_toc id="widgetToc" rendered="#{configurationBean.sidebarTocWidgetVisible}" />
+                </ui:fragment>
+            </ui:fragment>
 
-				<widgetComponent:widget_searchInCurrentItem  rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc]}')}"/>
+	   </ui:repeat>
 
-				<widgetComponent:widget_statistics_usage />
+        <!-- Widgets from modules -->
+        <c:forEach var="module" items="#{configurationBean.modules}">
+            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+                <ui:include src="/#{contribution}" />
+            </c:forEach>
+        </c:forEach>
+        
+        <widgetComponent:widget_userInteractions />
 
-				<widgetComponent:widget_archives />
-
-				<widgetComponent:widget_nerFacetting rendered="#{displayConditions.matchRecord('{pageType: [viewObject]}')}"/>
-
-				<widgetComponent:widget_metadata id="widgetMetadata" rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc, viewFulltext]}')}"/>
-				
-				<widgetComponent:widget_metadataTech id="widgetTechnical" />
-
-				<widgetComponent:widget_geoMap
-					rendered="#{activeDocumentBean.geoMap.hasFeatures()}"
-					geoMap="#{activeDocumentBean.geoMap}" title="#{msg.NORM_LOCATION}"
-					allowFullscreen="false" linkToSearch="false"
-					showAnnotations="true" popoverOnHover="true"
-					popoverClass="record_geomap_popover"
-					highlightDocumentId="#{activeDocumentBean.logid}"
-					currentPageNo="#{activeDocumentBean.viewManager.currentImageOrder}"
-					featureClickHandling="openSearch" />
-
-				<widgetComponent:widget_annotations id="widgetAnnotations" />
-
-				<widgetComponent:widget_recordNotes 
-					notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
-
-			<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: ![viewToc]}')}">
-				
-					<widgetComponent:widget_downloads id="widgetDownloads" />
-			</ui:fragment>
-
-
-				<widgetComponent:widget_formatsLinks id="widgetFormatLinks" rendered="#{
-				displayConditions.matchRecord('{pageType: [viewMetadata]}') or 
-				displayConditions.matchRecord('{pageType: [viewToc], docType:[anchor]}')}"/>
-				
-				<widgetComponent:widget_citation id="widgetCitations" rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc, viewFulltext]}') or displayConditions.matchRecord('{pageType: [viewMetadata, viewToc], docType:[anchor]}')}"/>
-			
-				<ui:fragment rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc, viewFulltext]}')}">
-
-					<widgetComponent:widget_relatedGroups />
-
-					<widgetComponent:widget_toc id="widgetToc"
-						rendered="#{configurationBean.sidebarTocWidgetVisible}" />
-						
-				</ui:fragment>
-					
-			</ui:fragment>
-
-			<widgetComponent:widget_versionHistory />
-
-			<c:forEach var="module" items="#{configurationBean.modules}">
-				<c:forEach var="contribution" items="#{module.sidebarContributions}">
-					<ui:include src="/#{contribution}" />
-				</c:forEach>
-			</c:forEach>
-
-			<widgetComponent:widget_userInteractions />
-		
 		<script>
 			viewerJS.clipboard.init();
 		</script>

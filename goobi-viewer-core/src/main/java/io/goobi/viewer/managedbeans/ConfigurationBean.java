@@ -519,7 +519,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarPageLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetPageViewLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetObjectViewLinkVisible();
     }
 
     /**
@@ -577,6 +577,7 @@ public class ConfigurationBean implements Serializable {
      *
      * @should return correct value
      * @return a boolean.
+     */
     public boolean isSidebarTocViewLinkVisible() {
         return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetTocViewLinkVisible();
     }
@@ -1149,6 +1150,15 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
+     * 
+     * @param view Record view name
+     * @return List of sidebar widget names to display in the given view (in the intended order)
+     */
+    public List<String> getSidebarWidgetsForView(String view) {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetsForView(view);
+    }
+
+    /**
      * <p>
      * isDisplaySidebarBrowsingTerms.
      * </p>
@@ -1609,6 +1619,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     public boolean isPdfPageRangeEnabled() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsagePdfPageRange();
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownloadsPdfPageRange();
     }
+
 }

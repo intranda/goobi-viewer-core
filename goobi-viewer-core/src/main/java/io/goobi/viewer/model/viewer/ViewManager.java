@@ -2571,7 +2571,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public boolean isDisplayObjectViewLink() throws IndexUnreachableException, DAOException {
-        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetPageViewLinkVisible() && isHasPages() && !isFilesOnly();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetObjectViewLinkVisible() && isHasPages() && !isFilesOnly();
     }
 
     /**
