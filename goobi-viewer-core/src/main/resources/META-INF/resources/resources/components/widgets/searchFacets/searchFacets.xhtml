@@ -21,7 +21,7 @@
                 <h:form id="searchListFacetsForm" prependId="false">
                     <!-- FACETS -->
                     <c:forEach var="field" items="#{searchBean.facets.allAvailableFacets.entrySet().toArray()}" varStatus="status">
-                        <h:panelGroup id="collectionFacetsPanelGroup_#{status.index}"
+                        <h:panelGroup id="collectionFacetsPanelGroup_#{status.index}" layout="block"
                             rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and (searchBean.facets.isFacetListSizeSufficient(field.key) or fn:length(searchBean.facets.getActiveFacetsForField(field.key)) > 0)}">
                             <div class="widget widget-search-facets__collection" data-facet="searchFacetFilter">
                                 <div class="widget__topbar widget-search-facets__topbar">
