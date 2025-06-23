@@ -472,9 +472,11 @@ public class ConfigurationBean implements Serializable {
      * </p>
      *
      * @return a boolean.
+     * @deprecated Widgets are now implicitly enabled by being added to a record view configuration
      */
+    @Deprecated(since = "25.06")
     public boolean isSidebarTocWidgetVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisible();
+        return true;
     }
 
     /**
@@ -496,7 +498,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarOpacLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetOpacLinkVisible();
     }
 
     /**
@@ -970,9 +972,11 @@ public class ConfigurationBean implements Serializable {
      * </p>
      *
      * @return a boolean.
+     * @deprecated Widgets are now implicitly enabled by being added to a record view configuration
      */
+    @Deprecated(since = "25.06")
     public boolean isShowSearchInItem() {
-        return DataManager.getInstance().getConfiguration().isSidebarSearchInItemWidgetEnabled();
+        return true;
     }
 
     /**
@@ -1257,9 +1261,11 @@ public class ConfigurationBean implements Serializable {
     /**
      * 
      * @return Configured value
+     * @deprecated Widgets are now implicitly enabled by being added to a record view configuration
      */
+    @Deprecated(since = "25.06")
     public boolean isCopyrightIndicatorEnabled() {
-        return DataManager.getInstance().getConfiguration().isCopyrightIndicatorEnabled();
+        return true;
     }
 
     /**

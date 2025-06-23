@@ -1013,17 +1013,20 @@
     
         <widgets>
         
+            <!-- RECORD VIEW WIDGETS -->
+        
             <widget name="views">
                 <fulltext enabled="false" />
                 <calendar enabled="falsE" />
                 <metadata enabled="false" />
                 <object enabled="false" />
+                <opac enabled="true" />
                 <thumbs enabled="false" />
                 <toc enabled="false" />
             </widget>
             
             <!-- additional-files: Download widget within a records view for additional files from the source directory. -->
-            <widget name="additional-files" enabled="true">
+            <widget name="additional-files">
                 <!-- hideFileRegex: If a regular expression is defined, files matching it are hidden from the widget display. The download is still possible. -->
                 <filter action="hide" regex="(wug_.*|AK_.*)"/>
                 <filter action="show" regex="{struct.MD_SHELFMARK}">
@@ -1033,10 +1036,7 @@
                 </filter>
             </widget>
             
-            <!-- browsing-terms: Term browsing widget. -->
-            <widget name="browsing-terms" enabled="false" />
-            
-            <widget name="citation" enabled="false">
+            <widget name="citation">
                 <citationRecommendation enabled="false">
                 <!-- Available citation styles (supported by citeproc) -->
                 <styles>
@@ -1068,7 +1068,7 @@
             </widget>
             
             <!-- copyright-info: copyright status of the current record will be visualized with colors and icons. -->
-            <widget name="copyright-info" enabled="true" style="trafficlight">
+            <widget name="copyright-info" style="trafficlight">
                 <status field="MD_ACCESSCONDITION">
                     <value content="Freier Zugang" status="OPEN" description="COPYRIGHT_STATUS_OPEN" />
                     <value content="Eingeschränker Zugang" status="PARTIAL" description="COPYRIGHT_STATUS_PARTIAL" />
@@ -1085,7 +1085,7 @@
                 </license>
             </widget>
             
-            <widget name="downloads" enabled="false">
+            <widget name="downloads">
                 <page>
                     <downloadOptions enabled="false">
                     <!-- Each option contains a label and a format. The label is translated via the messages. 
@@ -1102,15 +1102,11 @@
                 </page>
             </widget>
             
-            <widget name="metadata" enabled="false" />
+            <widget name="metadata" />
             
-            <widget name="opac" enabled="true" />
+            <widget name="search-in-current-item" onlyIfFullTextAvailable="true" />
             
-            <widget name="rss" enabled="false" />
-            
-            <widget name="search-in-current-item" enabled="false" onlyIfFullTextAvailable="true" />
-            
-            <widget name="toc" enabled="false">
+            <widget name="toc">
                 <!-- visibleInFullscreen: If false, the sidebar TOC element won't be visible in the full-screen sidebar accordion -->
                 <visibleInFullscreen>false</visibleInFullscreen>
 
@@ -1129,6 +1125,14 @@
                 <!-- max length of level before it gets collapsed -->
                 <collapseLengthThreshold lowestLevelToTest="333">141</collapseLengthThreshold>
             </widget>
+            
+            <!-- OTHER WIDGETS -->
+            
+            <!-- browsing-terms: Term browsing widget. -->
+            <widget name="browsing-terms" enabled="false" />
+            
+            <!-- widget[@name="rss]/@enabled: If true, the sidebar RSS widget it displayed. Default is true. -->
+            <widget name="rss" enabled="false" />
             
         </widgets>
         
