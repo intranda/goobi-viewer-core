@@ -3169,6 +3169,10 @@ public class ViewManager implements Serializable {
      * @return a boolean.
      */
     public boolean isDisplayContentDownloadMenu() {
+        if (!DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetAdditionalFiles()) {
+            logger.trace("additional files disabled");
+            return false;
+        }
         try {
             return !listDownloadableContent().isEmpty();
         } catch (PresentationException | IndexUnreachableException | DAOException | IOException e) {
