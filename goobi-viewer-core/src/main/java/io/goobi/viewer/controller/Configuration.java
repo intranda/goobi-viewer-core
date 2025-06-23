@@ -3009,20 +3009,6 @@ public class Configuration extends AbstractConfiguration {
         return getSidebarWidgetBooleanValue("views", "fulltext[@enabled]", true);
     }
 
-    // Side bar widget: search-in-current-item
-
-    /**
-     * <p>
-     * isSidebarSearchInItemWidgetEnabled.
-     * </p>
-     *
-     * @should return true if the search field to search the current item/work is configured to be visible
-     * @return a boolean.
-     */
-    public boolean isSidebarSearchInItemWidgetEnabled() {
-        return getSidebarWidgetBooleanValue("search-in-current-item", "[@enabled]", true);
-    }
-
     /**
      * <p>
      * isSearchInItemOnlyIfFullTextAvailable.
@@ -3039,55 +3025,6 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * <p>
-     * isDisplaySidebarBrowsingTerms.
-     * </p>
-     *
-     * @return a boolean.
-     * @should return correct value
-     */
-    public boolean isDisplaySidebarBrowsingTerms() {
-        return getSidebarWidgetBooleanValue("browsing-terms", "[@enabled]", true);
-    }
-
-    /**
-     * <p>
-     * isSidebarRssFeedWidgetEnabled.
-     * </p>
-     *
-     * @return a boolean.
-     * @should return correct value
-     */
-    public boolean isSidebarRssFeedWidgetEnabled() {
-        return getSidebarWidgetBooleanValue("rss", "[@enabled]", true);
-    }
-
-    /**
-     * <p>
-     * isOriginalContentDownload.
-     * </p>
-     *
-     * @return true if enabled; false otherwise
-     * @should return correct value
-     */
-    public boolean isDisplaySidebarWidgetAdditionalFiles() {
-        return getSidebarWidgetBooleanValue("additional-files", "[@enabled]", false);
-    }
-
-    /**
-     * <p>
-     * This method checks whether the TOC <strong>widget</strong> is enabled. To check whether the sidebar TOC <strong>link</strong> in the views
-     * widget is enabled, use <code>isSidebarTocVisible()</code>.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isSidebarTocWidgetVisible() {
-        return getSidebarWidgetBooleanValue("toc", "[@enabled]", true);
-    }
-
-    /**
-     * <p>
      * This method checks whether the TOC <strong>widget</strong> is enabled. To check whether the sidebar TOC <strong>link</strong> in the views
      * widget is enabled, use <code>isSidebarTocVisible()</code>.
      * </p>
@@ -3097,18 +3034,6 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isSidebarTocWidgetVisibleInFullscreen() {
         return getSidebarWidgetBooleanValue("toc", "visibleInFullscreen", true);
-    }
-
-    /**
-     * <p>
-     * isSidebarOpacLinkVisible.
-     * </p>
-     *
-     * @should return correct value
-     * @return a boolean.
-     */
-    public boolean isSidebarOpacLinkVisible() {
-        return getSidebarWidgetBooleanValue("opac", "[@enabled]", false);
     }
 
     /**
@@ -5734,15 +5659,6 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isDiscloseImageContentLocation() {
         return getLocalBoolean("webapi.iiif.discloseContentLocation", true);
-    }
-
-    /**
-     * 
-     * @return Configured value
-     * @should return correct value
-     */
-    public boolean isCopyrightIndicatorEnabled() {
-        return getSidebarWidgetBooleanValue("copyright-info", "[@enabled]", false);
     }
 
     /**

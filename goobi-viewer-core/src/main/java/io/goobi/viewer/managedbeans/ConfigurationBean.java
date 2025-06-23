@@ -472,9 +472,11 @@ public class ConfigurationBean implements Serializable {
      * </p>
      *
      * @return a boolean.
+     * @deprecated Widget visibility is now controlled via sidebar/views/view/displayWidget
      */
+    @Deprecated(since = "25.06")
     public boolean isSidebarTocWidgetVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisible();
+        return true;
     }
 
     /**
@@ -494,9 +496,11 @@ public class ConfigurationBean implements Serializable {
      * </p>
      *
      * @return a boolean.
+     * @deprecated Widget visibility is now controlled via sidebar/views/view/displayWidget
      */
+    @Deprecated(since = "25.06")
     public boolean isSidebarOpacLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible();
+        return true;
     }
 
     /**
@@ -970,9 +974,11 @@ public class ConfigurationBean implements Serializable {
      * </p>
      *
      * @return a boolean.
+     * @deprecated Widget visibility is now controlled via sidebar/views/view/displayWidget
      */
+    @Deprecated(since = "25.06")
     public boolean isShowSearchInItem() {
-        return DataManager.getInstance().getConfiguration().isSidebarSearchInItemWidgetEnabled();
+        return true;
     }
 
     /**
@@ -1164,10 +1170,11 @@ public class ConfigurationBean implements Serializable {
      * </p>
      *
      * @return a boolean.
-     * @should return correct value
+     * @deprecated Widget visibility is now controlled via sidebar/views/view/displayWidget
      */
+    @Deprecated(since = "25.06")
     public boolean isDisplaySidebarBrowsingTerms() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarBrowsingTerms();
+        return true;
     }
 
     /**
@@ -1176,10 +1183,11 @@ public class ConfigurationBean implements Serializable {
      * </p>
      *
      * @return a boolean.
-     * @should return correct value
+     * @deprecated Widget visibility is now controlled via sidebar/views/view/displayWidget
      */
+    @Deprecated(since = "25.06")
     public boolean isDisplaySidebarRssFeed() {
-        return DataManager.getInstance().getConfiguration().isSidebarRssFeedWidgetEnabled();
+        return true;
     }
 
     /**
@@ -1257,9 +1265,11 @@ public class ConfigurationBean implements Serializable {
     /**
      * 
      * @return Configured value
+     * @deprecated Widget visibility is now controlled via sidebar/views/view/displayWidget
      */
+    @Deprecated(since = "25.06")
     public boolean isCopyrightIndicatorEnabled() {
-        return DataManager.getInstance().getConfiguration().isCopyrightIndicatorEnabled();
+        return true;
     }
 
     /**

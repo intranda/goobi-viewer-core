@@ -1235,15 +1235,6 @@ class ConfigurationTest extends AbstractTest {
         assertEquals(false, DataManager.getInstance().getConfiguration().isMetadataPdfEnabled());
     }
 
-    /**
-     * @see Configuration#isDisplaySidebarWidgetAdditionalFiles()
-     * @verifies return correct value
-     */
-    @Test
-    void isDisplaySidebarWidgetAdditionalFiles_shouldReturnCorrectValue() {
-        assertEquals(true, DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetAdditionalFiles());
-    }
-
     @Test
     void getHideDownloadFileRegex_returnConfiguredValue() {
         List<IFilterConfiguration> filters = DataManager.getInstance().getConfiguration().getAdditionalFilesDisplayFilters();
@@ -1415,30 +1406,12 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSidebarViewsWidgetOpacLinkVisible()
-     * @verifies return correct value
-     */
-    @Test
-    void isSidebarViewsWidgetOpacLinkVisible_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible());
-    }
-
-    /**
      * @see Configuration#isSidebarTocViewLinkVisible()
      * @verifies return correct value
      */
     @Test
     void isSidebarViewsWidgetTocLinkVisible_shouldReturnCorrectValue() {
         assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetTocViewLinkVisible());
-    }
-
-    /**
-     * @see Configuration#isSidebarTocWidgetVisible()
-     * @verifies return correct value
-     */
-    @Test
-    void isSidebarTocVisible_shouldReturnCorrectValue() {
-        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisible());
     }
 
     /**
@@ -1827,7 +1800,7 @@ class ConfigurationTest extends AbstractTest {
     void isDisplaySearchRssLinks_shouldReturnCorrectValue() {
         assertFalse(DataManager.getInstance().getConfiguration().isDisplaySearchRssLinks());
     }
-    
+
     /**
      * @see Configuration#getSidebarWidgetsForView(String)
      * @verifies return correct values
@@ -3001,15 +2974,6 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSidebarSearchInItemWidgetEnabled()
-     * @verifies return true if the search field to search the current item/work is configured to be visible
-     */
-    @Test
-    void isSidebarSearchInItemWidgetEnabled_shouldReturnTrueIfTheSearchFieldToSearchTheCurrentItemworkIsConfiguredToBeVisible() {
-        assertFalse(DataManager.getInstance().getConfiguration().isSidebarSearchInItemWidgetEnabled());
-    }
-
-    /**
      * @see Configuration#isSearchInItemOnlyIfFullTextAvailable()
      * @verifies return correct value
      */
@@ -3118,24 +3082,6 @@ class ConfigurationTest extends AbstractTest {
         Assertions.assertNotNull(marker);
         assertEquals("maps__marker_2", marker.getName());
         assertEquals("fa-search", marker.getIcon());
-    }
-
-    /**
-     * @see Configuration#isDisplaySidebarBrowsingTerms()
-     * @verifies return correct value
-     */
-    @Test
-    void isDisplaySidebarBrowsingTerms_shouldReturnCorrectValue() {
-        assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarBrowsingTerms());
-    }
-
-    /**
-     * @see Configuration#isSidebarRssFeedWidgetEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    void isSidebarRssFeedWidgetEnabled_shouldReturnCorrectValue() {
-        assertFalse(DataManager.getInstance().getConfiguration().isSidebarRssFeedWidgetEnabled());
     }
 
     /**
@@ -3521,15 +3467,6 @@ class ConfigurationTest extends AbstractTest {
 
         assertEquals("lido_objects", groups.get(0).getName());
         assertEquals("SOURCEDOCFORMAT:LIDO", groups.get(0).getQuery());
-    }
-
-    /**
-     * @see Configuration#isCopyrightIndicatorEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    void isCopyrightIndicatorEnabled_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isCopyrightIndicatorEnabled());
     }
 
     /**
