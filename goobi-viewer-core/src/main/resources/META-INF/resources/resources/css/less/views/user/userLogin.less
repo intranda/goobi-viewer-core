@@ -415,6 +415,9 @@
 	       transform: scale(1);
 	    }
 	}
+	.form-control {
+		transition: border-color 0.15s ease-in-out;
+	}
 	// REMOVES YELLOW AUTOCOMPLETE BACKGROUND
 	@media (prefers-color-scheme: light) {
 		:-webkit-autofill {
@@ -424,8 +427,8 @@
 	}
 	@media (prefers-color-scheme: dark) {
 	  :-webkit-autofill {
-		-webkit-text-fill-color: white;
-		box-shadow: 0 0 0 100px #1b2330 inset !important;
+		-webkit-text-fill-color: #212529;
+		box-shadow: 0 0 0 100px #ffffff inset !important;
 	    }
 	}
 	:-webkit-autofill { 
@@ -438,6 +441,23 @@
 	}
 }
 
+.color-theme-light {
+	.user-login-modal {
+		:-webkit-autofill {
+			-webkit-text-fill-color: #212529;
+			box-shadow: 0 0 0 100px #ffffff inset !important;
+		}
+	}
+}
+
+.color-theme-dark {
+	.user-login-modal {
+		:-webkit-autofill {
+			-webkit-text-fill-color: #212529;
+			box-shadow: 0 0 0 100px #ffffff inset !important;
+		}
+	}
+}
 
 /* MODIFICATION */
 #login-body {
