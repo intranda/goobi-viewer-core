@@ -119,7 +119,7 @@
 		<jakarta.websocket.version>2.2.0</jakarta.websocket.version>
 		<jakarta.ws.rs-api.version>3.1.0</jakarta.ws.rs-api.version>
 		<java-jwt.version>4.5.0</java-jwt.version>
-		<jwks-rsa.version>0.22.1</jwks-rsa.version>
+		<jwks-rsa.version>0.22.2</jwks-rsa.version>
 		<jaxen.version>2.0.0</jaxen.version>
 		<jaxb-api.version>4.0.2</jaxb-api.version>
 		<jaxb-runtime.version>4.0.5</jaxb-runtime.version>
