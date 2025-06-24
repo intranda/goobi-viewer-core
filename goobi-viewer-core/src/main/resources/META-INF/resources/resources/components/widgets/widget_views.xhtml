@@ -23,11 +23,9 @@
 	<composite:implementation>
 		<div class="widget widget-views" jsf:id="widgetViewsContent" rendered="#{displayConditions.getTag('widgetViewsContent').getChildCount('widget-element') > 1}">
 			<ui:fragment rendered="#{cc.attrs.collapsible == false}">
-				<div 
-					tabindex="0"
+				<div tabindex="0"
 					role="button"
-					class="widget__topbar widget-views__topbar #{cc.attrs.collapsible ? 'collapseable' : ''}"
-				>
+					class="widget__topbar widget-views__topbar #{cc.attrs.collapsible ? 'collapseable' : ''}">
 					<h2 class="widget__title widget-views__title">
 						#{cc.attrs.widgetTitle}
 					</h2>
@@ -44,8 +42,7 @@
 				<div 
 					tabindex="0"
 					role="button"
-					class="widget__topbar widget-views__topbar #{cc.attrs.collapsible ? 'collapseable' : ''}"
-				>
+					class="widget__topbar widget-views__topbar #{cc.attrs.collapsible ? 'collapseable' : ''}">
 					<h2 class="widget__title">
 						#{cc.attrs.widgetTitle}
 					</h2>
@@ -57,9 +54,10 @@
 			</ui:fragment>
 			
 			<div class="widget__body widget-views__body">
+				<h:form prependId="false" id="widgetViewsForm" styleClass="widget-views__form">
 				<ul class="#{cc.attrs.collapsible ? 'collapseable' : ''}">
-					<h:form prependId="false" id="widgetViewsForm">
-					<!-- Object -->
+
+					<!-- Object --> 
 					<h:panelGroup  visibility-class="widget-element"
 						rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, mimeType: [image, video, audio, model]}')}">
 						<li
@@ -226,8 +224,8 @@
 								</h:outputLink>
 							</li>
 					</ui:repeat>
-					</h:form>
 				</ul>
+				</h:form>
 			</div>
 		</div>
 	</composite:implementation>

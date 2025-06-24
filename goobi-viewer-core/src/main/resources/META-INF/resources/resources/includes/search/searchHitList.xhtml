@@ -30,7 +30,7 @@
             	<ui:fragment rendered="#{displayHitsPerPage}">
                     <div class="search-list__nav-helper-item search-list__nav-helper-item-hits-per-page">
                         <div class="search-list__nav-helper-label">
-                            <label for="hitsPerPageSelect" id="searchListSortingLabel">#{msg.search__hits_per_page}:</label>
+                            <label for="hitsPerPageSelect" id="searchListHitsPerPageLabel">#{msg.search__hits_per_page}:</label>
                         </div>
                         <div class="custom-control custom-control--select">
                             <h:form>
@@ -38,7 +38,7 @@
                                  onchange="$('[data-hits-per-page]').click()">
                                  <f:selectItems var="value" value="#{configurationBean.searchHitsPerPageValues}"
                                      itemLabel="#{value}" itemValue="#{value}"   onclick="$('.relaodButton').click()" />
-                                 <f:passThroughAttribute name="aria-labelledby" value="searchListSortingLabel"/>
+                                 <f:passThroughAttribute name="aria-labelledby" value="searchListHitsPerPageLabel"/>
                                  <f:passThroughAttribute name="aria-haspopup" value="listbox"/>
                              </h:selectOneMenu>
                              <h:commandButton style="display: none" action="#{search.search(cmsBean.currentPage.subThemeDiscriminatorValue)}">
@@ -52,7 +52,7 @@
 				<ui:fragment rendered="#{showSorting}">
                     <div class="search-list__nav-helper-item search-list__nav-helper-item-sorting">
                         <div class="search-list__nav-helper-label">
-                            <label for="sortSelect">#{msg.sortBy}:</label>
+                            <label id="searchListSortingLabel " for="sortSelect">#{msg.sortBy}:</label>
                         </div>
                         <div class="custom-control custom-control--select">
                         	<!-- The onkeypress prevents the command button from being triggered accidentally by pressing enter. It should only 
@@ -65,6 +65,7 @@
 	                            					var="option"
 	                            					itemLabel="#{option.label}"
 	                            					itemValue="#{option}" />
+									<f:passThroughAttribute name="aria-labelledby" value="searchListSortingLabel"/>
 	                            </h:selectOneMenu>
 <!-- 	                            <h:commandButton styleClass="d-none" id="executeSort" action="pretty:newSearch5"></h:commandButton> -->
 	                            <h:commandButton styleClass="d-none" pt:data-execute="search" action="#{search.changeSorting()}"></h:commandButton>

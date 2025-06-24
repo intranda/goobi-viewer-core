@@ -18,23 +18,8 @@
 		li {
 			&.active {
 				margin-bottom: 3px;
-				
 				a {
 					background-color: @lightgray;
-				}
-				
-				.row {
-					margin: 0;
-					color: @blue;
-				}
-				.col-11,
-				.col-1 {
-					padding: 0;
-					text-overflow: ellipsis;
-					overflow: hidden;
-				}
-				.col-1 {
-					text-align: right;
 				}
 			}
 		}
@@ -52,6 +37,19 @@
 	}
 	&__list-item-link {
 		
+	}
+	&__list-item-link-inner {
+		display: flex;
+		gap: 5px;
+		justify-content: space-between;
+	}
+	&__list-item-link-active {
+		padding: 0;
+//		text-overflow: ellipsis;
+//		overflow: hidden;
+	}
+	&__list-item-link-icon {
+		padding-inline-end: 5px;
 	}
 	/* FILTER */
 	&__filter {
