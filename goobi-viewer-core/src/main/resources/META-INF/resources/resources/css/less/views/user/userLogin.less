@@ -416,7 +416,19 @@
 	    }
 	}
 	// REMOVES YELLOW AUTOCOMPLETE BACKGROUND
-	:-webkit-autofill { /* -webkit also works in firefox here */
+	@media (prefers-color-scheme: light) {
+		:-webkit-autofill {
+			-webkit-text-fill-color: #212529;
+			box-shadow: 0 0 0 100px #ffffff inset !important;
+		}
+	}
+	@media (prefers-color-scheme: dark) {
+	  :-webkit-autofill {
+		-webkit-text-fill-color: white;
+		box-shadow: 0 0 0 100px #1b2330 inset !important;
+	    }
+	}
+	:-webkit-autofill { 
 	    filter:none; /* needed for firefox! */
 	    box-shadow: 0 0 0 100px rgba(255, 255, 255, 1) inset;
 	}
