@@ -144,7 +144,7 @@
 		<spring.version>6.2.8</spring.version>
 		<slf4j.version>2.0.17</slf4j.version>
 		<solr.version>9.8.1</solr.version>
-		<swagger.version>2.2.33</swagger.version>
+		<swagger.version>2.2.34</swagger.version>
 		<tomcat.version>10.1.31</tomcat.version>
 		<weld-servlet-shaded.version>5.1.6.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
