@@ -23,7 +23,7 @@ public class LabelCreator {
     public Metadata getMetadata(MetadataContainer doc, String template) {
         return this.metadataTemplates.getOrDefault(
                 Optional.ofNullable(doc).map(mc -> mc.getFirstValue(SolrConstants.DOCSTRCT)).orElse(StringConstants.DEFAULT_NAME),
-                this.metadataTemplates.get(StringConstants.DEFAULT_NAME));
+                this.metadataTemplates.getOrDefault(StringConstants.DEFAULT_NAME, new Metadata()));
     }
 
     public IMetadataValue getValue(MetadataContainer doc, String template) {

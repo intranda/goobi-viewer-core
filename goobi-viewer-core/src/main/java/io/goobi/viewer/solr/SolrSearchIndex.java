@@ -97,6 +97,8 @@ public class SolrSearchIndex {
     private static final int TIMEOUT_SO = 30000;
     private static final int TIMEOUT_CONNECTION = 30000;
 
+    public static final int MAX_HITS_EXPANDED = 100000;
+
     private long lastPing = 0;
 
     /** Application-scoped map containing already looked up data repository names of records. */

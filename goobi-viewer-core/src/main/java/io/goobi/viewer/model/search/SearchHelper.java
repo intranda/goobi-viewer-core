@@ -3470,7 +3470,7 @@ public final class SearchHelper {
         params.put(ExpandParams.EXPAND, "true");
         params.put(ExpandParams.EXPAND_Q, expandQuery);
         params.put(ExpandParams.EXPAND_FIELD, SolrConstants.PI_TOPSTRUCT);
-        params.put(ExpandParams.EXPAND_ROWS, String.valueOf(SolrSearchIndex.MAX_HITS));
+        params.put(ExpandParams.EXPAND_ROWS, String.valueOf(SolrSearchIndex.MAX_HITS_EXPANDED));
         params.put(ExpandParams.EXPAND_SORT, SolrConstants.ORDER + " asc");
         params.put(ExpandParams.EXPAND_FQ, ""); // The main filter query may not apply to the expand query to produce child hits
         return params;

@@ -173,7 +173,7 @@ public class MetadataContainer {
                 .findFirst()
                 .flatMap(IMetadataValue::getValue)
                 .filter(StringTools::isInteger)
-                .map(Integer::getInteger)
+                .map(Integer::parseInt)
                 .orElse(null);
     }
 

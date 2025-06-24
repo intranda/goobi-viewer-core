@@ -75,7 +75,7 @@ public class FeatureGenerator {
         List<String> coordinates =
                 coordinateFields.stream()
                         .flatMap(field -> groups.stream().map(g -> g.getFirstValue(field)))
-                        .filter(v -> !v.isEmpty())
+                        .filter(v -> v != null && !v.isEmpty())
                         .map(v -> v.getValue().orElse(""))
                         .toList();
 

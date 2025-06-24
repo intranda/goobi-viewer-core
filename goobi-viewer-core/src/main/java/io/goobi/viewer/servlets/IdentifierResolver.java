@@ -564,7 +564,7 @@ public class IdentifierResolver extends HttpServlet {
     }
 
     public static String constructUrl(MetadataContainer targetDoc, boolean pageResolverUrl) {
-        int order = 1;
+        Integer order = 1;
         if (targetDoc.containsField(SolrConstants.THUMBPAGENO)) {
             order = targetDoc.getFirstIntValue(SolrConstants.THUMBPAGENO);
         } else if (targetDoc.containsField(SolrConstants.ORDER)) {
@@ -606,7 +606,7 @@ public class IdentifierResolver extends HttpServlet {
         return sb.toString();
     }
 
-    static String constructUrl(MetadataContainer targetDoc, boolean pageResolverUrl, int order) {
+    static String constructUrl(MetadataContainer targetDoc, boolean pageResolverUrl, Integer order) {
         String docStructType = targetDoc.getFirstValue(SolrConstants.DOCSTRCT);
         String mimeType = (String) targetDoc.getFirstValue(SolrConstants.MIMETYPE);
         String topstructPi = (String) targetDoc.getFirstValue(SolrConstants.PI_TOPSTRUCT);
@@ -618,9 +618,10 @@ public class IdentifierResolver extends HttpServlet {
         PageType pageType = PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, pageResolverUrl);
 
         StringBuilder sb = new StringBuilder("/");
+        int effectiveOrder = order == null ? 1 : order;
         sb.append(DataManager.getInstance()
                 .getUrlBuilder()
-                .buildPageUrl(topstructPi, order, targetDoc.getFirstValue(SolrConstants.LOGID), pageType, topstruct || anchorOrGroup));
+                .buildPageUrl(topstructPi, effectiveOrder, targetDoc.getFirstValue(SolrConstants.LOGID), pageType, topstruct || anchorOrGroup));
 
         // logger.trace("Resolved to: {}", sb.toString()); //NOSONAR Debug
         return sb.toString();
