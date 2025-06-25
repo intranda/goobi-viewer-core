@@ -21,12 +21,15 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataElement;
 
 class MetadataBeanTest extends AbstractTest {
@@ -53,5 +56,53 @@ class MetadataBeanTest extends AbstractTest {
         List<MetadataElement> list = bean.getMetadataElementsAsList(new MetadataElement(), new MetadataElement(), new MetadataElement());
         Assertions.assertNotNull(list);
         Assertions.assertEquals(3, list.size());
+    }
+
+    /**
+     * @see MetadataBean#getBottomMetadataElementAsList(int)
+     * @verifies return empty list if bottom element missing
+     */
+    @Test
+    void getBottomMetadataElementAsList_shouldReturnEmptyListIfBottomElementMissing() {
+        MetadataBean bean = new MetadataBean();
+        List<MetadataElement> list = bean.getBottomMetadataElementAsList(0);
+        Assertions.assertNotNull(list);
+        Assertions.assertTrue(list.isEmpty());
+    }
+
+    /**
+     * @see MetadataBean#getBottomMetadataElementAsList(int)
+     * @verifies return empty list if bottom element contains no sidebar metadata
+     */
+    @Test
+    void getBottomMetadataElementAsList_shouldReturnEmptyListIfBottomElementContainsNoSidebarMetadata() {
+        MetadataBean bean = new MetadataBean();
+        bean.getMetadataElementMap().put(0, new ArrayList<>());
+        Assertions.assertNotNull(bean.getMetadataElementList());
+        bean.getMetadataElementList().add(new MetadataElement());
+        Assertions.assertEquals(1, bean.getMetadataElementList().size());
+        Assertions.assertFalse(bean.getMetadataElementList().get(0).isHasSidebarMetadata());
+        List<MetadataElement> list = bean.getBottomMetadataElementAsList(0);
+        Assertions.assertNotNull(list);
+        Assertions.assertTrue(list.isEmpty());
+    }
+
+    /**
+     * @see MetadataBean#getBottomMetadataElementAsList(int)
+     * @verifies return bottom if it contains sidebar metadata
+     */
+    @Test
+    void getBottomMetadataElementAsList_shouldReturnBottomElementIfItContainsSidebarMetadata() {
+        MetadataBean bean = new MetadataBean();
+        bean.getMetadataElementMap().put(0, new ArrayList<>());
+        Assertions.assertNotNull(bean.getMetadataElementList());
+        MetadataElement me = new MetadataElement();
+        me.setSidebarMetadataList(Collections.singletonList(new Metadata()));
+        bean.getMetadataElementList().add(me);
+        Assertions.assertEquals(1, bean.getMetadataElementList().size());
+        Assertions.assertTrue(bean.getMetadataElementList().get(0).isHasSidebarMetadata());
+        List<MetadataElement> list = bean.getBottomMetadataElementAsList(0);
+        Assertions.assertNotNull(list);
+        Assertions.assertFalse(list.isEmpty());
     }
 }

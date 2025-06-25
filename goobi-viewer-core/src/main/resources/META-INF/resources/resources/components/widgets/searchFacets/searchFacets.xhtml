@@ -21,7 +21,7 @@
                 <h:form id="searchListFacetsForm" prependId="false">
                     <!-- FACETS -->
                     <c:forEach var="field" items="#{searchBean.facets.allAvailableFacets.entrySet().toArray()}" varStatus="status">
-                        <h:panelGroup id="collectionFacetsPanelGroup_#{status.index}"
+                        <h:panelGroup id="collectionFacetsPanelGroup_#{status.index}" layout="block"
                             rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and (searchBean.facets.isFacetListSizeSufficient(field.key) or fn:length(searchBean.facets.getActiveFacetsForField(field.key)) > 0)}">
                             <div class="widget widget-search-facets__collection" data-facet="searchFacetFilter">
                                 <div class="widget__topbar widget-search-facets__topbar">
@@ -146,9 +146,9 @@
 	                                    <c:forEach items="#{searchBean.facets.getActiveFacetsForField(field.key)}" var="facet">
 	                                        <li class="widget-search-facets__list-item active">
 	                                            <h:commandLink styleClass="widget-search-facets__list-item-link" action="#{searchBean.removeFacetAction(facet.link)}" title="#{msg.removeFacet}">
-	                                                <div class="row">
-	                                                    <div class="col-11">#{facet.translatedLabel}</div>
-	                                                    <div class="col-1">
+	                                                <div class="widget-search-facets__list-item-link-inner">
+	                                                    <div class="widget-search-facets__list-item-link-active">#{facet.translatedLabel}</div>
+	                                                    <div class="widget-search-facets__list-item-link-icon">
 	                                                        <i class="fa fa-times" aria-hidden="true"></i>
 	                                                    </div>
 	                                                </div>

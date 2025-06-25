@@ -155,12 +155,13 @@ public class CollectionViewBean implements Serializable {
      * @return a {@link java.lang.String} object
      */
     public static String getCollectionId(CMSCollectionContent content) {
+        String componentId = content.getOwningComponent() == null ? "component" : "component" + content.getOwningComponent().getId();
         if (content.getOwningComponent().getOwningPage() != null) {
-            return content.getOwningComponent().getOwningPage().getId() + "_" + content.getItemId();
+            return content.getOwningComponent().getOwningPage().getId() + "_" + componentId + content.getItemId();
         } else if (content.getOwningComponent().getOwningTemplate() != null) {
-            return content.getOwningComponent().getOwningTemplate().getId() + "_" + content.getItemId();
+            return content.getOwningComponent().getOwningTemplate().getId() + "_" + componentId + content.getItemId();
         } else {
-            return content.getItemId();
+            return componentId + "_" + content.getItemId();
         }
     }
 
