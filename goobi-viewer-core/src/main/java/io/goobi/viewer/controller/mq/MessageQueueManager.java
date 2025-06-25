@@ -76,6 +76,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.managedbeans.MessageQueueBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -187,8 +188,8 @@ public class MessageQueueManager {
 
     public static String getQueueForMessageType(String taskName) {
         try {
-            TaskType type = TaskType.valueOf(taskName);
-            return type == TaskType.PRERENDER_PDF ? QUEUE_NAME_PDF : QUEUE_NAME_VIEWER;
+            ITaskType type = TaskType.getByName(taskName);
+            return type != null && type == TaskType.PRERENDER_PDF ? QUEUE_NAME_PDF : QUEUE_NAME_VIEWER;
         } catch (NullPointerException | IllegalArgumentException e) {
             logger.error("Error parsing TaskType for name {}", taskName);
             return QUEUE_NAME_VIEWER;
@@ -332,7 +333,7 @@ public class MessageQueueManager {
             try {
                 MessageHandler<MessageStatus> handler = clazz.getDeclaredConstructor().newInstance();
                 handlers.put(handler.getMessageHandlerName(), handler);
-
+                logger.trace("Loaded ticket handler: {}", handler.getMessageHandlerName());
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | IllegalArgumentException | InvocationTargetException
                     | SecurityException e) {
                 logger.error(e);

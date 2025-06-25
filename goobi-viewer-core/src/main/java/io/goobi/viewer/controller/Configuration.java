@@ -75,6 +75,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.cms.Highlight;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
+import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
@@ -6234,7 +6235,7 @@ public class Configuration extends AbstractConfiguration {
 
     public String getQuartzSchedulerCronExpression(String taskName) {
         try {
-            TaskType type = TaskType.valueOf(taskName.toUpperCase());
+            ITaskType type = TaskType.getByName(taskName.toUpperCase());
             return getLocalString("quartz.scheduler." + taskName.toLowerCase() + ".cronExpression", type.getDefaultCronExpression());
 
         } catch (IllegalArgumentException e) {

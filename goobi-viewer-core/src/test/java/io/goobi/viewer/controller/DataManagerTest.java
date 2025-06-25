@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.controller;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.exceptions.IndexAugmenterException;
+import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
@@ -41,7 +43,7 @@ class DataManagerTest {
      * @verifies not add module if it's already registered
      */
     @Test
-    void registerModule_shouldNotAddModuleIfItsAlreadyRegistered() throws Exception {
+    void registerModule_shouldNotAddModuleIfItsAlreadyRegistered() {
 
         class TestModule implements IModule {
 
@@ -133,6 +135,11 @@ class DataManagerTest {
             @Override
             public List<String> getWidgets(String type) {
                 return null;
+            }
+            
+            @Override
+            public List<ITaskType> getTaskTypes() {
+                return Collections.emptyList();
             }
 
             /* (non-Javadoc)
