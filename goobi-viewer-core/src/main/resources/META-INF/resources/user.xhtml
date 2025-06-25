@@ -56,13 +56,26 @@
 				<h:form id="deleteUser" styleClass="form-horizontal form-group" role="form" prependId="false">
 					<facelet:deleteUser user="#{userBean.user.copy}" />
 				</h:form>
+
+				
 			</ui:fragment>
 		</div>
 	</ui:define>
 
 
 	<ui:define name="sidebar">
+		<!-- USER AVATAR -->
 		<facelet:userAvatar user="#{userBean.user.copy}" />
+		
+		<!-- CROWDSOURCING USER SETTINGS (E-MAIL NOTIFICATIONS) -->
+		<div class="user-settings__crowdsourcing-box">
+			<c:forEach var="module" items="#{configurationBean.modules}">
+			    <c:forEach var="contribution" items="#{module.getWidgets('userSettings')}">
+			        <ui:include src="/#{contribution}" />
+			    </c:forEach>
+			</c:forEach>
+		</div>
+		
 	</ui:define>
 
 </ui:composition>

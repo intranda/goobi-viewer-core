@@ -22,8 +22,6 @@
 
 package io.goobi.viewer.model.job.quartz;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,12 +29,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import jakarta.inject.Inject;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletContextEvent;
-import jakarta.servlet.ServletContextListener;
-import jakarta.servlet.annotation.WebListener;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -58,11 +50,20 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.mq.GeoMapUpdateHandler;
+import io.goobi.viewer.modules.IModule;
+import jakarta.inject.Inject;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.annotation.WebListener;
 
 @WebListener
 public class QuartzListener implements ServletContextListener {
+
+    private static final Logger logger = LogManager.getLogger(QuartzListener.class);
 
     public static final String QUARTZ_LISTENER_CONTEXT_ATTRIBUTE = "io.goobi.viewer.model.job.quartz.QuartzListener";
 
@@ -132,7 +133,8 @@ public class QuartzListener implements ServletContextListener {
                 }
 
                 //Initialize CronJob
-                HandleMessageJob job = new HandleMessageJob(TaskType.valueOf(trigger.getTaskType()), trigger.getScheduleExpression(), messageBroker);
+                HandleMessageJob job =
+                        new HandleMessageJob(TaskType.getByName(trigger.getTaskType()), trigger.getScheduleExpression(), messageBroker);
                 JobDetail jobDetail = initializeCronJob(job, sched);
                 Map<String, Object> params = getParams(job.getTaskType(), true, servletContext);
                 sched.getContext().put(jobDetail.getKey().getName(), params);
@@ -147,12 +149,12 @@ public class QuartzListener implements ServletContextListener {
         }
     }
 
-    private Map<String, Object> getParams(TaskType taskType, boolean runInQueue, ServletContext servletContext) {
+    private Map<String, Object> getParams(ITaskType taskType, boolean runInQueue, ServletContext servletContext) {
         Map<String, Object> params = new HashMap<>();
         params.put("taskType", taskType.toString());
         params.put("runInQueue", runInQueue);
         switch (taskType) {
-            case UPDATE_SITEMAP:
+            case TaskType.UPDATE_SITEMAP:
                 String rootUrl = this.config.getViewerBaseUrl();
                 String realPath = servletContext.getRealPath("/");
                 params.put("viewerRootUrl", rootUrl);
@@ -165,6 +167,7 @@ public class QuartzListener implements ServletContextListener {
     }
 
     private List<RecurringTaskTrigger> loadOrCreateTriggers() throws DAOException {
+        logger.info("loadOrCreateTriggers");
         Map<String, RecurringTaskTrigger> storedTriggers =
                 dao.getRecurringTaskTriggers().stream().collect(Collectors.toMap(RecurringTaskTrigger::getTaskType, Function.identity()));
         List<RecurringTaskTrigger> triggers = new ArrayList<>();
@@ -179,10 +182,19 @@ public class QuartzListener implements ServletContextListener {
         } else if (storedTriggers.containsKey(TaskType.CACHE_GEOMAPS.name())) {
             dao.deleteRecurringTaskTrigger(storedTriggers.get(TaskType.CACHE_GEOMAPS.name()).getId());
         }
+
+        //  Add module triggers
+        for (IModule module : DataManager.getInstance().getModules()) {
+            for (ITaskType type : module.getTaskTypes()) {
+                addTrigger(storedTriggers, triggers, type, TaskTriggerStatus.RUNNING);
+                logger.debug("Added task trigger {} from {}.", type.name(), module.getId());
+            }
+        }
+
         return triggers;
     }
 
-    public void addTrigger(Map<String, RecurringTaskTrigger> storedTriggers, List<RecurringTaskTrigger> triggers, TaskType taskType,
+    public void addTrigger(Map<String, RecurringTaskTrigger> storedTriggers, List<RecurringTaskTrigger> triggers, ITaskType taskType,
             TaskTriggerStatus defaultStatus)
             throws DAOException {
         if (storedTriggers.containsKey(taskType.name())) {

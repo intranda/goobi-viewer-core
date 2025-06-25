@@ -23,11 +23,9 @@
 	<composite:implementation>
 		<div class="widget widget-views" jsf:id="widgetViewsContent" rendered="#{displayConditions.getTag('widgetViewsContent').getChildCount('widget-element') > 1}">
 			<ui:fragment rendered="#{cc.attrs.collapsible == false}">
-				<div 
-					tabindex="0"
+				<div tabindex="0"
 					role="button"
-					class="widget__topbar widget-views__topbar #{cc.attrs.collapsible ? 'collapseable' : ''}"
-				>
+					class="widget__topbar widget-views__topbar #{cc.attrs.collapsible ? 'collapseable' : ''}">
 					<h2 class="widget__title widget-views__title">
 						#{cc.attrs.widgetTitle}
 					</h2>

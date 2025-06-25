@@ -15,8 +15,8 @@
 				</div>
 				
 				<div class="widget__body widget-search-result-navigation__body">
-					<div class="search-result-navigation-wrapp clearfix">
-						<div class="search-result-navigation-left">
+					<div class="widget-search-result-navigation__wrapper">
+						<div class="widget-search-result-navigation__left">
 							<h:outputLink rendered="#{activeDocumentBean.prevHit != null}" disabled="#{searchBean.currentHitIndex == 0}"
 								value="#{activeDocumentBean.prevHit.sidebarPrevUrl}">
 								<div class="searchResultNavigationBackImg" style="#{searchBean.currentHitIndex == 0 ? 'opacity: 0.4;' : ''}" >
@@ -27,7 +27,7 @@
 							</h:outputLink>
 						</div>
 	
-						<div class="search-result-navigation-center">
+						<div class="widget-search-result-navigation__center">
 							<h:outputFormat value="#{msg.searchResultNavigation_hitIndex}"
 								rendered="#{activeDocumentBean.nextHit != null or activeDocumentBean.prevHit != null}" class="searchResultNavigationText">
 								<f:param value="#{searchBean.currentHitIndexDisplay}" />
@@ -35,7 +35,7 @@
 							</h:outputFormat>
 						</div>
 	
-						<div class="search-result-navigation-right">
+						<div class="widget-search-result-navigation__right">
 							<h:outputLink rendered="#{activeDocumentBean.nextHit != null}" disabled="#{searchBean.currentHitIndex == (searchBean.hitsCount - 1)}"
 								value="#{activeDocumentBean.nextHit.sidebarNextUrl}">
 								<div class="searchResultNavigationForwardImg" style="#{searchBean.currentHitIndex == (searchBean.hitsCount - 1) ? 'opacity: 0.4;' : ''}">
@@ -47,10 +47,11 @@
 						</div>
 					</div>
 	
-					<div class="search-result-navigation-back-to-collection">
+					<div class="widget-search-result-navigation__back-to-collection">
 						<h:outputLink rendered="#{activeDocumentBean.nextHit != null}"
 						    value="#{searchBean.lastUsedSearchUrl}">
-							<ui:include src="#{navigationHelper.getResource('images/icons/icon_backtohitlist.svg')}" />#{msg.returnToHitlist}
+							<ui:include src="#{navigationHelper.getResource('images/icons/icon_backtohitlist.svg')}" />
+							<span>#{msg.returnToHitlist}</span>
 			            </h:outputLink>
 					</div>
 				</div>

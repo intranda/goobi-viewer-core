@@ -38,7 +38,11 @@
 				
 				<c:forEach items="#{cc.attrs.metadataElementList}"
 					var="metadataElement" varStatus="status">
+					
+					<!-- Skip element if it contains no sidebar metadata -->
+					<ui:fragment rendered="#{metadataElement.hasSidebarMetadata}">
 
+                    <!-- Render structure type label only if more than one element in list -->
 					<ui:fragment
 						rendered="#{fn:length(cc.attrs.metadataElementList) gt 1}">
 						<h3 class="metadata__elements-h3">
@@ -137,6 +141,8 @@
 							</div>
 						</c:forEach>
 					</dl>
+					
+					</ui:fragment>
 				</c:forEach>
 
 			<!-- LIDO -->

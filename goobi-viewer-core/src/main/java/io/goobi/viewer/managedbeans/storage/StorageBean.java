@@ -32,7 +32,7 @@ import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * Bean to store variables within a certain scope. Should be extended with beans appplying to a certain jsf scope
+ * Bean to store variables within a certain scope. Should be extended with beans applying to a certain jsf scope
  */
 public abstract class StorageBean implements DataStorage, Serializable {
 
