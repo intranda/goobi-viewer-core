@@ -6,6 +6,12 @@
 .widget-toc {
   position: relative;
   /* TITLE */
+  &__topbar {}
+  &__body {
+	ul {
+		gap: 5px;
+	}
+  }
   &__title {
 	width: 100%;
     display: flex;
@@ -65,6 +71,9 @@
         padding-right: 5px;
       }
     }
+	a {
+		padding: 2px 0;
+	}
     &.active {
       a {
         font-weight: 700;

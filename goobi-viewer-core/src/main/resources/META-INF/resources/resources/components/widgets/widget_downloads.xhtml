@@ -10,620 +10,588 @@
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
 
 	<composite:interface>
-	    	<composite:attribute name="collapsible" required="false" default="#{displayConditions.getTag('widgetDownloadsBody').getChildCount('widget-element') > 7}" />
+		<composite:attribute name="collapsible" required="false" default="false"/>
 	</composite:interface>
 
 	<composite:implementation>
-			<div 
-				jsf:id="widgetDownloads" 
-				class="widget widget-downloads" 
-				rendered="#{activeDocumentBean.viewManager != null and displayConditions.getTag('widgetDownloads').getChildCount('widget-element') > 0}"
-				data-numChildren="#{displayConditions.getTag('widgetDownloadsBody').getChildCount('widget-element')}"
-			>
-				<div 
-					tabindex="0"
-					role="button"
-					class="widget__topbar widget-downloads__topbar #{cc.attrs.collapsible  ? 'collapseable' : ''}"
-				>
-					<h2 class="widget__title widget-downloads__title">
-						#{msg.widget__downloads__title}
-					</h2>
-					
-					<div class="widget__topbar-icons-container">
-						<div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
-							<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+		<div jsf:id="widgetDownloads" class="widget widget-downloads"
+			rendered="#{activeDocumentBean.viewManager != null and displayConditions.getTag('widgetDownloads').getChildCount('widget-element') > 0}">
+			<div tabindex="0" role="button"
+				class="widget__topbar widget-downloads__topbar #{cc.attrs.collapsible  ? 'collapseable' : ''}">
+				<h2 class="widget__title widget-downloads__title">
+					#{msg.widget__downloads__title}</h2>
+
+				<div class="widget__topbar-icons-container">
+					<div
+						class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
+						<img
+							src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+					</div>
+
+					<i class="fa fa-angle-down" aria-hidden="true"></i>
+				</div>
+			</div>
+
+			<!-- WIDGET BODY -->
+			<div id="widgetDownloadsBody"
+				class="widget__body widget-downloads__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
+				<!-- INTRODUCTION TEXT -->
+				<ui:fragment
+					rendered="#{fn:length(msg['widget__downloads__intro_text_object_downloads']) > 0 and displayConditions.matchRecord('{pageType:[viewObject, cmsPage]}') }">
+					<p id="introductionText" class="widget-downloads__license-text">
+						<h:outputText
+							value="#{msg['widget__downloads__intro_text_object_downloads']}"
+							escape="false" />
+					</p>
+				</ui:fragment>
+				<!-- INTRODUCTION TEXT DOWNLOADS GENERAL -->
+				<ui:fragment
+					rendered="#{fn:length(msg['widget__downloads__intro_text_text_formats']) > 0 and displayConditions.matchRecord('{pageType:[viewFulltext]}') }">
+					<p id="introductionText" class="widget-downloads__license-text">
+						<h:outputText
+							value="#{msg['widget__downloads__intro_text_text_formats']}"
+							escape="false" />
+					</p>
+				</ui:fragment>
+
+				<!-- INTRODUCTION TEXT ADDITIONAL FILES -->
+				<ui:fragment
+					rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_DOWNLOAD']) > 0 and activeDocumentBean.viewManager.displayContentDownloadMenu}">
+					<p id="introductionText"
+						class="widget-downloads__additional-files-text">
+						<h:outputText
+							value="#{msg['MASTERVALUE_INTRODUCTION_TEXT_DOWNLOAD']}"
+							escape="false" />
+					</p>
+				</ui:fragment>
+
+				<!-- WORK -->
+				<!-- WORK DOWNLOADS -->
+				<div jsf:id="recordDownloads"
+					rendered="#{displayConditions.getTag('recordDownloads').getChildCount('widget-element') > 0}"
+					class="widget-downloads__work-downloads widget__badge-container">
+
+					<h3 id="titleWork"
+						class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget__downloads__complete_record}</h3>
+
+					<!-- WORK FULLTEXT FORMATS (VIEW_FULLTEXT not checked here because each method already has access permission checks) -->
+
+					<!-- ALTO (WORK) -->
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{displayConditions.matchRecord('{contentType:[ALTO], pageType:[viewFulltext, viewFullscreen], accessCondition:VIEW_FULLTEXT}')}">
+						<a href="#{activeDocumentBean.viewManager.altoUrlForAllPages}"
+							id="alto"
+							class="badge badge-dark widget-downloads__work-download-alto"
+							title="#{msg.metadata_dl_alto_work}" data-toggle="tooltip"
+							data-placement="top" data-trigger="hover" rel="nofollow noopener"
+							aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadAltoWorkButtonLabel}">
+							#{msg.downloadAltoWorkButtonLabel} </a>
+					</ui:fragment>
+
+					<!-- TEI (WORK) -->
+					<!-- MULTILANGUAGE -->
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{displayConditions.matchRecord('{contentType:[TEI], pageType:[viewFulltext, viewFullscreen], accessCondition:VIEW_FULLTEXT}')}">
+						<ui:repeat var="lang"
+							value="#{textBean.getRecordLanguages(activeDocumentBean.viewManager.topStructElement)}">
+							<a
+								href="#{activeDocumentBean.viewManager.getTeiUrlForAllPages(lang)}"
+								id="teiWork"
+								class="badge badge-dark widget-downloads__work-download-tei"
+								title="#{msg.downloadWorkTei}" data-toggle="tooltip"
+								data-placement="top" data-trigger="hover" target="_blank"
+								rel="nofollow noopener"
+								aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.TEI}">
+								#{msg.TEI} (#{lang}) </a>
+						</ui:repeat>
+					</ui:fragment>
+					<!-- SINGLE LANGUAGE -->
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{displayConditions.matchRecord('{contentType:![TEI], pageType:[viewFulltext, viewFullscreen], accessCondition:VIEW_FULLTEXT}')}">
+						<a href="#{activeDocumentBean.viewManager.teiUrlForAllPages}"
+							id="teiWork"
+							class="badge badge-dark widget-downloads__work-download-tei"
+							title="#{msg.downloadWorkTei}" data-toggle="tooltip"
+							data-placement="top" data-trigger="hover" target="_blank"
+							rel="nofollow noopener"
+							aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.TEI}">
+							#{msg.TEI} </a>
+					</ui:fragment>
+					<!-- FULLTEXT (WORK) -->
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{displayConditions.matchRecord('{contentType:[ALTO, TEXT], pageType:[viewFulltext, viewFullscreen], accessCondition:VIEW_FULLTEXT}')}">
+						<a href="#{activeDocumentBean.viewManager.fulltextUrlForAllPages}"
+							id="textWork"
+							class="badge badge-dark widget-downloads__work-download-fulltext"
+							title="#{msg.downloadWorkFulltext}" data-toggle="tooltip"
+							data-placement="top" data-trigger="hover" target="_blank"
+							rel="nofollow noopener"
+							aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.fulltext}">
+							#{msg.fulltext} </a>
+					</ui:fragment>
+
+					<!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
+
+					<!-- METS -->
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], accessCondition:DOWNLOAD_METADATA, pageType:![viewFulltext, viewFullscreen, viewMetadata]}')}">
+						<a href="#{activeDocumentBean.viewManager.metsResolverUrl}"
+							id="lidomets"
+							class="badge badge-dark widget-format-links__work-download-lido-mets"
+							title="#{msg.metadata_dl_mets}" data-toggle="tooltip"
+							data-placement="top" data-trigger="hover" target="_blank"
+							rel="nofollow noopener"
+							aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadMetsButtonLabel}">
+							#{msg.downloadMetsButtonLabel} </a>
+					</ui:fragment>
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], accessCondition:DOWNLOAD_METADATA, pageType:![viewFulltext, viewFullscreen], docType: [volume]}')}">
+						<a href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
+							id="metsanchor"
+							class="badge badge-dark widget-format-links__work-download-mets-anchor"
+							title="#{msg.metadata_dl_metsAnchor}" data-toggle="tooltip"
+							data-placement="top" data-trigger="hover" target="_blank"
+							rel="nofollow noopener"
+							aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadAnchorMetsButtonLabel}">
+							#{msg.downloadAnchorMetsButtonLabel} </a>
+					</ui:fragment>
+
+					<!-- LIDO -->
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{displayConditions.matchRecord('{sourceFormat:[LIDO], accessCondition:DOWNLOAD_METADATA, pageType:![viewFulltext]}')}">
+						<a href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
+							id="lidomets"
+							class="badge badge-dark widget-format-links__work-download-lido-mets"
+							title="#{msg.metadata_dl_lido}" data-toggle="tooltip"
+							data-placement="top" data-trigger="hover" target="_blank"
+							rel="nofollow noopener"
+							aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadLidoButtonLabel}">
+							#{msg.downloadLidoButtonLabel} </a>
+					</ui:fragment>
+
+					<!-- DUBLINCORE -->
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{displayConditions.matchRecord('{sourceFormat:[DUBLINCORE], accessCondition:DOWNLOAD_METADATA, pageType:![viewFulltext, viewFullscreen]}')}">
+						<a href="#{activeDocumentBean.viewManager.dublinCoreResolverUrl}"
+							id="dublincorexml"
+							class="badge badge-dark widget-format-links__work-download-lido-mets"
+							title="#{msg.metadata_dl_dublincore}" data-toggle="tooltip"
+							data-placement="top" data-trigger="hover" target="_blank"
+							rel="nofollow noopener"
+							aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadDublinCoreButtonLabel}">
+							#{msg.downloadDublinCoreButtonLabel} </a>
+					</ui:fragment>
+
+
+					<!-- PDF (WORK) -->
+					<c:set scope="request" var="hasPrerenderedPagePdfs"
+						value="#{activeDocumentBean.viewManager.hasPrerenderedPagePdfs()}" />
+					<ui:fragment
+						rendered="#{displayConditions.matchRecord('{contentType:[IMAGE], pageType:[viewObject, viewFullscreen], accessCondition:DOWNLOAD_PDF}')}">
+						<ui:fragment visibility-class="widget-element"
+							rendered="#{!configurationBean.generatePdfInMessageQueue and hasPrerenderedPagePdfs}">
+							<a
+								href="#{activeDocumentBean.viewManager.getPdfDownloadLink([['usePdfSource', 'true']])}"
+								id="pdfWork-small"
+								class="badge badge-dark widget-downloads__work-download-pdf"
+								title="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_small})"
+								data-toggle="tooltip" data-placement="top" data-trigger="hover"
+								target="_blank" rel="nofollow noopener"
+								aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
+								<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+								#{msg.label__pdf_download} (#{msg.label__pdf_download_small})
+							</a>
+							<a
+								href="#{activeDocumentBean.viewManager.getPdfDownloadLink([['usePdfSource', 'false']])}"
+								id="pdfWork-full"
+								class="badge badge-dark widget-downloads__work-download-pdf"
+								title="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_full})"
+								data-toggle="tooltip" data-placement="top" data-trigger="hover"
+								target="_blank" rel="nofollow noopener"
+								aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
+								<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+								#{msg.label__pdf_download} (#{msg.label__pdf_download_full})
+							</a>
+						</ui:fragment>
+						<ui:fragment visibility-class="widget-element"
+							rendered="#{!configurationBean.generatePdfInMessageQueue and !hasPrerenderedPagePdfs}">
+							<a href="#{activeDocumentBean.viewManager.pdfDownloadLink}"
+								id="pdfWork"
+								class="badge badge-dark widget-downloads__work-download-pdf"
+								title="#{msg.label__pdf_download_record}" data-toggle="tooltip"
+								data-placement="top" data-trigger="hover" target="_blank"
+								rel="nofollow noopener"
+								aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
+								<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+								#{msg.label__pdf_download}
+							</a>
+						</ui:fragment>
+
+						<ui:fragment visibility-class="widget-element"
+							rendered="#{configurationBean.generatePdfInMessageQueue}">
+							<a href="#" id="pdfWork"
+								class="badge badge-dark widget-downloads__work-download-pdf download-modal"
+								data-type="pdf" data-title="#{activeDocumentBean.titleBarLabel}"
+								data-id="" data-pi="#{activeDocumentBean.viewManager.pi}"
+								title="#{msg.label__pdf_download_record}" data-toggle="tooltip"
+								data-placement="top" data-trigger="hover"
+								aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
+								<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+								#{msg.label__pdf_download}
+							</a>
+						</ui:fragment>
+
+					</ui:fragment>
+
+					<!-- External download link -->
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{activeDocumentBean.viewManager.externalDownloadUrl != null}">
+						<a href="#{activeDocumentBean.viewManager.externalDownloadUrl}"
+							id="externalDownloadWork"
+							class="badge badge-dark widget-format-links__work-download-external"
+							title="#{msg.downloadWorkExternal}" data-toggle="tooltip"
+							data-placement="top" data-trigger="hover" target="_blank"
+							rel="nofollow noopener"
+							aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadWorkExternal}">
+							<i class="fa fa-download" aria-hidden="true"></i>
+							#{msg.downloadWorkExternal}
+						</a>
+					</ui:fragment>
+
+					<!-- EPUB -->
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{activeDocumentBean.accessPermissionEpub}">
+						<a href="#"
+							class="badge badge-dark widget-downloads__work-download-epub download-modal-widget"
+							data-type="epub" data-title="#{activeDocumentBean.titleBarLabel}"
+							data-id="" data-pi="#{activeDocumentBean.viewManager.pi}"
+							title="#{msg.epubDownload}" data-toggle="tooltip"
+							data-placement="top" data-trigger="hover"
+							aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.epub}">
+							#{msg.epub} </a>
+					</ui:fragment>
+
+					<!-- TOC -->
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{configurationBean.docHierarchyPdfEnabled and displayConditions.matchRecord('{tocSize: 2}')}">
+						<h:form class="d-inline-flex" id="titleBodyForm" prependId="false">
+							<h:commandLink id="tocDownload"
+								action="#{activeDocumentBean.downloadTOCAction()}"
+								title="#{msg.tocDownload}"
+								styleClass="badge badge-dark widget-downloads__work-download-toc"
+								value="#{msg.tocDownloadBadge}">
+								<f:passThroughAttribute name="data-toggle" value="tooltip" />
+								<f:passThroughAttribute name="data-placement" value="top" />
+								<f:passThroughAttribute name="aria-label"
+									value="#{msg.tocDownload}" />
+							</h:commandLink>
+						</h:form>
+					</ui:fragment>
+
+					<!-- WORK IIIF-RELIANT FUNCTIONS (GENERATE_IIIF_MANIFEST CHECK) -->
+					<!-- IIIF MANIFEST FULL RECORD -->
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{displayConditions.matchRecord('{numPages:1, mimeType:![application], pageType:![viewFulltext, viewMetadata], accessCondition:GENERATE_IIIF_MANIFEST}')}">
+						<button id="iiifManifestRecord"
+							class="badge badge-dark widget-usage__work-download-iiif"
+							data-copy-value="#{imageDelivery.iiifManifest}"
+							data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+							aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.iiif}"
+							tabindex="0">#{msg.iiif}</button>
+					</ui:fragment>
+
+					<!-- MIRADOR FULL RECORD -->
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{displayConditions.matchRecord('{pageType:![viewFulltext, viewMetadata], contentType:[IMAGE], accessCondition:GENERATE_IIIF_MANIFEST}')}">
+						<a
+							href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifManifest}&amp;page=1"
+							id="mirador"
+							class="badge badge-dark widget-usage__work-link-mirador-viewer"
+							title="#{msg.action__view_in_mirador__tooltip}"
+							data-toggle="tooltip" data-placement="top" data-trigger="hover"
+							target="_blank" rel="nofollow noopener"
+							aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.action__view_in_mirador}">
+							#{msg.action__view_in_mirador} </a>
+					</ui:fragment>
+
+				</div>
+
+				<!-- PAGE -->
+				<!-- PAGE DOWNLOADS -->
+				<div jsf:id="pageDownloads"
+					rendered="#{activeDocumentBean.viewManager.currentPage != null and displayConditions.getTag('pageDownloads').getChildCount('widget-element') > 0}"
+					class="widget-downloads__page-downloads widget__badge-container">
+
+					<h3 id="titleImage"
+						class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget__downloads__this_page}</h3>
+
+					<!-- PDF (PAGE) -->
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen, cmsPage], contentType:[IMAGE], accessCondition:DOWNLOAD_PAGE_PDF}')}">
+						<a href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
+							id="pdfPage"
+							class="badge badge-dark widget-downloads__page-download-pdf"
+							title="#{msg.label__pdf_download_image}" data-toggle="tooltip"
+							data-placement="top" data-trigger="hover" target="_blank"
+							rel="nofollow noopener"
+							aria-label="#{msg.image}: #{msg.label__pdf_download}"> <i
+							class="fa fa-file-pdf-o" aria-hidden="true"></i>
+							#{msg.label__pdf_download}
+						</a>
+					</ui:fragment>
+
+					<!-- IMAGE DOWNLOAD OPTIONS -->
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{activeDocumentBean.viewManager.getDownloadOptionsForPage(activeDocumentBean.viewManager.currentPage).size() > 0 and displayConditions.matchPage('{pageType:[viewObject, viewFullscreen, cmsPage], mimeType: [image], accessCondition:DOWNLOAD_IMAGES}')}">
+						<!-- IMAGE (PAGE) GENERATE LINKS FOR EVERY CONFIGURED DOWNLOAD SIZE -->
+						<ui:repeat varStatus="status" var="option"
+							value="#{activeDocumentBean.viewManager.getDownloadOptionsForPage(activeDocumentBean.viewManager.currentPage)}">
+							<h:outputLink id="downloadImageSizeLink"
+								styleClass="badge badge-dark widget-downloads__page-download-image-size-link"
+								title="#{navigationHelper.getTranslationWithParamsUnescaped(msg.widget__downloads__download_image_size, option.format,option.boxSizeLabel)}"
+								pt:data-toggle="tooltip" target="_blank" rel="nofollow noopener"
+								aria-label="#{msg.downloadButton}"
+								value="#{activeDocumentBean.viewManager.getPageDownloadUrl(option, activeDocumentBean.viewManager.currentPage)}"
+								pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}.#{option.getExtension(activeDocumentBean.viewManager.currentPage.fileName)}">
+								<span class="widget-downloads__download-image-size-radio-label">#{msg.image}</span>
+								<span class="widget-downloads__download-image-size-radio-label">#{msg[option.label]}</span>
+							</h:outputLink>
+						</ui:repeat>
+					</ui:fragment>
+
+					<!-- PAGE FULLTEXT FORMATS (VIEW_FULLTEXT CHECK) -->
+					<!-- ALTO (PAGE) -->
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{displayConditions.matchPage('{pageType:[viewFulltext, viewFullscreen], contentType:[ALTO], accessCondition:VIEW_FULLTEXT}')}">
+						<a href="#{activeDocumentBean.viewManager.altoUrl}" id="altoPage"
+							class="badge badge-dark widget-downloads__page-download-alto"
+							title="#{msg.metadata_dl_alto_page}" data-toggle="tooltip"
+							data-placement="top" data-trigger="hover" target="_blank"
+							rel="nofollow noopener"
+							aria-label="#{msg.image}: #{msg.downloadAltoPageButtonLabel}">
+							#{msg.downloadAltoPageButtonLabel} </a>
+					</ui:fragment>
+
+					<!-- TEI (PAGE) -->
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{displayConditions.matchPage('{pageType:[viewFulltext, viewFullscreen], contentType:[ALTO, TEXT], accessCondition:VIEW_FULLTEXT}')}">
+						<a href="#{activeDocumentBean.viewManager.teiUrl}" id="teiPage"
+							class="badge badge-dark widget-downloads__page-download-tei"
+							title="#{msg.downloadPageTei}" data-toggle="tooltip"
+							data-placement="top" data-trigger="hover" target="_blank"
+							rel="nofollow noopener" aria-label="#{msg.image}: #{msg.TEI}">
+							#{msg.TEI} </a>
+					</ui:fragment>
+
+					<!-- FULLTEXT (PAGE) -->
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{displayConditions.matchPage('{pageType:[viewFulltext, viewFullscreen], contentType:[ALTO, TEXT], accessCondition:VIEW_FULLTEXT}')}">
+						<a href="#{activeDocumentBean.viewManager.fulltextUrl}"
+							id="textPage"
+							class="badge badge-dark widget-downloads__page-download-fulltext"
+							title="#{msg.downloadPageFulltext}" data-toggle="tooltip"
+							data-placement="top" data-trigger="hover" target="_blank"
+							rel="nofollow noopener"
+							aria-label="#{msg.image}: #{msg.fulltext}"> #{msg.fulltext} </a>
+					</ui:fragment>
+
+					<!-- IIIF MANIFEST PAGE -->
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{displayConditions.matchPage('{pageType:![viewFulltext, viewMetadata], numPages:2, mimeType: [image], accessCondition:GENERATE_IIIF_MANIFEST}')}">
+						<button id="iiifManifestPage"
+							class="badge badge-dark widget-usage__page-download-iiif"
+							data-copy-value="#{imageDelivery.iiifPageManifest}"
+							data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+							aria-label="#{msg.image}: #{msg.iiif}" tabindex="0">
+							#{msg.iiif}</button>
+					</ui:fragment>
+
+					<!-- MIRADOR PAGE -->
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{displayConditions.matchPage('{pageType:![viewFulltext, viewMetadata], numPages:2, contentType:[IMAGE], accessCondition:GENERATE_IIIF_MANIFEST}')}">
+						<a
+							href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifPageManifest}"
+							id="mirador"
+							class="badge badge-dark widget-usage__page-link-mirador-viewer"
+							title="#{msg.action__view_in_mirador__tooltip}"
+							data-toggle="tooltip" data-placement="top" data-trigger="hover"
+							target="_blank" rel="nofollow noopener"
+							aria-label="#{msg.image}: #{msg.action__view_in_mirador}">
+							#{msg.action__view_in_mirador} </a>
+					</ui:fragment>
+				</div>
+
+
+				<div jsf:id="mediaDownloads"
+					rendered="#{displayConditions.getTag('mediaDownloads').getChildCount('widget-element') > 0}"
+					class="widget-downloads__media widget__badge-container">
+
+					<h3 id="titleMedia"
+						class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget__downloads__media}</h3>
+
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen], contentType:[AUDIO], accessCondition:DOWNLOAD_IMAGES}')}">
+						<a
+							href="#{request.contextPath}/api/v1/records/#{activeDocumentBean.viewManager.pi}/files/media/#{activeDocumentBean.viewManager.currentPage.getFileForType('AUDIO')}"
+							id="downloadAudio"
+							class="badge badge-dark widget-downloads__media-audio-download-link"
+							title="#{msg.action__download_audio__tooltip}"
+							data-toggle="tooltip" data-placement="top" data-trigger="hover"
+							target="_blank" rel="nofollow noopener"
+							aria-label="#{msg.action__download_audio__tooltip}">
+							#{msg.action__download_audio} </a>
+					</ui:fragment>
+
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen], contentType:[VIDEO], accessCondition:DOWNLOAD_IMAGES}')}">
+						<a
+							href="#{request.contextPath}/api/v1/records/#{activeDocumentBean.viewManager.pi}/files/media/#{activeDocumentBean.viewManager.currentPage.getFileForType('VIDEO')}"
+							id="downloadVideo"
+							class="badge badge-dark widget-downloads__media-video-download-link"
+							title="#{msg.action__download_video__tooltip}"
+							data-toggle="tooltip" data-placement="top" data-trigger="hover"
+							target="_blank" rel="nofollow noopener"
+							aria-label="#{msg.action__download_video__tooltip}">
+							#{msg.action__download_video} </a>
+					</ui:fragment>
+
+					<ui:fragment visibility-class="widget-element"
+						rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen], contentType:[MODEL], accessCondition:DOWNLOAD_IMAGES}')}">
+						<a
+							href="#{request.contextPath}/api/v1/records/#{activeDocumentBean.viewManager.pi}/files/media/#{activeDocumentBean.viewManager.currentPage.getFileForType('MODEL')}"
+							id="downloadModel"
+							class="badge badge-dark widget-downloads__media-model-download-link"
+							title="#{msg.action__download_model__tooltip}"
+							data-toggle="tooltip" data-placement="top" data-trigger="hover"
+							target="_blank" rel="nofollow noopener"
+							aria-label="#{msg.action__download_model__tooltip}">
+							#{msg.action__download_model} </a>
+					</ui:fragment>
+
+				</div>
+
+				<!-- PAGE RANGE DOWNLOADS -->
+				<div jsf:id="pageRangeDownloads"
+					rendered="#{displayConditions.getTag('pageRangeDownloads').getChildCount('widget-element') > 0}"
+					class="widget-downloads__page-range-downloads widget__badge-container">
+
+					<!-- PDF (PAGE RANGE) -->
+					<h3 id="titlePageRange"
+						class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget__downloads__page_range}</h3>
+
+					<div class="widget-downloads__page-range-downloads-box"
+						data-target="pageRangeDownload">
+
+						<div
+							rendered="#{configurationBean.pdfPageRangeEnabled and 
+										displayConditions.matchRecord('{pageType:[viewObject, cmsPage], contentType:[IMAGE], accessCondition:DOWNLOAD_PDF}')}"
+							jsf:id="pdfRangeDownloads" visibility-class="widget-element"
+							class="widget-downloads__page-range-downloads-inner">
+
+							<h:form id="pdfPageRangeDownloadForm">
+								<div
+									class="widget-downloads__page-range-downloads-inputs-wrapper">
+									<div
+										class="widget-downloads__page-range-downloads-inputs-wrapper-inner">
+										<!-- FROM -->
+										<div
+											class="widget-downloads__page-range-downloads-select-from">
+											<div class="custom-control custom-control--select">
+												<h:selectOneMenu id="selectPageFrom"
+													value="#{activeDocumentBean.viewManager.firstPdfPage}"
+													pt:data-toggle="tooltip"
+													pt:title="#{msg.widget__downloads__page_range_tooltip_first_page}">
+													<f:selectItems
+														value="#{activeDocumentBean.viewManager.dropdownPages}" />
+												</h:selectOneMenu>
+											</div>
+										</div>
+										<div
+											class="widget-downloads__page-range-downloads-select-from">
+											<div class="custom-control custom-control--select">
+												<h:selectOneMenu id="selectPageTo"
+													value="#{activeDocumentBean.viewManager.lastPdfPage}"
+													pt:data-toggle="tooltip"
+													pt:title="#{msg.widget__downloads__page_range_tooltip_last_page}">
+													<f:selectItems
+														value="#{activeDocumentBean.viewManager.dropdownPages}" />
+												</h:selectOneMenu>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<button
+									jsf:action="#{activeDocumentBean.viewManager.generatePageRangePdf()}"
+									id="pdfPageRangeLink"
+									class="badge badge-dark widget-downloads__page-download-pdf-range widget-downloads__page-range-pdf-link"
+									title="#{msg.label__pdf_download_page_range}"
+									data-toggle="tooltip" data-placement="bottom"
+									data-trigger="hover" rel="nofollow noopener"
+									aria-label="#{msg.image}: #{msg.label__pdf_download}">
+									<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+									#{msg.downloadButton}
+								</button>
+							</h:form>
+
 						</div>
-						
-						<i class="fa fa-angle-down" aria-hidden="true"></i>
 					</div>
 				</div>
 
-				<!-- WIDGET BODY -->
-				<div id="widgetDownloadsBody"
-					class="widget__body widget-downloads__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
-					<!-- INTRODUCTION TEXT -->
-					<ui:fragment
-						rendered="#{fn:length(msg['widget__downloads__intro_text_object_downloads']) > 0 and displayConditions.matchRecord('{pageType:[viewObject, cmsPage]}') }">
-						<p id="introductionText" class="widget-downloads__license-text">
-							<h:outputText 
-								value="#{msg['widget__downloads__intro_text_object_downloads']}"
-								escape="false" />
-						</p>
-					</ui:fragment>
-					<!-- INTRODUCTION TEXT DOWNLOADS GENERAL -->
-					<ui:fragment
-						rendered="#{fn:length(msg['widget__downloads__intro_text_text_formats']) > 0 and displayConditions.matchRecord('{pageType:[viewFulltext]}') }">
-						<p id="introductionText" class="widget-downloads__license-text">
-							<h:outputText
-								value="#{msg['widget__downloads__intro_text_text_formats']}"
-								escape="false" />
-						</p>
-					</ui:fragment>
+				<!-- IMAGE FRAGMENT -->
+				<!-- Note: displayed conditionally per css/js when an image area is selected -->
+				<div
+					class="widget-downloads__image-fragment-wrapper widget__badge-container"
+					data-fragment-link="wrapper">
 
-					<!-- INTRODUCTION TEXT ADDITIONAL FILES -->
-					<ui:fragment
-						rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_DOWNLOAD']) > 0 and activeDocumentBean.viewManager.displayContentDownloadMenu}">
-						<p id="introductionText"
-							class="widget-downloads__additional-files-text">
-							<h:outputText
-								value="#{msg['MASTERVALUE_INTRODUCTION_TEXT_DOWNLOAD']}"
-								escape="false" />
-						</p>
-					</ui:fragment>
+					<div
+						class="widget-downloads__image-fragment widget__badge-container">
+						<h3 id="imgFragment"
+							class="widget-downloads__subtitle widget__badge-container-heading">#{msg.image_fragment}</h3>
 
-					<!-- WORK -->
-						<!-- WORK DOWNLOADS -->
-						<div jsf:id="recordDownloads" rendered="#{displayConditions.getTag('recordDownloads').getChildCount('widget-element') > 0}"
-							class="widget-downloads__work-downloads widget__badge-container">
-
-							<h3 id="titleWork"
-								class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget__downloads__complete_record}</h3>
-
-							<!-- WORK FULLTEXT FORMATS (VIEW_FULLTEXT not checked here because each method already has access permission checks) -->
-							
-							<!-- ALTO (WORK) -->
-								<ui:fragment visibility-class="widget-element"
-									rendered="#{displayConditions.matchRecord('{contentType:[ALTO], pageType:[viewFulltext, viewFullscreen], accessCondition:VIEW_FULLTEXT}')}">
-									<a href="#{activeDocumentBean.viewManager.altoUrlForAllPages}"
-										id="alto"
-										class="badge badge-dark widget-downloads__work-download-alto"
-										title="#{msg.metadata_dl_alto_work}" data-toggle="tooltip"
-										data-placement="top" data-trigger="hover"
-										rel="nofollow noopener"
-										aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadAltoWorkButtonLabel}">
-										#{msg.downloadAltoWorkButtonLabel} </a>
-								</ui:fragment>
-
-								<!-- TEI (WORK) -->
-								<!-- MULTILANGUAGE -->
-								<ui:fragment visibility-class="widget-element"
-									rendered="#{displayConditions.matchRecord('{contentType:[TEI], pageType:[viewFulltext, viewFullscreen], accessCondition:VIEW_FULLTEXT}')}">
-									<ui:repeat var="lang"
-										value="#{textBean.getRecordLanguages(activeDocumentBean.viewManager.topStructElement)}">
-										<a
-											href="#{activeDocumentBean.viewManager.getTeiUrlForAllPages(lang)}"
-											id="teiWork"
-											class="badge badge-dark widget-downloads__work-download-tei"
-											title="#{msg.downloadWorkTei}" data-toggle="tooltip"
-											data-placement="top" data-trigger="hover" target="_blank"
-											rel="nofollow noopener"
-											aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.TEI}">
-											#{msg.TEI} (#{lang}) </a>
-									</ui:repeat>
-								</ui:fragment>
-								<!-- SINGLE LANGUAGE -->
-								<ui:fragment visibility-class="widget-element"
-									rendered="#{displayConditions.matchRecord('{contentType:![TEI], pageType:[viewFulltext, viewFullscreen], accessCondition:VIEW_FULLTEXT}')}">
-									<a href="#{activeDocumentBean.viewManager.teiUrlForAllPages}"
-										id="teiWork"
-										class="badge badge-dark widget-downloads__work-download-tei"
-										title="#{msg.downloadWorkTei}" data-toggle="tooltip"
-										data-placement="top" data-trigger="hover" target="_blank"
-										rel="nofollow noopener"
-										aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.TEI}">
-										#{msg.TEI} </a>
-								</ui:fragment>
-								<!-- FULLTEXT (WORK) -->
-								<ui:fragment visibility-class="widget-element"
-									rendered="#{displayConditions.matchRecord('{contentType:[ALTO, TEXT], pageType:[viewFulltext, viewFullscreen], accessCondition:VIEW_FULLTEXT}')}">
-									<a
-										href="#{activeDocumentBean.viewManager.fulltextUrlForAllPages}"
-										id="textWork"
-										class="badge badge-dark widget-downloads__work-download-fulltext"
-										title="#{msg.downloadWorkFulltext}" data-toggle="tooltip"
-										data-placement="top" data-trigger="hover" target="_blank"
-										rel="nofollow noopener"
-										aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.fulltext}">
-										#{msg.fulltext} </a>
-								</ui:fragment>
-
-                        <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
-                        
-	                            <!-- METS -->
-	                            <ui:fragment visibility-class="widget-element" 
-	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], accessCondition:DOWNLOAD_METADATA, pageType:![viewFulltext, viewFullscreen, viewMetadata]}')}">
-	                                <a 
-	                                    href="#{activeDocumentBean.viewManager.metsResolverUrl}"
-	                                    id="lidomets" 
-	                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
-	                                    title="#{msg.metadata_dl_mets}"
-	                                    data-toggle="tooltip"
-	                                    data-placement="top"
-	                                    data-trigger="hover"
-	                                    target="_blank" rel="nofollow noopener"
-	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadMetsButtonLabel}"> 
-	                                    #{msg.downloadMetsButtonLabel}
-	                                </a>
-	                            </ui:fragment>
-	                            <ui:fragment visibility-class="widget-element" 
-	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[METS, METS_MARC], accessCondition:DOWNLOAD_METADATA, pageType:![viewFulltext, viewFullscreen], docType: [volume]}')}">
-	                                <a 
-	                                    href="#{activeDocumentBean.viewManager.anchorMetsResolverUrl}"
-	                                    id="metsanchor" 
-	                                    class="badge badge-dark widget-format-links__work-download-mets-anchor" 
-	                                    title="#{msg.metadata_dl_metsAnchor}"
-	                                    data-toggle="tooltip"
-	                                    data-placement="top"
-	                                    data-trigger="hover"
-	                                    target="_blank" rel="nofollow noopener"
-	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadAnchorMetsButtonLabel}"> 
-	                                    #{msg.downloadAnchorMetsButtonLabel}
-	                                </a>
-	                            </ui:fragment>
-	                            
-	                            <!-- LIDO -->
-	                            <ui:fragment visibility-class="widget-element" 
-	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[LIDO], accessCondition:DOWNLOAD_METADATA, pageType:![viewFulltext]}')}">
-	                                <a 
-	                                    href="#{activeDocumentBean.viewManager.lidoResolverUrl}"
-	                                    id="lidomets" 
-	                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
-	                                    title="#{msg.metadata_dl_lido}"
-	                                    data-toggle="tooltip"
-	                                    data-placement="top"
-	                                    data-trigger="hover"
-	                                    target="_blank" rel="nofollow noopener"
-	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadLidoButtonLabel}"> 
-	                                    #{msg.downloadLidoButtonLabel}
-	                                </a>
-	                            </ui:fragment>
-	                            
-	                            <!-- DUBLINCORE -->
-	                            <ui:fragment visibility-class="widget-element" 
-	                            rendered="#{displayConditions.matchRecord('{sourceFormat:[DUBLINCORE], accessCondition:DOWNLOAD_METADATA, pageType:![viewFulltext, viewFullscreen]}')}">
-	                                <a 
-	                                    href="#{activeDocumentBean.viewManager.dublinCoreResolverUrl}"
-	                                    id="dublincorexml"
-	                                    class="badge badge-dark widget-format-links__work-download-lido-mets" 
-	                                    title="#{msg.metadata_dl_dublincore}"
-	                                    data-toggle="tooltip"
-	                                    data-placement="top"
-	                                    data-trigger="hover"
-	                                    target="_blank" rel="nofollow noopener"
-	                                    aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadDublinCoreButtonLabel}"> 
-	                                    #{msg.downloadDublinCoreButtonLabel}
-	                                </a>
-	                            </ui:fragment>
-	                            
-	                            
-							<!-- PDF (WORK) -->
-							<c:set scope="request" var="hasPrerenderedPagePdfs"
-								value="#{activeDocumentBean.viewManager.hasPrerenderedPagePdfs()}" />
-							<ui:fragment
-	                            rendered="#{displayConditions.matchRecord('{contentType:[IMAGE], pageType:[viewObject, viewFullscreen], accessCondition:DOWNLOAD_PDF}')}">
-								<ui:fragment visibility-class="widget-element"  rendered="#{!configurationBean.generatePdfInMessageQueue and hasPrerenderedPagePdfs}">
-									<a
-										href="#{activeDocumentBean.viewManager.getPdfDownloadLink([['usePdfSource', 'true']])}"
-										id="pdfWork-small"
-										class="badge badge-dark widget-downloads__work-download-pdf"
-										title="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_small})"
-										data-toggle="tooltip" data-placement="top"
-										data-trigger="hover" target="_blank" rel="nofollow noopener"
-										aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
-										<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-										#{msg.label__pdf_download} (#{msg.label__pdf_download_small})
-									</a>
-									<a
-										href="#{activeDocumentBean.viewManager.getPdfDownloadLink([['usePdfSource', 'false']])}"
-										id="pdfWork-full"
-										class="badge badge-dark widget-downloads__work-download-pdf"
-										title="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_full})"
-										data-toggle="tooltip" data-placement="top"
-										data-trigger="hover" target="_blank" rel="nofollow noopener"
-										aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
-										<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-										#{msg.label__pdf_download} (#{msg.label__pdf_download_full})
-									</a>
-								</ui:fragment>
-								<ui:fragment visibility-class="widget-element"  rendered="#{!configurationBean.generatePdfInMessageQueue and !hasPrerenderedPagePdfs}">
-									<a href="#{activeDocumentBean.viewManager.pdfDownloadLink}"
-										id="pdfWork"
-										class="badge badge-dark widget-downloads__work-download-pdf"
-										title="#{msg.label__pdf_download_record}"
-										data-toggle="tooltip" data-placement="top"
-										data-trigger="hover" target="_blank" rel="nofollow noopener"
-										aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
-										<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-										#{msg.label__pdf_download}
-									</a>
-								</ui:fragment>
-								
-								<ui:fragment visibility-class="widget-element" 
-									rendered="#{configurationBean.generatePdfInMessageQueue}">
-									<a href="#" id="pdfWork"
-										class="badge badge-dark widget-downloads__work-download-pdf download-modal"
-										data-type="pdf"
-										data-title="#{activeDocumentBean.titleBarLabel}" data-id=""
-										data-pi="#{activeDocumentBean.viewManager.pi}"
-										title="#{msg.label__pdf_download_record}"
-										data-toggle="tooltip" data-placement="top"
-										data-trigger="hover"
-										aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.label__pdf_download}">
-										<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-										#{msg.label__pdf_download}
-									</a>
-								</ui:fragment>
-								
-							</ui:fragment>
-							
-	                        <!-- External download link -->
-	                        <ui:fragment visibility-class="widget-element" rendered="#{activeDocumentBean.viewManager.externalDownloadUrl != null}">
-	                            <a
-	                                href="#{activeDocumentBean.viewManager.externalDownloadUrl}"
-	                                id="externalDownloadWork" 
-	                                class="badge badge-dark widget-format-links__work-download-external" 
-	                                title="#{msg.downloadWorkExternal}"
-	                                data-toggle="tooltip"
-	                                data-placement="top"
-	                                data-trigger="hover"
-	                                target="_blank" rel="nofollow noopener"
-	                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.downloadWorkExternal}">
-	                                <i class="fa fa-download" aria-hidden="true"></i>
-	                                #{msg.downloadWorkExternal}
-	                            </a>
-	                        </ui:fragment>
-
-							<!-- EPUB -->
-							<ui:fragment visibility-class="widget-element" 
-								rendered="#{activeDocumentBean.accessPermissionEpub}">
-								<a href="#"
-									class="badge badge-dark widget-downloads__work-download-epub download-modal-widget"
-									data-type="epub"
-									data-title="#{activeDocumentBean.titleBarLabel}" data-id=""
-									data-pi="#{activeDocumentBean.viewManager.pi}"
-									title="#{msg.epubDownload}" data-toggle="tooltip"
-									data-placement="top" data-trigger="hover"
-									aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.epub}">
-									#{msg.epub} </a>
-							</ui:fragment>
-
-							<!-- TOC -->
-							<ui:fragment visibility-class="widget-element" 
-								rendered="#{configurationBean.docHierarchyPdfEnabled and displayConditions.matchRecord('{tocSize: 2}')}">
-								<h:form class="d-inline-flex" id="titleBodyForm"
-									prependId="false">
-									<h:commandLink id="tocDownload"
-										action="#{activeDocumentBean.downloadTOCAction()}"
-										title="#{msg.tocDownload}"
-										styleClass="badge badge-dark widget-downloads__work-download-toc"
-										value="#{msg.tocDownloadBadge}">
-										<f:passThroughAttribute name="data-toggle" value="tooltip" />
-										<f:passThroughAttribute name="data-placement" value="top" />
-										<f:passThroughAttribute name="aria-label"
-											value="#{msg.tocDownload}" />
-									</h:commandLink>
-								</h:form>
-							</ui:fragment>
-
-                        <!-- WORK IIIF-RELIANT FUNCTIONS (GENERATE_IIIF_MANIFEST CHECK) -->
-                           <!-- IIIF MANIFEST FULL RECORD -->
-                           <ui:fragment visibility-class="widget-element" 
-                           	rendered="#{displayConditions.matchRecord('{numPages:1, mimeType:![application], pageType:![viewFulltext, viewMetadata], accessCondition:GENERATE_IIIF_MANIFEST}')}">
-	                           <button 
-	                                  id="iiifManifestRecord"
-	                                  class="badge badge-dark widget-usage__work-download-iiif" 
-	                               data-copy-value="#{imageDelivery.iiifManifest}" 
-	                               data-copy-done-msg="#{msg.copyUrlDone}"
-	                                  title="#{msg.copyUrl}"
-	                                  aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.iiif}"
-	                                  tabindex="0"> 
-	                               #{msg.iiif}
-	                           </button>
-	                       </ui:fragment>      
-	                    
-                            <!-- MIRADOR FULL RECORD -->
-                            <ui:fragment visibility-class="widget-element" 
-                           	rendered="#{displayConditions.matchRecord('{pageType:![viewFulltext, viewMetadata], contentType:[IMAGE], accessCondition:GENERATE_IIIF_MANIFEST}')}">
-                                    <a
-                                        href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifManifest}&amp;page=1" 
-                                        id="mirador" 
-                                        class="badge badge-dark widget-usage__work-link-mirador-viewer" 
-                                        title="#{msg.action__view_in_mirador__tooltip}"
-										data-toggle="tooltip"
-										data-placement="top"
-										data-trigger="hover"
-                                        target="_blank" rel="nofollow noopener"
-                                        aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.action__view_in_mirador}"> 
-                                        #{msg.action__view_in_mirador}
-                                    </a> 
-                            </ui:fragment>
-                        
-						</div>
-
-					<!-- PAGE -->
-							<!-- PAGE DOWNLOADS -->
-							<div jsf:id="pageDownloads" rendered="#{activeDocumentBean.viewManager.currentPage != null and displayConditions.getTag('pageDownloads').getChildCount('widget-element') > 0}"
-							class="widget-downloads__page-downloads widget__badge-container">
-
-								<h3 id="titleImage"
-									class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget__downloads__this_page}</h3>
-
-								<!-- PDF (PAGE) -->
-								 <ui:fragment visibility-class="widget-element" 
-                           			rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen, cmsPage], contentType:[IMAGE], accessCondition:DOWNLOAD_PAGE_PDF}')}">
-									<a href="#{activeDocumentBean.viewManager.pdfPageDownloadLink}"
-										id="pdfPage"
-										class="badge badge-dark widget-downloads__page-download-pdf"
-										title="#{msg.label__pdf_download_image}" data-toggle="tooltip"
-										data-placement="top" data-trigger="hover" target="_blank"
-										rel="nofollow noopener"
-										aria-label="#{msg.image}: #{msg.label__pdf_download}"> <i
-										class="fa fa-file-pdf-o" aria-hidden="true"></i>
-										#{msg.label__pdf_download}
-									</a>
-								</ui:fragment>
-								
-								<!-- IMAGE DOWNLOAD OPTIONS -->
-								<ui:fragment visibility-class="widget-element" 
-                           			rendered="#{activeDocumentBean.viewManager.getDownloadOptionsForPage(activeDocumentBean.viewManager.currentPage).size() > 0 and displayConditions.matchPage('{pageType:[viewObject, viewFullscreen, cmsPage], mimeType: [image], accessCondition:DOWNLOAD_IMAGES}')}">
-									<!-- IMAGE (PAGE) GENERATE LINKS FOR EVERY CONFIGURED DOWNLOAD SIZE -->
-									<ui:repeat varStatus="status" var="option"
-										value="#{activeDocumentBean.viewManager.getDownloadOptionsForPage(activeDocumentBean.viewManager.currentPage)}">
-										<h:outputLink id="downloadImageSizeLink"
-											styleClass="badge badge-dark widget-downloads__page-download-image-size-link"
-											title="#{navigationHelper.getTranslationWithParamsUnescaped(msg.widget__downloads__download_image_size, option.format,option.boxSizeLabel)}"
-											pt:data-toggle="tooltip" target="_blank"
-											rel="nofollow noopener" aria-label="#{msg.downloadButton}"
-											value="#{activeDocumentBean.viewManager.getPageDownloadUrl(option, activeDocumentBean.viewManager.currentPage)}"
-											pt:download="#{activeDocumentBean.viewManager.currentPage.fileNameBase}.#{option.getExtension(activeDocumentBean.viewManager.currentPage.fileName)}">
-											<span
-												class="widget-downloads__download-image-size-radio-label">#{msg.image}</span>
-											<span
-												class="widget-downloads__download-image-size-radio-label">#{msg[option.label]}</span>
-										</h:outputLink>
-									</ui:repeat>
-								</ui:fragment>
-																
-								<!-- PAGE FULLTEXT FORMATS (VIEW_FULLTEXT CHECK) -->
-								<!-- ALTO (PAGE) -->
-								<ui:fragment visibility-class="widget-element" 
-                           			rendered="#{displayConditions.matchPage('{pageType:[viewFulltext, viewFullscreen], contentType:[ALTO], accessCondition:VIEW_FULLTEXT}')}">
-									<a href="#{activeDocumentBean.viewManager.altoUrl}"
-										id="altoPage"
-										class="badge badge-dark widget-downloads__page-download-alto"
-										title="#{msg.metadata_dl_alto_page}" data-toggle="tooltip"
-										data-placement="top" data-trigger="hover" target="_blank"
-										rel="nofollow noopener"
-										aria-label="#{msg.image}: #{msg.downloadAltoPageButtonLabel}">
-										#{msg.downloadAltoPageButtonLabel} </a>
-								</ui:fragment>
-
-										<!-- TEI (PAGE) -->
-								<ui:fragment visibility-class="widget-element" 
-                           			rendered="#{displayConditions.matchPage('{pageType:[viewFulltext, viewFullscreen], contentType:[ALTO, TEXT], accessCondition:VIEW_FULLTEXT}')}">
-									<a href="#{activeDocumentBean.viewManager.teiUrl}"
-										id="teiPage"
-										class="badge badge-dark widget-downloads__page-download-tei"
-										title="#{msg.downloadPageTei}" data-toggle="tooltip"
-										data-placement="top" data-trigger="hover" target="_blank"
-										rel="nofollow noopener"
-										aria-label="#{msg.image}: #{msg.TEI}"> #{msg.TEI} </a>
-								</ui:fragment>
-
-								<!-- FULLTEXT (PAGE) -->
-								<ui:fragment visibility-class="widget-element" 
-                           			rendered="#{displayConditions.matchPage('{pageType:[viewFulltext, viewFullscreen], contentType:[ALTO, TEXT], accessCondition:VIEW_FULLTEXT}')}">
-									<a href="#{activeDocumentBean.viewManager.fulltextUrl}"
-										id="textPage"
-										class="badge badge-dark widget-downloads__page-download-fulltext"
-										title="#{msg.downloadPageFulltext}" data-toggle="tooltip"
-										data-placement="top" data-trigger="hover" target="_blank"
-										rel="nofollow noopener"
-										aria-label="#{msg.image}: #{msg.fulltext}">
-										#{msg.fulltext} </a>
-								</ui:fragment>
-
-								<!-- IIIF MANIFEST PAGE -->
-								<ui:fragment visibility-class="widget-element" 
-                           			rendered="#{displayConditions.matchPage('{pageType:![viewFulltext, viewMetadata], numPages:2, mimeType: [image], accessCondition:GENERATE_IIIF_MANIFEST}')}">
-									<button id="iiifManifestPage"
-										class="badge badge-dark widget-usage__page-download-iiif"
-										data-copy-value="#{imageDelivery.iiifPageManifest}"
-										data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
-										aria-label="#{msg.image}: #{msg.iiif}" tabindex="0">
-										#{msg.iiif}</button>
-								</ui:fragment>
-
-								<!-- MIRADOR PAGE -->
-								<ui:fragment visibility-class="widget-element"
-									rendered="#{displayConditions.matchPage('{pageType:![viewFulltext, viewMetadata], numPages:2, contentType:[IMAGE], accessCondition:GENERATE_IIIF_MANIFEST}')}">
-									<a
-										href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifPageManifest}"
-										id="mirador"
-										class="badge badge-dark widget-usage__page-link-mirador-viewer"
-										title="#{msg.action__view_in_mirador__tooltip}"
-										data-toggle="tooltip" data-placement="top"
-										data-trigger="hover" target="_blank" rel="nofollow noopener"
-										aria-label="#{msg.image}: #{msg.action__view_in_mirador}">
-										#{msg.action__view_in_mirador} </a>
-								</ui:fragment>
-							</div>
- 
-
-							<div jsf:id="mediaDownloads" rendered="#{displayConditions.getTag('mediaDownloads').getChildCount('widget-element') > 0}" class="widget-downloads__media widget__badge-container">
-							 
-							<h3 id="titleMedia"
-								class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget__downloads__media}</h3>
-							
-							<ui:fragment visibility-class="widget-element"
-									rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen], contentType:[AUDIO], accessCondition:DOWNLOAD_IMAGES}')}">
-									<a
-										href="#{request.contextPath}/api/v1/records/#{activeDocumentBean.viewManager.pi}/files/media/#{activeDocumentBean.viewManager.currentPage.getFileForType('AUDIO')}"
-										id="downloadAudio"
-										class="badge badge-dark widget-downloads__media-audio-download-link"
-										title="#{msg.action__download_audio__tooltip}"
-										data-toggle="tooltip" data-placement="top"
-										data-trigger="hover" target="_blank" rel="nofollow noopener"
-										aria-label="#{msg.action__download_audio__tooltip}">
-										#{msg.action__download_audio} </a>
-							</ui:fragment>
-							
-							<ui:fragment visibility-class="widget-element"
-									rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen], contentType:[VIDEO], accessCondition:DOWNLOAD_IMAGES}')}">
-									<a
-										href="#{request.contextPath}/api/v1/records/#{activeDocumentBean.viewManager.pi}/files/media/#{activeDocumentBean.viewManager.currentPage.getFileForType('VIDEO')}"
-										id="downloadVideo"
-										class="badge badge-dark widget-downloads__media-video-download-link"
-										title="#{msg.action__download_video__tooltip}"
-										data-toggle="tooltip" data-placement="top"
-										data-trigger="hover" target="_blank" rel="nofollow noopener"
-										aria-label="#{msg.action__download_video__tooltip}">
-										#{msg.action__download_video} </a>
-							</ui:fragment>
-							
-							<ui:fragment visibility-class="widget-element"
-									rendered="#{displayConditions.matchPage('{pageType:[viewObject, viewFullscreen], contentType:[MODEL], accessCondition:DOWNLOAD_IMAGES}')}">
-									<a
-										href="#{request.contextPath}/api/v1/records/#{activeDocumentBean.viewManager.pi}/files/media/#{activeDocumentBean.viewManager.currentPage.getFileForType('MODEL')}"
-										id="downloadModel"
-										class="badge badge-dark widget-downloads__media-model-download-link"
-										title="#{msg.action__download_model__tooltip}"
-										data-toggle="tooltip" data-placement="top"
-										data-trigger="hover" target="_blank" rel="nofollow noopener"
-										aria-label="#{msg.action__download_model__tooltip}">
-										#{msg.action__download_model} </a>
-							</ui:fragment>
-							
-							</div>
-
-							<!-- PAGE RANGE DOWNLOADS -->
-							<div jsf:id="pageRangeDownloads"
-							rendered="#{displayConditions.getTag('pageRangeDownloads').getChildCount('widget-element') > 0}"
-							 class="widget-downloads__page-range-downloads widget__badge-container">
-		
-								<!-- PDF (PAGE RANGE) -->
-									<h3 id="titlePageRange"
-										class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget__downloads__page_range}</h3>
-
-									<div class="widget-downloads__page-range-downloads-box"
-										data-target="pageRangeDownload">							
-
-										<div rendered="#{configurationBean.pdfPageRangeEnabled and 
-										displayConditions.matchRecord('{pageType:[viewObject, cmsPage], contentType:[IMAGE], accessCondition:DOWNLOAD_PDF}')}"
-										jsf:id="pdfRangeDownloads" visibility-class="widget-element"
-										class="widget-downloads__page-range-downloads-inner">
-										
-											<h:form id="pdfPageRangeDownloadForm">
-												<div
-													class="widget-downloads__page-range-downloads-inputs-wrapper">
-													<div
-														class="widget-downloads__page-range-downloads-inputs-wrapper-inner">
-														<!-- FROM -->
-														<div
-															class="widget-downloads__page-range-downloads-select-from">
-															<div class="custom-control custom-control--select">
-																<h:selectOneMenu id="selectPageFrom"
-																	value="#{activeDocumentBean.viewManager.firstPdfPage}"
-																	pt:data-toggle="tooltip"
-																	pt:title="#{msg.widget__downloads__page_range_tooltip_first_page}">
-																	<f:selectItems
-																		value="#{activeDocumentBean.viewManager.dropdownPages}" />
-																</h:selectOneMenu>
-															</div>
-														</div>
-														<div
-															class="widget-downloads__page-range-downloads-select-from">
-															<div class="custom-control custom-control--select">
-																<h:selectOneMenu id="selectPageTo"
-																	value="#{activeDocumentBean.viewManager.lastPdfPage}"
-																	pt:data-toggle="tooltip"
-																	pt:title="#{msg.widget__downloads__page_range_tooltip_last_page}">
-																	<f:selectItems
-																		value="#{activeDocumentBean.viewManager.dropdownPages}" />
-																</h:selectOneMenu>
-															</div>
-														</div>
-													</div>
-												</div>
-
-												<button
-													jsf:action="#{activeDocumentBean.viewManager.generatePageRangePdf()}"
-													id="pdfPageRangeLink"
-													class="badge badge-dark widget-downloads__page-download-pdf-range widget-downloads__page-range-pdf-link"
-													title="#{msg.label__pdf_download_page_range}"
-													data-toggle="tooltip" data-placement="bottom"
-													data-trigger="hover" rel="nofollow noopener"
-													aria-label="#{msg.image}: #{msg.label__pdf_download}">
-													<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-													#{msg.downloadButton}
-												</button>
-											</h:form>
-
-										</div>
-									</div>
-						</div>
-
-						<!-- IMAGE FRAGMENT -->
-						<!-- Note: displayed conditionally per css/js when an image area is selected -->
-						<div class="widget-downloads__image-fragment-wrapper widget__badge-container"
-							data-fragment-link="wrapper">
-
-							<div
-								class="widget-downloads__image-fragment widget__badge-container">
-								<h3 id="imgFragment"
-									class="widget-downloads__subtitle widget__badge-container-heading">#{msg.image_fragment}</h3>
-
-								<a
-									class="badge badge-dark widget-downloads__image-fragment-page"
-									data-fragment-link="page" id="imageFragmentPage"
-									data-copy="image-region-page"
-									data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
-									aria-label="#{msg.image}: #{msg.label__share_image_region_page}">
-									#{msg.label__share_image_region_page}</a> <a
-									class="badge badge-dark widget-downloads__image-fragment-image"
-									data-fragment-link="iiif" id="imageFragmentImage"
-									data-copy="image-region-image"
-									data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
-									aria-label="#{msg.image}: #{msg.label__share_image_region_image}">
-									#{msg.label__share_image_region_image}</a>
-							</div>
-						</div>
-						<!-- INTEGRATED WIDGET ADDITIONAL FILES -->
-						<ui:fragment rendered="#{activeDocumentBean.viewManager.displayContentDownloadMenu and 
+						<a class="badge badge-dark widget-downloads__image-fragment-page"
+							data-fragment-link="page" id="imageFragmentPage"
+							data-copy="image-region-page" data-copy-done="#{msg.copyUrlDone}"
+							title="#{msg.copyUrl}"
+							aria-label="#{msg.image}: #{msg.label__share_image_region_page}">
+							#{msg.label__share_image_region_page}</a> <a
+							class="badge badge-dark widget-downloads__image-fragment-image"
+							data-fragment-link="iiif" id="imageFragmentImage"
+							data-copy="image-region-image"
+							data-copy-done="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+							aria-label="#{msg.image}: #{msg.label__share_image_region_image}">
+							#{msg.label__share_image_region_image}</a>
+					</div>
+				</div>
+				<!-- INTEGRATED WIDGET ADDITIONAL FILES -->
+				<ui:fragment
+					rendered="#{activeDocumentBean.viewManager.displayContentDownloadMenu and 
 						(displayConditions.matchRecord('{pageType:[viewObject], numPages:1, mimeType: [image, video, audio, model]}') or displayConditions.matchRecord('{pageType:[viewMetadata], numPages:!1, mimeType: ![image, video, audio, model]}')) }">
-							<div id="widgetAdditionalFiles"
-								class="widget-downloads__additional-files-wrapper">
-								<h:form id="widgetAdditionalFilesForm">
-									<h3 id="additionFilesTitle"
-										class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget_additionalFiles}</h3>
-		
-									<ul class="widget-downloads__additional-files-list">
-										<ui:repeat varStatus="status" visibility-class="widget-element"
-											value="#{activeDocumentBean.viewManager.contentDownloadLinksForWork}"
-											var="link">
-											<li jsf:id="additionalFileLink_#{status.index}"><h:outputLink value="#{link.url}" target="_blank">
+					<div id="widgetAdditionalFiles"
+						class="widget-downloads__additional-files-wrapper">
+						<h:form id="widgetAdditionalFilesForm">
+							<h3 id="additionFilesTitle"
+								class="widget-downloads__subtitle widget__badge-container-heading">#{msg.widget_additionalFiles}</h3>
+
+							<ul class="widget-downloads__additional-files-list">
+								<ui:repeat varStatus="status" visibility-class="widget-element"
+									value="#{activeDocumentBean.viewManager.contentDownloadLinksForWork}"
+									var="link">
+									<li jsf:id="additionalFileLink_#{status.index}"><h:outputLink
+											value="#{link.url}" target="_blank">
 												#{link.name}
 											</h:outputLink></li>
-										</ui:repeat>
-									</ul>
-								</h:form>
-							</div>
-						</ui:fragment>
-						
-				</div> <!-- END BODY -->
-				
-				<!--  Handling page range download buttons and inputs -->
-				<script>
+								</ui:repeat>
+							</ul>
+						</h:form>
+					</div>
+				</ui:fragment>
+
+			</div>
+			<!-- END BODY -->
+
+			<!--  Handling page range download buttons and inputs -->
+			<script>
 					$('[data-target="showPageRangeDownload"]')
 						.on("click",
 							function() {
@@ -636,6 +604,7 @@
 								.slideDown('fast');
 						});
 				</script>
-			</div> <!-- END WIDGET -->
+		</div>
+		<!-- END WIDGET -->
 	</composite:implementation>
 </ui:composition>

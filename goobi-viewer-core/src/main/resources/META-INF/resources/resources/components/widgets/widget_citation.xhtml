@@ -1,171 +1,153 @@
-<ui:composition
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" >
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
 
-    <composite:interface>
-    	    	<composite:attribute name="collapsible" required="false" default="#{displayConditions.getTag('widgetCitationsBody').getChildCount('widget-element') > 2}" />
-    </composite:interface>
+	<composite:interface>
+		<composite:attribute name="collapsible" required="false" default="false" />
+	</composite:interface>
 
-    <composite:implementation>
-        
-            <div 
-            	rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks and displayConditions.getTag('widgetCitation').getChildCount('widget-element') > 0}"
-            	jsf:id="widgetCitation" 
-            	class="widget widget-citation"
-            >
-	            <div 
-	            	tabindex="0"
-					role="button"
-	            	class="widget__topbar widget-citation__topbar #{cc.attrs.collapsible ? 'collapseable' : ''}"
-	            >
-					<h2 class="widget__title widget-citation__title">
-	                    #{msg.widget_citation}
-	                </h2>
-					
-	                <div class="widget__topbar-icons-container">
-	                	<div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
-							<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
-						</div>
-	                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-	                </div>
+	<composite:implementation>
+		<div jsf:id="widgetCitation" class="widget widget-citation"
+			rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks and displayConditions.getTag('widgetCitation').getChildCount('widget-element') > 0}">
+			<div tabindex="0" role="button"
+				class="widget__topbar widget-citation__topbar #{cc.attrs.collapsible ? 'collapseable' : ''}">
+				
+				<h2 class="widget__title widget-citation__title">#{msg.widget_citation}</h2>
+
+				<div class="widget__topbar-icons-container">
+					<div
+						class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
+						<img
+							src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+					</div>
+					<i class="fa fa-angle-down" aria-hidden="true"></i>
+				</div>
+			</div>
+
+			<!-- WIDGET BODY -->
+			<div id="widgetCitationsBody"
+				class="widget__body widget-citation__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
+				<!-- INTRODUCTION TEXT -->
+				<ui:fragment
+					rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_CITATION']) > 0}">
+					<p id="introductionText" class="widget-citation__license-text">
+						<h:outputText
+							value="#{msg['MASTERVALUE_INTRODUCTION_TEXT_CITATION']}"
+							escape="false" />
+					</p>
+				</ui:fragment>
+
+				<!-- WORK DOWNLOADS -->
+				<div jsf:id="recordCitations"
+					class="widget-citation__work-downloads widget__badge-container"
+					rendered="#{displayConditions.getTag('recordCitations').getChildCount('widget-element') > 0}">
+
+					<h3 id="titleWork"
+						class="widget-citation__subtitle widget__badge-container-heading">#{msg.widget__citation__complete_record}</h3>
+
+					<!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
+					<ui:repeat varStatus="status"
+						rendered="#{displayConditions.matchRecord('{docType:[record, anchor]}')}"
+						visibility-class="widget-element" var="link"
+						value="#{activeDocumentBean.viewManager.getSidebarWidgetUsageCitationLinksForLevel('record').stream().filter(link -> !link.isEmpty()).toList()}">
+
+						<ui:fragment rendered="#{link.action.name() == 'CLIPBOARD'}">
+							<button type="button"
+								id="citeLinkUrlObjectClipboard#{status.index + 1}"
+								class="badge badge-dark"
+								data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
+								data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+								aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
+								#{msg[link.label]}</button>
+						</ui:fragment>
+						<ui:fragment rendered="#{link.action.name() == 'DOWNLOAD'}">
+							<a href="#{link.getUrl(activeDocumentBean.viewManager)}"
+								id="citeLinkUrlObjectDownload#{status.index + 1}"
+								class="badge badge-dark" title="#{msg[link.label]}"
+								data-toggle="tooltip" data-placement="top" data-trigger="hover"
+								rel="nofollow" download="#{msg[link.label]}"
+								aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg[link.label]}">
+								#{msg[link.label]} </a>
+						</ui:fragment>
+						<ui:fragment rendered="#{link.action.name() == 'OPEN'}">
+							<a href="#{link.getUrl(activeDocumentBean.viewManager)}"
+								target="_blank" id="citeLinkUrlObjectOpen#{status.index + 1}"
+								class="badge badge-dark" title="#{msg[link.label]}"
+								data-toggle="tooltip" data-placement="top" data-trigger="hover"
+								rel="nofollow"
+								aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg[link.label]}">
+								#{msg[link.label]} </a>
+						</ui:fragment>
+
+					</ui:repeat>
+
 				</div>
 
-                <!-- WIDGET BODY -->
-				<div id="widgetCitationsBody" class="widget__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
-                    <!-- INTRODUCTION TEXT -->
-                    <ui:fragment rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_CITATION']) > 0}">
-                        <p id="introductionText" class="widget-citation__license-text">
-                            <h:outputText value="#{msg['MASTERVALUE_INTRODUCTION_TEXT_CITATION']}" escape="false" />
-                        </p>
-                    </ui:fragment>
-                    
-                    <!-- WORK DOWNLOADS -->
-                    <div jsf:id="recordCitations" class="widget-citation__work-downloads widget__badge-container"
-                    rendered="#{displayConditions.getTag('recordCitations').getChildCount('widget-element') > 0}">  
-                    
-                    	<h3 id="titleWork" class="widget-citation__subtitle widget__badge-container-heading">#{msg.widget__citation__complete_record}</h3>
+				<!-- PAGE -->
+				<!-- PAGE DOWNLOADS -->
+				<div jsf:id="pageCitations"
+					class="widget-citation__page-downloads widget__badge-container"
+					rendered="#{displayConditions.getTag('pageCitations').getChildCount('widget-element') > 0}">
 
-                        <!-- WORK METADATA DOWNLOAD (DOWNLOAD_METADATA CHECK) -->
-                            <ui:repeat varStatus="status" rendered="#{displayConditions.matchRecord('{docType:[record, anchor]}')}" visibility-class="widget-element"
-                            var="link" value="#{activeDocumentBean.viewManager.getSidebarWidgetUsageCitationLinksForLevel('record').stream().filter(link -> !link.isEmpty()).toList()}">
-                                    
-                                <ui:fragment rendered="#{link.action.name() == 'CLIPBOARD'}">
-                                    <button type="button" 
-                                    	id="citeLinkUrlObjectClipboard#{status.index + 1}"
-                                        class="badge badge-dark"
-                                        data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
-                                        data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
-                                        aria-label="#{msg.citeLinks}: #{msg.copyUrl}">
-                                        #{msg[link.label]}</button>
-                                </ui:fragment>
-                                <ui:fragment rendered="#{link.action.name() == 'DOWNLOAD'}">
-	                                <a href="#{link.getUrl(activeDocumentBean.viewManager)}"
-		                                id="citeLinkUrlObjectDownload#{status.index + 1}"
-		                                class="badge badge-dark" 
-		                                title="#{msg[link.label]}"
-		                                data-toggle="tooltip"
-		                                data-placement="top"
-		                                data-trigger="hover"
-		                                rel="nofollow"
-		                                download="#{msg[link.label]}"
-		                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg[link.label]}"> 
-		                                #{msg[link.label]}
-		                            </a>
-                                </ui:fragment>     
-                                <ui:fragment rendered="#{link.action.name() == 'OPEN'}" >
-                                    <a href="#{link.getUrl(activeDocumentBean.viewManager)}"
-                                    	target="_blank"
-		                                id="citeLinkUrlObjectOpen#{status.index + 1}"
-		                                class="badge badge-dark" 
-		                                title="#{msg[link.label]}"
-		                                data-toggle="tooltip"
-		                                data-placement="top"
-		                                data-trigger="hover"
-		                                rel="nofollow"
-		                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg[link.label]}"> 
-		                                #{msg[link.label]}
-		                            </a>
-                                </ui:fragment>
-                                
-                            </ui:repeat>
-                   
-                    </div>
+					<h3 id="titleImage"
+						class="widget-citation__subtitle widget__badge-container-heading">#{msg.widget__citation__this_page}</h3>
+
+					<ui:repeat
+						rendered="#{!activeDocumentBean.viewManager.doublePageMode and displayConditions.matchRecord('{docType:[record], numPages:1}')}"
+						var="link" varStatus="status" visibility-class="widget-element"
+						value="#{activeDocumentBean.viewManager.getSidebarWidgetUsageCitationLinksForLevel('image').stream().filter(link -> !link.isEmpty()).toList()}">
+
+						<ui:fragment rendered="#{link.action.name() == 'CLIPBOARD'}">
+							<button type="button"
+								id="citeLinkUrlPageClipboard#{status.index + 1}"
+								class="badge badge-dark"
+								data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
+								data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
+								aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
+								#{msg[link.label]}</button>
+						</ui:fragment>
+						<ui:fragment rendered="#{link.action.name() == 'DOWNLOAD'}">
+							<a href="#{link.getUrl(activeDocumentBean.viewManager)}"
+								id="citeLinkUrlPageDownload#{status.index + 1}"
+								class="badge badge-dark" title="#{msg[link.label]}"
+								data-toggle="tooltip" data-placement="top" data-trigger="hover"
+								rel="nofollow"
+								aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg[link.label]}">
+								#{msg[link.label]} </a>
+						</ui:fragment>
+						<ui:fragment rendered="#{link.action.name() == 'OPEN'}">
+							<a href="#{link.getUrl(activeDocumentBean.viewManager)}"
+								target="_blank" id="citeLinkUrlPageOpen#{status.index + 1}"
+								class="badge badge-dark" title="#{msg[link.label]}"
+								data-toggle="tooltip" data-placement="top" data-trigger="hover"
+								rel="nofollow"
+								aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg[link.label]}">
+								#{msg[link.label]} </a>
+						</ui:fragment>
+
+					</ui:repeat>
 
 
-                    <!-- PAGE -->
-                        <!-- PAGE DOWNLOADS -->
-                        <div jsf:id="pageCitations" class="widget-citation__page-downloads widget__badge-container"  
-                        rendered="#{displayConditions.getTag('pageCitations').getChildCount('widget-element') > 0}">
-                        
-                            <h3 id="titleImage" class="widget-citation__subtitle widget__badge-container-heading">#{msg.widget__citation__this_page}</h3>
+					<!-- ACTIVATE CLIPBOARD (TOOLTIPS + COPY URL)  -->
+					<script>
+						viewerJS.clipboard.init();
+					</script>
 
-                                <ui:repeat 
-	                                rendered="#{!activeDocumentBean.viewManager.doublePageMode and displayConditions.matchRecord('{docType:[record], numPages:1}')}"
-	                                var="link" varStatus="status" visibility-class="widget-element" 
-	                                value="#{activeDocumentBean.viewManager.getSidebarWidgetUsageCitationLinksForLevel('image').stream().filter(link -> !link.isEmpty()).toList()}">
-                                        
-	                                 <ui:fragment rendered="#{link.action.name() == 'CLIPBOARD'}">
-	                                    <button type="button" 
-	                                    	id="citeLinkUrlPageClipboard#{status.index + 1}"
-	                                        class="badge badge-dark"
-	                                        data-copy-value="#{link.getUrl(activeDocumentBean.viewManager)}"
-	                                        data-copy-done-msg="#{msg.copyUrlDone}" title="#{msg.copyUrl}"
-	                                        aria-label="#{msg.citeLinks}: #{msg.citeLinkPage}">
-	                                        #{msg[link.label]}</button>
-	                                </ui:fragment>
-	                                <ui:fragment rendered="#{link.action.name() == 'DOWNLOAD'}">
-		                                <a href="#{link.getUrl(activeDocumentBean.viewManager)}"
-			                                id="citeLinkUrlPageDownload#{status.index + 1}"
-			                                class="badge badge-dark" 
-			                                title="#{msg[link.label]}"
-			                                data-toggle="tooltip"
-			                                data-placement="top"
-			                                data-trigger="hover"
-			                                rel="nofollow"
-			                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg[link.label]}"> 
-			                                #{msg[link.label]}
-			                            </a>
-	                                </ui:fragment>     
-	                                <ui:fragment rendered="#{link.action.name() == 'OPEN'}" >
-	                                    <a href="#{link.getUrl(activeDocumentBean.viewManager)}"
-	                                    	target="_blank"
-			                                id="citeLinkUrlPageOpen#{status.index + 1}"
-			                                class="badge badge-dark" 
-			                                title="#{msg[link.label]}"
-			                                data-toggle="tooltip"
-			                                data-placement="top"
-			                                data-trigger="hover"
-			                                rel="nofollow"
-			                                aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg[link.label]}"> 
-			                                #{msg[link.label]}
-			                            </a>
-	                                </ui:fragment>
-                                
-                             </ui:repeat>
-                             
-                                                     		
-				            <!-- ACTIVATE CLIPBOARD (TOOLTIPS + COPY URL)  -->
-				            <script>
-				                viewerJS.clipboard.init();
-				            </script>
-                            
-                        </div>
+				</div>
 
-                    
-					<viewerComponent:downloadsCitations visibility-class="widget-element" 
+				<viewerComponent:downloadsCitations visibility-class="widget-element"
 					rendered="#{cc.attrs.showCiteLinksButton or (configurationBean.displaySidebarWidgetUsageCitationRecommendation and fn:length(activeDocumentBean.viewManager.citationStringHtml) > 0)}"
-					showCiteLinksButton="false"/>
- 
-                </div>
-            </div>
-            
-    </composite:implementation>
+					showCiteLinksButton="false" />
+
+			</div>
+		</div>
+
+	</composite:implementation>
 </ui:composition>

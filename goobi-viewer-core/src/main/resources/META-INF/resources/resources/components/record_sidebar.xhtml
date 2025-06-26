@@ -13,42 +13,61 @@
 	<composite:interface></composite:interface>
 	
 	<composite:implementation>
-	
-	    DEBUG: #{navigationHelper.currentView}
+
         <ui:repeat var="widgetName" value="#{configurationBean.getSidebarWidgetsForView(navigationHelper.currentView)}">
+            <!-- WIDGET VIEWS -->
             <ui:fragment rendered="#{widgetName == 'views'}">
                 <widgetComponent:widget_views id="widgetViews" collapsible="false" widgetTitle="#{msg.view}"  />
             </ui:fragment>
+            
+            <!-- WIDGET COPYRIGHT -->
             <ui:fragment rendered="#{widgetName == 'copyright-info'}">
                 <widgetComponent:widget_copyrightInfo
                     rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'widget'}"/>
             </ui:fragment>
+            
+            <!-- WIDGET SEARCH RESULT NAVIGATION -->
             <ui:fragment rendered="#{widgetName == 'search-result-navigation'}">
                 <widgetComponent:widget_searchResultNavigation />
             </ui:fragment>
+            
+            <!-- WIDGET VERSION HISTORY  -->
             <ui:fragment rendered="#{widgetName == 'version-history'}">
                 <widgetComponent:widget_versionHistory />
             </ui:fragment>
             
+			<!-- RENDER CONDITION: MATCH RECORD NOT GROUP -->
             <ui:fragment rendered="#{displayConditions.matchRecord('{docType: ![group]}')}">
+                
+                <!-- WIDGET ANNOTATIONS -->
                 <ui:fragment rendered="#{widgetName == 'annotations'}">
                     <widgetComponent:widget_annotations id="widgetAnnotations" />
                 </ui:fragment>
+ 
+                <!-- WIDGET ARCHIVES -->
                 <ui:fragment rendered="#{widgetName == 'archives'}">
                     <widgetComponent:widget_archives />
                 </ui:fragment>
-                <ui:fragment rendered="#{widgetName == 'citation'}">
+  
+                <!-- WIDGET CITATIONS -->
+                <ui:fragment rendered="#{widgetName == 'citations'}">
                     <widgetComponent:widget_citation id="widgetCitations"
                         rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc, viewFulltext]}') or displayConditions.matchRecord('{pageType: [viewMetadata, viewToc], docType:[anchor]}')}"/>
                 </ui:fragment>
+
+                <!-- WIDGET DOWNLOADS -->
                 <ui:fragment rendered="#{widgetName == 'downloads'}">
                     <widgetComponent:widget_downloads id="widgetDownloads" />
                 </ui:fragment>
+
+                <!-- WIDGET FORMATS + LINKS -->
                 <ui:fragment rendered="#{widgetName == 'formats-links'}">
                     <widgetComponent:widget_formatsLinks id="widgetFormatLinks" rendered="#{
                         displayConditions.matchRecord('{pageType: [viewMetadata]}') or 
                         displayConditions.matchRecord('{pageType: [viewToc], docType:[anchor]}')}"/>
                 </ui:fragment>
+
+                <!-- WIDGET GEOMAP -->
                 <ui:fragment rendered="#{widgetName == 'geomap'}">
                     <widgetComponent:widget_geoMap
                         rendered="#{activeDocumentBean.geoMap.hasFeatures()}"
@@ -60,25 +79,38 @@
                         currentPageNo="#{activeDocumentBean.viewManager.currentImageOrder}"
                         featureClickHandling="openSearch" />
                 </ui:fragment>
+                <!-- WIDGET METADATA + WIDGET METADATA TECH -->
                 <ui:fragment rendered="#{widgetName == 'metadata'}">
                     <widgetComponent:widget_metadata id="widgetMetadata" />
                     <widgetComponent:widget_metadataTech id="widgetTechnical" /> <!-- TODO own config? -->
                 </ui:fragment>
+                
+                <!-- WIDGET NAMES ENTITIES -->
                 <ui:fragment rendered="#{widgetName == 'named-entities'}">
                     <widgetComponent:widget_nerFacetting rendered="#{displayConditions.matchRecord('{pageType: [viewObject]}')}"/>
                 </ui:fragment>
+
+				<!-- WIDGET RECORD NOTES -->
                 <ui:fragment rendered="#{widgetName == 'record-notes'}">
                     <widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
                 </ui:fragment>
+                
+				<!-- WIDGET RELATED GROUPS -->
                 <ui:fragment rendered="#{widgetName == 'related-groups'}">
                     <widgetComponent:widget_relatedGroups />
                 </ui:fragment>
+                
+				<!-- WIDGET SEARCH IN CURRENT ITEM -->
                 <ui:fragment rendered="#{widgetName == 'search-in-current-item'}">
                     <widgetComponent:widget_searchInCurrentItem />
                 </ui:fragment>
+
+				<!-- WIDGET USAGE STATS -->
                 <ui:fragment rendered="#{widgetName == 'statistics-usage'}">
                     <widgetComponent:widget_statistics_usage />
                 </ui:fragment>
+                
+				<!-- WIDGET TOC -->
                 <ui:fragment rendered="#{widgetName == 'toc'}">
                     <widgetComponent:widget_toc id="widgetToc" />
                 </ui:fragment>
@@ -86,15 +118,17 @@
 
 	   </ui:repeat>
 
-        <!-- Widgets from modules -->
+        <!-- WIDGETS FROM MODULES -->
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">
                 <ui:include src="/#{contribution}" />
             </c:forEach>
         </c:forEach>
         
+        <!-- ADMINISTRATION WIDGET -->
         <widgetComponent:widget_userInteractions />
 
+		<!-- INIT COPY TO CLIPBOARD FUNCTION -->
 		<script>
 			viewerJS.clipboard.init();
 		</script>
