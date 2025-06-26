@@ -5703,7 +5703,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getCopyrightIndicatorStyle() {
-        return getSidebarWidgetStringValue("copyright-info", "[@style]", "widget");
+        return getSidebarWidgetStringValue("copyright", "[@style]", "widget");
     }
 
     /**
@@ -5712,7 +5712,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getCopyrightIndicatorStatusField() {
-        return getSidebarWidgetStringValue("copyright-info", "status[@field]", null);
+        return getSidebarWidgetStringValue("copyright", "status[@field]", null);
     }
 
     /**
@@ -5726,7 +5726,7 @@ public class Configuration extends AbstractConfiguration {
             throw new IllegalArgumentException("value may not be null");
         }
 
-        HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("copyright-info");
+        HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("copyright");
         if (widgetConfig != null) {
             List<HierarchicalConfiguration<ImmutableNode>> configs = widgetConfig.configurationsAt("status.value");
             for (HierarchicalConfiguration<ImmutableNode> config : configs) {
@@ -5758,7 +5758,7 @@ public class Configuration extends AbstractConfiguration {
             throw new IllegalArgumentException("value may not be null");
         }
 
-        HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("copyright-info");
+        HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("copyright");
         if (widgetConfig != null) {
             List<HierarchicalConfiguration<ImmutableNode>> configs = widgetConfig.configurationsAt("license.value");
             for (HierarchicalConfiguration<ImmutableNode> config : configs) {
@@ -5780,7 +5780,7 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getCopyrightIndicatorLicenseField() {
-        return getSidebarWidgetStringValue("copyright-info", "license[@field]", null);
+        return getSidebarWidgetStringValue("copyright", "license[@field]", null);
     }
 
     public boolean isDisplaySocialMediaShareLinks() {

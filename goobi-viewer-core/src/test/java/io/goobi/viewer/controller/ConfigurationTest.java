@@ -1819,7 +1819,7 @@ class ConfigurationTest extends AbstractTest {
         List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetsForView("object");
         assertEquals(3, result.size());
         assertEquals("views", result.get(0));
-        assertEquals("copyright-info", result.get(1));
+        assertEquals("copyright", result.get(1));
         assertEquals("search-in-current-item", result.get(2));
     }
 

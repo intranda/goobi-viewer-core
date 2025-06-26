@@ -1002,12 +1002,12 @@
         <views>
             <view name="object">
                 <displayWidget name="views" />
-                <displayWidget name="copyright-info" />
+                <displayWidget name="copyright" />
                 <displayWidget name="search-in-current-item" />
             </view>
             <view name="toc">
                 <displayWidget name="views" />
-                <displayWidget name="copyright-info" />
+                <displayWidget name="copyright" />
             </view>
         </views>
     
@@ -1067,8 +1067,8 @@
                 </citationLinks>
             </widget>
             
-            <!-- copyright-info: copyright status of the current record will be visualized with colors and icons. -->
-            <widget name="copyright-info" style="trafficlight">
+            <!-- copyright: copyright status of the current record will be visualized with colors and icons. -->
+            <widget name="copyright" style="trafficlight">
                 <status field="MD_ACCESSCONDITION">
                     <value content="Freier Zugang" status="OPEN" description="COPYRIGHT_STATUS_OPEN" />
                     <value content="Eingeschränker Zugang" status="PARTIAL" description="COPYRIGHT_STATUS_PARTIAL" />
