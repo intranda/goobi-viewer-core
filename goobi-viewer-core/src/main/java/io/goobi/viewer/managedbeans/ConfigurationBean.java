@@ -28,6 +28,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.configuration2.HierarchicalConfiguration;
+import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -1160,6 +1162,26 @@ public class ConfigurationBean implements Serializable {
      */
     public List<String> getSidebarWidgetsForView(String view) {
         return DataManager.getInstance().getConfiguration().getSidebarWidgetsForView(view);
+    }
+
+    /**
+     * 
+     * @param view Record view name
+     * @param widget Widget name
+     * @return true if widget configured as collapsible; false otherwise; default is false
+     */
+    public boolean isSidebarWidgetForViewCollapsible(String view, String widget) {
+        return DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsible(view, widget);
+    }
+
+    /**
+     * 
+     * @param view Record view name
+     * @param widget Widget name
+     * @return true if widget configured as collapsed by default; false otherwise; default is false
+     */
+    public boolean isSidebarWidgetForViewCollapsedByDefault(String view, String widget) {
+        return DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsedByDefault(view, widget);
     }
 
     /**

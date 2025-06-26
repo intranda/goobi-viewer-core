@@ -1128,6 +1128,54 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @param view Record view name
+     * @param widget Widget name
+     * @return true if widget configured as collapsible; false otherwise; default is false
+     * @should return correct value
+     */
+    public boolean isSidebarWidgetForViewCollapsible(String view, String widget) {
+        if (StringUtils.isEmpty(view) || StringUtils.isEmpty(widget)) {
+            return false;
+        }
+
+        HierarchicalConfiguration<ImmutableNode> viewConfig = getSidebarViewConfiguration(view.toLowerCase());
+        if (viewConfig != null) {
+            for (HierarchicalConfiguration<ImmutableNode> widgetConfig : viewConfig.configurationsAt("displayWidget")) {
+                if (widget.equals(widgetConfig.getString(XML_PATH_ATTRIBUTE_NAME))) {
+                    return widgetConfig.getBoolean("[@collapsible]", false);
+                }
+            }
+        }
+
+        return false;
+    }
+    
+    /**
+     * 
+     * @param view Record view name
+     * @param widget Widget name
+     * @return true if widget configured as collapsed by default; false otherwise; default is false
+     * @should return correct value
+     */
+    public boolean isSidebarWidgetForViewCollapsedByDefault(String view, String widget) {
+        if (StringUtils.isEmpty(view) || StringUtils.isEmpty(widget)) {
+            return false;
+        }
+
+        HierarchicalConfiguration<ImmutableNode> viewConfig = getSidebarViewConfiguration(view.toLowerCase());
+        if (viewConfig != null) {
+            for (HierarchicalConfiguration<ImmutableNode> widgetConfig : viewConfig.configurationsAt("displayWidget")) {
+                if (widget.equals(widgetConfig.getString(XML_PATH_ATTRIBUTE_NAME))) {
+                    return widgetConfig.getBoolean("[@collapsedByDefault]", false);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Returns the list of structure elements allowed to be shown in calendar view
      *
      * @should return all configured elements

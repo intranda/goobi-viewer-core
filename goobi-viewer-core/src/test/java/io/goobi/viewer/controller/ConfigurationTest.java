@@ -1822,6 +1822,24 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("copyright", result.get(1));
         assertEquals("search-in-current-item", result.get(2));
     }
+    
+    /**
+     * @see Configuration#isSidebarWidgetForViewCollapsible(String,String)
+     * @verifies return correct value
+     */
+    @Test
+    void isSidebarWidgetForViewCollapsible_shouldReturnCorrectValue() {
+        assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsible("object", "copyright"));
+    }
+    
+    /**
+     * @see Configuration#isSidebarWidgetForViewCollapsedByDefault(String,String)
+     * @verifies return correct value
+     */
+    @Test
+    void isSidebarWidgetForViewCollapsedByDefault_shouldReturnCorrectValue() {
+        assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsedByDefault("object", "copyright"));
+    }
 
     /**
      * @see Configuration#getCalendarDocStructTypes()

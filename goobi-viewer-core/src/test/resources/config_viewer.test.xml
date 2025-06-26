@@ -1002,7 +1002,7 @@
         <views>
             <view name="object">
                 <displayWidget name="views" />
-                <displayWidget name="copyright" />
+                <displayWidget name="copyright" collapsible="true" collapsedByDefault="true" />
                 <displayWidget name="search-in-current-item" />
             </view>
             <view name="toc">
