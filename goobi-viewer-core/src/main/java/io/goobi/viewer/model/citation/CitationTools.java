@@ -163,7 +163,8 @@ public final class CitationTools {
         }
 
         // Use configured mapping, if available
-        Map<String, String> docstructMap = DataManager.getInstance().getConfiguration().getSidebarWidgetCitationCitationRecommendationDocstructMapping();
+        Map<String, String> docstructMap =
+                DataManager.getInstance().getConfiguration().getSidebarWidgetCitationCitationRecommendationDocstructMapping();
         if (docstructMap != null && docstructMap.containsKey(docstruct)) {
             CSLType ret = CSLType.fromString(docstructMap.get(docstruct));
             logger.trace("Mapped CSL type: {}", ret.name());
