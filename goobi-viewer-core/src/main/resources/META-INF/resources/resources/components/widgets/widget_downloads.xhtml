@@ -9,15 +9,17 @@
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
 
-	<composite:interface>
-		<composite:attribute name="collapsible" required="false" default="false"/>
-	</composite:interface>
+	<composite:interface></composite:interface>
 
 	<composite:implementation>
 		<div jsf:id="widgetDownloads" class="widget widget-downloads"
 			rendered="#{activeDocumentBean.viewManager != null and displayConditions.getTag('widgetDownloads').getChildCount('widget-element') > 0}">
-			<div tabindex="0" role="button"
-				class="widget__topbar widget-downloads__topbar #{cc.attrs.collapsible  ? 'collapseable' : ''}">
+			<div tabindex="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'downloads') ? '0' : ''}"
+				role="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'downloads') ? 'button' : ''}"
+				class="widget__topbar 
+				widget-downloads__topbar #{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'downloads')  ? 'collapsible' : ''}
+				#{!configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'downloads')  ? 'in' : ''}">
+				  
 				<h2 class="widget__title widget-downloads__title">
 					#{msg.widget__downloads__title}</h2>
 
@@ -28,13 +30,14 @@
 							src="#{request.contextPath}/resources/images/infinity_loader.svg" />
 					</div>
 
-					<i class="fa fa-angle-down" aria-hidden="true"></i>
+					<i class="widget__topbar-icon-collapsible fa fa-angle-down" aria-hidden="true"></i>
 				</div>
 			</div>
 
 			<!-- WIDGET BODY -->
 			<div id="widgetDownloadsBody"
-				class="widget__body widget-downloads__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
+				class="widget__body widget-downloads__body 
+				#{configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'downloads')  ? '-collapsed' : ''}">
 				<!-- INTRODUCTION TEXT -->
 				<ui:fragment
 					rendered="#{fn:length(msg['widget__downloads__intro_text_object_downloads']) > 0 and displayConditions.matchRecord('{pageType:[viewObject, cmsPage]}') }">

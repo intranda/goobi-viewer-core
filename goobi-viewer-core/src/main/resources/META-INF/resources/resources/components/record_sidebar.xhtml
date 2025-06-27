@@ -50,8 +50,8 @@
                 </ui:fragment>
   
                 <!-- WIDGET CITATIONS -->
-                <ui:fragment rendered="#{widgetName == 'citations'}">
-                    <widgetComponent:widget_citation id="widgetCitations"
+                <ui:fragment rendered="#{widgetName == 'citation'}">
+                    <widgetComponent:widget_citation id="widgetCitation"
                         rendered="#{displayConditions.matchRecord('{pageType: ![viewMetadata, viewToc, viewFulltext]}') or displayConditions.matchRecord('{pageType: [viewMetadata, viewToc], docType:[anchor]}')}"/>
                 </ui:fragment>
 
@@ -79,10 +79,14 @@
                         currentPageNo="#{activeDocumentBean.viewManager.currentImageOrder}"
                         featureClickHandling="openSearch" />
                 </ui:fragment>
-                <!-- WIDGET METADATA + WIDGET METADATA TECH -->
+                <!--  WIDGET METADATA TECH -->
                 <ui:fragment rendered="#{widgetName == 'metadata'}">
                     <widgetComponent:widget_metadata id="widgetMetadata" />
-                    <widgetComponent:widget_metadataTech id="widgetTechnical" /> <!-- TODO own config? -->
+                </ui:fragment>
+                
+                <!-- WIDGET METADATA TECH -->
+                <ui:fragment rendered="#{widgetName == 'metadata-tech'}">
+					<widgetComponent:widget_metadataTech id="widgetTechnical" /> <!-- TODO own config? -->
                 </ui:fragment>
                 
                 <!-- WIDGET NAMES ENTITIES -->

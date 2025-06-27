@@ -9,15 +9,16 @@
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
 
-	<composite:interface>
-		<composite:attribute name="collapsible" required="false" default="false" />
-	</composite:interface>
+	<composite:interface></composite:interface>
 
 	<composite:implementation>
 		<div jsf:id="widgetCitation" class="widget widget-citation"
 			rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks and displayConditions.getTag('widgetCitation').getChildCount('widget-element') > 0}">
-			<div tabindex="0" role="button"
-				class="widget__topbar widget-citation__topbar #{cc.attrs.collapsible ? 'collapseable' : ''}">
+			<div class="widget__topbar widget-citation__topbar 
+				#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'citation')  ? 'collapsible' : ''}
+				#{!configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'citation')  ? 'in' : ''}"
+					tabindex="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'citation') ? '0' : ''}"
+					role="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'citation') ? 'button' : ''}">
 				
 				<h2 class="widget__title widget-citation__title">#{msg.widget_citation}</h2>
 
@@ -27,13 +28,13 @@
 						<img
 							src="#{request.contextPath}/resources/images/infinity_loader.svg" />
 					</div>
-					<i class="fa fa-angle-down" aria-hidden="true"></i>
+					<i class="widget__topbar-icon-collapsible fa fa-angle-down" aria-hidden="true"></i>
 				</div>
 			</div>
 
 			<!-- WIDGET BODY -->
 			<div id="widgetCitationsBody"
-				class="widget__body widget-citation__body #{cc.attrs.collapsible ? 'collapseable' : ''}">
+				class="widget__body widget-citation__body #{configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'citation')  ? '-collapsed' : ''}">
 				<!-- INTRODUCTION TEXT -->
 				<ui:fragment
 					rendered="#{fn:length(msg['MASTERVALUE_INTRODUCTION_TEXT_CITATION']) > 0}">
