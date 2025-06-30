@@ -26,10 +26,15 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_ACCESS;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_ACCESS_TOKEN;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_LOGOUT;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_PROBE;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_PROBE_REQUEST;
 
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.HashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,17 +43,25 @@ import de.intranda.api.iiif.auth.v2.AuthAccessTokenService2;
 import de.intranda.api.iiif.auth.v2.AuthLogoutService2;
 import de.intranda.api.iiif.auth.v2.AuthProbeResult2;
 import de.intranda.api.iiif.auth.v2.AuthProbeService2;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
+import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
@@ -85,13 +98,49 @@ public class AuthorizationFlowResource {
     }
 
     @GET
-    @jakarta.ws.rs.Path(AUTH_PROBE)
+    @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "")
     @IIIFPresentationBinding
-    public AuthProbeResult2 probeResource() {
-        // TODO 
-        return new AuthProbeResult2();
+    public AuthProbeResult2 probeResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
+            @Parameter(description = "Content file name") @PathParam("filename") String filename) {
+        logger.trace("probeResource: {}/{}", pi, filename);
+        AuthProbeResult2 ret = new AuthProbeResult2();
+
+        String authHeader = servletRequest.getHeader("Authorization");
+        if (StringUtils.isNotEmpty(authHeader)) {
+            logger.trace("Authorization: {}", authHeader);
+            if (authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                logger.trace("Token: {}", token);
+                // TODO Check token, return 200 if access granted via token
+            } else {
+                ret.setStatus(Response.Status.BAD_REQUEST.getStatusCode()).setHeading(new HashMap<>()).setNote(new HashMap<>());
+                ret.getHeading().put("en", "Authorization: bad format");
+                ret.getNote().put("en", "Authorization: bad format");
+            }
+
+            return ret;
+        }
+
+        try {
+            BaseMimeType baseMimeType = FileTools.getBaseMimeType(FileTools.getMimeTypeFromFile(Paths.get(filename)));
+            logger.trace("Base mime type: {}", baseMimeType);
+            boolean access = AccessConditionUtils.checkAccess(servletRequest, baseMimeType.getName(), pi, filename, false).isGranted();
+            if (access) {
+                ret.setStatus(Response.Status.OK.getStatusCode());
+                logger.trace("access granted");
+            } else {
+                ret.setStatus(Response.Status.FORBIDDEN.getStatusCode());
+                logger.trace("access denied");
+            }
+        } catch (IndexUnreachableException | DAOException | IOException e) {
+            ret.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).setHeading(new HashMap<>()).setNote(new HashMap<>());
+            ret.getHeading().put("en", "Error");
+            ret.getNote().put("en", e.getMessage());
+        }
+
+        return ret;
     }
 
     @GET
@@ -108,10 +157,29 @@ public class AuthorizationFlowResource {
                 return Response.ok("").build();
             } catch (AuthenticationProviderException e) {
                 logger.error(e.getMessage());
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getMessage()).build();
             }
         }
-        
+
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
+
+    /**
+     * Throw an AccessDenied error if the request doesn't satisfy the access conditions
+     * 
+     * @param pi
+     * @param filename
+     * @throws ServiceNotAllowedException
+     */
+    private void checkFulltextAccessConditions(String pi, String filename) throws ServiceNotAllowedException {
+        boolean access = false;
+        try {
+            access = AccessConditionUtils.checkAccess(servletRequest, "text", pi, filename, false).isGranted();
+        } catch (IndexUnreachableException | DAOException e) {
+            logger.error(String.format("Cannot check fulltext access for pi %s and file %s: %s", pi, filename, e.toString()));
+        }
+        if (!access) {
+            throw new ServiceNotAllowedException("Access to fulltext file " + pi + "/" + filename + " not allowed");
+        }
     }
 }
