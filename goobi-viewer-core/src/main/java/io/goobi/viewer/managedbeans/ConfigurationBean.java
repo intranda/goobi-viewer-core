@@ -1178,10 +1178,11 @@ public class ConfigurationBean implements Serializable {
      * 
      * @param view Record view name
      * @param widget Widget name
-     * @return true if widget configured as collapsed by default; false otherwise; default is false
+     * @return true if widget configured as collapsed by default and collapsible in general; false otherwise; default is false
      */
     public boolean isSidebarWidgetForViewCollapsedByDefault(String view, String widget) {
-        return DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsedByDefault(view, widget);
+        return isSidebarWidgetForViewCollapsible(view, widget)
+                && DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsedByDefault(view, widget);
     }
 
     /**
@@ -1200,7 +1201,7 @@ public class ConfigurationBean implements Serializable {
      * <p>
      * isDisplaySidebarRssFeed.
      * </p>
-     *
+     *s
      * @return a boolean.
      * @should return correct value
      */
