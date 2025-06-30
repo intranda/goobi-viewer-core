@@ -36,8 +36,9 @@ class FeatureGeneratorTest {
         List<GeoMapFeature> features = new ArrayList<>(generator.getFeatures(mdDoc));
         Assertions.assertEquals(features.size(), 1);
         Assertions.assertEquals("Document title in Göttingen", features.get(0).getTitle().getValue().orElse(""));
-        Assertions.assertEquals(features.get(0).getEntities().size(), 1);
-        Assertions.assertEquals("Document title in Göttingen", features.get(0).getEntities().get(0).getLabel().getValue().orElse(""));
+        Assertions.assertEquals(features.get(0).getItems().size(), 1);
+        Assertions.assertEquals("Document title in Göttingen",
+                features.get(0).getItems().stream().findFirst().orElse(null).getLabel().getValue().orElse(""));
     }
 
     @Test
@@ -60,8 +61,8 @@ class FeatureGeneratorTest {
         Assertions.assertEquals(2, features.size());
         Assertions.assertEquals("Document title", features.get(0).getTitle().getValue().orElse(""));
         Assertions.assertEquals("Document title", features.get(1).getTitle().getValue().orElse(""));
-        Assertions.assertEquals(1, features.get(0).getEntities().size());
-        Assertions.assertEquals(1, features.get(1).getEntities().size());
+        Assertions.assertEquals(1, features.get(0).getItems().size());
+        Assertions.assertEquals(1, features.get(1).getItems().size());
     }
 
 }

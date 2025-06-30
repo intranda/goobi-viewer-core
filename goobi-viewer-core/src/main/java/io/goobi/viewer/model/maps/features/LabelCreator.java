@@ -55,7 +55,8 @@ public class LabelCreator {
     }
 
     public IMetadataValue getValue(MetadataContainer doc, MetadataContainer topStruct, String template) {
-        return this.getValue(doc, new MetadataContainer(Collections.emptyMap()), topStruct, template);
+        return this.getValue(doc, new MetadataContainer(Collections.emptyMap()),
+                topStruct != null ? topStruct : new MetadataContainer(Collections.emptyMap()), template);
     }
 
     public IMetadataValue getValue(MetadataContainer doc, MetadataContainer parentStruct, MetadataContainer topStruct, String template) {
