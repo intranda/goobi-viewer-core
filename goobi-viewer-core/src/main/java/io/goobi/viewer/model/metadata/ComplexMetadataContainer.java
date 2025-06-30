@@ -153,4 +153,8 @@ public class ComplexMetadataContainer {
         return this.metadataMap.values().stream().flatMap(mdList -> mdList.getMetadata().stream()).toList();
     }
 
+    public boolean isEmpty() {
+        return this.metadataMap.isEmpty();
+    }
+
 }

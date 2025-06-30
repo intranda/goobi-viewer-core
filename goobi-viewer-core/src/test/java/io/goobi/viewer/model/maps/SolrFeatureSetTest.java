@@ -14,7 +14,7 @@ class SolrFeatureSetTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void testGetFeatures() throws PresentationException, IndexUnreachableException {
         SolrFeatureSet featureSet = new SolrFeatureSet();
-        featureSet.setAggregateResults(true);
+        featureSet.setSearchScope(SolrSearchScope.RECORDS);
         featureSet.setSolrQuery("PI_TOPSTRUCT:AC03111335");
         featureSet.setMarkerTitleField("cms__geomaps__popup_content__option__metadata");
         Collection<GeoMapFeature> features = featureSet.createFeatures();

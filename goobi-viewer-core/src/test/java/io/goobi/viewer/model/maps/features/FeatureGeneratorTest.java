@@ -60,7 +60,8 @@ class FeatureGeneratorTest {
         Assertions.assertEquals(2, features.size());
         Assertions.assertEquals("Document title", features.get(0).getTitle().getValue().orElse(""));
         Assertions.assertEquals("Document title", features.get(1).getTitle().getValue().orElse(""));
-
+        Assertions.assertEquals(1, features.get(0).getEntities().size());
+        Assertions.assertEquals(1, features.get(1).getEntities().size());
     }
 
 }

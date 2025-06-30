@@ -503,7 +503,7 @@ public class Configuration extends AbstractConfiguration {
             if (type.equals(metadataList.getString(XML_PATH_ATTRIBUTE_TYPE))) {
                 List<HierarchicalConfiguration<ImmutableNode>> templateList = metadataList.configurationsAt("template");
                 for (HierarchicalConfiguration<ImmutableNode> templateConfig : templateList) {
-                    String template = templateConfig.getString("[@type]", VALUE_DEFAULT);
+                    String template = templateConfig.getString("[@name]", VALUE_DEFAULT);
                     map.put(template, getMetadataForTemplate(template, templateList, fallbackToDefaultTemplate, topstructValueFallbackDefaultValue));
                 }
 

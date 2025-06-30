@@ -131,7 +131,7 @@ public final class ComplexMetadata {
     }
 
     private static Function<String, Boolean> getMetadataFilter() {
-        return name -> !IGNORE_METADATA_FIELDS.contains(name) && !name.matches(IGNORE_METADATA_REGEX);
+        return name -> !name.matches(IGNORE_METADATA_REGEX);
     }
 
     public String getField() {

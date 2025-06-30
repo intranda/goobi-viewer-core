@@ -850,6 +850,22 @@
                 </metadata>
             </template>
         </metadataList>
+        
+        <!-- geomaps -->
+        <metadataList type="geomap_marker_place">
+        	<template name="_DEFAULT">
+               	<metadata label="" value="{NORM_NAME}">
+                   			<param type="field" key="NORM_NAME" altKey="LABEL" />
+				</metadata>
+			</template>
+        </metadataList>
+		<metadataList type="geomap_marker_metadata">
+			<template name="_DEFAULT">
+               	<metadata label="" value="{MD_VALUE}">
+                   			<param type="field" key="MD_VALUE" altKey="LABEL" />
+				</metadata>
+			</template>
+		</metadataList>
 		
         <!-- normdataList: List of NORM_ fields to display in the norm data pop-up box -->
         <normdataList>
@@ -1411,22 +1427,10 @@
 	  <metadata>
 		  <option label="cms__geomaps__popup_content__option__none" name=""/>
         	<option label="cms__geomaps__popup_content__option__place" name="NORM_NAME">
-        		<title>
-        			<template name="_DEFAULT">
-	                	<metadata label="" value="{NORM_NAME}">
-	                    			<param type="field" key="NORM_NAME" altKey="LABEL" />
-						</metadata>
-					</template>
-				</title>
+        		<marker metadataList="geomap_marker_place"/>
         	</option>
         	<option label="cms__geomaps__popup_content__option__metadata" name="MD_VALUE">
-        		<title>
-	        		<template name="_DEFAULT">
-	                	<metadata label="" value="{MD_VALUE}">
-	                    			<param type="field" key="MD_VALUE" altKey="LABEL" />
-						</metadata>
-					</template>
-        		</title>
+        		<marker metadataList="geomap_marker_metadata"/>
         	</option>
         </metadata>
 	  <coordinateFields>

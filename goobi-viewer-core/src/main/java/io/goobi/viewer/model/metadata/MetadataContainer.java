@@ -345,4 +345,12 @@ public class MetadataContainer {
         return this.metadata.containsKey(field);
     }
 
+    @Override
+    public String toString() {
+        return metadata.entrySet().stream().map(entry -> {
+            return entry.getKey() + "\t-\t"
+                    + entry.getValue().stream().map(v -> v.getValueOrFallback(Locale.ENGLISH)).collect(Collectors.joining(", "));
+        }).sorted().collect(Collectors.joining("\n"));
+    }
+
 }

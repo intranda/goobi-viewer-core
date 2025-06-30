@@ -58,6 +58,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.maps.GeoMapFeature;
+import io.goobi.viewer.model.maps.GeoMapFeatureItem;
 import io.goobi.viewer.model.maps.IArea;
 import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.maps.Point;
@@ -92,6 +93,7 @@ public class GeoCoordinateConverter {
     private final Map<String, Metadata> featureTitleConfigs;
     private final Map<String, Metadata> entityTitleConfigs;
     private final HttpServletRequest servletRequest;
+    private final CoordinateReaderProvider coordinateReaderProvider;
 
     public GeoCoordinateConverter() {
         this("");
@@ -100,6 +102,7 @@ public class GeoCoordinateConverter {
     public GeoCoordinateConverter(String markerTitleConfig) {
         this.featureTitleConfigs = DataManager.getInstance().getConfiguration().getGeomapFeatureConfigurations(markerTitleConfig);
         this.entityTitleConfigs = DataManager.getInstance().getConfiguration().getGeomapItemConfigurations(markerTitleConfig);
+        this.coordinateReaderProvider = new CoordinateReaderProvider();
         this.servletRequest = null;
     }
 
@@ -107,6 +110,7 @@ public class GeoCoordinateConverter {
         super();
         this.featureTitleConfigs = featureTitleConfigs;
         this.entityTitleConfigs = entityTitleConfigs;
+        this.coordinateReaderProvider = new CoordinateReaderProvider();
         this.servletRequest = null;
     }
 
@@ -114,6 +118,7 @@ public class GeoCoordinateConverter {
         this.servletRequest = servletRequest;
         this.featureTitleConfigs = DataManager.getInstance().getConfiguration().getGeomapFeatureConfigurations("");
         this.entityTitleConfigs = DataManager.getInstance().getConfiguration().getGeomapItemConfigurations("");
+        this.coordinateReaderProvider = new CoordinateReaderProvider();
     }
 
     /**
@@ -163,7 +168,7 @@ public class GeoCoordinateConverter {
                 .map(e -> {
                     GeoMapFeature f = e.getKey();
                     f.setCount(e.getValue().size());
-                    f.setEntities(e.getValue().stream().flatMap(f1 -> f1.getEntities().stream()).collect(Collectors.toList()));
+                    f.setItems(e.getValue().stream().flatMap(f1 -> f1.getItems().stream()).collect(Collectors.toList()));
                     return f;
                 })
                 .collect(Collectors.toList());
@@ -338,7 +343,7 @@ public class GeoCoordinateConverter {
         List<String> points = new ArrayList<>();
         points.addAll(doc.get(metadataField).stream().filter(Objects::nonNull).map(md -> md.getValueOrFallback(null)).toList());
         List<GeoMapFeature> docFeatures = getFeatures(points);
-        docFeatures.forEach(f -> f.addEntity(doc));
+        docFeatures.forEach(f -> f.addItem(new GeoMapFeatureItem(doc.getLabel(), titleField)));
         String title = StringUtils.isBlank(titleField) ? null : doc.getFirstValue(titleField);
         Metadata titleConfig = this.featureTitleConfigs.getOrDefault(
                 Optional.ofNullable(doc).map(mc -> mc.getFirstValue(SolrConstants.DOCSTRCT)).orElse(StringConstants.DEFAULT_NAME),
@@ -355,20 +360,12 @@ public class GeoCoordinateConverter {
 
         docFeatures.forEach(f -> {
 
-            IMetadataValue title = Optional.ofNullable(f.getEntities())
+            IMetadataValue title = Optional.ofNullable(f.getItems())
                     .filter(l -> !l.isEmpty())
-                    .map(l -> l.get(0))
-                    .map(MetadataContainer::getMetadata)
-                    .map(metadata -> createTitle(titleConfiguration, metadata))
-                    .filter(md -> !md.isEmpty())
+                    .flatMap(l -> l.stream().findFirst())
+                    .map(GeoMapFeatureItem::getLabel)
                     .orElse(new SimpleMetadataValue(defaultTitle));
             f.setTitle(title);
-
-            f.getEntities()
-                    .forEach(entity -> Optional.ofNullable(entity.getMetadata())
-                            .map(metadata -> createTitle(entityLabelConfiguration, metadata))
-                            .filter(md -> !md.isEmpty())
-                            .ifPresent(entity::setLabel));
 
         });
     }
@@ -392,7 +389,7 @@ public class GeoCoordinateConverter {
      * @param points A list of strings that represent two-dimensional coordinates or an array of such.
      * @return The coordinates in form of {@link GeoMapFeature geoMapFeatures}
      */
-    public static List<GeoMapFeature> getFeatures(List<String> points) {
+    public List<GeoMapFeature> getFeatures(List<String> points) {
         List<GeoMapFeature> docFeatures = new ArrayList<>();
         for (String point : points) {
             try {
@@ -442,7 +439,6 @@ public class GeoCoordinateConverter {
 
         MetadataContainer entity = MetadataContainer.createMetadataEntity(doc, children,
                 getFeatureFieldFilter(children != null && !children.isEmpty()), getEntityFieldFilter());
-        docFeatures.forEach(f -> f.addEntity(entity));
     }
 
     private static Predicate<String> getFeatureFieldFilter(boolean aggregateHits) {
@@ -555,7 +551,7 @@ public class GeoCoordinateConverter {
         throw new IllegalArgumentException(String.format("Unable to parse objects %s, %s to double array", x, y));
     }
 
-    private static List<GeoMapFeature> createFeaturesFromJson(String point) {
+    private List<GeoMapFeature> createFeaturesFromJson(String point) {
         List<GeoMapFeature> features = new ArrayList<>();
         JSONObject json = new JSONObject(point);
         String type = json.getString("type");
@@ -565,7 +561,7 @@ public class GeoCoordinateConverter {
                 array.forEach(f -> {
                     if (f instanceof JSONObject jsonObj) {
                         String jsonString = jsonObj.toString();
-                        Geometry geometry = CoordinateReaderProvider.getReader(jsonString).read(jsonString);
+                        Geometry geometry = coordinateReaderProvider.getReader(jsonString).read(jsonString);
                         GeoMapFeature feature = new GeoMapFeature(geometry);
                         if (!features.contains(feature)) {
                             features.add(feature);
@@ -574,7 +570,7 @@ public class GeoCoordinateConverter {
                 });
             }
         } else if ("Feature".equalsIgnoreCase(type)) {
-            Geometry geometry = CoordinateReaderProvider.getReader(json.toString()).read(json.toString());
+            Geometry geometry = coordinateReaderProvider.getReader(json.toString()).read(json.toString());
             GeoMapFeature feature = new GeoMapFeature(geometry);
             features.add(feature);
         }

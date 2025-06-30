@@ -2538,7 +2538,7 @@ public class ActiveDocumentBean implements Serializable {
             subDocFields.addAll(coordinateFields);
 
             Collection<GeoMapFeature> features = new ArrayList<>();
-
+            CoordinateReaderProvider coordinateReaderProvider = new CoordinateReaderProvider();
             List<DisplayUserGeneratedContent> annos = DataManager.getInstance()
                     .getDao()
                     .getAnnotationsForWork(pi)
@@ -2551,7 +2551,7 @@ public class ActiveDocumentBean implements Serializable {
                     .toList();
             for (DisplayUserGeneratedContent anno : annos) {
                 if (anno.getAnnotationBody() instanceof TypedResource tr) {
-                    Geometry geometry = CoordinateReaderProvider.getReader(tr.asJson()).read(tr.asJson());
+                    Geometry geometry = coordinateReaderProvider.getReader(tr.asJson()).read(tr.asJson());
                     GeoMapFeature feature = new GeoMapFeature(geometry);
                     features.add(feature);
                 }

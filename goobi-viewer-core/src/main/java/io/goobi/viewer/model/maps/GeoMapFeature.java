@@ -22,11 +22,10 @@
 package io.goobi.viewer.model.maps;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -38,7 +37,6 @@ import org.json.JSONObject;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue.ValuePair;
 import io.goobi.viewer.controller.JsonTools;
-import io.goobi.viewer.model.metadata.MetadataContainer;
 import mil.nga.sf.geojson.Feature;
 import mil.nga.sf.geojson.FeatureConverter;
 import mil.nga.sf.geojson.Geometry;
@@ -61,7 +59,7 @@ public class GeoMapFeature {
     private String documentId = null;
     private Integer pageNo = null;
     private final Map<String, String> properties = new HashMap<>();
-    private List<MetadataContainer> entities = new ArrayList<>();
+    private Collection<GeoMapFeatureItem> items = new ArrayList<>();
 
     public GeoMapFeature() {
     }
@@ -166,16 +164,16 @@ public class GeoMapFeature {
         this.count = count;
     }
 
-    public List<MetadataContainer> getEntities() {
-        return Collections.unmodifiableList(entities);
+    public Collection<GeoMapFeatureItem> getItems() {
+        return Collections.unmodifiableCollection(items);
     }
 
-    public void setEntities(List<MetadataContainer> entities) {
-        this.entities = entities;
+    public void setItems(Collection<GeoMapFeatureItem> items) {
+        this.items = items;
     }
 
-    public void addEntity(MetadataContainer entity) {
-        this.entities.add(entity);
+    public void addItem(GeoMapFeatureItem item) {
+        this.items.add(item);
     }
 
     public Geometry getGeometry() {
@@ -221,8 +219,8 @@ public class GeoMapFeature {
         if (this.pageNo != null) {
             jsonProperties.put("page", this.pageNo);
         }
-        if (!this.entities.isEmpty()) {
-            addEntities(jsonProperties);
+        if (!this.items.isEmpty()) {
+            addItems(jsonProperties);
         }
         jsonProperties.put("count", this.count);
         return feature;
@@ -239,25 +237,13 @@ public class GeoMapFeature {
         return properties;
     }
 
-    public void addEntities(JSONObject properties) {
+    private void addItems(JSONObject properties) {
         JSONArray ents = new JSONArray();
         properties.put("entities", ents);
-        for (MetadataContainer entity : this.entities) {
+        for (GeoMapFeatureItem item : this.items) {
             JSONObject jsonMetadata = new JSONObject();
-            jsonMetadata.put("title", JsonTools.getAsObjectForJson(entity.getLabel()));
+            jsonMetadata.put("title", JsonTools.getAsObjectForJson(item.getLabel()));
             ents.put(jsonMetadata);
-            for (Entry<String, List<IMetadataValue>> entry : entity.getMetadata().entrySet()) {
-                String name = entry.getKey();
-                if (name != null) {
-                    List<IMetadataValue> values = entry.getValue();
-                    JSONArray array = new JSONArray();
-                    for (IMetadataValue value : values) {
-                        Object escapedValue = JsonTools.getAsObjectForJson(value);
-                        array.put(escapedValue);
-                    }
-                    jsonMetadata.put(name, array);
-                }
-            }
         }
     }
 
@@ -293,7 +279,7 @@ public class GeoMapFeature {
      */
     @Override
     public String toString() {
-        return getJson();
+        return getJsonObject().toString();
     }
 
     private String getIndentifyingString(IMetadataValue md) {

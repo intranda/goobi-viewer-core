@@ -3466,11 +3466,21 @@ public final class SearchHelper {
      * @return Map&lt;String, String&gt;
      */
     public static Map<String, String> getExpandQueryParams(String expandQuery) {
+        return getExpandQueryParams(expandQuery, SolrSearchIndex.MAX_HITS_EXPANDED);
+    }
+
+    /**
+     * @param expandQuery
+     * @return Map&lt;String, String&gt;
+     */
+    public static Map<String, String> getExpandQueryParams(String expandQuery, Integer maxHits) {
         Map<String, String> params = new HashMap<>();
         params.put(ExpandParams.EXPAND, "true");
         params.put(ExpandParams.EXPAND_Q, expandQuery);
         params.put(ExpandParams.EXPAND_FIELD, SolrConstants.PI_TOPSTRUCT);
-        params.put(ExpandParams.EXPAND_ROWS, String.valueOf(SolrSearchIndex.MAX_HITS_EXPANDED));
+        if (maxHits != null) {
+            params.put(ExpandParams.EXPAND_ROWS, String.valueOf(maxHits));
+        }
         params.put(ExpandParams.EXPAND_SORT, SolrConstants.ORDER + " asc");
         params.put(ExpandParams.EXPAND_FQ, ""); // The main filter query may not apply to the expand query to produce child hits
         return params;

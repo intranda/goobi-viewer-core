@@ -23,11 +23,16 @@ package io.goobi.viewer.model.maps;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.client.utils.URIBuilder;
@@ -36,32 +41,38 @@ import org.apache.logging.log4j.Logger;
 
 import com.ocpsoft.pretty.PrettyContext;
 
+import de.intranda.monitoring.timer.Time;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.maps.features.AbstractFeatureDataProvider;
 import io.goobi.viewer.model.maps.features.FeatureGenerator;
-import io.goobi.viewer.model.maps.features.FeatureQueryGenerator;
+import io.goobi.viewer.model.maps.features.IFeatureDataProvider;
 import io.goobi.viewer.model.maps.features.LabelCreator;
 import io.goobi.viewer.model.maps.features.MetadataDocument;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Transient;
 
 @Entity
 @DiscriminatorValue("solr")
 public class SolrFeatureSet extends FeatureSet {
 
+    private static final int MAX_RECORD_HITS = 10_000;
     private static final long serialVersionUID = -9054215108168526688L;
     private static final Logger logger = LogManager.getLogger(SolrFeatureSet.class);
 
     @Column(name = "solr_query", columnDefinition = "TEXT")
     private String solrQuery = null;
 
-    @Column(name = "aggregate_results")
-    private boolean aggregateResults = false;
+    @Column(name = "search_scope")
+    @Enumerated(EnumType.STRING)
+    private SolrSearchScope searchScope = SolrSearchScope.ALL;
 
     /**
      * SOLR-Field to create the marker title from if the features are generated from a SOLR query
@@ -88,7 +99,7 @@ public class SolrFeatureSet extends FeatureSet {
         super(blueprint);
         this.solrQuery = blueprint.solrQuery;
         this.markerTitleField = blueprint.markerTitleField;
-        this.aggregateResults = blueprint.aggregateResults;
+        this.searchScope = blueprint.searchScope;
         this.useHeatmap = blueprint.useHeatmap;
     }
 
@@ -141,18 +152,45 @@ public class SolrFeatureSet extends FeatureSet {
 
     protected Collection<GeoMapFeature> createFeatures() throws PresentationException, IndexUnreachableException {
 
-        FeatureQueryGenerator queryGenerator = new FeatureQueryGenerator(DataManager.getInstance().getSearchIndex());
-        List<MetadataDocument> hits = queryGenerator.getResults(getSolrQuery(), 10_000);
-
-        List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
         LabelCreator markerLabels =
                 new LabelCreator(DataManager.getInstance().getConfiguration().getGeomapFeatureConfigurations(getMarkerTitleField()));
         LabelCreator itemLabels = new LabelCreator(DataManager.getInstance().getConfiguration().getGeomapItemConfigurations(getMarkerTitleField()));
+        List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
 
-        FeatureGenerator featureGenerator = new FeatureGenerator(coordinateFields, markerLabels, itemLabels);
+        List<MetadataDocument> hits;
+        try (Time t = DataManager.getInstance().getTiming().takeTime("query")) {
+            IFeatureDataProvider queryGenerator =
+                    AbstractFeatureDataProvider.getDataProvider(getSearchScope(),
+                            ListUtils.union(coordinateFields, ListUtils.union(markerLabels.getFieldsToQuery(), itemLabels.getFieldsToQuery())));
+            hits = queryGenerator.getResults(getSolrQuery(), MAX_RECORD_HITS);
+        }
+        try (Time t = DataManager.getInstance().getTiming().takeTime("features")) {
+            FeatureGenerator featureGenerator = new FeatureGenerator(coordinateFields, markerLabels, itemLabels);
 
-        Collection<GeoMapFeature> featuresFromSolr = hits.stream().map(featureGenerator::getFeatures).flatMap(Collection::stream).toList();
-        return featuresFromSolr;
+            Collection<GeoMapFeature> featuresFromSolr = new ArrayList<>();
+            for (MetadataDocument hit : hits) {
+                Collection<GeoMapFeature> features = featureGenerator.getFeatures(hit);
+                featuresFromSolr.addAll(features);
+            }
+
+            Collection<GeoMapFeature> combinedFeatures = combineFeatures(featuresFromSolr);
+
+            return combinedFeatures;
+        }
+
+    }
+
+    private Collection<GeoMapFeature> combineFeatures(Collection<GeoMapFeature> singleFeatures) {
+        Map<GeoMapFeature, List<GeoMapFeature>> featureMap = singleFeatures.stream().collect(Collectors.groupingBy(Function.identity()));
+        Collection<GeoMapFeature> features = new ArrayList<>();
+        for (Entry<GeoMapFeature, List<GeoMapFeature>> entry : featureMap.entrySet()) {
+            GeoMapFeature feature = entry.getKey();
+            Collection<GeoMapFeatureItem> items = entry.getValue().stream().flatMap(f -> f.getItems().stream()).toList();
+            feature.setItems(items);
+            feature.setCount(items.size());
+            features.add(feature);
+        }
+        return features;
     }
 
     public String getSolrQuery() {
@@ -173,6 +211,10 @@ public class SolrFeatureSet extends FeatureSet {
 
     public String getSolrQueryForSearch() {
         return this.getSolrQueryForSearch(isAggregateResults());
+    }
+
+    public boolean isAggregateResults() {
+        return getSearchScope() != SolrSearchScope.RECORDS;
     }
 
     public String getSolrQueryForSearch(boolean aggregateResults) {
@@ -243,12 +285,12 @@ public class SolrFeatureSet extends FeatureSet {
         return true;
     }
 
-    public boolean isAggregateResults() {
-        return aggregateResults;
+    public SolrSearchScope getSearchScope() {
+        return searchScope;
     }
 
-    public void setAggregateResults(boolean aggregateResults) {
-        this.aggregateResults = aggregateResults;
+    public void setSearchScope(SolrSearchScope searchScope) {
+        this.searchScope = searchScope;
         this.featuresAsString = null;
     }
 

@@ -22,13 +22,11 @@
 package io.goobi.viewer.model.maps;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -141,28 +139,7 @@ public class RecordGeoMap {
         featureSet.setMarker(config.getMarker());
         geoMap.addFeatureSet(featureSet);
 
-        GeoCoordinateConverter converter = new GeoCoordinateConverter(config.getLabelConfig());
-
-        Map<GeoMapFeature, List<GeoMapFeature>> featureMap = docs.stream()
-                .distinct()
-                .filter(d -> matchesQuery(d, config.getQuery()))
-                .filter(d -> StringUtils.isNotBlank(d.getFirstValue("NORM_COORDS_GEOJSON")))
-                .map(doc -> converter.getGeojsonPoints(doc, "NORM_COORDS_GEOJSON", "MD_VALUE"))
-                .flatMap(Collection::stream)
-                .collect(Collectors.groupingBy(Function.identity()));
-
-        List<String> features = featureMap.entrySet()
-                .stream()
-                .map(entry -> {
-                    GeoMapFeature main = entry.getKey();
-                    main.setEntities(entry.getValue().stream().map(GeoMapFeature::getEntities).flatMap(List::stream).collect(Collectors.toList()));
-                    return main;
-                })
-                .map(GeoMapFeature::getJsonObject)
-                .map(Object::toString)
-                .collect(Collectors.toList());
-
-        featureSet.setFeatures(features);
+        //TODO:create related document features
 
     }
 
@@ -187,7 +164,7 @@ public class RecordGeoMap {
         featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), true)));
         featureSet.setSolrQuery(String.format("+DOCTYPE:METADATA +LABEL:(%s) +PI_TOPSTRUCT:%s", config.getQuery(), mainStruct.getPi()));
         featureSet.setMarkerTitleField(config.getLabelConfig());
-        featureSet.setAggregateResults(true);
+        featureSet.setSearchScope(SolrSearchScope.METADATA);
         featureSet.setMarker(config.getMarker());
         geoMap.addFeatureSet(featureSet);
     }
@@ -203,7 +180,7 @@ public class RecordGeoMap {
                     .flatMap(field -> docStruct.getMetadataValues(field).stream())
                     .filter(StringUtils::isNotBlank)
                     .toList();
-            List<GeoMapFeature> features = GeoCoordinateConverter.getFeatures(coordinateValues);
+            List<GeoMapFeature> features = new GeoCoordinateConverter().getFeatures(coordinateValues);
 
             Metadata labelConfig =
                     DataManager.getInstance().getConfiguration().getGeoMapFeatureConfiguration(config.getLabelConfig(), docStruct.getDocStructType());
@@ -222,7 +199,7 @@ public class RecordGeoMap {
             featureSet.setMarker(config.getMarker());
             featureSet.setMarkerTitleField(config.getLabelConfig());
             featureSet.setSolrQuery(String.format("+PI_TOPSTRUCT:%s +DOCTYPE:DOCSTRCT", docStruct.getPi()));
-            featureSet.setAggregateResults(false);
+            featureSet.setSearchScope(SolrSearchScope.RECORDS);
             geoMap.addFeatureSet(featureSet);
         }
     }
@@ -243,9 +220,10 @@ public class RecordGeoMap {
                     .filter(a -> ContentType.GEOLOCATION.equals(a.getType()))
                     .filter(a -> ContentBean.isAccessible(a, BeanUtils.getRequest()))
                     .toList();
+            CoordinateReaderProvider coordinateReaderProvider = new CoordinateReaderProvider();
             for (DisplayUserGeneratedContent anno : annos) {
                 if (anno.getAnnotationBody() instanceof TypedResource tr) {
-                    GeoMapFeature feature = new GeoMapFeature(CoordinateReaderProvider.getReader(tr.toString()).read(tr.toString()));
+                    GeoMapFeature feature = new GeoMapFeature(coordinateReaderProvider.getReader(tr.toString()).read(tr.toString()));
                     feature.setPageNo(anno.getPage());
                     feature.setDocumentId(anno.getId().toString());
                     features.add(feature.getJsonObject().toString());

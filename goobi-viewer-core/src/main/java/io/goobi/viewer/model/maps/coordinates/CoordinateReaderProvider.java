@@ -13,8 +13,15 @@ public class CoordinateReaderProvider {
 
     private static final Logger logger = LogManager.getLogger(CoordinateReaderProvider.class);
 
-    public static ICoordinateReader getReader(String value) {
-        return getCoordinateReaderInstances().stream()
+    private final List<ICoordinateReader> coordinateReader;
+
+    public CoordinateReaderProvider() {
+        this.coordinateReader = getCoordinateReaderInstances();
+
+    }
+
+    public ICoordinateReader getReader(String value) {
+        return coordinateReader.stream()
                 .filter(reader -> reader.canRead(value))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("No reader found for input string '" + value + "'"));
