@@ -36,11 +36,15 @@ import org.apache.logging.log4j.Logger;
 import de.intranda.api.iiif.auth.v2.AuthAccessService2;
 import de.intranda.api.iiif.auth.v2.AuthAccessTokenService2;
 import de.intranda.api.iiif.auth.v2.AuthLogoutService2;
+import de.intranda.api.iiif.auth.v2.AuthProbeResult2;
 import de.intranda.api.iiif.auth.v2.AuthProbeService2;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.managedbeans.UserBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -48,6 +52,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @jakarta.ws.rs.Path(AUTH)
 @ViewerRestServiceBinding
@@ -55,6 +60,9 @@ import jakarta.ws.rs.core.MediaType;
 public class AuthorizationFlowResource {
 
     private static final Logger logger = LogManager.getLogger(AuthorizationFlowResource.class);
+
+    private static final String API_V2 = "api/v2";
+
     @Context
     private HttpServletRequest servletRequest;
     @Context
@@ -66,14 +74,44 @@ public class AuthorizationFlowResource {
     @GET
     @jakarta.ws.rs.Path(AUTH_PROBE)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 manifest for record")
+    @Operation(tags = { "records", "iiif" }, summary = "")
     @IIIFPresentationBinding
     public AuthProbeService2 getProbeServiceDescription() {
-        String baseUrl = DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "api/v2" + AUTH;
+        String baseUrl = DataManager.getInstance().getConfiguration().getViewerBaseUrl() + API_V2 + AUTH;
         return new AuthProbeService2(URI.create(baseUrl + AUTH_PROBE),
                 Collections.singletonList(new AuthAccessService2(URI.create(baseUrl + AUTH_ACCESS), AuthAccessService2.Profile.ACTIVE,
                         new AuthAccessTokenService2(URI.create(baseUrl + AUTH_ACCESS_TOKEN)),
                         new AuthLogoutService2(URI.create(baseUrl + AUTH_LOGOUT)))));
     }
 
+    @GET
+    @jakarta.ws.rs.Path(AUTH_PROBE)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "iiif" }, summary = "")
+    @IIIFPresentationBinding
+    public AuthProbeResult2 probeResource() {
+        // TODO 
+        return new AuthProbeResult2();
+    }
+
+    @GET
+    @jakarta.ws.rs.Path(AUTH_LOGOUT)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "iiif" }, summary = "")
+    @IIIFPresentationBinding
+    public Response logout() {
+        UserBean userBean = BeanUtils.getUserBean();
+        if (userBean != null) {
+            try {
+                userBean.logout();
+                // TODO delete tokens
+                return Response.ok("").build();
+            } catch (AuthenticationProviderException e) {
+                logger.error(e.getMessage());
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            }
+        }
+        
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
 }
