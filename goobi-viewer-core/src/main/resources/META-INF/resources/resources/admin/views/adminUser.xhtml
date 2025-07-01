@@ -3,6 +3,7 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
@@ -139,10 +140,6 @@
 								</div>
 
 									<div class="row">
-
-									<div class="col-6">
-										#{msg.admin__user_superuser}:
-									</div>
 										<div class="col-6 admin__form-input">
 											<h:form id="sidebarForm">
 												<div class="admin__radio-switch openAccessToggle">
@@ -165,6 +162,15 @@
 										</div>
 									</div>
 								</div>
+
+								<!-- CROWDSOURCING USER SETTINGS (E-MAIL NOTIFICATIONS) -->
+									<c:forEach var="module" items="#{configurationBean.modules}">
+										<div class="admin__default-block">
+										    <c:forEach var="contribution" items="#{module.getWidgets('userSettings')}">
+										        <ui:include src="/#{contribution}" />
+										    </c:forEach>
+									   </div>
+									</c:forEach>
 
 
 							</div>

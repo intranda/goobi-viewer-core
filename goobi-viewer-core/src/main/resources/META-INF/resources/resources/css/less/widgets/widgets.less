@@ -13,10 +13,10 @@
 		align-items: center;
 		position: relative;
 		min-height: 35px;
-		&.collapseable {
+		&.collapsible {
 			cursor: pointer;
 			pointer-events: all;
-			.fa { 
+			.widget__topbar-icon-collapsible  {
 				font-size: @fontNormal;
 				display: inline-block;
 			}
@@ -35,7 +35,9 @@
 		align-items: center;
 		gap: 5px;
 	}
-
+	&__topbar-icon-collapsible {
+		display: none;
+	}
 	&__title {
 		margin-top: 0;
 		margin-bottom: 0;
@@ -44,10 +46,9 @@
 
 	&__body {
 		word-break: break-word;
-		&.collapseable {
+		&.-collapsed {
 			display: none;
 		}
-
 		a {
 			display: block;
 			// padding: 0.5rem 0;
@@ -58,7 +59,7 @@
 		ul {
 			display: flex;
 			flex-direction: column;
-			gap: 6px;
+			gap: 8px;
 			list-style: none;
 			margin: 0;
 			padding: 0;
@@ -127,19 +128,6 @@
 		font-size: 1.8rem;
 	}
 }
-
-// HIDE ARROW FOR COLLAPSEABLE WIDGETS
-.widget-citation__topbar, 
-.widget-downloads__topbar,
-.widget-format-links__topbar {
-	pointer-events: none;
-	.fa {
-		display: none;
-	}
-}
-
-
-
 
 @{RTL} .widget {
 	&__title {

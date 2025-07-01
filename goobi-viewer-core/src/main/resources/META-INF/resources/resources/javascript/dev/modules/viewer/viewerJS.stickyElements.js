@@ -100,8 +100,8 @@ var viewerJS = ( function( viewer ) {
 			}
 			
 			if(config.initFrontend) {
-				// toggle collapseable widgets
-	       		viewer.toggledCollapseable.subscribe(e => {
+				// toggle collapsible widgets
+	       		viewer.toggledCollapsible.subscribe(e => {
 	            	var pos = $(e.target).position().top;
 		       		var offset = $(e.target).offset().top;
 		       		var currentPos = document.documentElement.scrollTop;

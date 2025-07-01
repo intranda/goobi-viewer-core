@@ -1235,15 +1235,6 @@ class ConfigurationTest extends AbstractTest {
         assertEquals(false, DataManager.getInstance().getConfiguration().isMetadataPdfEnabled());
     }
 
-    /**
-     * @see Configuration#isDisplaySidebarWidgetAdditionalFiles()
-     * @verifies return correct value
-     */
-    @Test
-    void isDisplaySidebarWidgetAdditionalFiles_shouldReturnCorrectValue() {
-        assertEquals(true, DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetAdditionalFiles());
-    }
-
     @Test
     void getHideDownloadFileRegex_returnConfiguredValue() {
         List<IFilterConfiguration> filters = DataManager.getInstance().getConfiguration().getAdditionalFilesDisplayFilters();
@@ -1370,57 +1361,57 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSidebarFulltextLinkVisible()
+     * @see Configuration#isSidebarViewsWidgetFulltextLinkVisible()
      * @verifies return correct value
      */
     @Test
-    void isSidebarFulltextLinkVisible_shouldReturnCorrectValue() {
-        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible());
+    void isSidebarViewsWidgetFulltextLinkVisible_shouldReturnCorrectValue() {
+        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetFulltextLinkVisible());
     }
 
     /**
-     * @see Configuration#isSidebarMetadataViewLinkVisible()
+     * @see Configuration#isSidebarViewsWidgetMetadataViewLinkVisible()
      * @verifies return correct value
      */
     @Test
-    void isSidebarMetadataLinkVisible_shouldReturnCorrectValue() {
-        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarMetadataViewLinkVisible());
+    void isSidebarViewsWidgetMetadataLinkVisible_shouldReturnCorrectValue() {
+        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetMetadataViewLinkVisible());
     }
 
     /**
-     * @see Configuration#isSidebarPageViewLinkVisible()
+     * @see Configuration#isSidebarViewsWidgetObjectViewLinkVisible()
      * @verifies return correct value
      */
     @Test
-    void isSidebarPageLinkVisible_shouldReturnCorrectValue() {
-        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarPageViewLinkVisible());
+    void isSidebarViewsWidgetObjectLinkVisible_shouldReturnCorrectValue() {
+        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetObjectViewLinkVisible());
     }
 
     /**
-     * @see Configuration#isSidebarCalendarViewLinkVisible()
+     * @see Configuration#isSidebarViewsWidgetCalendarViewLinkVisible()
      * @verifies return correct value
      */
     @Test
-    void isSidebarCalendarLinkVisible_shouldReturnCorrectValue() {
-        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarCalendarViewLinkVisible());
+    void isSidebarViewsWidgetCalendarLinkVisible_shouldReturnCorrectValue() {
+        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetCalendarViewLinkVisible());
     }
 
     /**
-     * @see Configuration#isSidebarThumbsViewLinkVisible()
+     * @see Configuration#isSidebarViewsWidgetThumbsViewLinkVisible()
      * @verifies return correct value
      */
     @Test
-    void isSidebarThumbsLinkVisible_shouldReturnCorrectValue() {
-        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarThumbsViewLinkVisible());
+    void isSidebarViewsWidgetThumbsLinkVisible_shouldReturnCorrectValue() {
+        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetThumbsViewLinkVisible());
     }
 
     /**
-     * @see Configuration#isSidebarOpacLinkVisible()
+     * @see Configuration#isSidebarViewsWidgetOpacLinkVisible()
      * @verifies return correct value
      */
     @Test
-    void isSidebarOpacLinkVisible_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible());
+    void isSidebarViewsWidgetOpacLinkVisible_shouldReturnCorrectValue() {
+        assertTrue(DataManager.getInstance().getConfiguration().isSidebarViewsWidgetOpacLinkVisible());
     }
 
     /**
@@ -1428,17 +1419,8 @@ class ConfigurationTest extends AbstractTest {
      * @verifies return correct value
      */
     @Test
-    void isSidebarTocLinkVisible_shouldReturnCorrectValue() {
-        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarTocViewLinkVisible());
-    }
-
-    /**
-     * @see Configuration#isSidebarTocWidgetVisible()
-     * @verifies return correct value
-     */
-    @Test
-    void isSidebarTocVisible_shouldReturnCorrectValue() {
-        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisible());
+    void isSidebarViewsWidgetTocLinkVisible_shouldReturnCorrectValue() {
+        assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarViewsWidgetTocViewLinkVisible());
     }
 
     /**
@@ -1826,6 +1808,37 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void isDisplaySearchRssLinks_shouldReturnCorrectValue() {
         assertFalse(DataManager.getInstance().getConfiguration().isDisplaySearchRssLinks());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetsForView(String)
+     * @verifies return correct values
+     */
+    @Test
+    void getSidebarWidgetsForView_shouldReturnCorrectValues() {
+        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetsForView("object");
+        assertEquals(3, result.size());
+        assertEquals("views", result.get(0));
+        assertEquals("copyright", result.get(1));
+        assertEquals("search-in-current-item", result.get(2));
+    }
+    
+    /**
+     * @see Configuration#isSidebarWidgetForViewCollapsible(String,String)
+     * @verifies return correct value
+     */
+    @Test
+    void isSidebarWidgetForViewCollapsible_shouldReturnCorrectValue() {
+        assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsible("object", "copyright"));
+    }
+    
+    /**
+     * @see Configuration#isSidebarWidgetForViewCollapsedByDefault(String,String)
+     * @verifies return correct value
+     */
+    @Test
+    void isSidebarWidgetForViewCollapsedByDefault_shouldReturnCorrectValue() {
+        assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsedByDefault("object", "copyright"));
     }
 
     /**
@@ -2988,15 +3001,6 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSearchInItemEnabled()
-     * @verifies return true if the search field to search the current item/work is configured to be visible
-     */
-    @Test
-    void isSearchInItemEnabled_shouldReturnTrueIfTheSearchFieldToSearchTheCurrentItemworkIsConfiguredToBeVisible() {
-        assertFalse(DataManager.getInstance().getConfiguration().isSearchInItemEnabled());
-    }
-
-    /**
      * @see Configuration#isSearchInItemOnlyIfFullTextAvailable()
      * @verifies return correct value
      */
@@ -3117,79 +3121,70 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isDisplaySidebarRssFeed()
+     * @see Configuration#isSidebarRssFeedWidgetEnabled()
      * @verifies return correct value
      */
     @Test
-    void isDisplaySidebarRssFeed_shouldReturnCorrectValue() {
-        assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarRssFeed());
+    void isSidebarRssFeedWidgetEnabled_shouldReturnCorrectValue() {
+        assertFalse(DataManager.getInstance().getConfiguration().isSidebarRssFeedWidgetEnabled());
     }
 
     /**
-     * @see Configuration#isDisplaySidebarWidgetUsage()
+     * @see Configuration#isDisplayWidgetDownloadsDownloadOptions()
      * @verifies return correct value
      */
     @Test
-    void isDisplaySidebarWidgetUsage_shouldReturnCorrectValue() {
-        assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsage());
+    void isDisplayWidgetDownloadsDownloadOptions_shouldReturnCorrectValue() {
+        assertFalse(DataManager.getInstance().getConfiguration().isDisplayWidgetDownloadsDownloadOptions());
     }
 
     /**
-     * @see Configuration#isDisplayWidgetUsageDownloadOptions()
+     * @see Configuration#isDisplaySidebarWidgetCitationCitationRecommendation()
      * @verifies return correct value
      */
     @Test
-    void isDisplayWidgetUsageDownloadOptions_shouldReturnCorrectValue() {
-        assertFalse(DataManager.getInstance().getConfiguration().isDisplayWidgetUsageDownloadOptions());
+    void isDisplaySidebarWidgetCitationCitationRecommendation_shouldReturnCorrectValue() {
+        assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetCitationCitationRecommendation());
     }
 
     /**
-     * @see Configuration#isDisplaySidebarWidgetUsageCitationRecommendation()
+     * @see Configuration#isDisplaySidebarWidgetCitationCitationLinks()
      * @verifies return correct value
      */
     @Test
-    void isDisplaySidebarWidgetUsageCitationRecommendation_shouldReturnCorrectValue() {
-        assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationRecommendation());
+    void isDisplaySidebarWidgetCitationCitationLinks_shouldReturnCorrectValue() {
+        assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetCitationCitationLinks());
     }
 
     /**
-     * @see Configuration#isDisplaySidebarWidgetUsageCitationLinks()
-     * @verifies return correct value
-     */
-    @Test
-    void isDisplaySidebarWidgetUsageCitationLinks_shouldReturnCorrectValue() {
-        assertFalse(DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks());
-    }
-
-    /**
-     * @see Configuration#getSidebarWidgetUsageCitationStyles()
+     * @see Configuration#getSidebarWidgetCitationCitationStyles()
      * @verifies return all configured values
      */
     @Test
-    void getSidebarWidgetUsageCitationRecommendationStyles_shouldReturnAllConfiguredValues() {
-        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationStyles();
+    void getSidebarWidgetCitationCitationRecommendationStyles_shouldReturnAllConfiguredValues() {
+        List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetCitationCitationRecommendationStyles();
         assertEquals(3, result.size());
     }
 
     /**
-     * @see Configuration#getSidebarWidgetUsageCitationRecommendationDocstructMapping()
+     * @see Configuration#getSidebarWidgetCitationCitationRecommendationDocstructMapping()
      * @verifies return all configured values
      */
     @Test
-    void getSidebarWidgetUsageCitationRecommendationDocstructMapping_shouldReturnAllConfiguredValues() {
-        Map<String, String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationDocstructMapping();
+    void getSidebarWidgetCitationCitationRecommendationDocstructMapping_shouldReturnAllConfiguredValues() {
+        Map<String, String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetCitationCitationRecommendationDocstructMapping();
         assertEquals(2, result.size());
         assertEquals("book", result.get("other_monograph"));
         assertEquals("manuscript", result.get("other_manuscript"));
     }
 
     /**
-     * @see Configuration#getSidebarWidgetUsageCitationLinks()
+     * @see Configuration#getSidebarWidgetCitationCitationLinks()
      * @verifies return all configured values
      */
     @Test
-    void getSidebarWidgetUsageCitationLinks_shouldReturnAllConfiguredValues() {
-        List<CitationLink> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationLinks();
+    void getSidebarWidgetCitationCitationLinks_shouldReturnAllConfiguredValues() {
+        List<CitationLink> result = DataManager.getInstance().getConfiguration().getSidebarWidgetCitationCitationLinks();
         assertEquals(4, result.size());
         {
             CitationLink link = result.get(0);
@@ -3212,12 +3207,12 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getSidebarWidgetUsagePageDownloadOptions()
+     * @see Configuration#getSidebarWidgetDownloadsPageDownloadOptions()
      * @verifies return all configured elements
      */
     @Test
-    void getSidebarWidgetUsagePageDownloadOptions_shouldReturnAllConfiguredElements() {
-        List<DownloadOption> result = DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
+    void getSidebarWidgetDownloadsPageDownloadOptions_shouldReturnAllConfiguredElements() {
+        List<DownloadOption> result = DataManager.getInstance().getConfiguration().getSidebarWidgetDownloadsPageDownloadOptions();
         assertEquals(5, result.size());
         DownloadOption option = result.get(4);
         assertEquals("label__download_option_large_4096", option.getLabel());
@@ -3517,15 +3512,6 @@ class ConfigurationTest extends AbstractTest {
 
         assertEquals("lido_objects", groups.get(0).getName());
         assertEquals("SOURCEDOCFORMAT:LIDO", groups.get(0).getQuery());
-    }
-
-    /**
-     * @see Configuration#isCopyrightIndicatorEnabled()
-     * @verifies return correct value
-     */
-    @Test
-    void isCopyrightIndicatorEnabled_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isCopyrightIndicatorEnabled());
     }
 
     /**

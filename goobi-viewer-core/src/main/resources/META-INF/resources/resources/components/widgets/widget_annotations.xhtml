@@ -23,7 +23,7 @@
 				<div 
 					tabindex="0"
 					role="button"
-					class="widget__topbar widget-annotations__topbar #{(cc.attrs.collapsible and contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() gt 3) ? 'collapseable' : ''}"
+					class="widget__topbar widget-annotations__topbar #{(cc.attrs.collapsible and contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() gt 3) ? 'collapsible' : ''}"
 				>
 					<h2 class="widget__title widget-annotations__title">
 						#{msg.admin__crowdsourcing_annotations}
@@ -39,7 +39,7 @@
 
 				<h:panelGroup 
 					layout="block" 
-					styleClass="widget__body widget-annotations__body #{(cc.attrs.collapsible and contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() gt 3) ? 'collapseable' : ''}"
+					styleClass="widget__body widget-annotations__body #{(cc.attrs.collapsible and contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).size() gt 3) ? 'collapsible' : ''}"
 				>
 					<viewerComponent:annotationList id="widgetAnnotationList" contentList="#{contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi)}" sidebar="true"/>
 				</h:panelGroup>
