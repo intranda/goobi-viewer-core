@@ -110,14 +110,16 @@
                     <button class="btn btn--clean" title="#{msg.fullscreen_hideSidebar}" data-close="fs-sidebar" data-toggle="tooltip" data-placement="right" aria-label="#{msg.fullscreen_hideSidebar}"></button>
                 </div>
 
-                <div class="fullscreen__view-sidebar-share">
-                    <widgetComponent:widget_copyright />
-               		<widgetComponent:widget_socialMedia_share />
-                </div>
-
                 <!-- SIDEBAR WORK TITLE -->
                 <div class="fullscreen__view-sidebar-work-title">
                     <h1 >#{activeDocumentBean.titleBarLabel}</h1>
+                    
+                    <ui:fragment rendered="#{configurationBean.displaySocialMediaShareLinks}">
+               			<div class="fullscreen__view-sidebar-share">
+               				<widgetComponent:widget_socialMedia_share />
+               			</div>
+                    </ui:fragment>
+                    
                     <ui:fragment rendered="#{configurationBean.copyrightIndicatorEnabled and configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
 						<viewerComponent:copyrightIndicator />
 					</ui:fragment>
