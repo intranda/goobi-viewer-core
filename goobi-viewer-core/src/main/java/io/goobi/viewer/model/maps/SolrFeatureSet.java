@@ -188,6 +188,9 @@ public class SolrFeatureSet extends FeatureSet {
             Collection<GeoMapFeatureItem> items = entry.getValue().stream().flatMap(f -> f.getItems().stream()).toList();
             feature.setItems(items);
             feature.setCount(items.size());
+            if (feature.getItems().size() == 1) {
+                feature.getItems().stream().findAny().map(item -> item.getLink()).ifPresent(link -> feature.setLink(link));
+            }
             features.add(feature);
         }
         return features;

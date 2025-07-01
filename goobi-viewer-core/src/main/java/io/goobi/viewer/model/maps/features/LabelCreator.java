@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.maps.features;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +71,10 @@ public class LabelCreator {
         } else {
             return new SimpleMetadataValue("");
         }
+    }
+
+    public Collection<String> getTemplateNames() {
+        return metadataTemplates.keySet();
     }
 
     public List<String> getFieldsToQuery() {

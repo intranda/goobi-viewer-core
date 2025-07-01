@@ -30,10 +30,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import com.ocpsoft.pretty.faces.util.StringUtils;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.controller.DataManager;
@@ -135,14 +134,13 @@ public class FeatureGenerator {
         IMetadataValue featureTitle = getTitle(metadata, topDocument, this.featureTitleCreator);
         IMetadataValue entityTitle = getTitle(metadata, topDocument, this.entityTitleCreator);
         URI link = createLink(metadata, topDocument);
+        URI searchLink = new FeatureQueryGenerator().createSearchLink(metadata, getAppropriateTemplate(metadata), this.featureTitleCreator);
 
         return coordinates.stream().map(coords -> {
             GeoMapFeature feature = getFeature(coords);
             feature.setTitle(featureTitle);
             feature.addItem(new GeoMapFeatureItem(entityTitle, link != null ? link.toString() : ""));
-            if (link != null) {
-                feature.setLink(link.toString());
-            }
+            feature.setLink(searchLink.toString());
             return feature;
         }).toList();
     }

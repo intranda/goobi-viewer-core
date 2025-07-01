@@ -243,6 +243,7 @@ public class GeoMapFeature {
         for (GeoMapFeatureItem item : this.items) {
             JSONObject jsonMetadata = new JSONObject();
             jsonMetadata.put("title", JsonTools.getAsObjectForJson(item.getLabel()));
+            jsonMetadata.put("link", item.getLink());
             ents.put(jsonMetadata);
         }
     }

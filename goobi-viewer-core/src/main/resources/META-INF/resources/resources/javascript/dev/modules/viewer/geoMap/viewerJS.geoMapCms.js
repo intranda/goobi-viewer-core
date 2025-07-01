@@ -75,12 +75,11 @@
 	            layer.onFeatureClick.subscribe( (feature) => { 
 					// viewerJS.notifications.confirm("Do you want to show search results for this location?")
 						let featuresToShow = feature.properties?.entities?.filter(e => e.visible !== false).filter(e => e.title?.length > 0);
-//						console.log("click for search ", featuresToShow, feature.properties.count, feature.properties.link);
-						if(featuresToShow.length == 0 && (feature.properties.count > 1 || !feature.properties?.link?.length))  {
+						console.log("click for search ", feature);
+						if(feature.properties?.link) {
 							$(layer.config.search.loader).show();
-							const locationQuery = this.createFilterQuery(layer.config.search.filterQueryTemplate, feature);
-							window.open(searchUrlTemplate + "?" + locationQuery, layer.config.search.linkTarget);
-						} 
+							window.open(feature.properties.link);
+						}
 	            });
 	        }
 		});

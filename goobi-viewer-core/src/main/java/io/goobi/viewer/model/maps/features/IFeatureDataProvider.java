@@ -30,7 +30,8 @@ public interface IFeatureDataProvider {
 
     static final List<String> REQUIRED_FIELDS =
             List.of("IDDOC*", "PI*", "GROUPFIELD", "DOCTYPE", "LOGID", "DOCSTRCT*", "LABEL", "ISWORK", "METADATATYPE",
-                    "MD_VALUE", "MD_REFID", "MD_PROCESSID", "MD_IDENTIFIER");
+                    "MD_VALUE", "MD_REFID", "MD_PROCESSID", "MD_IDENTIFIER", "THUMBPAGENO", "ORDER", "MIMETYPE", "THUMBNAIL", "BOOL_WKT_COORDS",
+                    "WKT_COORDS");
 
     public List<MetadataDocument> getResults(String query, int maxResults) throws PresentationException, IndexUnreachableException;
 
