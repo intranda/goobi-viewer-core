@@ -3535,4 +3535,8 @@ public class SearchBean implements SearchInterface, Serializable {
                 return StringConstants.PRETTY_NEWSEARCH5;
         }
     }
+
+    public HttpServletRequest getHttpRequest() {
+        return this.request;
+    }
 }

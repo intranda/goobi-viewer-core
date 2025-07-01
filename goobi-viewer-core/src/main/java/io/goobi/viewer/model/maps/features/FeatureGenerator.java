@@ -39,6 +39,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.maps.GeoMapFeatureItem;
+import io.goobi.viewer.model.maps.SolrSearchScope;
 import io.goobi.viewer.model.maps.coordinates.CoordinateReaderProvider;
 import io.goobi.viewer.model.metadata.ComplexMetadata;
 import io.goobi.viewer.model.metadata.ComplexMetadataContainer;
@@ -61,7 +62,8 @@ public class FeatureGenerator {
     private final LabelCreator entityTitleCreator;
     private final CoordinateReaderProvider coordinateReaderProvider;
 
-    public FeatureGenerator(List<String> coordinateFields, LabelCreator featureTitleCreator, LabelCreator entityTitleCreator) {
+    public FeatureGenerator(List<String> coordinateFields, LabelCreator featureTitleCreator,
+            LabelCreator entityTitleCreator) {
         super();
         this.coordinateFields = coordinateFields;
         this.featureTitleCreator = featureTitleCreator;
@@ -69,13 +71,20 @@ public class FeatureGenerator {
         this.coordinateReaderProvider = new CoordinateReaderProvider();
     }
 
-    public Collection<GeoMapFeature> getFeatures(MetadataDocument document) {
+    public Collection<GeoMapFeature> getFeatures(MetadataDocument document, SolrSearchScope searchScope) {
 
         Collection<GeoMapFeature> features = new ArrayList<>();
-        if (document.getMetadataGroups().isEmpty()) {
-            features = getFeatures(document.getMainDocMetadata());
-        } else {
-            features = getFeatures(document.getMetadataGroups(), document.getMainDocMetadata());
+
+        if (searchScope.isSearchInTopDocuments()) {
+            features.addAll(getFeatures(document.getMainDocMetadata()));
+        }
+        if (searchScope.isSearchInMetadata()) {
+            features.addAll(getFeatures(document.getMetadataGroups(), document.getMainDocMetadata()));
+        }
+        if (searchScope.isSearchInStructureDocuments()) {
+            for (MetadataDocument childDoc : document.getChildDocuments()) {
+                features.addAll(getFeatures(childDoc.getMainDocMetadata()));
+            }
         }
 
         Map<GeoMapFeature, List<GeoMapFeature>> featureMap = features
@@ -134,13 +143,14 @@ public class FeatureGenerator {
         IMetadataValue featureTitle = getTitle(metadata, topDocument, this.featureTitleCreator);
         IMetadataValue entityTitle = getTitle(metadata, topDocument, this.entityTitleCreator);
         URI link = createLink(metadata, topDocument);
-        URI searchLink = new FeatureQueryGenerator().createSearchLink(metadata, getAppropriateTemplate(metadata), this.featureTitleCreator);
+        String filterQuery =
+                new FeatureQueryGenerator().createSearchFilterQuery(metadata, getAppropriateTemplate(metadata), this.featureTitleCreator);
 
         return coordinates.stream().map(coords -> {
             GeoMapFeature feature = getFeature(coords);
             feature.setTitle(featureTitle);
             feature.addItem(new GeoMapFeatureItem(entityTitle, link != null ? link.toString() : ""));
-            feature.setLink(searchLink.toString());
+            feature.setFilterQuery(filterQuery);
             return feature;
         }).toList();
     }

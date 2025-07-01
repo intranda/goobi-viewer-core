@@ -53,6 +53,7 @@ public class GeoMapFeature {
     private IMetadataValue title;
     private IMetadataValue description;
     private String link;
+    private String filterQuery;
     private Feature geoJson;
     private int count = 1;
     //This is used to identify the feature with a certain document, specifically a LOGID of a TOC element
@@ -112,6 +113,14 @@ public class GeoMapFeature {
      */
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public String getFilterQuery() {
+        return filterQuery;
+    }
+
+    public void setFilterQuery(String filterQuery) {
+        this.filterQuery = filterQuery;
     }
 
     /**
@@ -212,6 +221,9 @@ public class GeoMapFeature {
         this.properties.entrySet().forEach(entry -> jsonProperties.put(entry.getKey(), entry.getValue()));
         if (StringUtils.isNotBlank(this.link)) {
             jsonProperties.put("link", this.link);
+        }
+        if (StringUtils.isNotBlank(this.filterQuery)) {
+            jsonProperties.put("filterQuery", this.filterQuery);
         }
         if (StringUtils.isNotBlank(this.documentId)) {
             jsonProperties.put("documentId", this.documentId);

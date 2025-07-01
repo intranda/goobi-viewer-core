@@ -303,21 +303,18 @@
 											<!-- AGGREGATE RESULTS -->
 											<div class="form-group form-row">
 												<div class="col-2 control-label admin__form-label">
-													<label for="featureset_#{status.index}_aggregation">#{msg.cms__geomaps__aggregate_query_results__label}:</label>
+													<label for="featureset_#{status.index}_aggregation">#{msg.cms__geomaps__search_scope__label}:</label>
 												</div>
 												<div class="input_form__option_marker"></div>
 												<div class="col-9 admin__form-input cms-module__option-control">
 													
 													<div class="form-group form-row">
-														<div class="col-2 control-label admin__form-label">
-															<label for="featureset_1_aggregation">Search scope:</label>
-														</div>
-													<div class="col-9 admin__form-input cms-module__option-control">
-														<o:importConstants type="io.goobi.viewer.model.maps.SolrSearchScope"></o:importConstants>
-														<h:selectOneRadio value = "#{featureSet.searchScope}"> 
-															<f:selectItems value="#{SolrSearchScope.values()}" var="scope" 
-		            											itemValue="#{scope}" itemLabel="#{msg[scope.label]}" />
-														</h:selectOneRadio> 
+														<div class="col-9 admin__form-input cms-module__option-control">
+															<o:importConstants type="io.goobi.viewer.model.maps.SolrSearchScope"></o:importConstants>
+															<h:selectOneRadio value = "#{featureSet.searchScope}"> 
+																<f:selectItems value="#{SolrSearchScope.values()}" var="scope" 
+			            											itemValue="#{scope}" itemLabel="#{msg[scope.label]}" />
+															</h:selectOneRadio> 
 														</div>
 													</div>
 <!-- 													<viewerComponent:toggleSwitch name="toggleAggregation_#{status.index}" value="#{featureSet.aggregateResults}" render="mapPanel"/> -->

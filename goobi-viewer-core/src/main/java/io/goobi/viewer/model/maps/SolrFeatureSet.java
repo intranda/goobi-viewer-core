@@ -63,7 +63,7 @@ import jakarta.persistence.Transient;
 @DiscriminatorValue("solr")
 public class SolrFeatureSet extends FeatureSet {
 
-    private static final int MAX_RECORD_HITS = 10_000;
+    private static final int MAX_RECORD_HITS = 50_000;
     private static final long serialVersionUID = -9054215108168526688L;
     private static final Logger logger = LogManager.getLogger(SolrFeatureSet.class);
 
@@ -160,7 +160,7 @@ public class SolrFeatureSet extends FeatureSet {
         List<MetadataDocument> hits;
         try (Time t = DataManager.getInstance().getTiming().takeTime("query")) {
             IFeatureDataProvider queryGenerator =
-                    AbstractFeatureDataProvider.getDataProvider(getSearchScope(),
+                    AbstractFeatureDataProvider.getDataProvider(getSearchScope() == null ? SolrSearchScope.ALL : getSearchScope(),
                             ListUtils.union(coordinateFields, ListUtils.union(markerLabels.getFieldsToQuery(), itemLabels.getFieldsToQuery())));
             hits = queryGenerator.getResults(getSolrQuery(), MAX_RECORD_HITS);
         }
@@ -169,7 +169,7 @@ public class SolrFeatureSet extends FeatureSet {
 
             Collection<GeoMapFeature> featuresFromSolr = new ArrayList<>();
             for (MetadataDocument hit : hits) {
-                Collection<GeoMapFeature> features = featureGenerator.getFeatures(hit);
+                Collection<GeoMapFeature> features = featureGenerator.getFeatures(hit, this.getSearchScope());
                 featuresFromSolr.addAll(features);
             }
 
@@ -230,7 +230,17 @@ public class SolrFeatureSet extends FeatureSet {
     }
 
     public String getSolrQueryEncoded() {
-        return StringTools.encodeUrl(Optional.ofNullable(getSolrQuery()).orElse("")).replace("%2B", "+");
+
+        String baseQuery = Optional.ofNullable(getSolrQuery()).orElse("");
+        String scopeQuery = this.getSearchScope().getQuery();
+        String query;
+        if (StringUtils.isNoneBlank(baseQuery, scopeQuery)) {
+            query = "+(%s) +(%s)".formatted(baseQuery, scopeQuery);
+        } else {
+            query = baseQuery + scopeQuery;
+        }
+
+        return StringTools.encodeUrl(query, true);
     }
 
     /**

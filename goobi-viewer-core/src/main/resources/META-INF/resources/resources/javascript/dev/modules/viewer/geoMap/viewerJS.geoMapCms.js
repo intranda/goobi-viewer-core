@@ -78,7 +78,11 @@
 						console.log("click for search ", feature);
 						if(feature.properties?.link) {
 							$(layer.config.search.loader).show();
-							window.open(feature.properties.link);
+							window.open(feature.properties.link, "_self");
+						} else if(layer.config.search?.searchUrlTemplate && feature.properties?.filterQuery) {
+							console.log("open ", layer.config.search.searchUrlTemplate + "?" + feature.properties.filterQuery);
+							$(layer.config.search.loader).show();
+							window.open(layer.config.search.searchUrlTemplate + "?filterQuery=" + feature.properties.filterQuery, "_self");
 						}
 	            });
 	        }

@@ -44,4 +44,31 @@ public enum SolrSearchScope {
         return description;
     }
 
+    public boolean isSearchInTopDocuments() {
+        return this == ALL || this == RECORDS;
+    }
+
+    public boolean isSearchInStructureDocuments() {
+        return this == ALL || this == DOCSTRUCTS;
+    }
+
+    public boolean isSearchInMetadata() {
+        return this == ALL || this == METADATA;
+    }
+
+    String getQuery() {
+        switch (this) {
+            case RECORDS:
+                return "+(ISWORK:true ISANCHOR:true)";
+            case DOCSTRUCTS:
+                return "+DOCTYPE:DOCSTRCT -(ISWORK:true ISANCHOR:true)";
+            case METADATA:
+                return "+DOCTYPE:METADATA";
+            case ALL:
+            default:
+                return "";
+
+        }
+    }
+
 }
