@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.model.maps.GeoMapFeature;
+import io.goobi.viewer.model.maps.SolrSearchScope;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
@@ -33,7 +34,7 @@ class FeatureGeneratorTest {
 
         MetadataDocument mdDoc = MetadataDocument.fromSolrDocs(mainDoc, Collections.emptyList(), Collections.emptyList());
 
-        List<GeoMapFeature> features = new ArrayList<>(generator.getFeatures(mdDoc));
+        List<GeoMapFeature> features = new ArrayList<>(generator.getFeatures(mdDoc, SolrSearchScope.ALL));
         Assertions.assertEquals(features.size(), 1);
         Assertions.assertEquals("Document title in Göttingen", features.get(0).getTitle().getValue().orElse(""));
         Assertions.assertEquals(features.get(0).getItems().size(), 1);
@@ -57,7 +58,7 @@ class FeatureGeneratorTest {
 
         MetadataDocument mdDoc = MetadataDocument.fromSolrDocs(mainDoc, Collections.emptyList(), List.of(locationDoc1, locationDoc2));
 
-        List<GeoMapFeature> features = new ArrayList<>(generator.getFeatures(mdDoc));
+        List<GeoMapFeature> features = new ArrayList<>(generator.getFeatures(mdDoc, SolrSearchScope.ALL));
         Assertions.assertEquals(2, features.size());
         Assertions.assertEquals("Document title", features.get(0).getTitle().getValue().orElse(""));
         Assertions.assertEquals("Document title", features.get(1).getTitle().getValue().orElse(""));
