@@ -89,7 +89,7 @@ public class DownloadOption {
             return null;
         }
 
-        List<DownloadOption> options = DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
+        List<DownloadOption> options = DataManager.getInstance().getConfiguration().getSidebarWidgetDownloadsPageDownloadOptions();
         if (options == null) {
             return null;
         }
@@ -146,11 +146,10 @@ public class DownloadOption {
             return Optional.ofNullable(ImageFileFormat.getImageFileFormatFromFileExtension(filename))
                     .map(ImageFileFormat::getFileExtension)
                     .orElse("");
-        } else {
-            return Optional.ofNullable(ImageFileFormat.getImageFileFormatFromFileExtension(getFormat()))
-                    .map(ImageFileFormat::getFileExtension)
-                    .orElse("");
         }
+        return Optional.ofNullable(ImageFileFormat.getImageFileFormatFromFileExtension(getFormat()))
+                .map(ImageFileFormat::getFileExtension)
+                .orElse("");
     }
 
     /**

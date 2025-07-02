@@ -63,7 +63,7 @@ public class FilesListing implements Serializable {
         FilenameFilter filter = new FilenameFilter() {
             @Override
             public boolean accept(File f, String name) {
-                return name.endsWith(".xml") || name.endsWith(".properties");
+                return name.endsWith(".xml") || name.endsWith(".xsl") || name.endsWith(".properties");
             }
         };
 

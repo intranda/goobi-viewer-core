@@ -1,36 +1,43 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:f="http://xmlns.jcp.org/jsf/core"
-      xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-      xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-      xmlns:templateComponent="http://xmlns.jcp.org/jsf/composite/themes/zlb/components">
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:templateComponent="http://xmlns.jcp.org/jsf/composite/themes/zlb/components">
 
-    <!-- interface options -->
-    <composite:interface />
+	<!-- interface options -->
+	<composite:interface />
 
-    <!-- component content -->
-    <composite:implementation>
-        <ui:fragment rendered="#{configurationBean.displaySocialMediaShareLinks}">
-	        <div id="widgetSocialMedia" class="widget widget--white">
-	            <div class="widget__social-media">
-	                <div class="widget__social-media-body">
-	                    <ul>
-	                        <!-- SHARE LINKS -->
-	                            <li>
-	                                <a href="http://facebook.com/sharer.php?u=#{navigationHelper.encodedUrl}&amp;t=#{request.contextPath}" data-toggle="tooltip" data-placement="top" title="Auf Facebook teilen" target="_blank"> 
-	                                    <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/icon_fb.gif" alt="Facebook Icon" />
-	                                </a>
-	                            </li>
-	                            <li>
-	                                <a href="https://twitter.com/intent/tweet?text=#{navigationHelper.encodedUrl}" data-toggle="tooltip" data-placement="top" title="Auf Twitter teilen" target="_blank"> 
-	                                    <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/icon_twitter.gif" alt="Twitter Icon" />
-	                                </a>
-	                            </li>
-	                    </ul>
-	                </div>
-	            </div>
-	        </div>
-    	</ui:fragment>
-    </composite:implementation>
+	<!-- component content -->
+	<composite:implementation>
+		<ui:fragment
+			rendered="#{configurationBean.displaySocialMediaShareLinks}">
+			<div id="widgetSocialMedia" class="widget widget-social-media">
+				<div class="widget-social-media__body">
+					<ul class="widget-social-media__links-wrapper">
+						<!-- SHARE ON X -->
+						<li>
+							<a class="widget-social-media__link" href="http://facebook.com/sharer.php?u=#{navigationHelper.encodedUrl}&amp;t=#{request.contextPath}"
+								data-toggle="tooltip" data-placement="top"
+								title="#{msg.widget_social__share_on_x}" target="_blank"> <img
+									src="#{request.contextPath}/resources/images/svgs/x_logo.svg"
+									alt="Facebook Logo" />
+							</a>
+						</li>
+						<!-- SHARE ON FB -->
+						<li>
+							<a class="widget-social-media__link" href="https://twitter.com/intent/tweet?text=#{navigationHelper.encodedUrl}"
+								data-toggle="tooltip" data-placement="top"
+								title="#{msg.widget_social__share_on_fb}" target="_blank"> <img
+									src="#{request.contextPath}/resources/images/svgs/facebook_logo.svg"
+									alt="X Logo" />
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</ui:fragment>
+	</composite:implementation>
 </ui:composition>

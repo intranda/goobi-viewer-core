@@ -28,6 +28,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.configuration2.HierarchicalConfiguration;
+import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -472,9 +474,11 @@ public class ConfigurationBean implements Serializable {
      * </p>
      *
      * @return a boolean.
+     * @deprecated Widgets are now implicitly enabled by being added to a record view configuration
      */
+    @Deprecated(since = "25.06")
     public boolean isSidebarTocWidgetVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisible();
+        return true;
     }
 
     /**
@@ -496,7 +500,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarOpacLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetOpacLinkVisible();
     }
 
     /**
@@ -519,7 +523,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarPageLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarPageViewLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetObjectViewLinkVisible();
     }
 
     /**
@@ -531,7 +535,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarCalendarLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarCalendarViewLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetCalendarViewLinkVisible();
     }
 
     /**
@@ -543,7 +547,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarMetadataLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarMetadataViewLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetMetadataViewLinkVisible();
     }
 
     /**
@@ -555,7 +559,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarThumbsLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarThumbsViewLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetThumbsViewLinkVisible();
     }
 
     /**
@@ -567,7 +571,19 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarFulltextLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetFulltextLinkVisible();
+    }
+
+    /**
+     * <p>
+     * isSidebarTocViewLinkVisible.
+     * </p>
+     *
+     * @should return correct value
+     * @return a boolean.
+     */
+    public boolean isSidebarTocViewLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetTocViewLinkVisible();
     }
 
     /**
@@ -958,9 +974,11 @@ public class ConfigurationBean implements Serializable {
      * </p>
      *
      * @return a boolean.
+     * @deprecated Widgets are now implicitly enabled by being added to a record view configuration
      */
+    @Deprecated(since = "25.06")
     public boolean isShowSearchInItem() {
-        return DataManager.getInstance().getConfiguration().isSearchInItemEnabled();
+        return true;
     }
 
     /**
@@ -1138,6 +1156,36 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
+     * 
+     * @param view Record view name
+     * @return List of sidebar widget names to display in the given view (in the intended order)
+     */
+    public List<String> getSidebarWidgetsForView(String view) {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetsForView(view);
+    }
+
+    /**
+     * 
+     * @param view Record view name
+     * @param widget Widget name
+     * @return true if widget configured as collapsible; false otherwise; default is false
+     */
+    public boolean isSidebarWidgetForViewCollapsible(String view, String widget) {
+        return DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsible(view, widget);
+    }
+
+    /**
+     * 
+     * @param view Record view name
+     * @param widget Widget name
+     * @return true if widget configured as collapsed by default and collapsible in general; false otherwise; default is false
+     */
+    public boolean isSidebarWidgetForViewCollapsedByDefault(String view, String widget) {
+        return isSidebarWidgetForViewCollapsible(view, widget)
+                && DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsedByDefault(view, widget);
+    }
+
+    /**
      * <p>
      * isDisplaySidebarBrowsingTerms.
      * </p>
@@ -1153,23 +1201,12 @@ public class ConfigurationBean implements Serializable {
      * <p>
      * isDisplaySidebarRssFeed.
      * </p>
-     *
+     *s
      * @return a boolean.
      * @should return correct value
      */
     public boolean isDisplaySidebarRssFeed() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarRssFeed();
-    }
-
-    /**
-     * <p>
-     * isDisplayWidgetUsage.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isDisplaySidebarWidgetUsage() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsage();
+        return DataManager.getInstance().getConfiguration().isSidebarRssFeedWidgetEnabled();
     }
 
     /**
@@ -1180,7 +1217,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isDisplaySidebarWidgetUsageCitationLinks() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks();
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetCitationCitationLinks();
     }
 
     /**
@@ -1191,7 +1228,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isDisplaySidebarWidgetUsageCitationRecommendation() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationRecommendation();
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetCitationCitationRecommendation();
     }
 
     /**
@@ -1199,11 +1236,11 @@ public class ConfigurationBean implements Serializable {
      * @return List of configured <code>DownloadOption</code> items
      */
     public List<DownloadOption> getSidebarWidgetUsagePageDownloadOptions() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetDownloadsPageDownloadOptions();
     }
 
     public boolean isDisplaySidebarWidgetUsagePageDownloadOptions() {
-        return DataManager.getInstance().getConfiguration().isDisplayWidgetUsageDownloadOptions();
+        return DataManager.getInstance().getConfiguration().isDisplayWidgetDownloadsDownloadOptions();
     }
 
     /**
@@ -1211,7 +1248,7 @@ public class ConfigurationBean implements Serializable {
      * @return List of available citation style names
      */
     public List<String> getSidebarWidgetUsageCitationRecommendationStyles() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationStyles();
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetCitationCitationRecommendationStyles();
     }
 
     /**
@@ -1247,9 +1284,11 @@ public class ConfigurationBean implements Serializable {
     /**
      * 
      * @return Configured value
+     * @deprecated Widgets are now implicitly enabled by being added to a record view configuration
      */
+    @Deprecated(since = "25.06")
     public boolean isCopyrightIndicatorEnabled() {
-        return DataManager.getInstance().getConfiguration().isCopyrightIndicatorEnabled();
+        return true;
     }
 
     /**
@@ -1609,10 +1648,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     public boolean isPdfPageRangeEnabled() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsagePdfPageRange();
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownloadsPdfPageRange();
     }
 
-    public boolean isSidebarTocViewLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarTocViewLinkVisible();
-    }
 }

@@ -46,7 +46,7 @@ var viewerJS = (function () {
 
     var viewer = {};
     viewer.initialized = new rxjs.Subject();
-    viewer.toggledCollapseable = new rxjs.Subject();
+    viewer.toggledCollapsible = new rxjs.Subject();
     
     viewer.init = function (config) {
         if (_debug) {
@@ -123,7 +123,7 @@ var viewerJS = (function () {
         // init some image methods
         viewer.initFragmentNavigation();
         viewer.initStoreScrollPosition();
-        viewer.initSidebarCollapseable();
+        viewer.initSidebarCollapsible();
 
         // AJAX Loader Eventlistener
         viewerJS.jsfAjax.init(_defaults);
@@ -318,11 +318,12 @@ var viewerJS = (function () {
         viewer.jsfAjax.complete.pipe(rxjs.operators.first()).subscribe(() => $(".ajax_loader").hide())
         $(".ajax_loader").show();
     }
-  
-    viewer.initSidebarCollapseable = function() {
-    	$('body').on('click', '.widget__topbar.collapseable', function (e) {
-			$(this).toggleClass('in').closest('.widget').find('.widget__body.collapseable').slideToggle(300, function() {
-				viewer.toggledCollapseable.next(e);
+  	
+	// Collapsible sidebar widgets function
+    viewer.initSidebarCollapsible = function() {
+    	$('body').on('click', '.widget__topbar.collapsible', function (e) {
+			$(this).toggleClass('in').closest('.widget').find('.widget__body').slideToggle(300, function() {
+				viewer.toggledCollapsible.next(e);
 		    })
 		})
     }
