@@ -38,17 +38,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import de.intranda.api.iiif.auth.v2.AuthAccessService2;
+import de.intranda.api.iiif.auth.v2.AuthAccessToken2;
+import de.intranda.api.iiif.auth.v2.AuthAccessTokenError2;
+import de.intranda.api.iiif.auth.v2.AuthAccessTokenError2.Profile;
 import de.intranda.api.iiif.auth.v2.AuthAccessTokenService2;
 import de.intranda.api.iiif.auth.v2.AuthLogoutService2;
 import de.intranda.api.iiif.auth.v2.AuthProbeResult2;
 import de.intranda.api.iiif.auth.v2.AuthProbeService2;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.UserBean;
@@ -60,9 +64,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -74,7 +80,7 @@ public class AuthorizationFlowResource {
 
     private static final Logger logger = LogManager.getLogger(AuthorizationFlowResource.class);
 
-    private static final String API_V2 = "api/v2";
+    private static final String BASE_URL = DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "api/v2" + AUTH;
 
     @Context
     private HttpServletRequest servletRequest;
@@ -85,23 +91,44 @@ public class AuthorizationFlowResource {
     }
 
     @GET
+    @jakarta.ws.rs.Path(AUTH_ACCESS_TOKEN)
+    @Produces({ MediaType.TEXT_HTML })
+    @Operation(tags = { "records", "iiif" }, summary = "")
+    public String accessTokenService(@QueryParam("messageId") String messageId, @QueryParam("origin") String origin,
+            @CookieParam("SESSION_ID") String sessionId) throws JsonProcessingException {
+        StringBuilder sb = new StringBuilder();
+        if (StringUtils.isNotEmpty(messageId) && StringUtils.isNotEmpty(origin) && StringUtils.isNotEmpty(sessionId)) {
+            logger.trace("messageId: {}", messageId);
+            logger.trace("origin: {}", origin);
+            logger.trace("sessionId: {}", sessionId);
+            // TODO Validate origin
+            // TODO Check auth status via cookie here
+            String token = "";
+            sb.append("<html><body><script>window.parent.postMessage(")
+                    .append(JsonTools.getAsJson(new AuthAccessToken2(messageId, token).setExpiresIn(300)))
+                    .append(");</script></body></html>");
+        } else {
+            return JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_REQUEST));
+        }
+
+        return sb.toString();
+    }
+
+    @GET
     @jakarta.ws.rs.Path(AUTH_PROBE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "")
-    @IIIFPresentationBinding
     public AuthProbeService2 getProbeServiceDescription() {
-        String baseUrl = DataManager.getInstance().getConfiguration().getViewerBaseUrl() + API_V2 + AUTH;
-        return new AuthProbeService2(URI.create(baseUrl + AUTH_PROBE),
-                Collections.singletonList(new AuthAccessService2(URI.create(baseUrl + AUTH_ACCESS), AuthAccessService2.Profile.ACTIVE,
-                        new AuthAccessTokenService2(URI.create(baseUrl + AUTH_ACCESS_TOKEN)),
-                        new AuthLogoutService2(URI.create(baseUrl + AUTH_LOGOUT)))));
+        return new AuthProbeService2(URI.create(BASE_URL + AUTH_PROBE),
+                Collections.singletonList(new AuthAccessService2(URI.create(BASE_URL + AUTH_ACCESS), AuthAccessService2.Profile.ACTIVE,
+                        new AuthAccessTokenService2(URI.create(BASE_URL + AUTH_ACCESS_TOKEN)),
+                        new AuthLogoutService2(URI.create(BASE_URL + AUTH_LOGOUT)))));
     }
 
     @GET
     @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "")
-    @IIIFPresentationBinding
     public AuthProbeResult2 probeResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @Parameter(description = "Content file name") @PathParam("filename") String filename) {
         logger.trace("probeResource: {}/{}", pi, filename);
@@ -147,7 +174,6 @@ public class AuthorizationFlowResource {
     @jakarta.ws.rs.Path(AUTH_LOGOUT)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "")
-    @IIIFPresentationBinding
     public Response logout() {
         UserBean userBean = BeanUtils.getUserBean();
         if (userBean != null) {
@@ -162,24 +188,5 @@ public class AuthorizationFlowResource {
         }
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-    }
-
-    /**
-     * Throw an AccessDenied error if the request doesn't satisfy the access conditions
-     * 
-     * @param pi
-     * @param filename
-     * @throws ServiceNotAllowedException
-     */
-    private void checkFulltextAccessConditions(String pi, String filename) throws ServiceNotAllowedException {
-        boolean access = false;
-        try {
-            access = AccessConditionUtils.checkAccess(servletRequest, "text", pi, filename, false).isGranted();
-        } catch (IndexUnreachableException | DAOException e) {
-            logger.error(String.format("Cannot check fulltext access for pi %s and file %s: %s", pi, filename, e.toString()));
-        }
-        if (!access) {
-            throw new ServiceNotAllowedException("Access to fulltext file " + pi + "/" + filename + " not allowed");
-        }
     }
 }
