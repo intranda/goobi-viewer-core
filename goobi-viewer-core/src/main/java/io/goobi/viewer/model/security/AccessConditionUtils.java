@@ -970,7 +970,7 @@ public final class AccessConditionUtils {
             }
 
             //check clientApplication
-            if (client != null && client.map(c -> c.mayLogIn(remoteAddress)).orElse(false)) {
+            if (client.map(c -> c.mayLogIn(remoteAddress)).orElse(false)) {
                 //check if specific client matches access conditions
                 if (client.isPresent()) {
                     AccessPermission access = client.get().canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
@@ -978,7 +978,7 @@ public final class AccessConditionUtils {
                         return access;
                     }
                 }
-                //check if accesscondition match for all clients
+                //check if access condition match for all clients
                 ClientApplication allClients = DataManager.getInstance().getClientManager().getAllClientsFromDatabase();
                 if (allClients != null) {
                     AccessPermission access =
