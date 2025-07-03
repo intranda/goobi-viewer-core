@@ -433,7 +433,7 @@ public class IIIFSearchBuilder {
         try {
             List<Comment> comments = DataManager.getInstance().getDao().getCommentsForWork(pi);
             comments = comments.stream()
-                    .filter(c -> c.getContentString().matches(AbstractSearchParser.getContainedWordRegex(queryRegex)))
+                    .filter(c -> c.getContentString().matches(AbstractSearchParser.getContainedWordRegex(Pattern.quote(queryRegex))))
                     .toList();
             for (Comment comment : comments) {
                 terms.addAll(converter.getSearchTerms(queryRegex, comment.getContentString(), getMotivation()));
