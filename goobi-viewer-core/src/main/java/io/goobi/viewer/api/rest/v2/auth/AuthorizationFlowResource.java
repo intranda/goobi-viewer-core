@@ -33,6 +33,7 @@ import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -56,6 +57,7 @@ import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.UserBean;
+import io.goobi.viewer.managedbeans.storage.SessionBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
@@ -96,22 +98,24 @@ public class AuthorizationFlowResource {
     @Operation(tags = { "records", "iiif" }, summary = "")
     public String accessTokenService(@QueryParam("messageId") String messageId, @QueryParam("origin") String origin,
             @CookieParam("SESSION_ID") String sessionId) throws JsonProcessingException {
-        StringBuilder sb = new StringBuilder();
         if (StringUtils.isNotEmpty(messageId) && StringUtils.isNotEmpty(origin) && StringUtils.isNotEmpty(sessionId)) {
             logger.trace("messageId: {}", messageId);
             logger.trace("origin: {}", origin);
             logger.trace("sessionId: {}", sessionId);
+            logger.trace("local session id: {}", servletRequest.getSession().getId());
             // TODO Validate origin
-            // TODO Check auth status via cookie here
-            String token = "";
-            sb.append("<html><body><script>window.parent.postMessage(")
-                    .append(JsonTools.getAsJson(new AuthAccessToken2(messageId, token).setExpiresIn(300)))
-                    .append(");</script></body></html>");
-        } else {
-            return JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_REQUEST));
+            if (sessionId.equals(servletRequest.getSession().getId())) {
+                AuthAccessToken2 token = new AuthAccessToken2(messageId, 300);
+                addTokenToSession(token);
+                StringBuilder sb = new StringBuilder();
+                sb.append("<html><body><script>window.parent.postMessage(")
+                        .append(JsonTools.getAsJson(new AuthAccessToken2(messageId, 300)))
+                        .append(");</script></body></html>");
+                return sb.toString();
+            }
         }
 
-        return sb.toString();
+        return JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_REQUEST));
     }
 
     @GET
@@ -135,36 +139,44 @@ public class AuthorizationFlowResource {
         AuthProbeResult2 ret = new AuthProbeResult2();
 
         String authHeader = servletRequest.getHeader("Authorization");
-        if (StringUtils.isNotEmpty(authHeader)) {
-            logger.trace("Authorization: {}", authHeader);
-            if (authHeader.startsWith("Bearer ")) {
-                String token = authHeader.substring(7);
-                logger.trace("Token: {}", token);
-                // TODO Check token, return 200 if access granted via token
-            } else {
-                ret.setStatus(Response.Status.BAD_REQUEST.getStatusCode()).setHeading(new HashMap<>()).setNote(new HashMap<>());
-                ret.getHeading().put("en", "Authorization: bad format");
-                ret.getNote().put("en", "Authorization: bad format");
+        if (StringUtils.isEmpty(authHeader)) {
+            ret.setStatus(Response.Status.BAD_REQUEST.getStatusCode()).setHeading(new HashMap<>()).setNote(new HashMap<>());
+            ret.getHeading().put("en", "Authorization: bad format");
+            ret.getNote().put("en", "Authorization: bad format");
+            return ret;
+        }
+        logger.trace("Authorization: {}", authHeader);
+        if (authHeader.startsWith("Bearer ")) {
+            String tokenValue = authHeader.substring(7);
+            logger.trace("Token: {}", tokenValue);
+            AuthAccessToken2 token = getTokenFromSession(tokenValue);
+            if (token != null) {
+                logger.trace("Token not found in session.");
+                String key = pi + "_" + filename;
+                Boolean access = token.hasPermission(key);
+                if (access == null) {
+                    try {
+                        BaseMimeType baseMimeType = FileTools.getBaseMimeType(FileTools.getMimeTypeFromFile(Paths.get(filename)));
+                        logger.trace("Base mime type: {}", baseMimeType);
+                        access = AccessConditionUtils.checkAccess(servletRequest, baseMimeType.getName(), pi, filename, false).isGranted();
+                        token.addPermission(key, access);
+                    } catch (IndexUnreachableException | DAOException | IOException e) {
+                        ret.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).setHeading(new HashMap<>()).setNote(new HashMap<>());
+                        ret.getHeading().put("en", "Error");
+                        ret.getNote().put("en", e.getMessage());
+                        access = false;
+                    }
+                }
+                if (access) {
+                    ret.setStatus(Response.Status.OK.getStatusCode());
+                    logger.trace("access granted");
+                } else {
+                    ret.setStatus(Response.Status.FORBIDDEN.getStatusCode());
+                    logger.trace("access denied");
+                }
             }
 
             return ret;
-        }
-
-        try {
-            BaseMimeType baseMimeType = FileTools.getBaseMimeType(FileTools.getMimeTypeFromFile(Paths.get(filename)));
-            logger.trace("Base mime type: {}", baseMimeType);
-            boolean access = AccessConditionUtils.checkAccess(servletRequest, baseMimeType.getName(), pi, filename, false).isGranted();
-            if (access) {
-                ret.setStatus(Response.Status.OK.getStatusCode());
-                logger.trace("access granted");
-            } else {
-                ret.setStatus(Response.Status.FORBIDDEN.getStatusCode());
-                logger.trace("access denied");
-            }
-        } catch (IndexUnreachableException | DAOException | IOException e) {
-            ret.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).setHeading(new HashMap<>()).setNote(new HashMap<>());
-            ret.getHeading().put("en", "Error");
-            ret.getNote().put("en", e.getMessage());
         }
 
         return ret;
@@ -188,5 +200,54 @@ public class AuthorizationFlowResource {
         }
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
+
+    /**
+     * 
+     * @param token
+     * @return true if successful; false otherwise
+     */
+    @SuppressWarnings("unchecked")
+    private static boolean addTokenToSession(AuthAccessToken2 token) {
+        if (token == null) {
+            throw new IllegalArgumentException("token may not be null");
+        }
+        SessionBean sessionBean = BeanUtils.getSessionBean();
+        if (sessionBean != null) {
+            //  Add token to bean or session
+            Map<String, AuthAccessToken2> tokenMap = (Map<String, AuthAccessToken2>) sessionBean.get("AuthAccessTokens");
+            if (tokenMap == null) {
+                tokenMap = new HashMap<>();
+                sessionBean.put("AuthACcessTokens", tokenMap);
+            }
+            tokenMap.put(token.getAccessToken(), token);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 
+     * @param token Token string
+     * @return {@link AuthAccessToken2}; null if none found
+     */
+    @SuppressWarnings("unchecked")
+    private static AuthAccessToken2 getTokenFromSession(String token) {
+        if (token == null) {
+            throw new IllegalArgumentException("token may not be null");
+        }
+        SessionBean sessionBean = BeanUtils.getSessionBean();
+        if (sessionBean != null) {
+            //  Add token to bean or session
+            Map<String, AuthAccessToken2> tokenMap = (Map<String, AuthAccessToken2>) sessionBean.get("AuthAccessTokens");
+            if (tokenMap == null) {
+                tokenMap = new HashMap<>();
+                sessionBean.put("AuthACcessTokens", tokenMap);
+            }
+            return tokenMap.get(token);
+        }
+
+        return null;
     }
 }

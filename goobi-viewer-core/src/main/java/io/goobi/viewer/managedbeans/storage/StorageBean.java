@@ -25,7 +25,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import io.goobi.viewer.controller.DataStorage;
 import jakarta.inject.Inject;
