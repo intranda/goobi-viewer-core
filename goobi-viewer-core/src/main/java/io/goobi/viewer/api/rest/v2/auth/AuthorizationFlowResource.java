@@ -109,7 +109,7 @@ public class AuthorizationFlowResource {
                 addTokenToSession(token);
                 StringBuilder sb = new StringBuilder();
                 sb.append("<html><body><script>window.parent.postMessage(")
-                        .append(JsonTools.getAsJson(new AuthAccessToken2(messageId, 300)))
+                        .append(JsonTools.getAsJson(token))
                         .append(");</script></body></html>");
                 return sb.toString();
             }
