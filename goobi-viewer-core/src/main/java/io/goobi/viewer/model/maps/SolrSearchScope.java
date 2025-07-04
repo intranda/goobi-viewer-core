@@ -23,9 +23,10 @@ package io.goobi.viewer.model.maps;
 
 public enum SolrSearchScope {
 
-    ALL("label__geomap_search_scope__alls", "desc__geomap_search_scope__all"),
+    ALL("label__geomap_search_scope__all", "desc__geomap_search_scope__all"),
     RECORDS("label__geomap_search_scope__records", "desc__geomap_search_scope__records"),
     METADATA("label__geomap_saerch_scope__metadata", "desc__geomap_saerch_scope__metadata"),
+    RELATIONSHIPS("label__geomap_saerch_scope__relations", "desc__geomap_saerch_scope__relations"),
     DOCSTRUCTS("label__geomap_saerch_scope__docStructs", "desc__geomap_saerch_scope__docStructs");
 
     private final String label;
@@ -53,7 +54,11 @@ public enum SolrSearchScope {
     }
 
     public boolean isSearchInMetadata() {
-        return this == ALL || this == METADATA;
+        return this == ALL || this == METADATA || this == RELATIONSHIPS;
+    }
+
+    public boolean isSearchInRelationships() {
+        return this == RELATIONSHIPS;
     }
 
     String getQuery() {

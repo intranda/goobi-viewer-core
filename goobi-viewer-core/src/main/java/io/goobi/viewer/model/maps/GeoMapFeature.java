@@ -256,6 +256,9 @@ public class GeoMapFeature {
             JSONObject jsonMetadata = new JSONObject();
             jsonMetadata.put("title", JsonTools.getAsObjectForJson(item.getLabel()));
             jsonMetadata.put("link", item.getLink());
+            item.getAdditionalFields().entrySet().forEach(e -> {
+                jsonMetadata.put(e.getKey(), e.getValue().stream().map(v -> JsonTools.getAsObjectForJson(v)).toList());
+            });
             ents.put(jsonMetadata);
         }
     }

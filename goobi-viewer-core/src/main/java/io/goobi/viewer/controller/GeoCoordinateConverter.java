@@ -343,7 +343,7 @@ public class GeoCoordinateConverter {
         List<String> points = new ArrayList<>();
         points.addAll(doc.get(metadataField).stream().filter(Objects::nonNull).map(md -> md.getValueOrFallback(null)).toList());
         List<GeoMapFeature> docFeatures = getFeatures(points);
-        docFeatures.forEach(f -> f.addItem(new GeoMapFeatureItem(doc.getLabel(), titleField)));
+        docFeatures.forEach(f -> f.addItem(new GeoMapFeatureItem(doc.getLabel(), titleField, Collections.emptyMap())));
         String title = StringUtils.isBlank(titleField) ? null : doc.getFirstValue(titleField);
         Metadata titleConfig = this.featureTitleConfigs.getOrDefault(
                 Optional.ofNullable(doc).map(mc -> mc.getFirstValue(SolrConstants.DOCSTRCT)).orElse(StringConstants.DEFAULT_NAME),

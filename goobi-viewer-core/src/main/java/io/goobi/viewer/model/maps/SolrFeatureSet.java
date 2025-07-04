@@ -25,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,7 +33,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.ListUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.client.utils.URIBuilder;
@@ -77,14 +78,32 @@ public class SolrFeatureSet extends FeatureSet {
     /**
      * SOLR-Field to create the marker title from if the features are generated from a SOLR query
      */
+    @Deprecated
     @Column(name = "marker_title_field")
     private String markerTitleField = "MD_VALUE";
+
+    /**
+     * type of a metadata list configuration to use to construct the marker labels
+     */
+    @Column(name = "metadata_list_marker")
+    private String markerMetadataList = "";
+
+    @Column(name = "item_filter_field")
+    private String itemFilterName = "";
+    /**
+     * type of a metadata list configuration to use to construct labels for items for a marker displayed as a list next to the map
+     */
+    @Column(name = "metadata_list_item")
+    private String itemMetadataList = "";
 
     @Transient
     protected String featuresAsString = null;
 
     @Transient
     private final boolean useHeatmap;
+
+    @Transient
+    private GeomapItemFilter itemFilter;
 
     public SolrFeatureSet() {
         this(DataManager.getInstance().getConfiguration().useHeatmapForCMSMaps());
@@ -99,8 +118,11 @@ public class SolrFeatureSet extends FeatureSet {
         super(blueprint);
         this.solrQuery = blueprint.solrQuery;
         this.markerTitleField = blueprint.markerTitleField;
+        this.markerMetadataList = blueprint.markerMetadataList;
+        this.itemMetadataList = blueprint.itemMetadataList;
         this.searchScope = blueprint.searchScope;
         this.useHeatmap = blueprint.useHeatmap;
+        this.itemFilterName = blueprint.itemFilterName;
     }
 
     @Override
@@ -153,8 +175,8 @@ public class SolrFeatureSet extends FeatureSet {
     protected Collection<GeoMapFeature> createFeatures() throws PresentationException, IndexUnreachableException {
 
         LabelCreator markerLabels =
-                new LabelCreator(DataManager.getInstance().getConfiguration().getGeomapFeatureConfigurations(getMarkerTitleField()));
-        LabelCreator itemLabels = new LabelCreator(DataManager.getInstance().getConfiguration().getGeomapItemConfigurations(getMarkerTitleField()));
+                new LabelCreator(DataManager.getInstance().getConfiguration().getMetadataTemplates(getMarkerMetadataList()));
+        LabelCreator itemLabels = new LabelCreator(DataManager.getInstance().getConfiguration().getMetadataTemplates(getItemMetadataList()));
         List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
 
         List<MetadataDocument> hits;
@@ -165,7 +187,7 @@ public class SolrFeatureSet extends FeatureSet {
             hits = queryGenerator.getResults(getSolrQuery(), MAX_RECORD_HITS);
         }
         try (Time t = DataManager.getInstance().getTiming().takeTime("features")) {
-            FeatureGenerator featureGenerator = new FeatureGenerator(coordinateFields, markerLabels, itemLabels);
+            FeatureGenerator featureGenerator = new FeatureGenerator(coordinateFields, getItemFilter().getFields(), markerLabels, itemLabels);
 
             Collection<GeoMapFeature> featuresFromSolr = new ArrayList<>();
             for (MetadataDocument hit : hits) {
@@ -232,7 +254,7 @@ public class SolrFeatureSet extends FeatureSet {
     public String getSolrQueryEncoded() {
 
         String baseQuery = Optional.ofNullable(getSolrQuery()).orElse("");
-        String scopeQuery = this.getSearchScope().getQuery();
+        String scopeQuery = Optional.ofNullable(this.getSearchScope()).map(SolrSearchScope::getQuery).orElse("");
         String query;
         if (StringUtils.isNoneBlank(baseQuery, scopeQuery)) {
             query = "+(%s) +(%s)".formatted(baseQuery, scopeQuery);
@@ -270,10 +292,12 @@ public class SolrFeatureSet extends FeatureSet {
         return StringUtils.isNotBlank(this.solrQuery);
     }
 
+    @Deprecated
     public String getMarkerTitleField() {
         return markerTitleField;
     }
 
+    @Deprecated
     public void setMarkerTitleField(String markerTitleField) {
         this.markerTitleField = markerTitleField;
     }
@@ -291,6 +315,28 @@ public class SolrFeatureSet extends FeatureSet {
             logger.error("Error retrieving geoma features from solr", e);
             return false;
         }
+    }
+
+    public String getMarkerMetadataList() {
+        if (StringUtils.isAllBlank(markerMetadataList) && StringUtils.isNotBlank(markerTitleField)) {
+            this.markerMetadataList = DataManager.getInstance().getConfiguration().getMetadataListForGeomapMarkerConfig(markerTitleField);
+        }
+        return markerMetadataList;
+    }
+
+    public void setMarkerMetadataList(String markerMetadataList) {
+        this.markerMetadataList = markerMetadataList;
+    }
+
+    public String getItemMetadataList() {
+        if (StringUtils.isAllBlank(itemMetadataList) && StringUtils.isNotBlank(markerTitleField)) {
+            this.itemMetadataList = DataManager.getInstance().getConfiguration().getMetadataListForGeomapItemConfig(markerTitleField);
+        }
+        return itemMetadataList;
+    }
+
+    public void setItemMetadataList(String itemMetadataList) {
+        this.itemMetadataList = itemMetadataList;
     }
 
     @Override
@@ -311,4 +357,34 @@ public class SolrFeatureSet extends FeatureSet {
     public String getType() {
         return "SOLR_QUERY";
     }
+
+    public String getItemFilterName() {
+        return itemFilterName;
+    }
+
+    public void setItemFilterName(String itemFilterName) {
+        this.itemFilterName = itemFilterName;
+    }
+
+    public GeomapItemFilter getItemFilter() {
+        if (itemFilter == null) {
+            this.itemFilter = loadFilter(itemFilterName);
+        }
+        return itemFilter;
+    }
+
+    private GeomapItemFilter loadFilter(String name) {
+        if (StringUtils.isNotBlank(name)) {
+            return DataManager.getInstance()
+                    .getConfiguration()
+                    .getGeomapFilters()
+                    .stream()
+                    .filter(f -> name.equals(f.getName()))
+                    .findAny()
+                    .orElse(new GeomapItemFilter("", "", false, Collections.emptyList()));
+        } else {
+            return new GeomapItemFilter("", "", false, Collections.emptyList());
+        }
+    }
+
 }

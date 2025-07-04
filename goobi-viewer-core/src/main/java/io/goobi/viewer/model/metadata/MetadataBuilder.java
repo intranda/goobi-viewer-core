@@ -33,8 +33,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -110,6 +112,38 @@ public class MetadataBuilder {
 
     public IMetadataValue build(Metadata metadataConfiguration) {
         return createFromConfig(metadataConfiguration);
+    }
+
+    public IMetadataValue build(List<Metadata> metadataConfiguration, String separator) {
+        return metadataConfiguration.stream()
+                .map(config -> createFromConfig(config))
+                .collect(Collectors.reducing(new SimpleMetadataValue(), (v1, v2) -> join(v1, v2, separator)));
+    }
+
+    @SuppressWarnings("unchecked")
+    private IMetadataValue join(IMetadataValue v1, IMetadataValue v2, String separator) {
+        List<String> languages = CollectionUtils.union(v1.getLanguages(), v2.getLanguages()).stream().distinct().toList();
+
+        if (languages.size() == 1) {
+            String value = List.of(v1.getValue(), v2.getValue())
+                    .stream()
+                    .map(o -> o.orElse(""))
+                    .filter(StringUtils::isNotBlank)
+                    .collect(Collectors.joining(separator));
+            return new SimpleMetadataValue(value);
+        } else {
+            MultiLanguageMetadataValue mdValue = new MultiLanguageMetadataValue();
+            for (String lang : languages) {
+                String value = List.of(v1.getValue(lang), v2.getValue(lang))
+                        .stream()
+                        .map(o -> o.orElse(""))
+                        .filter(StringUtils::isNotBlank)
+                        .collect(Collectors.joining(separator));
+                mdValue.setValue(value, lang);
+            }
+            return mdValue;
+        }
+
     }
 
     /**

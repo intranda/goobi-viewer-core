@@ -23,8 +23,10 @@ package io.goobi.viewer.model.maps.features;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -44,6 +46,7 @@ import io.goobi.viewer.model.maps.coordinates.CoordinateReaderProvider;
 import io.goobi.viewer.model.metadata.ComplexMetadata;
 import io.goobi.viewer.model.metadata.ComplexMetadataContainer;
 import io.goobi.viewer.model.metadata.MetadataContainer;
+import io.goobi.viewer.model.metadata.RelationshipMetadataContainer;
 import io.goobi.viewer.servlets.IdentifierResolver;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
@@ -58,14 +61,16 @@ public class FeatureGenerator {
     protected static final String POLYGON_LAT_LNG_PATTERN = "POLYGON\\(\\(([\\dE.-]+[\\s/]*[\\dE.-]+[,\\s]*)+\\)\\)"; //NOSONAR
 
     private final List<String> coordinateFields;
+    private final List<String> additionalFields;
     private final LabelCreator featureTitleCreator;
     private final LabelCreator entityTitleCreator;
     private final CoordinateReaderProvider coordinateReaderProvider;
 
-    public FeatureGenerator(List<String> coordinateFields, LabelCreator featureTitleCreator,
+    public FeatureGenerator(List<String> coordinateFields, List<String> additionalFields, LabelCreator featureTitleCreator,
             LabelCreator entityTitleCreator) {
         super();
         this.coordinateFields = coordinateFields;
+        this.additionalFields = additionalFields;
         this.featureTitleCreator = featureTitleCreator;
         this.entityTitleCreator = entityTitleCreator;
         this.coordinateReaderProvider = new CoordinateReaderProvider();
@@ -74,12 +79,16 @@ public class FeatureGenerator {
     public Collection<GeoMapFeature> getFeatures(MetadataDocument document, SolrSearchScope searchScope) {
 
         Collection<GeoMapFeature> features = new ArrayList<>();
-
+        searchScope = searchScope == null ? SolrSearchScope.ALL : searchScope;
         if (searchScope.isSearchInTopDocuments()) {
             features.addAll(getFeatures(document.getMainDocMetadata()));
         }
         if (searchScope.isSearchInMetadata()) {
             features.addAll(getFeatures(document.getMetadataGroups(), document.getMainDocMetadata()));
+        }
+        if (searchScope.isSearchInRelationships() && document.getMetadataGroups() instanceof RelationshipMetadataContainer) {
+            features.addAll(
+                    getRelatedFeatures((RelationshipMetadataContainer) document.getMetadataGroups(), document.getMainDocMetadata()));
         }
         if (searchScope.isSearchInStructureDocuments()) {
             for (MetadataDocument childDoc : document.getChildDocuments()) {
@@ -104,6 +113,20 @@ public class FeatureGenerator {
         return features;
     }
 
+    private Collection<GeoMapFeature> getRelatedFeatures(RelationshipMetadataContainer metadataGroups, MetadataContainer topDocument) {
+
+        Collection<GeoMapFeature> features = new ArrayList<>();
+        for (ComplexMetadata group : metadataGroups.getAllGroups()) {
+            MetadataContainer relation = metadataGroups.getRelatedRecord(group);
+            MetadataContainer groupMd = new MetadataContainer(group.getMetadata());
+            List<String> coordinates = getCoordinates(relation, coordinateFields);
+            Collection<GeoMapFeature> f = getFeatures(groupMd, relation, coordinates);
+            features.addAll(f);
+        }
+
+        return features;
+    }
+
     private Collection<GeoMapFeature> getFeatures(ComplexMetadataContainer metadataGroups, MetadataContainer topDocument) {
 
         Collection<GeoMapFeature> features = new ArrayList<>();
@@ -115,6 +138,13 @@ public class FeatureGenerator {
         }
 
         return features;
+    }
+
+    private List<String> getCoordinates(MetadataContainer metadata, List<String> coordinateFields) {
+        return coordinateFields.stream()
+                .map(field -> metadata.getFirstValue(field))
+                .filter(StringUtils::isNotBlank)
+                .toList();
     }
 
     private List<String> getCoordinates(ComplexMetadata group, List<String> coordinateFields) {
@@ -142,6 +172,7 @@ public class FeatureGenerator {
 
         IMetadataValue featureTitle = getTitle(metadata, topDocument, this.featureTitleCreator);
         IMetadataValue entityTitle = getTitle(metadata, topDocument, this.entityTitleCreator);
+
         URI link = createLink(metadata, topDocument);
         String filterQuery =
                 new FeatureQueryGenerator().createSearchFilterQuery(metadata, getAppropriateTemplate(metadata), this.featureTitleCreator);
@@ -149,10 +180,22 @@ public class FeatureGenerator {
         return coordinates.stream().map(coords -> {
             GeoMapFeature feature = getFeature(coords);
             feature.setTitle(featureTitle);
-            feature.addItem(new GeoMapFeatureItem(entityTitle, link != null ? link.toString() : ""));
+            feature.addItem(
+                    new GeoMapFeatureItem(entityTitle, link != null ? link.toString() : "",
+                            getValueMap(this.additionalFields, metadata, topDocument)));
             feature.setFilterQuery(filterQuery);
             return feature;
         }).toList();
+    }
+
+    private Map<String, List<IMetadataValue>> getValueMap(List<String> fields, MetadataContainer... metadata) {
+        Map<String, List<IMetadataValue>> map = new HashMap<>();
+        for (String field : fields) {
+            Arrays.stream(metadata).map(md -> md.get(field)).filter(l -> !l.isEmpty()).findFirst().ifPresent(v -> {
+                map.put(field, v);
+            });
+        }
+        return map;
     }
 
     protected IMetadataValue getTitle(MetadataContainer metadata, MetadataContainer topDocument, LabelCreator labelCreator) {

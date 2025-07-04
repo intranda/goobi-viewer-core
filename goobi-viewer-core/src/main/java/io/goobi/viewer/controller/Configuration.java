@@ -78,6 +78,7 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.maps.GeoMapMarker.MarkerType;
+import io.goobi.viewer.model.maps.GeomapItemFilter;
 import io.goobi.viewer.model.maps.View;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
@@ -853,6 +854,36 @@ public class Configuration extends AbstractConfiguration {
         return getGeomapFeatureConfigurations(option).getOrDefault(template, new Metadata());
     }
 
+    public String getMetadataListForGeomapMarkerConfig(String option) {
+
+        if (StringUtils.isBlank(option)) {
+            return "";
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> options = getLocalConfigurationsAt("maps.metadata.option");
+
+        return options.stream()
+                .filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
+                .findAny()
+                .map(config -> config.getString("marker[@metadataList]", ""))
+                .orElse("");
+    }
+
+    public String getMetadataListForGeomapItemConfig(String option) {
+
+        if (StringUtils.isBlank(option)) {
+            return "";
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> options = getLocalConfigurationsAt("maps.metadata.option");
+
+        return options.stream()
+                .filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
+                .findAny()
+                .map(config -> config.getString("item[@metadataList]", ""))
+                .orElse("");
+    }
+
     public Map<String, Metadata> getGeomapFeatureConfigurations(String option) {
         if (StringUtils.isBlank(option)) {
             return Collections.emptyMap();
@@ -920,19 +951,21 @@ public class Configuration extends AbstractConfiguration {
         return new View(zoom, lng, lat);
     }
 
-    public Map<String, List<LabeledValue>> getGeomapFilters() {
+    public List<GeomapItemFilter> getGeomapFilters() {
         List<HierarchicalConfiguration<ImmutableNode>> filterConfigs = this.getLocalConfigurationsAt("maps.filters.filter");
-        Map<String, List<LabeledValue>> filters = new HashMap<>();
+        List<GeomapItemFilter> filters = new ArrayList<>();
         for (HierarchicalConfiguration<ImmutableNode> config : filterConfigs) {
-            String groupName = config.getString("featureGroup", "");
+            String name = config.getString("name", "_DEFAULT");
+            String label = config.getString("label", name);
+            boolean visible = config.getBoolean("[@visible]", true);
             List<LabeledValue> fields = config.configurationsAt("field").stream().map(c -> {
                 String field = c.getString(".");
-                String label = c.getString("[@label]", "");
+                String fieldLabel = c.getString("[@label]", "");
                 String styleClass = c.getString("[@styleClass]", "");
-                return new LabeledValue(field, label, styleClass);
+                return new LabeledValue(field, fieldLabel, styleClass);
             })
                     .collect(Collectors.toList());
-            filters.put(groupName, fields);
+            filters.add(new GeomapItemFilter(name, label, visible, fields));
         }
         return filters;
     }
@@ -945,7 +978,8 @@ public class Configuration extends AbstractConfiguration {
         }
 
         FeatureSetConfiguration config = new FeatureSetConfiguration("docStruct", "MD_TITLE",
-                DataManager.getInstance().getConfiguration().getRecordGeomapMarker(templateName), "", "LABEL", Collections.emptyList());
+                DataManager.getInstance().getConfiguration().getRecordGeomapMarker(templateName), "", "_DEFAULT", "_DEFAULT",
+                "");
 
         return List.of(config);
     }

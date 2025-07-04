@@ -4,9 +4,10 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.goobi.viewer.controller.StringTools;
 import jakarta.servlet.http.HttpServletRequest;
-import software.amazon.awssdk.utils.StringUtils;
 
 public class FilterQueryParser {
 

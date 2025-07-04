@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.StringConstants;
@@ -35,20 +37,25 @@ import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataBuilder;
 import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.model.metadata.MetadataParameter;
-import software.amazon.awssdk.utils.StringUtils;
 
 public class LabelCreator {
 
-    private final Map<String, Metadata> metadataTemplates;
+    private final Map<String, List<Metadata>> metadataTemplates;
+    private final String valueSeparator;
 
-    public LabelCreator(Map<String, Metadata> metadataTemplates) {
-        this.metadataTemplates = metadataTemplates;
+    public LabelCreator(Map<String, List<Metadata>> metadataTemplates) {
+        this(metadataTemplates, "");
     }
 
-    public Metadata getMetadata(MetadataContainer doc, String template) {
+    public LabelCreator(Map<String, List<Metadata>> metadataTemplates, String valueSeparator) {
+        this.metadataTemplates = metadataTemplates;
+        this.valueSeparator = valueSeparator;
+    }
+
+    public List<Metadata> getMetadata(MetadataContainer doc, String template) {
         return this.metadataTemplates.getOrDefault(
                 template,
-                this.metadataTemplates.getOrDefault(StringConstants.DEFAULT_NAME, new Metadata()));
+                this.metadataTemplates.getOrDefault(StringConstants.DEFAULT_NAME, Collections.emptyList()));
     }
 
     public IMetadataValue getValue(MetadataContainer doc, String template) {
@@ -61,13 +68,13 @@ public class LabelCreator {
     }
 
     public IMetadataValue getValue(MetadataContainer doc, MetadataContainer parentStruct, MetadataContainer topStruct, String template) {
-        return new MetadataBuilder(doc, parentStruct, topStruct).build(this.getMetadata(doc, template));
+        return new MetadataBuilder(doc, parentStruct, topStruct).build(this.getMetadata(doc, template), this.valueSeparator);
     }
 
     public IMetadataValue getValue(Map<String, List<IMetadataValue>> metadata, String template) {
-        Metadata mdConfig = this.metadataTemplates.get(template);
+        List<Metadata> mdConfig = this.metadataTemplates.get(template);
         if (mdConfig != null) {
-            return new MetadataBuilder(metadata).build(mdConfig);
+            return new MetadataBuilder(metadata).build(mdConfig, this.valueSeparator);
         } else {
             return new SimpleMetadataValue("");
         }
@@ -78,7 +85,7 @@ public class LabelCreator {
     }
 
     public List<String> getFieldsToQuery() {
-        return metadataTemplates.values().stream().flatMap(this::getFields).distinct().toList();
+        return metadataTemplates.values().stream().flatMap(List::stream).flatMap(this::getFields).distinct().toList();
     }
 
     private Stream<String> getFields(Metadata md) {

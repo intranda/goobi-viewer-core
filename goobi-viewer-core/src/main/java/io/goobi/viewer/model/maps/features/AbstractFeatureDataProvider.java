@@ -48,6 +48,8 @@ public abstract class AbstractFeatureDataProvider implements IFeatureDataProvide
                 return new DocStructDataProvider(DataManager.getInstance().getSearchIndex(), requiredFields);
             case METADATA:
                 return new MetadataDataProvider(DataManager.getInstance().getSearchIndex(), requiredFields);
+            case RELATIONSHIPS:
+                return new RelationshipDataProvider(DataManager.getInstance().getSearchIndex(), requiredFields);
             case ALL:
             default:
                 return new GlobalFeatureDataProvider(DataManager.getInstance().getSearchIndex(), requiredFields);

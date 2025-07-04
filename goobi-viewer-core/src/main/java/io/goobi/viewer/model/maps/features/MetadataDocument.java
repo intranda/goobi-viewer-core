@@ -57,6 +57,16 @@ public class MetadataDocument {
                         .toList());
     }
 
+    public MetadataDocument(String pi, String iddoc, MetadataContainer metadata, ComplexMetadataContainer metadataGroups,
+            Collection<MetadataDocument> children) {
+        super();
+        this.pi = pi;
+        this.iddoc = iddoc;
+        this.metadata = metadata;
+        this.metadataGroups = metadataGroups;
+        this.children = children;
+    }
+
     private MetadataDocument(SolrDocument doc, Collection<SolrDocument> metadataDocs, Collection<MetadataDocument> children) {
         this.pi = getPi(doc);
         this.iddoc = getIddoc(doc);

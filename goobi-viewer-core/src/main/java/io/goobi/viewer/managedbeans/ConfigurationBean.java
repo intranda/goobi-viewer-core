@@ -22,11 +22,8 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -38,7 +35,6 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -46,6 +42,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
+import io.goobi.viewer.model.maps.GeomapItemFilter;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -1538,22 +1535,6 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isDisplaySearchHitNumbers();
     }
 
-    public String getGeomapFiltersAsJson() {
-        Locale locale = BeanUtils.getLocale();
-        Map<String, List<LabeledValue>> map = DataManager.getInstance().getConfiguration().getGeomapFilters();
-        Map<String, List<LabeledValue>> translatedMap = new HashMap<>();
-        for (Entry<String, List<LabeledValue>> entry : map.entrySet()) {
-            //            String translatedLabel = ViewerResourceBundle.getTranslation(entry.getKey(), BeanUtils.getLocale(), true);
-            List<LabeledValue> translatedValues = entry.getValue()
-                    .stream()
-                    .map(v -> new LabeledValue(v.getValue(), ViewerResourceBundle.getTranslation(v.getLabel(), locale), v.getStyleClass()))
-                    .toList();
-            translatedMap.put(entry.getKey(), translatedValues);
-
-        }
-        return new JSONObject(translatedMap).toString();
-    }
-
     public List<SelectItem> getGeomapFeatureTitleOptions() {
         return DataManager.getInstance()
                 .getConfiguration()
@@ -1614,5 +1595,15 @@ public class ConfigurationBean implements Serializable {
 
     public boolean isSidebarTocViewLinkVisible() {
         return DataManager.getInstance().getConfiguration().isSidebarTocViewLinkVisible();
+    }
+
+    public List<String> getGeomapFilters() {
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getGeomapFilters()
+                .stream()
+                .filter(GeomapItemFilter::isVisible)
+                .map(f -> f.getName())
+                .toList();
     }
 }
