@@ -951,6 +951,13 @@ public class Configuration extends AbstractConfiguration {
         return new View(zoom, lng, lat);
     }
 
+    public GeomapItemFilter getGeomapFilter(String name) {
+        if (StringUtils.isBlank(name)) {
+            return null;
+        }
+        return getGeomapFilters().stream().filter(f -> name.equals(f.getName())).findAny().orElse(null);
+    }
+
     public List<GeomapItemFilter> getGeomapFilters() {
         List<HierarchicalConfiguration<ImmutableNode>> filterConfigs = this.getLocalConfigurationsAt("maps.filters.filter");
         List<GeomapItemFilter> filters = new ArrayList<>();
