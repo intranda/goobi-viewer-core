@@ -64,6 +64,7 @@ import io.goobi.viewer.model.security.authentication.AuthenticationProviderExcep
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.CookieParam;
@@ -84,12 +85,46 @@ public class AuthorizationFlowResource {
 
     private static final String BASE_URL = DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "api/v2" + AUTH;
 
+    private static final String KEY_ORIGIN = "IIIF_origin";
+    private static final String KEY_TOKENS = "IIIF_AuthAccessTokens";
+
     @Context
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
 
     public AuthorizationFlowResource(@Context HttpServletRequest request) {
+    }
+
+    @GET
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "iiif" }, summary = "")
+    public AuthProbeService2 getServiceDescription() {
+        Map<String, String> logoutLabel = new HashMap<>();
+        logoutLabel.put("en", "Logout");
+        return new AuthProbeService2(URI.create(BASE_URL + AUTH_PROBE),
+                Collections
+                        .singletonList(new AuthAccessService2(URI.create(BASE_URL + AUTH_ACCESS), AuthAccessService2.Profile.ACTIVE, new HashMap<>(),
+                                new AuthAccessTokenService2(URI.create(BASE_URL + AUTH_ACCESS_TOKEN)),
+                                new AuthLogoutService2(URI.create(BASE_URL + AUTH_LOGOUT), logoutLabel))));
+    }
+
+    @GET
+    @jakarta.ws.rs.Path(AUTH_ACCESS)
+    @Produces({ MediaType.TEXT_HTML })
+    @Operation(tags = { "records", "iiif" }, summary = "")
+    public Response accessTokenService(@QueryParam("origin") String origin) throws ServletException, IOException {
+        if (StringUtils.isEmpty(origin)) {
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "origin missing").build();
+        }
+        logger.trace("origin: {}", origin);
+        if (!addOriginToSession(origin)) {
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Could not add origin to session").build();
+        }
+
+        servletRequest.getRequestDispatcher("/resources/components/modalUserLogin.xhtml").forward(servletRequest, servletResponse);
+
+        return Response.ok("").build();
     }
 
     @GET
@@ -103,7 +138,13 @@ public class AuthorizationFlowResource {
             logger.trace("origin: {}", origin);
             logger.trace("sessionId: {}", sessionId);
             logger.trace("local session id: {}", servletRequest.getSession().getId());
-            // TODO Validate origin
+
+            // Validate origin
+            if (!origin.equals(getOriginFromSession())) {
+                logger.trace("Invalid origin, expected: {}", getOriginFromSession());
+                // return JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_ORIGIN));
+            }
+
             if (sessionId.equals(servletRequest.getSession().getId())) {
                 AuthAccessToken2 token = new AuthAccessToken2(messageId, 300);
                 addTokenToSession(token);
@@ -116,17 +157,6 @@ public class AuthorizationFlowResource {
         }
 
         return JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_REQUEST));
-    }
-
-    @GET
-    @jakarta.ws.rs.Path(AUTH_PROBE)
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "")
-    public AuthProbeService2 getProbeServiceDescription() {
-        return new AuthProbeService2(URI.create(BASE_URL + AUTH_PROBE),
-                Collections.singletonList(new AuthAccessService2(URI.create(BASE_URL + AUTH_ACCESS), AuthAccessService2.Profile.ACTIVE,
-                        new AuthAccessTokenService2(URI.create(BASE_URL + AUTH_ACCESS_TOKEN)),
-                        new AuthLogoutService2(URI.create(BASE_URL + AUTH_LOGOUT)))));
     }
 
     @GET
@@ -151,7 +181,6 @@ public class AuthorizationFlowResource {
             logger.trace("Token: {}", tokenValue);
             AuthAccessToken2 token = getTokenFromSession(tokenValue);
             if (token != null) {
-                logger.trace("Token not found in session.");
                 String key = pi + "_" + filename;
                 Boolean access = token.hasPermission(key);
                 if (access == null) {
@@ -161,6 +190,7 @@ public class AuthorizationFlowResource {
                         access = AccessConditionUtils.checkAccess(servletRequest, baseMimeType.getName(), pi, filename, false).isGranted();
                         token.addPermission(key, access);
                     } catch (IndexUnreachableException | DAOException | IOException e) {
+                        logger.error(e.getMessage());
                         ret.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).setHeading(new HashMap<>()).setNote(new HashMap<>());
                         ret.getHeading().put("en", "Error");
                         ret.getNote().put("en", e.getMessage());
@@ -174,6 +204,9 @@ public class AuthorizationFlowResource {
                     ret.setStatus(Response.Status.FORBIDDEN.getStatusCode());
                     logger.trace("access denied");
                 }
+            } else {
+                logger.trace("Token not found in session.");
+                ret.setStatus(Response.Status.FORBIDDEN.getStatusCode());
             }
 
             return ret;
@@ -191,7 +224,7 @@ public class AuthorizationFlowResource {
         if (userBean != null) {
             try {
                 userBean.logout();
-                // TODO delete tokens
+                // Tokens and origin should be purged from SessionBean by logout process
                 return Response.ok("").build();
             } catch (AuthenticationProviderException e) {
                 logger.error(e.getMessage());
@@ -215,10 +248,10 @@ public class AuthorizationFlowResource {
         SessionBean sessionBean = BeanUtils.getSessionBean();
         if (sessionBean != null) {
             //  Add token to bean or session
-            Map<String, AuthAccessToken2> tokenMap = (Map<String, AuthAccessToken2>) sessionBean.get("AuthAccessTokens");
+            Map<String, AuthAccessToken2> tokenMap = (Map<String, AuthAccessToken2>) sessionBean.get(KEY_TOKENS);
             if (tokenMap == null) {
                 tokenMap = new HashMap<>();
-                sessionBean.put("AuthACcessTokens", tokenMap);
+                sessionBean.put(KEY_TOKENS, tokenMap);
             }
             tokenMap.put(token.getAccessToken(), token);
             return true;
@@ -228,6 +261,7 @@ public class AuthorizationFlowResource {
     }
 
     /**
+     * Retrieves {@link AuthAccessToken2} with the given token value from SessionBean.
      * 
      * @param token Token string
      * @return {@link AuthAccessToken2}; null if none found
@@ -239,15 +273,46 @@ public class AuthorizationFlowResource {
         }
         SessionBean sessionBean = BeanUtils.getSessionBean();
         if (sessionBean != null) {
-            //  Add token to bean or session
-            Map<String, AuthAccessToken2> tokenMap = (Map<String, AuthAccessToken2>) sessionBean.get("AuthAccessTokens");
+            Map<String, AuthAccessToken2> tokenMap = (Map<String, AuthAccessToken2>) sessionBean.get(KEY_TOKENS);
             if (tokenMap == null) {
                 tokenMap = new HashMap<>();
-                sessionBean.put("AuthACcessTokens", tokenMap);
+                sessionBean.put(KEY_TOKENS, tokenMap);
             }
             return tokenMap.get(token);
         }
 
         return null;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    private static String getOriginFromSession() {
+        SessionBean sessionBean = BeanUtils.getSessionBean();
+        if (sessionBean != null) {
+            return (String) sessionBean.get(KEY_ORIGIN);
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @param origin
+     * @return
+     */
+    private static boolean addOriginToSession(String origin) {
+        if (origin == null) {
+            throw new IllegalArgumentException("origin may not be null");
+        }
+        SessionBean sessionBean = BeanUtils.getSessionBean();
+        if (sessionBean != null) {
+            sessionBean.put(KEY_ORIGIN, origin);
+            logger.trace("origin added to session: {}", origin);
+            return true;
+        }
+
+        return false;
     }
 }
