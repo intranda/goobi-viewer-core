@@ -75,7 +75,6 @@ public class RecordGeoMap {
      * Create a new geomap with features from the given StructElement and related documents.
      * 
      * @param struct
-     * @param relatedDocuments
      */
     public RecordGeoMap(StructElement struct) throws DAOException {
         this(struct, DataManager.getInstance().getDao(),
@@ -86,7 +85,6 @@ public class RecordGeoMap {
      * Create a new geomap with features from the given StructElement and related documents.
      * 
      * @param struct
-     * @param relatedDocuments
      * @param dao
      * @param featureSetConfigs
      */
