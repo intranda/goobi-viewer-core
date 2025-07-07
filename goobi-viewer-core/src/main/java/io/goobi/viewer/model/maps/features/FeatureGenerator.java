@@ -79,18 +79,18 @@ public class FeatureGenerator {
     public Collection<GeoMapFeature> getFeatures(MetadataDocument document, SolrSearchScope searchScope) {
 
         Collection<GeoMapFeature> features = new ArrayList<>();
-        searchScope = searchScope == null ? SolrSearchScope.ALL : searchScope;
-        if (searchScope.isSearchInTopDocuments()) {
+        SolrSearchScope searchScopeToUse = searchScope == null ? SolrSearchScope.ALL : searchScope;
+        if (searchScopeToUse.isSearchInTopDocuments()) {
             features.addAll(getFeatures(document.getMainDocMetadata()));
         }
-        if (searchScope.isSearchInMetadata()) {
+        if (searchScopeToUse.isSearchInMetadata()) {
             features.addAll(getFeatures(document.getMetadataGroups(), document.getMainDocMetadata()));
         }
-        if (searchScope.isSearchInRelationships() && document.getMetadataGroups() instanceof RelationshipMetadataContainer) {
+        if (searchScopeToUse.isSearchInRelationships() && document.getMetadataGroups() instanceof RelationshipMetadataContainer) {
             features.addAll(
                     getRelatedFeatures((RelationshipMetadataContainer) document.getMetadataGroups(), document.getMainDocMetadata()));
         }
-        if (searchScope.isSearchInStructureDocuments()) {
+        if (searchScopeToUse.isSearchInStructureDocuments()) {
             for (MetadataDocument childDoc : document.getChildDocuments()) {
                 features.addAll(getFeatures(childDoc.getMainDocMetadata()));
             }

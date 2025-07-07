@@ -17,8 +17,8 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 
 public abstract class AbstractFeatureDataProvider implements IFeatureDataProvider {
 
-    final SolrSearchIndex searchIndex;
-    final List<String> requiredFields;
+    private final SolrSearchIndex searchIndex;
+    private final List<String> requiredFields;
 
     public AbstractFeatureDataProvider(SolrSearchIndex searchIndex, List<String> requiredFields) {
         this.searchIndex = searchIndex;
@@ -38,6 +38,14 @@ public abstract class AbstractFeatureDataProvider implements IFeatureDataProvide
         List<String> fieldList = (requiredFields == null || requiredFields.isEmpty()) ? Collections.emptyList()
                 : ListUtils.union(this.requiredFields, IFeatureDataProvider.REQUIRED_FIELDS);
         return fieldList;
+    }
+
+    public SolrSearchIndex getSearchIndex() {
+        return searchIndex;
+    }
+
+    public List<String> getRequiredFields() {
+        return requiredFields;
     }
 
     public static IFeatureDataProvider getDataProvider(SolrSearchScope scope, List<String> requiredFields) {

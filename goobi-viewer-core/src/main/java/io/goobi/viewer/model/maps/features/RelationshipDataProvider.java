@@ -25,7 +25,8 @@ public class RelationshipDataProvider extends MetadataDataProvider {
         MetadataDocument doc = super.getMetadataDocument(response, topDocument);
         ComplexMetadataContainer mdGroups = doc.getMetadataGroups();
         try {
-            RelationshipMetadataContainer relations = RelationshipMetadataContainer.loadRelationships(mdGroups, getFieldList(), this.searchIndex);
+            RelationshipMetadataContainer relations =
+                    RelationshipMetadataContainer.loadRelationships(mdGroups, getFieldList(), this.getSearchIndex());
             return new MetadataDocument(doc.getPi(), doc.getIddoc(), doc.getMainDocMetadata(), relations, doc.getChildDocuments());
         } catch (PresentationException | IndexUnreachableException e) {
             logger.error("Error loading related documents for {}. Reason: {}", doc.getPi(), e.toString());

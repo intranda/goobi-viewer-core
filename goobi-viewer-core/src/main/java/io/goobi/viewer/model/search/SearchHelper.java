@@ -3462,7 +3462,7 @@ public final class SearchHelper {
     }
 
     /**
-     * @param expandQuery
+     * @param expandQuery the query used to filter the expanded hits
      * @return Map&lt;String, String&gt;
      */
     public static Map<String, String> getExpandQueryParams(String expandQuery) {
@@ -3470,7 +3470,8 @@ public final class SearchHelper {
     }
 
     /**
-     * @param expandQuery
+     * @param expandQuery the query used to filter the expanded hits
+     * @param maxHits maximum number of expanded hits per main hits
      * @return Map&lt;String, String&gt;
      */
     public static Map<String, String> getExpandQueryParams(String expandQuery, Integer maxHits) {
