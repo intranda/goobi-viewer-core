@@ -673,7 +673,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getMetadataListTypes_shouldReturnAllMetadataListTypesIfPrefixEmpty() {
         List<String> result = DataManager.getInstance().getConfiguration().getMetadataListTypes(null);
-        assertEquals(6, result.size());
+        assertEquals(9, result.size());
     }
 
     /**
@@ -3084,10 +3084,11 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void testGetGeoMapMarkerFields() {
         List<String> fields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
-        assertEquals(3, fields.size());
+        assertEquals(4, fields.size());
         assertTrue(fields.contains("MD_GEOJSON_POINT"));
         assertTrue(fields.contains("NORM_COORDS_GEOJSON"));
         assertTrue(fields.contains("MD_COORDINATES"));
+        assertTrue(fields.contains("MD_GPS_POLYGON"));
     }
 
     @Test
