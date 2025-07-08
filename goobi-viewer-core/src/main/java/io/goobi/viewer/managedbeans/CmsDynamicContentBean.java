@@ -25,11 +25,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.faces.component.UIComponent;
-import jakarta.faces.component.html.HtmlPanelGroup;
-import jakarta.faces.view.ViewScoped;
-import jakarta.inject.Named;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,6 +32,10 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.component.html.HtmlPanelGroup;
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
 
 /**
  * <p>
@@ -107,7 +106,9 @@ public class CmsDynamicContentBean implements Serializable {
             List<CMSComponent> components = this.cmsPage.getTopbarComponents();
             for (CMSComponent component : components) {
                 UIComponent ui = component.getUiComponent();
-                this.topBarGroup.getChildren().add(ui);
+                if (ui != null) {
+                    this.topBarGroup.getChildren().add(ui);
+                }
             }
         } catch (PresentationException e) {
             logger.error("Error building header components for page {}", cmsPage.getId(), e);
