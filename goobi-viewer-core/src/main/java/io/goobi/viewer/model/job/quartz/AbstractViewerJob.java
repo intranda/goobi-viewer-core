@@ -43,19 +43,14 @@ public abstract class AbstractViewerJob implements Job, IViewerJob {
     protected AbstractViewerJob() {
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.goobi.production.flow.jobs.IGoobiJob#execute(org.quartz.
-     * JobExecutionContext)
-     */
+    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         // execute job only, if no other instance is running
         String keyName = context.getJobDetail().getKey().getName();
         if (!isRunning(keyName)) {
-            log.trace("Start scheduled Job: " + getJobName());
+            log.trace("Start scheduled Job: {}", getJobName());
             if (!isRunning(keyName)) {
                 setRunning(keyName, true);
                 try {
@@ -72,7 +67,7 @@ public abstract class AbstractViewerJob implements Job, IViewerJob {
                     setRunning(keyName, false);
                 }
             }
-            log.trace("End scheduled Job: " + getJobName());
+            log.trace("End scheduled Job: {}", getJobName());
         }
     }
 

@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import io.goobi.viewer.controller.AbstractConfiguration;
+import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.modules.interfaces.IURLBuilder;
 import io.goobi.viewer.modules.interfaces.IndexAugmenter;
@@ -127,6 +128,13 @@ public interface IModule extends IndexAugmenter {
      * @return a {@link java.util.List} object.
      */
     public List<String> getWidgets(String type);
+
+    /**
+     * Returns available quartz types.
+     * 
+     * @return List<ITaskType>
+     */
+    public List<ITaskType> getTaskTypes();
 
     /**
      * Any clean-up the module might want to do when resetting the currently loaded record.

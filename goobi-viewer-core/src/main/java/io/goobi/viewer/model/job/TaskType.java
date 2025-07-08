@@ -19,10 +19,12 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package io.goobi.viewer.model.job;
 
-public enum TaskType {
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.modules.IModule;
+
+public enum TaskType implements ITaskType {
     /** Send emails to all search owners if their searches have changed results */
     NOTIFY_SEARCH_UPDATE("0 42 8,12,17 * * ?"),
     /** Remove expired born digital content download tickets from the DB */
@@ -58,6 +60,29 @@ public enum TaskType {
         this.defaultCronExpression = cronExpression;
     }
 
+    /**
+     * 
+     * @param name
+     * @return {@link ITaskType}
+     */
+    public static ITaskType getByName(String name) {
+        for (TaskType val : values()) {
+            if (val.name().equals(name)) {
+                return val;
+            }
+        }
+        for (IModule module : DataManager.getInstance().getModules()) {
+            for (ITaskType type : module.getTaskTypes()) {
+                if (type.name().equals(name)) {
+                    return type;
+                }
+            }
+        }
+ 
+        return null;
+    }
+
+    @Override
     public String getDefaultCronExpression() {
         return defaultCronExpression;
     }

@@ -36,7 +36,7 @@
         </li>
 
 		<!-- PREV PAGE -->
-        <li each="{step in opts.navigationSteps.slice().reverse()}" class="image-controls__action {getPageNumberMinus(step) < opts.firstPageNumber ? 'inactive' : ''}">
+        <li each="{step in opts.navigationSteps.slice().reverse()}" class="image-controls__action page-browse {getPageNumberMinus(step) < opts.firstPageNumber ? 'inactive' : ''}">
 
             <virtual if="{opts.numPages > step}">
             	<!-- NOT SEQUENCE MODE -->
@@ -91,7 +91,7 @@
         </li>
 
 		<!-- NEXT PAGE -->
-        <li each="{step in opts.navigationSteps}" class="image-controls__action {getPageNumberPlus(step) > opts.lastPageNumber ? 'inactive' : ''}">
+        <li each="{step in opts.navigationSteps}" class="image-controls__action page-browse {getPageNumberPlus(step) > opts.lastPageNumber ? 'inactive' : ''}">
             	<virtual if="{opts.numPages > step}">
                 <!-- NOT SEQUENCE MODE -->
                 <a if="{getPageNumberPlus(step) <= opts.lastPageNumber && !isSequenceMode()}" href="{getPageUrl(getPageNumberPlus(step))}" title="{step + " " + msg.stepForward}" data-toggle="tooltip" data-placement="{opts.tooltipPlacement}" aria-labelledby="imageLabel-forward-{step}">

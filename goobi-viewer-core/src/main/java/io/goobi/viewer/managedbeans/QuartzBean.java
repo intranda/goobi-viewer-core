@@ -19,17 +19,12 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,6 +45,8 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.quartz.QuartzJobDetails;
 import io.goobi.viewer.model.job.quartz.RecurringTaskTrigger;
 import io.goobi.viewer.model.job.quartz.TaskTriggerStatus;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 
 @Named
 @ApplicationScoped
@@ -64,9 +61,6 @@ public class QuartzBean implements Serializable {
     private boolean paused;
 
     private Scheduler scheduler = null;
-    
-    @Inject
-    private AdminDeveloperBean developerBean;
 
     public QuartzBean() throws SchedulerException {
         this.reset();
@@ -84,7 +78,7 @@ public class QuartzBean implements Serializable {
             }
         }
     }
-    
+
     public void reset() throws SchedulerException {
         scheduler = new StdSchedulerFactory().getScheduler();
         initializePausedState();
@@ -110,8 +104,7 @@ public class QuartzBean implements Serializable {
                 //get job's trigger
                 List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
                 Trigger trigger = triggers.get(0);
-                if (trigger instanceof CronTrigger) {
-                    CronTrigger cronTrigger = (CronTrigger) trigger;
+                if (trigger instanceof CronTrigger cronTrigger) {
                     String cronExpr = cronTrigger.getCronExpression();
                     details.setCronExpression(cronExpr);
                 }
@@ -167,10 +160,10 @@ public class QuartzBean implements Serializable {
         }
     }
 
-    private void persistTriggerStatus(String jobName, TaskTriggerStatus status) {
+    private static void persistTriggerStatus(String jobName, TaskTriggerStatus status) {
         try {
             IDAO dao = DataManager.getInstance().getDao();
-            RecurringTaskTrigger trigger = dao.getRecurringTaskTriggerForTask(TaskType.valueOf(jobName));
+            RecurringTaskTrigger trigger = dao.getRecurringTaskTriggerForTask(TaskType.getByName(jobName));
             trigger.setStatus(status);
             dao.updateRecurringTaskTrigger(trigger);
         } catch (DAOException e) {
@@ -201,5 +194,4 @@ public class QuartzBean implements Serializable {
     public boolean isPaused() {
         return paused;
     }
-
 }

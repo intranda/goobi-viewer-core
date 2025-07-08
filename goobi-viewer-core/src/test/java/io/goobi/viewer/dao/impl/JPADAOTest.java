@@ -1502,6 +1502,17 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see JPADAO#getAdminUsers()
+     * @verifies return correct rows
+     */
+    @Test
+    void getAdminUsers_shouldReturnCorrectRows() throws Exception {
+        List<User> result = DataManager.getInstance().getDao().getAdminUsers();
+        assertEquals(1, result.size());
+        assertEquals(Long.valueOf(1), result.get(0).getId());
+    }
+
+    /**
      * @see JPADAO#getSearches(User,int,int,String,boolean,Map)
      * @verifies sort results correctly
      */
@@ -3387,7 +3398,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals("Maintenance mode EN", mm.getText("en"));
         assertEquals("Maintenance mode DE", mm.getText("de"));
     }
-    
+
     /**
      * @see JPADAO#updateMaintenanceMode(MaintenanceMode)
      * @verifies update object correctly
@@ -3400,7 +3411,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         mm.setText("Maintenance mode EN NEW", "en");
         mm.setText("Maintenance mode JP", "jp");
         DataManager.getInstance().getDao().updateMaintenanceMode(mm);
-        
+
         MaintenanceMode mm2 = DataManager.getInstance().getDao().getMaintenanceMode();
         assertEquals(mm, mm2);
         assertFalse(mm2.isEnabled());

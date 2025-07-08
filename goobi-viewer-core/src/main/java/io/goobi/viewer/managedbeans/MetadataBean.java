@@ -246,11 +246,13 @@ public class MetadataBean {
      * 
      * @param metadataViewIndex
      * @return List<MetadataElement>
+     * @should return empty list if bottom element missing
+     * @should return empty list if bottom element contains no sidebar metadata
      */
     public List<MetadataElement> getBottomMetadataElementAsList(int metadataViewIndex) {
         // logger.trace("getBottomMetadataElementAsList: {}", metadataViewIndex); //NOSONAR Debug
         MetadataElement bottomElement = getBottomMetadataElement(metadataViewIndex);
-        if (bottomElement != null) {
+        if (bottomElement != null && bottomElement.isHasSidebarMetadata()) {
             return Collections.singletonList(bottomElement);
         }
 
@@ -538,4 +540,14 @@ public class MetadataBean {
         });
         return metadataList;
     }
+
+    /**
+     * Getter for unit tests.
+     * 
+     * @return the metadataElementMap
+     */
+    Map<Integer, List<MetadataElement>> getMetadataElementMap() {
+        return metadataElementMap;
+    }
+
 }

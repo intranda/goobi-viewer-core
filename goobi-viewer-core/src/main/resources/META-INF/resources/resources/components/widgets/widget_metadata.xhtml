@@ -22,7 +22,12 @@
 			rendered="#{not empty cc.attrs.metadataElementList and not (activeDocumentBean.anchor or activeDocumentBean.group)}" styleClass="widget widget-metadata">
 
 			<!-- SIDEBAR METADATA -->
-				<div class="widget__topbar widget-metadata__topbar">
+			<div class="widget__topbar widget-metadata__topbar 
+				#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'metadata')  ? 'collapsible' : ''}
+				#{!configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'metadata')  ? 'in' : ''}"
+					tabindex="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'metadata') ? '0' : ''}"
+					role="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'metadata') ? 'button' : ''}">
+					
 					<h2 class="widget__title widget-metadata__title">
 						<span>#{msg[metadataBean.defaultSidebarMetadataLabel]}</span>
 						<div
@@ -31,14 +36,26 @@
 								src="#{request.contextPath}/resources/images/infinity_loader.svg" />
 						</div>
 					</h2>
+					<div class="widget__topbar-icons-container">
+						<div
+							class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
+							<img
+								src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+						</div>
+						<i class="widget__topbar-icon-collapsible fa fa-angle-down" aria-hidden="true"></i>
+					</div>
 				</div>
 
 
-				<div class="widget__body widget-metadata__body">
+				<div class="widget__body widget-metadata__body #{configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'metadata')  ? '-collapsed' : ''}">
 				
 				<c:forEach items="#{cc.attrs.metadataElementList}"
 					var="metadataElement" varStatus="status">
+					
+					<!-- Skip element if it contains no sidebar metadata -->
+					<ui:fragment rendered="#{metadataElement.hasSidebarMetadata}">
 
+                    <!-- Render structure type label only if more than one element in list -->
 					<ui:fragment
 						rendered="#{fn:length(cc.attrs.metadataElementList) gt 1}">
 						<h3 class="metadata__elements-h3">
@@ -137,6 +154,8 @@
 							</div>
 						</c:forEach>
 					</dl>
+					
+					</ui:fragment>
 				</c:forEach>
 
 			<!-- LIDO -->

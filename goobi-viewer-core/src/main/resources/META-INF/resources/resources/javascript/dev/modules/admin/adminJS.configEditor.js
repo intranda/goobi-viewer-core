@@ -104,6 +104,9 @@ var adminJS = ( function( admin ) {
 				} else {
 					type = "xml";
 				}
+				if (type == 'xsl') {
+					type = "xml"; // use XML highlighting for .xsl files
+				}
 				if (typeof type == "undefined") {
 					type = "xml";
 				}
@@ -111,7 +114,7 @@ var adminJS = ( function( admin ) {
 					theme = "default";
 				}
 				if ( _debug ) {
-					console.log("type changed to = " + type);
+					console.log("type changed to = " + type); 
 				}
 				// TARGETED TEXTAREA WITH CODE CONTENT
 				var targetTextArea = document.getElementById('editor-form:editor');

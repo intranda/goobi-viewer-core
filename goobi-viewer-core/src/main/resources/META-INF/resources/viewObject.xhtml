@@ -72,7 +72,7 @@
 				<h:form>
 					<h:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" 
 					onevent="onPageUpdateEvent" onerror="onPageUpdateEvent"
-					render="imageControls:fullscreenLink :viewMetadata :userCommentsForm :userGeneratedContentGroup :sidebar:widgetViews:widgetViewsForm :sidebar:widgetMetadata:sidebarMetadataList :sidebar:widgetDownloads:pageDownloads :sidebar:widgetCitations:pageCitations :sidebar:widgetAnnotations:widgetAnnotationList:annotationList :sidebar:widgetTechnical:technicalMetadataList"></h:commandScript>
+					render="imageControls:fullscreenLink :viewMetadata :userCommentsForm :userGeneratedContentGroup :sidebar:widgetViews:widgetViewsForm :sidebar:widgetMetadata:sidebarMetadataList :sidebar:widgetDownloads:pageDownloads :sidebar:widgetCitation:pageCitations :sidebar:widgetAnnotations:widgetAnnotationList:annotationList :sidebar:widgetMetadataTech:technicalMetadataList"></h:commandScript>
 					
 					<script>
 						function onPageUpdateEvent(data) {
@@ -244,7 +244,7 @@
 
     <ui:define name="sidebar">
 
-		<h:panelGroup id="sidebarGroup">
+		<h:panelGroup layout="block" id="sidebarGroup">
 	        <viewerComponent:record_sidebar id="sidebar"/>
 		</h:panelGroup>
 

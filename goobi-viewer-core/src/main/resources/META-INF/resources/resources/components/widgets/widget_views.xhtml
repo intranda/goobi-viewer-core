@@ -23,19 +23,22 @@
 	<composite:implementation>
 		<div class="widget widget-views" jsf:id="widgetViewsContent" rendered="#{displayConditions.getTag('widgetViewsContent').getChildCount('widget-element') > 1}">
 			<ui:fragment rendered="#{cc.attrs.collapsible == false}">
-				<div 
-					tabindex="0"
-					role="button"
-					class="widget__topbar widget-views__topbar #{cc.attrs.collapsible ? 'collapseable' : ''}"
-				>
+			<div class="widget__topbar widget-views__topbar 
+				#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'views')  ? 'collapsible' : ''}
+				#{!configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'views')  ? 'in' : ''}"
+					tabindex="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'views') ? '0' : ''}"
+					role="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'views') ? 'button' : ''}">
 					<h2 class="widget__title widget-views__title">
 						#{cc.attrs.widgetTitle}
 					</h2>
 					
 					<div class="widget__topbar-icons-container">
-						<div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
-							<img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+						<div
+							class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
+							<img
+								src="#{request.contextPath}/resources/images/infinity_loader.svg" />
 						</div>
+						<i class="widget__topbar-icon-collapsible fa fa-angle-down" aria-hidden="true"></i>
 					</div>
 				</div>
 			</ui:fragment>
@@ -44,8 +47,7 @@
 				<div 
 					tabindex="0"
 					role="button"
-					class="widget__topbar widget-views__topbar #{cc.attrs.collapsible ? 'collapseable' : ''}"
-				>
+					class="widget__topbar widget-views__topbar #{cc.attrs.collapsible ? 'collapsible' : ''}">
 					<h2 class="widget__title">
 						#{cc.attrs.widgetTitle}
 					</h2>
@@ -56,10 +58,11 @@
 				</div>
 			</ui:fragment>
 			
-			<div class="widget__body widget-views__body">
-				<ul class="#{cc.attrs.collapsible ? 'collapseable' : ''}">
-					<h:form prependId="false" id="widgetViewsForm">
-					<!-- Object -->
+			<div class="widget__body widget-views__body #{configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'views')  ? '-collapsed' : ''}">
+				<h:form prependId="false" id="widgetViewsForm" styleClass="widget-views__form">
+				<ul class="#{cc.attrs.collapsible ? 'collapsible' : ''}">
+
+					<!-- Object --> 
 					<h:panelGroup  visibility-class="widget-element"
 						rendered="#{configurationBean.sidebarPageLinkVisible and displayConditions.matchRecord('{numPages:1, mimeType: [image, video, audio, model]}')}">
 						<li
@@ -226,8 +229,8 @@
 								</h:outputLink>
 							</li>
 					</ui:repeat>
-					</h:form>
 				</ul>
+				</h:form>
 			</div>
 		</div>
 	</composite:implementation>

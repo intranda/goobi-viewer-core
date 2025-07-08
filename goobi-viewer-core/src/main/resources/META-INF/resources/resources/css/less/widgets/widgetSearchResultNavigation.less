@@ -2,81 +2,85 @@
    Widget Search Result Navigation
    style declarations for widget_searchresultNavigation.xhtml
    ==============================================================*/
-#widgetSearchResultNavigation {
-    h2 {}
-    .search-result-navigation-wrapp {
-    	display: flex;
-        .search-result-navigation-left,
-        .search-result-navigation-center,
-        .search-result-navigation-right {
-            overflow: hidden;
-        }
-        .search-result-navigation-left,
-        .search-result-navigation-right {
-			overflow: visible;
-            &:hover {
-            	svg {
-            		background-color: @lightgray;
-            	}
-            }
-        }
-        .search-result-navigation-left {
-            max-width: 20%;
-            flex: 0 0 20%;
-            text-align: left;
-            a {}
-            span {}
-            svg {
-            	width: 28px;
-            	height: 28px;
-            }
-        }
-        .search-result-navigation-center {
-            max-width: 60%;
-            flex: 0 0 60%;
-            text-align: center;
-            margin-left: auto;
-            margin-right: auto;
-            span {}
-        }
-        .search-result-navigation-right {
-            max-width: 20%;
-            flex: 0 0 20%;
-            text-align: right;
-            a {}
-            span {}
-            svg {
-            	width: 28px;
-            	height: 28px;
-            }
-        }
-    }
-    .search-result-navigation-back-to-collection {
-        padding: 0.4375rem 0 0 0;
-        a {
-            svg {
-                margin: -0.1875rem 0.1875rem 0 0;
-               	margin-right: 0.3rem;
-            }
-        }
-        &:hover {
-        	svg {
-        		background-color: @lightgray;
-        	}
-        }
-    }
+.widget-search-result-navigation {
+	&__topbar {}
+	&__title {}
+	&__body {}
+	&__wrapper {
+		display: flex;
+		align-items: center;
+		margin-bottom: 5px;
+	}
+	&__left,
+	&__center,
+	&__right {
+		overflow: hidden;
+		&:hover {
+			svg {
+				background-color: @lightgray;
+			}
+		}
+	}
+	&__left,
+	&__right {
+		overflow: visible;
+	}
+	&__left {
+		max-width: 20%;
+		flex: 0 0 20%;
+		text-align: left;
+		svg {
+			width: 28px;
+			height: 28px;
+		}
+	}
+	&__center {
+		max-width: 60%;
+		flex: 0 0 60%;
+		text-align: center;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	&__right {
+		max-width: 20%;
+		flex: 0 0 20%;
+		text-align: right;
+		svg {
+			width: 28px;
+			height: 28px;
+		}
+	}
+	&__back-to-collection {
+		display: flex;
+		align-items: center;
+		gap: 5px;
+		padding: 0.4375rem 0 0 0;
+		a {
+			svg {
+				margin: -0.1875rem 0.1875rem 0 0;
+				margin-right: 0.3rem;
+			}
+		}
+		&:hover {
+			svg {
+				background-color: @lightgray;
+			}
+		}
+	}
+	
 }
 
-@{RTL} #widgetSearchResultNavigation {
-    .search-result-navigation-back-to-collection {
-	    a {
-	        svg {
-	           	margin-right: unset;
-	           	margin-left: 0.3rem;
-	           	transform: rotate(180deg);
-	           	}
-	        }
-	    }
+
+@{RTL} .widget-search-result-navigation {
+	&__back-to-collection {
+		a {
+		    svg {
+		       	margin-right: unset;
+		       	margin-left: 0.3rem;
+		       	transform: rotate(180deg);
+			}
+		}
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
