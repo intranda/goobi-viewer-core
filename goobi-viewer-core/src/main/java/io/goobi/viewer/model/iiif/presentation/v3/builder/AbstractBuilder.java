@@ -747,7 +747,7 @@ public abstract class AbstractBuilder {
         return provider;
     }
 
-    private IIIFAgent getProvider(ProviderConfiguration providerConfig, VariableReplacer variableReplacer) {
+    private static IIIFAgent getProvider(ProviderConfiguration providerConfig, VariableReplacer variableReplacer) {
         IIIFAgent provider = new IIIFAgent(providerConfig.getUri(), ViewerResourceBundle.getTranslations(providerConfig.getLabel(), false));
 
         providerConfig.getHomepages().forEach(homepageConfig -> {
@@ -775,6 +775,7 @@ public abstract class AbstractBuilder {
         ImageResource thumb;
         AbstractApiUrlManager um = DataManager.getInstance().getRestApiManager().getContentApiManager(Version.v2).orElse(null);
         if (um != null) {
+            // TODO Check permissions?
             thumb = new ImageResource(urls.path(RECORDS_RECORD, RECORDS_IMAGE).params(pi).build(), thumbWidth, thumbHeight);
         } else {
             thumb = new ImageResource(URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(pi)));
@@ -791,8 +792,7 @@ public abstract class AbstractBuilder {
         try {
             String thumbUrl = this.thumbs.getThumbnailUrl(ele);
             if (StringUtils.isNotBlank(thumbUrl)) {
-                ImageResource thumb = new ImageResource(new URI(thumbUrl), getFormat(thumbUrl), getImageInfoIfIIIF(thumbUrl));
-                return thumb;
+                return new ImageResource(new URI(thumbUrl), getFormat(thumbUrl), getImageInfoIfIIIF(thumbUrl));
             }
         } catch (URISyntaxException e) {
             logger.warn("Unable to retrieve thumbnail url", e);
@@ -800,25 +800,23 @@ public abstract class AbstractBuilder {
         return null;
     }
 
-    private String getFormat(String thumbUrl) {
+    private static String getFormat(String thumbUrl) {
         return ImageFileFormat.getImageFileFormatFromFileExtension(thumbUrl).getMimeType();
     }
 
-    private Optional<ImageInformation> getImageInfoIfIIIF(String thumbUrl) {
+    private static Optional<ImageInformation> getImageInfoIfIIIF(String thumbUrl) {
         if (IIIFUrlResolver.isIIIFImageUrl(thumbUrl)) {
             String imageInfoURI = IIIFUrlResolver.getIIIFImageBaseUrl(thumbUrl);
             return Optional.of(new ImageInformation3(imageInfoURI));
-        } else {
-            return Optional.empty();
         }
+        return Optional.empty();
     }
 
     protected ImageResource getThumbnail(StructElement ele, int pageNo) {
         try {
             String thumbUrl = this.thumbs.getThumbnailUrl(pageNo, ele.getPi());
             if (StringUtils.isNotBlank(thumbUrl)) {
-                ImageResource thumb = new ImageResource(new URI(thumbUrl), getFormat(thumbUrl), getImageInfoIfIIIF(thumbUrl));
-                return thumb;
+                return new ImageResource(new URI(thumbUrl), getFormat(thumbUrl), getImageInfoIfIIIF(thumbUrl));
             }
         } catch (URISyntaxException | IndexUnreachableException | PresentationException | DAOException | ViewerConfigurationException e) {
             logger.warn("Unable to retrieve thumbnail url", e);
@@ -830,8 +828,7 @@ public abstract class AbstractBuilder {
         try {
             String thumbUrl = this.thumbs.getThumbnailUrl(page);
             if (StringUtils.isNotBlank(thumbUrl)) {
-                ImageResource thumb = new ImageResource(new URI(thumbUrl), getFormat(thumbUrl), getImageInfoIfIIIF(thumbUrl));
-                return thumb;
+                return new ImageResource(new URI(thumbUrl), getFormat(thumbUrl), getImageInfoIfIIIF(thumbUrl));
             }
         } catch (URISyntaxException e) {
             logger.warn("Unable to retrieve thumbnail url", e);
@@ -879,8 +876,7 @@ public abstract class AbstractBuilder {
     public Optional<URI> getExternalManifestURI(String pi) {
         if (this.config.useExternalManifestUrls()) {
             try {
-                Optional<URI> externalURI = readURIFromSolr(pi);
-                return externalURI;
+                return readURIFromSolr(pi);
             } catch (PresentationException | IndexUnreachableException e) {
                 logger.warn("Error reading manifest url from for PI {}", pi);
             } catch (URISyntaxException e) {
@@ -901,9 +897,8 @@ public abstract class AbstractBuilder {
                 }
             }
             return Optional.empty();
-        } else {
-            throw new PresentationException("No solr field configured containing external manifest urls");
         }
+        throw new PresentationException("No solr field configured containing external manifest urls");
     }
 
     protected String escapeURI(String uri) {

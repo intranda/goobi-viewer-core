@@ -96,17 +96,18 @@ public class AuthorizationFlowResource {
     public AuthorizationFlowResource(@Context HttpServletRequest request) {
     }
 
+    /**
+     * For testing purposes.
+     */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "")
     public AuthProbeService2 getServiceDescription() {
-        Map<String, String> logoutLabel = new HashMap<>();
-        logoutLabel.put("en", "Logout");
         return new AuthProbeService2(URI.create(BASE_URL + AUTH_PROBE),
                 Collections
                         .singletonList(new AuthAccessService2(URI.create(BASE_URL + AUTH_ACCESS), AuthAccessService2.Profile.ACTIVE, new HashMap<>(),
                                 new AuthAccessTokenService2(URI.create(BASE_URL + AUTH_ACCESS_TOKEN)),
-                                new AuthLogoutService2(URI.create(BASE_URL + AUTH_LOGOUT), logoutLabel))));
+                                new AuthLogoutService2(URI.create(BASE_URL + AUTH_LOGOUT)).addLabel("en", "Logout"))));
     }
 
     @GET
@@ -170,7 +171,7 @@ public class AuthorizationFlowResource {
 
         String authHeader = servletRequest.getHeader("Authorization");
         if (StringUtils.isEmpty(authHeader)) {
-            ret.setStatus(Response.Status.BAD_REQUEST.getStatusCode()).setHeading(new HashMap<>()).setNote(new HashMap<>());
+            ret.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
             ret.getHeading().put("en", "Authorization: bad format");
             ret.getNote().put("en", "Authorization: bad format");
             return ret;
@@ -191,7 +192,7 @@ public class AuthorizationFlowResource {
                         token.addPermission(key, access);
                     } catch (IndexUnreachableException | DAOException | IOException e) {
                         logger.error(e.getMessage());
-                        ret.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()).setHeading(new HashMap<>()).setNote(new HashMap<>());
+                        ret.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
                         ret.getHeading().put("en", "Error");
                         ret.getNote().put("en", e.getMessage());
                         access = false;

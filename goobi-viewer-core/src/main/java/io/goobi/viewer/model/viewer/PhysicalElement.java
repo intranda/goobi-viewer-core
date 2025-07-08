@@ -1461,18 +1461,18 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return false;
         }
 
+        HttpServletRequest request = null;
         if (getFilepath().startsWith("http")) {
             //External urls are always free to use
             return true;
         } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            return AccessConditionUtils.checkAccessPermissionForImage(request, pi, fileName).isGranted()
-                    && FilterTools.checkForConcurrentViewLimit(pi, request);
+            request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         } else {
             logger.trace("FacesContext not found");
         }
 
-        return false;
+        return AccessConditionUtils.checkAccessPermissionForImage(request, pi, fileName).isGranted()
+                && FilterTools.checkForConcurrentViewLimit(pi, request);
     }
 
     /**

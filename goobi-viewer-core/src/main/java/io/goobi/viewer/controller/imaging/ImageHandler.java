@@ -49,10 +49,12 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.api.rest.v2.auth.AuthorizationFlowTools;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.RestApiManager;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -171,10 +173,10 @@ public class ImageHandler {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws ViewerConfigurationException
+     * @throws DAOException
      */
     public ImageInformation getImageInformation(PhysicalElement page, PageType pageType)
-            throws ContentLibException, ViewerConfigurationException, URISyntaxException {
-
+            throws ContentLibException, ViewerConfigurationException, URISyntaxException, IndexUnreachableException, DAOException {
         URI fileUri = new URI(getIIIFBaseUrl(page.getFilepath()));
         int width = page.getImageWidth(); //0 if width is not known
         int height = page.getImageHeight(); //0 if height is not known
@@ -201,8 +203,9 @@ public class ImageHandler {
                 .map(Integer::parseInt)
                 .toList();
 
-        ImageInformation info = (Version.v2 == RestApiManager.getVersionToUseForIIIF()) ? new ImageInformation(apiUri)
-                : new ImageInformation3(apiUri);
+        boolean access = page.isAccessPermissionImage();
+        ImageInformation info =
+                (Version.v2 == RestApiManager.getVersionToUseForIIIF()) ? new ImageInformation(apiUri) : new ImageInformation3(apiUri);
         info.setWidth(width);
         info.setHeight(height);
         info.setTiles(tileSizes.entrySet()
@@ -215,6 +218,10 @@ public class ImageHandler {
                         .sorted()
                         .map(scale -> new Dimension(scale, (int) (scale * height / (double) width)))
                         .toList()));
+
+        if (!access) {
+            info.addService(AuthorizationFlowTools.getAuthServices(page.getPi(), page.getFileName()));
+        }
 
         return info;
     }

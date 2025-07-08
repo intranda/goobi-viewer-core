@@ -296,7 +296,7 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     public void addPage(Manifest3 manifest, PhysicalElement page)
-            throws IndexUnreachableException, ContentLibException, URISyntaxException, PresentationException {
+            throws IndexUnreachableException, ContentLibException, URISyntaxException, PresentationException, DAOException {
         if (page != null) {
             Canvas3 canvas = canvasBuilder.build(page);
             manifest.addItem(canvas);

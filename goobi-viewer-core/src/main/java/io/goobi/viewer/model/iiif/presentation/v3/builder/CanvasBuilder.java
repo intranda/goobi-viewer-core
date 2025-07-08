@@ -54,9 +54,11 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.api.rest.v2.ApiUrls;
+import io.goobi.viewer.api.rest.v2.auth.AuthorizationFlowTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.ImageHandler;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
@@ -96,9 +98,10 @@ public class CanvasBuilder extends AbstractBuilder {
      * @throws IndexUnreachableException
      * @throws ContentLibException
      * @throws URISyntaxException
+     * @throws DAOException
      */
     public Canvas3 build(String pi, int order)
-            throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException {
+            throws PresentationException, IndexUnreachableException, ContentLibException, URISyntaxException, DAOException {
         StructElement topStruct = this.dataRetriever.getDocument(pi);
         PhysicalElement page = AbstractPageLoader.loadPage(topStruct, order);
         if (page != null) {
@@ -117,9 +120,10 @@ public class CanvasBuilder extends AbstractBuilder {
      * @throws URISyntaxException
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @throws DAOException
      */
     public AnnotationPage buildFulltextAnnotations(String pi, int order)
-            throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
+            throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException, DAOException {
         StructElement topStruct = this.dataRetriever.getDocument(pi);
         PhysicalElement page = AbstractPageLoader.loadPage(topStruct, order);
         Canvas3 canvas = build(page);
@@ -134,9 +138,10 @@ public class CanvasBuilder extends AbstractBuilder {
      * @throws URISyntaxException
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @throws DAOException
      */
     public Canvas3 build(PhysicalElement page)
-            throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
+            throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException, DAOException {
         URI canvasUri = this.urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_CANVAS).params(page.getPi(), page.getOrder()).buildURI();
         Canvas3 canvas = new Canvas3(canvasUri);
         canvas.setLabel(new SimpleMetadataValue(page.getOrderLabel()));
@@ -252,9 +257,10 @@ public class CanvasBuilder extends AbstractBuilder {
      * @throws PresentationException
      * @throws URISyntaxException
      * @throws ContentLibException
+     * @throws DAOException
      */
     private void addImageResource(Canvas3 canvas, PhysicalElement page)
-            throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException {
+            throws ContentLibException, URISyntaxException, PresentationException, IndexUnreachableException, DAOException {
         if (page.getImageWidth() > 0 && page.getImageHeight() > 0) {
             canvas.setWidth(page.getImageWidth());
             canvas.setHeight(page.getImageHeight());
@@ -271,14 +277,22 @@ public class CanvasBuilder extends AbstractBuilder {
         if (page.isHasImage()) {
             String filename = page.getFileName();
             URI mediaId = imageUrlManager.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_MEDIA).params(page.getPi(), page.getOrder()).buildURI();
-            if ((ImageHandler.isExternalUrl(filename))) {
+            if (ImageHandler.isExternalUrl(filename)) {
                 // Hotfix for URIs that contain spaces in the image file name
                 String imageId = ImageHandler.getIIIFBaseUrl(filename.replace(" ", "+"));
-                canvas.addMedia(mediaId, new ImageResource(imageId, thumbWidth, thumbHeight));
+                ImageResource imageResource = new ImageResource(imageId, thumbWidth, thumbHeight);
+                canvas.addMedia(mediaId, imageResource);
             } else {
                 String escFilename = StringTools.encodeUrl(filename);
                 String imageId = imageUrlManager.path(ApiUrls.RECORDS_FILES_IMAGE).params(page.getPi(), escFilename).build();
-                canvas.addMedia(mediaId, new ImageResource(imageId, thumbWidth, thumbHeight));
+                ImageResource imageResource = new ImageResource(imageId, thumbWidth, thumbHeight);
+                boolean access = page.isAccessPermissionImage();
+                if (!access) {
+                    for (ImageInformation ii : imageResource.getServices()) {
+                        ii.addService(AuthorizationFlowTools.getAuthServices(page.getPi(), page.getFileName()));
+                    }
+                }
+                canvas.addMedia(mediaId, imageResource);
             }
         }
 
