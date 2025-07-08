@@ -305,6 +305,7 @@ public class SolrFeatureSet extends FeatureSet {
     @Override
     public void updateFeatures() {
         this.featuresAsString = null;
+        this.itemFilter = null;
     }
 
     @Override
