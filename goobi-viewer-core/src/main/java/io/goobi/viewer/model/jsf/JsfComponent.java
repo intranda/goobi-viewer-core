@@ -23,6 +23,8 @@ package io.goobi.viewer.model.jsf;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class JsfComponent implements Serializable {
 
     private static final long serialVersionUID = 2205896851743823811L;
@@ -44,14 +46,25 @@ public class JsfComponent implements Serializable {
     }
 
     public String getFilename() {
+        if (StringUtils.isBlank(name)) {
+            return "";
+        }
         if (name.matches("(i?)[^.]+\\.x?html")) {
             return name;
         }
         return name + ".xhtml";
     }
 
+    public boolean exists() {
+        return StringUtils.isNoneBlank(library, name);
+    }
+
     @Override
     public String toString() {
-        return this.library + "/" + this.getFilename();
+        if (exists()) {
+            return this.library + "/" + this.getFilename();
+        } else {
+            return "empty component";
+        }
     }
 }
