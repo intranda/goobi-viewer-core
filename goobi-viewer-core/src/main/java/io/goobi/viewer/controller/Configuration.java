@@ -41,7 +41,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -80,10 +79,10 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.maps.GeoMapMarker.MarkerType;
+import io.goobi.viewer.model.maps.GeomapItemFilter;
 import io.goobi.viewer.model.maps.View;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
-import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.metadata.MetadataView.MetadataViewLocation;
 import io.goobi.viewer.model.misc.EmailRecipient;
@@ -473,6 +472,48 @@ public class Configuration extends AbstractConfiguration {
         return new ArrayList<>(); // must be a mutable list!
     }
 
+    public Map<String, List<Metadata>> getMetadataTemplates(String type) {
+        return getMetadataTemplates(type, true, true);
+    }
+
+    public Map<String, List<Metadata>> getMetadataTemplates(String type, boolean fallbackToDefaultTemplate,
+            boolean topstructValueFallbackDefaultValue) {
+        if (type == null) {
+            throw new IllegalArgumentException("type may not be null");
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> allMetadataLists = new ArrayList<>();
+
+        // Local lists
+        List<HierarchicalConfiguration<ImmutableNode>> metadataLists = getLocalConfigurationsAt("metadata.metadataList");
+        if (metadataLists != null) {
+            allMetadataLists.addAll(metadataLists);
+        }
+        // Global lists
+        metadataLists = getLocalConfigurationsAt(getConfig(), null, "metadata.metadataList");
+        if (metadataLists != null) {
+            allMetadataLists.addAll(metadataLists);
+        }
+
+        if (allMetadataLists.isEmpty()) {
+            logger.trace("no metadata lists found");
+            return new HashMap<>(); // must be a mutable list!
+        }
+
+        Map<String, List<Metadata>> map = new HashMap<>();
+        for (HierarchicalConfiguration<ImmutableNode> metadataList : allMetadataLists) {
+            if (type.equals(metadataList.getString(XML_PATH_ATTRIBUTE_TYPE))) {
+                List<HierarchicalConfiguration<ImmutableNode>> templateList = metadataList.configurationsAt("template");
+                for (HierarchicalConfiguration<ImmutableNode> templateConfig : templateList) {
+                    String template = templateConfig.getString("[@name]", VALUE_DEFAULT);
+                    map.put(template, getMetadataForTemplate(template, templateList, fallbackToDefaultTemplate, topstructValueFallbackDefaultValue));
+                }
+
+            }
+        }
+        return map;
+    }
+
     /**
      * Returns the list of configured metadata for search hit elements.
      *
@@ -811,15 +852,37 @@ public class Configuration extends AbstractConfiguration {
     }
 
     public Metadata getGeoMapFeatureConfiguration(String option, String template) {
-        Metadata defaultMd =
-                new Metadata(SolrConstants.LABEL, "{LABEL}",
-                        List.of(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey(SolrConstants.LABEL)));
-        return getGeomapFeatureConfigurations(option).entrySet()
-                .stream()
-                .filter(entry -> entry.getKey().equals(template))
-                .map(Entry::getValue)
+        return getGeomapFeatureConfigurations(option).getOrDefault(template, new Metadata());
+    }
+
+    public String getMetadataListForGeomapMarkerConfig(String option) {
+
+        if (StringUtils.isBlank(option)) {
+            return "";
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> options = getLocalConfigurationsAt("maps.metadata.option");
+
+        return options.stream()
+                .filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
                 .findAny()
-                .orElse(getGeomapFeatureConfigurations(option).getOrDefault("_DEFAULT", defaultMd));
+                .map(config -> config.getString("marker[@metadataList]", ""))
+                .orElse("");
+    }
+
+    public String getMetadataListForGeomapItemConfig(String option) {
+
+        if (StringUtils.isBlank(option)) {
+            return "";
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> options = getLocalConfigurationsAt("maps.metadata.option");
+
+        return options.stream()
+                .filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
+                .findAny()
+                .map(config -> config.getString("item[@metadataList]", ""))
+                .orElse("");
     }
 
     public Map<String, Metadata> getGeomapFeatureConfigurations(String option) {
@@ -828,24 +891,40 @@ public class Configuration extends AbstractConfiguration {
         }
 
         List<HierarchicalConfiguration<ImmutableNode>> options = getLocalConfigurationsAt("maps.metadata.option");
-        List<HierarchicalConfiguration<ImmutableNode>> templates = options.stream()
-                .filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
-                .map(config -> config.configurationsAt("title.template"))
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
 
-        return loadGeomapLabelConfigurations(templates);
+        return options.stream()
+                .filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
+                .findAny()
+                .map(config -> config.getString("marker[@metadataList]", ""))
+                .filter(StringUtils::isNotBlank)
+                .map(mdListName -> getMetadataTemplates(mdListName))
+                .map(map -> map.entrySet()
+                        .stream()
+                        .filter(e -> !e.getValue().isEmpty())
+                        //map to single Metadata list
+                        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().get(0))))
+                .orElse(new HashMap<>());
     }
 
-    public Map<String, Metadata> getGeomapEntityConfigurations(String option) {
-        List<HierarchicalConfiguration<ImmutableNode>> options = getLocalConfigurationsAt("maps.metadata.option");
-        List<HierarchicalConfiguration<ImmutableNode>> templates = options.stream()
-                .filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
-                .map(config -> config.configurationsAt("entity.title.template"))
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
+    public Map<String, Metadata> getGeomapItemConfigurations(String option) {
+        if (StringUtils.isBlank(option)) {
+            return Collections.emptyMap();
+        }
 
-        return loadGeomapLabelConfigurations(templates);
+        List<HierarchicalConfiguration<ImmutableNode>> options = getLocalConfigurationsAt("maps.metadata.option");
+
+        return options.stream()
+                .filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
+                .findAny()
+                .map(config -> config.getString("item[@metadataList]", ""))
+                .filter(StringUtils::isNotBlank)
+                .map(mdListName -> getMetadataTemplates(mdListName))
+                .map(map -> map.entrySet()
+                        .stream()
+                        .filter(e -> !e.getValue().isEmpty())
+                        //map to single Metadata list
+                        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().get(0))))
+                .orElse(new HashMap<>());
     }
 
     /**
@@ -873,19 +952,28 @@ public class Configuration extends AbstractConfiguration {
         return new View(zoom, lng, lat);
     }
 
-    public Map<String, List<LabeledValue>> getGeomapFilters() {
+    public GeomapItemFilter getGeomapFilter(String name) {
+        if (StringUtils.isBlank(name)) {
+            return null;
+        }
+        return getGeomapFilters().stream().filter(f -> name.equals(f.getName())).findAny().orElse(null);
+    }
+
+    public List<GeomapItemFilter> getGeomapFilters() {
         List<HierarchicalConfiguration<ImmutableNode>> filterConfigs = this.getLocalConfigurationsAt("maps.filters.filter");
-        Map<String, List<LabeledValue>> filters = new HashMap<>();
+        List<GeomapItemFilter> filters = new ArrayList<>();
         for (HierarchicalConfiguration<ImmutableNode> config : filterConfigs) {
-            String groupName = config.getString("featureGroup", "");
+            String name = config.getString("name", "_DEFAULT");
+            String label = config.getString("label", name);
+            boolean visible = config.getBoolean("[@visible]", true);
             List<LabeledValue> fields = config.configurationsAt("field").stream().map(c -> {
                 String field = c.getString(".");
-                String label = c.getString("[@label]", "");
+                String fieldLabel = c.getString("[@label]", "");
                 String styleClass = c.getString("[@styleClass]", "");
-                return new LabeledValue(field, label, styleClass);
+                return new LabeledValue(field, fieldLabel, styleClass);
             })
                     .collect(Collectors.toList());
-            filters.put(groupName, fields);
+            filters.add(new GeomapItemFilter(name, label, visible, fields));
         }
         return filters;
     }
@@ -898,7 +986,8 @@ public class Configuration extends AbstractConfiguration {
         }
 
         FeatureSetConfiguration config = new FeatureSetConfiguration("docStruct", "MD_TITLE",
-                DataManager.getInstance().getConfiguration().getRecordGeomapMarker(templateName), "", "LABEL", Collections.emptyList());
+                DataManager.getInstance().getConfiguration().getRecordGeomapMarker(templateName), "", "_DEFAULT", "_DEFAULT",
+                "");
 
         return List.of(config);
     }

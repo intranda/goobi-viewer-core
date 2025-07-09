@@ -48,7 +48,6 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
-import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
@@ -56,6 +55,7 @@ import io.goobi.viewer.model.citation.CitationLink.CitationLinkType;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
+import io.goobi.viewer.model.maps.GeomapItemFilter;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
@@ -673,7 +673,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getMetadataListTypes_shouldReturnAllMetadataListTypesIfPrefixEmpty() {
         List<String> result = DataManager.getInstance().getConfiguration().getMetadataListTypes(null);
-        assertEquals(6, result.size());
+        assertEquals(9, result.size());
     }
 
     /**
@@ -3088,10 +3088,11 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void testGetGeoMapMarkerFields() {
         List<String> fields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
-        assertEquals(3, fields.size());
+        assertEquals(4, fields.size());
         assertTrue(fields.contains("MD_GEOJSON_POINT"));
         assertTrue(fields.contains("NORM_COORDS_GEOJSON"));
         assertTrue(fields.contains("MD_COORDINATES"));
+        assertTrue(fields.contains("MD_GPS_POLYGON"));
     }
 
     @Test
@@ -3633,16 +3634,16 @@ class ConfigurationTest extends AbstractTest {
 
     @Test
     void test_getGeomapFilters() {
-        Map<String, List<LabeledValue>> filters = DataManager.getInstance().getConfiguration().getGeomapFilters();
-        assertEquals(3, filters.size());
-        assertEquals("D", filters.get("").get(0).getValue());
-        assertEquals("", filters.get("").get(0).getLabel());
-        assertEquals("A", filters.get("X").get(0).getValue());
-        assertEquals("", filters.get("X").get(0).getLabel());
-        assertEquals("B", filters.get("Y").get(0).getValue());
-        assertEquals("b", filters.get("Y").get(0).getLabel());
-        assertEquals("C", filters.get("Y").get(1).getValue());
-        assertEquals("c", filters.get("Y").get(1).getLabel());
+        List<GeomapItemFilter> filters = DataManager.getInstance().getConfiguration().getGeomapFilters();
+        assertEquals(5, filters.size());
+        assertEquals("Filter_D", filters.get(0).getLabel());
+        assertEquals("D", filters.get(0).getFilters().get(0).getValue());
+
+        assertEquals("Filter_BC", filters.get(2).getLabel());
+        assertEquals(2, filters.get(2).getFilters().size());
+        assertEquals("B", filters.get(2).getFilters().get(0).getValue());
+        assertEquals("C", filters.get(2).getFilters().get(1).getValue());
+
     }
 
     @Test

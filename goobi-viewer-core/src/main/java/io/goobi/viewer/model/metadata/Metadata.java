@@ -120,6 +120,33 @@ public class Metadata implements Serializable {
     private final List<Metadata> childMetadata = new ArrayList<>();
     private Metadata parentMetadata;
 
+    public Metadata(Metadata orig) {
+        this.label = orig.label;
+        this.key = orig.key;
+        this.masterValue = orig.masterValue;
+        this.citationTemplate = orig.citationTemplate;
+        this.sortField = orig.sortField;
+        this.separator = orig.separator;
+        this.labelField = orig.labelField;
+        this.separator = orig.separator;
+        this.type = orig.type;
+        this.number = orig.number;
+        this.group = orig.group;
+        this.singleString = orig.singleString;
+        this.hideIfOnlyMetadataField = orig.hideIfOnlyMetadataField;
+        this.topstructOnly = orig.topstructOnly;
+        this.filterQuery = orig.filterQuery;
+        this.accessGranted = orig.accessGranted;
+        this.ownerDocstrctType = orig.ownerDocstrctType;
+        this.ownerStructElementIddoc = orig.ownerStructElementIddoc;
+        this.citationProcessorWrapper = orig.citationProcessorWrapper;
+        this.indentation = orig.indentation;
+        this.values.addAll(orig.values.stream().map(v -> new MetadataValue(v.getIddoc(), v.getMasterValue(), v.getLabel())).toList());
+        this.params.addAll(orig.params.stream().map(p -> new MetadataParameter(p)).toList());
+        this.childMetadata.addAll(orig.childMetadata.stream().map(c -> new Metadata(c)).toList());
+        this.parentMetadata = orig.parentMetadata;
+    }
+
     /**
      * <p>
      * Default constructor.
@@ -1515,5 +1542,10 @@ public class Metadata implements Serializable {
 
     public String getCombinedValue(String separator) {
         return this.getValues().stream().map(MetadataValue::getCombinedValue).collect(Collectors.joining(separator));
+    }
+
+    public static Metadata forField(String field) {
+        return new Metadata(field, "{%s}".formatted(field), List.of(new MetadataParameter(MetadataParameterType.FIELD, field)));
+
     }
 }

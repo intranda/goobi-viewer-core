@@ -28,11 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,6 +47,7 @@ import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -59,6 +55,10 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * This Servlet maps a given lucene field value to a url and then either redirects there or forwards there, depending on the config.
@@ -123,6 +123,7 @@ public class IdentifierResolver extends HttpServlet {
      * using the page field; if a document is found in this alternative way, target field and page field of the document are inserted into the target
      * page url. NOTE: If you forward, the target URL must be on the same server and must be below the context root of this servlet, e.g. this servlet
      * can not forward to a target above '/'. A redirect changes the URL displayed in the browser, a forward does not.
+     * 
      * @should return 400 if record identifier missing
      * @should return 404 if record not found
      * @should return 400 if record field name bad
@@ -544,7 +545,9 @@ public class IdentifierResolver extends HttpServlet {
     }
 
     /**
-     * <p>constructUrl.</p>
+     * <p>
+     * constructUrl.
+     * </p>
      *
      * @param targetDoc a {@link org.apache.solr.common.SolrDocument} object
      * @param pageResolverUrl a boolean
@@ -556,6 +559,16 @@ public class IdentifierResolver extends HttpServlet {
             order = (int) targetDoc.getFieldValue(SolrConstants.THUMBPAGENO);
         } else if (targetDoc.containsKey(SolrConstants.ORDER)) {
             order = (int) targetDoc.getFieldValue(SolrConstants.ORDER);
+        }
+        return constructUrl(targetDoc, pageResolverUrl, order);
+    }
+
+    public static String constructUrl(MetadataContainer targetDoc, boolean pageResolverUrl) {
+        Integer order = 1;
+        if (targetDoc.containsField(SolrConstants.THUMBPAGENO)) {
+            order = targetDoc.getFirstIntValue(SolrConstants.THUMBPAGENO);
+        } else if (targetDoc.containsField(SolrConstants.ORDER)) {
+            order = targetDoc.getFirstIntValue(SolrConstants.ORDER);
         }
         return constructUrl(targetDoc, pageResolverUrl, order);
     }
@@ -588,6 +601,27 @@ public class IdentifierResolver extends HttpServlet {
         sb.append(DataManager.getInstance()
                 .getUrlBuilder()
                 .buildPageUrl(topstructPi, order, (String) targetDoc.getFieldValue(SolrConstants.LOGID), pageType, topstruct || anchorOrGroup));
+
+        // logger.trace("Resolved to: {}", sb.toString()); //NOSONAR Debug
+        return sb.toString();
+    }
+
+    static String constructUrl(MetadataContainer targetDoc, boolean pageResolverUrl, Integer order) {
+        String docStructType = targetDoc.getFirstValue(SolrConstants.DOCSTRCT);
+        String mimeType = (String) targetDoc.getFirstValue(SolrConstants.MIMETYPE);
+        String topstructPi = (String) targetDoc.getFirstValue(SolrConstants.PI_TOPSTRUCT);
+        boolean topstruct = SolrTools.getAsBoolean(targetDoc.getFirstValue(SolrConstants.ISWORK));
+        boolean anchorOrGroup = SolrTools.isAnchor(targetDoc) || SolrTools.isGroup(targetDoc);
+        boolean hasImages = targetDoc.containsField(SolrConstants.ORDER) || (targetDoc.containsField(SolrConstants.THUMBNAIL)
+                && !StringUtils.isEmpty((String) targetDoc.getFirstValue(SolrConstants.THUMBNAIL)));
+
+        PageType pageType = PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, pageResolverUrl);
+
+        StringBuilder sb = new StringBuilder("/");
+        int effectiveOrder = order == null ? 1 : order;
+        sb.append(DataManager.getInstance()
+                .getUrlBuilder()
+                .buildPageUrl(topstructPi, effectiveOrder, targetDoc.getFirstValue(SolrConstants.LOGID), pageType, topstruct || anchorOrGroup));
 
         // logger.trace("Resolved to: {}", sb.toString()); //NOSONAR Debug
         return sb.toString();

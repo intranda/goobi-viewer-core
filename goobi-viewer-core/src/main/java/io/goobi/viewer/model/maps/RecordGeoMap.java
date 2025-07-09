@@ -22,13 +22,11 @@
 package io.goobi.viewer.model.maps;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +48,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent.ContentType;
+import io.goobi.viewer.model.maps.coordinates.CoordinateReaderProvider;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataBuilder;
 import io.goobi.viewer.model.metadata.MetadataContainer;
@@ -68,7 +67,6 @@ public class RecordGeoMap {
     private static final Logger logger = LogManager.getLogger(RecordGeoMap.class);
 
     private final StructElement mainStruct;
-    private final List<MetadataContainer> relatedDocuments;
     private final GeoMap geoMap;
     private final IDAO dao;
     private final List<FeatureSetConfiguration> featureSetConfigs;
@@ -77,10 +75,9 @@ public class RecordGeoMap {
      * Create a new geomap with features from the given StructElement and related documents.
      * 
      * @param struct
-     * @param relatedDocuments
      */
-    public RecordGeoMap(StructElement struct, List<MetadataContainer> relatedDocuments) throws DAOException {
-        this(struct, relatedDocuments, DataManager.getInstance().getDao(),
+    public RecordGeoMap(StructElement struct) throws DAOException {
+        this(struct, DataManager.getInstance().getDao(),
                 DataManager.getInstance().getConfiguration().getRecordGeomapFeatureSetConfigs(struct.getDocStructType()));
     }
 
@@ -88,14 +85,12 @@ public class RecordGeoMap {
      * Create a new geomap with features from the given StructElement and related documents.
      * 
      * @param struct
-     * @param relatedDocuments
      * @param dao
      * @param featureSetConfigs
      */
-    public RecordGeoMap(StructElement struct, List<MetadataContainer> relatedDocuments, IDAO dao, List<FeatureSetConfiguration> featureSetConfigs) {
+    public RecordGeoMap(StructElement struct, IDAO dao, List<FeatureSetConfiguration> featureSetConfigs) {
         this.dao = dao;
         this.mainStruct = struct;
-        this.relatedDocuments = new ArrayList<>(relatedDocuments);
         this.featureSetConfigs = featureSetConfigs;
         this.geoMap = createMap();
     }
@@ -106,7 +101,6 @@ public class RecordGeoMap {
     public RecordGeoMap() {
         this.dao = null;
         this.mainStruct = null;
-        this.relatedDocuments = new ArrayList<>();
         this.featureSetConfigs = new ArrayList<>();
         this.geoMap = new GeoMap();
     }
@@ -123,7 +117,7 @@ public class RecordGeoMap {
                 .forEach(config -> createAllDocStructFeatureSet(map, mainStruct, config));
         this.featureSetConfigs.stream()
                 .filter(config -> "relation".equals(config.getType()))
-                .forEach(config -> createRelatedDocumentFeatureSet(map, relatedDocuments, config));
+                .forEach(config -> createRelatedDocumentFeatureSet(map, mainStruct, config));
         this.featureSetConfigs.stream()
                 .filter(config -> "metadata".equals(config.getType()))
                 .forEach(config -> createMetadataFeatureSet(map, mainStruct, config));
@@ -131,37 +125,26 @@ public class RecordGeoMap {
                 .filter(config -> "annotations".equals(config.getType()))
                 .forEach(config -> createAnnotationFeatureSet(map, mainStruct.getPi(), config));
 
+        //set ids
+        for (int i = 0; i < map.getFeatureSets().size(); i++) {
+            map.getFeatureSets().get(i).setId((long) i);
+        }
+
         return map;
     }
 
-    private static void createRelatedDocumentFeatureSet(GeoMap geoMap, List<MetadataContainer> docs, FeatureSetConfiguration config) {
-        ManualFeatureSet featureSet = new ManualFeatureSet();
+    private static void createRelatedDocumentFeatureSet(GeoMap geoMap, StructElement mainStruct,
+            FeatureSetConfiguration config) {
+
+        SolrFeatureSet featureSet = new SolrFeatureSet(false);
         featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), true)));
+        featureSet.setSolrQuery(String.format("+(%s) +PI_TOPSTRUCT:%s", config.getQuery(), mainStruct.getPi()));
+        featureSet.setMarkerMetadataList(config.getMarkerMetadataList());
+        featureSet.setItemMetadataList(config.getItemMetadataList());
+        featureSet.setSearchScope(SolrSearchScope.RELATIONSHIPS);
         featureSet.setMarker(config.getMarker());
+        featureSet.setItemFilterName(config.getFilter());
         geoMap.addFeatureSet(featureSet);
-
-        GeoCoordinateConverter converter = new GeoCoordinateConverter(config.getLabelConfig());
-
-        Map<GeoMapFeature, List<GeoMapFeature>> featureMap = docs.stream()
-                .distinct()
-                .filter(d -> matchesQuery(d, config.getQuery()))
-                .filter(d -> StringUtils.isNotBlank(d.getFirstValue("NORM_COORDS_GEOJSON")))
-                .map(doc -> converter.getGeojsonPoints(doc, "NORM_COORDS_GEOJSON", "MD_VALUE"))
-                .flatMap(Collection::stream)
-                .collect(Collectors.groupingBy(Function.identity()));
-
-        List<String> features = featureMap.entrySet()
-                .stream()
-                .map(entry -> {
-                    GeoMapFeature main = entry.getKey();
-                    main.setEntities(entry.getValue().stream().map(GeoMapFeature::getEntities).flatMap(List::stream).collect(Collectors.toList()));
-                    return main;
-                })
-                .map(GeoMapFeature::getJsonObject)
-                .map(Object::toString)
-                .collect(Collectors.toList());
-
-        featureSet.setFeatures(features);
 
     }
 
@@ -184,10 +167,12 @@ public class RecordGeoMap {
     private static void createMetadataFeatureSet(GeoMap geoMap, StructElement mainStruct, FeatureSetConfiguration config) {
         SolrFeatureSet featureSet = new SolrFeatureSet(false);
         featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), true)));
-        featureSet.setSolrQuery(String.format("+DOCTYPE:METADATA +LABEL:(%s) +PI_TOPSTRUCT:%s", config.getQuery(), mainStruct.getPi()));
-        featureSet.setMarkerTitleField(config.getLabelConfig());
-        featureSet.setAggregateResults(true);
+        featureSet.setSolrQuery(String.format("+(%s) +PI_TOPSTRUCT:%s", config.getQuery(), mainStruct.getPi()));
+        featureSet.setMarkerMetadataList(config.getMarkerMetadataList());
+        featureSet.setItemMetadataList(config.getItemMetadataList());
+        featureSet.setSearchScope(SolrSearchScope.METADATA);
         featureSet.setMarker(config.getMarker());
+        featureSet.setItemFilterName(config.getFilter());
         geoMap.addFeatureSet(featureSet);
     }
 
@@ -202,11 +187,11 @@ public class RecordGeoMap {
                     .flatMap(field -> docStruct.getMetadataValues(field).stream())
                     .filter(StringUtils::isNotBlank)
                     .toList();
-            List<GeoMapFeature> features = GeoCoordinateConverter.getFeatures(coordinateValues);
+            List<GeoMapFeature> features = new GeoCoordinateConverter().getFeatures(coordinateValues);
 
-            Metadata labelConfig =
-                    DataManager.getInstance().getConfiguration().getGeoMapFeatureConfiguration(config.getLabelConfig(), docStruct.getDocStructType());
-            IMetadataValue label = new MetadataBuilder(docStruct).build(labelConfig);
+            String mdListType = DataManager.getInstance().getConfiguration().getMetadataListForGeomapMarkerConfig(config.getMarkerMetadataList());
+            List<Metadata> mdList = DataManager.getInstance().getConfiguration().getMetadataTemplates(mdListType).get(docStruct.getDocStructType());
+            IMetadataValue label = new MetadataBuilder(docStruct).build(mdList, "");
             features.forEach(f -> f.setTitle(label));
             featureSet.setFeatures(features.stream().map(GeoMapFeature::getJsonObject).map(JSONObject::toString).toList());
 
@@ -219,9 +204,11 @@ public class RecordGeoMap {
             SolrFeatureSet featureSet = new SolrFeatureSet(false);
             featureSet.setName(new TranslatedText(ViewerResourceBundle.getTranslations(config.getName(), true)));
             featureSet.setMarker(config.getMarker());
-            featureSet.setMarkerTitleField(config.getLabelConfig());
-            featureSet.setSolrQuery(String.format("+PI_TOPSTRUCT:%s +DOCTYPE:DOCSTRCT", docStruct.getPi()));
-            featureSet.setAggregateResults(false);
+            featureSet.setMarkerMetadataList(config.getMarkerMetadataList());
+            featureSet.setItemMetadataList(config.getItemMetadataList());
+            featureSet.setSolrQuery(String.format("+PI_TOPSTRUCT:%s", docStruct.getPi()));
+            featureSet.setSearchScope(SolrSearchScope.RECORDS);
+            featureSet.setItemFilterName(config.getFilter());
             geoMap.addFeatureSet(featureSet);
         }
     }
@@ -242,9 +229,10 @@ public class RecordGeoMap {
                     .filter(a -> ContentType.GEOLOCATION.equals(a.getType()))
                     .filter(a -> ContentBean.isAccessible(a, BeanUtils.getRequest()))
                     .toList();
+            CoordinateReaderProvider coordinateReaderProvider = new CoordinateReaderProvider();
             for (DisplayUserGeneratedContent anno : annos) {
                 if (anno.getAnnotationBody() instanceof TypedResource tr) {
-                    GeoMapFeature feature = new GeoMapFeature(tr.asJson());
+                    GeoMapFeature feature = new GeoMapFeature(coordinateReaderProvider.getReader(tr.toString()).read(tr.toString()));
                     feature.setPageNo(anno.getPage());
                     feature.setDocumentId(anno.getId().toString());
                     features.add(feature.getJsonObject().toString());
@@ -268,7 +256,16 @@ public class RecordGeoMap {
         Locale locale = BeanUtils.getLocale();
         Map<String, List<LabeledValue>> map = new HashMap<>();
         for (FeatureSetConfiguration config : featureSetConfigs) {
-            map.put(config.getName(), config.getFilters());
+            if (StringUtils.isNotBlank(config.getFilter())) {
+                map.put(config.getName(),
+                        DataManager.getInstance()
+                                .getConfiguration()
+                                .getGeomapFilters()
+                                .stream()
+                                .filter(f -> config.getFilter().equals(f.getName()))
+                                .flatMap(f -> f.getFilters().stream())
+                                .toList());
+            }
         }
         Map<String, List<LabeledValue>> translatedMap = new HashMap<>();
         for (Entry<String, List<LabeledValue>> entry : map.entrySet()) {

@@ -24,6 +24,7 @@ package io.goobi.viewer.model.metadata;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,8 +33,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,10 +60,18 @@ public class MetadataBuilder {
 
     private static final Logger logger = LogManager.getLogger(MetadataBuilder.class);
 
-    private final Map<String, List<IMetadataValue>> values;
+    private final Map<String, Map<String, List<IMetadataValue>>> values = new HashMap<>();
 
     public MetadataBuilder(MetadataContainer metadata) {
         this(metadata.getMetadata());
+    }
+
+    public MetadataBuilder(MetadataContainer metadata, MetadataContainer parent, MetadataContainer topStruct) {
+        this(metadata.getMetadata(), parent.getMetadata(), topStruct.getMetadata(), Collections.emptyMap());
+    }
+
+    public MetadataBuilder(MetadataContainer metadata, MetadataContainer parent, MetadataContainer topStruct, MetadataContainer related) {
+        this(metadata.getMetadata(), parent.getMetadata(), topStruct.getMetadata(), related.getMetadata());
     }
 
     /**
@@ -88,11 +99,51 @@ public class MetadataBuilder {
      * @param values
      */
     public MetadataBuilder(Map<String, List<IMetadataValue>> values) {
-        this.values = values;
+        this.values.put("", values);
+    }
+
+    public MetadataBuilder(Map<String, List<IMetadataValue>> values, Map<String, List<IMetadataValue>> parent,
+            Map<String, List<IMetadataValue>> topStruct, Map<String, List<IMetadataValue>> related) {
+        this(values);
+        this.values.put("parent", parent);
+        this.values.put("topStruct", topStruct);
+        this.values.put("related", related);
     }
 
     public IMetadataValue build(Metadata metadataConfiguration) {
-        return createFromConfig(metadataConfiguration, values);
+        return createFromConfig(metadataConfiguration);
+    }
+
+    public IMetadataValue build(List<Metadata> metadataConfiguration, String separator) {
+        return metadataConfiguration.stream()
+                .map(config -> createFromConfig(config))
+                .collect(Collectors.reducing(new SimpleMetadataValue(), (v1, v2) -> join(v1, v2, separator)));
+    }
+
+    @SuppressWarnings("unchecked")
+    private IMetadataValue join(IMetadataValue v1, IMetadataValue v2, String separator) {
+        List<String> languages = CollectionUtils.union(v1.getLanguages(), v2.getLanguages()).stream().distinct().toList();
+
+        if (languages.size() == 1) {
+            String value = List.of(v1.getValue(), v2.getValue())
+                    .stream()
+                    .map(o -> o.orElse(""))
+                    .filter(StringUtils::isNotBlank)
+                    .collect(Collectors.joining(separator));
+            return new SimpleMetadataValue(value);
+        } else {
+            MultiLanguageMetadataValue mdValue = new MultiLanguageMetadataValue();
+            for (String lang : languages) {
+                String value = List.of(v1.getValue(lang), v2.getValue(lang))
+                        .stream()
+                        .map(o -> o.orElse(""))
+                        .filter(StringUtils::isNotBlank)
+                        .collect(Collectors.joining(separator));
+                mdValue.setValue(value, lang);
+            }
+            return mdValue;
+        }
+
     }
 
     /**
@@ -101,17 +152,19 @@ public class MetadataBuilder {
      * @param metadata
      * @return {@link IMetadataValue}
      */
-    private static IMetadataValue createFromConfig(Metadata config, Map<String, List<IMetadataValue>> metadata) {
+    private IMetadataValue createFromConfig(Metadata config) {
         IMetadataValue title = new MultiLanguageMetadataValue();
         for (MetadataParameter param : config.getParams()) {
             IMetadataValue value;
             IMetadataValue keyValue = Optional.ofNullable(param.getKey())
-                    .map(metadata::get)
+                    .map(key -> getValues(param).get(key))
+                    .filter(l -> !l.isEmpty())
                     .map(l -> l.get(0))
                     .map(IMetadataValue::copy)
                     .orElse(new SimpleMetadataValue(""));
             IMetadataValue altKeyValue = Optional.ofNullable(param.getAltKey())
-                    .map(metadata::get)
+                    .map(key -> getValues(param).get(key))
+                    .filter(l -> !l.isEmpty())
                     .map(l -> l.get(0))
                     .map(IMetadataValue::copy)
                     .orElse(new SimpleMetadataValue(""));
@@ -130,10 +183,10 @@ public class MetadataBuilder {
                     value.mapEach(s -> StringTools.convertToSingleWord(s, IDENTIFIER_MAX_LENGTH, IDENTIFIER_WHITESPACE_REPLACEMENT).toLowerCase());
                     break;
                 default:
-                    value = Optional.ofNullable(metadata.get(param.getKey()))
+                    value = Optional.ofNullable(getValues(param).get(param.getKey()))
                             .map(List::stream)
                             .flatMap(Stream::findFirst)
-                            .orElse(Optional.ofNullable(metadata.get(param.getAltKey()))
+                            .orElse(Optional.ofNullable(getValues(param).get(param.getAltKey()))
                                     .map(List::stream)
                                     .flatMap(Stream::findFirst)
                                     .orElse(new SimpleMetadataValue("")));
@@ -143,6 +196,10 @@ public class MetadataBuilder {
             appendValue(config, title, param, value);
         }
         return title;
+    }
+
+    private Map<String, List<IMetadataValue>> getValues(MetadataParameter param) {
+        return this.values.getOrDefault(param.getScope(), Collections.emptyMap());
     }
 
     /**

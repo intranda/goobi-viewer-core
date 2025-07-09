@@ -3210,10 +3210,10 @@ this.createFilters = function(filterMap, featureGroups) {
 	let filters = [];
 	for (const entry of filterMap.entries()) {
 		let layerName = entry[0];
-		let filterConfigs = entry[1];
-		let groups = featureGroups.filter(g => this.getLayerName(g) == layerName);
-		if(layerName && filterConfigs && filterConfigs.length > 0 && groups.length > 0) {
-			filterConfigs.forEach(filterConfig => {
+		let filterConfigs = JSON.parse(entry[1]);
+		let groups = featureGroups.filter(g => g.config.identifier == layerName);
+		if(layerName && filterConfigs?.filter && filterConfigs.filter.length > 0 && groups.length > 0) {
+			filterConfigs.filter.forEach(filterConfig => {
 				let filter = {
 						field: filterConfig.value,
 						label: filterConfig.label,
@@ -3251,6 +3251,8 @@ this.findValues = function(featureGroups, filterField) {
 
 this.findEntities = function(featureGroups, filterField) {
 	let entities = featureGroups.flatMap(group => group.markers).filter(m => m.feature.properties.entities).flatMap(m => m.feature.properties.entities).filter(e => e[filterField]);
+	console.log("groups", featureGroups);
+	console.log("entities", entities, filterField);
 	return entities;
 }.bind(this)
 
@@ -3378,22 +3380,26 @@ this.getListLabel = function() {
 
 this.getLink = function(entity) {
 	if(entity) {
-		let labels = this.opts.entityLinkFormat;
-		label = labels.map(format => {
-			let groups = [...format.matchAll(/\${(.*?)}/g)];
-			let l = "";
-			groups.forEach(group => {
-				if(group.length > 1) {
-					let value = entity[group[1]]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ");
-					if(value) {
-						l += format.replaceAll(group[0], value ? value : "");
+		if(entity.link) {
+			return entity.link;
+		} else {
+			let labels = this.opts.entityLinkFormat;
+			label = labels.map(format => {
+				let groups = [...format.matchAll(/\${(.*?)}/g)];
+				let l = "";
+				groups.forEach(group => {
+					if(group.length > 1) {
+						let value = entity[group[1]]?.map(s => viewerJS.iiif.getValue(s, this.opts.locale, this.opts.defaultLocale)).join(", ");
+						if(value) {
+							l += format.replaceAll(group[0], value ? value : "");
+						}
 					}
-				}
-			})
-			return l;
-		}).join("");
-		return label;
+				})
+				return l;
+			}).join("");
+			return label;
 
+		}
 	}
 }.bind(this)
 

@@ -177,7 +177,7 @@ public class CMSContentItem {
                     Collections.singletonMap("class", this.content.isTranslatable() ? "content-item-wrapper -translatable" : "content-item-wrapper"));
             wrapper.setId(this.uiComponent.getId() + "_wrapper");
             this.uiComponent.getChildren().add(wrapper);
-            if (StringUtils.isBlank(this.getJsfComponent().getFilename())) {
+            if (!this.getJsfComponent().exists()) {
                 logger.warn("No backend component available for contentItem {}", this.getContent().getBackendComponentName());
             } else {
                 UIComponent component = builder.build(this.getJsfComponent(), wrapper, Collections.singletonMap("contentItem", this));

@@ -85,6 +85,7 @@ public class GeoMapUpdateHandler implements MessageHandler<MessageStatus> {
         List<FeatureSet> featureSets = new ArrayList<>(geomap.getFeatureSets());
         for (FeatureSet featureSet : featureSets) {
             try {
+                featureSet.updateFeatures();
                 featureSet.getFeaturesAsString();
             } catch (ContextNotActiveException e) {
                 logger.info("No active faces context for search bean.");

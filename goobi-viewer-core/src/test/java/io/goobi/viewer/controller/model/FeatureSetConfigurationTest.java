@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.maps.GeomapItemFilter;
 
 class FeatureSetConfigurationTest extends AbstractTest {
 
@@ -45,19 +46,18 @@ class FeatureSetConfigurationTest extends AbstractTest {
         assertEquals("set_metadata_1", configs.get(0).getName());
         assertEquals("maps_marker_1", configs.get(0).getMarker());
         assertEquals("MD_A:A MD_B:B*", configs.get(0).getQuery());
-        assertEquals(1, configs.get(0).getFilters().size());
-        assertEquals("", configs.get(0).getFilters().get(0).getLabel());
-        assertEquals("MD_METADATATYPE", configs.get(0).getFilters().get(0).getValue());
+        assertEquals("Filter_METADATATYPE", configs.get(0).getFilter());
+        assertEquals("MD_METADATATYPE", config.getGeomapFilter(configs.get(0).getFilter()).getFields().get(0));
 
         assertEquals("event", configs.get(1).getType());
         assertEquals("set_event_2", configs.get(1).getName());
         assertEquals("maps_marker_2", configs.get(1).getMarker());
         assertEquals("DOCTYPE:event", configs.get(1).getQuery());
-        assertEquals(2, configs.get(1).getFilters().size());
-        assertEquals("", configs.get(1).getFilters().get(0).getLabel());
-        assertEquals("MD_EVENTTYPE", configs.get(1).getFilters().get(0).getValue());
-        assertEquals("", configs.get(1).getFilters().get(1).getLabel());
-        assertEquals("MD_TYPE", configs.get(1).getFilters().get(1).getValue());
+        assertEquals("Filter_EVENT", configs.get(1).getFilter());
+        GeomapItemFilter filter = config.getGeomapFilter(configs.get(1).getFilter());
+        assertEquals(2, filter.getFilters().size());
+        assertEquals("MD_EVENTTYPE", filter.getFilters().get(0).getValue());
+        assertEquals("MD_TYPE", filter.getFilters().get(1).getValue());
 
     }
 }
