@@ -37,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.annotations.PrivateOwned;
+import org.json.JSONObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -388,5 +389,14 @@ public class GeoMap implements Serializable {
 
     public boolean shouldOpenPopoversOnHover() {
         return this.featureSets.stream().allMatch(f -> f.isQueryResultSet());
+    }
+
+    public String getAllFiltersAsJson() {
+        Map<Long, String> map = getFeatureSets().stream()
+                .filter(f -> f instanceof SolrFeatureSet)
+                .map(f -> (SolrFeatureSet) f)
+                .collect(Collectors.toMap(SolrFeatureSet::getId, f -> f.getItemFilter().getAsJson()));
+        return new JSONObject(map).toString();
+
     }
 }

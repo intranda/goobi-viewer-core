@@ -313,7 +313,6 @@
 	<url-mapping id="newSearch5">
 		<pattern value="/search/#{activeContext:searchBean.activeContext}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{activeFacetString:searchBean.facets.activeFacetString}/" />
 		<view-id value="/searchList.xhtml" />
-		<query-param name="filterQuery" onPostback="false" >#{searchBean.filterQuery}</query-param>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
@@ -1256,7 +1255,6 @@
         <view-id value="#{cmsBean.getCurrentPageUrl}" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
-        <query-param name="filterQuery" onPostback="false" >#{searchBean.filterQuery}</query-param>
     </url-mapping>
     <url-mapping id="cmsOpenPage7">
 		<pattern value="/cms/#{page:cmsBean.currentPageId}/#{activeContext:searchBean.activeContext}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{activeFacetString:searchBean.facets.activeFacetString}/-/" />

@@ -38,11 +38,61 @@ import io.goobi.viewer.model.maps.FeatureSet;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.maps.SolrFeatureSet;
+import io.goobi.viewer.model.maps.SolrSearchScope;
 
 public class GeoMapUpdate implements IModelUpdate {
 
     @Override
     public boolean update(IDAO dao, CMSTemplateManager templateManager) throws DAOException, SQLException {
+        return convertToFeatureSets(dao) || createSearchScope(dao);
+    }
+
+    private boolean createSearchScope(IDAO dao) throws DAOException, SQLException {
+        if (dao.columnsExists("cms_geomap_featureset", "aggregate_results")) {
+            List<Map<String, Object>> featureSets = getTableData("cms_geomap_featureset", dao);
+            for (Map<String, Object> featureSet : featureSets) {
+                if (featureSet.containsKey("aggregate_results")) {
+                    Long featureSetId = (Long) featureSet.get("featureset_id");
+                    Boolean aggregateResults = (Boolean) featureSet.get("aggregate_results");
+                    setSearchScopeForFeatureSet(featureSetId, aggregateResults ? SolrSearchScope.METADATA : SolrSearchScope.DOCSTRUCTS, dao);
+                }
+            }
+            cleanupAggregateResult(dao);
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    private void cleanupAggregateResult(IDAO dao) throws DAOException {
+        dao.executeUpdate("ALTER TABLE cms_geomap_featureset DROP COLUMN aggregate_results;");
+    }
+
+    private void setSearchScopeForFeatureSet(Long featureSetId, SolrSearchScope scope, IDAO dao) throws DAOException {
+        dao.executeUpdate("UPDATE cms_geomap_featureset SET search_scope = \"%s\";".formatted(scope.name()));
+    }
+
+    private List<Map<String, Object>> getTableData(String table, IDAO dao) throws DAOException {
+        List<Object[]> info = dao.getNativeQueryResults("SHOW COLUMNS FROM %s".formatted(table));
+
+        List<Object[]> tableData = dao.getNativeQueryResults("SELECT * FROM %s".formatted(table));
+
+        List<String> columnNames = info.stream().map(o -> (String) o[0]).toList();
+
+        List<Map<String, Object>> rows = new ArrayList<>();
+        for (Object[] row : tableData) {
+
+            Map<String, Object> object = IntStream.range(0, columnNames.size())
+                    .boxed()
+                    .filter(i -> row[i] != null)
+                    .collect(Collectors.toMap(columnNames::get, i -> row[i]));
+            rows.add(object);
+        }
+        return rows;
+    }
+
+    private boolean convertToFeatureSets(IDAO dao) throws DAOException, SQLException {
         if (dao.columnsExists("cms_geomap", "solr_query")) {
 
             Map<Long, FeatureSet> featureSets = createFeatureSets(dao);
@@ -58,8 +108,9 @@ public class GeoMapUpdate implements IModelUpdate {
             dao.executeUpdate("ALTER TABLE cms_geomap DROP COLUMN solr_query");
 
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
     /**

@@ -32,8 +32,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jakarta.faces.context.FacesContext;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,12 +45,14 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.maps.GeoMap;
+import io.goobi.viewer.model.search.FilterQueryParser;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchInterface;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
+import jakarta.faces.context.FacesContext;
 
 /**
  * <p>
@@ -200,7 +200,14 @@ public class SearchFunctionality implements Functionality, SearchInterface {
      */
     private String getCompleteFilterString(String subtheme) {
 
-        String filterString = getPageFacetString();
+        String filterString = new FilterQueryParser().getFilterQuery(searchBean.getHttpRequest()).map(queryFilter -> {
+            String pageQuery = getPageFacetString();
+            if (StringUtils.isNotBlank(pageQuery)) {
+                return "+(%s) +(%s)".formatted(queryFilter, pageQuery);
+            } else {
+                return queryFilter;
+            }
+        }).orElse(getPageFacetString());
         String subthemeFilter = getSubthemeFilter(subtheme);
 
         if (StringUtils.isNoneBlank(subthemeFilter, filterString)) {

@@ -25,7 +25,7 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     // Default variables
-    var _debug = false;
+    var _debug = false; 
     
     viewer.accessibility = {
       // Detect if a user uses the tab key to navigate

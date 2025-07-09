@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -88,9 +87,7 @@ import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.maps.RecordGeoMap;
-import io.goobi.viewer.model.metadata.ComplexMetadataContainer;
-import io.goobi.viewer.model.metadata.MetadataContainer;
-import io.goobi.viewer.model.metadata.RelationshipMetadataContainer;
+import io.goobi.viewer.model.maps.coordinates.CoordinateReaderProvider;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
@@ -122,6 +119,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import mil.nga.sf.geojson.Geometry;
 
 /**
  * This bean opens the requested record and provides all data relevant to this record.
@@ -2463,27 +2461,8 @@ public class ActiveDocumentBean implements Serializable {
     public RecordGeoMap getRecordGeoMap() throws DAOException, IndexUnreachableException {
         RecordGeoMap map = this.geoMaps.get(getPersistentIdentifier());
         if (map == null) {
-            ComplexMetadataContainer md = Optional.ofNullable(this).map(b -> b.viewManager).map(ViewManager::getTopStructElement).map(t -> {
-                try {
-                    return t.getMetadataDocuments();
-                } catch (PresentationException | IndexUnreachableException e) {
-                    return null;
-                }
-            }).orElse(null);
-            if (md instanceof RelationshipMetadataContainer rmc) {
-                List<MetadataContainer> docs = rmc.getFieldNames()
-                        .stream()
-                        .map(rmc::getMetadata)
-                        .flatMap(List::stream)
-                        .distinct()
-                        .map(rmc::getRelatedRecord)
-                        .filter(Objects::nonNull)
-                        .toList();
-                map = new RecordGeoMap(getTopDocument(), docs);
-                this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), map);
-            } else {
-                map = new RecordGeoMap();
-            }
+            map = new RecordGeoMap(getTopDocument());
+            this.geoMaps = Collections.singletonMap(getPersistentIdentifier(), map);
         }
         return map;
     }
@@ -2536,7 +2515,7 @@ public class ActiveDocumentBean implements Serializable {
             subDocFields.addAll(coordinateFields);
 
             Collection<GeoMapFeature> features = new ArrayList<>();
-
+            CoordinateReaderProvider coordinateReaderProvider = new CoordinateReaderProvider();
             List<DisplayUserGeneratedContent> annos = DataManager.getInstance()
                     .getDao()
                     .getAnnotationsForWork(pi)
@@ -2549,7 +2528,8 @@ public class ActiveDocumentBean implements Serializable {
                     .toList();
             for (DisplayUserGeneratedContent anno : annos) {
                 if (anno.getAnnotationBody() instanceof TypedResource tr) {
-                    GeoMapFeature feature = new GeoMapFeature(tr.asJson());
+                    Geometry geometry = coordinateReaderProvider.getReader(tr.asJson()).read(tr.asJson());
+                    GeoMapFeature feature = new GeoMapFeature(geometry);
                     features.add(feature);
                 }
             }

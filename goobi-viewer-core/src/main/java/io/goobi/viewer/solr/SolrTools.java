@@ -65,6 +65,7 @@ import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
@@ -534,6 +535,19 @@ public final class SolrTools {
     /**
      *
      * @param doc
+     * @return true if doc contains DOCTYPE:GROUP; false otherwise
+     */
+    public static boolean isGroup(MetadataContainer doc) {
+        if (doc == null) {
+            return false;
+        }
+
+        return DocType.GROUP.toString().equals(doc.getFirstValue(SolrConstants.DOCTYPE));
+    }
+
+    /**
+     *
+     * @param doc
      * @return true if doc contains ISANCHOR:true; false otherwise
      */
     public static boolean isAnchor(SolrDocument doc) {
@@ -547,6 +561,19 @@ public final class SolrTools {
     /**
      *
      * @param doc
+     * @return true if doc contains ISANCHOR:true; false otherwise
+     */
+    public static boolean isAnchor(MetadataContainer doc) {
+        if (doc == null) {
+            return false;
+        }
+
+        return doc.containsField(SolrConstants.ISANCHOR) && doc.getFirstBooleanValue(SolrConstants.ISANCHOR);
+    }
+
+    /**
+     *
+     * @param doc
      * @return true if doc contains ISWORK:true; false otherwise
      */
     public static boolean isWork(SolrDocument doc) {
@@ -555,6 +582,19 @@ public final class SolrTools {
         }
 
         return doc.containsKey(SolrConstants.ISWORK) && (Boolean) doc.getFieldValue(SolrConstants.ISWORK);
+    }
+
+    /**
+     *
+     * @param doc
+     * @return true if doc contains ISWORK:true; false otherwise
+     */
+    public static boolean isWork(MetadataContainer doc) {
+        if (doc == null) {
+            return false;
+        }
+
+        return doc.containsField(SolrConstants.ISWORK) && doc.getFirstBooleanValue(SolrConstants.ISWORK);
     }
 
     /**

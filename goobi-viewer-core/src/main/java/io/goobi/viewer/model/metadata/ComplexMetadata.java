@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.metadata;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -79,9 +80,9 @@ public final class ComplexMetadata {
     private Map<String, List<IMetadataValue>> metadata = new HashMap<>();
 
     private ComplexMetadata(SolrDocument doc) {
-//        if (!DocType.METADATA.name().equals(doc.get(SolrConstants.DOCTYPE))) {
-//            throw new IllegalArgumentException("ComplexMetadata must be initialized from SolrDocument of DocType 'METADATA'");
-//        }
+        //        if (!DocType.METADATA.name().equals(doc.get(SolrConstants.DOCTYPE))) {
+        //            throw new IllegalArgumentException("ComplexMetadata must be initialized from SolrDocument of DocType 'METADATA'");
+        //        }
         this.field = SolrTools.getBaseFieldName(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL));
         this.type = SolrTools.getSingleFieldStringValue(doc, SolrConstants.METADATATYPE);
         this.ownerId = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC_OWNER)).map(String.class::cast).orElse(null);
@@ -95,7 +96,7 @@ public final class ComplexMetadata {
         return md;
     }
 
-    public static List<ComplexMetadata> getMetadataFromDocuments(List<SolrDocument> docs) {
+    public static List<ComplexMetadata> getMetadataFromDocuments(Collection<SolrDocument> docs) {
         Map<Object, List<SolrDocument>> docMap =
                 docs.stream().collect(Collectors.toMap(doc -> doc.getFieldValue(MD_REFID), List::of, ListUtils::union));
         List<ComplexMetadata> translatedMetadata = docMap.entrySet()
@@ -130,7 +131,7 @@ public final class ComplexMetadata {
     }
 
     private static Function<String, Boolean> getMetadataFilter() {
-        return name -> !IGNORE_METADATA_FIELDS.contains(name) && !name.matches(IGNORE_METADATA_REGEX);
+        return name -> !name.matches(IGNORE_METADATA_REGEX);
     }
 
     public String getField() {
