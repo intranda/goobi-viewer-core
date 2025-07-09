@@ -38,6 +38,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.intranda.api.iiif.image.ImageInformation;
+import de.intranda.api.iiif.image.v3.ImageInformation3;
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -54,8 +56,12 @@ import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
 import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.api.rest.v2.auth.AuthorizationFlowTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -83,6 +89,9 @@ public class RecordsFilesImageResource extends ImageResource {
 
     private static final Logger logger = LogManager.getLogger(RecordsFilesImageResource.class);
 
+    private String pi;
+    private String filename;
+
     /**
      * @param context
      * @param request
@@ -98,6 +107,8 @@ public class RecordsFilesImageResource extends ImageResource {
             @Parameter(description = "Filename of the image") @PathParam("filename") String filename,
             @Context ContentServerCacheManager cacheManager) {
         super(context, request, response, pi, filename, cacheManager);
+        this.pi = pi;
+        this.filename = filename;
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename);
         //Privilege must be PRIV_BORN_DIGITAL for born digital PDFs, and PRIV_VIEW_IMAGES otherwise (i.e. for images)
@@ -194,4 +205,25 @@ public class RecordsFilesImageResource extends ImageResource {
         }
     }
 
+    @Override
+    @GET
+    @Path("/info.json")
+    @Produces({ MEDIA_TYPE_APPLICATION_JSONLD, MediaType.APPLICATION_JSON })
+    @ContentServerImageInfoBinding
+    @CORSBinding
+    public ImageInformation getInfoAsJson() throws ContentLibException {
+        logger.trace("getInfoAsJson");
+        ImageInformation info = super.getInfoAsJson();
+        try {
+            // Add auth services if access not granted
+            if (!AccessConditionUtils.checkAccessPermissionForImage(request, pi, filename).isGranted()) {
+                info.addService(AuthorizationFlowTools.getAuthServices(pi, filename));
+            }
+        } catch (IndexUnreachableException | DAOException e) {
+            logger.error(e.getMessage());
+            info.addService(AuthorizationFlowTools.getAuthServices(pi, filename));
+        }
+
+        return new ImageInformation3(info);
+    }
 }
