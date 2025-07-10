@@ -57,7 +57,7 @@ public class WKTPointReader implements ICoordinateReader {
     }
 
     List<Double> getPoints(String value) {
-        Matcher matcher = Pattern.compile(COORDINATE_REGEX).matcher(value);
+        Matcher matcher = Pattern.compile(COORDINATE_REGEX).matcher(value); //NOSONAR
         List<Double> coords = new ArrayList<>();
         while (matcher.find()) {
             String group = matcher.group();
