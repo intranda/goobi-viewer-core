@@ -38,6 +38,7 @@ public class FeatureQueryGenerator {
         String longLat = metadata.getFirstValue("WKT_COORDS");
         if (StringUtils.isNotBlank(longLat)) {
             String query = StringTools.encodeUrl(createSearchTerm(metadata, template, labelCreator));
+            query = "MD_Place:" + metadata.getFirstValue("MD_Place");
             String locationQuery = "WKT_COORDS:\"Intersects(POINT(%s)) distErrPct=0\"".formatted(longLat);
             //            if (StringUtils.isNotBlank(query)) {
             //                return StringTools.encodeUrl("(%s) AND (%s)".formatted(query, locationQuery));

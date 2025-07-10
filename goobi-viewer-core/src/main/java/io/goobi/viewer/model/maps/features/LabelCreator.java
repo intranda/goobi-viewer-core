@@ -52,7 +52,7 @@ public class LabelCreator {
         this.valueSeparator = valueSeparator;
     }
 
-    public List<Metadata> getMetadata(MetadataContainer doc, String template) {
+    public List<Metadata> getMetadata(String template) {
         return this.metadataTemplates.getOrDefault(
                 template,
                 this.metadataTemplates.getOrDefault(StringConstants.DEFAULT_NAME, Collections.emptyList()));
@@ -68,7 +68,7 @@ public class LabelCreator {
     }
 
     public IMetadataValue getValue(MetadataContainer doc, MetadataContainer parentStruct, MetadataContainer topStruct, String template) {
-        return new MetadataBuilder(doc, parentStruct, topStruct).build(this.getMetadata(doc, template), this.valueSeparator);
+        return new MetadataBuilder(doc, parentStruct, topStruct).build(this.getMetadata(template), this.valueSeparator);
     }
 
     public IMetadataValue getValue(Map<String, List<IMetadataValue>> metadata, String template) {
@@ -86,6 +86,11 @@ public class LabelCreator {
 
     public List<String> getFieldsToQuery() {
         return metadataTemplates.values().stream().flatMap(List::stream).flatMap(this::getFields).distinct().toList();
+    }
+
+    public List<String> getFieldsToQuery(String template) {
+        List<Metadata> md = getMetadata(template);
+        return md.stream().flatMap(this::getFields).distinct().toList();
     }
 
     private Stream<String> getFields(Metadata md) {
