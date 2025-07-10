@@ -63,7 +63,7 @@
 			layer.language = this.config.map.language;
 			//when clicking on features with an associated link, open that link
 	    	layer.onFeatureClick.subscribe(feature => {
-	   	       if(feature.properties?.link && !feature.properties.entities?.filter(e => e.visible !== false).filter(e => e.title != undefined && (typeof e.title == 'object' || e.title.length > 0)).length && !feature.properties.highlighted) {
+	   	       if(feature.properties?.link && !_hasVisibleItems(feature) && !feature.properties.highlighted) {
 	   	           $(layer.config.search.loader).show();
 	   	           window.location.assign(feature.properties.link);
 	   	       }
@@ -72,8 +72,10 @@
 	    	if(layer.config.search.openSearchOnMarkerClick) {
 				let searchUrlTemplate = layer.config.search.searchUrlTemplate;
 	            layer.onFeatureClick.subscribe( (feature) => { 
-					// viewerJS.notifications.confirm("Do you want to show search results for this location?")
+					if(!_hasVisibleItems(feature)) {
+						// viewerJS.notifications.confirm("Do you want to show search results for this location?")
 						let featuresToShow = feature.properties?.entities?.filter(e => e.visible !== false).filter(e => e.title?.length > 0);
+						
 						if(feature.properties?.link) {
 							$(layer.config.search.loader).show();
 							window.open(feature.properties.link, "_self");
@@ -81,6 +83,7 @@
 							$(layer.config.search.loader).show();
 							window.open(layer.config.search.searchUrlTemplate + "?filterQuery=" + feature.properties.filterQuery, "_self");
 						}
+					}
 	            });
 	        }
 		});
@@ -92,7 +95,10 @@
     	return "filterQuery=" + encodeURI(query).replaceAll("_PLUS_", "%2B");
     }
 	
-	
 	return viewer;
-
+	
 } )( viewerJS || {}, jQuery );
+
+function _hasVisibleItems(feature) {
+	return feature.properties?.entities?.filter(e => e.visible !== false).filter(e => e.title != undefined && (typeof e.title == 'object' || e.title.length > 0)).length
+}
