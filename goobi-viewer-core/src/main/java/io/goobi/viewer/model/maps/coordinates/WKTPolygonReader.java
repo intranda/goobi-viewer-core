@@ -23,8 +23,6 @@ package io.goobi.viewer.model.maps.coordinates;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import mil.nga.sf.geojson.Geometry;
 import mil.nga.sf.geojson.LineString;
@@ -35,7 +33,6 @@ public class WKTPolygonReader implements ICoordinateReader {
 
     private static final String POLYGON_REGEX =
             "POLYGON\\(\\((-?(?:\\d*\\.\\d+|\\d+)\\s+-?(?:\\d*\\.\\d+|\\d+),\\s*)++(-?(?:\\d*\\.\\d+|\\d+)\\s+-?(?:\\d*\\.\\d+|\\d+))\\)\\)";
-    private static final String POINT_REGEX = "(-?(?:\\d*\\.\\d+|\\d+)\\s*){2,}";
 
     @Override
     public boolean canRead(String value) {
@@ -44,12 +41,16 @@ public class WKTPolygonReader implements ICoordinateReader {
 
     @Override
     public Geometry read(String value) {
-        Matcher matcher = Pattern.compile(POINT_REGEX).matcher(value);
-        WKTPointReader pointReader = new WKTPointReader();
+
+        String pointsString = value.replace("POLYGON((", "").replace("))", "");
+        String[] pointStrings = pointsString.split(",");
+
         List<Point> points = new ArrayList<>();
-        while (matcher.find()) {
-            String group = matcher.group();
-            points.add(((Point) pointReader.read(group)));
+        WKTPointReader pointReader = new WKTPointReader();
+        for (String pointString : pointStrings) {
+            if (pointReader.canRead(pointString)) {
+                points.add(((Point) pointReader.read(pointString)));
+            }
         }
         return new Polygon(List.of(new LineString(points)));
     }

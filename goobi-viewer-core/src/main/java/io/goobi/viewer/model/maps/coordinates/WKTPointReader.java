@@ -32,22 +32,16 @@ import mil.nga.sf.geojson.Position;
 
 public class WKTPointReader implements ICoordinateReader {
 
-    private static final String POINT_REGEX = "(-?(?:\\d*\\.\\d+|\\d+)(?:\\s+|$)){2,}";
     private static final String COORDINATE_REGEX = "-?(?:\\d*\\.\\d+|\\d+)(?:\\s+|$)";
 
     @Override
     public boolean canRead(String value) {
-        return value.matches(POINT_REGEX);
+        return getPoints(value).size() > 1;
     }
 
     @Override
     public Geometry read(String value) {
-        Matcher matcher = Pattern.compile(COORDINATE_REGEX).matcher(value);
-        List<Double> coords = new ArrayList<>();
-        while (matcher.find()) {
-            String group = matcher.group();
-            coords.add(Double.valueOf(group));
-        }
+        List<Double> coords = getPoints(value);
         if (coords.size() == 2) {
             Position position = new Position(coords.get(0), coords.get(1));
             return new Point(position);
@@ -60,6 +54,16 @@ public class WKTPointReader implements ICoordinateReader {
         } else {
             throw new IllegalArgumentException("Cannot parse '" + value + "' as WKT point");
         }
+    }
+
+    List<Double> getPoints(String value) {
+        Matcher matcher = Pattern.compile(COORDINATE_REGEX).matcher(value);
+        List<Double> coords = new ArrayList<>();
+        while (matcher.find()) {
+            String group = matcher.group();
+            coords.add(Double.valueOf(group));
+        }
+        return coords;
     }
 
 }
