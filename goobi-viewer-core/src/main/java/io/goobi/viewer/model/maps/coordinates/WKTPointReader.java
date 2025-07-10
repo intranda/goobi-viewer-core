@@ -32,7 +32,7 @@ import mil.nga.sf.geojson.Position;
 
 public class WKTPointReader implements ICoordinateReader {
 
-    private static final String COORDINATE_REGEX = "[+-]?([0-9]*[.])?[0-9]+";
+    private static final String COORDINATE_REGEX = "[+-]?(?:\\d+\\.\\d*|\\d*\\.\\d+|\\d+)\\b";
 
     @Override
     public boolean canRead(String value) {
