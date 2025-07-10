@@ -32,8 +32,8 @@ import mil.nga.sf.geojson.Position;
 
 public class WKTPointReader implements ICoordinateReader {
 
-    private static final String POINT_REGEX = "(-?[\\d.]++\\s*){2,}";
-    private static final String COORDINATE_REGEX = "(-?(?:\\d*\\.\\d+|\\d+)\\s*){2,}";
+    private static final String POINT_REGEX = "(-?(?:\\d*\\.\\d+|\\d+)(?:\\s+|$)){2,}";
+    private static final String COORDINATE_REGEX = "-?(?:\\d*\\.\\d+|\\d+)(?:\\s+|$)";
 
     @Override
     public boolean canRead(String value) {
@@ -45,7 +45,8 @@ public class WKTPointReader implements ICoordinateReader {
         Matcher matcher = Pattern.compile(COORDINATE_REGEX).matcher(value);
         List<Double> coords = new ArrayList<>();
         while (matcher.find()) {
-            coords.add(Double.valueOf(matcher.group()));
+            String group = matcher.group();
+            coords.add(Double.valueOf(group));
         }
         if (coords.size() == 2) {
             Position position = new Position(coords.get(0), coords.get(1));

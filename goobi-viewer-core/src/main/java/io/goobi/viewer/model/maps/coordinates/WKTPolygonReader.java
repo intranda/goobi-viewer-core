@@ -33,7 +33,8 @@ import mil.nga.sf.geojson.Polygon;
 
 public class WKTPolygonReader implements ICoordinateReader {
 
-    private static final String POLYGON_REGEX = "POLYGON\\(\\((-?[\\d.]+\\s+-?[\\d.]+,\\s*)++(-?[\\d.]+\\s+-?[\\d.]+)\\)\\)";
+    private static final String POLYGON_REGEX =
+            "POLYGON\\(\\((-?(?:\\d*\\.\\d+|\\d+)\\s+-?(?:\\d*\\.\\d+|\\d+),\\s*)++(-?(?:\\d*\\.\\d+|\\d+)\\s+-?(?:\\d*\\.\\d+|\\d+))\\)\\)";
     private static final String POINT_REGEX = "(-?(?:\\d*\\.\\d+|\\d+)\\s*){2,}";
 
     @Override
@@ -47,7 +48,8 @@ public class WKTPolygonReader implements ICoordinateReader {
         WKTPointReader pointReader = new WKTPointReader();
         List<Point> points = new ArrayList<>();
         while (matcher.find()) {
-            points.add(((Point) pointReader.read(matcher.group())));
+            String group = matcher.group();
+            points.add(((Point) pointReader.read(group)));
         }
         return new Polygon(List.of(new LineString(points)));
     }

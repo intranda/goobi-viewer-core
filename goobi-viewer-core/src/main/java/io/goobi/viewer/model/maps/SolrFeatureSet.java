@@ -300,6 +300,8 @@ public class SolrFeatureSet extends FeatureSet {
     @Deprecated
     public void setMarkerTitleField(String markerTitleField) {
         this.markerTitleField = markerTitleField;
+        this.markerMetadataList = null;
+        this.itemMetadataList = null;
     }
 
     @Override
