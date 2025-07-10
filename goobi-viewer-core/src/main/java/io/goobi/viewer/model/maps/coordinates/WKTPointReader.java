@@ -57,7 +57,7 @@ public class WKTPointReader implements ICoordinateReader {
     }
 
     List<Double> getPoints(String value) {
-        Matcher matcher = Pattern.compile(COORDINATE_REGEX).matcher(value); //NOSONAR
+        Matcher matcher = Pattern.compile(COORDINATE_REGEX).matcher(value); //NOSONAR human brain & AI said: no security risk in regex here...
         List<Double> coords = new ArrayList<>();
         while (matcher.find()) {
             String group = matcher.group();
