@@ -926,7 +926,10 @@
 								<ignoredUnusedDeclaredDependency>io.swagger.core.v3:swagger-models-jakarta</ignoredUnusedDeclaredDependency>
 
 								<!-- JSTL is used within JSF for example c:forEach -->
-								<ignoredUnusedDeclaredDependency> jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api</ignoredUnusedDeclaredDependency>
+								<ignoredUnusedDeclaredDependency>jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api</ignoredUnusedDeclaredDependency>
+
+                                <!-- jakarta.transaction is needed for EclipseLink 4.0.6 and later -->
+                                <ignoredUnusedDeclaredDependency>jakarta.transaction:jakarta.transaction-api</ignoredUnusedDeclaredDependency>>
 
 								<!-- Jaxen ist used during runtime from jdom2.XPathExpression -->
 								<ignoredUnusedDeclaredDependency>jaxen:jaxen</ignoredUnusedDeclaredDependency>
