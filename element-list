@@ -109,6 +109,8 @@ io.goobi.viewer.model.job.upload
 io.goobi.viewer.model.jsf
 io.goobi.viewer.model.log
 io.goobi.viewer.model.maps
+io.goobi.viewer.model.maps.coordinates
+io.goobi.viewer.model.maps.features
 io.goobi.viewer.model.metadata
 io.goobi.viewer.model.misc
 io.goobi.viewer.model.normdata
