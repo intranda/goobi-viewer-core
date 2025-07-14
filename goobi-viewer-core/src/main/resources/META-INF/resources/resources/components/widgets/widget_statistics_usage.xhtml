@@ -12,8 +12,8 @@
 
 	<composite:interface></composite:interface>
 
-	<composite:implementation>.usage-statistics-loader
-		<c:if
+	<composite:implementation>
+		<c:if 
 			test="#{userBean.admin}">
 			<ui:param name="stats"
 				value="#{statisticsBean.getUsageStatisticsForRecord(activeDocumentBean.viewManager.pi)}" />
