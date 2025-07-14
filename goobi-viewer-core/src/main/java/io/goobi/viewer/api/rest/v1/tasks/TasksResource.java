@@ -50,6 +50,7 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.MessageQueueException;
+import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -200,9 +201,9 @@ public class TasksResource {
         throw new ContentNotFoundException("No Job found with id " + id);
     }
 
-    private static Optional<TaskType> getTaskType(String taskName) {
+    private static Optional<ITaskType> getTaskType(String taskName) {
         try {
-            return Optional.ofNullable(TaskType.valueOf(taskName.toUpperCase()));
+            return Optional.ofNullable(TaskType.getByName(taskName.toUpperCase()));
         } catch (IllegalArgumentException e) {
             return Optional.empty();
         }
@@ -228,7 +229,7 @@ public class TasksResource {
                 .collect(Collectors.toList());
     }
 
-    public boolean isAuthorized(TaskType type, Optional<String> jobSessionId, HttpServletRequest request) {
+    public boolean isAuthorized(ITaskType type, Optional<String> jobSessionId, HttpServletRequest request) {
         if (type == null) {
             return false;
         }

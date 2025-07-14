@@ -84,7 +84,7 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
             List<String> recordFields)
             throws PresentationException, IndexUnreachableException {
         ComplexMetadataContainer container = ComplexMetadataContainer.loadMetadataDocuments(pi, searchIndex);
-        return loadRelationships(searchIndex, recordFields, container);
+        return loadRelationships(container, recordFields, searchIndex);
     }
 
     public static RelationshipMetadataContainer loadRelationships(ComplexMetadataContainer container)
@@ -94,11 +94,11 @@ public class RelationshipMetadataContainer extends ComplexMetadataContainer {
 
     public static RelationshipMetadataContainer loadRelationships(ComplexMetadataContainer container, SolrSearchIndex searchIndex)
             throws PresentationException, IndexUnreachableException {
-        return loadRelationships(searchIndex, RELATED_RECORD_METADATA_FIELDS, container);
+        return loadRelationships(container, RELATED_RECORD_METADATA_FIELDS, searchIndex);
     }
 
-    public static RelationshipMetadataContainer loadRelationships(SolrSearchIndex searchIndex, List<String> recordFields,
-            ComplexMetadataContainer container) throws PresentationException, IndexUnreachableException {
+    public static RelationshipMetadataContainer loadRelationships(ComplexMetadataContainer container, List<String> recordFields,
+            SolrSearchIndex searchIndex) throws PresentationException, IndexUnreachableException {
         List<ComplexMetadata> relationshipMetadata = container.metadataMap.values()
                 .stream()
                 .map(ComplexMetadataList::getMetadata)

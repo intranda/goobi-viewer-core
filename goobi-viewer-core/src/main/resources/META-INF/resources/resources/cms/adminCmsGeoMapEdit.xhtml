@@ -303,13 +303,67 @@
 											<!-- AGGREGATE RESULTS -->
 											<div class="form-group form-row">
 												<div class="col-2 control-label admin__form-label">
-													<label for="featureset_#{status.index}_aggregation">#{msg.cms__geomaps__aggregate_query_results__label}:</label>
+													<label for="featureset_#{status.index}_aggregation">#{msg.cms__geomaps__search_scope__label}:</label>
 												</div>
 												<div class="input_form__option_marker"></div>
 												<div class="col-9 admin__form-input cms-module__option-control">
-													<viewerComponent:toggleSwitch name="toggleAggregation_#{status.index}" value="#{featureSet.aggregateResults}" render="mapPanel"/>
+													
+<!-- 													<div class="form-group form-row"> -->
+<!-- 														<div class="col-9 admin__form-input cms-module__option-control"> -->
+<!-- 															<o:importConstants type="io.goobi.viewer.model.maps.SolrSearchScope"></o:importConstants> -->
+<!-- 															<h:selectOneRadio value = "#{featureSet.searchScope}">  -->
+<!-- 																<f:selectItems value="#{SolrSearchScope.values()}" var="scope"  -->
+<!-- 			            											itemValue="#{scope}" itemLabel="#{msg[scope.label]}" /> -->
+<!-- 															</h:selectOneRadio>  -->
+<!-- 														</div> -->
+<!-- 													</div> -->
+													
+													<div class="d-flex admin__geomap-radio-group-wrapper">
+													
+														<o:importConstants type="io.goobi.viewer.model.maps.SolrSearchScope" />
+														<ui:repeat value="#{SolrSearchScope.values()}" var="scope">
+															<div class="admin__geomap-radio-group">
+															    <h:selectOneRadio group="featuresetSearchScopeRadioGroup" immediate="true" value="#{featureSet.searchScope}">
+															    	<f:selectItem itemValue="#{scope}" itemLabel="#{msg[scope.label]}" />  
+															    	<f:ajax render="featuresetSearchScopeRadioGroup" />
+															    </h:selectOneRadio>
+														    </div>
+														</ui:repeat>
+														
+													</div>
+													
+													
+													
+<!-- 													<viewerComponent:toggleSwitch name="toggleAggregation_#{status.index}" value="#{featureSet.aggregateResults}" render="mapPanel"/> -->
 													<div id="titleHelp"
-													class="admin__form-help-text">#{msg.cms__geomaps__aggregate_query_results__help}</div>
+													class="admin__form-help-text">#{msg.cms__geomaps__filter_type__help}</div>
+												</div>
+												<div class="col-1 admin__form-help-icon">
+													<button type="button" class="btn btn--clean"
+														data-toggle="helptext" for="titleHelp"
+														aria-label="inline help icon">
+														<i class="fa fa-question-circle" aria-hidden="true"></i>
+													</button>
+												</div>
+
+											</div>
+											
+											<!-- ITEM FILTER -->
+											<div class="form-group form-row" jsf:id="item-filter-group" jsf:rendered="#{not empty configurationBean.geomapFilters}">
+												<div class="col-2 control-label admin__form-label">
+													<label for="featureset_#{status.index}_aggregation">#{msg.cms__geomaps__item_filter__label}:</label>
+												</div>
+												<div class="input_form__option_marker"></div>
+												<div class="col-9 admin__form-input cms-module__option-control">
+															<h:selectOneMenu id="itemFilterSelect"
+															styleClass="form-control" 
+															value="#{featureSet.itemFilterName}" required="false">
+															<f:selectItem itemValue="" itemLabel=""/>
+															<f:selectItems var="option" value="#{configurationBean.geomapFilters}"></f:selectItems>
+														</h:selectOneMenu>
+<!-- 													<viewerComponent:toggleSwitch name="toggleAggregation_#{status.index}" value="#{featureSet.aggregateResults}" render="mapPanel"/> -->
+													<div id="titleHelp"
+													class="admin__form-help-text">#{msg.cms__geomaps__item_filters__help}</div>
 												</div>
 												<div class="col-1 admin__form-help-icon">
 													<button type="button" class="btn btn--clean"

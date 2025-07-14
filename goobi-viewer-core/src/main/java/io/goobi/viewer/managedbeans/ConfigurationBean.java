@@ -22,11 +22,8 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -38,7 +35,6 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -46,6 +42,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
+import io.goobi.viewer.model.maps.GeomapItemFilter;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -472,9 +469,11 @@ public class ConfigurationBean implements Serializable {
      * </p>
      *
      * @return a boolean.
+     * @deprecated Widgets are now implicitly enabled by being added to a record view configuration
      */
+    @Deprecated(since = "25.06")
     public boolean isSidebarTocWidgetVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarTocWidgetVisible();
+        return true;
     }
 
     /**
@@ -496,7 +495,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarOpacLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetOpacLinkVisible();
     }
 
     /**
@@ -519,7 +518,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarPageLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarPageViewLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetObjectViewLinkVisible();
     }
 
     /**
@@ -531,7 +530,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarCalendarLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarCalendarViewLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetCalendarViewLinkVisible();
     }
 
     /**
@@ -543,7 +542,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarMetadataLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarMetadataViewLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetMetadataViewLinkVisible();
     }
 
     /**
@@ -555,7 +554,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarThumbsLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarThumbsViewLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetThumbsViewLinkVisible();
     }
 
     /**
@@ -567,7 +566,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isSidebarFulltextLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetFulltextLinkVisible();
     }
 
     /**
@@ -958,9 +957,11 @@ public class ConfigurationBean implements Serializable {
      * </p>
      *
      * @return a boolean.
+     * @deprecated Widgets are now implicitly enabled by being added to a record view configuration
      */
+    @Deprecated(since = "25.06")
     public boolean isShowSearchInItem() {
-        return DataManager.getInstance().getConfiguration().isSearchInItemEnabled();
+        return true;
     }
 
     /**
@@ -1138,6 +1139,36 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
+     * 
+     * @param view Record view name
+     * @return List of sidebar widget names to display in the given view (in the intended order)
+     */
+    public List<String> getSidebarWidgetsForView(String view) {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetsForView(view);
+    }
+
+    /**
+     * 
+     * @param view Record view name
+     * @param widget Widget name
+     * @return true if widget configured as collapsible; false otherwise; default is false
+     */
+    public boolean isSidebarWidgetForViewCollapsible(String view, String widget) {
+        return DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsible(view, widget);
+    }
+
+    /**
+     * 
+     * @param view Record view name
+     * @param widget Widget name
+     * @return true if widget configured as collapsed by default and collapsible in general; false otherwise; default is false
+     */
+    public boolean isSidebarWidgetForViewCollapsedByDefault(String view, String widget) {
+        return isSidebarWidgetForViewCollapsible(view, widget)
+                && DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsedByDefault(view, widget);
+    }
+
+    /**
      * <p>
      * isDisplaySidebarBrowsingTerms.
      * </p>
@@ -1153,23 +1184,13 @@ public class ConfigurationBean implements Serializable {
      * <p>
      * isDisplaySidebarRssFeed.
      * </p>
-     *
+     * s
+     * 
      * @return a boolean.
      * @should return correct value
      */
     public boolean isDisplaySidebarRssFeed() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarRssFeed();
-    }
-
-    /**
-     * <p>
-     * isDisplayWidgetUsage.
-     * </p>
-     *
-     * @return a boolean.
-     */
-    public boolean isDisplaySidebarWidgetUsage() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsage();
+        return DataManager.getInstance().getConfiguration().isSidebarRssFeedWidgetEnabled();
     }
 
     /**
@@ -1180,7 +1201,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isDisplaySidebarWidgetUsageCitationLinks() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationLinks();
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetCitationCitationLinks();
     }
 
     /**
@@ -1191,7 +1212,7 @@ public class ConfigurationBean implements Serializable {
      * @return a boolean.
      */
     public boolean isDisplaySidebarWidgetUsageCitationRecommendation() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsageCitationRecommendation();
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetCitationCitationRecommendation();
     }
 
     /**
@@ -1199,11 +1220,11 @@ public class ConfigurationBean implements Serializable {
      * @return List of configured <code>DownloadOption</code> items
      */
     public List<DownloadOption> getSidebarWidgetUsagePageDownloadOptions() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsagePageDownloadOptions();
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetDownloadsPageDownloadOptions();
     }
 
     public boolean isDisplaySidebarWidgetUsagePageDownloadOptions() {
-        return DataManager.getInstance().getConfiguration().isDisplayWidgetUsageDownloadOptions();
+        return DataManager.getInstance().getConfiguration().isDisplayWidgetDownloadsDownloadOptions();
     }
 
     /**
@@ -1211,7 +1232,7 @@ public class ConfigurationBean implements Serializable {
      * @return List of available citation style names
      */
     public List<String> getSidebarWidgetUsageCitationRecommendationStyles() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetUsageCitationRecommendationStyles();
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetCitationCitationRecommendationStyles();
     }
 
     /**
@@ -1247,9 +1268,11 @@ public class ConfigurationBean implements Serializable {
     /**
      * 
      * @return Configured value
+     * @deprecated Widgets are now implicitly enabled by being added to a record view configuration
      */
+    @Deprecated(since = "25.06")
     public boolean isCopyrightIndicatorEnabled() {
-        return DataManager.getInstance().getConfiguration().isCopyrightIndicatorEnabled();
+        return true;
     }
 
     /**
@@ -1538,22 +1561,6 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isDisplaySearchHitNumbers();
     }
 
-    public String getGeomapFiltersAsJson() {
-        Locale locale = BeanUtils.getLocale();
-        Map<String, List<LabeledValue>> map = DataManager.getInstance().getConfiguration().getGeomapFilters();
-        Map<String, List<LabeledValue>> translatedMap = new HashMap<>();
-        for (Entry<String, List<LabeledValue>> entry : map.entrySet()) {
-            //            String translatedLabel = ViewerResourceBundle.getTranslation(entry.getKey(), BeanUtils.getLocale(), true);
-            List<LabeledValue> translatedValues = entry.getValue()
-                    .stream()
-                    .map(v -> new LabeledValue(v.getValue(), ViewerResourceBundle.getTranslation(v.getLabel(), locale), v.getStyleClass()))
-                    .toList();
-            translatedMap.put(entry.getKey(), translatedValues);
-
-        }
-        return new JSONObject(translatedMap).toString();
-    }
-
     public List<SelectItem> getGeomapFeatureTitleOptions() {
         return DataManager.getInstance()
                 .getConfiguration()
@@ -1609,10 +1616,28 @@ public class ConfigurationBean implements Serializable {
     }
 
     public boolean isPdfPageRangeEnabled() {
-        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetUsagePdfPageRange();
+        return DataManager.getInstance().getConfiguration().isDisplaySidebarWidgetDownloadsPdfPageRange();
     }
 
+    /**
+     * <p>
+     * isSidebarTocViewLinkVisible.
+     * </p>
+     *
+     * @should return correct value
+     * @return a boolean.
+     */
     public boolean isSidebarTocViewLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarTocViewLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarViewsWidgetTocViewLinkVisible();
+    }
+
+    public List<String> getGeomapFilters() {
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getGeomapFilters()
+                .stream()
+                .filter(GeomapItemFilter::isVisible)
+                .map(f -> f.getName())
+                .toList();
     }
 }

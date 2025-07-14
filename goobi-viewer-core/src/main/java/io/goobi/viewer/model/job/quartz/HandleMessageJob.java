@@ -32,6 +32,7 @@ import org.quartz.Job;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.MessageQueueException;
+import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
 
 /**
@@ -44,10 +45,10 @@ public class HandleMessageJob extends AbstractViewerJob implements IViewerJob, J
 
     private static final Logger logger = LogManager.getLogger(HandleMessageJob.class);
 
-    private final TaskType taskType;
+    private final ITaskType taskType;
     private final String cronSchedulerExpression;
 
-    public HandleMessageJob(TaskType taskType, String cronSchedulerExpression, MessageQueueManager messageBroker) {
+    public HandleMessageJob(ITaskType taskType, String cronSchedulerExpression, MessageQueueManager messageBroker) {
         this.taskType = taskType;
         this.cronSchedulerExpression = cronSchedulerExpression;
     }
@@ -59,7 +60,7 @@ public class HandleMessageJob extends AbstractViewerJob implements IViewerJob, J
 
     @Override
     public String getJobName() {
-        return Optional.ofNullable(taskType).map(TaskType::name).orElse("");
+        return Optional.ofNullable(taskType).map(ITaskType::name).orElse("");
     }
 
     @Override
@@ -67,18 +68,21 @@ public class HandleMessageJob extends AbstractViewerJob implements IViewerJob, J
         return cronSchedulerExpression;
     }
 
-    public TaskType getTaskType() {
+    public ITaskType getTaskType() {
         return taskType;
     }
 
     @Override
     public void execute(Map<String, Object> params, MessageQueueManager messageBroker) {
-        TaskType type = TaskType.valueOf(params.get("taskType").toString());
+        ITaskType type = TaskType.getByName(params.get("taskType").toString());
+        if (type == null) {
+            logger.error("Task type not found: {}", params.get("tastType"));
+            return;
+        }
+        
         boolean runInQueue = (boolean) params.get("runInQueue");
         ViewerMessage message = new ViewerMessage(type.name());
-        params.forEach((key, value) -> {
-            message.getProperties().put(key, value.toString());
-        });
+        params.forEach((key, value) -> message.getProperties().put(key, value.toString()));
         if (runInQueue) {
             try {
                 messageBroker.addToQueue(message);

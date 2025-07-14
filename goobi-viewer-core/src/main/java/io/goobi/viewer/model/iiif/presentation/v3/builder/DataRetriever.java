@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -162,7 +163,7 @@ public class DataRetriever {
                 .replace("{collection}", collectionName)
                 .replace("{splittingChar}", splittingChar);
         Map<String, CollectionResult> result = SearchHelper.findAllCollectionsFromField(solrField, null, filterQuery, true, true, splittingChar);
-        String regex = collectionName + "[{}][^{}]+$".replace("{}", splittingChar);
+        String regex = Pattern.quote(collectionName) + "[{}][^{}]+$".replace("{}", splittingChar);
         return result.values()
                 .stream()
                 .filter(c -> c.getName().matches(regex))

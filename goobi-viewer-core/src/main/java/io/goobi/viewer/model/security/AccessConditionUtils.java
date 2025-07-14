@@ -182,6 +182,7 @@ public final class AccessConditionUtils {
             case "ogg":
             case "ogv":
             case "flv":
+            case "wav":
                 sbQuery.append(" +").append(useFileField).append(':');
                 // Escape whitespaces etc. for wildcard searches
                 sbQuery.append(ClientUtils.escapeQueryChars(baseFileName)).append(".*");
@@ -977,7 +978,7 @@ public final class AccessConditionUtils {
                         return access;
                     }
                 }
-                //check if accesscondition match for all clients
+                //check if access condition match for all clients
                 ClientApplication allClients = DataManager.getInstance().getClientManager().getAllClientsFromDatabase();
                 if (allClients != null) {
                     AccessPermission access =

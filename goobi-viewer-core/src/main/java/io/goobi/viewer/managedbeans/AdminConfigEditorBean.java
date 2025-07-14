@@ -512,7 +512,7 @@ public class AdminConfigEditorBean implements Serializable {
 
         try {
             // Check XML validity
-            if ("xml".equals(currentFileRecord.getFileType())) {
+            if ("xml".equals(currentFileRecord.getFileType()) || "xsl".equals(currentFileRecord.getFileType())) {
                 List<XMLError> errors = XmlTools.checkXMLWellformed(fileContent);
                 if (!errors.isEmpty()) {
                     boolean abort = false;

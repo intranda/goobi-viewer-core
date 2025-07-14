@@ -97,6 +97,8 @@ public class SolrSearchIndex {
     private static final int TIMEOUT_SO = 30000;
     private static final int TIMEOUT_CONNECTION = 30000;
 
+    public static final int MAX_HITS_EXPANDED = 100000;
+
     private long lastPing = 0;
 
     /** Application-scoped map containing already looked up data repository names of records. */
@@ -173,6 +175,10 @@ public class SolrSearchIndex {
         return getNewHttp2SolrClient();
     }
 
+    public static SolrClient getNewSolrClient(String solrUrl) {
+        return getNewHttp2SolrClient(solrUrl);
+    }
+
     /**
      * <p>
      * getNewHttp2SolrClient.
@@ -181,7 +187,11 @@ public class SolrSearchIndex {
      * @return a {@link org.apache.solr.client.solrj.impl.HttpSolrServer} object.
      */
     static Http2SolrClient getNewHttp2SolrClient() {
-        return new Http2SolrClient.Builder(DataManager.getInstance().getConfiguration().getSolrUrl())
+        return getNewHttp2SolrClient(DataManager.getInstance().getConfiguration().getSolrUrl());
+    }
+
+    static Http2SolrClient getNewHttp2SolrClient(String solrUrl) {
+        return new Http2SolrClient.Builder(solrUrl)
                 .withIdleTimeout(TIMEOUT_SO, TimeUnit.MILLISECONDS)
                 .withConnectionTimeout(TIMEOUT_CONNECTION, TimeUnit.MILLISECONDS)
                 .withFollowRedirects(false)

@@ -48,11 +48,11 @@ public class ComplexMetadataContainer {
         this.metadataMap = metadataMap;
     }
 
-    public ComplexMetadataContainer(List<SolrDocument> metadataDocs) {
+    public ComplexMetadataContainer(Collection<SolrDocument> metadataDocs) {
         this(metadataDocs, s -> true);
     }
 
-    public ComplexMetadataContainer(List<SolrDocument> metadataDocs, Predicate<String> fieldNameFilter) {
+    public ComplexMetadataContainer(Collection<SolrDocument> metadataDocs, Predicate<String> fieldNameFilter) {
         this.metadataMap = ComplexMetadata.getMetadataFromDocuments(metadataDocs)
                 .stream()
                 .filter(doc -> fieldNameFilter.test(doc.getField()))
@@ -147,6 +147,14 @@ public class ComplexMetadataContainer {
             throws PresentationException, IndexUnreachableException {
         SolrDocumentList metadataDocs = searchIndex.search(String.format(QUERY_FORMAT, pi), fieldList);
         return new ComplexMetadataContainer(metadataDocs);
+    }
+
+    public List<ComplexMetadata> getAllGroups() {
+        return this.metadataMap.values().stream().flatMap(mdList -> mdList.getMetadata().stream()).toList();
+    }
+
+    public boolean isEmpty() {
+        return this.metadataMap.isEmpty();
     }
 
 }

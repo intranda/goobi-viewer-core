@@ -923,4 +923,8 @@ public final class StringTools {
 
         return text.substring(0, end) + "...";
     }
+
+    public static boolean isInteger(String s) {
+        return StringUtils.isNotBlank(s) && s.matches("^[+-]?\\d{1,9}$");
+    }
 }

@@ -89,6 +89,7 @@ import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
+import io.goobi.viewer.model.search.FilterQueryParser;
 import io.goobi.viewer.model.search.IFacetItem;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
@@ -148,6 +149,8 @@ public class SearchBean implements SearchInterface, Serializable {
     private BreadcrumbBean breadcrumbBean;
     @Inject
     private UserBean userBean;
+    @Inject
+    private HttpServletRequest request;
 
     /** Max number of search hits to be displayed on one page. */
     private int hitsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPageDefaultValue();
@@ -269,7 +272,17 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException
      */
     public String search() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
-        return search(this.filterQuery);
+        return search(getEffectiveFilterQuery());
+    }
+
+    public String getEffectiveFilterQuery() {
+        if (StringUtils.isNotBlank(this.filterQuery)) {
+            return this.filterQuery;
+        } else if (this.request != null) {
+            return new FilterQueryParser().getFilterQuery(this.request).orElse("");
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -853,6 +866,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
+    @Deprecated(since = "25.05")
     public void hitsPerPageListener()
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("hitsPerPageListener");
@@ -981,6 +995,11 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         currentSearch.execute(facets, searchTerms, hitsPerPage, navigationHelper.getLocale());
+
+        // Make sure the current page isn't higher than the number of pages (e.g. when changing the number of hits per page)
+        if (currentPage > getLastPage()) {
+            setCurrentPage(getLastPage());
+        }
     }
 
     /**
@@ -1884,11 +1903,7 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public void setCurrentPage(int currentPage) {
         logger.trace("setCurrentPage: {}", currentPage);
-        this.currentPage = currentPage;
-        if (currentPage <= 0) {
-            this.currentPage = 1;
-            logger.debug("currentPage set to 1");
-        }
+        this.currentPage = currentPage > 1 ? currentPage : 1;
     }
 
     /** {@inheritDoc} */
@@ -3519,5 +3534,9 @@ public class SearchBean implements SearchInterface, Serializable {
             default:
                 return StringConstants.PRETTY_NEWSEARCH5;
         }
+    }
+
+    public HttpServletRequest getHttpRequest() {
+        return this.request;
     }
 }

@@ -40,6 +40,7 @@ import org.apache.solr.common.SolrDocument;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.GeoCoordinateConverter;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
@@ -58,6 +59,10 @@ public class MetadataContainer {
     private IMetadataValue label;
 
     private final Map<String, List<IMetadataValue>> metadata;
+
+    public MetadataContainer(Map<String, List<IMetadataValue>> metadata) {
+        this("", new SimpleMetadataValue(""), metadata);
+    }
 
     /**
      * 
@@ -162,6 +167,25 @@ public class MetadataContainer {
         return this.get(key).stream().findFirst().flatMap(IMetadataValue::getValue).orElse("");
     }
 
+    public Integer getFirstIntValue(String key) {
+        return this.get(key)
+                .stream()
+                .findFirst()
+                .flatMap(IMetadataValue::getValue)
+                .filter(StringTools::isInteger)
+                .map(Integer::parseInt)
+                .orElse(null);
+    }
+
+    public Boolean getFirstBooleanValue(String key) {
+        return this.get(key)
+                .stream()
+                .findFirst()
+                .flatMap(IMetadataValue::getValue)
+                .map(v -> SolrTools.getAsBoolean(v))
+                .orElse(null);
+    }
+
     /**
      * Get all values of the default language (or any value of no default langauge value exists) for the given field.
      * 
@@ -262,10 +286,6 @@ public class MetadataContainer {
         Map<String, List<IMetadataValue>> translatedMetadata = SolrTools.getTranslatedMetadata(doc, mainDocFieldNameFilter::test);
         MetadataContainer entity = new MetadataContainer(
                 SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC), "");
-        //        MetadataContainer entity = new MetadataContainer(
-        //                SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC),
-        //                Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL))
-        //                        .orElse(Optional.ofNullable(SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_VALUE)).orElse("")));
 
         Set<String> childLabels = children.stream()
                 .map(c -> SolrTools.getSingleFieldStringValue(c, SolrConstants.LABEL))
@@ -319,6 +339,18 @@ public class MetadataContainer {
      */
     public static MetadataContainer createMetadataEntity(SolrDocument doc) {
         return createMetadataEntity(doc, Collections.emptyList(), s -> true, s -> true);
+    }
+
+    public boolean containsField(String field) {
+        return this.metadata.containsKey(field);
+    }
+
+    @Override
+    public String toString() {
+        return metadata.entrySet().stream().map(entry -> {
+            return entry.getKey() + "\t-\t"
+                    + entry.getValue().stream().map(v -> v.getValueOrFallback(Locale.ENGLISH)).collect(Collectors.joining(", "));
+        }).sorted().collect(Collectors.joining("\n"));
     }
 
 }

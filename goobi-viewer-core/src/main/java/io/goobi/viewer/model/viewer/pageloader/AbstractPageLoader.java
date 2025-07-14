@@ -30,8 +30,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jakarta.faces.model.SelectItem;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,6 +50,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.faces.model.SelectItem;
 
 /**
  * <p>
@@ -270,12 +269,12 @@ public abstract class AbstractPageLoader implements IPageLoader {
                 .setDataRepository(dataRepository)
                 .build();
 
-        if (doc.getFieldValue(SolrConstants.WIDTH) != null) {
-            pe.setWidth((Integer) doc.getFieldValue(SolrConstants.WIDTH));
-        }
-        if (doc.getFieldValue(SolrConstants.HEIGHT) != null) {
-            pe.setHeight((Integer) doc.getFieldValue(SolrConstants.HEIGHT));
-        }
+        //        if (doc.getFieldValue(SolrConstants.WIDTH) != null) {
+        //            pe.setWidth((Integer) doc.getFieldValue(SolrConstants.WIDTH));
+        //        }
+        //        if (doc.getFieldValue(SolrConstants.HEIGHT) != null) {
+        //            pe.setHeight((Integer) doc.getFieldValue(SolrConstants.HEIGHT));
+        //        }
 
         // Full-text filename
         pe.setFulltextFileName((String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT));

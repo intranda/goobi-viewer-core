@@ -2,9 +2,9 @@
 	Global style declarations for Admin Backend
    ==============================================================*/
 /* ADMIN LAYOUT */
-#admin {
+#admin { 
 	// min-height: 100vh;
-}
+} 
 .admin {
 	position: relative;
 	/* BACKEND FONT + FALLBACK FONTS */
@@ -1546,7 +1546,8 @@
 	.user-settings__form-wrapper {
 		border: 1px solid #ccc;
 	}
-	.user-settings__profile-image-box {
+	.user-settings__profile-image-box,
+	.user-settings__crowdsourcing-box {
 		margin-bottom: 3rem;
 		border: 1px solid #ccc;
 		padding: 2rem;
@@ -2445,6 +2446,17 @@
 				margin-bottom: 0;
 			}
 		}
+		// FOR ADMIN USER SIDEBAR CROWDSOURCING EMAIL NOTIFICATION SETTINGS
+		.admin__default-block h3 {
+			font-size: 1.8rem;
+			margin-bottom: 1rem;
+		}
+		.crowdsourcing-notification__text {
+			margin-top: .4rem;
+			font-size: 1.2rem;
+			font-style: italic;
+			color: #666;
+		}
 	}
 	.-deactivated {
 		opacity: .4;
@@ -2502,6 +2514,18 @@
 			right: 0.7rem;
 			top: 50%;
 			transform: translate(0%, -52%);
+		}
+	}
+	&__geomap-radio-group-wrapper {
+		align-items: center;
+		gap: 15px;
+	}
+	&__geomap-radio-group { 
+		display: flex;
+		gap: 3px;
+		label {
+			margin: 0;
+			line-height: 1.1;
 		}
 	}
 

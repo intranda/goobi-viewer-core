@@ -304,13 +304,13 @@
 	                <div class="search-advanced__nav-helper-box">
 		                    <div class="search-advanced__nav-helper-item">
 		                        <div class="search-advanced__nav-helper-label">
-		                            <label for="hitsPerPageSelect" id="searchListSortingLabel">#{msg.search__hits_per_page}:</label>
+		                            <label for="hitsPerPageSelect" id="searchListHitsPerPageLabel">#{msg.search__hits_per_page}:</label>
 		                        </div>
 		                        <div class="custom-control custom-control--select search-advanced__custom-control">
 		                             <h:selectOneMenu id="hitsPerPageSelect" value="#{searchBean.hitsPerPage}">
 		                                 <f:selectItems var="value" value="#{configurationBean.searchHitsPerPageValues}" styleClass="search-advanced__select-values"
 		                                     itemLabel="#{value}" itemValue="#{value}" />
-		                                 <f:passThroughAttribute name="aria-labelledby" value="searchListSortingLabel"/>
+		                                 <f:passThroughAttribute name="aria-labelledby" value="searchListHitsPerPageLabel"/>
 		                                 <f:passThroughAttribute name="aria-haspopup" value="listbox"/>
 		                             </h:selectOneMenu>
 		                             <h:commandButton style="display: none" action="#{search.search(cmsBean.currentPage.subThemeDiscriminatorValue)}">

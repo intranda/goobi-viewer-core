@@ -287,7 +287,7 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     public UIComponent getUiComponent() throws PresentationException {
 
-        if (this.uiComponent == null && this.jsfComponent != null && StringUtils.isNotBlank(this.jsfComponent.getFilename())) {
+        if (this.uiComponent == null && this.jsfComponent != null && this.jsfComponent.exists()) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
             this.uiComponent = FacesContext.getCurrentInstance().getApplication().createComponent(HtmlPanelGroup.COMPONENT_TYPE);
             this.uiComponent.setId("cms_" + FilenameUtils.getBaseName(this.templateFilename) + "_" + Optional.ofNullable(this.order).orElse(0));
@@ -310,12 +310,16 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
 
     public UIComponent getBackendUiComponent() throws PresentationException {
         if (this.backendUiComponent == null) {
-            String id = FilenameUtils.getBaseName("component_" + this.getJsfComponent().getName()) + "_" + System.nanoTime();
+            String id = FilenameUtils.getBaseName("component_" + this.getTemplateFilename()) + "_" + System.nanoTime();
             this.backendUiComponent = new HtmlPanelGroup();
             this.backendUiComponent.setId(id);
+            int itemCount = 0;
             for (CMSContentItem cmsContentItem : contentItems) {
                 UIComponent itemComponent = cmsContentItem.getUiComponent();
+                itemComponent.setId(id + "_" + itemCount);
                 this.backendUiComponent.getChildren().add(itemComponent);
+                //itemComponent.setParent(this.backendUiComponent);
+                ++itemCount;
             }
         }
         return backendUiComponent;

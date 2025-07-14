@@ -17,7 +17,6 @@
     	<composite:attribute name="highlightDocumentId" required="false" default=""/>
     	<composite:attribute name="currentPageNo" type="java.lang.Integer" required="false" default="#{null}"/>
     	<composite:attribute name="featureSetSwitch" type="java.lang.Boolean" required="false" default="false"/>
-    	<composite:attribute name="featureFilters" required="false" default="#{configurationBean.geomapFiltersAsJson}"/>
     	<composite:attribute name="showFeatureList" type="java.lang.Boolean" required="false" default="#{false}"/>
     </composite:interface>
     
@@ -56,6 +55,7 @@
 				           		clusterMarkers: #{cc.attrs.clusterMarkers},
 				           		markerIcon: (icon => icon)(#{featureSet.markerAsJSON}),
 				           		label: #{featureSet.name.getAsJson()},
+				           		identifier: #{featureSet.id},
 				           		controls: {
 				           			zoom: {
 				           				in: "#geomap_#{cc.attrs.mapId}_zoomIn",
@@ -117,9 +117,9 @@
 		    			defaultLocale: "#{navigationHelper.defaultLocale}"
 		    		})
 	    		}
-	    		if(#{not empty cc.attrs.featureFilters}) {	    			
+	    		if(#{not empty cc.attrs.geoMap.allFiltersAsJson}) {	    			
 		    		riot.mount(document.getElementById("featureFilters_#{cc.attrs.mapId}"), "featuresetfilter", {
-		    			filters: new Map(Object.entries(#{cc.attrs.featureFilters})),
+		    			filters: new Map(Object.entries(#{cc.attrs.geoMap.allFiltersAsJson})),
 	    				geomap: map,
 	    				featureGroups: map.getActiveLayers(),
 		    			locale: "#{navigationHelper.locale}",

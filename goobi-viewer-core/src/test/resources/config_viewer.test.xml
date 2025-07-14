@@ -850,6 +850,35 @@
                 </metadata>
             </template>
         </metadataList>
+        
+        <!-- geomaps -->
+        <metadataList type="geomap_marker_place">
+        	<template name="_DEFAULT">
+               	<metadata label="" value="{NORM_NAME}">
+                   			<param type="field" key="NORM_NAME" altKey="LABEL" />
+				</metadata>
+			</template>
+        </metadataList>
+		<metadataList type="geomap_marker_metadata">
+			<template name="_DEFAULT">
+               	<metadata label="" value="{MD_VALUE}">
+                   			<param type="field" key="MD_VALUE" altKey="LABEL" />
+				</metadata>
+			</template>
+		</metadataList>
+		
+		<metadataList type="geomap_record">
+			<template name="_DEFAULT">
+               	<metadata label="" value="{NORM_NAME}">
+                   			<param type="field" key="NORM_NAME" altKey="LABEL" />
+				</metadata>
+			</template>
+			<template name="MD_BIOGRAPHY_JOURNEY">
+               		<metadata label="" value="Journey to {MD_LOCATION}">
+                   			<param type="field" key="MD_LOCATION" />
+               		</metadata>
+			</template>
+		</metadataList>
 		
         <!-- normdataList: List of NORM_ fields to display in the norm data pop-up box -->
         <normdataList>
@@ -997,47 +1026,47 @@
 
 	<!-- ##### SHOW OR HIDE SECTIONS IN THE SIDEBAR GLOBALLY ##### -->
 	<sidebar>
-	
-		<!-- sidebarWidgetAdditionalFiles/@enabled: If true, the download widget within a records 
-			view for additional files from the source directory is displayed. Default 
-			is true. -->
-		<sidebarWidgetAdditionalFiles enabled="true">
-			<!-- hideFileRegex: If a regular expression is defined, files matching 
-				it are hidden from the widget display. The download is still possible. -->
-	    	<filter action="hide" regex="(wug_.*|AK_.*)"/>
-	    	<filter action="show" regex="{struct.MD_SHELFMARK}">
-	    		<conditions>
-	    			<filter action="show" regex="archive\.100uaghgw\.020volksliedarchiv.*" value="{record.DC}"/>
-	    		</conditions>
-	    	</filter>
-		</sidebarWidgetAdditionalFiles>
-	
-	    <!-- @enabled: If true, the sidebar term browsing widget it displayed. Default is true. -->
-        <sidebarBrowsingTerms enabled="false" />
+    
+        <!-- views: Widget display configurations for individual record views. -->
+        <views>
+            <view name="object">
+                <displayWidget name="views" />
+                <displayWidget name="copyright" collapsible="true" collapsedByDefault="true" />
+                <displayWidget name="search-in-current-item" />
+            </view>
+            <view name="toc">
+                <displayWidget name="views" />
+                <displayWidget name="copyright" />
+            </view>
+        </views>
+    
+        <widgets>
         
-        <!-- @enabled: If true, the sidebar RSS widget it displayed. Default is true. -->
-        <sidebarRssFeed enabled="false" />
-
-        <!-- @enabled: Show or hide the widget including download links for record and page while viewing the object -->
-        <sidebarWidgetUsage enabled="false">
-            <work>
-                <dfgViewerUrlField>MD2_DFGVIEWERURL</dfgViewerUrlField>
-            </work>
-            <page>
-                <downloadOptions enabled="false">
-                <!-- Each option contains a label and a format. The label is translated via the messages. 
-                    The format can take the values supported by the ContentServer, for example "pdf", "tif", 
-                    "jpg" or "png". If the static string "MASTER" is used, the format is dynamically set to 
-                    the format of the master image. The attribute boxSizeInPixel specifies the size of a box 
-                    in pixels into which the image is scaled while maintaining the aspect ratio. -->
-                    <option label="Master" format="MASTER" boxSizeInPixel="max"/>
-                    <option label="label__download_option_preview_150" format="jpg" boxSizeInPixel="150" />
-                    <option label="label__download_option_small_1024" format="jpg" boxSizeInPixel="1024" />
-                    <option label="label__download_option_medium_2048" format="jpg" boxSizeInPixel="2048" />
-                    <option label="label__download_option_large_4096" format="jpg" boxSizeInPixel="4096" />
-                </downloadOptions>
-            </page>
-            <citationRecommendation enabled="false">
+            <!-- RECORD VIEW WIDGETS -->
+        
+            <widget name="views">
+                <fulltext enabled="false" />
+                <calendar enabled="falsE" />
+                <metadata enabled="false" />
+                <object enabled="false" />
+                <opac enabled="true" />
+                <thumbs enabled="false" />
+                <toc enabled="false" />
+            </widget>
+            
+            <!-- additional-files: Download widget within a records view for additional files from the source directory. -->
+            <widget name="additional-files">
+                <!-- hideFileRegex: If a regular expression is defined, files matching it are hidden from the widget display. The download is still possible. -->
+                <filter action="hide" regex="(wug_.*|AK_.*)"/>
+                <filter action="show" regex="{struct.MD_SHELFMARK}">
+                    <conditions>
+                        <filter action="show" regex="archive\.100uaghgw\.020volksliedarchiv.*" value="{record.DC}"/>
+                    </conditions>
+                </filter>
+            </widget>
+            
+            <widget name="citation">
+                <citationRecommendation enabled="false">
                 <!-- Available citation styles (supported by citeproc) -->
                 <styles>
                     <style>modern-language-association</style>
@@ -1045,99 +1074,96 @@
                     <style>harvard</style>
                 </styles>
                 <!-- Metadata source mapping for citations. Please refer to the citeproc documentation for available "dest" values. -->
-                <source>
-                    <metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
-                        <param type="field" key="LABEL" />
-                        <param type="translatedfield" key="ACCESSCONDITION" />
-                    </metadata>
-                    <csltypes>
-                        <csltype docstrct="other_monograph">book</csltype>
-                        <csltype docstrct="other_manuscript">manuscript</csltype>
-                    </csltypes>
-                </source>
-            </citationRecommendation>
-            <citationLinks enabled="false" docstructIntroText="docstruct intro text" imageIntroText="image intro text">
-                <!-- links: Citation link configurations. -->
-                <links>
-                    <link type="URL" for="record" label="LABEL_URN" field="URN" pattern="https://nbn-resolving.org/{value}/" topstructValueFallback="true"  />
-                    <link type="INTERNAL" for="docstruct" label="LABEL_VIEWER_PURL" />
-                    <link type="INTERNAL" for="image" label="LABEL_VIEWER_PURL" />
-                    <link type="URL" for="image"  label="LINK" field="MD_LINK" pattern="https://nbn-resolving.org/{value}/fragment/page={page}" topstructValueFallback="true" />
-                    
-                </links>
-            </citationLinks>
-        </sidebarWidgetUsage>
+                    <source>
+                        <metadata label="MD_LICENSETEXT" value="MASTERVALUE_LICENSETEXT">
+                            <param type="field" key="LABEL" />
+                            <param type="translatedfield" key="ACCESSCONDITION" />
+                        </metadata>
+                        <csltypes>
+                            <csltype docstrct="other_monograph">book</csltype>
+                            <csltype docstrct="other_manuscript">manuscript</csltype>
+                        </csltypes>
+                    </source>
+                </citationRecommendation>
+                <citationLinks enabled="false" docstructIntroText="docstruct intro text" imageIntroText="image intro text">
+                    <!-- links: Citation link configurations. -->
+                    <links>
+                        <link type="URL" for="record" label="LABEL_URN" field="URN" pattern="https://nbn-resolving.org/{value}/" topstructValueFallback="true"  />
+                        <link type="INTERNAL" for="docstruct" label="LABEL_VIEWER_PURL" />
+                        <link type="INTERNAL" for="image" label="LABEL_VIEWER_PURL" />
+                        <link type="URL" for="image"  label="LINK" field="MD_LINK" pattern="https://nbn-resolving.org/{value}/fragment/page={page}" topstructValueFallback="true" />
+                    </links>
+                </citationLinks>
+            </widget>
+            
+            <!-- copyright: copyright status of the current record will be visualized with colors and icons. -->
+            <widget name="copyright" style="trafficlight">
+                <status field="MD_ACCESSCONDITION">
+                    <value content="Freier Zugang" status="OPEN" description="COPYRIGHT_STATUS_OPEN" />
+                    <value content="Eingeschränker Zugang" status="PARTIAL" description="COPYRIGHT_STATUS_PARTIAL" />
+                    <value content="Gesperrter Zugang" status="LOCKED" description="COPYRIGHT_STATUS_LOCKED" />
+                </status>
+                <license field="MD_ACCESSCONDITIONCOPYRIGHT">
+                    <value content="https://creativecommons..." description="COPYRIGHT_DESCRIPTION_CC0">
+                        <!-- icon: one or more icons are allowed per value -->
+                        <icon>cc0.svg</icon>
+                    </value>
+                    <value content="VGWORT" description="COPYRIGHT_DESCRIPTION_VGWORT">
+                        <icon>paragraph50.svg</icon>
+                    </value>
+                </license>
+            </widget>
+            
+            <widget name="downloads">
+                <page>
+                    <downloadOptions enabled="false">
+                    <!-- Each option contains a label and a format. The label is translated via the messages. 
+                        The format can take the values supported by the ContentServer, for example "pdf", "tif", 
+                        "jpg" or "png". If the static string "MASTER" is used, the format is dynamically set to 
+                        the format of the master image. The attribute boxSizeInPixel specifies the size of a box 
+                        in pixels into which the image is scaled while maintaining the aspect ratio. -->
+                        <option label="Master" format="MASTER" boxSizeInPixel="max"/>
+                        <option label="label__download_option_preview_150" format="jpg" boxSizeInPixel="150" />
+                        <option label="label__download_option_small_1024" format="jpg" boxSizeInPixel="1024" />
+                        <option label="label__download_option_medium_2048" format="jpg" boxSizeInPixel="2048" />
+                        <option label="label__download_option_large_4096" format="jpg" boxSizeInPixel="4096" />
+                    </downloadOptions>
+                </page>
+            </widget>
+            
+            <widget name="metadata" />
+            
+            <widget name="search-in-current-item" onlyIfFullTextAvailable="true" />
+            
+            <widget name="toc">
+                <!-- visibleInFullscreen: If false, the sidebar TOC element won't be visible in the full-screen sidebar accordion -->
+                <visibleInFullscreen>false</visibleInFullscreen>
 
-		<!-- @enabled: if false, the image view is hidden -->
-		<page enabled="false" />
+                <!-- pageNumbersVisible: if false, page numbers in the sidebar TOC are hidden (default is false) -->
+                <pageNumbersVisible>true</pageNumbersVisible>
 
-		<!-- @enabled: if false, the calendar view link is hidden -->
-		<calendar enabled="false" />
+                <!-- lengthBeforeCut: defines the number of characters until the string is cut and a "more" link is shown -->
+                <lengthBeforeCut>21</lengthBeforeCut>
 
-		<!-- @enabled: if false, the TOC link is hidden (This is the link to the TOC 
-			page in the work menu, not the sidebar TOC component!) -->
-		<toc enabled="false" />
+                <!-- display as interactive tree view -->
+                <useTreeView>false</useTreeView>
 
-		<!-- @enabled: if false, the thumbnail view is hidden -->
-		<thumbs enabled="false" />
+                <!-- level for initial collapse -->
+                <initialCollapseLevel>22</initialCollapseLevel>
 
-        <!-- @enabled: if false, no widget for searching in the currently show record will be displayed. Default is true. -->
-        <!-- @onlyIfFullTextAvailable: if true, the widget will only be displayed if current record has full-text. Default is false. -->
-		<searchInItem enabled="false" onlyIfFullTextAvailable="true" />
-
-        <!-- metadata/@enabled: if false, the bibliographic data view is hidden -->
-		<metadata enabled="false">
-		</metadata>
-
-		<!-- @enabled: if false, the fulltext view is hidden -->
-		<fulltext enabled="false" />
-
-		<!-- sidebarToc: configuration of the sidebar TOC component -->
-        <!-- @enabled: if false, the sidebar toc is hidden -->
-		<sidebarToc enabled="false">
-			<!-- visibleInFullscreen: If false, the sidebar TOC element won't be visible in the full-screen sidebar accordion -->
-            <visibleInFullscreen>false</visibleInFullscreen>
-
-			<!-- pageNumbersVisible: if false, page numbers in the sidebar toc are 
-				hidden (default is false) -->
-			<pageNumbersVisible>true</pageNumbersVisible>
-
-			<!-- lengthBeforeCut: defines the number of characters until the string 
-				is cut and a "more" link is shown -->
-			<lengthBeforeCut>21</lengthBeforeCut>
-
-			<!-- display as interactive tree view -->
-			<useTreeView>false</useTreeView>
-
-			<!-- level for initial collapse -->
-			<initialCollapseLevel>22</initialCollapseLevel>
-
-			<!-- max length of level before it gets collapsed -->
-			<collapseLengthThreshold lowestLevelToTest="333">141
-			</collapseLengthThreshold>
-		</sidebarToc>
-		
-        <!-- @enabled: If true, the OPAC link from the current record will be displayed. Default is false. -->
-        <opac enabled="true" />
-        
-        <!-- copyrightIndicator/@enabled: If true, copyright status of the current record will be visualized with colors and icons. Default is false. -->
-        <copyrightIndicator enabled="true" style="trafficlight">
-            <status field="MD_ACCESSCONDITION">
-                <value content="Freier Zugang" status="OPEN" description="COPYRIGHT_STATUS_OPEN" />
-                <value content="Eingeschränker Zugang" status="PARTIAL" description="COPYRIGHT_STATUS_PARTIAL" />
-                <value content="Gesperrter Zugang" status="LOCKED" description="COPYRIGHT_STATUS_LOCKED" />
-            </status>
-
-            <license field="MD_ACCESSCONDITIONCOPYRIGHT">
-                <value content="https://creativecommons..." description="COPYRIGHT_DESCRIPTION_CC0">
-                    <!-- icon: one or more icons are allowed per value -->
-                    <icon>cc0.svg</icon>
-                </value>
-                <value content="VGWORT" description="COPYRIGHT_DESCRIPTION_VGWORT">
-                    <icon>paragraph50.svg</icon>
-                </value>
-            </license>
-        </copyrightIndicator>
+                <!-- max length of level before it gets collapsed -->
+                <collapseLengthThreshold lowestLevelToTest="333">141</collapseLengthThreshold>
+            </widget>
+            
+            <!-- OTHER WIDGETS -->
+            
+            <!-- browsing-terms: Term browsing widget. -->
+            <widget name="browsing-terms" enabled="false" />
+            
+            <!-- widget[@name="rss]/@enabled: If true, the sidebar RSS widget it displayed. Default is true. -->
+            <widget name="rss" enabled="false" />
+            
+        </widgets>
         
 	</sidebar>
 
@@ -1396,43 +1422,42 @@
 	  </markers>
 	  <filters>
 	  		<filter>
+	  			<name>Filter_D</name>
 				<field>D</field>
 			</filter>
 			<filter>
-				<featureGroup>X</featureGroup>
+				<name>Filter_A</name>
 				<field label="">A</field>
 			</filter>
 			<filter>
-				<featureGroup>Y</featureGroup>
+				<name>Filter_BC</name>
 				<field label="b">B</field>
 				<field label="c">C</field>
+			</filter>
+			<filter>
+				<name>Filter_METADATATYPE</name>
+				<field label="">MD_METADATATYPE</field>
+			</filter>
+			<filter>
+				<name>Filter_EVENT</name>
+				<field label="">MD_EVENTTYPE</field>
+				<field label="">MD_TYPE</field>
 			</filter>
 		</filters>
 	  <metadata>
 		  <option label="cms__geomaps__popup_content__option__none" name=""/>
         	<option label="cms__geomaps__popup_content__option__place" name="NORM_NAME">
-        		<title>
-        			<template name="_DEFAULT">
-	                	<metadata label="" value="{NORM_NAME}">
-	                    			<param type="field" key="NORM_NAME" altKey="LABEL" />
-						</metadata>
-					</template>
-				</title>
+        		<marker metadataList="geomap_marker_place"/>
         	</option>
         	<option label="cms__geomaps__popup_content__option__metadata" name="MD_VALUE">
-        		<title>
-	        		<template name="_DEFAULT">
-	                	<metadata label="" value="{MD_VALUE}">
-	                    			<param type="field" key="MD_VALUE" altKey="LABEL" />
-						</metadata>
-					</template>
-        		</title>
+        		<marker metadataList="geomap_marker_metadata"/>
         	</option>
         </metadata>
 	  <coordinateFields>
 	  	<field>MD_GEOJSON_POINT</field>
 	  	<field>NORM_COORDS_GEOJSON</field>
 	  	<field>MD_COORDINATES</field>
+	  	<field>MD_GPS_POLYGON</field>
 	  </coordinateFields>
 	  <mapbox>
 	    <token>some.token</token>
@@ -1444,40 +1469,15 @@
 		    		<name>set_metadata_1</name>
 		        	<marker>maps_marker_1</marker>
 	    			<query>MD_A:A MD_B:B*</query>
-	    			<filters>
-	    				<filter>
-	    					<field label="">MD_METADATATYPE</field>
-	    				</filter>
-	    			</filters>
+	    			<filter>Filter_METADATATYPE</filter>
 	    		</featureSet>
 	    		<featureSet type="event">
 		    		<name>set_event_2</name>
-		        	<marker>maps_marker_2</marker>
+		        	<marker metadataList="geomap_record">maps_marker_2</marker>
 	    			<query>DOCTYPE:event</query>
-	    			<filters>
-	    				<filter>
-	    					<field label="">MD_EVENTTYPE</field>
-	    				</filter>
-	    				<filter>
-	    					<field label="">MD_TYPE</field>
-	    				</filter>
-	    			</filters>
+	    			<filter>Filter_EVENT</filter>
 	    		</featureSet>
 	    	</featureSets>
-		  	<metadata>
-	       		<title>
-	            	<template name="_DEFAULT">
-	                	<metadata label="" value="{NORM_NAME}">
-	                    			<param type="field" key="NORM_NAME" altKey="LABEL" />
-						</metadata>
-					</template>
-					<template name="MD_BIOGRAPHY_JOURNEY">
-	                		<metadata label="" value="Journey to {MD_LOCATION}">
-	                    			<param type="field" key="MD_LOCATION" />
-	                		</metadata>
-					</template>
-	       		</title>
-	       	</metadata>
       	</template>
       </record>
 	</maps>

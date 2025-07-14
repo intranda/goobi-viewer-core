@@ -129,6 +129,40 @@ public class MetadataParameter implements Serializable {
     private boolean topstructValueFallback = false;
     private boolean removeHighlighting = false;
     private List<MetadataReplaceRule> replaceRules = Collections.emptyList();
+    /**
+     * Optional parameter which signals that the values should come from some other document, either "parent" (data comes from direct parent document)
+     * or "topStruct" (data comes from the main record document)
+     */
+    private String scope = "";
+
+    public MetadataParameter() {
+
+    }
+
+    public MetadataParameter(MetadataParameter orig) {
+        this.type = orig.type;
+        this.source = orig.source;
+        this.destination = orig.destination;
+        this.key = orig.key;
+        this.altKey = orig.altKey;
+        this.masterValueFragment = orig.masterValueFragment;
+        this.defaultValue = orig.defaultValue;
+        this.prefix = orig.prefix;
+        this.suffix = orig.prefix;
+        this.condition = orig.condition;
+        this.inputPattern = orig.inputPattern;
+        this.outputPattern = orig.outputPattern;
+        this.addUrl = orig.addUrl;
+        this.topstructValueFallback = orig.topstructValueFallback;
+        this.removeHighlighting = orig.removeHighlighting;
+        this.replaceRules = new ArrayList<>(orig.replaceRules);
+        this.scope = orig.scope;
+    }
+
+    public MetadataParameter(MetadataParameterType type, String key) {
+        this.type = type;
+        this.key = key;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -345,6 +379,15 @@ public class MetadataParameter implements Serializable {
         return this;
     }
 
+    public MetadataParameter setScope(String scope) {
+        this.scope = scope;
+        return this;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
     /**
      * @return the condition
      */
@@ -501,6 +544,8 @@ public class MetadataParameter implements Serializable {
         String condition = config.getString(XML_PATH_ATTRIBUTE_CONDITION);
         String inputPattern = config.getString("[@inputPattern]");
         String outputPattern = config.getString("[@pattern]");
+        String scope = config.getString("[@scope]", "");
+
         boolean addUrl = config.getBoolean(XML_PATH_ATTRIBUTE_URL, false);
         boolean topstructValueFallback = config.getBoolean("[@topstructValueFallback]", topstructValueFallbackDefaultValue);
         boolean removeHighlighting = config.getBoolean("[@removeHighlighting]", false);
@@ -560,6 +605,7 @@ public class MetadataParameter implements Serializable {
                 .setAddUrl(addUrl)
                 .setTopstructValueFallback(topstructValueFallback)
                 .setRemoveHighlighting(removeHighlighting)
+                .setScope(scope)
                 .setReplaceRules(replaceRules);
     }
 }

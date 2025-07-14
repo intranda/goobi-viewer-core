@@ -17,7 +17,7 @@
 
 		<h:panelGroup rendered="#{configurationBean.copyrightIndicatorEnabled}"
 			layout="block" id="copyrightIndicator"
-			styleClass="widget widget-copyright-info"
+			styleClass="widget widget-copyright"
 			pt:data-target="triggerCopyrightInfo"
 			pt:aria-label="#{msg.copyright__information}" pt:tabindex="0"
 			pt:role="button"
@@ -25,21 +25,21 @@
 			pt:data-placement="top"
 			pt:title="#{msg.copyright__toggle_tooltip}">
 
-			<div class="widget__body widget-copyright-info__body">
+			<div class="widget__body widget-copyright__body">
 				<div 
-					class="widget-copyright-info__container
+					class="widget-copyright__container
 					#{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'OPEN' ? '-green' : ''}
 					#{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'PARTIAL' ? '-yellow' : ''}
 					#{activeDocumentBean.viewManager.copyrightIndicatorStatusName == 'LOCKED' ? '-red' : ''}"
 				>
-					<div class="widget-copyright-info__lock">
-						<div class="widget-copyright-info__dot">
+					<div class="widget-copyright__lock">
+						<div class="widget-copyright__dot">
 							<!-- PSEUDO FA ELEMENT GETS REPLACED DEPENDING ON GREEN/YELLOW/RED STATE -->
-							<i class="fa widget-copyright-info__status-icon" aria-hidden="true"></i>
+							<i class="fa widget-copyright__status-icon" aria-hidden="true"></i>
 						</div>
 					</div>
 	
-					<div class="widget-copyright-info__icons">
+					<div class="widget-copyright__icons">
 						<!-- BACKGROUND COLOR DEPENDING ON STATE - GREEN, YELLOW, RED -->
 	
 						<ui:fragment
@@ -58,21 +58,21 @@
 				</div>
 				
 				<!-- ADDITIONAL CONTENT TO SHOW -->
-				<div id="widgetCopyrightInfo" class="widget-copyright-info__additional-information">
+				<div id="widgetCopyrightInfo" class="widget-copyright__additional-information">
 	
 					<!-- LICENCE STATUS UNCLEAR -->
 					<ui:fragment rendered="#{empty activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">
-						<div class="widget-copyright-info__hidden-information">
+						<div class="widget-copyright__hidden-information">
 							<div id="copyrightInformation">
 	
-								<div class="widget-copyright-info__access-licence-info">
+								<div class="widget-copyright__access-licence-info">
 									<h3>#{msg.copyright_indicator__access_restriction}</h3>
                                     <c:forEach var="iStatus" items="#{activeDocumentBean.viewManager.copyrightIndicatorStatuses}">
                                         <h:outputText escape="false" value="#{msg[iStatus.description]}" /><br />
                                     </c:forEach>
 								</div>
 								
-								<div class="widget-copyright-info__copyright-info">
+								<div class="widget-copyright__copyright">
 									<h3>#{msg.copyright_indicator__copyright_licence}</h3>
 									<h:outputText escape="false"
 										value="#{msg.copyright__information_unclear}" />
@@ -84,17 +84,17 @@
 		
 					<!-- LICENCE STATUS SET -->
 					<ui:fragment rendered="#{not empty activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">
-						<div class="widget-copyright-info__hidden-information">
+						<div class="widget-copyright__hidden-information">
 							<div id="copyrightInformation">
 								
-								<div class="widget-copyright-info__access-licence-info">
+								<div class="widget-copyright__access-licence-info">
 									<h3>#{msg.copyright_indicator__access_restriction}</h3>
 									<c:forEach var="iStatus" items="#{activeDocumentBean.viewManager.copyrightIndicatorStatuses}">
 									    <h:outputText escape="false" value="#{msg[iStatus.description]}" /><br />
 									</c:forEach>
 								</div>
 								
-								<div class="widget-copyright-info__copyright-info">
+								<div class="widget-copyright__copyright">
 									<h3>#{msg.copyright_indicator__copyright_licence}</h3>
 									<h:outputText escape="false" value="#{msg[activeDocumentBean.viewManager.copyrightIndicatorLicense.description]}" />
 								</div>
@@ -111,15 +111,15 @@
 						$('[data-target="triggerCopyrightInfo"]').click(function() {
 							if ($(this).hasClass('-open')) {
 								$('#widgetCopyrightInfo').slideUp('fast');
-								$('.widget-copyright-info').removeClass('-open');
-								$('.widget-copyright-info').tooltip('enable');
+								$('.widget-copyright').removeClass('-open');
+								$('.widget-copyright').tooltip('enable');
 							}
 
 							else {
 								$('#widgetCopyrightInfo').slideDown('fast');
-								$('.widget-copyright-info').addClass('-open');
-								$('.widget-copyright-info').tooltip('disable');
-								$('.widget-copyright-info').tooltip('hide');
+								$('.widget-copyright').addClass('-open');
+								$('.widget-copyright').tooltip('disable');
+								$('.widget-copyright').tooltip('hide');
 							}
 						});
 

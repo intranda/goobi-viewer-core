@@ -24,6 +24,7 @@ package io.goobi.viewer.controller.mq;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.persistence.annotations.PrivateOwned;
 
@@ -38,6 +39,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -224,6 +227,22 @@ public class ViewerMessage {
 
     public boolean shouldRetry() {
         return this.retryCount < this.maxRetries;
+    }
+
+    /**
+     * Returns the latest VieweMessage of the given type that finished successfully.
+     * 
+     * @param type
+     * @return Optional<ViewerMessage>
+     * @throws DAOException
+     */
+    public static Optional<ViewerMessage> getLastSuccessfulTask(String type) throws DAOException {
+        return DataManager.getInstance()
+                .getDao()
+                .getViewerMessages(0, 1, "lastUpdateTime", true,
+                        Map.of("taskName", type, "messageStatus", MessageStatus.FINISH.name()))
+                .stream()
+                .findAny();
     }
 
 }
