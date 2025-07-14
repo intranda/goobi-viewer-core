@@ -211,7 +211,7 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
         ContainerRequestContext context = Mockito.mock(ContainerRequestContext.class);
 
         RecordsFilesImageResource resource =
-                new RecordsFilesImageResource(context, request, response, urls, PI, FILENAME + ".tif", ContentServerCacheManager.getInstance());
+                new RecordsFilesImageResource(context, request, response, PI, FILENAME + ".tif", ContentServerCacheManager.getInstance());
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             resource.getPdf().write(baos);
             // System.out.println("Written byte array stream of size " + baos.size());
