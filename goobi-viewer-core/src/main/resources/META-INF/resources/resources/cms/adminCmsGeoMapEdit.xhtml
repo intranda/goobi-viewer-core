@@ -318,18 +318,16 @@
 <!-- 														</div> -->
 <!-- 													</div> -->
 													
-													<div class="form-group form-row">
+													<div class="d-flex admin__geomap-radio-group-wrapper">
 													
 														<o:importConstants type="io.goobi.viewer.model.maps.SolrSearchScope" />
 														<ui:repeat value="#{SolrSearchScope.values()}" var="scope">
-														    <h:selectOneRadio group="featuresetSearchScopeRadioGroup" immediate="true" value="#{featureSet.searchScope}">
-														    	<f:selectItem itemValue="#{scope}" itemLabel="#{msg[scope.label]}" 
-														    	
-														    	/>  
-														    	<f:ajax render="featuresetSearchScopeRadioGroup" />
-														    	
-														    </h:selectOneRadio>
-														    
+															<div class="admin__geomap-radio-group">
+															    <h:selectOneRadio group="featuresetSearchScopeRadioGroup" immediate="true" value="#{featureSet.searchScope}">
+															    	<f:selectItem itemValue="#{scope}" itemLabel="#{msg[scope.label]}" />  
+															    	<f:ajax render="featuresetSearchScopeRadioGroup" />
+															    </h:selectOneRadio>
+														    </div>
 														</ui:repeat>
 														
 													</div>
@@ -338,7 +336,7 @@
 													
 <!-- 													<viewerComponent:toggleSwitch name="toggleAggregation_#{status.index}" value="#{featureSet.aggregateResults}" render="mapPanel"/> -->
 													<div id="titleHelp"
-													class="admin__form-help-text">#{msg.cms__geomaps__aggregate_query_results__help}</div>
+													class="admin__form-help-text">#{msg.cms__geomaps__filter_type__help}</div>
 												</div>
 												<div class="col-1 admin__form-help-icon">
 													<button type="button" class="btn btn--clean"
@@ -357,17 +355,12 @@
 												</div>
 												<div class="input_form__option_marker"></div>
 												<div class="col-9 admin__form-input cms-module__option-control">
-													
-													<div class="form-group form-row">
-														<div class="col-9 admin__form-input cms-module__option-control">
 															<h:selectOneMenu id="itemFilterSelect"
 															styleClass="form-control"
 															value="#{featureSet.itemFilterName}" required="false">
 															<f:selectItem itemValue="" itemLabel=""/>
 															<f:selectItems var="option" value="#{configurationBean.geomapFilters}"></f:selectItems>
 														</h:selectOneMenu>
-														</div>
-													</div>
 <!-- 													<viewerComponent:toggleSwitch name="toggleAggregation_#{status.index}" value="#{featureSet.aggregateResults}" render="mapPanel"/> -->
 													<div id="titleHelp"
 													class="admin__form-help-text">#{msg.cms__geomaps__aggregate_query_results__help}</div>
