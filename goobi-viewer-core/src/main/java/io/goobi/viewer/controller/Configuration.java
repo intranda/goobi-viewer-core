@@ -960,7 +960,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     public List<GeomapItemFilter> getGeomapFilters() {
-        List<HierarchicalConfiguration<ImmutableNode>> filterConfigs = this.getLocalConfigurationsAt("maps.filters.filter");
+        HierarchicalConfiguration<ImmutableNode> filtersConfig = this.getLocalConfigurationAt("maps.filters");
+        List<HierarchicalConfiguration<ImmutableNode>> filterConfigs = filtersConfig.configurationsAt("filter");
+
         List<GeomapItemFilter> filters = new ArrayList<>();
         for (HierarchicalConfiguration<ImmutableNode> config : filterConfigs) {
             String name = config.getString("name", "_DEFAULT");
@@ -1239,7 +1241,7 @@ public class Configuration extends AbstractConfiguration {
 
         return false;
     }
-    
+
     /**
      * 
      * @param view Record view name
