@@ -87,7 +87,6 @@ public class RecordsFilesImageResource extends ImageResource {
      * @param context
      * @param request
      * @param response
-     * @param urls
      * @param pi
      * @param filename
      * @param cacheManager
