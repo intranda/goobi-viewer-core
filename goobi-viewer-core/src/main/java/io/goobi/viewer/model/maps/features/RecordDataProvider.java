@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 
@@ -34,7 +35,6 @@ import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
-import software.amazon.awssdk.utils.StringUtils;
 
 public class RecordDataProvider extends AbstractFeatureDataProvider {
 
