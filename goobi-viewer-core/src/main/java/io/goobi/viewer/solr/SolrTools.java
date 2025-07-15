@@ -50,6 +50,7 @@ import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrException;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -832,25 +833,29 @@ public final class SolrTools {
         if (filterQuery == null) {
             throw new IllegalArgumentException("filterQuery may not be null");
         }
-        String facettifiedField = useFacetField ? SearchHelper.facetifyField(field) : field;
-        String fq = SearchHelper.buildFinalQuery(filterQuery, false, SearchAggregationType.NO_AGGREGATION);
-        QueryResponse qr =
-                DataManager.getInstance()
-                        .getSearchIndex()
-                        .searchFacetsAndStatistics(fq, null, Collections.singletonList(facettifiedField), 1, false);
-        if (qr != null) {
-            FacetField facet = qr.getFacetField(facettifiedField);
-            if (facet != null) {
-                List<String> ret = new ArrayList<>(facet.getValueCount());
-                for (Count count : facet.getValues()) {
-                    // Skip inverted values
-                    if (!StringTools.checkValueEmptyOrInverted(count.getName())) {
-                        ret.add(count.getName());
-                        // logger.trace(count.getName()); //NOSONAR Debug
+        try {
+            String facettifiedField = useFacetField ? SearchHelper.facetifyField(field) : field;
+            String fq = SearchHelper.buildFinalQuery(filterQuery, false, SearchAggregationType.NO_AGGREGATION);
+            QueryResponse qr =
+                    DataManager.getInstance()
+                            .getSearchIndex()
+                            .searchFacetsAndStatistics(fq, null, Collections.singletonList(facettifiedField), 1, false);
+            if (qr != null) {
+                FacetField facet = qr.getFacetField(facettifiedField);
+                if (facet != null) {
+                    List<String> ret = new ArrayList<>(facet.getValueCount());
+                    for (Count count : facet.getValues()) {
+                        // Skip inverted values
+                        if (!StringTools.checkValueEmptyOrInverted(count.getName())) {
+                            ret.add(count.getName());
+                            // logger.trace(count.getName()); //NOSONAR Debug
+                        }
                     }
+                    return ret;
                 }
-                return ret;
             }
+        } catch (SolrException e) {
+            throw new IndexUnreachableException("Error communication with solr :" + e.toString());
         }
 
         return Collections.emptyList();

@@ -34,6 +34,7 @@ import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
+import software.amazon.awssdk.utils.StringUtils;
 
 public class RecordDataProvider extends AbstractFeatureDataProvider {
 
@@ -45,6 +46,10 @@ public class RecordDataProvider extends AbstractFeatureDataProvider {
     }
 
     public List<MetadataDocument> getResults(String query, int maxResults) throws PresentationException, IndexUnreachableException {
+
+        if (StringUtils.isBlank(query)) {
+            return Collections.emptyList();
+        }
 
         String docsQuery = "+(%s) +(ISWORK:true ISANCHOR:true)".formatted(query);
         String finalQuery = SearchHelper.buildFinalQuery(docsQuery, false, SearchAggregationType.NO_AGGREGATION);
