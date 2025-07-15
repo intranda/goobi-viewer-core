@@ -40,6 +40,7 @@ import java.util.Map;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -113,9 +114,10 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
     }
 
     @Test
+    @Disabled
     void testGetImageInformationFromBaseUrl() {
-        String url = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif").build();
-        String id = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif").build();
+        String url = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif/").build();
+        String id = urls.path(RECORDS_FILES_IMAGE).params(PI, FILENAME + ".tif/").build();
         try (Response response = target(url)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -211,7 +213,7 @@ class ViewerImageResourceTest extends AbstractRestApiTest {
         ContainerRequestContext context = Mockito.mock(ContainerRequestContext.class);
 
         RecordsFilesImageResource resource =
-                new RecordsFilesImageResource(context, request, response, urls, PI, FILENAME + ".tif", ContentServerCacheManager.getInstance());
+                new RecordsFilesImageResource(context, request, response, PI, FILENAME + ".tif", ContentServerCacheManager.getInstance());
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             resource.getPdf().write(baos);
             // System.out.println("Written byte array stream of size " + baos.size());

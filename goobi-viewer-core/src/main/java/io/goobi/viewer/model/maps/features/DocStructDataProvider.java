@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 
@@ -45,6 +46,10 @@ public class DocStructDataProvider extends AbstractFeatureDataProvider {
     }
 
     public List<MetadataDocument> getResults(String query, int maxResults) throws PresentationException, IndexUnreachableException {
+
+        if (StringUtils.isBlank(query)) {
+            return Collections.emptyList();
+        }
 
         String docStructQuery = "+(%s) +DOCTYPE:DOCSTRCT -(ISWORK:true ISANCHOR:true)".formatted(query);
         String filteredQuery = SearchHelper.buildFinalQuery(docStructQuery, false, SearchAggregationType.NO_AGGREGATION);

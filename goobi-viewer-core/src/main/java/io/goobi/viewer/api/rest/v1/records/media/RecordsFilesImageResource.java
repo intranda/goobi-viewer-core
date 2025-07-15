@@ -51,11 +51,11 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageIn
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 import de.unigoettingen.sub.commons.util.PathConverter;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
 import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.api.rest.filters.AccessConditionRequestFilter;
 import io.goobi.viewer.api.rest.filters.FilterTools;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.api.rest.v2.auth.AuthorizationFlowTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
@@ -96,14 +96,13 @@ public class RecordsFilesImageResource extends ImageResource {
      * @param context
      * @param request
      * @param response
-     * @param urls
      * @param pi
      * @param filename
      * @param cacheManager
      */
     public RecordsFilesImageResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
-            @Context ApiUrls urls, @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
+            @Parameter(description = "Persistent identifier of the record") @PathParam("pi") String pi,
             @Parameter(description = "Filename of the image") @PathParam("filename") String filename,
             @Context ContentServerCacheManager cacheManager) {
         super(context, request, response, pi, filename, cacheManager);
@@ -196,8 +195,9 @@ public class RecordsFilesImageResource extends ImageResource {
 
     @Override
     public void createResourceURI(HttpServletRequest request, String directory, String filename) throws IllegalRequestException {
-        super.createResourceURI(request, directory, filename);
         try {
+            AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getIIIFContentApiManager();
+            this.resourceURI = super.createResourceURI(URI.create(urls.getApiUrl()), directory, filename);
             String toReplace = URLEncoder.encode("{pi}", "UTF-8");
             this.resourceURI = URI.create(this.resourceURI.toString().replace(toReplace, directory));
         } catch (UnsupportedEncodingException e) {
