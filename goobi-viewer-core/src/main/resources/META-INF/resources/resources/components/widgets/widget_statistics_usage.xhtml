@@ -13,12 +13,10 @@
 	<composite:interface></composite:interface>
 
 	<composite:implementation>
-		<c:if
-			test="#{statisticsBean.showRecordStatisticsWidget and userBean.admin}">
+		<c:if 
+			test="#{userBean.admin}">
 			<ui:param name="stats"
 				value="#{statisticsBean.getUsageStatisticsForRecord(activeDocumentBean.viewManager.pi)}" />
-			<ui:param name="displayStatistics"
-				value="#{viewBean.get('showRecordStatistics') == 'true' or not statisticsBean.recordStatisticWidgetCollapsible}" />
 
 
 			<div id="widgetUsageStatistics"
@@ -58,10 +56,10 @@
 								src="#{request.contextPath}/resources/images/infinity_loader.svg"
 								class="img-responsive" alt="Waiting..." />
 							</span>
-							<ui:fragment rendered="#{displayStatistics and stats.isEmpty()}">
+							<ui:fragment rendered="#{stats.isEmpty()}">
 								<span>#{msg.statistics__no_data}</span>
 							</ui:fragment>
-							<ui:fragment rendered="#{displayStatistics and !stats.isEmpty()}">
+							<ui:fragment rendered="#{!stats.isEmpty()}">
 
 								<div class="widget-usage-statistics__info-wrapper">
 									<div class="widget-usage-statistics__key">#{msg.widget_usage_statistics__total_views}:</div>
@@ -91,26 +89,6 @@
 						</div>
 					</div>
 
-
-
-					<!-- WIDGET WORK COUNT FOLDOUT -->
-					<h:panelGroup rendered="#{cc.attrs.collapse == true}">
-						<div id="widget-usage-statistics"
-							class="widget widget-usage-statistics">
-							<div class="widget__topbar widget-usage-statistics__topbar">
-								<h2 class="widget__title widget-usage-statistics__title">
-									<a href="#usageStatisticsCollapse" data-toggle="collapse"
-										aria-expanded="false" aria-controls="usageStatisticsCollapse">
-									</a>
-								</h2>
-							</div>
-
-							<div id="usageStatisticsCollapse"
-								class="widget__body widget-usage-statistics__body collapse">
-								<div id="usageStatistics" />
-							</div>
-						</div>
-					</h:panelGroup>
 				</h:form>
 			</div>
 		</c:if>

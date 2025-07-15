@@ -415,13 +415,4 @@ public class StatisticsBean implements Serializable {
     public boolean isUsageStatisticsActive() {
         return DataManager.getInstance().getConfiguration().isStatisticsEnabled();
     }
-
-    public boolean isShowRecordStatisticsWidget() {
-        return DataManager.getInstance().getConfiguration().isShowRecordStatisticsWidget();
-    }
-
-    public boolean isRecordStatisticWidgetCollapsible() {
-        return DataManager.getInstance().getConfiguration().isRecordStatisticsWidgetCollapsible();
-    }
-
 }

@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>25.06-SNAPSHOT</version>
+	<version>25.07-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Goobi viewer - Core</name>
 	<description>The Goobi viewer is an open source solution for the presentation of digitized cultural assets.</description>
@@ -130,7 +130,7 @@
 		<json.version>20250517</json.version>
 		<jsoup.version>1.21.1</jsoup.version>
 		<junit.version>5.13.3</junit.version>
-		<log4j.version>2.25.0</log4j.version>
+		<log4j.version>2.25.1</log4j.version>
 		<mariadb-java-client.version>3.5.4</mariadb-java-client.version>
 		<mockito.version>5.18.0</mockito.version>
 		<mockserver.version>5.15.0</mockserver.version>
