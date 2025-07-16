@@ -35,7 +35,6 @@ import org.apache.commons.lang3.Range;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Line;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
-import de.intranda.digiverso.ocr.alto.model.superclasses.Child;
 
 /**
  * <p>
@@ -215,15 +214,19 @@ public class AltoSearchParser extends AbstractSearchParser {
      * @return a {@link java.lang.String} object.
      */
     public String getPrecedingText(Word w, int maxLength) {
-        String before = "";
-        Child sibling = w.getPreviousSibling();
-        while (sibling != null && before.length() < maxLength) {
-            if (sibling instanceof Word word) {
-                before = word.getSubsContent() + " " + before;
+
+        int wordIndex = w.getParent().getWords().indexOf(w);
+        StringBuilder before = new StringBuilder();
+        if (wordIndex > -1) {
+            ListIterator<Word> lineIterator = w.getParent().getWords().listIterator(wordIndex);
+            while (lineIterator.hasPrevious() && before.length() < maxLength) {
+                if (before.isEmpty() || !Character.isWhitespace(before.charAt(0))) {
+                    before.insert(0, " ");
+                }
+                before.insert(0, lineIterator.previous().getContent());
             }
-            sibling = sibling.getPreviousSibling();
         }
-        return before;
+        return before.toString().trim();
     }
 
     /**
@@ -236,15 +239,19 @@ public class AltoSearchParser extends AbstractSearchParser {
      * @return a {@link java.lang.String} object.
      */
     public String getSucceedingText(Word w, int maxLength) {
-        Child sibling = w.getNextSibling();
-        StringBuilder sb = new StringBuilder();
-        while (sibling != null && sb.length() < maxLength) {
-            if (sibling instanceof Word word) {
-                sb.append(' ').append(word.getSubsContent());
+
+        int wordIndex = w.getParent().getWords().indexOf(w) + 1;
+        StringBuilder after = new StringBuilder();
+        if (wordIndex < w.getParent().getWords().size()) {
+            ListIterator<Word> lineIterator = w.getParent().getWords().listIterator(wordIndex);
+            while (lineIterator.hasNext() && after.length() < maxLength) {
+                if (after.isEmpty() || !Character.isWhitespace(after.charAt(after.length() - 1))) {
+                    after.append(" ");
+                }
+                after.append(lineIterator.next().getContent());
             }
-            sibling = sibling.getNextSibling();
         }
-        return sb.toString();
+        return after.toString().trim();
     }
 
 }
