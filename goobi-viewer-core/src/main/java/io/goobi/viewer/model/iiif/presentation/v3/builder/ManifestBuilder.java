@@ -66,6 +66,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.ApiPath;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
+import io.goobi.viewer.api.rest.v2.auth.AuthorizationFlowTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.exceptions.DAOException;
@@ -183,6 +184,13 @@ public class ManifestBuilder extends AbstractBuilder {
         }
     }
 
+    /**
+     * 
+     * @param pi
+     * @param pageNo
+     * @param manifest
+     * @param request
+     */
     private void addAnnotations(String pi, int pageNo, Manifest3 manifest, HttpServletRequest request) {
         try {
             ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
@@ -349,7 +357,13 @@ public class ManifestBuilder extends AbstractBuilder {
                     }
                 })
                 .ifPresentOrElse(
-                        page -> addRelatedResources(manifest, ele, page),
+                        page -> {
+                            try {
+                                addRelatedResources(manifest, ele, page);
+                            } catch (IndexUnreachableException | DAOException e) {
+                                logger.error(e.toString());
+                            }
+                        },
                         () -> addRelatedResources(manifest, ele));
 
         return manifest;
@@ -360,7 +374,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * @param ele
      */
     private void addRelatedResources(AbstractPresentationModelElement3 manifest, StructElement ele) {
-
+        logger.trace("addRelatedResources (record)");
         // metadata document
         if (ele.isLidoRecord() && DataManager.getInstance().getConfiguration().isVisibleIIIFSeeAlsoLido()) {
             IMetadataValue label = getLabel(DataManager.getInstance().getConfiguration().getLabelIIIFSeeAlsoLido());
@@ -435,7 +449,18 @@ public class ManifestBuilder extends AbstractBuilder {
 
     }
 
-    private void addRelatedResources(AbstractPresentationModelElement3 manifest, StructElement ele, PhysicalElement page) {
+    /**
+     * Page manifest resources.
+     * 
+     * @param manifest
+     * @param ele
+     * @param page
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    private void addRelatedResources(AbstractPresentationModelElement3 manifest, StructElement ele, PhysicalElement page)
+            throws IndexUnreachableException, DAOException {
+        logger.trace("addRelatedResources (page)");
 
         // metadata document
         if (ele.isLidoRecord() && DataManager.getInstance().getConfiguration().isVisibleIIIFSeeAlsoLido()) {
@@ -473,6 +498,7 @@ public class ManifestBuilder extends AbstractBuilder {
             URI uri = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(ele.getPi(), escapeURI(page.getFileName())).buildURI();
             LinkingProperty pdf =
                     new LinkingProperty(LinkingTarget.PDF, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF()));
+            // TODO Add auth services?
             manifest.addRendering(pdf.getResource(uri));
         }
 
@@ -482,7 +508,12 @@ public class ManifestBuilder extends AbstractBuilder {
                     .buildURI();
             LinkingProperty alto =
                     new LinkingProperty(LinkingTarget.ALTO, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingAlto()));
-            manifest.addSeeAlso(alto.getResource(uri));
+            LabeledResource resource = alto.getResource(uri);
+            if (!page.isAccessPermissionFulltext()) {
+                // Add auth services
+                resource.addService(AuthorizationFlowTools.getAuthServices(ele.getPi(), page.getAltoFileName()));
+            }
+            manifest.addSeeAlso(resource);
         }
 
         if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingPlaintext() && page.isFulltextAvailable()) {
@@ -492,7 +523,12 @@ public class ManifestBuilder extends AbstractBuilder {
                     .buildURI();
             LinkingProperty text = new LinkingProperty(LinkingTarget.PLAINTEXT,
                     createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPlaintext()));
-            manifest.addRendering(text.getResource(uri));
+            LabeledResource resource = text.getResource(uri);
+            if (!page.isAccessPermissionFulltext()) {
+                // Add auth services
+                resource.addService(AuthorizationFlowTools.getAuthServices(ele.getPi(), page.getAltoFileName()));
+            }
+            manifest.addRendering(resource);
         }
 
         List<ManifestLinkConfiguration> linkConfigurations = DataManager.getInstance().getConfiguration().getIIIFSeeAlsoMetadataConfigurations();

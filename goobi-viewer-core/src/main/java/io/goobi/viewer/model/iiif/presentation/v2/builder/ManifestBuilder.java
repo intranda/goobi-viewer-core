@@ -62,6 +62,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.v2.auth.AuthorizationFlowTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.exceptions.DAOException;

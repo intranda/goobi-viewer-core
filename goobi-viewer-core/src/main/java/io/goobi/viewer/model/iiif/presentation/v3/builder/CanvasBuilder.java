@@ -47,6 +47,7 @@ import de.intranda.api.annotation.wa.WebAnnotation;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.presentation.v3.Canvas3;
+import de.intranda.api.iiif.presentation.v3.LabeledResource;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
@@ -186,11 +187,18 @@ public class CanvasBuilder extends AbstractBuilder {
      *
      * @param page
      * @return The annotation page, or null if no fulltext is available for the given page
+     * @throws DAOException
+     * @throws IndexUnreachableException
      */
-    private AnnotationPage getFulltextAnnotationsReference(PhysicalElement page) {
+    private AnnotationPage getFulltextAnnotationsReference(PhysicalElement page) throws IndexUnreachableException, DAOException {
         if (page.isFulltextAvailable()) {
             URI annoPageUri = this.urls.path(ApiUrls.RECORDS_PAGES, ApiUrls.RECORDS_PAGES_TEXT).params(page.getPi(), page.getOrder()).buildURI();
-            return new AnnotationPage(annoPageUri, false);
+            AnnotationPage ret = new AnnotationPage(annoPageUri, false);
+            if (!page.isAccessPermissionFulltext()) {
+                // Add auth services
+                ret.addService(AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName()));
+            }
+            return ret;
         }
 
         return null;
@@ -302,8 +310,10 @@ public class CanvasBuilder extends AbstractBuilder {
      * 
      * @param canvas
      * @param page
+     * @throws DAOException
+     * @throws IndexUnreachableException
      */
-    private void addRelatedResources(Canvas3 canvas, PhysicalElement page) {
+    private void addRelatedResources(Canvas3 canvas, PhysicalElement page) throws IndexUnreachableException, DAOException {
 
         if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingViewer()) {
             PageType pageType = PageType.viewMetadata;
@@ -327,6 +337,7 @@ public class CanvasBuilder extends AbstractBuilder {
                     .buildURI();
             LinkingProperty pdf =
                     new LinkingProperty(LinkingTarget.PDF, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF()));
+            // TODO Add auth services?
             canvas.addRendering(pdf.getResource(uri));
         }
 
@@ -334,7 +345,12 @@ public class CanvasBuilder extends AbstractBuilder {
             URI uri = urls.path(RECORDS_FILES, RECORDS_FILES_ALTO).params(page.getPi(), getFilename(page.getAltoFileName())).buildURI();
             LinkingProperty alto =
                     new LinkingProperty(LinkingTarget.ALTO, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingAlto()));
-            canvas.addSeeAlso(alto.getResource(uri));
+            LabeledResource resource = alto.getResource(uri);
+            if (!page.isAccessPermissionFulltext()) {
+                // Add auth services
+                resource.addService(AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName()));
+            }
+            canvas.addSeeAlso(resource);
         }
 
         if (StringUtils.isNotBlank(page.getFulltextFileName())
@@ -348,7 +364,12 @@ public class CanvasBuilder extends AbstractBuilder {
             URI uri = urls.path(RECORDS_FILES, RECORDS_FILES_PLAINTEXT).params(page.getPi(), getFilename(page.getAltoFileName())).buildURI();
             LinkingProperty text = new LinkingProperty(LinkingTarget.PLAINTEXT,
                     createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPlaintext()));
-            canvas.addRendering(text.getResource(uri));
+            LabeledResource resource = text.getResource(uri);
+            if (!page.isAccessPermissionFulltext()) {
+                // Add auth services
+                resource.addService(AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName()));
+            }
+            canvas.addRendering(resource);
         }
     }
 }
