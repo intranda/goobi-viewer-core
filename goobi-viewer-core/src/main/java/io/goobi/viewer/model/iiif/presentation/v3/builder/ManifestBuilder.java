@@ -498,8 +498,12 @@ public class ManifestBuilder extends AbstractBuilder {
             URI uri = urls.path(RECORDS_FILES_IMAGE, RECORDS_FILES_IMAGE_PDF).params(ele.getPi(), escapeURI(page.getFileName())).buildURI();
             LinkingProperty pdf =
                     new LinkingProperty(LinkingTarget.PDF, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF()));
-            // TODO Add auth services?
-            manifest.addRendering(pdf.getResource(uri));
+            LabeledResource resource = pdf.getResource(uri);
+            if (!page.isAccessPermissionPdf()) {
+                // Add auth services
+                resource.addService(AuthorizationFlowTools.getAuthServices(ele.getPi(), page.getAltoFileName()));
+            }
+            manifest.addRendering(resource);
         }
 
         if (DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto() && page.isAltoAvailable()) {

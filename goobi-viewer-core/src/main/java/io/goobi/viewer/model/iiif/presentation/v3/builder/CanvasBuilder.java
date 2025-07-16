@@ -337,8 +337,12 @@ public class CanvasBuilder extends AbstractBuilder {
                     .buildURI();
             LinkingProperty pdf =
                     new LinkingProperty(LinkingTarget.PDF, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF()));
-            // TODO Add auth services?
-            canvas.addRendering(pdf.getResource(uri));
+            LabeledResource resource = pdf.getResource(uri);
+            if (!page.isAccessPermissionFulltext()) {
+                // Add auth services
+                resource.addService(AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName()));
+            }
+            canvas.addRendering(resource);
         }
 
         if (StringUtils.isNotBlank(page.getAltoFileName()) && DataManager.getInstance().getConfiguration().isVisibleIIIFRenderingAlto()) {

@@ -1525,7 +1525,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return false;
         }
 
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        HttpServletRequest request = null;
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
+            request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        }
         try {
             return AccessConditionUtils.checkAccessPermissionForPagePdf(request, this).isGranted();
         } catch (IndexUnreachableException e) {
