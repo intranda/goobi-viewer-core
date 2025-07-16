@@ -49,6 +49,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.intranda.api.annotation.AgentType;
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.ISelector;
+import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.wa.Agent;
 import de.intranda.api.annotation.wa.FragmentSelector;
@@ -117,11 +118,13 @@ public class AnnotationConverter {
                         resource = specificResource;
                     }
                 } else {
-                    TypedResource typedResource = mapper.readValue(anno.getTarget(), TypedResource.class);
-                    if (targetURI != null) {
+                    IResource baseResource = mapper.readValue(anno.getTarget(), TypedResource.class);
+                    if (targetURI != null && baseResource instanceof TypedResource typedResource) {
                         resource = new TypedResource(targetURI, typedResource.getType(), typedResource.getFormat(), typedResource.getProfile());
+                    } else if (targetURI != null && baseResource instanceof SimpleResource) {
+                        resource = new SimpleResource(targetURI);
                     } else {
-                        resource = typedResource;
+                        resource = baseResource;
                     }
                 }
             } catch (JsonParseException e) {
