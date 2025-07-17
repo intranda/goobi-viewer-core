@@ -37,6 +37,7 @@ import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
@@ -337,7 +338,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     public Map<FileType, String> getFileTypes() {
-        Collection<String> filenames = new HashSet<String>(getFileNames().values());
+        Collection<String> filenames = new HashSet<>(getFileNames().values());
         filenames.add(getFileName());
         return FileType.sortByFileType(filenames);
     }
@@ -354,7 +355,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return a {@link java.lang.String} object.
      */
     public String getSandboxedUrl() {
-        logger.trace(fileNames.toString());
+        logger.trace(fileNames);
         if (fileNames.get("html-sandboxed") != null) {
             return fileNames.get("html-sandboxed");
         }
@@ -375,7 +376,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         StringBuilder urlBuilder = new StringBuilder();
         for (String text : watermarkTextConfiguration) {
-            if (StringUtils.startsWithIgnoreCase(text, WATERMARK_TEXT_TYPE_SOLR)) {
+            if (Strings.CI.startsWith(text, WATERMARK_TEXT_TYPE_SOLR)) {
                 String field = text.substring(WATERMARK_TEXT_TYPE_SOLR.length());
                 try {
                     SolrDocumentList res = DataManager.getInstance()
@@ -393,12 +394,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                     logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
 
                 }
-            } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_URN)) {
+            } else if (Strings.CI.equals(text, WATERMARK_TEXT_TYPE_URN)) {
                 if (StringUtils.isNotEmpty(urn)) {
                     urlBuilder.append(urn);
                     break;
                 }
-            } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_PURL)) {
+            } else if (Strings.CI.equals(text, WATERMARK_TEXT_TYPE_PURL)) {
                 urlBuilder.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                         .append("/")
                         .append(PageType.viewImage.getName())
