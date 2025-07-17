@@ -500,8 +500,8 @@ public class ManifestBuilder extends AbstractBuilder {
                     new LinkingProperty(LinkingTarget.PDF, createLabel(DataManager.getInstance().getConfiguration().getLabelIIIFRenderingPDF()));
             LabeledResource resource = pdf.getResource(uri);
             if (!page.isAccessPermissionPdf()) {
-                // Add auth services
-                resource.addService(AuthorizationFlowTools.getAuthServices(ele.getPi(), page.getAltoFileName()));
+                // TODO Find correct PDF file name and add auth services
+                // resource.addService(AuthorizationFlowTools.getAuthServices(ele.getPi(), page.getImageToPdfUrl()));
             }
             manifest.addRendering(resource);
         }
