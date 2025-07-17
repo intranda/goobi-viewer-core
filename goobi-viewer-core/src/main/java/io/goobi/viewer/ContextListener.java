@@ -76,25 +76,6 @@ public class ContextListener implements ServletContextListener {
         DataManager.getInstance();
         ViewerResourceBundle.init(sce.getServletContext());
         logger.trace("Temp folder: {}", DataManager.getInstance().getConfiguration().getTempFolder());
-        try {
-            //Initialize CMSTemplateManager with the exisitng ServletContext
-            //CMSTemplateManager.getInstance(sce.getServletContext());
-            // Add a "member" role, if not yet in the database
-            if (DataManager.getInstance().getDao().getRole("member") == null) {
-                logger.info("Role 'member' does not exist yet, adding...");
-                if (!DataManager.getInstance().getDao().addRole(new Role("member"))) {
-                    logger.error("Could not add static role 'member'.");
-                }
-            }
-            // Add core license type
-            LicenseType.addCoreLicenseTypesToDB();
-            // Add anonymous user
-            UserTools.checkAndCreateAnonymousUser();
-            // add general clientapplication (representing all clients)
-            DataManager.getInstance().getClientManager().addGeneralClientApplicationToDB();
-        } catch (DAOException e) {
-            logger.error(e.getMessage(), e);
-        }
         //        createResources();
 
         // Scan for all Pretty config files in module JARs
