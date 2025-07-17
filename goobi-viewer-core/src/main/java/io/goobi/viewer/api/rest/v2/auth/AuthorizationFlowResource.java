@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -143,7 +144,7 @@ public class AuthorizationFlowResource {
             // Validate origin
             if (!origin.equals(getOriginFromSession())) {
                 logger.trace("Invalid origin, expected: {}", getOriginFromSession());
-                // return JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_ORIGIN));
+                // return JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_ORIGIN)); // TODO re-enabled
             }
 
             if (sessionId.equals(servletRequest.getSession().getId())) {
@@ -188,7 +189,13 @@ public class AuthorizationFlowResource {
                     try {
                         BaseMimeType baseMimeType = FileTools.getBaseMimeType(FileTools.getMimeTypeFromFile(Paths.get(filename)));
                         logger.trace("Base mime type: {}", baseMimeType);
-                        access = AccessConditionUtils.checkAccess(servletRequest, baseMimeType.getName(), pi, filename, false).isGranted();
+                        if (BaseMimeType.APPLICATION.equals(baseMimeType) && "pdf".equalsIgnoreCase(FilenameUtils.getExtension(filename))) {
+                            // TODO Page PDF access check
+                            access = false;
+                        } else {
+                            // Image/text access check
+                            access = AccessConditionUtils.checkAccess(servletRequest, baseMimeType.getName(), pi, filename, false).isGranted();
+                        }
                         token.addPermission(key, access);
                     } catch (IndexUnreachableException | DAOException | IOException e) {
                         logger.error(e.getMessage());
