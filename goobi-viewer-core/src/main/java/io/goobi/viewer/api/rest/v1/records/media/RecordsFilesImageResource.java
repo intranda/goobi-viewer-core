@@ -224,6 +224,6 @@ public class RecordsFilesImageResource extends ImageResource {
             info.addService(AuthorizationFlowTools.getAuthServices(pi, filename));
         }
 
-        return new ImageInformation3(info);
+        return new ImageInformation(info);
     }
 }
