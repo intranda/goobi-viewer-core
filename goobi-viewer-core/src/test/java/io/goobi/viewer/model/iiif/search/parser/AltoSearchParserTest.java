@@ -34,8 +34,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Line;
+import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Space;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
+import de.intranda.digiverso.ocr.alto.utils.AltoCoords;
 
 /**
  * @author florian
@@ -61,6 +63,70 @@ class AltoSearchParserTest {
      */
     @AfterEach
     public void tearDown() throws Exception {
+    }
+
+    @Test
+    void test_getTextBefore_noSpaces() {
+        Line line = new Line(new AltoCoords(0, 0, 1000, 20));
+        String text = "Da es dem Herrn Verleger darauf ankommt, ein geschichtliches";
+        int x = 10;
+        for (String wordString : text.split("\\s+")) {
+            Word word = new Word(wordString, new AltoCoords(x, 10, 8, 5));
+            line.addWord(word);
+            x += 10;
+        }
+        Word selected = line.getWords().get(4);
+        String preceeding = parser.getPrecedingText(selected, 10);
+        Assertions.assertEquals("dem Herrn", preceeding);
+    }
+
+    @Test
+    void test_getTextBefore() {
+        Line line = new Line(new AltoCoords(0, 0, 1000, 20));
+        String text = "Da es dem Herrn Verleger darauf ankommt, ein geschichtliches";
+        int x = 10;
+        for (String wordString : text.split("\\s+")) {
+            Word word = new Word(wordString, new AltoCoords(x, 10, 8, 5));
+            line.addChild(word);
+            Space space = new Space(" ", new AltoCoords(x + 8, 10, 2, 5));
+            line.addChild(space);
+            x += 10;
+        }
+        Word selected = line.getWords().get(4);
+        String preceeding = parser.getPrecedingText(selected, 10);
+        Assertions.assertEquals("dem Herrn", preceeding);
+    }
+
+    @Test
+    void test_getTextAfter_noSpaces() {
+        Line line = new Line(new AltoCoords(0, 0, 1000, 20));
+        String text = "Da es dem Herrn Verleger darauf ankommt, ein geschichtliches";
+        int x = 10;
+        for (String wordString : text.split("\\s+")) {
+            Word word = new Word(wordString, new AltoCoords(x, 10, 8, 5));
+            line.addWord(word);
+            x += 10;
+        }
+        Word selected = line.getWords().get(4);
+        String preceeding = parser.getSucceedingText(selected, 15);
+        Assertions.assertEquals("darauf ankommt,", preceeding);
+    }
+
+    @Test
+    void test_getTextAfter() {
+        Line line = new Line(new AltoCoords(0, 0, 1000, 20));
+        String text = "Da es dem Herrn Verleger darauf ankommt, ein geschichtliches";
+        int x = 10;
+        for (String wordString : text.split("\\s+")) {
+            Word word = new Word(wordString, new AltoCoords(x, 10, 8, 5));
+            line.addChild(word);
+            Space space = new Space(" ", new AltoCoords(x + 8, 10, 2, 5));
+            line.addChild(space);
+            x += 10;
+        }
+        Word selected = line.getWords().get(4);
+        String preceeding = parser.getSucceedingText(selected, 15);
+        Assertions.assertEquals("darauf ankommt,", preceeding);
     }
 
     @Test

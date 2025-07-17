@@ -520,7 +520,9 @@ public class IIIFSearchBuilder {
         queryBuilder.append(" +DOCTYPE:DOCSTRCT");
         queryBuilder.append(" +( ");
         for (String field : searchFields) {
-            queryBuilder.append(field).append(":").append(query).append("* ");
+            if (StringUtils.isNotBlank(field)) {
+                queryBuilder.append(field).append(":").append(query).append("* ");
+            }
         }
         queryBuilder.append(")");
 
