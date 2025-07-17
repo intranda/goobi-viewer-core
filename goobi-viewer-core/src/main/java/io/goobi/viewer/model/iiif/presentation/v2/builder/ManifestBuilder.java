@@ -54,6 +54,7 @@ import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.intranda.api.iiif.presentation.v2.Manifest2;
 import de.intranda.api.iiif.search.AutoSuggestService;
 import de.intranda.api.iiif.search.SearchService;
+import de.intranda.api.services.Service;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
@@ -336,13 +337,16 @@ public class ManifestBuilder extends AbstractBuilder {
 
         this.getRenderings().forEach(link -> {
             try {
-                URI id = page.map(p -> {
-                    return getLinkingPropertyUri(p, link.getTarget());
-                }).orElse(getLinkingPropertyUri(ele, link.getTarget()));
+                URI id = page.map(p -> getLinkingPropertyUri(p, link.getTarget())).orElse(getLinkingPropertyUri(ele, link.getTarget()));
                 if (id != null) {
-                    manifest.addRendering(link.getLinkingContent(id));
+                    LinkingContent content = link.getLinkingContent(id);
+                    Service authService = getAuthServiceIfResourceRestricted(page, link.getTarget());
+                    if (authService != null) {
+                        content.addService(authService);
+                    }
+                    manifest.addRendering(content);
                 }
-            } catch (URISyntaxException | PresentationException | IndexUnreachableException e) {
+            } catch (URISyntaxException | PresentationException | IndexUnreachableException | DAOException e) {
                 logger.error("Error building linking property url", e);
             }
         });
@@ -402,6 +406,49 @@ public class ManifestBuilder extends AbstractBuilder {
                 break;
         }
         return uri;
+    }
+
+    /**
+     * 
+     * @param page
+     * @param target
+     * @return AuthProbeService2 (and attached services) if access to resource is restricted; null otherwise
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    private static Service getAuthServiceIfResourceRestricted(Optional<PhysicalElement> page, LinkingTarget target)
+            throws IndexUnreachableException, DAOException {
+        if (page.isEmpty() || target == null) {
+            return null;
+        }
+
+        switch (target) {
+            case VIEWER:
+                if (page.get().isAccessPermissionObject()) {
+                    return AuthorizationFlowTools.getAuthServices(page.get().getPi(), page.get().getFileName());
+                }
+                break;
+            case ALTO:
+                if (page.get().isAltoAvailable() && page.get().isAccessPermissionFulltext()) {
+                    return AuthorizationFlowTools.getAuthServices(page.get().getPi(), page.get().getAltoFileName());
+                }
+                break;
+            case PLAINTEXT:
+                if (page.get().isFulltextAvailable() && page.get().isAccessPermissionFulltext()) {
+                    return AuthorizationFlowTools.getAuthServices(page.get().getPi(), page.get().getFulltextFileName());
+                }
+                break;
+            case PDF:
+                if (!page.get().isAccessPermissionPdf()) {
+                    // TODO Find correct PDF file name and add auth services
+                    // return AuthorizationFlowTools.getAuthServices(page.get().getPi(), page.get().getImageToPdfUrl());
+                }
+                break;
+            default:
+                break;
+        }
+
+        return null;
     }
 
     /**
