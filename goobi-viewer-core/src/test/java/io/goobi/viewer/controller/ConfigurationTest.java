@@ -162,7 +162,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getCollectionBlacklist_shouldReturnAllConfiguredElements() {
         List<String> ret = DataManager.getInstance().getConfiguration().getCollectionBlacklist(SolrConstants.DC);
-        Assertions.assertNotNull(ret);
+        assertNotNull(ret);
         assertEquals(2, ret.size());
     }
 
@@ -431,7 +431,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getTocLabelConfiguration_shouldReturnCorrectTemplateConfiguration() {
         List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getTocLabelConfiguration("PeriodicalVolume");
-        Assertions.assertNotNull(metadataList);
+        assertNotNull(metadataList);
         assertEquals(1, metadataList.size());
         Metadata metadata = metadataList.get(0);
         assertEquals("", metadata.getLabel());
@@ -452,7 +452,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getTocLabelConfiguration_shouldReturnDefaultTemplateConfigurationIfTemplateNotFound() {
         List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getTocLabelConfiguration("notfound");
-        Assertions.assertNotNull(metadataList);
+        assertNotNull(metadataList);
         assertEquals(1, metadataList.size());
         Metadata metadata = metadataList.get(0);
         assertEquals("", metadata.getLabel());
@@ -521,7 +521,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getSecurityQuestions_shouldReturnAllConfiguredElements() {
         List<SecurityQuestion> result = DataManager.getInstance().getConfiguration().getSecurityQuestions();
-        Assertions.assertNotNull(result);
+        assertNotNull(result);
         assertEquals(2, result.size());
         {
             SecurityQuestion q = result.get(0);
@@ -950,7 +950,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void loadStopwords_shouldLoadAllStopwords() throws IOException {
         Set<String> stopwords = Configuration.loadStopwords("src/test/resources/stopwords.txt");
-        Assertions.assertNotNull(stopwords);
+        assertNotNull(stopwords);
         assertEquals(5, stopwords.size());
     }
 
@@ -962,7 +962,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void loadStopwords_shouldRemovePartsStartingWithPipe() throws IOException {
         Set<String> stopwords = Configuration.loadStopwords("src/test/resources/stopwords.txt");
-        Assertions.assertNotNull(stopwords);
+        assertNotNull(stopwords);
         assertTrue(stopwords.contains("one"));
     }
 
@@ -973,7 +973,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void loadStopwords_shouldNotAddEmptyStopwords() throws IOException {
         Set<String> stopwords = Configuration.loadStopwords("src/test/resources/stopwords.txt");
-        Assertions.assertNotNull(stopwords);
+        assertNotNull(stopwords);
         assertFalse(stopwords.contains(""));
     }
 
@@ -1978,7 +1978,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getPriorityValuesForFacetField_shouldReturnReturnAllConfiguredElementsForRegularFields() {
         List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForFacetField("MD_PLACEPUBLISH");
-        Assertions.assertNotNull(result);
+        assertNotNull(result);
         assertEquals(3, result.size());
         assertEquals("val1", result.get(0));
         assertEquals("val2", result.get(1));
@@ -1992,7 +1992,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getPriorityValuesForFacetField_shouldReturnReturnAllConfiguredElementsForHierarchicalFields() {
         List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForFacetField("DC");
-        Assertions.assertNotNull(result);
+        assertNotNull(result);
         assertEquals(2, result.size());
         assertEquals("collection2", result.get(0));
         assertEquals("collection1", result.get(1));
@@ -2106,7 +2106,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getAdvancedSearchTemplateNames_shouldReturnCorrectValue() {
         List<String> result = DataManager.getInstance().getConfiguration().getAdvancedSearchTemplateNames();
-        Assertions.assertNotNull(result);
+        assertNotNull(result);
         assertEquals(2, result.size());
     }
 
@@ -2527,7 +2527,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getAncestorIdentifierFields_shouldReturnAllConfiguredValues() {
         List<String> list = DataManager.getInstance().getConfiguration().getAncestorIdentifierFields();
-        Assertions.assertNotNull(list);
+        assertNotNull(list);
         assertEquals(1, list.size());
         assertEquals(SolrConstants.PI_PARENT, list.get(0));
     }
@@ -2685,7 +2685,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getSearchExcelExportFields_shouldReturnAllValues() {
         List<ExportFieldConfiguration> result = DataManager.getInstance().getConfiguration().getSearchExcelExportFields();
-        Assertions.assertNotNull(result);
+        assertNotNull(result);
         assertEquals(2, result.size());
         assertEquals(SolrConstants.PI, result.get(0).getField());
         assertEquals(SolrConstants.LABEL, result.get(1).getField());
@@ -2716,7 +2716,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getDisplayAdditionalMetadataIgnoreFields_shouldReturnCorrectValues() {
         List<String> results = DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields();
-        Assertions.assertNotNull(results);
+        assertNotNull(results);
         assertEquals(3, results.size());
         assertEquals(SolrConstants.ISANCHOR, results.get(0));
         assertEquals(SolrConstants.ISWORK, results.get(1));
@@ -2730,7 +2730,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getDisplayAdditionalMetadataTranslateFields_shouldReturnCorrectValues() {
         List<String> results = DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields();
-        Assertions.assertNotNull(results);
+        assertNotNull(results);
         assertEquals(3, results.size());
         assertEquals(SolrConstants.DC, results.get(0));
         assertEquals(SolrConstants.DOCSTRCT, results.get(1));
@@ -2744,7 +2744,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getDisplayAdditionalMetadataOnelineFields_shouldReturnCorrectValues() {
         List<String> results = DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataOnelineFields();
-        Assertions.assertNotNull(results);
+        assertNotNull(results);
         assertEquals(1, results.size());
         assertEquals("MD_ACCESSLOCATIONS", results.get(0));
     }
@@ -2756,7 +2756,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getDisplayAdditionalMetadataSnippetFields_shouldReturnCorrectValues() {
         List<String> results = DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataSnippetFields();
-        Assertions.assertNotNull(results);
+        assertNotNull(results);
         assertEquals(1, results.size());
         assertEquals("MD_DESCRIPTION", results.get(0));
     }
@@ -2768,7 +2768,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getDisplayAdditionalMetadataNoHighlightFields_shouldReturnCorrectValues() {
         List<String> results = DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataNoHighlightFields();
-        Assertions.assertNotNull(results);
+        assertNotNull(results);
         assertEquals(1, results.size());
         assertEquals("MD_REFID", results.get(0));
     }
@@ -3108,7 +3108,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void testGetGeoMapMarker() {
         GeoMapMarker marker = DataManager.getInstance().getConfiguration().getGeoMapMarker("maps__marker_2");
-        Assertions.assertNotNull(marker);
+        assertNotNull(marker);
         assertEquals("maps__marker_2", marker.getName());
         assertEquals("fa-search", marker.getIcon());
     }
@@ -3287,7 +3287,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getTranslationGroups_shouldReadConfigItemsCorrectly() {
         List<TranslationGroup> result = DataManager.getInstance().getConfiguration().getTranslationGroups();
-        Assertions.assertNotNull(result);
+        assertNotNull(result);
         assertEquals(3, result.size());
         {
             TranslationGroup group = result.get(0);
@@ -3326,9 +3326,9 @@ class ConfigurationTest extends AbstractTest {
     void getMetadataFromSubnodeConfig_shouldLoadMetadataConfigAttributesCorrectly() {
         HierarchicalConfiguration<ImmutableNode> metadataConfig =
                 DataManager.getInstance().getConfiguration().getLocalConfigurationAt("metadata.metadataView(0).template(0).metadata(4)");
-        Assertions.assertNotNull(metadataConfig);
+        assertNotNull(metadataConfig);
         Metadata md = Configuration.getMetadataFromSubnodeConfig(metadataConfig, false, 0);
-        Assertions.assertNotNull(md);
+        assertNotNull(md);
         assertEquals("MD_CATALOGIDSOURCE", md.getLabel());
         assertEquals("LINK_CATALOGIDSOURCE", md.getMasterValue());
         assertEquals("; ", md.getSeparator());
@@ -3343,9 +3343,9 @@ class ConfigurationTest extends AbstractTest {
     void getMetadataFromSubnodeConfig_shouldLoadParametersCorrectly() {
         HierarchicalConfiguration<ImmutableNode> metadataConfig =
                 DataManager.getInstance().getConfiguration().getLocalConfigurationAt("metadata.metadataView(1).template(0).metadata(1)");
-        Assertions.assertNotNull(metadataConfig);
+        assertNotNull(metadataConfig);
         Metadata md = Configuration.getMetadataFromSubnodeConfig(metadataConfig, false, 0);
-        Assertions.assertNotNull(md);
+        assertNotNull(md);
         assertEquals(5, md.getParams().size());
         assertEquals("EVENTTYPE", md.getParams().get(0).getKey());
         assertEquals(MetadataParameterType.FIELD, md.getParams().get(0).getType());
@@ -3360,10 +3360,10 @@ class ConfigurationTest extends AbstractTest {
     void getMetadataFromSubnodeConfig_shouldLoadChildMetadataConfigurationsRecursively() {
         List<HierarchicalConfiguration<ImmutableNode>> metadataConfig =
                 DataManager.getInstance().getConfiguration().getLocalConfigurationsAt("metadata.metadataView(1).template(0).metadata(1)");
-        Assertions.assertNotNull(metadataConfig);
+        assertNotNull(metadataConfig);
         assertFalse(metadataConfig.isEmpty());
         Metadata md = Configuration.getMetadataFromSubnodeConfig(metadataConfig.get(0), false, 0);
-        Assertions.assertNotNull(md);
+        assertNotNull(md);
         assertEquals(0, md.getIndentation());
         assertEquals(1, md.getChildMetadata().size());
         Metadata childMd = md.getChildMetadata().get(0);
@@ -3552,17 +3552,17 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getCopyrightIndicatorStatusForValue_shouldReturnCorrectValue() {
         CopyrightIndicatorStatus status = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue("Freier Zugang");
-        Assertions.assertNotNull(status);
+        assertNotNull(status);
         assertEquals(CopyrightIndicatorStatus.Status.OPEN, status.getStatus());
         assertEquals("COPYRIGHT_STATUS_OPEN", status.getDescription());
 
         status = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue("Eingeschränker Zugang");
-        Assertions.assertNotNull(status);
+        assertNotNull(status);
         assertEquals(CopyrightIndicatorStatus.Status.PARTIAL, status.getStatus());
         assertEquals("COPYRIGHT_STATUS_PARTIAL", status.getDescription());
 
         status = DataManager.getInstance().getConfiguration().getCopyrightIndicatorStatusForValue("Gesperrter Zugang");
-        Assertions.assertNotNull(status);
+        assertNotNull(status);
         assertEquals(CopyrightIndicatorStatus.Status.LOCKED, status.getStatus());
         assertEquals("COPYRIGHT_STATUS_LOCKED", status.getDescription());
 
@@ -3584,7 +3584,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getCopyrightIndicatorLicenseForValue_shouldReturnCorrectValue() {
         CopyrightIndicatorLicense result = DataManager.getInstance().getConfiguration().getCopyrightIndicatorLicenseForValue("VGWORT");
-        Assertions.assertNotNull(result);
+        assertNotNull(result);
         assertEquals("COPYRIGHT_DESCRIPTION_VGWORT", result.getDescription());
         assertEquals(1, result.getIcons().size());
         assertEquals("paragraph50.svg", result.getIcons().get(0));
