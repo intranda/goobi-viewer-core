@@ -24,14 +24,12 @@ package io.goobi.viewer.managedbeans;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.rometools.rome.feed.synd.SyndEntry;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -39,10 +37,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.rss.Channel;
 import io.goobi.viewer.model.rss.RSSFeed;
-import io.goobi.viewer.model.search.SearchAggregationType;
-import io.goobi.viewer.model.search.SearchFacets;
-import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.servlets.utils.ServletUtils;
+import io.goobi.viewer.solr.SolrConstants;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
 
@@ -70,6 +65,10 @@ public class RSSBean {
         }
 
         return Collections.emptyList();
+    }
+
+    public Channel getRssFeedChannel(Integer maxHits, String query) {
+        return getRssFeedChannel(maxHits, query, SolrConstants.DATECREATED, true);
     }
 
     /**
