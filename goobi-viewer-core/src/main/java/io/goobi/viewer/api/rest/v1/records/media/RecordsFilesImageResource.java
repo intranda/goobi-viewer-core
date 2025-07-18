@@ -39,7 +39,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.iiif.image.ImageInformation;
-import de.intranda.api.iiif.image.v3.ImageInformation3;
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -47,6 +46,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
@@ -83,7 +83,6 @@ import jakarta.ws.rs.core.StreamingOutput;
  */
 @Path(RECORDS_FILES_IMAGE)
 @ContentServerBinding
-@AccessConditionBinding
 @CORSBinding
 public class RecordsFilesImageResource extends ImageResource {
 
@@ -150,6 +149,7 @@ public class RecordsFilesImageResource extends ImageResource {
     @GET
     @Path(RECORDS_FILES_IMAGE_PDF)
     @Produces("application/pdf")
+    @AccessConditionBinding
     @ContentServerPdfBinding
     @RecordFileDownloadBinding
     @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
@@ -184,15 +184,17 @@ public class RecordsFilesImageResource extends ImageResource {
         }
     }
 
-    @Override
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
+    @AccessConditionBinding
     @ContentServerImageInfoBinding
     @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 2.1.1 image information object")
+    @Override
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
         return super.redirectToCanonicalImageInfo();
     }
 
+    @AccessConditionBinding
     @Override
     public void createResourceURI(HttpServletRequest request, String directory, String filename) throws IllegalRequestException {
         try {
@@ -205,12 +207,33 @@ public class RecordsFilesImageResource extends ImageResource {
         }
     }
 
+    @GET
+    @Path("/full.gif")
+    @Produces("image/gif")
+    @AccessConditionBinding
+    @ContentServerImageBinding
     @Override
+    public StreamingOutput getGif() throws ContentLibException {
+        return super.getGif();
+    }
+
+    @GET
+    @Path("/{region}/{size}/{rotation}/{quality}.{format}")
+    @Produces({ "image/jpg", "image/png", "image/tif" })
+    @AccessConditionBinding
+    @ContentServerImageBinding
+    @Override
+    public Response getImage(@PathParam("region") String region, @PathParam("size") String size, @PathParam("rotation") String rotation,
+            @PathParam("quality") String quality, @PathParam("format") String format) throws ContentLibException {
+        return super.getImage(region, size, rotation, quality, format);
+    }
+
     @GET
     @Path("/info.json")
     @Produces({ MEDIA_TYPE_APPLICATION_JSONLD, MediaType.APPLICATION_JSON })
     @ContentServerImageInfoBinding
     @CORSBinding
+    @Override
     public ImageInformation getInfoAsJson() throws ContentLibException {
         logger.trace("getInfoAsJson");
         ImageInformation info = super.getInfoAsJson();
