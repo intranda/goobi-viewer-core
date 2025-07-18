@@ -424,17 +424,17 @@ public class ManifestBuilder extends AbstractBuilder {
 
         switch (target) {
             case VIEWER:
-                if (page.get().isAccessPermissionObject()) {
+                if (!page.get().isAccessPermissionObject()) {
                     return AuthorizationFlowTools.getAuthServices(page.get().getPi(), page.get().getFileName());
                 }
                 break;
             case ALTO:
-                if (page.get().isAltoAvailable() && page.get().isAccessPermissionFulltext()) {
+                if (page.get().isAltoAvailable() && !page.get().isAccessPermissionFulltext()) {
                     return AuthorizationFlowTools.getAuthServices(page.get().getPi(), page.get().getAltoFileName());
                 }
                 break;
             case PLAINTEXT:
-                if (page.get().isFulltextAvailable() && page.get().isAccessPermissionFulltext()) {
+                if (page.get().isFulltextAvailable() && !page.get().isAccessPermissionFulltext()) {
                     return AuthorizationFlowTools.getAuthServices(page.get().getPi(), page.get().getFulltextFileName());
                 }
                 break;
