@@ -155,7 +155,6 @@ public class CampaignEndpoint {
         }
     }
 
-    @Override
     @OnError
     public void onError(Session session, Throwable t) {
         if (!(t instanceof EOFException)) {
