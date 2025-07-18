@@ -23,6 +23,7 @@ package io.goobi.viewer.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -1822,7 +1823,7 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("copyright", result.get(1));
         assertEquals("search-in-current-item", result.get(2));
     }
-    
+
     /**
      * @see Configuration#isSidebarWidgetForViewCollapsible(String,String)
      * @verifies return correct value
@@ -1831,7 +1832,7 @@ class ConfigurationTest extends AbstractTest {
     void isSidebarWidgetForViewCollapsible_shouldReturnCorrectValue() {
         assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsible("object", "copyright"));
     }
-    
+
     /**
      * @see Configuration#isSidebarWidgetForViewCollapsedByDefault(String,String)
      * @verifies return correct value
@@ -3165,6 +3166,17 @@ class ConfigurationTest extends AbstractTest {
     void getSidebarWidgetCitationCitationRecommendationStyles_shouldReturnAllConfiguredValues() {
         List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetCitationCitationRecommendationStyles();
         assertEquals(3, result.size());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetCitationCitationStyles()
+     * @verifies return correct configuration
+     */
+    @Test
+    void getSidebarWidgetCitationCitationRecommendationSource_shouldReturnCorrectConfiguration() {
+        Metadata result = DataManager.getInstance().getConfiguration().getSidebarWidgetCitationCitationRecommendationSource();
+        assertNotNull(result);
+        assertEquals("MD_LICENSETEXT", result.getLabel());
     }
 
     /**

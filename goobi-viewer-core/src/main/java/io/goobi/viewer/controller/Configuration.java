@@ -1078,6 +1078,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      *
      * @return Configured values
+     * @should return correct configuration
      */
     public Metadata getSidebarWidgetCitationCitationRecommendationSource() {
         HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("citation");
