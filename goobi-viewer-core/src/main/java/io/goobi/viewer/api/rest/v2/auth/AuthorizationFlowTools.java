@@ -16,8 +16,8 @@ import de.intranda.api.iiif.auth.v2.AuthLogoutService2;
 import de.intranda.api.iiif.auth.v2.AuthProbeService2;
 import io.goobi.viewer.controller.DataManager;
 
-public class AuthorizationFlowTools {
-    
+public final class AuthorizationFlowTools {
+
     private AuthorizationFlowTools() {
     }
 
@@ -25,7 +25,7 @@ public class AuthorizationFlowTools {
      * 
      * @param pi
      * @param fileName
-     * @return
+     * @return {@link AuthProbeService2}
      */
     public static AuthProbeService2 getAuthServices(String pi, String fileName) {
         String baseUrl = DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "api/v2" + AUTH;

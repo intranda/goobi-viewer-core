@@ -99,6 +99,7 @@ public class AuthorizationFlowResource {
 
     /**
      * For testing purposes.
+     * @return {@link AuthProbeService2}
      */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })

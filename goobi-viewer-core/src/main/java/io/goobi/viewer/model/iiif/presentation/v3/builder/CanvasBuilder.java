@@ -341,6 +341,7 @@ public class CanvasBuilder extends AbstractBuilder {
             if (!page.isAccessPermissionFulltext()) {
                 // TODO Find correct PDF file name and add auth services
                 // resource.addService(AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName()));
+                logger.trace("Added auth services for PDF.");
             }
             canvas.addRendering(resource);
         }

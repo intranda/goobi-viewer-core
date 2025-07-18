@@ -502,6 +502,7 @@ public class ManifestBuilder extends AbstractBuilder {
             if (!page.isAccessPermissionPdf()) {
                 // TODO Find correct PDF file name and add auth services
                 // resource.addService(AuthorizationFlowTools.getAuthServices(ele.getPi(), page.getImageToPdfUrl()));
+                logger.trace("Added auth services for PDF.");
             }
             manifest.addRendering(resource);
         }
