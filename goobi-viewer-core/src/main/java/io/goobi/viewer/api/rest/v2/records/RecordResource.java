@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.api.rest.v2.records;
 
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_AUTOCOMPLETE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_SEARCH;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_ANNOTATIONS;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_ANNOTATIONS_PAGE;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.RECORDS_COMMENTS;
@@ -33,21 +35,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
-import jakarta.inject.Inject;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.annotation.IAnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
+import de.intranda.api.iiif.search.AutoSuggestResult;
+import de.intranda.api.iiif.search.SearchResult;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -63,8 +58,18 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.ManifestBuilder;
+import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * @author florian
@@ -167,6 +172,64 @@ public class RecordResource {
         } else {
             return new AnnotationPage(uri);
         }
+    }
+
+    /**
+     * Endpoint for IIIF Search API service in a manifest. Depending on the given motivation parameters, fulltext (motivation=painting), user comments
+     * (motivation=commenting) and general (crowdsourcing-) annotations (motivation=describing) may be searched.
+     *
+     * @param pi The pi of the manifest to search
+     * @param query The search query; a list of space separated terms. The search is for all complete words which match any of the query terms. Terms
+     *            may contain the wildcard charachter '*' to represent an arbitrary number of characters within the word
+     * @param motivation a space separated list of motivations of annotations to search for. Search for the following motivations is implemented:
+     *            <ul>
+     *            <li>painting: fulltext resources</li>
+     *            <li>non-painting: all supported resources except fulltext</li>
+     *            <li>commenting: user comments</li>
+     *            <li>describing: Crowdsourced or other general annotations</li>
+     *            </ul>
+     * @param date not supported. If this parameter is given, it will be included in the 'ignored' property of the 'within' property of the answer
+     * @param user not supported. If this parameter is given, it will be included in the 'ignored' property of the 'within' property of the answer
+     * @param page the page number for paged result sets. if this is empty, page=1 is assumed
+     * @return a {@link de.intranda.api.iiif.search.SearchResult} containing all annotations matching the query in the 'resources' property
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     */
+    @GET
+    @jakarta.ws.rs.Path(RECORDS_MANIFEST_SEARCH)
+    @Produces({ MediaType.APPLICATION_JSON })
+    public SearchResult searchInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation,
+            @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page)
+            throws IndexUnreachableException, PresentationException {
+        return new IIIFSearchBuilder(urls, query, pi, servletRequest).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
+    }
+
+    /**
+     * <p>
+     * autoCompleteInManifest.
+     * </p>
+     *
+     * @param pi a {@link java.lang.String} object.
+     * @param query a {@link java.lang.String} object.
+     * @param motivation a {@link java.lang.String} object.
+     * @param date a {@link java.lang.String} object.
+     * @param user a {@link java.lang.String} object.
+     * @param page a {@link java.lang.Integer} object.
+     * @return a {@link de.intranda.api.iiif.search.AutoSuggestResult} object.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     */
+    @GET
+    @jakarta.ws.rs.Path(RECORDS_MANIFEST_AUTOCOMPLETE)
+    @Produces({ MediaType.APPLICATION_JSON })
+    public AutoSuggestResult autoCompleteInManifest(@PathParam("pi") String pi, @QueryParam("q") String query,
+            @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user,
+            @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
+        return new IIIFSearchBuilder(urls, query, pi, servletRequest).setMotivation(motivation)
+                .setDate(date)
+                .setUser(user)
+                .setPage(page)
+                .buildAutoSuggest();
     }
 
 }

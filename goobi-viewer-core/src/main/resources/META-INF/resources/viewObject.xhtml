@@ -69,7 +69,7 @@
 				</div>
 
 				<!-- Update pagenumber and all relevant html areas with ajax when changing image in sequence mode -->
-				<h:form>
+				<h:form styleClass="view-object__update-form">
 					<h:commandScript name="setCurrentImageOrder" action="#{activeDocumentBean.setCurrentImageOrderPerScript}" 
 					onevent="onPageUpdateEvent" onerror="onPageUpdateEvent"
 					render="imageControls:fullscreenLink :viewMetadata :userCommentsForm :userGeneratedContentGroup :sidebar:widgetViews:widgetViewsForm :sidebar:widgetMetadata:sidebarMetadataList :sidebar:widgetDownloads:pageDownloads :sidebar:widgetCitation:pageCitations :sidebar:widgetAnnotations:widgetAnnotationList:annotationList :sidebar:widgetMetadataTech:technicalMetadataList"></h:commandScript>

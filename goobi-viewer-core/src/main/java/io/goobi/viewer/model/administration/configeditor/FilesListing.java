@@ -29,14 +29,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import jakarta.faces.model.DataModel;
-import jakarta.faces.model.ListDataModel;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import jakarta.faces.model.DataModel;
+import jakarta.faces.model.ListDataModel;
 
 public class FilesListing implements Serializable {
 
@@ -63,7 +62,7 @@ public class FilesListing implements Serializable {
         FilenameFilter filter = new FilenameFilter() {
             @Override
             public boolean accept(File f, String name) {
-                return name.endsWith(".xml") || name.endsWith(".xsl") || name.endsWith(".properties");
+                return name.endsWith(".xml") || name.endsWith(".xsl") || name.endsWith(".properties") || name.endsWith(".txt");
             }
         };
 

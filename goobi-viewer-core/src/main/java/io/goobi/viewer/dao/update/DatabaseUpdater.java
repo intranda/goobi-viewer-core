@@ -31,9 +31,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.reflections.Reflections;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
+import io.goobi.viewer.model.security.LicenseType;
+import io.goobi.viewer.model.security.Role;
+import io.goobi.viewer.model.security.user.UserTools;
 
 /**
  * Management tool to updated deprecated viewer database setups to the one required by the viewer. to be run at viewer start, right after initializing
@@ -77,6 +81,26 @@ public class DatabaseUpdater {
             } catch (SQLException | DAOException e) {
                 logger.error("Failed to update database using {}", update.getClass().getSimpleName(), e);
             }
+        }
+
+        try {
+            //Initialize CMSTemplateManager with the exisitng ServletContext
+            //CMSTemplateManager.getInstance(sce.getServletContext());
+            // Add a "member" role, if not yet in the database
+            if (DataManager.getInstance().getDao().getRole("member") == null) {
+                logger.info("Role 'member' does not exist yet, adding...");
+                if (!DataManager.getInstance().getDao().addRole(new Role("member"))) {
+                    logger.error("Could not add static role 'member'.");
+                }
+            }
+            // Add core license type
+            LicenseType.addCoreLicenseTypesToDB();
+            // Add anonymous user
+            UserTools.checkAndCreateAnonymousUser();
+            // add general clientapplication (representing all clients)
+            DataManager.getInstance().getClientManager().addGeneralClientApplicationToDB();
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
         }
     }
 

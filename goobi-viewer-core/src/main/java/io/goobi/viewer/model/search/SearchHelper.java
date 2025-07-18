@@ -63,6 +63,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrException;
 import org.apache.solr.common.params.ExpandParams;
 import org.jsoup.Jsoup;
 
@@ -1770,30 +1771,32 @@ public final class SearchHelper {
         } else {
             facetFieldNames.add(useFacetFieldName);
         }
-
-        QueryResponse resp = DataManager.getInstance()
-                .getSearchIndex()
-                .searchFacetsAndStatistics(query, null, facetFieldNames, facetMinCount, facetPrefix, params, false);
-        FacetField facetField = resp.getFacetField(useFacetFieldName);
-        if (json && resp.getJsonFacetingResponse() != null && resp.getJsonFacetingResponse().getStatValue(useFacetFieldName) != null) {
-            return Collections.singletonList(String.valueOf(resp.getJsonFacetingResponse().getStatValue(useFacetFieldName)));
-        }
-
-        if (facetField == null) {
-            return Collections.emptyList();
-        }
-
-        List<String> ret = new ArrayList<>(facetField.getValueCount());
-        for (Count count : facetField.getValues()) {
-            if (StringUtils.isNotEmpty(count.getName()) && count.getCount() >= facetMinCount) {
-                if (count.getName().startsWith("\\u0001")) {
-                    continue;
-                }
-                ret.add(count.getName());
+        try {
+            QueryResponse resp = DataManager.getInstance()
+                    .getSearchIndex()
+                    .searchFacetsAndStatistics(query, null, facetFieldNames, facetMinCount, facetPrefix, params, false);
+            FacetField facetField = resp.getFacetField(useFacetFieldName);
+            if (json && resp.getJsonFacetingResponse() != null && resp.getJsonFacetingResponse().getStatValue(useFacetFieldName) != null) {
+                return Collections.singletonList(String.valueOf(resp.getJsonFacetingResponse().getStatValue(useFacetFieldName)));
             }
-        }
 
-        return ret;
+            if (facetField == null) {
+                return Collections.emptyList();
+            }
+
+            List<String> ret = new ArrayList<>(facetField.getValueCount());
+            for (Count count : facetField.getValues()) {
+                if (StringUtils.isNotEmpty(count.getName()) && count.getCount() >= facetMinCount) {
+                    if (count.getName().startsWith("\\u0001")) {
+                        continue;
+                    }
+                    ret.add(count.getName());
+                }
+            }
+            return ret;
+        } catch (SolrException e) {
+            throw new IndexUnreachableException("Error communication with solr: " + e.toString());
+        }
     }
 
     /**

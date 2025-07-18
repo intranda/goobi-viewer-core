@@ -1078,17 +1078,20 @@ public class Configuration extends AbstractConfiguration {
     /**
      *
      * @return Configured values
+     * @should return correct configuration
      */
     public Metadata getSidebarWidgetCitationCitationRecommendationSource() {
-        // TODO
-        HierarchicalConfiguration<ImmutableNode> sub = null;
-        try {
-            sub = getLocalConfigurationAt("sidebar.sidebarWidgetUsage.citationRecommendation.source.metadata");
-        } catch (IllegalArgumentException e) {
-            // no or multiple occurrences
-        }
-        if (sub != null) {
-            return getMetadataFromSubnodeConfig(sub, false, 0);
+        HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("citation");
+        if (widgetConfig != null) {
+            HierarchicalConfiguration<ImmutableNode> sub = null;
+            try {
+                sub = widgetConfig.configurationAt("citationRecommendation.source.metadata");
+            } catch (IllegalArgumentException e) {
+                // no or multiple occurrences
+            }
+            if (sub != null) {
+                return getMetadataFromSubnodeConfig(sub, false, 0);
+            }
         }
 
         return new Metadata();

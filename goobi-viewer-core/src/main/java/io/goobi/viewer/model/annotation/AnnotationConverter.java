@@ -49,6 +49,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.intranda.api.annotation.AgentType;
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.ISelector;
+import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.wa.Agent;
 import de.intranda.api.annotation.wa.FragmentSelector;
@@ -101,16 +102,30 @@ public class AnnotationConverter {
      * @throws java.io.IOException if any.
      */
     public IResource getTargetAsResource(PersistentAnnotation anno) throws IOException {
+
         if (anno.getTarget() != null) {
+            URI targetURI = getTargetURI(anno);
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
             IResource resource;
             try {
                 if (anno.getTarget().contains("SpecificResource")) {
-                    resource = mapper.readValue(anno.getTarget(), SpecificResource.class);
+                    SpecificResource specificResource = mapper.readValue(anno.getTarget(), SpecificResource.class);
+                    if (targetURI != null) {
+                        resource = new SpecificResource(targetURI, specificResource.getSelector());
+                    } else {
+                        resource = specificResource;
+                    }
                 } else {
-                    resource = mapper.readValue(anno.getTarget(), TypedResource.class);
+                    IResource baseResource = mapper.readValue(anno.getTarget(), TypedResource.class);
+                    if (targetURI != null && baseResource instanceof TypedResource typedResource) {
+                        resource = new TypedResource(targetURI, typedResource.getType(), typedResource.getFormat(), typedResource.getProfile());
+                    } else if (targetURI != null && baseResource instanceof SimpleResource) {
+                        resource = new SimpleResource(targetURI);
+                    } else {
+                        resource = baseResource;
+                    }
                 }
             } catch (JsonParseException e) {
                 resource = new TextualResource(anno.getTarget());
@@ -118,6 +133,16 @@ public class AnnotationConverter {
             return resource;
         }
         return null;
+    }
+
+    private URI getTargetURI(PersistentAnnotation anno) {
+        if (StringUtils.isNotBlank(anno.getTargetPI()) && anno.getTargetPageOrder() != null) {
+            return URI.create(this.urls.path(RECORDS_PAGES, RECORDS_PAGES_CANVAS).params(anno.getTargetPI(), anno.getTargetPageOrder()).build());
+        } else if (StringUtils.isNotBlank(anno.getTargetPI())) {
+            return URI.create(this.urls.path(RECORDS_RECORD, RECORDS_MANIFEST).params(anno.getTargetPI()).build());
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -339,7 +364,7 @@ public class AnnotationConverter {
         if (id != null) {
             return id;
         }
-        
+
         return null;
     }
 }
