@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>25.07-SNAPSHOT</version>
+	<version>25.06.1</version>
 	<packaging>jar</packaging>
 	<name>Goobi viewer - Core</name>
 	<description>The Goobi viewer is an open source solution for the presentation of digitized cultural assets.</description>
