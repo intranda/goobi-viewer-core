@@ -33,7 +33,6 @@ import org.json.JSONObject;
 
 import io.goobi.viewer.managedbeans.AdminConfigEditorBean;
 import jakarta.servlet.http.HttpSession;
-import jakarta.websocket.Endpoint;
 import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
@@ -46,7 +45,7 @@ import jakarta.websocket.server.ServerEndpoint;
  * Endpoint for unlocking files opened in {@link AdminConfigEditorBean} when leaving a page
  */
 @ServerEndpoint(value = "/admin/config/edit.socket", configurator = GetHttpSessionConfigurator.class)
-public class ConfigEditorEndpoint extends Endpoint {
+public class ConfigEditorEndpoint {
 
     private static final Logger logger = LogManager.getLogger(ConfigEditorEndpoint.class);
 
@@ -60,7 +59,6 @@ public class ConfigEditorEndpoint extends Endpoint {
      * @param config
      */
     @OnOpen
-    @Override
     public void onOpen(Session session, EndpointConfig config) {
         HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
         this.httpSessionId = Optional.ofNullable(httpSession).map(HttpSession::getId);
@@ -94,7 +92,6 @@ public class ConfigEditorEndpoint extends Endpoint {
         lockedFilePath.ifPresent(path -> httpSessionId.ifPresent(sessionId -> AdminConfigEditorBean.unlockFile(path, sessionId)));
     }
 
-    @Override
     @OnError
     public void onError(Session session, Throwable t) {
         if (!(t instanceof EOFException)) {

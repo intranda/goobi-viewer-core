@@ -33,7 +33,6 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.AdminBean;
 import jakarta.servlet.http.HttpSession;
-import jakarta.websocket.Endpoint;
 import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
@@ -46,7 +45,7 @@ import jakarta.websocket.server.ServerEndpoint;
  * Endpoint that maps HTTP session IDs to connected web sockets.
  */
 @ServerEndpoint(value = "/session.socket", configurator = GetHttpSessionConfigurator.class)
-public class UserEndpoint extends Endpoint {
+public class UserEndpoint {
 
     private static final Logger logger = LogManager.getLogger(UserEndpoint.class);
 
@@ -55,7 +54,6 @@ public class UserEndpoint extends Endpoint {
     private HttpSession httpSession;
 
     @OnOpen
-    @Override
     public void onOpen(Session session, EndpointConfig config) {
         // logger.trace("onOpen: {}", session.getId()); //NOSONAR Debug
         this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
@@ -81,7 +79,6 @@ public class UserEndpoint extends Endpoint {
         }
     }
 
-    @Override
     @OnError
     public void onError(Session session, Throwable t) {
         if (!(t instanceof EOFException)) {
