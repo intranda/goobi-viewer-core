@@ -41,7 +41,6 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
 import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.EncodeException;
-import jakarta.websocket.Endpoint;
 import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
@@ -54,7 +53,7 @@ import jakarta.websocket.server.ServerEndpoint;
  * Endpoint that maps HTTP session IDs to connected web sockets.
  */
 @ServerEndpoint(value = "/crowdsourcing/campaign.socket", configurator = GetHttpSessionConfigurator.class)
-public class CampaignEndpoint extends Endpoint {
+public class CampaignEndpoint {
 
     private static final Logger logger = LogManager.getLogger(CampaignEndpoint.class);
 
@@ -107,7 +106,6 @@ public class CampaignEndpoint extends Endpoint {
     private Session session;
 
     @OnOpen
-    @Override
     public void onOpen(Session session, EndpointConfig config) {
         logger.trace("onOpen: {}", session.getId());
         HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
