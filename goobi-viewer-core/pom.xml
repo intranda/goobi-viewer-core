@@ -89,7 +89,6 @@
 		<angus-mail.version>2.0.3</angus-mail.version>
 		<citationstyles.version>25.4</citationstyles.version>
 		<citeproc-java.version>3.3.0</citeproc-java.version>
-		<commons-codec.version>1.18.0</commons-codec.version>
 		<commons-collections4.version>4.5.0</commons-collections4.version>
 		<commons-configuration2.version>2.12.0</commons-configuration2.version>
 		<commons-io.version>2.19.0</commons-io.version>
@@ -270,11 +269,6 @@
 			<artifactId>locales</artifactId>
 			<version>${citationstyles.version}</version>
 			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>${commons-codec.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
