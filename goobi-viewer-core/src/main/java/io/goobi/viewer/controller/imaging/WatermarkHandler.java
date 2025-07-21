@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocumentList;
@@ -182,7 +183,7 @@ public class WatermarkHandler implements Serializable {
         if (!watermarkTextConfiguration.isEmpty()) {
             StringBuilder urlBuilder = new StringBuilder();
             for (String text : watermarkTextConfiguration) {
-                if (StringUtils.startsWithIgnoreCase(text, WATERMARK_TEXT_TYPE_SOLR)) {
+                if (Strings.CI.startsWith(text, WATERMARK_TEXT_TYPE_SOLR)) {
                     String field = text.substring(WATERMARK_TEXT_TYPE_SOLR.length());
                     try {
                         SolrDocumentList res = DataManager.getInstance()
@@ -200,12 +201,12 @@ public class WatermarkHandler implements Serializable {
                         logger.debug("IndexUnreachableException thrown here: " + e.getMessage());
 
                     }
-                } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_URN)) {
+                } else if (Strings.CI.equals(text, WATERMARK_TEXT_TYPE_URN)) {
                     if (StringUtils.isNotEmpty(page.getUrn())) {
                         urlBuilder.append(page.getUrn());
                         break;
                     }
-                } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_PURL)) {
+                } else if (Strings.CI.equals(text, WATERMARK_TEXT_TYPE_PURL)) {
                     urlBuilder.append(servletPath)
                             .append("/")
                             .append(PageType.viewImage.getName())
@@ -243,7 +244,7 @@ public class WatermarkHandler implements Serializable {
             if (!watermarkTextConfiguration.isEmpty()) {
                 StringBuilder urlBuilder = new StringBuilder();
                 for (String text : watermarkTextConfiguration) {
-                    if (StringUtils.startsWithIgnoreCase(text, WATERMARK_TEXT_TYPE_SOLR)) {
+                    if (Strings.CI.startsWith(text, WATERMARK_TEXT_TYPE_SOLR)) {
                         String field = text.substring(WATERMARK_TEXT_TYPE_SOLR.length());
                         try {
                             SolrDocumentList res = DataManager.getInstance()
@@ -261,7 +262,7 @@ public class WatermarkHandler implements Serializable {
                             logger.debug("IndexUnreachableException thrown here: " + e.getMessage());
 
                         }
-                    } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_URN)) {
+                    } else if (Strings.CI.equals(text, WATERMARK_TEXT_TYPE_URN)) {
                         String urn = doc.getMetadataValue(SolrConstants.URN);
                         try {
                             if (StringUtils.isBlank(urn) && doc.getTopStruct() != null) {
@@ -274,7 +275,7 @@ public class WatermarkHandler implements Serializable {
                             urlBuilder.append(urn);
                             break;
                         }
-                    } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_PURL)) {
+                    } else if (Strings.CI.equals(text, WATERMARK_TEXT_TYPE_PURL)) {
                         urlBuilder.append(servletPath)
                                 .append("/")
                                 .append(PageType.viewImage.getName())

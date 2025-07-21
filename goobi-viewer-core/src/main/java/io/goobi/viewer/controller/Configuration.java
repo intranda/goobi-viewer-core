@@ -57,6 +57,7 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.tree.ImmutableNode;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -3809,7 +3810,7 @@ public class Configuration extends AbstractConfiguration {
         List<HierarchicalConfiguration<ImmutableNode>> fieldConfigs = getLocalConfigurationsAt(XML_PATH_SEARCH_SORTING_FIELD);
         for (HierarchicalConfiguration<ImmutableNode> conf : fieldConfigs) {
             String configField = conf.getString(".");
-            if (StringUtils.equals(configField, field)) {
+            if (Strings.CS.equals(configField, field)) {
                 return Optional.ofNullable(conf.getString("[@dropDownAscMessageKey]", null));
             }
         }
@@ -3825,7 +3826,7 @@ public class Configuration extends AbstractConfiguration {
         List<HierarchicalConfiguration<ImmutableNode>> fieldConfigs = getLocalConfigurationsAt(XML_PATH_SEARCH_SORTING_FIELD);
         for (HierarchicalConfiguration<ImmutableNode> conf : fieldConfigs) {
             String configField = conf.getString(".");
-            if (StringUtils.equals(configField, field)) {
+            if (Strings.CS.equals(configField, field)) {
                 return Optional.ofNullable(conf.getString("[@dropDownDescMessageKey]", null));
             }
         }

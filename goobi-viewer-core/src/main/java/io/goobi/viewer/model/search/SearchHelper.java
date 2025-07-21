@@ -47,6 +47,7 @@ import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -1538,7 +1539,7 @@ public final class SearchHelper {
             return false;
         }
 
-        return StringUtils.contains(phrase, term);
+        return Strings.CS.contains(phrase, term);
     }
 
     /**
@@ -1835,7 +1836,7 @@ public final class SearchHelper {
         if (resp.getFacetField(facetField) != null) {
             for (Count count : resp.getFacetField(facetField).getValues()) {
                 if (count.getCount() == 0
-                        || (StringUtils.isNotEmpty(startsWith) && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith.toLowerCase()))) {
+                        || (StringUtils.isNotEmpty(startsWith) && !Strings.CI.startsWith(count.getName(), startsWith.toLowerCase()))) {
                     continue;
                 }
                 ret++;
@@ -1991,7 +1992,7 @@ public final class SearchHelper {
             if (useField != null) {
                 for (Count count : resp.getFacetField(useField).getValues()) {
                     if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith)
-                            && !StringUtils.startsWithIgnoreCase(count.getName(), startsWith)) {
+                            && !Strings.CI.startsWith(count.getName(), startsWith)) {
                         // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}", //NOSONAR Debug
                         // term, compareTerm, sortTerm, bmfc.isTranslate());
                         continue;
@@ -2167,7 +2168,7 @@ public final class SearchHelper {
                 String bestMatch = null;
                 // Look for exact match
                 for (String val : facetifiedSortTermValues) {
-                    if (StringUtils.equalsIgnoreCase(val, term)) {
+                    if (Strings.CI.equals(val, term)) {
                         bestMatch = val;
                         break;
                     }
@@ -2186,7 +2187,7 @@ public final class SearchHelper {
                 compareTerm = BrowseTermComparator.normalizeString(compareTerm,
                         DataManager.getInstance().getConfiguration().getBrowsingMenuSortingIgnoreLeadingChars()).trim();
             }
-            if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith) && !StringUtils.startsWithIgnoreCase(compareTerm, startsWith)) {
+            if (StringUtils.isNotEmpty(startsWith) && !"-".equals(startsWith) && !Strings.CI.startsWith(compareTerm, startsWith)) {
                 // logger.trace("Skipping term: {}, compareTerm: {}, sortTerm: {}, translate: {}", //NOSONAR Debug
                 // term, compareTerm, sortTerm, bmfc.isTranslate()); //NOSONAR Debug
                 continue;

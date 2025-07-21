@@ -25,15 +25,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
+
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
-
-import org.apache.commons.lang3.StringUtils;
-
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
  * <p>
@@ -288,7 +288,7 @@ public class Translation {
     public boolean equals(Object obj) {
         if (obj != null && obj.getClass().equals(this.getClass())) {
             Translation other = (Translation) obj;
-            return StringUtils.equals(this.language, other.language) && StringUtils.equals(this.tag, other.tag);
+            return Strings.CS.equals(this.language, other.language) && Strings.CS.equals(this.tag, other.tag);
         }
         return false;
     }

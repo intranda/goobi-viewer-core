@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.comparators.NullComparator;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
@@ -860,8 +861,8 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      */
     public void setPersistentUrl(final String persistentUrl) {
         // TODO null check
-        String temp = StringUtils.removeStart(persistentUrl, "/");
-        temp = StringUtils.removeEnd(temp, "/");
+        String temp = Strings.CS.removeStart(persistentUrl, "/");
+        temp = Strings.CS.removeEnd(temp, "/");
         this.persistentUrl = temp.trim();
     }
 
