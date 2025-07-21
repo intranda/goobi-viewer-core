@@ -114,6 +114,8 @@ public class MessageQueueManager {
 
     public static final String QUEUE_NAME_VIEWER = "viewer";
     public static final String QUEUE_NAME_PDF = "pdf";
+    public static final String QUEUE_NAME_FRONTEND = "frontend";
+    public static final List<String> QUEUE_NAMES = List.of(QUEUE_NAME_VIEWER, QUEUE_NAME_PDF, QUEUE_NAME_FRONTEND);
 
     private static final Logger logger = LogManager.getLogger(MessageQueueManager.class);
 
@@ -189,7 +191,14 @@ public class MessageQueueManager {
     public static String getQueueForMessageType(String taskName) {
         try {
             ITaskType type = TaskType.getByName(taskName);
-            return type != null && type == TaskType.PRERENDER_PDF ? QUEUE_NAME_PDF : QUEUE_NAME_VIEWER;
+            if (type == null) {
+                return QUEUE_NAME_VIEWER;
+            }
+            return switch (type) {
+                case TaskType.PRERENDER_PDF -> QUEUE_NAME_PDF;
+                case TaskType.DOWNLOAD_EXTERNAL_RESOURCE -> QUEUE_NAME_FRONTEND;
+                default -> QUEUE_NAME_VIEWER;
+            };
         } catch (NullPointerException | IllegalArgumentException e) {
             logger.error("Error parsing TaskType for name {}", taskName);
             return QUEUE_NAME_VIEWER;
@@ -265,17 +274,13 @@ public class MessageQueueManager {
         }
 
         try {
-            for (int i = 0; i < DataManager.getInstance().getConfiguration().getNumberOfParallelMessages(); i++) {
-                DefaultQueueListener listener = new DefaultQueueListener(this, QUEUE_NAME_VIEWER);
-                listener.register();
-                listeners.add(listener);
+            for (String queueName : QUEUE_NAMES) {
+                for (int i = 0; i < DataManager.getInstance().getConfiguration().getNumberOfParallelMessages(); i++) {
+                    DefaultQueueListener listener = new DefaultQueueListener(this, queueName);
+                    listener.register();
+                    listeners.add(listener);
+                }
             }
-            for (int i = 0; i < DataManager.getInstance().getConfiguration().getNumberOfParallelMessages(); i++) {
-                DefaultQueueListener listener = new DefaultQueueListener(this, QUEUE_NAME_PDF);
-                listener.register();
-                listeners.add(listener);
-            }
-
         } catch (JMSException e) {
             logger.error(e);
             return false;
@@ -380,15 +385,21 @@ public class MessageQueueManager {
     }
 
     public Optional<ViewerMessage> getMessageById(String messageId) {
-
+        Optional<ViewerMessage> message = Optional.empty();
         if (DataManager.getInstance().getConfiguration().isStartInternalMessageBroker() && StringUtils.isNotBlank(messageId)) {
-            try (QueueConnection connection = startConnection()) {
-                return getMessageById(messageId, QUEUE_NAME_VIEWER, connection).or(() -> getMessageById(messageId, QUEUE_NAME_PDF, connection));
-            } catch (JMSException e) {
-                logger.error(e);
+            // trail and error search for correct message in all queues
+            for (String queueName : QUEUE_NAMES) {
+                try (QueueConnection connection = startConnection()) {
+                    message = getMessageById(messageId, queueName, connection);
+                    if (message.isPresent()) {
+                        break;
+                    }
+                } catch (JMSException e) {
+                    logger.error(e);
+                }
             }
         }
-        return Optional.empty();
+        return message;
     }
 
     private static Optional<ViewerMessage> getMessageById(String messageId, String queueName, QueueConnection connection) {
