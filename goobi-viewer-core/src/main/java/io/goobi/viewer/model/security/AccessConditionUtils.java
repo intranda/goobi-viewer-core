@@ -305,7 +305,7 @@ public final class AccessConditionUtils {
                 }
             }
 
-            Map<String, AccessPermission> ret = new HashMap<>(requiredAccessConditions.size());
+            Map<String, AccessPermission> ret = HashMap.newHashMap(requiredAccessConditions.size());
             for (Entry<String, Set<String>> entry : requiredAccessConditions.entrySet()) {
                 Set<String> pageAccessConditions = entry.getValue();
                 AccessPermission access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), pageAccessConditions,

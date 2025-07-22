@@ -32,9 +32,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
@@ -69,6 +68,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * A class representing persistent configurations for a collection. A collections is identified by a SOLR-field name and a label. The most common
@@ -413,10 +413,10 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      */
     public boolean contentEquals(CMSCollection other) {
         return Objects.equals(this.mediaItem, other.mediaItem)
-                && StringUtils.equals(this.representativeWorkPI, other.representativeWorkPI)
-                && StringUtils.equals(this.solrField, other.solrField)
-                && StringUtils.equals(this.collectionUrl, other.collectionUrl)
-                && StringUtils.equals(this.solrFieldValue, other.solrFieldValue)
+                && Strings.CS.equals(this.representativeWorkPI, other.representativeWorkPI)
+                && Strings.CS.equals(this.solrField, other.solrField)
+                && Strings.CS.equals(this.collectionUrl, other.collectionUrl)
+                && Strings.CS.equals(this.solrFieldValue, other.solrFieldValue)
                 && translationsEquals(this.translations, other.translations);
     }
 
@@ -429,13 +429,13 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         if (tr1.size() == tr2.size()) {
             for (CMSCollectionTranslation tr : tr1) {
                 CMSCollectionTranslation otr = tr2.stream()
-                        .filter(t -> StringUtils.equals(t.getTag(), tr.getTag()))
-                        .filter(t -> StringUtils.equals(t.getLanguage(), tr.getLanguage()))
+                        .filter(t -> Strings.CS.equals(t.getTag(), tr.getTag()))
+                        .filter(t -> Strings.CS.equals(t.getLanguage(), tr.getLanguage()))
                         .findAny()
                         .orElse(null);
                 if (otr == null && StringUtils.isNotBlank(tr.getTranslationValue())) {
                     return false;
-                } else if (otr != null && !StringUtils.equals(otr.getTranslationValue(), tr.getTranslationValue())) {
+                } else if (otr != null && !Strings.CS.equals(otr.getTranslationValue(), tr.getTranslationValue())) {
                     return false;
                 }
             }

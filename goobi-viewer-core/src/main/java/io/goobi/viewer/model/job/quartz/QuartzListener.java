@@ -30,7 +30,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.CronScheduleBuilder;
@@ -127,7 +127,7 @@ public class QuartzListener implements ServletContextListener {
 
                 //first check trigger cron expression and update it if necessary
                 String cronExpression = config.getQuartzSchedulerCronExpression(trigger.getTaskType());
-                if (!StringUtils.equals(trigger.getScheduleExpression(), cronExpression)) {
+                if (!Strings.CS.equals(trigger.getScheduleExpression(), cronExpression)) {
                     trigger.setScheduleExpression(cronExpression);
                     this.dao.updateRecurringTaskTrigger(trigger);
                 }

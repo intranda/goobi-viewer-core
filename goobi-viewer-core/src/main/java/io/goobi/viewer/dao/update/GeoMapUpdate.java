@@ -47,7 +47,7 @@ public class GeoMapUpdate implements IModelUpdate {
         return convertToFeatureSets(dao) || createSearchScope(dao);
     }
 
-    private boolean createSearchScope(IDAO dao) throws DAOException, SQLException {
+    private static boolean createSearchScope(IDAO dao) throws DAOException, SQLException {
         if (dao.columnsExists("cms_geomap_featureset", "aggregate_results")) {
             List<Map<String, Object>> featureSets = getTableData("cms_geomap_featureset", dao);
             for (Map<String, Object> featureSet : featureSets) {
@@ -59,21 +59,21 @@ public class GeoMapUpdate implements IModelUpdate {
             }
             cleanupAggregateResult(dao);
             return true;
-        } else {
-            return false;
         }
 
+        return false;
     }
 
-    private void cleanupAggregateResult(IDAO dao) throws DAOException {
+    private static void cleanupAggregateResult(IDAO dao) throws DAOException {
         dao.executeUpdate("ALTER TABLE cms_geomap_featureset DROP COLUMN aggregate_results;");
     }
 
-    private void setSearchScopeForFeatureSet(Long featureSetId, SolrSearchScope scope, IDAO dao) throws DAOException {
+    private static void setSearchScopeForFeatureSet(Long featureSetId, SolrSearchScope scope, IDAO dao) throws DAOException {
         dao.executeUpdate("UPDATE cms_geomap_featureset SET search_scope = \"%s\";".formatted(scope.name()));
     }
 
-    private List<Map<String, Object>> getTableData(String table, IDAO dao) throws DAOException {
+    @SuppressWarnings("unchecked")
+    private static List<Map<String, Object>> getTableData(String table, IDAO dao) throws DAOException {
         List<Object[]> info = dao.getNativeQueryResults("SHOW COLUMNS FROM %s".formatted(table));
 
         List<Object[]> tableData = dao.getNativeQueryResults("SELECT * FROM %s".formatted(table));
@@ -108,9 +108,9 @@ public class GeoMapUpdate implements IModelUpdate {
             dao.executeUpdate("ALTER TABLE cms_geomap DROP COLUMN solr_query");
 
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**

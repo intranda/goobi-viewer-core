@@ -36,15 +36,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.faces.context.FacesContext;
-import jakarta.faces.model.SelectItem;
-import jakarta.faces.view.ViewScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.ws.rs.core.UriBuilder;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -78,6 +71,13 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.annotation.PostConstruct;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.model.SelectItem;
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * <p>
@@ -548,7 +548,7 @@ public class CmsPageEditBean implements Serializable {
         boolean hidePagedComponents = page != null && page.isContainsPagedComponents();
         Locale locale = BeanUtils.getLocale();
         List<CMSComponent> components = stream
-                .sorted((c1, c2) -> StringUtils.compare(ViewerResourceBundle.getTranslation(c1.getLabel(), locale),
+                .sorted((c1, c2) -> Strings.CS.compare(ViewerResourceBundle.getTranslation(c1.getLabel(), locale),
                         ViewerResourceBundle.getTranslation(c2.getLabel(), locale)))
                 .collect(Collectors.toList());
         Map<String, List<CMSComponent>> sortedMap = SelectItemBuilder.getAsAlphabeticallySortedMap(components,

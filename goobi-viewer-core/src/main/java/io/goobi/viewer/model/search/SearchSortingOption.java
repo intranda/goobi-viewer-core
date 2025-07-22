@@ -24,6 +24,7 @@ package io.goobi.viewer.model.search;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.messages.ViewerResourceBundle;
@@ -174,7 +175,7 @@ public class SearchSortingOption implements Serializable {
             if (StringUtils.isBlank(this.field)) {
                 return StringUtils.isBlank(other.field);
             }
-            return StringUtils.equals(this.getField(), other.getField()) && this.isAscending() == other.isAscending();
+            return Strings.CS.equals(this.getField(), other.getField()) && this.isAscending() == other.isAscending();
         }
         return false;
     }

@@ -89,10 +89,9 @@
 		<angus-mail.version>2.0.3</angus-mail.version>
 		<citationstyles.version>25.4</citationstyles.version>
 		<citeproc-java.version>3.3.0</citeproc-java.version>
-		<commons-codec.version>1.18.0</commons-codec.version>
 		<commons-collections4.version>4.5.0</commons-collections4.version>
 		<commons-configuration2.version>2.12.0</commons-configuration2.version>
-		<commons-io.version>2.19.0</commons-io.version>
+		<commons-io.version>2.20.0</commons-io.version>
 		<commons-jxpath.version>1.4.0</commons-jxpath.version>
 		<commons-lang3.version>3.18.0</commons-lang3.version>
 		<commons-net.version>3.11.1</commons-net.version>
@@ -105,7 +104,7 @@
 		<httpcore.version>4.4.16</httpcore.version>
 		<httpmime.version>4.5.14</httpmime.version>
 		<icu.version>77.1</icu.version>
-		<jackson.version>2.19.1</jackson.version>
+		<jackson.version>2.19.2</jackson.version>
 		<jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
 		<jakarta.el.version>6.0.1</jakarta.el.version>
 		<jakarta.enterprise.version>4.1.0</jakarta.enterprise.version>
@@ -129,7 +128,7 @@
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20250517</json.version>
 		<jsoup.version>1.21.1</jsoup.version>
-		<junit.version>5.13.3</junit.version>
+		<junit.version>5.13.4</junit.version>
 		<log4j.version>2.25.1</log4j.version>
 		<mariadb-java-client.version>3.5.4</mariadb-java-client.version>
 		<mockito.version>5.18.0</mockito.version>
@@ -141,7 +140,7 @@
 		<quartz.version>2.5.0</quartz.version>
 		<reflections.version>0.10.2</reflections.version>
 		<rome.version>2.1.0</rome.version>
-		<spring.version>6.2.8</spring.version>
+		<spring.version>6.2.9</spring.version>
 		<slf4j.version>2.0.17</slf4j.version>
 		<solr.version>9.8.1</solr.version>
 		<swagger.version>2.2.34</swagger.version>
@@ -270,11 +269,6 @@
 			<artifactId>locales</artifactId>
 			<version>${citationstyles.version}</version>
 			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>${commons-codec.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
