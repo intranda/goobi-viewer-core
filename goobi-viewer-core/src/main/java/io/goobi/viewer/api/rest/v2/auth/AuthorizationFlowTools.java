@@ -9,12 +9,14 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_PROBE;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 
 import de.intranda.api.iiif.auth.v2.AuthAccessService2;
 import de.intranda.api.iiif.auth.v2.AuthAccessTokenService2;
 import de.intranda.api.iiif.auth.v2.AuthLogoutService2;
 import de.intranda.api.iiif.auth.v2.AuthProbeService2;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 
 public final class AuthorizationFlowTools {
 
@@ -29,11 +31,19 @@ public final class AuthorizationFlowTools {
      */
     public static AuthProbeService2 getAuthServices(String pi, String fileName) {
         String baseUrl = DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "api/v2" + AUTH;
-        return new AuthProbeService2(URI.create(baseUrl + AUTH_PROBE + "/" + pi + "/" + fileName + "/"),
+        AuthProbeService2 ret = new AuthProbeService2(URI.create(baseUrl + AUTH_PROBE + "/" + pi + "/" + fileName + "/"),
                 Collections
                         .singletonList(
                                 new AuthAccessService2(URI.create(baseUrl + AUTH_ACCESS), AuthAccessService2.Profile.ACTIVE, new HashMap<>(),
                                         new AuthAccessTokenService2(URI.create(baseUrl + AUTH_ACCESS_TOKEN)),
-                                        new AuthLogoutService2(URI.create(baseUrl + AUTH_LOGOUT)).addLabel("en", "Logout"))));
+                                        new AuthLogoutService2(URI.create(baseUrl + AUTH_LOGOUT)))));
+
+        for (Locale locale : ViewerResourceBundle.getAllLocales()) {
+            AuthAccessService2 authService = ret.getService().get(0);
+            authService.getLabel().put(locale.getLanguage(), ViewerResourceBundle.getTranslation("login", locale));
+            authService.getLogoutService().addLabel(locale.getLanguage(), ViewerResourceBundle.getTranslation("logout", locale));
+        }
+        
+        return ret;
     }
 }

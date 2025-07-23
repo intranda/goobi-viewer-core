@@ -84,8 +84,6 @@ public class AuthorizationFlowResource {
 
     private static final Logger logger = LogManager.getLogger(AuthorizationFlowResource.class);
 
-    private static final String BASE_URL = DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "api/v2" + AUTH;
-
     private static final String KEY_ORIGIN = "IIIF_origin";
     private static final String KEY_TOKENS = "IIIF_AuthAccessTokens";
 
@@ -99,17 +97,14 @@ public class AuthorizationFlowResource {
 
     /**
      * For testing purposes.
+     * 
      * @return {@link AuthProbeService2}
      */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "")
     public AuthProbeService2 getServiceDescription() {
-        return new AuthProbeService2(URI.create(BASE_URL + AUTH_PROBE),
-                Collections
-                        .singletonList(new AuthAccessService2(URI.create(BASE_URL + AUTH_ACCESS), AuthAccessService2.Profile.ACTIVE, new HashMap<>(),
-                                new AuthAccessTokenService2(URI.create(BASE_URL + AUTH_ACCESS_TOKEN)),
-                                new AuthLogoutService2(URI.create(BASE_URL + AUTH_LOGOUT)).addLabel("en", "Logout"))));
+        return AuthorizationFlowTools.getAuthServices("PPN123", "00000001.xml");
     }
 
     @GET
