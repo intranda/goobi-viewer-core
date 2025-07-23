@@ -485,8 +485,10 @@ public class UserBean implements Serializable {
         HttpServletRequest request = BeanUtils.getRequest();
         String url = redirect(request);
 
-        user.setTranskribusSession(null);
-        setUser(null);
+        if (user != null) {
+            user.setTranskribusSession(null);
+            setUser(null);
+        }
         password = null;
         hasAdminBackendAccess = null;
         if (loggedInProvider != null) {
