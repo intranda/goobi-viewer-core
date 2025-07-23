@@ -25,13 +25,10 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_ACCESS;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_ACCESS_TOKEN;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_LOGOUT;
-import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_PROBE;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_PROBE_REQUEST;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,17 +39,13 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import de.intranda.api.iiif.auth.v2.AuthAccessService2;
 import de.intranda.api.iiif.auth.v2.AuthAccessToken2;
 import de.intranda.api.iiif.auth.v2.AuthAccessTokenError2;
 import de.intranda.api.iiif.auth.v2.AuthAccessTokenError2.Profile;
-import de.intranda.api.iiif.auth.v2.AuthAccessTokenService2;
-import de.intranda.api.iiif.auth.v2.AuthLogoutService2;
 import de.intranda.api.iiif.auth.v2.AuthProbeResult2;
 import de.intranda.api.iiif.auth.v2.AuthProbeService2;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
-import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -113,9 +106,10 @@ public class AuthorizationFlowResource {
     @Operation(tags = { "records", "iiif" }, summary = "")
     public Response accessTokenService(@QueryParam("origin") String origin) throws ServletException, IOException {
         if (StringUtils.isEmpty(origin)) {
+            logger.debug("origin missing");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "origin missing").build();
         }
-        logger.trace("origin: {}", origin);
+        logger.debug("origin: {}", origin);
         if (!addOriginToSession(origin)) {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Could not add origin to session").build();
         }
@@ -131,11 +125,12 @@ public class AuthorizationFlowResource {
     @Operation(tags = { "records", "iiif" }, summary = "")
     public String accessTokenService(@QueryParam("messageId") String messageId, @QueryParam("origin") String origin,
             @CookieParam("SESSION_ID") String sessionId) throws JsonProcessingException {
+        logger.debug("");
         if (StringUtils.isNotEmpty(messageId) && StringUtils.isNotEmpty(origin) && StringUtils.isNotEmpty(sessionId)) {
-            logger.trace("messageId: {}", messageId);
-            logger.trace("origin: {}", origin);
-            logger.trace("sessionId: {}", sessionId);
-            logger.trace("local session id: {}", servletRequest.getSession().getId());
+            logger.debug("messageId: {}", messageId);
+            logger.debug("origin: {}", origin);
+            logger.debug("sessionId: {}", sessionId);
+            logger.debug("local session id: {}", servletRequest.getSession().getId());
 
             // Validate origin
             if (!origin.equals(getOriginFromSession())) {
@@ -163,7 +158,7 @@ public class AuthorizationFlowResource {
     @Operation(tags = { "records", "iiif" }, summary = "")
     public AuthProbeResult2 probeResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @Parameter(description = "Content file name") @PathParam("filename") String filename) {
-        logger.trace("probeResource: {}/{}", pi, filename);
+        logger.debug("probeResource: {}/{}", pi, filename);
         AuthProbeResult2 ret = new AuthProbeResult2();
 
         String authHeader = servletRequest.getHeader("Authorization");
@@ -176,7 +171,7 @@ public class AuthorizationFlowResource {
         logger.trace("Authorization: {}", authHeader);
         if (authHeader.startsWith("Bearer ")) {
             String tokenValue = authHeader.substring(7);
-            logger.trace("Token: {}", tokenValue);
+            logger.debug("Token: {}", tokenValue);
             AuthAccessToken2 token = getTokenFromSession(tokenValue);
             if (token != null) {
                 String key = pi + "_" + filename;
@@ -203,13 +198,13 @@ public class AuthorizationFlowResource {
                 }
                 if (access) {
                     ret.setStatus(Response.Status.OK.getStatusCode());
-                    logger.trace("access granted");
+                    logger.debug("access granted");
                 } else {
                     ret.setStatus(Response.Status.FORBIDDEN.getStatusCode());
-                    logger.trace("access denied");
+                    logger.debug("access denied");
                 }
             } else {
-                logger.trace("Token not found in session.");
+                logger.debug("Token not found in session.");
                 ret.setStatus(Response.Status.FORBIDDEN.getStatusCode());
             }
 
@@ -224,6 +219,7 @@ public class AuthorizationFlowResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "")
     public Response logout() {
+        logger.trace("logout");
         UserBean userBean = BeanUtils.getUserBean();
         if (userBean != null) {
             try {
