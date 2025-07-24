@@ -48,6 +48,7 @@ import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.presentation.v3.Canvas3;
 import de.intranda.api.iiif.presentation.v3.LabeledResource;
+import de.intranda.api.services.Service;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
@@ -196,7 +197,9 @@ public class CanvasBuilder extends AbstractBuilder {
             AnnotationPage ret = new AnnotationPage(annoPageUri, false);
             if (!page.isAccessPermissionFulltext()) {
                 // Add auth services
-                ret.addService(AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName()));
+                for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
+                    ret.addService(service);
+                }
             }
             return ret;
         }
@@ -297,7 +300,9 @@ public class CanvasBuilder extends AbstractBuilder {
                 boolean access = page.isAccessPermissionImage();
                 if (!access) {
                     for (ImageInformation ii : imageResource.getServices()) {
-                        ii.addService(AuthorizationFlowTools.getAuthServices(page.getPi(), page.getFileName()));
+                        for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getFileName())) {
+                            ii.addService(service);
+                        }
                     }
                 }
                 canvas.addMedia(mediaId, imageResource);
@@ -353,7 +358,9 @@ public class CanvasBuilder extends AbstractBuilder {
             LabeledResource resource = alto.getResource(uri);
             if (!page.isAccessPermissionFulltext()) {
                 // Add auth services
-                resource.addService(AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName()));
+                for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
+                    resource.addService(service);
+                }
             }
             canvas.addSeeAlso(resource);
         }
@@ -372,7 +379,9 @@ public class CanvasBuilder extends AbstractBuilder {
             LabeledResource resource = text.getResource(uri);
             if (!page.isAccessPermissionFulltext()) {
                 // Add auth services
-                resource.addService(AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName()));
+                for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
+                    resource.addService(service);
+                }
             }
             canvas.addRendering(resource);
         }

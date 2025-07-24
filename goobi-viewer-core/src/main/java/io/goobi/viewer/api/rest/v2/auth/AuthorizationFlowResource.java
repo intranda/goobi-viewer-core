@@ -97,7 +97,7 @@ public class AuthorizationFlowResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "")
     public AuthProbeService2 getServiceDescription() {
-        return AuthorizationFlowTools.getAuthServices("PPN123", "00000001.xml");
+        return AuthorizationFlowTools.getAuthServicesEmbedded("PPN123", "00000001.xml");
     }
 
     @GET

@@ -41,6 +41,7 @@ import de.intranda.api.iiif.IIIFUrlResolver;
 import de.intranda.api.iiif.image.ImageInformation;
 import de.intranda.api.iiif.image.ImageTile;
 import de.intranda.api.iiif.image.v3.ImageInformation3;
+import de.intranda.api.services.Service;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageManager;
 import de.unigoettingen.sub.commons.util.PathConverter;
@@ -220,7 +221,9 @@ public class ImageHandler {
                         .toList()));
 
         if (!access) {
-            info.addService(AuthorizationFlowTools.getAuthServices(page.getPi(), page.getFileName()));
+            for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getFileName())) {
+                info.addService(service);
+            }
         }
 
         return info;

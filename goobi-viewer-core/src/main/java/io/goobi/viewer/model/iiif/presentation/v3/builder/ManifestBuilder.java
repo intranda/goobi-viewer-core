@@ -59,6 +59,7 @@ import de.intranda.api.iiif.presentation.v3.Manifest3;
 import de.intranda.api.iiif.presentation.v3.Range3;
 import de.intranda.api.iiif.search.AutoSuggestService;
 import de.intranda.api.iiif.search.SearchService;
+import de.intranda.api.services.Service;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
@@ -516,7 +517,9 @@ public class ManifestBuilder extends AbstractBuilder {
             LabeledResource resource = alto.getResource(uri);
             if (!page.isAccessPermissionFulltext()) {
                 // Add auth services
-                resource.addService(AuthorizationFlowTools.getAuthServices(ele.getPi(), page.getAltoFileName()));
+                for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
+                    resource.addService(service);
+                }
             }
             manifest.addSeeAlso(resource);
         }
@@ -531,7 +534,9 @@ public class ManifestBuilder extends AbstractBuilder {
             LabeledResource resource = text.getResource(uri);
             if (!page.isAccessPermissionFulltext()) {
                 // Add auth services
-                resource.addService(AuthorizationFlowTools.getAuthServices(ele.getPi(), page.getAltoFileName()));
+                for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getAltoFileName())) {
+                    resource.addService(service);
+                }
             }
             manifest.addRendering(resource);
         }

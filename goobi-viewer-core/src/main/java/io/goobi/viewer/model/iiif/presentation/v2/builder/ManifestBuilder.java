@@ -340,8 +340,8 @@ public class ManifestBuilder extends AbstractBuilder {
                 URI id = page.map(p -> getLinkingPropertyUri(p, link.getTarget())).orElse(getLinkingPropertyUri(ele, link.getTarget()));
                 if (id != null) {
                     LinkingContent content = link.getLinkingContent(id);
-                    Service authService = getAuthServiceIfResourceRestricted(page, link.getTarget());
-                    if (authService != null) {
+                    List<Service> authServices = getAuthServicesIfResourceRestricted(page, link.getTarget());
+                    for (Service authService : authServices) {
                         content.addService(authService);
                     }
                     manifest.addRendering(content);
@@ -412,14 +412,14 @@ public class ManifestBuilder extends AbstractBuilder {
      * 
      * @param page
      * @param target
-     * @return AuthProbeService2 (and attached services) if access to resource is restricted; null otherwise
+     * @return AuthProbeService2 (and other auth services) if access to resource is restricted; empty list otherwise
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    private static Service getAuthServiceIfResourceRestricted(Optional<PhysicalElement> page, LinkingTarget target)
+    private static List<Service> getAuthServicesIfResourceRestricted(Optional<PhysicalElement> page, LinkingTarget target)
             throws IndexUnreachableException, DAOException {
         if (page.isEmpty() || target == null) {
-            return null;
+            return Collections.emptyList();
         }
 
         switch (target) {
@@ -442,14 +442,14 @@ public class ManifestBuilder extends AbstractBuilder {
                 if (!page.get().isAccessPermissionPdf()) {
                     // TODO Find correct PDF file name and add auth services
                     // return AuthorizationFlowTools.getAuthServices(page.get().getPi(), page.get().getImageToPdfUrl());
-                    return null;
+                    return Collections.emptyList();
                 }
                 break;
             default:
                 break;
         }
 
-        return null;
+        return Collections.emptyList();
     }
 
     /**

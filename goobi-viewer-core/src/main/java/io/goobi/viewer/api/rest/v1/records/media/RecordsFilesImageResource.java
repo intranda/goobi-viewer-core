@@ -39,6 +39,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.iiif.image.ImageInformation;
+import de.intranda.api.services.Service;
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -240,11 +241,15 @@ public class RecordsFilesImageResource extends ImageResource {
         try {
             // Add auth services if access not granted
             if (!AccessConditionUtils.checkAccessPermissionForImage(request, pi, filename).isGranted()) {
-                info.addService(AuthorizationFlowTools.getAuthServices(pi, filename));
+                for (Service service : AuthorizationFlowTools.getAuthServices(pi, filename)) {
+                    info.addService(service);
+                }
             }
         } catch (IndexUnreachableException | DAOException e) {
             logger.error(e.getMessage());
-            info.addService(AuthorizationFlowTools.getAuthServices(pi, filename));
+            for (Service service : AuthorizationFlowTools.getAuthServices(pi, filename)) {
+                info.addService(service);
+            }
         }
 
         return new ImageInformation(info);

@@ -65,6 +65,7 @@ import de.intranda.api.iiif.presentation.v2.AnnotationList;
 import de.intranda.api.iiif.presentation.v2.Canvas2;
 import de.intranda.api.iiif.presentation.v2.Manifest2;
 import de.intranda.api.iiif.presentation.v2.Sequence;
+import de.intranda.api.services.Service;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
@@ -348,7 +349,9 @@ public class SequenceBuilder extends AbstractBuilder {
                         URI imageInfoURI = new URI(IIIFUrlResolver.getIIIFImageBaseUrl(thumbnailUrl));
                         ImageInformation imageInfo = new ImageInformation(imageInfoURI.toString());
                         if (!page.isAccessPermissionImage()) {
-                            imageInfo.addService(AuthorizationFlowTools.getAuthServices(page.getPi(), page.getFileName()));
+                            for (Service service : AuthorizationFlowTools.getAuthServices(page.getPi(), page.getFileName())) {
+                                imageInfo.addService(service);
+                            }
                         }
                         resource.setService(imageInfo);
                     }
