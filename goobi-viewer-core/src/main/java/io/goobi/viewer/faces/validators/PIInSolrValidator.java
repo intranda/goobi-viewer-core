@@ -71,6 +71,9 @@ public class PIInSolrValidator implements Validator<String> {
      */
     public static boolean validatePi(String pi) throws IndexUnreachableException, PresentationException {
         if (StringUtils.isNotBlank(pi)) {
+            if (PIValidator.validatePi(pi)) {
+                return false;
+            }
             SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
             return doc != null;
         }
