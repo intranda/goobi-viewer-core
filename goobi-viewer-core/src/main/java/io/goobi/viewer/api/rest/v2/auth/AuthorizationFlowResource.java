@@ -104,7 +104,8 @@ public class AuthorizationFlowResource {
     @jakarta.ws.rs.Path(AUTH_ACCESS)
     @Produces({ MediaType.TEXT_HTML })
     @Operation(tags = { "records", "iiif" }, summary = "")
-    public Response accessTokenService(@QueryParam("origin") String origin) throws ServletException, IOException {
+    public Response loginService(@QueryParam("origin") String origin) throws ServletException, IOException {
+        logger.debug("accessService");
         if (StringUtils.isEmpty(origin)) {
             logger.debug("origin missing");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "origin missing").build();
