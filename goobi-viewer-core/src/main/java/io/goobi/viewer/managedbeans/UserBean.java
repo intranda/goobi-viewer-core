@@ -320,7 +320,7 @@ public class UserBean implements Serializable {
         if ("#".equals(this.redirectUrl)) {
             this.redirectUrl = buildRedirectUrl();
         }
-        logger.trace("login: {}", Thread.currentThread().threadId());
+        logger.debug("login: {}", Thread.currentThread().threadId());
         if (provider != null) {
             try {
                 // Set provider so it can be accessed from outsde
@@ -402,7 +402,7 @@ public class UserBean implements Serializable {
                     //                    sessionTimeoutMonitorTimer.scheduleAtFixedRate(new SessionTimeoutMonitorTask(), 0, 10000);
 
                     if (response != null && StringUtils.isNotEmpty(redirectUrl)) {
-                        logger.trace("Redirecting to {}", redirectUrl);
+                        logger.debug("Redirecting to {}", redirectUrl);
                         String url = this.redirectUrl;
                         this.redirectUrl = "";
                         doRedirect(response, url);
