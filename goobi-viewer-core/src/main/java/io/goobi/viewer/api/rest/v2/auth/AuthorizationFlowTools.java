@@ -84,6 +84,7 @@ public final class AuthorizationFlowTools {
 
         for (Locale locale : ViewerResourceBundle.getAllLocales()) {
             loginService.getLabel().put(locale.getLanguage(), ViewerResourceBundle.getTranslation("login", locale));
+            loginService.getConfirmLabel().put(locale.getLanguage(), ViewerResourceBundle.getTranslation("login", locale));
             logoutService.addLabel(locale.getLanguage(), ViewerResourceBundle.getTranslation("logout", locale));
         }
 
