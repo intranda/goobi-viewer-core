@@ -22,8 +22,8 @@
 package io.goobi.viewer.api.rest.v2.auth;
 
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH;
-import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_ACCESS;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_ACCESS_TOKEN;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_LOGIN;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_LOGOUT;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_PROBE_REQUEST;
 
@@ -101,7 +101,7 @@ public class AuthorizationFlowResource {
     }
 
     @GET
-    @jakarta.ws.rs.Path(AUTH_ACCESS)
+    @jakarta.ws.rs.Path(AUTH_LOGIN)
     @Produces({ MediaType.TEXT_HTML })
     @Operation(tags = { "records", "iiif" }, summary = "")
     public Response loginService(@QueryParam("origin") String origin) throws ServletException, IOException {
@@ -116,6 +116,7 @@ public class AuthorizationFlowResource {
         }
 
         servletRequest.getRequestDispatcher("/user/").forward(servletRequest, servletResponse);
+        // TODO Make sure new tab is closed after logging in
 
         return Response.ok("").build();
     }
@@ -126,12 +127,12 @@ public class AuthorizationFlowResource {
     @Operation(tags = { "records", "iiif" }, summary = "")
     public String accessTokenService(@QueryParam("messageId") String messageId, @QueryParam("origin") String origin,
             @CookieParam("SESSION_ID") String sessionId) throws JsonProcessingException {
-        logger.debug("");
+        logger.debug("accessTokenService");
+        logger.debug("messageId: {}", messageId);
+        logger.debug("origin: {}", origin);
+        logger.debug("sessionId: {}", sessionId);
+        logger.debug("local session id: {}", servletRequest.getSession().getId());
         if (StringUtils.isNotEmpty(messageId) && StringUtils.isNotEmpty(origin) && StringUtils.isNotEmpty(sessionId)) {
-            logger.debug("messageId: {}", messageId);
-            logger.debug("origin: {}", origin);
-            logger.debug("sessionId: {}", sessionId);
-            logger.debug("local session id: {}", servletRequest.getSession().getId());
 
             // Validate origin
             if (!origin.equals(getOriginFromSession())) {

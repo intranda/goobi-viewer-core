@@ -1,8 +1,8 @@
 package io.goobi.viewer.api.rest.v2.auth;
 
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH;
-import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_ACCESS;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_ACCESS_TOKEN;
+import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_LOGIN;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_LOGOUT;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_PROBE;
 
@@ -49,7 +49,7 @@ public final class AuthorizationFlowTools {
         AuthProbeService2 ret = new AuthProbeService2(URI.create(baseUrl + AUTH_PROBE + "/" + pi + "/" + fileName + "/"),
                 Collections
                         .singletonList(
-                                new AuthAccessService2(URI.create(baseUrl + AUTH_ACCESS), AuthAccessService2.Profile.ACTIVE, new HashMap<>(),
+                                new AuthAccessService2(URI.create(baseUrl + AUTH_LOGIN), AuthAccessService2.Profile.ACTIVE, new HashMap<>(),
                                         new AuthAccessTokenService2(URI.create(baseUrl + AUTH_ACCESS_TOKEN)),
                                         new AuthLogoutService2(URI.create(baseUrl + AUTH_LOGOUT)))));
 
@@ -76,7 +76,7 @@ public final class AuthorizationFlowTools {
         AuthProbeService2 probeService = new AuthProbeService2(URI.create(baseUrl + AUTH_PROBE + "/" + pi + "/" + fileName + "/"), null);
         ret.add(probeService);
         AuthAccessService2 loginService =
-                new AuthAccessService2(URI.create(baseUrl + AUTH_ACCESS), AuthAccessService2.Profile.ACTIVE, new HashMap<>(), null, null);
+                new AuthAccessService2(URI.create(baseUrl + AUTH_LOGIN), AuthAccessService2.Profile.ACTIVE, new HashMap<>(), null, null);
         ret.add(loginService);
         AuthAccessTokenService2 tokenService = new AuthAccessTokenService2(URI.create(baseUrl + AUTH_ACCESS_TOKEN));
         ret.add(tokenService);
