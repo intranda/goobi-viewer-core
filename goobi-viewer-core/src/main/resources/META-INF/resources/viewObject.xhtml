@@ -157,8 +157,31 @@
 	            	             	}
 	                    		})
 	                    	})
+						
+	                   	// init viewerJS.paginator.init with config for keyboard controls
+						// RUN FUNCTION ONLY ONCE
+				       	if (typeof doClick === 'function') {
+				       			// console.log('already defined - do nothing');
+				       		} else {
+				       			// console.log('not already defined');
+				               	var paginatorConfig = {
+				               	        previous: () => doClick('[data-target="paginatorPrevPage"]'),
+				               	        next: () => doClick('[data-target="paginatorNextPage"]'),
+				               	        first: () => doClick('[data-target="paginatorFirstPage"]'),
+				               	        last: () => doClick('[data-target="paginatorLastPage"]'),
+				               	        rightToLeft: "#{activeDocumentBean.viewManager.topStructElement.rtl}"
+				               	}
+				               	function doClick(selector) {
+				               	    let query = $(selector);
+				               	    if(query.length) {
+				               	        query.get(0).click();
+				               	    }
+				               	}
+				               	viewerJS.paginator.init(paginatorConfig);
+				       		}
+				        </script>
 	                    
-	                    </script>
+	                    
                 </h:panelGroup>
                 <!-- METADATA (FIRST GROUP WITH location="objectview" -->    
                 <h:panelGroup id="viewMetadata" rendered="#{metadataBean.activeMetadataView != null}">

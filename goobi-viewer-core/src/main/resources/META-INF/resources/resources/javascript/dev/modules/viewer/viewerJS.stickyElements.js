@@ -100,6 +100,8 @@ var viewerJS = ( function( viewer ) {
 			}
 			
 			if(config.initFrontend) {
+				// procudes weird jumps and is commented out for now, since it is probably not needed anymore
+
 				// toggle collapsible widgets
 //	       		viewer.toggledCollapsible.subscribe(e => {
 //	            	var pos = $(e.target).position().top;
