@@ -163,14 +163,14 @@ public class AuthorizationFlowResource {
         AuthProbeResult2 ret = new AuthProbeResult2();
 
         String authHeader = servletRequest.getHeader("Authorization");
-        if (StringUtils.isEmpty(authHeader)) {
-            ret.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
-            ret.getHeading().put("en", "Authorization: bad format");
-            ret.getNote().put("en", "Authorization: bad format");
-            return ret;
-        }
+        //        if (StringUtils.isEmpty(authHeader)) {
+        //            ret.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
+        //            ret.getHeading().put("en", "Authorization: bad format");
+        //            ret.getNote().put("en", "Authorization: bad format");
+        //            return ret;
+        //        }
         logger.trace("Authorization: {}", authHeader);
-        if (authHeader.startsWith("Bearer ")) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String tokenValue = authHeader.substring(7);
             logger.debug("Token: {}", tokenValue);
             AuthAccessToken2 token = getTokenFromSession(tokenValue);
