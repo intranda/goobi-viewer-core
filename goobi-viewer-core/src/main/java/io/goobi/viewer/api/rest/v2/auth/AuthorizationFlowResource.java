@@ -115,7 +115,7 @@ public class AuthorizationFlowResource {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Could not add origin to session").build();
         }
 
-        servletRequest.getRequestDispatcher("/resources/components/modalUserLogin.xhtml").forward(servletRequest, servletResponse);
+        servletRequest.getRequestDispatcher("/user/").forward(servletRequest, servletResponse);
 
         return Response.ok("").build();
     }
