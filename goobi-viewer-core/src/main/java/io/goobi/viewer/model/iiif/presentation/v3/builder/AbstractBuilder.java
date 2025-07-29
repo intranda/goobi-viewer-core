@@ -800,7 +800,7 @@ public abstract class AbstractBuilder {
                 //                if (true) { // TODO Check access
                 //                    for (ImageInformation ii : resource.getServices()) {
                 //                        logger.trace("adding auth services to thumbnail");
-                //                        for (Service service : AuthorizationFlowTools.getAuthServices(ele.getPi(), ele.getMetadataValue(SolrConstants.THUMBNAIL))) {
+                // for (Service service : AuthorizationFlowTools.getAuthServices(ele.getPi(), ele.getMetadataValue(SolrConstants.THUMBNAIL))) {
                 //                            ii.addService(service);
                 //                        }
                 //                    }
