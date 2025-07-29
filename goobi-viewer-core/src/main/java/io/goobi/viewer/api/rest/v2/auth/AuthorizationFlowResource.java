@@ -296,6 +296,7 @@ public class AuthorizationFlowResource {
             return (String) sessionBean.get(KEY_ORIGIN);
         }
 
+        logger.debug("SessionBean not found");
         return null;
     }
 
@@ -311,7 +312,7 @@ public class AuthorizationFlowResource {
         SessionBean sessionBean = BeanUtils.getSessionBean();
         if (sessionBean != null) {
             sessionBean.put(KEY_ORIGIN, origin);
-            logger.trace("origin added to session: {}", origin);
+            logger.debug("origin added to session: {}", origin);
             return true;
         }
 
