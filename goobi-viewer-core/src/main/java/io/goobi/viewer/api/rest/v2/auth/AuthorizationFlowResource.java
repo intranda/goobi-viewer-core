@@ -136,7 +136,7 @@ public class AuthorizationFlowResource {
 
             // Validate origin
             if (!origin.equals(getOriginFromSession())) {
-                logger.trace("Invalid origin, expected: {}", getOriginFromSession());
+                logger.debug("Invalid origin, expected: {}", getOriginFromSession());
                 // return JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_ORIGIN)); // TODO re-enabled
             }
 
