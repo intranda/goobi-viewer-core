@@ -54,9 +54,10 @@ public final class AuthorizationFlowTools {
                                         new AuthLogoutService2(URI.create(baseUrl + AUTH_LOGOUT)))));
 
         for (Locale locale : ViewerResourceBundle.getAllLocales()) {
-            AuthAccessService2 authService = ret.getService().get(0);
-            authService.getLabel().put(locale.getLanguage(), ViewerResourceBundle.getTranslation("login", locale));
-            authService.getLogoutService().addLabel(locale.getLanguage(), ViewerResourceBundle.getTranslation("logout", locale));
+            AuthAccessService2 loginService = ret.getService().get(0);
+            loginService.getLabel().put(locale.getLanguage(), ViewerResourceBundle.getTranslation("login", locale));
+            loginService.getConfirmLabel().put(locale.getLanguage(), ViewerResourceBundle.getTranslation("login", locale));
+            loginService.getLogoutService().addLabel(locale.getLanguage(), ViewerResourceBundle.getTranslation("logout", locale));
         }
 
         return ret;
