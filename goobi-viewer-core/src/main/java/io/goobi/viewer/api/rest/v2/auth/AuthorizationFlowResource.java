@@ -201,12 +201,12 @@ public class AuthorizationFlowResource {
                     ret.setStatus(Response.Status.OK.getStatusCode());
                     logger.debug("access granted");
                 } else {
-                    ret.setStatus(Response.Status.FORBIDDEN.getStatusCode());
+                    ret.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
                     logger.debug("access denied");
                 }
             } else {
                 logger.debug("Token not found in session.");
-                ret.setStatus(Response.Status.FORBIDDEN.getStatusCode());
+                ret.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
             }
 
             return ret;
