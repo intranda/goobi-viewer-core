@@ -132,7 +132,7 @@ public class AuthorizationFlowResource {
         logger.debug("origin: {}", origin);
         logger.debug("sessionId: {}", sessionId);
         logger.debug("local session id: {}", servletRequest.getSession().getId());
-        if (StringUtils.isNotEmpty(messageId) && StringUtils.isNotEmpty(origin) && StringUtils.isNotEmpty(sessionId)) {
+        if (StringUtils.isNotEmpty(messageId) && StringUtils.isNotEmpty(origin)) {
 
             // Validate origin
             if (!origin.equals(getOriginFromSession())) {
@@ -140,7 +140,7 @@ public class AuthorizationFlowResource {
                 // return JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_ORIGIN)); // TODO re-enabled
             }
 
-            if (sessionId.equals(servletRequest.getSession().getId())) {
+//            if (sessionId.equals(servletRequest.getSession().getId())) {
                 AuthAccessToken2 token = new AuthAccessToken2(messageId, 300);
                 addTokenToSession(token);
                 StringBuilder sb = new StringBuilder();
@@ -148,7 +148,7 @@ public class AuthorizationFlowResource {
                         .append(JsonTools.getAsJson(token))
                         .append(");</script></body></html>");
                 return sb.toString();
-            }
+//            }
         }
 
         return JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_REQUEST));
