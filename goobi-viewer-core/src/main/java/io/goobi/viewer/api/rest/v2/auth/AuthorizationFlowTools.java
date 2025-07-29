@@ -34,8 +34,8 @@ public final class AuthorizationFlowTools {
      * @return List<Service>
      */
     public static List<Service> getAuthServices(String pi, String fileName) {
-        // return Collections.singletonList(getAuthServicesEmbedded(pi, fileName));
-        return getAuthServicesFlat(pi, fileName);
+        return Collections.singletonList(getAuthServicesEmbedded(pi, fileName));
+        // return getAuthServicesFlat(pi, fileName);
     }
 
     /**
