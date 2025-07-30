@@ -51,7 +51,6 @@ import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.UserBean;
-import io.goobi.viewer.managedbeans.storage.SessionBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
@@ -61,6 +60,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PathParam;
@@ -244,23 +244,22 @@ public class AuthorizationFlowResource {
      * @return true if successful; false otherwise
      */
     @SuppressWarnings("unchecked")
-    private static boolean addTokenToSession(AuthAccessToken2 token) {
+    private boolean addTokenToSession(AuthAccessToken2 token) {
         if (token == null) {
             throw new IllegalArgumentException("token may not be null");
         }
-        SessionBean sessionBean = BeanUtils.getSessionBean();
-        if (sessionBean != null) {
+        HttpSession session = servletRequest.getSession();
+        if (session != null) {
             //  Add token to bean or session
-            Map<String, AuthAccessToken2> tokenMap = (Map<String, AuthAccessToken2>) sessionBean.get(KEY_TOKENS);
+            Map<String, AuthAccessToken2> tokenMap = (Map<String, AuthAccessToken2>) session.getAttribute(KEY_TOKENS);
             if (tokenMap == null) {
                 tokenMap = new HashMap<>();
-                sessionBean.put(KEY_TOKENS, tokenMap);
+                session.setAttribute(KEY_TOKENS, tokenMap);
             }
             tokenMap.put(token.getAccessToken(), token);
             return true;
         }
 
-        logger.debug("SessionBean not found");
         return false;
     }
 
@@ -271,21 +270,20 @@ public class AuthorizationFlowResource {
      * @return {@link AuthAccessToken2}; null if none found
      */
     @SuppressWarnings("unchecked")
-    private static AuthAccessToken2 getTokenFromSession(String token) {
+    private AuthAccessToken2 getTokenFromSession(String token) {
         if (token == null) {
             throw new IllegalArgumentException("token may not be null");
         }
-        SessionBean sessionBean = BeanUtils.getSessionBean();
-        if (sessionBean != null) {
-            Map<String, AuthAccessToken2> tokenMap = (Map<String, AuthAccessToken2>) sessionBean.get(KEY_TOKENS);
+        HttpSession session = servletRequest.getSession();
+        if (session != null) {
+            Map<String, AuthAccessToken2> tokenMap = (Map<String, AuthAccessToken2>) session.getAttribute(KEY_TOKENS);
             if (tokenMap == null) {
                 tokenMap = new HashMap<>();
-                sessionBean.put(KEY_TOKENS, tokenMap);
+                session.setAttribute(KEY_TOKENS, tokenMap);
             }
             return tokenMap.get(token);
         }
 
-        logger.debug("SessionBean not found");
         return null;
     }
 
@@ -293,14 +291,13 @@ public class AuthorizationFlowResource {
      * 
      * @return
      */
-    private static String getOriginFromSession() {
-        SessionBean sessionBean = BeanUtils.getSessionBean();
-        if (sessionBean != null) {
-            logger.debug("SessionBean: {}", sessionBean);
-            return (String) sessionBean.get(KEY_ORIGIN);
+    private String getOriginFromSession() {
+        HttpSession session = servletRequest.getSession();
+        if (session != null) {
+            logger.debug("session: {}", session);
+            return (String) session.getAttribute(KEY_ORIGIN);
         }
 
-        logger.debug("SessionBean not found");
         return null;
     }
 
@@ -309,14 +306,14 @@ public class AuthorizationFlowResource {
      * @param origin
      * @return
      */
-    private static boolean addOriginToSession(String origin) {
+    private boolean addOriginToSession(String origin) {
         if (origin == null) {
             throw new IllegalArgumentException("origin may not be null");
         }
-        SessionBean sessionBean = BeanUtils.getSessionBean();
-        if (sessionBean != null) {
-            logger.debug("SessionBean: {}", sessionBean);
-            sessionBean.put(KEY_ORIGIN, origin);
+        HttpSession session = servletRequest.getSession();
+        if (session != null) {
+            logger.debug("session: {}", session);
+            session.setAttribute(KEY_ORIGIN, origin);
             logger.debug("origin added to session: {}", origin);
             return true;
         }
