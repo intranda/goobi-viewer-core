@@ -234,6 +234,7 @@ public class AuthorizationFlowResource {
             }
         }
 
+        logger.debug("UserBean not found");
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
     }
 
@@ -259,6 +260,7 @@ public class AuthorizationFlowResource {
             return true;
         }
 
+        logger.debug("SessionBean not found");
         return false;
     }
 
@@ -282,7 +284,8 @@ public class AuthorizationFlowResource {
             }
             return tokenMap.get(token);
         }
-
+        
+        logger.debug("SessionBean not found");
         return null;
     }
 
