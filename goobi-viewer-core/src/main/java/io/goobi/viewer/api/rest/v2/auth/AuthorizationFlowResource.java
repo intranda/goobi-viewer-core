@@ -106,6 +106,7 @@ public class AuthorizationFlowResource {
     @Operation(tags = { "records", "iiif" }, summary = "")
     public Response loginService(@QueryParam("origin") String origin) throws ServletException, IOException {
         logger.debug("accessService");
+        logger.debug("local session id: {}", servletRequest.getSession().getId());
         if (StringUtils.isEmpty(origin)) {
             logger.debug("origin missing");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "origin missing").build();
@@ -161,6 +162,7 @@ public class AuthorizationFlowResource {
     public AuthProbeResult2 probeResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @Parameter(description = "Content file name") @PathParam("filename") String filename) {
         logger.debug("probeResource: {}/{}", pi, filename);
+        logger.debug("local session id: {}", servletRequest.getSession().getId());
         AuthProbeResult2 ret = new AuthProbeResult2();
 
         String authHeader = servletRequest.getHeader("Authorization");
