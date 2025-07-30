@@ -140,15 +140,15 @@ public class AuthorizationFlowResource {
                 // return JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_ORIGIN)); // TODO re-enabled
             }
 
-//            if (sessionId.equals(servletRequest.getSession().getId())) {
-                AuthAccessToken2 token = new AuthAccessToken2(messageId, 300);
-                addTokenToSession(token);
-                StringBuilder sb = new StringBuilder();
-                sb.append("<html><body><script>window.parent.postMessage(")
-                        .append(JsonTools.getAsJson(token))
-                        .append(");</script></body></html>");
-                return sb.toString();
-//            }
+            //            if (sessionId.equals(servletRequest.getSession().getId())) {
+            AuthAccessToken2 token = new AuthAccessToken2(messageId, 300);
+            addTokenToSession(token);
+            StringBuilder sb = new StringBuilder();
+            sb.append("<html><body><script>window.parent.postMessage(")
+                    .append(JsonTools.getAsJson(token))
+                    .append(");</script></body></html>");
+            return sb.toString();
+            //            }
         }
 
         return JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_REQUEST));
@@ -284,7 +284,7 @@ public class AuthorizationFlowResource {
             }
             return tokenMap.get(token);
         }
-        
+
         logger.debug("SessionBean not found");
         return null;
     }
@@ -296,6 +296,7 @@ public class AuthorizationFlowResource {
     private static String getOriginFromSession() {
         SessionBean sessionBean = BeanUtils.getSessionBean();
         if (sessionBean != null) {
+            logger.debug("SessionBean: {}", sessionBean);
             return (String) sessionBean.get(KEY_ORIGIN);
         }
 
@@ -314,6 +315,7 @@ public class AuthorizationFlowResource {
         }
         SessionBean sessionBean = BeanUtils.getSessionBean();
         if (sessionBean != null) {
+            logger.debug("SessionBean: {}", sessionBean);
             sessionBean.put(KEY_ORIGIN, origin);
             logger.debug("origin added to session: {}", origin);
             return true;
