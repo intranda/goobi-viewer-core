@@ -46,6 +46,7 @@ import de.intranda.api.iiif.auth.v2.AuthProbeResult2;
 import de.intranda.api.iiif.auth.v2.AuthProbeService2;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -97,6 +98,7 @@ public class AuthorizationFlowResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "")
     public AuthProbeService2 getServiceDescription() {
+        logger.debug("local session id: {}", servletRequest.getSession().getId());
         return AuthorizationFlowTools.getAuthServicesEmbedded("PPN123", "00000001.xml");
     }
 
@@ -106,6 +108,7 @@ public class AuthorizationFlowResource {
     @Operation(tags = { "records", "iiif" }, summary = "")
     public Response loginService(@QueryParam("origin") String origin) throws ServletException, IOException {
         logger.debug("accessService");
+        servletRequest.getSession(true);
         logger.debug("local session id: {}", servletRequest.getSession().getId());
         if (StringUtils.isEmpty(origin)) {
             logger.debug("origin missing");
@@ -116,7 +119,8 @@ public class AuthorizationFlowResource {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Could not add origin to session").build();
         }
 
-        servletRequest.getRequestDispatcher("/user/").forward(servletRequest, servletResponse);
+        // servletRequest.getRequestDispatcher("/user/").forward(servletRequest, servletResponse);
+        servletResponse.sendRedirect(DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "user/");
         // TODO Make sure new tab is closed after logging in
 
         return Response.ok("").build();
