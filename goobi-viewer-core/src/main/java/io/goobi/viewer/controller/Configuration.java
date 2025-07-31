@@ -409,6 +409,7 @@ public class Configuration extends AbstractConfiguration {
             logger.error("no metadata lists found");
             return new ArrayList<>(); // must be a mutable list!
         }
+        // TODO Combine local and global types?
 
         List<String> ret = new ArrayList<>();
         for (HierarchicalConfiguration<ImmutableNode> metadataList : metadataLists) {
@@ -2983,15 +2984,26 @@ public class Configuration extends AbstractConfiguration {
      * 
      * @param path
      * @param name
+     * @param globalFallback If true, search in global config if desired name not found in local
      * @return HierarchicalConfiguration<ImmutableNode>; null if none found
      */
-    private HierarchicalConfiguration<ImmutableNode> getSubConfigurationByNameAttribute(String path, String name) {
+    private HierarchicalConfiguration<ImmutableNode> getSubConfigurationByNameAttribute(String path, String name, boolean globalFallback) {
+        List<HierarchicalConfiguration<ImmutableNode>> allConfigs = new ArrayList<>();
+
+        // Local lists
         List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt(path);
-        if (configs == null) {
-            return null;
+        if (configs != null) {
+            allConfigs.addAll(configs);
+        }
+        // Global lists
+        if (globalFallback) {
+            configs = getLocalConfigurationsAt(getConfig(), null, path);
+            if (configs != null) {
+                allConfigs.addAll(configs);
+            }
         }
 
-        for (HierarchicalConfiguration<ImmutableNode> subElement : configs) {
+        for (HierarchicalConfiguration<ImmutableNode> subElement : allConfigs) {
             if (subElement.getString(XML_PATH_ATTRIBUTE_NAME, "").equals(name)) {
                 return subElement;
 
@@ -3007,7 +3019,7 @@ public class Configuration extends AbstractConfiguration {
      * @return Configured values
      */
     private HierarchicalConfiguration<ImmutableNode> getSidebarViewConfiguration(String name) {
-        return getSubConfigurationByNameAttribute("sidebar.views.view", name);
+        return getSubConfigurationByNameAttribute("sidebar.views.view", name, false);
     }
 
     /**
@@ -3016,7 +3028,7 @@ public class Configuration extends AbstractConfiguration {
      * @return Configured values
      */
     private HierarchicalConfiguration<ImmutableNode> getSidebarWidgetConfiguration(String name) {
-        return getSubConfigurationByNameAttribute("sidebar.widgets.widget", name);
+        return getSubConfigurationByNameAttribute("sidebar.widgets.widget", name, true);
     }
 
     /**
