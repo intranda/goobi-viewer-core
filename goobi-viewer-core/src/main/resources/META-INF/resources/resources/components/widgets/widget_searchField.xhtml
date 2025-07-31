@@ -12,10 +12,11 @@
     <composite:interface>
         <composite:attribute name="autocomplete" type="java.lang.Boolean" required="false" default="false"/>
         <composite:attribute name="onlySearchIcon" required="false" default="true" />
+  		<composite:attribute name="htmlId" required="false" default="widgetSearchField" />
     </composite:interface>
 
     <composite:implementation>
-            <div id="widgetSearchField" class="widget widget-searchfield">
+            <div id="#{cc.attrs.htmlId}" class="widget widget-searchfield">
                 <h:form id="widgetSearchFieldForm" styleClass="form-inline" prependId="false">
                         <div class="form-group">
                         	<label class="sr-only" for="searchField">#{msg.search}</label>
