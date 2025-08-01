@@ -403,20 +403,25 @@ public class UserBean implements Serializable {
                     //                    sessionTimeoutMonitorTimer = new Timer();
                     //                    sessionTimeoutMonitorTimer.scheduleAtFixedRate(new SessionTimeoutMonitorTask(), 0, 10000);
 
-                    if (response != null && StringUtils.isNotEmpty(redirectUrl)) {
-                        logger.debug("Redirecting to {}", redirectUrl);
-                        String url = this.redirectUrl;
-                        this.redirectUrl = "";
-                        doRedirect(response, url);
-                    } else if (response != null) {
-                        Optional<ViewerPath> currentPath = ViewHistory.getCurrentView(request);
-                        if (currentPath.isPresent()) {
-                            logger.trace("Redirecting to current URL: {}", currentPath.get().getCombinedPrettyfiedUrl());
-                            doRedirect(response, ServletUtils.getServletPathWithHostAsUrlFromRequest(request)
-                                    + currentPath.get().getCombinedPrettyfiedUrl());
+                    if (response != null) {
+                        if (isCloseTabAfterLogin()) {
+                            logger.debug("Closing login tab...");
+                            doRedirect(response, DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "logincomplete/");
+                        } else if (StringUtils.isNotEmpty(redirectUrl)) {
+                            logger.debug("Redirecting to {}", redirectUrl);
+                            String url = this.redirectUrl;
+                            this.redirectUrl = "";
+                            doRedirect(response, url);
                         } else {
-                            logger.trace("Redirecting to start page");
-                            doRedirect(response, ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
+                            Optional<ViewerPath> currentPath = ViewHistory.getCurrentView(request);
+                            if (currentPath.isPresent()) {
+                                logger.trace("Redirecting to current URL: {}", currentPath.get().getCombinedPrettyfiedUrl());
+                                doRedirect(response, ServletUtils.getServletPathWithHostAsUrlFromRequest(request)
+                                        + currentPath.get().getCombinedPrettyfiedUrl());
+                            } else {
+                                logger.trace("Redirecting to start page");
+                                doRedirect(response, ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
+                            }
                         }
                     }
 
@@ -872,7 +877,7 @@ public class UserBean implements Serializable {
     public boolean isShowOpenId() {
         return DataManager.getInstance().getConfiguration().isShowOpenIdConnect();
     }
-    
+
     public boolean isCloseTabAfterLogin() {
         return StringUtils.isNotEmpty(origin);
     }
