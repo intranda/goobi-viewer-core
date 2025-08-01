@@ -120,7 +120,7 @@ public class AuthorizationFlowResource {
         }
 
         // servletRequest.getRequestDispatcher("/user/").forward(servletRequest, servletResponse);
-        servletResponse.sendRedirect(DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "user/");
+        servletResponse.sendRedirect(DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "login/?origin=" + origin);
         // TODO Make sure new tab is closed after logging in
 
         return Response.ok("").build();
