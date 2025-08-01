@@ -123,6 +123,8 @@ public class UserBean implements Serializable {
     private String lastName;
     /** Redirect URL after successful login. */
     private String redirectUrl = null;
+    /** External origin, e.g. IIIF Auth client. */
+    private String origin = null;
     private String transkribusUserName;
     private String transkribusPassword;
     private Boolean hasAdminBackendAccess;
@@ -870,6 +872,10 @@ public class UserBean implements Serializable {
     public boolean isShowOpenId() {
         return DataManager.getInstance().getConfiguration().isShowOpenIdConnect();
     }
+    
+    public boolean isCloseTabAfterLogin() {
+        return StringUtils.isNotEmpty(origin);
+    }
 
     /**
      * <p>
@@ -1068,6 +1074,21 @@ public class UserBean implements Serializable {
             this.redirectUrl = redirectUrl;
             logger.trace("Redirect URL: {}", redirectUrl);
         }
+    }
+
+    /**
+     * @return the origin
+     */
+    public String getOrigin() {
+        return origin;
+    }
+
+    /**
+     * @param origin the origin to set
+     */
+    public void setOrigin(String origin) {
+        logger.debug("setOrigin: {}", origin);
+        this.origin = origin;
     }
 
     /**
