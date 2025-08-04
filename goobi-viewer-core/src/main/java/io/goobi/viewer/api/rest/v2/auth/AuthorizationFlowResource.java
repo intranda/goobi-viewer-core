@@ -28,6 +28,7 @@ import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_LOGOUT;
 import static io.goobi.viewer.api.rest.v2.ApiUrls.AUTH_PROBE_REQUEST;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -119,11 +120,10 @@ public class AuthorizationFlowResource {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Could not add origin to session").build();
         }
 
-        // servletRequest.getRequestDispatcher("/user/").forward(servletRequest, servletResponse);
-        servletResponse.sendRedirect(DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "login/?origin=" + origin);
-        // TODO Make sure new tab is closed after logging in
+        String cookieValue = "JSESSIONID=" + servletRequest.getSession().getId() + "; Path=/; HttpOnly; Secure; SameSite=None";
+        URI loginRedirectUri = URI.create(DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "login/?origin=" + origin);
 
-        return Response.ok("").build();
+        return Response.temporaryRedirect(loginRedirectUri).header("Set-Cookie", cookieValue).build();
     }
 
     @GET
