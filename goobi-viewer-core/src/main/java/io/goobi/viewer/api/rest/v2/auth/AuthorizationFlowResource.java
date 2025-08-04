@@ -123,7 +123,10 @@ public class AuthorizationFlowResource {
         String cookieValue = "JSESSIONID=" + servletRequest.getSession().getId() + "; Path=/; HttpOnly; Secure; SameSite=None";
         URI loginRedirectUri = URI.create(DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "login/?origin=" + origin);
 
-        return Response.temporaryRedirect(loginRedirectUri).header("Set-Cookie", cookieValue).build();
+        return Response.temporaryRedirect(loginRedirectUri)
+                .header("Set-Cookie", cookieValue)
+                .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
+                .build();
     }
 
     @GET
@@ -151,7 +154,9 @@ public class AuthorizationFlowResource {
             //            if (sessionId.equals(servletRequest.getSession().getId())) {
             AuthAccessToken2 token = new AuthAccessToken2(messageId, 300);
             addTokenToSession(token);
-            return Response.ok(getTokenServiceResponseBody(JsonTools.getAsJson(token), origin), MediaType.TEXT_HTML).build();
+            return Response.ok(getTokenServiceResponseBody(JsonTools.getAsJson(token), origin), MediaType.TEXT_HTML)
+                    .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
+                    .build();
             //            }
         }
 
@@ -321,7 +326,7 @@ public class AuthorizationFlowResource {
     private String getOriginFromSession() {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
-            logger.debug("session id: {}", session);
+            logger.debug("session id: {}", session.getId());
             return (String) session.getAttribute(KEY_ORIGIN);
         }
 
