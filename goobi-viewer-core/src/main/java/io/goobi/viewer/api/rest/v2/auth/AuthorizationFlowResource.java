@@ -142,7 +142,7 @@ public class AuthorizationFlowResource {
             // Validate origin
             if (!origin.equals(getOriginFromSession())) {
                 logger.debug("Invalid origin, expected: {}", getOriginFromSession());
-                return JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_ORIGIN)); // TODO re-enable
+                return JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_ORIGIN));
             }
 
             //            if (sessionId.equals(servletRequest.getSession().getId())) {
@@ -151,6 +151,9 @@ public class AuthorizationFlowResource {
             StringBuilder sb = new StringBuilder();
             sb.append("<html><body><script>window.parent.postMessage(")
                     .append(JsonTools.getAsJson(token))
+                    .append(",'")
+                    .append(origin)
+                    .append("'")
                     .append(");</script></body></html>");
             logger.debug("Token msg: {}", sb.toString());
             return sb.toString();
