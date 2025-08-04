@@ -379,6 +379,10 @@ public class UserBean implements Serializable {
                     if (this.user != null) {
                         if (this.user.equals(u)) {
                             logger.debug("User already logged in");
+                            if (isCloseTabAfterLogin()) {
+                                logger.debug("Closing login tab...");
+                                doRedirect(response, DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "logincomplete/");
+                            } 
                             return;
                         }
                         // Exception if different user logged in
