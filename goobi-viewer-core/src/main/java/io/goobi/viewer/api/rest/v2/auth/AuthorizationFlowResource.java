@@ -152,6 +152,7 @@ public class AuthorizationFlowResource {
             sb.append("<html><body><script>window.parent.postMessage(")
                     .append(JsonTools.getAsJson(token))
                     .append(");</script></body></html>");
+            logger.debug("Token msg: {}", sb.toString());
             return sb.toString();
             //            }
         }
