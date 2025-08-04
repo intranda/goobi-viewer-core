@@ -99,7 +99,7 @@ public class AuthorizationFlowResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "")
     public AuthProbeService2 getServiceDescription() {
-        logger.debug("local session id: {}", servletRequest.getSession().getId());
+        logger.debug("session id from request: {}", servletRequest.getSession().getId());
         return AuthorizationFlowTools.getAuthServicesEmbedded("PPN123", "00000001.xml");
     }
 
@@ -110,7 +110,7 @@ public class AuthorizationFlowResource {
     public Response loginService(@QueryParam("origin") String origin) throws ServletException, IOException {
         logger.debug("accessService");
         servletRequest.getSession(true);
-        logger.debug("local session id: {}", servletRequest.getSession().getId());
+        logger.debug("session id from request: {}", servletRequest.getSession().getId());
         if (StringUtils.isEmpty(origin)) {
             logger.debug("origin missing");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "origin missing").build();
@@ -130,37 +130,54 @@ public class AuthorizationFlowResource {
     @jakarta.ws.rs.Path(AUTH_ACCESS_TOKEN)
     @Produces({ MediaType.TEXT_HTML })
     @Operation(tags = { "records", "iiif" }, summary = "")
-    public String accessTokenService(@QueryParam("messageId") String messageId, @QueryParam("origin") String origin,
+    public Response accessTokenService(@QueryParam("messageId") String messageId, @QueryParam("origin") String origin,
             @CookieParam("SESSION_ID") String sessionId) throws JsonProcessingException {
         logger.debug("accessTokenService");
         logger.debug("messageId: {}", messageId);
         logger.debug("origin: {}", origin);
-        logger.debug("sessionId: {}", sessionId);
-        logger.debug("local session id: {}", servletRequest.getSession().getId());
+        logger.debug("sessionId from cookie: {}", sessionId);
+        logger.debug("session id from request: {}", servletRequest.getSession().getId());
         if (StringUtils.isNotEmpty(messageId) && StringUtils.isNotEmpty(origin)) {
 
             // Validate origin
             if (!origin.equals(getOriginFromSession())) {
                 logger.debug("Invalid origin, expected: {}", getOriginFromSession());
-                return JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_ORIGIN));
+                return Response
+                        .ok(getTokenServiceResponseBody(JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_ORIGIN)), origin),
+                                MediaType.TEXT_HTML)
+                        .build();
             }
 
             //            if (sessionId.equals(servletRequest.getSession().getId())) {
             AuthAccessToken2 token = new AuthAccessToken2(messageId, 300);
             addTokenToSession(token);
-            StringBuilder sb = new StringBuilder();
-            sb.append("<html><body><script>window.parent.postMessage(")
-                    .append(JsonTools.getAsJson(token))
-                    .append(",'")
-                    .append(origin)
-                    .append("'")
-                    .append(");</script></body></html>");
-            logger.debug("Token msg: {}", sb.toString());
-            return sb.toString();
+            return Response.ok(getTokenServiceResponseBody(JsonTools.getAsJson(token), origin), MediaType.TEXT_HTML).build();
             //            }
         }
 
-        return JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_REQUEST));
+        return Response
+                .ok(getTokenServiceResponseBody(JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_REQUEST)), origin),
+                        MediaType.TEXT_HTML)
+                .build();
+    }
+
+    /**
+     * 
+     * @param jsonMsg
+     * @param origin
+     * @return {@link String}
+     */
+    private static String getTokenServiceResponseBody(String jsonMsg, String origin) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html><body><script>window.parent.postMessage(")
+                .append(jsonMsg)
+                .append(",'")
+                .append(origin)
+                .append("'")
+                .append(");</script></body></html>");
+
+        logger.debug("Token service response body:\n{}", sb);
+        return sb.toString();
     }
 
     @GET
@@ -170,7 +187,7 @@ public class AuthorizationFlowResource {
     public AuthProbeResult2 probeResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @Parameter(description = "Content file name") @PathParam("filename") String filename) {
         logger.debug("probeResource: {}/{}", pi, filename);
-        logger.debug("local session id: {}", servletRequest.getSession().getId());
+        logger.debug("session id from request: {}", servletRequest.getSession().getId());
         AuthProbeResult2 ret = new AuthProbeResult2();
 
         String authHeader = servletRequest.getHeader("Authorization");
@@ -180,7 +197,7 @@ public class AuthorizationFlowResource {
         //            ret.getNote().put("en", "Authorization: bad format");
         //            return ret;
         //        }
-        logger.trace("Authorization: {}", authHeader);
+        logger.debug("Authorization: {}", authHeader);
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String tokenValue = authHeader.substring(7);
             logger.debug("Token: {}", tokenValue);
@@ -231,7 +248,7 @@ public class AuthorizationFlowResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "")
     public Response logout() {
-        logger.trace("logout");
+        logger.debug("logout");
         UserBean userBean = BeanUtils.getUserBean();
         if (userBean != null) {
             try {
@@ -304,7 +321,7 @@ public class AuthorizationFlowResource {
     private String getOriginFromSession() {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
-            logger.debug("session: {}", session);
+            logger.debug("session id: {}", session);
             return (String) session.getAttribute(KEY_ORIGIN);
         }
 
@@ -322,7 +339,7 @@ public class AuthorizationFlowResource {
         }
         HttpSession session = servletRequest.getSession();
         if (session != null) {
-            logger.debug("session: {}", session.getId());
+            logger.debug("session id: {}", session.getId());
             session.setAttribute(KEY_ORIGIN, origin);
             logger.debug("origin added to session: {}", origin);
             return true;
