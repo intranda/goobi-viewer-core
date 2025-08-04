@@ -68,7 +68,7 @@
 			
 			<!-- Description control metadata -->
 			<c:if
-				test="#{archiveMetadataBean.getMetadata(archiveEntry).descriptionControlAreaList.stream().filter(field -> field.filled).count() > 0}">
+				test="#{archiveMetadataBean.getMetadata(archiveEntry).descriptionControlAreaList.stream().filter(metadata -> !metadata.blank).count() > 0}">
 				<div class="archives__object-block-label">#{msg.archives__archive_area_descriptionControl}</div>
 				<ui:repeat var="metadata" value="#{archiveMetadataBean.getMetadata(archiveEntry).descriptionControlAreaList}">
                     <!-- grouped="true" -->
