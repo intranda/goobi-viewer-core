@@ -26,7 +26,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -829,7 +828,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
      */
     public boolean checkAccess(HttpServletRequest request) {
         if (accessGranted == null) {
-            logger.trace("checkAccess: {}", getItemLabel());
+            // logger.trace("checkAccess: {}", getItemLabel());
             if (cmsPage != null && StringUtils.isNotBlank(cmsPage.getAccessCondition())) {
                 try {
                     accessGranted = AccessConditionUtils.checkAccessPermissionForCmsPage(request, cmsPage).isGranted();
@@ -840,7 +839,7 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
             } else {
                 accessGranted = true;
             }
-            logger.trace("access granted? {}", accessGranted);
+            // logger.trace("access granted? {}", accessGranted);
         }
 
         return accessGranted;
