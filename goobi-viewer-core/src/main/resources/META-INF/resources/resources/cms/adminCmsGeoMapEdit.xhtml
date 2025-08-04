@@ -321,16 +321,89 @@
 													<div class="d-flex admin__geomap-radio-group-wrapper">
 													
 														<o:importConstants type="io.goobi.viewer.model.maps.SolrSearchScope" />
-														<ui:repeat value="#{SolrSearchScope.values()}" var="scope">
+														
+														<ui:repeat value="#{SolrSearchScope.values()}" var="scope" varStatus="status">
+															
+															
+															
 															<div class="admin__geomap-radio-group">
 															    <h:selectOneRadio group="featuresetSearchScopeRadioGroup" immediate="true" value="#{featureSet.searchScope}">
 															    	<f:selectItem itemValue="#{scope}" itemLabel="#{msg[scope.label]}" />  
 															    	<f:ajax render="featuresetSearchScopeRadioGroup" />
 															    </h:selectOneRadio>
 														    </div>
+														    
+														    
+														    
 														</ui:repeat>
 														
+														
+														
+														
 													</div>
+													
+													<!-- NEW STRUCTURES -->
+											<div class="radio-button-tree">
+
+<!-- 												<ui:repeat value="#{SolrSearchScope.values()}" var="scope" varStatus="status"> -->
+
+<!-- 													<div class="#{status.first ? 'connected-top' : ''}  -->
+<!--  																#{status.last ? 'connected-bottom' : ''}   --> -->
+<!-- 																#{!status.first and !status.last ? 'connected-middle' : ''}">  -->
+													    
+<!-- 													    <h:selectOneRadio group="featuresetSearchScopeRadioGroup" immediate="true" value="#{featureSet.searchScope}" layout="custom"> -->
+<!-- 													    	<f:selectItem itemValue="#{scope}" itemLabel="#{msg[scope.label]}" />   -->
+													    	
+<!-- 													        <label class="custom-radio"> -->
+<!-- 													            <input type="radio" -->
+<!-- 													                   name="#{component.clientId}" -->
+<!-- 													                   value="#{scope}" -->
+<!-- 													                   checked="#{component.value == item.itemValue ? 'checked' : null}" /> -->
+<!-- 													            <span class="radio-indicator"></span> -->
+<!-- 													            #{msg[scope.label]} -->
+<!-- 													        </label> -->
+													    	
+<!-- 													    	<f:ajax render="featuresetSearchScopeRadioGroup" /> -->
+													    
+<!-- 													    </h:selectOneRadio> -->
+													    
+													    
+
+													    
+<!-- 												    </div> -->
+														    
+<!-- 												</ui:repeat> -->
+												
+												
+												
+<!-- 												<ui:repeat value="#{SolrSearchScope.values()}" var="scope" varStatus="status"> -->
+												
+<!-- 												    <div class="#{status.first ? 'connected-top' : ''}  -->
+<!--  												                #{status.last ? 'connected-bottom' : ''} -->
+<!--  												                #{!status.first and !status.last ? 'connected-middle' : ''}"> -->
+												
+<!-- 												        <label class="custom-radio"> -->
+<!-- 												            <input type="radio" -->
+<!-- 												                   name="featuresetSearchScopeRadioGroup" -->
+<!-- 												                   value="#{scope}" -->
+<!-- 												                   onchange="#{facesContext.externalContext.requestContextPath}/featuresetSearchScopeRadioGroupForm:submit()" /> -->
+<!-- 												            <span class="radio-indicator"></span> -->
+<!-- 												            #{msg[scope.label]} -->
+<!-- 												        </label> -->
+												
+<!-- 												    </div> -->
+												
+<!-- 												</ui:repeat> -->
+												
+												
+												
+												
+
+
+												</div>	
+													
+													
+													
 													
 													
 													
