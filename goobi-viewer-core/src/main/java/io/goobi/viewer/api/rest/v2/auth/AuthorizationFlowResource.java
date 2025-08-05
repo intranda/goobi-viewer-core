@@ -107,7 +107,7 @@ public class AuthorizationFlowResource {
     @jakarta.ws.rs.Path(AUTH_LOGIN)
     @Produces({ MediaType.TEXT_HTML })
     @Operation(tags = { "records", "iiif" }, summary = "")
-    public Response loginService(@QueryParam("origin") String origin) throws ServletException, IOException {
+    public Response loginService(@QueryParam("origin") String origin) {
         logger.debug("accessService");
         servletRequest.getSession(true);
         logger.debug("session id from request: {}", servletRequest.getSession().getId());
@@ -154,6 +154,7 @@ public class AuthorizationFlowResource {
             //            if (sessionId.equals(servletRequest.getSession().getId())) {
             AuthAccessToken2 token = new AuthAccessToken2(messageId, 300);
             addTokenToSession(token);
+            servletResponse.setHeader("Content-Security-Policy", "frame-ancestors 'self' " + origin);
             return Response.ok(getTokenServiceResponseBody(JsonTools.getAsJson(token), origin), MediaType.TEXT_HTML)
                     .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
                     .build();
