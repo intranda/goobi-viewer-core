@@ -96,10 +96,13 @@ public class AuthorizationFlowResource {
             if (servletRequest.getSession() != null) {
                 logger.debug("session id from request: {}", servletRequest.getSession().getId());
             }
-            if (servletRequest.getCookies() != null) {
+            Cookie[] cookies = servletRequest.getCookies();
+            if (cookies != null) {
                 for (Cookie cookie : servletRequest.getCookies()) {
-                    logger.debug(cookie);
+                    logger.debug("Cookie received: {}={}", cookie.getName(), cookie.getValue());
                 }
+            } else {
+                logger.debug("No cookies received");
             }
         }
     }
