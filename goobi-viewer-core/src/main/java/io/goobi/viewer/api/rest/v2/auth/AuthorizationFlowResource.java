@@ -58,6 +58,7 @@ import io.goobi.viewer.model.security.authentication.AuthenticationProviderExcep
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -90,6 +91,28 @@ public class AuthorizationFlowResource {
     public AuthorizationFlowResource(@Context HttpServletRequest request) {
     }
 
+    private void debugRequest() {
+        if (servletRequest != null) {
+            logger.debug("session id from request: {}", servletRequest.getSession().getId());
+            for (Cookie cookie : servletRequest.getCookies()) {
+                logger.debug(cookie.toString());
+            }
+        }
+    }
+
+    public String generateTestCookie() {
+        NewCookie testCookie = new NewCookie.Builder("DEBUG_COOKIE")
+                .value("test123")
+                .path("/")
+                .secure(true)
+                .httpOnly(true)
+                .build();
+
+        return RuntimeDelegate.getInstance()
+                .createHeaderDelegate(NewCookie.class)
+                .toString(testCookie) + "; SameSite=None";
+    }
+
     /**
      * For testing purposes.
      * 
@@ -109,8 +132,7 @@ public class AuthorizationFlowResource {
     @Operation(tags = { "records", "iiif" }, summary = "")
     public Response loginService(@QueryParam("origin") String origin) {
         logger.debug("accessService");
-        servletRequest.getSession(true);
-        logger.debug("session id from request: {}", servletRequest.getSession().getId());
+        debugRequest();
         if (StringUtils.isEmpty(origin)) {
             logger.debug("origin missing");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "origin missing").build();
@@ -144,10 +166,10 @@ public class AuthorizationFlowResource {
     public Response accessTokenService(@QueryParam("messageId") String messageId, @QueryParam("origin") String origin,
             @CookieParam("SESSION_ID") String sessionId) throws JsonProcessingException {
         logger.debug("accessTokenService");
+        debugRequest();
         logger.debug("messageId: {}", messageId);
         logger.debug("origin: {}", origin);
         logger.debug("sessionId from cookie: {}", sessionId);
-        logger.debug("session id from request: {}", servletRequest.getSession().getId());
         if (StringUtils.isNotEmpty(messageId) && StringUtils.isNotEmpty(origin)) {
 
             // Validate origin
@@ -173,6 +195,7 @@ public class AuthorizationFlowResource {
 
             return Response.ok(getTokenServiceResponseBody(JsonTools.getAsJson(token), origin), MediaType.TEXT_HTML)
                     .header("Set-Cookie", cookieValue)
+                    .header("Set-Cookie", generateTestCookie())
                     .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
                     .header("Access-Control-Allow-Origin", origin)
                     .header("Access-Control-Allow-Credentials", "true")
@@ -212,7 +235,7 @@ public class AuthorizationFlowResource {
     public AuthProbeResult2 probeResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
             @Parameter(description = "Content file name") @PathParam("filename") String filename) {
         logger.debug("probeResource: {}/{}", pi, filename);
-        logger.debug("session id from request: {}", servletRequest.getSession().getId());
+        debugRequest();
         AuthProbeResult2 ret = new AuthProbeResult2();
 
         String authHeader = servletRequest.getHeader("Authorization");
