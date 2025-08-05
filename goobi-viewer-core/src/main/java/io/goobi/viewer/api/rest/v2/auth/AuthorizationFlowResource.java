@@ -171,12 +171,12 @@ public class AuthorizationFlowResource {
     @Produces({ MediaType.TEXT_HTML })
     @Operation(tags = { "records", "iiif" }, summary = "")
     public Response accessTokenService(@QueryParam("messageId") String messageId, @QueryParam("origin") String origin,
-            @CookieParam("SESSION_ID") String sessionId) throws JsonProcessingException {
+            @CookieParam("JSESSIONID") String sessionId) throws JsonProcessingException {
         logger.debug("accessTokenService");
         debugRequest();
         logger.debug("messageId: {}", messageId);
         logger.debug("origin: {}", origin);
-        logger.debug("sessionId from cookie: {}", sessionId);
+        logger.debug("JSESSIONID from cookie: {}", sessionId);
         if (StringUtils.isNotEmpty(messageId) && StringUtils.isNotEmpty(origin)) {
 
             // Validate origin
