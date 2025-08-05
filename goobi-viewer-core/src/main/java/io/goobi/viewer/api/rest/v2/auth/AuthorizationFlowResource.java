@@ -133,6 +133,7 @@ public class AuthorizationFlowResource {
         return Response.temporaryRedirect(loginRedirectUri)
                 .header("Set-Cookie", cookieValue)
                 .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
+                .header("Access-Control-Allow-Credentials", "true")
                 .build();
     }
 
@@ -161,7 +162,7 @@ public class AuthorizationFlowResource {
             //            if (sessionId.equals(servletRequest.getSession().getId())) {
             AuthAccessToken2 token = new AuthAccessToken2(messageId, 300);
             addTokenToSession(token);
-            
+
             NewCookie sessionCookie = new NewCookie.Builder("JSESSIONID")
                     .value(servletRequest.getSession().getId())
                     .path("/") // Cookie valid for all paths
@@ -169,10 +170,11 @@ public class AuthorizationFlowResource {
                     .httpOnly(true) // Not accessible via JavaScript
                     .build();
             String cookieValue = RuntimeDelegate.getInstance().createHeaderDelegate(NewCookie.class).toString(sessionCookie) + "; SameSite=None";
-            
+
             return Response.ok(getTokenServiceResponseBody(JsonTools.getAsJson(token), origin), MediaType.TEXT_HTML)
                     .header("Set-Cookie", cookieValue)
                     .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
+                    .header("Access-Control-Allow-Credentials", "true")
                     .build();
             //            }
         }
