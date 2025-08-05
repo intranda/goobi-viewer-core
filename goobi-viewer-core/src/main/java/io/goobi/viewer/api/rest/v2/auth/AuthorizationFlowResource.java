@@ -248,6 +248,8 @@ public class AuthorizationFlowResource {
             } else {
                 logger.debug("Token not found in session.");
                 ret.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
+                ret.getHeading().put("en", "Token not found");
+                ret.getNote().put("en", "Token not found");
             }
 
             return ret;
