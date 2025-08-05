@@ -137,8 +137,9 @@ public class AuthorizationFlowResource {
     @jakarta.ws.rs.Path(AUTH_LOGIN)
     @Produces({ MediaType.TEXT_HTML })
     @Operation(tags = { "records", "iiif" }, summary = "")
-    public Response loginService(@QueryParam("origin") String origin) {
+    public Response loginService(@QueryParam("origin") String origin, @CookieParam("JSESSIONID") String jSessionId) {
         logger.debug("accessService");
+        logger.debug("JSESSIONID from cookie: {}", jSessionId);
         debugRequest();
         if (StringUtils.isEmpty(origin)) {
             logger.debug("origin missing");
@@ -149,8 +150,9 @@ public class AuthorizationFlowResource {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Could not add origin to session").build();
         }
 
+        String sessionIdForCookie = jSessionId != null ? jSessionId : servletRequest.getSession().getId();
         NewCookie sessionCookie = new NewCookie.Builder("JSESSIONID")
-                .value(servletRequest.getSession().getId())
+                .value(sessionIdForCookie)
                 .path("/") // Cookie valid for all paths
                 .secure(true) // Only sent over HTTPS
                 .httpOnly(true) // Not accessible via JavaScript
@@ -171,12 +173,12 @@ public class AuthorizationFlowResource {
     @Produces({ MediaType.TEXT_HTML })
     @Operation(tags = { "records", "iiif" }, summary = "")
     public Response accessTokenService(@QueryParam("messageId") String messageId, @QueryParam("origin") String origin,
-            @CookieParam("SESSION_ID") String sessionId) throws JsonProcessingException {
+            @CookieParam("JSESSIONID") String jSessionId) throws JsonProcessingException {
         logger.debug("accessTokenService");
         debugRequest();
         logger.debug("messageId: {}", messageId);
         logger.debug("origin: {}", origin);
-        logger.debug("sessionId from cookie: {}", sessionId);
+        logger.debug("JSESSIONID from cookie: {}", jSessionId);
         if (StringUtils.isNotEmpty(messageId) && StringUtils.isNotEmpty(origin)) {
 
             // Validate origin
