@@ -59,7 +59,6 @@ import io.goobi.viewer.model.security.authentication.AuthenticationProviderExcep
 import io.goobi.viewer.model.viewer.BaseMimeType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -70,7 +69,9 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.RuntimeDelegate;
 
 @jakarta.ws.rs.Path(AUTH)
 @ViewerRestServiceBinding
@@ -120,7 +121,13 @@ public class AuthorizationFlowResource {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Could not add origin to session").build();
         }
 
-        String cookieValue = "JSESSIONID=" + servletRequest.getSession().getId() + "; Path=/; HttpOnly; Secure; SameSite=None";
+        NewCookie sessionCookie = new NewCookie.Builder("JSESSIONID")
+                .value(servletRequest.getSession().getId())
+                .path("/") // Cookie valid for all paths
+                .secure(true) // Only sent over HTTPS
+                .httpOnly(true) // Not accessible via JavaScript
+                .build();
+        String cookieValue = RuntimeDelegate.getInstance().createHeaderDelegate(NewCookie.class).toString(sessionCookie) + "; SameSite=None";
         URI loginRedirectUri = URI.create(DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "login/?origin=" + origin);
 
         return Response.temporaryRedirect(loginRedirectUri)
@@ -154,7 +161,6 @@ public class AuthorizationFlowResource {
             //            if (sessionId.equals(servletRequest.getSession().getId())) {
             AuthAccessToken2 token = new AuthAccessToken2(messageId, 300);
             addTokenToSession(token);
-            servletResponse.setHeader("Content-Security-Policy", "frame-ancestors 'self' " + origin);
             return Response.ok(getTokenServiceResponseBody(JsonTools.getAsJson(token), origin), MediaType.TEXT_HTML)
                     .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
                     .build();
@@ -197,14 +203,15 @@ public class AuthorizationFlowResource {
         AuthProbeResult2 ret = new AuthProbeResult2();
 
         String authHeader = servletRequest.getHeader("Authorization");
-        //        if (StringUtils.isEmpty(authHeader)) {
-        //            ret.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
-        //            ret.getHeading().put("en", "Authorization: bad format");
-        //            ret.getNote().put("en", "Authorization: bad format");
-        //            return ret;
-        //        }
         logger.debug("Authorization: {}", authHeader);
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        if (authHeader != null) {
+            if (!authHeader.startsWith("Bearer ")) {
+                ret.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
+                ret.getHeading().put("en", "Authorization: bad format");
+                ret.getNote().put("en", "Authorization: bad format");
+                return ret;
+            }
+
             String tokenValue = authHeader.substring(7);
             logger.debug("Token: {}", tokenValue);
             AuthAccessToken2 token = getTokenFromSession(tokenValue);
@@ -290,6 +297,7 @@ public class AuthorizationFlowResource {
                 session.setAttribute(KEY_TOKENS, tokenMap);
             }
             tokenMap.put(token.getAccessToken(), token);
+            logger.debug("Added token '{}' to session '{}'.", token.getAccessToken(), session.getId());
             return true;
         }
 
