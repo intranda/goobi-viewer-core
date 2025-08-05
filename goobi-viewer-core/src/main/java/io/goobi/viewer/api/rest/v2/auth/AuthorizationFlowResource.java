@@ -45,7 +45,6 @@ import de.intranda.api.iiif.auth.v2.AuthAccessTokenError2;
 import de.intranda.api.iiif.auth.v2.AuthAccessTokenError2.Profile;
 import de.intranda.api.iiif.auth.v2.AuthProbeResult2;
 import de.intranda.api.iiif.auth.v2.AuthProbeService2;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -75,7 +74,7 @@ import jakarta.ws.rs.ext.RuntimeDelegate;
 
 @jakarta.ws.rs.Path(AUTH)
 @ViewerRestServiceBinding
-@CORSBinding
+//@CORSBinding
 public class AuthorizationFlowResource {
 
     private static final Logger logger = LogManager.getLogger(AuthorizationFlowResource.class);
@@ -133,6 +132,7 @@ public class AuthorizationFlowResource {
         return Response.temporaryRedirect(loginRedirectUri)
                 .header("Set-Cookie", cookieValue)
                 .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
+                .header("Access-Control-Allow-Origin", origin)
                 .header("Access-Control-Allow-Credentials", "true")
                 .build();
     }
@@ -174,6 +174,7 @@ public class AuthorizationFlowResource {
             return Response.ok(getTokenServiceResponseBody(JsonTools.getAsJson(token), origin), MediaType.TEXT_HTML)
                     .header("Set-Cookie", cookieValue)
                     .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
+                    .header("Access-Control-Allow-Origin", origin)
                     .header("Access-Control-Allow-Credentials", "true")
                     .build();
             //            }
