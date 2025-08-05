@@ -159,7 +159,7 @@ public class AuthorizationFlowResource {
         URI loginRedirectUri = URI.create(DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "login/?origin=" + origin);
 
         return Response.temporaryRedirect(loginRedirectUri)
-                .header("Set-Cookie", cookieValue)
+//                .header("Set-Cookie", cookieValue)
                 .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
                 .header("Access-Control-Allow-Origin", origin)
                 .header("Access-Control-Allow-Credentials", "true")
@@ -201,7 +201,7 @@ public class AuthorizationFlowResource {
             String cookieValue = RuntimeDelegate.getInstance().createHeaderDelegate(NewCookie.class).toString(sessionCookie) + "; SameSite=None";
 
             return Response.ok(getTokenServiceResponseBody(JsonTools.getAsJson(token), origin), MediaType.TEXT_HTML)
-                    .header("Set-Cookie", cookieValue)
+//                    .header("Set-Cookie", cookieValue)
                     .header("Set-Cookie", generateTestCookie())
                     .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
                     .header("Access-Control-Allow-Origin", origin)
