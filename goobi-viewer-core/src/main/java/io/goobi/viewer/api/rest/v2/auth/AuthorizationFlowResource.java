@@ -92,46 +92,6 @@ public class AuthorizationFlowResource {
     public AuthorizationFlowResource(@Context HttpServletRequest request) {
     }
 
-    private void debugRequest() {
-        if (servletRequest != null) {
-            if (servletRequest.getSession() != null) {
-                logger.debug("session id from request: {}", servletRequest.getSession().getId());
-            }
-            Cookie[] cookies = servletRequest.getCookies();
-            if (cookies != null) {
-                for (Cookie cookie : servletRequest.getCookies()) {
-                    logger.debug("Cookie received: {}={}", cookie.getName(), cookie.getValue());
-                }
-            } else {
-                logger.debug("No cookies received");
-            }
-        }
-    }
-
-    public String generateTestCookie() {
-        NewCookie testCookie = new NewCookie.Builder("DEBUG_COOKIE")
-                .value("test123")
-                .path("/")
-                .secure(true)
-                .httpOnly(true)
-                .build();
-
-        return RuntimeDelegate.getInstance()
-                .createHeaderDelegate(NewCookie.class)
-                .toString(testCookie) + "; SameSite=None";
-    }
-
-    public String generateCookie() {
-        NewCookie sessionCookie = new NewCookie.Builder("JSESSIONID")
-                .value(servletRequest.getSession().getId())
-                .path("/") // Cookie valid for all paths
-                .secure(true) // Only sent over HTTPS
-                .httpOnly(true) // Not accessible via JavaScript
-                .build();
-
-        return RuntimeDelegate.getInstance().createHeaderDelegate(NewCookie.class).toString(sessionCookie) + "; SameSite=None";
-    }
-
     /**
      * For testing purposes.
      * 
@@ -150,7 +110,7 @@ public class AuthorizationFlowResource {
     @Produces({ MediaType.TEXT_HTML })
     @Operation(tags = { "records", "iiif" }, summary = "")
     public Response loginService(@QueryParam("origin") String origin) {
-        logger.debug("accessService");
+        logger.debug("loginService");
         servletRequest.getSession(true); // Force session creation
         debugRequest();
         if (StringUtils.isEmpty(origin)) {
@@ -197,20 +157,15 @@ public class AuthorizationFlowResource {
             //            if (sessionId.equals(servletRequest.getSession().getId())) {
             AuthAccessToken2 token = new AuthAccessToken2(messageId, 300);
             addTokenToSession(token);
-
-            return Response.ok(getTokenServiceResponseBody(JsonTools.getAsJson(token), origin), MediaType.TEXT_HTML)
-                    .header("Set-Cookie", generateCookie())
-                    .header("Set-Cookie", generateTestCookie())
-                    .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
-                    .header("Access-Control-Allow-Origin", origin)
-                    .header("Access-Control-Allow-Credentials", "true")
-                    .build();
+            return generateOkResponse(getTokenServiceResponseBody(JsonTools.getAsJson(token), origin), MediaType.TEXT_HTML, origin);
             //            }
         }
 
         return Response
                 .ok(getTokenServiceResponseBody(JsonTools.getAsJson(new AuthAccessTokenError2(messageId, Profile.INVALID_REQUEST)), origin),
                         MediaType.TEXT_HTML)
+                .header("Access-Control-Allow-Origin", origin)
+                .header("Access-Control-Allow-Credentials", "true")
                 .build();
     }
 
@@ -247,13 +202,8 @@ public class AuthorizationFlowResource {
         }
         String authHeader = servletRequest.getHeader("Authorization");
         if (authHeader == null) {
-            return Response
-                    .ok(JsonTools.getAsJson(new AuthProbeResult2().setStatus(Response.Status.UNAUTHORIZED.getStatusCode())),
-                            MediaType.APPLICATION_JSON)
-                    .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
-                    .header("Access-Control-Allow-Origin", origin)
-                    .header("Access-Control-Allow-Credentials", "true")
-                    .build();
+            return generateOkResponse(JsonTools.getAsJson(new AuthProbeResult2().setStatus(Response.Status.UNAUTHORIZED.getStatusCode())),
+                    MediaType.APPLICATION_JSON, origin);
         }
 
         logger.debug("Authorization: {}", authHeader);
@@ -261,10 +211,7 @@ public class AuthorizationFlowResource {
             AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(pi, filename);
             service.getErrorHeading().put("en", "Authorization: bad format");
             service.getErrorNote().put("en", "Authorization: bad format");
-            return Response.ok(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", origin)
-                    .header("Access-Control-Allow-Credentials", "true")
-                    .build();
+            return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
         }
 
         String tokenValue = authHeader.substring(7);
@@ -275,10 +222,7 @@ public class AuthorizationFlowResource {
             AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(pi, filename);
             service.getErrorHeading().put("en", "Token not found");
             service.getErrorNote().put("en", "Token not found");
-            return Response.ok(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON)
-                    .header("Access-Control-Allow-Origin", origin)
-                    .header("Access-Control-Allow-Credentials", "true")
-                    .build();
+            return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
         }
 
         String key = pi + "_" + filename;
@@ -301,10 +245,7 @@ public class AuthorizationFlowResource {
                 AuthProbeService2 service = AuthorizationFlowTools.getAuthServicesEmbedded(pi, filename);
                 service.getErrorHeading().put("en", "Error");
                 service.getErrorNote().put("en", e.getMessage());
-                return Response.ok(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON)
-                        .header("Access-Control-Allow-Origin", origin)
-                        .header("Access-Control-Allow-Credentials", "true")
-                        .build();
+                return generateOkResponse(JsonTools.getAsJson(service), MediaType.APPLICATION_JSON, origin);
             }
         }
 
@@ -317,11 +258,7 @@ public class AuthorizationFlowResource {
             logger.debug("access denied");
         }
 
-        return Response.ok(JsonTools.getAsJson(result), MediaType.APPLICATION_JSON)
-                .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
-                .header("Access-Control-Allow-Origin", origin)
-                .header("Access-Control-Allow-Credentials", "true")
-                .build();
+        return generateOkResponse(JsonTools.getAsJson(result), MediaType.APPLICATION_JSON, origin);
     }
 
     @GET
@@ -428,5 +365,55 @@ public class AuthorizationFlowResource {
         }
 
         return false;
+    }
+
+    private Response generateOkResponse(Object entity, String mediaType, String origin) {
+        return Response.ok(entity, mediaType)
+                .header("Set-Cookie", generateCookie())
+                .header("Set-Cookie", generateTestCookie())
+                .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
+                .header("Access-Control-Allow-Origin", origin)
+                .header("Access-Control-Allow-Credentials", "true")
+                .build();
+    }
+
+    public String generateCookie() {
+        NewCookie sessionCookie = new NewCookie.Builder("JSESSIONID")
+                .value(servletRequest.getSession().getId())
+                .path("/") // Cookie valid for all paths
+                .secure(true) // Only sent over HTTPS
+                .httpOnly(true) // Not accessible via JavaScript
+                .build();
+
+        return RuntimeDelegate.getInstance().createHeaderDelegate(NewCookie.class).toString(sessionCookie) + "; SameSite=None";
+    }
+
+    public String generateTestCookie() {
+        NewCookie testCookie = new NewCookie.Builder("DEBUG_COOKIE")
+                .value("test123")
+                .path("/")
+                .secure(true)
+                .httpOnly(true)
+                .build();
+
+        return RuntimeDelegate.getInstance()
+                .createHeaderDelegate(NewCookie.class)
+                .toString(testCookie) + "; SameSite=None";
+    }
+
+    private void debugRequest() {
+        if (servletRequest != null) {
+            if (servletRequest.getSession() != null) {
+                logger.debug("session id from request: {}", servletRequest.getSession().getId());
+            }
+            Cookie[] cookies = servletRequest.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : servletRequest.getCookies()) {
+                    logger.debug("Cookie received: {}={}", cookie.getName(), cookie.getValue());
+                }
+            } else {
+                logger.debug("No cookies received");
+            }
+        }
     }
 }
