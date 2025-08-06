@@ -120,6 +120,17 @@ public class AuthorizationFlowResource {
                 .toString(testCookie) + "; SameSite=None";
     }
 
+    public String generateCookie() {
+        NewCookie sessionCookie = new NewCookie.Builder("JSESSIONID")
+                .value(servletRequest.getSession().getId())
+                .path("/") // Cookie valid for all paths
+                .secure(true) // Only sent over HTTPS
+                .httpOnly(true) // Not accessible via JavaScript
+                .build();
+
+        return RuntimeDelegate.getInstance().createHeaderDelegate(NewCookie.class).toString(sessionCookie) + "; SameSite=None";
+    }
+
     /**
      * For testing purposes.
      * 
@@ -139,6 +150,7 @@ public class AuthorizationFlowResource {
     @Operation(tags = { "records", "iiif" }, summary = "")
     public Response loginService(@QueryParam("origin") String origin) {
         logger.debug("accessService");
+        servletRequest.getSession(true); // Force session creation
         debugRequest();
         if (StringUtils.isEmpty(origin)) {
             logger.debug("origin missing");
@@ -149,17 +161,10 @@ public class AuthorizationFlowResource {
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Could not add origin to session").build();
         }
 
-        NewCookie sessionCookie = new NewCookie.Builder("JSESSIONID")
-                .value(servletRequest.getSession().getId())
-                .path("/") // Cookie valid for all paths
-                .secure(true) // Only sent over HTTPS
-                .httpOnly(true) // Not accessible via JavaScript
-                .build();
-        String cookieValue = RuntimeDelegate.getInstance().createHeaderDelegate(NewCookie.class).toString(sessionCookie) + "; SameSite=None";
         URI loginRedirectUri = URI.create(DataManager.getInstance().getConfiguration().getViewerBaseUrl() + "login/?origin=" + origin);
 
         return Response.temporaryRedirect(loginRedirectUri)
-                .header("Set-Cookie", cookieValue)
+                .header("Set-Cookie", generateCookie())
                 .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
                 .header("Access-Control-Allow-Origin", origin)
                 .header("Access-Control-Allow-Credentials", "true")
@@ -192,16 +197,8 @@ public class AuthorizationFlowResource {
             AuthAccessToken2 token = new AuthAccessToken2(messageId, 300);
             addTokenToSession(token);
 
-            NewCookie sessionCookie = new NewCookie.Builder("JSESSIONID")
-                    .value(servletRequest.getSession().getId())
-                    .path("/") // Cookie valid for all paths
-                    .secure(true) // Only sent over HTTPS
-                    .httpOnly(true) // Not accessible via JavaScript
-                    .build();
-            String cookieValue = RuntimeDelegate.getInstance().createHeaderDelegate(NewCookie.class).toString(sessionCookie) + "; SameSite=None";
-
             return Response.ok(getTokenServiceResponseBody(JsonTools.getAsJson(token), origin), MediaType.TEXT_HTML)
-                    .header("Set-Cookie", cookieValue)
+                    .header("Set-Cookie", generateCookie())
                     .header("Set-Cookie", generateTestCookie())
                     .header("Content-Security-Policy", "frame-ancestors 'self' " + origin)
                     .header("Access-Control-Allow-Origin", origin)
