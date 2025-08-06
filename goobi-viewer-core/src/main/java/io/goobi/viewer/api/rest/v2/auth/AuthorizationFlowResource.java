@@ -65,6 +65,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.OPTIONS;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
@@ -186,6 +187,30 @@ public class AuthorizationFlowResource {
 
         logger.debug("Token service response body:\n{}", sb);
         return sb.toString();
+    }
+
+    @OPTIONS
+    @jakarta.ws.rs.Path(AUTH_PROBE_REQUEST)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records", "iiif" }, summary = "")
+    public Response handleProbePreflight(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
+            @Parameter(description = "Content file name") @PathParam("filename") String filename, @HeaderParam("Origin") String origin) {
+        logger.debug("probeResource: {}/{}", pi, filename);
+        debugRequest();
+        if (StringUtils.isEmpty(origin)) {
+            logger.warn("No Origin header found.");
+        }
+        if (origin != null) {
+            return Response.ok()
+                    .header("Access-Control-Allow-Origin", origin)
+                    .header("Access-Control-Allow-Credentials", "true")
+                    .header("Access-Control-Allow-Methods", "GET, OPTIONS")
+                    .header("Access-Control-Allow-Headers", "Authorization, Content-Type")
+                    .header("Access-Control-Max-Age", "3600")
+                    .build();
+        }
+
+        return Response.status(Response.Status.FORBIDDEN).build();
     }
 
     @GET
